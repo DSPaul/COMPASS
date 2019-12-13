@@ -1,0 +1,918 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:self="clr-namespace:COMPASS"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:COMPASS"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="COMPASS.MainWindow"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="COMPASS" Height="500" Width="800" FontSize="20"
+        Foreground="White" Icon="Icons/compass_new.ico"
+        Closing="Window_Closing" WindowState="Maximized" WindowStyle="None" 
+        WindowStartupLocation="CenterScreen" MouseDown="Window_MouseDown">
+    <Window.Resources>
+        <!--#region ScrollBar Style-->
+        <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="Visibility" Value="Hidden"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+        </Style>
+        <Style x:Key="ScrollBarPageButton" TargetType="{x:Type RepeatButton}">
+            <Setter Property="Visibility" Value="Hidden"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Focusable" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Border Background="Black" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ScrollBarThumb" TargetType="{x:Type Thumb}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Focusable" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border CornerRadius="4" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0"  Width="8" Margin="8,0,-2,0"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition MaxHeight="0"/>
+                    <RowDefinition Height="0.00001*"/>
+                    <RowDefinition MaxHeight="0"/>
+                </Grid.RowDefinitions>
+                <Border Grid.RowSpan="3" CornerRadius="2" Background="Transparent" />
+                <RepeatButton Grid.Row="0" Style="{StaticResource ScrollBarLineButton}" Height="18" Command="ScrollBar.LineUpCommand" Content="M 0 4 L 8 4 L 4 0 Z" />
+                <Track Name="PART_Track" Grid.Row="1" IsDirectionReversed="true">
+                    <Track.DecreaseRepeatButton>
+                        <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageUpCommand" />
+                    </Track.DecreaseRepeatButton>
+                    <Track.Thumb>
+                        <Thumb Style="{StaticResource ScrollBarThumb}" Margin="1,0,1,0" Background="#FF686868" BorderBrush="#FF686868"/>
+                    </Track.Thumb>
+                    <Track.IncreaseRepeatButton>
+                        <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageDownCommand" />
+                    </Track.IncreaseRepeatButton>
+                </Track>
+                <RepeatButton Grid.Row="3" Style="{StaticResource ScrollBarLineButton}" Height="18" Command="ScrollBar.LineDownCommand" Content="M 0 0 L 4 4 L 8 0 Z"/>
+            </Grid>
+        </ControlTemplate>
+        <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MaxWidth="18"/>
+                    <ColumnDefinition Width="0.00001*"/>
+                    <ColumnDefinition MaxWidth="18"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.ColumnSpan="3" CornerRadius="2" Background="#F0F0F0"/>
+                <RepeatButton Grid.Column="0"  Style="{StaticResource ScrollBarLineButton}" Width="18" Command="ScrollBar.LineLeftCommand" Content="M 4 0 L 4 8 L 0 4 Z" />
+                <Track Name="PART_Track" Grid.Column="1" IsDirectionReversed="False">
+                    <Track.DecreaseRepeatButton>
+                        <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageLeftCommand" />
+                    </Track.DecreaseRepeatButton>
+                    <Track.Thumb>
+                        <Thumb Style="{StaticResource ScrollBarThumb}" Margin="0,1,0,1" Background="#888" BorderBrush="#888" />
+                    </Track.Thumb>
+                    <Track.IncreaseRepeatButton>
+                        <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageRightCommand" />
+                    </Track.IncreaseRepeatButton>
+                </Track>
+                <RepeatButton Grid.Column="3" Style="{StaticResource ScrollBarLineButton}" Width="18" Command="ScrollBar.LineRightCommand" Content="M 0 0 L 4 4 L 0 8 Z"/>
+            </Grid>
+        </ControlTemplate>
+        <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="Height" Value="18" />
+                    <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
+                </Trigger>
+                <Trigger Property="Orientation" Value="Vertical">
+                    <Setter Property="Width" Value="18"/>
+                    <Setter Property="Height" Value="Auto" />
+                    <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="FavsScrollViewer" TargetType="{x:Type ScrollViewer}">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ScrollContentPresenter Grid.Column="1"/>
+                            <ScrollBar Name="PART_VerticalScrollBar" Value="{TemplateBinding VerticalOffset}" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                            <ScrollBar Name="PART_HorizontalScrollBar" Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Value="{TemplateBinding HorizontalOffset}" Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--#endregion-->
+        <!--#region Contextmenu Style-->
+        <Style TargetType="ContextMenu">
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="HasDropShadow" Value="True"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Template" >
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContextMenu">
+                        <Border CornerRadius="15" Background="#FF3F3F3F">
+                            <Border.OpacityMask>
+                                <VisualBrush>
+                                    <VisualBrush.Visual>
+                                        <Border Background="Black"
+                                                SnapsToDevicePixels="True"
+                                                CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=Border}}"
+                                                Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}}"
+                                                Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Border}}"/>
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Border.OpacityMask>
+                            <ItemsPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="MenuItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type MenuItem}">
+                        <Border Padding="15,5" Background="{TemplateBinding Background}">
+                            <ContentPresenter Content="{TemplateBinding Header}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter Property="Background"  Value="#FF999999"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--#endregion-->
+        <local:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+    </Window.Resources>
+    <Window.Background>
+        <!--<ImageBrush ImageSource="C:\Users\pauld\Pictures\Wallpapers\neverwinter_seascape.jpg" Opacity="0.6"/>-->
+        <!--<SolidColorBrush Color="#FF242528"/>-->
+        <LinearGradientBrush EndPoint="0.8,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0.0" Opacity="0.4">
+            <GradientStop Color="#FF183DE9"/>
+            <GradientStop Color="#FFF10927" Offset="1"/>
+        </LinearGradientBrush>
+        <!--<LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+            <GradientStop Color="#FF1DA1F2"/>
+            <GradientStop Color="#FF15202B" Offset="1"/>
+        </LinearGradientBrush>-->
+    </Window.Background>
+    <Grid Name="MainGrid" Focusable="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width ="0"/>
+            <ColumnDefinition Width ="auto"/>
+            <ColumnDefinition Width ="auto"/>
+            <ColumnDefinition Width ="*"/>
+            <ColumnDefinition Width ="auto"/>
+            <ColumnDefinition Width ="5"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--#region Top Bar-->
+        <Grid Grid.ColumnSpan="7" x:Name="WindowsBar" 
+              MouseDown="WindowsBar_MouseDown" MouseMove="OnMouseMove">
+            <Grid.Background>
+                <SolidColorBrush Color="Black" Opacity="0"/>
+            </Grid.Background>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width ="auto"/>
+                <ColumnDefinition Width ="auto"/>
+                <ColumnDefinition Width ="*"/>
+                <ColumnDefinition Width ="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" Margin="10,0">
+                <Image Source="Icons/Compass.png" Width="35" SnapsToDevicePixels="True"/>
+                <TextBlock Text="C.O.M.P.A.S.S." VerticalAlignment="Center" Margin="10,0"/>
+            </StackPanel>
+
+            <Border Grid.Column="1" CornerRadius="15" MinWidth="200"
+                        Background="#FFB7B7B7" OpacityMask="#FF222222" Margin="10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width ="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Grid.Column="0" 
+                                    x:Name="Searchbox" Text="Search" 
+                                    Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF636363" 
+                                    Margin="10,0,0,0"
+                                    KeyDown="Searchbox_KeyDown"
+                                    PreviewMouseLeftButtonUp="Searchbox_MouseLeftButtonUp"
+                                    />
+                    <Button Grid.Column="1"
+                                x:Name="Searchbtn" 
+                                Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Right" 
+                                Margin="0,0,10,0"
+                                Click="Searchbtn_Click">
+                        <Image Source="C:\Users\pauld\source\repos\pdfOrganizer\Assets\Icons\2x\Search.png"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Stretch" Grid.Column="3">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type Button}" >
+                        <Setter Property="Width" Value="40"/>
+                        <Setter Property="Padding" Value="7"/>
+                        <Setter Property="Background" Value="{x:Null}"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Background="{TemplateBinding Background}" HorizontalAlignment="Stretch">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" Value="Gray" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Resources>
+
+                <Button x:Name="MinimizeButton"
+                        KeyboardNavigation.IsTabStop="False"
+                        Click="MinimizeWindow" BorderBrush="{x:Null}">
+                    <Image Source="Icons/Minimize.png" Width="15"/>
+                </Button>
+
+                <Button x:Name="MaximizeButton"
+                        KeyboardNavigation.IsTabStop="False"
+                        Click="MaximizeClick" BorderBrush="{x:Null}" >
+                    <Grid>
+                        <Image  x:Name="Maximizeimage" Source="Icons/Maximize.png" Visibility="Collapsed" Width="15"/>
+                        <Image x:Name="NotMaximizeimage" Source="Icons/Window.png" Width="15"/>
+                    </Grid>
+                </Button>
+
+                <Button x:Name="CloseButton"
+                        Click="CloseButton_Click" BorderBrush="{x:Null}">
+                    <Image Source="Icons/Cross.png" Width="20"/>
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter Property="Background" Value="Red" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Left Dock-->
+        <Grid Grid.Column="2" Grid.Row="1">
+            <Grid.Resources>
+                <Style TargetType="{x:Type Button}" x:Key="SquareBtn">
+                    <Setter Property="Background" Value="Gray"/>
+                    <Setter Property="BorderBrush" Value="{x:Null}"/>
+                    <Setter Property="Margin" Value="10,3,0,3"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="1" CornerRadius="7" HorizontalAlignment="Stretch">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" Value="#FF999999" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Resources>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width =" auto"/>
+                <ColumnDefinition Width ="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="10"/>
+            </Grid.RowDefinitions>
+
+            <TabControl  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Background="{x:Null}" Margin="10,0,0,5"
+                         BorderThickness="0">
+                <TabControl.Resources>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Margin" Value="0,0,0,-2"/>
+                        <Setter Property="VerticalAlignment" Value="Bottom"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TabItem">
+                                    <Border CornerRadius="10,10,0,0" x:Name="TabBorder">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#FFD9D9D9" Opacity="0.6"/>
+                                        </Border.Background>
+                                        <ContentPresenter 
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ContentSource="Header"
+                                        Margin="10,2"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="TabBorder" Property="Background">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Color="#FFD9D9D9" Opacity="0.6"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter TargetName="TabBorder" Property="Background">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Color="#FFD9D9D9" Opacity="0.3"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TabControl.Resources>
+                <TabItem Header="Tags">
+                    <Border CornerRadius="0,0,15,15">
+                        <Border.Background>
+                            <SolidColorBrush Color="#FFD9D9D9" Opacity="0.6"/>
+                        </Border.Background>
+                        <TreeView x:Name="TagTree" Grid.Column="1" Grid.Row="1" BorderBrush="{x:Null}"
+                                    ItemsSource="{Binding}" Grid.ColumnSpan="2" Background="{x:Null}"
+                                    MouseLeftButtonUp="Tag_Selected"
+                                    MouseRightButtonDown="TagTree_MouseRightButtonDown">
+                            <TreeView.Resources>
+                                <Style TargetType="{x:Type TreeViewItem}">
+                                    <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
+                                    <Setter Property="Opacity" Value="1"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter Property="Opacity" Value="1"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TreeView.Resources>
+                            <TreeView.ItemTemplate>
+                                <HierarchicalDataTemplate DataType="{x:Type local:Tag}" ItemsSource="{Binding Items}">
+                                    <Border CornerRadius="10" Margin="0,3">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding BackgroundColor}"/>
+                                        </Border.Background>
+                                        <TextBlock Text="{Binding Content}" Margin="7,0" Foreground="White" FontSize="15">
+                                            <TextBlock.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Assign to Files"/>
+                                                    <MenuItem Header="Edit" Click="EditTag"/>
+                                                    <MenuItem Header="Delete" Click="DeleteTag"/>
+                                                </ContextMenu>
+                                            </TextBlock.ContextMenu>
+                                        </TextBlock>
+                                    </Border>
+                                </HierarchicalDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
+                    </Border>
+                </TabItem>
+                <TabItem Header=" Filter"/>
+            </TabControl>
+            <Button x:Name="AddtagBtn" Grid.Column="1" Grid.Row="2" Click="Addtag_Click" Style="{StaticResource SquareBtn}">
+                <StackPanel Orientation="Horizontal" Margin="0,0">
+                    <Image Source="Icons/Add.png" Height="30" Margin="0,0,10,0"/>
+                    <TextBlock Text="Add Tag" Foreground="#FFCBCBCB" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button x:Name="ImportBtn" Grid.Column="1" Grid.Row="3"
+                        Click="ImportBtn_Click" Style="{StaticResource SquareBtn}"
+                        >
+                <StackPanel Orientation="Horizontal" Margin="0,0">
+                    <Image Source="Icons/Import.png" Height="30" Margin="0,0,10,0"/>
+                    <TextBlock Text="Import  " Foreground="#FFCBCBCB" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button x:Name="SettingsBtn" Grid.Column="1" Grid.Row="4" Style="{StaticResource SquareBtn}">
+                <StackPanel Orientation="Horizontal" Margin="5,0">
+                    <Image Source="Icons/Settings.png" Height="30" Margin="0,0,10,0"/>
+                    <TextBlock Text="Settings" Foreground="#FFCBCBCB" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <!--#region Add Tag Popup-->
+            <Grid Grid.Row="1" Grid.Column="1" Margin="5"
+                    VerticalAlignment="Bottom" x:Name="TagCreation" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Border CornerRadius="15" Background="White">
+                    <Grid>
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type Button}" x:Key="CheckedRound">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Border CornerRadius="15" Background="#FF1CE81C" Margin="5,0">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,2">
+                                                    <Image Source="Icons/Done.png"/>
+                                                    <TextBlock Text="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Foreground="White"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                            <Style TargetType="{x:Type Button}" x:Key="CrossRound">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Border CornerRadius="15" Background="#FFEB1313" Margin="5,0">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,2">
+                                                    <Image Source="Icons/Cross.png"/>
+                                                    <TextBlock Text="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Foreground="White"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid  x:Name="TagCreationMain">
+                            <Grid.Resources>
+                                <Style TargetType="{x:Type Label}">
+                                    <Setter Property="FontSize" Value="13"/>
+                                    <Setter Property="Margin" Value="10,0,0,0"/>
+                                </Style>
+                            </Grid.Resources>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height =" 10"/>
+                                <RowDefinition Height =" auto"/>
+                                <RowDefinition Height =" auto"/>
+                                <RowDefinition Height =" auto"/>
+                                <RowDefinition Height =" auto"/>
+                                <RowDefinition Height =" auto"/>
+                                <RowDefinition Height =" 10"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Content="Tag Name:" Grid.Row="1"/>
+                            <Border Margin="10,0" Grid.Row="2" Background="#FF575757" CornerRadius="10">
+                                <TextBox x:Name="TagNameTextBlock" KeyDown="TagNameTextBlock_KeyDown" BorderBrush="{x:Null}"
+                                     Background="{x:Null}" Foreground="White"/>
+                            </Border>
+                            <StackPanel Grid.Row="3" Orientation="Horizontal">
+                                <Label Content="Color:"/>
+                                <Button x:Name="ShowColorSelection" Click="ShowColorSelection_Click">
+                                    <Button.Background>
+                                        <SolidColorBrush Color="{Binding SelectedColor, ElementName=ColorSelector}"/>
+                                    </Button.Background>
+                                    <Button.Template>
+                                        <ControlTemplate>
+                                            <Border Background="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" 
+                                                    Width="60" Height="15" CornerRadius="8" BorderBrush="Black" BorderThickness="0.5" />
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Grid.Row="4" Orientation="Horizontal" x:Name="ParentSelectionPanel">
+                                <Label Content="Parent:"/>
+                                <Button x:Name="ShowParentSelection" Click="ShowParentSelection_Click" BorderBrush="{x:Null}"
+                                        FontSize="13" Foreground="White" Margin="5,0" Background="{x:Null}">
+                                    <Border CornerRadius="8">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding BackgroundColor, FallbackValue=Black}"/>
+                                        </Border.Background>
+                                        <TextBlock Text="{Binding Content, FallbackValue='None'}"
+                                                           VerticalAlignment="Center" Margin="5,0"/>
+                                    </Border>
+                                </Button>
+                                <Button x:Name="ClearParent" Click="ClearParent_Click"  Background="{x:Null}"
+                                    BorderBrush="{x:Null}" VerticalAlignment="Center">
+                                    <Border Background="Red" CornerRadius="10" Width="20">
+                                        <Image Source="Icons/Cross.png"/>
+                                    </Border>
+                                </Button>
+                            </StackPanel>
+                            <Button Grid.Row="5" Style="{StaticResource CheckedRound}" Content="Create Tag"
+                                    x:Name="CreateTagBtn" Click="CreateTagBtn_Click"/>
+                        </Grid>
+                        <ScrollViewer x:Name="ParentSelection" PreviewMouseWheel="ParentSelectionScroll_PreviewMouseWheel" Visibility="Collapsed"
+                                      MaxHeight="{Binding ActualHeight, ElementName=TagTree}">
+                            <StackPanel>
+                                <TreeView x:Name="ParentSelectionTree" BorderBrush="{x:Null}"
+                                    ItemsSource="{Binding}"
+                                    Background="{x:Null}" SelectedItemChanged="ShowParentSelection_Click"
+                                    HorizontalAlignment="Left">
+                                    <TreeView.Resources>
+                                        <Style TargetType="{x:Type TreeViewItem}">
+                                            <Setter Property="IsExpanded" Value="True"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="true">
+                                                    <Setter Property="BorderBrush" Value="Black"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TreeView.Resources>
+                                    <TreeView.ItemTemplate>
+                                        <HierarchicalDataTemplate DataType="{x:Type local:Tag}" ItemsSource="{Binding Items}">
+                                            <Border CornerRadius="10" Margin="0,3">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="{Binding BackgroundColor}"/>
+                                                </Border.Background>
+                                                <TextBlock Text="{Binding Content}" Margin="10,2" Foreground="White" FontSize="13"/>
+                                            </Border>
+                                        </HierarchicalDataTemplate>
+                                    </TreeView.ItemTemplate>
+                                </TreeView>
+                                <Button Click="ShowParentSelection_Click" Content="Cancel" Style="{StaticResource CrossRound}"
+                                    Margin="5"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                        <StackPanel Grid.Column="1" x:Name="ColorSelection" Visibility="Collapsed">
+                            <xctk:ColorCanvas Grid.Column="1" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}"
+                                          x:Name="ColorSelector"/>
+                            <Button Style="{StaticResource CheckedRound}" Content="Select Color"
+                                    Click="ShowColorSelection_Click" Margin="5" />
+                        </StackPanel>
+
+                    </Grid>
+                </Border>
+                <Path Grid.Row="2" Data="M 0,0 L 15,15 L 30,0 L 0,0" HorizontalAlignment="Center" Fill="White"
+                      StrokeThickness="0" Stroke="Black" Panel.ZIndex="1" VerticalAlignment="Top"/>
+            </Grid>
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Main Dock-->
+        <Grid Grid.Column="3" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width ="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0" />
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="10"/>
+            </Grid.RowDefinitions>
+
+            <!--#region View Selection-->
+            <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal">
+                <Button Background="{x:Null}" BorderBrush="{x:Null}" Click="ShowListView">
+                    <Image Source="Icons/ListView.png"/>
+                </Button>
+                <Button Background="{x:Null}" BorderBrush="{x:Null}" Click="ShowMixView">
+                    <Image Source="Icons/MixView.png"/>
+                </Button>
+                <Button Background="{x:Null}" BorderBrush="{x:Null}" Click="ShowTileView">
+                    <Image Source="Icons/TileView.png"/>
+                </Button>
+            </StackPanel>
+            <!--#endregion-->
+
+            <!--#region Current Filters-->
+            <TextBlock Grid.Column="0" Grid.Row="1" x:Name="CurrentTagTextBlock" Text="Filters:" Margin="10,0" VerticalAlignment="Center"/>
+            <Border CornerRadius="15" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row ="1"
+                    Margin="0,10" Background="#FF565656">
+                <Grid>
+                    <ListBox x:Name="CurrentTagList"  ItemsSource="{Binding ActiveTags}" BorderBrush="{x:Null}" 
+                     SelectionChanged="ActiveTag_Click" Background="{x:Null}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" MaxWidth="{Binding ActualWidth, ElementName=CurrentTagList}"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="10" Margin="0,3">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{Binding BackgroundColor}"/>
+                                    </Border.Background>
+                                    <TextBlock Text="{Binding Content}" Margin="10,2" Foreground="White" FontSize="13"/>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button x:Name="ResetBtn" Click="ResetBtn_Click" Margin="10,0"
+                        Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="30">
+                        <Image Source="Icons/Cross.png"/>
+                    </Button>
+                </Grid>
+            </Border>
+            <!--#endregion-->
+
+            <!--#region ListView-->
+            <DataGrid x:Name="FileListView" Grid.Column="0 " Grid.Row="3" Grid.ColumnSpan="4" 
+                            Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Margin="10,0,0,0"
+                            AutoGenerateColumns="False" ItemsSource="{Binding ActiveFiles}"
+                            CanUserAddRows="False" SelectionMode="Single"
+                            RowHeaderWidth="0" GridLinesVisibility="None">
+                <DataGrid.Resources>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+                                    <TextBlock Text="{TemplateBinding Content}" Margin="5,0" Width="{TemplateBinding Width}" TextAlignment="Left" FontSize="14" FontWeight="Bold" Foreground="#FFC8C8C8"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.ItemContainerStyle>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Background" Value="{x:Null}"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" Value="#FF5E5F65"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter Property="Background" Value="#FF2E2F34"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.ItemContainerStyle>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="TITLE" Width="auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text ="{Binding Title}" TextWrapping="Wrap" FontSize="17" Margin="0,0,10,0"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="AUTHOR" Width="auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text ="{Binding Author}" TextWrapping="Wrap" FontSize="17" Margin="0,0,10,0"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="TAGS" Width="auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ItemsControl ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" 
+                                                        Foreground="Black" FontSize="14" VerticalAlignment="Center">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Width="{Binding ActualWidth}"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border CornerRadius="10" Margin="3,0" VerticalAlignment="Center">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="{Binding BackgroundColor}"/>
+                                                </Border.Background>
+                                                <TextBlock Text="{Binding Content}" Margin ="10,2" Foreground="White"
+                                                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Width="*"/>
+                    <DataGridTemplateColumn Width="auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Click="Edit_File_Btn" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" >
+                                    <Image Source="Icons\Edit.png"/>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <!--#endregion-->
+
+            <!--#region MixView-->
+            <ListBox  Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4"  Visibility="Collapsed" x:Name="FileMixView" 
+                       ItemsSource="{Binding ActiveFiles}" Background="{x:Null}" BorderBrush="{x:Null}"
+                      ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0"
+                      >
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleY="1.05" ScaleX="1.05"/>
+                                        </TransformGroup>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileMixView}"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border CornerRadius="15" Margin="10">
+                            <Border.Background>
+                                <SolidColorBrush Color="Gray" Opacity="0.5"/>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="15" Direction="300"/>
+                            </Border.Effect>
+                            <Grid VerticalAlignment="Top">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="125"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.Resources>
+                                    <Style TargetType="TextBlock" x:Key="Type">
+                                        <Setter Property="FontSize" Value="14"/>
+                                        <Setter Property="Foreground" Value="#FFD0D0D0"/>
+                                        <Setter Property="Margin" Value="3,2"/>
+                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    </Style>
+                                    <Style TargetType="TextBlock" x:Key="Data">
+                                        <Setter Property="FontSize" Value="14"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="Margin" Value="3,2"/>
+                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                    </Style>
+                                </Grid.Resources>
+                                <Image  Grid.Row="0" Grid.RowSpan="4"
+                                   Source="{Binding CoverArt, Converter={StaticResource UriToBitmapConverter}}"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Type}" Text="Title:" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Type}" Text="Author:" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Type}" Text="Publisher:" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource Type}" Text="Version:" />
+                                <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Title}" />
+                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Author}" />
+                                <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Publisher}" />
+                                <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Version}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <!--#endregion-->
+
+            <!--#region TileView-->
+            <ListBox  Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4"  Visibility="Collapsed" x:Name="FileTileView" 
+                       ItemsSource="{Binding ActiveFiles}" Background="{x:Null}" BorderBrush="{x:Null}"
+                      ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0"
+                      FocusVisualStyle="{x:Null}"
+                      >
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
+                                        </TransformGroup>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileTileView}"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border CornerRadius="15" Margin="10">
+                            <Border.Background>
+                                <SolidColorBrush Color="Gray" Opacity="0.5"/>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="15" Direction="300"/>
+                            </Border.Effect>
+                            <Grid VerticalAlignment="Top">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <Image  Grid.Row="0" Width="150"
+                                   Source="{Binding CoverArt, Converter={StaticResource UriToBitmapConverter}}"/>
+                                <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" MaxWidth="150"
+                                        Text="{Binding Title}" Foreground="White" HorizontalAlignment="Center" TextAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
+    </Grid>
+</Window>
+    
+ 
