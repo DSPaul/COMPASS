@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-
 namespace COMPASS
 {
     public class MyFile
@@ -45,7 +44,7 @@ namespace COMPASS
         public int ID { get; set; }
         public string CoverArt { get; set; }
 
-        public ObservableCollection<Tag> Tags { get; set; }
+        public ObservableCollection<Tag> Tags { get; set; } 
     }
 }
 

@@ -15,6 +15,7 @@
         </LinearGradientBrush>
     </Window.Background>-->
     <Window.Resources>
+        <self:UriToBitmapConverter x:Key="UriToBitmapConverter" />
         <!--#region ScrollBar Style-->
         <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
             <Setter Property="Visibility" Value="Hidden"/>
@@ -356,7 +357,7 @@
         </Grid.Resources>
 
         <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="100" x:Name="CoverIm"
-               Source="{Binding CoverArt}" Margin="10,0" Width="300"/>
+               Source="{Binding CoverArt, Converter={StaticResource UriToBitmapConverter}}" Margin="10,0" Width="300"/>
         <TextBlock Text="Title:" Grid.Column="1" Grid.Row="1"/>
         <TextBox Text="{Binding Title, Mode=TwoWay}" Grid.Column="1" Grid.Row="2" Name="FilenameTB"/>
         <TextBlock Text="Author:" Grid.Column="1" Grid.Row="3"/>

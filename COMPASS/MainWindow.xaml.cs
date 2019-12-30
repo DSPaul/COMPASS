@@ -30,8 +30,8 @@ namespace COMPASS
         public MainWindow()
         {
             InitializeComponent();
-            LoadTags();
-            LoadFiles();
+            Data.LoadTags();
+            Data.LoadFiles();
             MagickNET.SetGhostscriptDirectory(@"C:\Users\pauld\Documents\COMPASS\COMPASS\Libraries");
             
             //set Itemsources for databinding
@@ -42,7 +42,6 @@ namespace COMPASS
             TagTree.DataContext = Data.RootTags;
             ParentSelectionTree.DataContext = Data.RootTags;
             ParentSelectionPanel.DataContext = ParentSelectionTree.SelectedItem as Tag;
-            //
 
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
         }
@@ -50,70 +49,13 @@ namespace COMPASS
         // is true if we hold left mouse button on windows tilebar
         private bool DragWindow = false;
 
-        //Loads the RootTags from a file and constructs the Alltags list from it
-        public void LoadTags()
-        {
-            if (File.Exists(@"C:\Users\pauld\Documents\Tags.xml"))
-            {
-                //loading root tags
-                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Tag>));
-                using (var Reader = new StreamReader(@"C:\Users\pauld\Documents\Tags.xml"))
-                {
-                    Data.RootTags = serializer.Deserialize(Reader) as ObservableCollection<Tag>;
-                }
-
-                //Creating All Tags
-                List<Tag> Currentlist = Data.RootTags.ToList();
-                for(int i = 0; i < Currentlist.Count();i++)
-                {
-                    Tag t = Currentlist[i];
-                    Data.AllTags.Add(t);
-                    if(t.Items.Count > 0)
-                    {
-                        foreach (Tag t2 in t.Items) Currentlist.Add(t2);
-                    }   
-                }
-            }
-        }
-
-        //Loads AllFiles list from Files
-        public void LoadFiles()
-        {
-            if (File.Exists(@"C:\Users\pauld\Documents\Files.xml"))
-            {
-                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<MyFile>));
-                using (var Reader = new StreamReader(@"C:\Users\pauld\Documents\Files.xml"))
-                {
-                    Data.AllFiles = serializer.Deserialize(Reader) as ObservableCollection<MyFile>;
-                }
-
-                //build metadatalists
-                foreach(MyFile f in Data.AllFiles)
-                {
-                    if (f.Author != "" && !Data.AuthorList.Contains(f.Author)) Data.AuthorList.Add(f.Author);
-                    if (f.Publisher != "" && !Data.PublisherList.Contains(f.Publisher)) Data.PublisherList.Add(f.Publisher);
-                    if (f.Source != "" && !Data.SourceList.Contains(f.Source)) Data.SourceList.Add(f.Source);
-                }
-            }
-            Reset();
-        }
-
         //resets Filters and searchfield
         public void Reset()
         {
             ClearTreeViewSelection(TagTree);
-
-            Data.TagFilteredFiles.Clear();
-            Data.SearchFilteredFiles.Clear();
-            foreach (MyFile f in Data.AllFiles)
-            {
-                Data.SearchFilteredFiles.Add(f);
-                Data.TagFilteredFiles.Add(f);
-            }
-            Update_ActiveFiles();
             Searchbox.Text = "Search";
-            Data.ActiveTags.Clear();
-
+            Data.ActiveFiles.Clear();
+            Data.Rebuild_FileData();
             RefreshTreeViews();
         }
 
@@ -140,7 +82,7 @@ namespace COMPASS
             {
                 if (!f.Tags.Contains(selectedtag) && Data.TagFilteredFiles.Contains(f)) Data.TagFilteredFiles.Remove(f);
             }
-            Update_ActiveFiles();
+            Data.Update_ActiveFiles();
             ClearTreeViewSelection(TagTree);
         }
 
@@ -207,15 +149,7 @@ namespace COMPASS
         //removes tag from filter list when clicked
         private void ActiveTag_Click(object sender, RoutedEventArgs e)
         {
-            Data.ActiveTags.Remove((Tag)CurrentTagList.SelectedItem);
-            foreach (Tag t in Data.ActiveTags) if (t == (Tag)CurrentTagList.SelectedItem) Data.ActiveTags.Remove(t);
-            Data.TagFilteredFiles.Clear();
-            foreach(MyFile f in Data.AllFiles)
-            {
-                if(Data.ActiveTags.All(i => f.Tags.Contains(i)))
-                    Data.TagFilteredFiles.Add(f);
-            }
-            Update_ActiveFiles();
+            Data.Deactivate_Tag((Tag)CurrentTagList.SelectedItem);
         }
 
         //import files
@@ -287,14 +221,7 @@ namespace COMPASS
                     if (f.Title.IndexOf(Searchbox.Text, StringComparison.OrdinalIgnoreCase) < 0) Data.SearchFilteredFiles.Remove(f);
                 }
             }
-            Update_ActiveFiles();
-        }
-
-        public static void Update_ActiveFiles()
-        {
-            Data.ActiveFiles.Clear();
-            foreach (var p in Data.TagFilteredFiles.Intersect(Data.SearchFilteredFiles))
-                Data.ActiveFiles.Add(p);
+            Data.Update_ActiveFiles();
         }
 
         private void Searchbox_KeyDown(object sender, KeyEventArgs e)
@@ -315,6 +242,7 @@ namespace COMPASS
             fpw.Show();
         }
 
+        
         public static void SaveTagsToFile()
         {
             System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Tag>));

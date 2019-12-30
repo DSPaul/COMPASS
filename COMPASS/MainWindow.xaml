@@ -831,7 +831,7 @@
                                     </Style>
                                 </Grid.Resources>
                                 <Image  Grid.Row="0" Grid.RowSpan="4"
-                                   Source="{Binding CoverArt, Converter={StaticResource UriToBitmapConverter}}"/>
+                                   Source="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}}"/>
                                 <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Type}" Text="Title:" />
                                 <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Type}" Text="Author:" />
                                 <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Type}" Text="Publisher:" />
@@ -901,7 +901,7 @@
                                     <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
                                 <Image  Grid.Row="0" Width="150"
-                                   Source="{Binding CoverArt, Converter={StaticResource UriToBitmapConverter}}"/>
+                                        Source="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}}"/>
                                 <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" MaxWidth="150"
                                         Text="{Binding Title}" Foreground="White" HorizontalAlignment="Center" TextAlignment="Center"/>
                             </Grid>

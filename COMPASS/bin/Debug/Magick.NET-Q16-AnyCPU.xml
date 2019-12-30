@@ -2058,6 +2058,16 @@
             <param name="height">The height of the pixel neighborhood.</param>
             <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
         </member>
+        <member name="M:ImageMagick.IMagickImage.AdaptiveThreshold(System.Int32,System.Int32,ImageMagick.Channels)">
+            <summary>
+            Local adaptive threshold image.
+            http://www.dai.ed.ac.uk/HIPR2/adpthrsh.htm.
+            </summary>
+            <param name="width">The width of the pixel neighborhood.</param>
+            <param name="height">The height of the pixel neighborhood.</param>
+            <param name="channels">The channel(s) that should be thresholded.</param>
+            <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
+        </member>
         <member name="M:ImageMagick.IMagickImage.AdaptiveThreshold(System.Int32,System.Int32,System.Double)">
             <summary>
             Local adaptive threshold image.
@@ -2068,6 +2078,17 @@
             <param name="bias">Constant to subtract from pixel neighborhood mean (+/-)(0-QuantumRange).</param>
             <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
         </member>
+        <member name="M:ImageMagick.IMagickImage.AdaptiveThreshold(System.Int32,System.Int32,System.Double,ImageMagick.Channels)">
+            <summary>
+            Local adaptive threshold image.
+            http://www.dai.ed.ac.uk/HIPR2/adpthrsh.htm.
+            </summary>
+            <param name="width">The width of the pixel neighborhood.</param>
+            <param name="height">The height of the pixel neighborhood.</param>
+            <param name="bias">Constant to subtract from pixel neighborhood mean (+/-)(0-QuantumRange).</param>
+            <param name="channels">The channel(s) that should be thresholded.</param>
+            <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
+        </member>
         <member name="M:ImageMagick.IMagickImage.AdaptiveThreshold(System.Int32,System.Int32,ImageMagick.Percentage)">
             <summary>
             Local adaptive threshold image.
@@ -2076,6 +2097,17 @@
             <param name="width">The width of the pixel neighborhood.</param>
             <param name="height">The height of the pixel neighborhood.</param>
             <param name="biasPercentage">Constant to subtract from pixel neighborhood mean.</param>
+            <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
+        </member>
+        <member name="M:ImageMagick.IMagickImage.AdaptiveThreshold(System.Int32,System.Int32,ImageMagick.Percentage,ImageMagick.Channels)">
+            <summary>
+            Local adaptive threshold image.
+            http://www.dai.ed.ac.uk/HIPR2/adpthrsh.htm.
+            </summary>
+            <param name="width">The width of the pixel neighborhood.</param>
+            <param name="height">The height of the pixel neighborhood.</param>
+            <param name="biasPercentage">Constant to subtract from pixel neighborhood mean.</param>
+            <param name="channels">The channel(s) that should be thresholded.</param>
             <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
         </member>
         <member name="M:ImageMagick.IMagickImage.AddNoise(ImageMagick.NoiseType)">
@@ -3187,6 +3219,18 @@
             </summary>
             <param name="threshold">The threshold.</param>
             <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
+            <returns>The angle that was used.</returns>
+        </member>
+        <member name="M:ImageMagick.IMagickImage.Deskew(ImageMagick.DeskewSettings)">
+            <summary>
+            Removes skew from the image. Skew is an artifact that occurs in scanned images because of
+            the camera being misaligned, imperfections in the scanning or surface, or simply because
+            the paper was not placed completely flat when scanned. The value of threshold ranges
+            from 0 to QuantumRange.
+            </summary>
+            <param name="settings">The deskew settings.</param>
+            <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
+            <returns>The angle that was used.</returns>
         </member>
         <member name="M:ImageMagick.IMagickImage.Despeckle">
             <summary>
@@ -5655,6 +5699,14 @@
             <param name="percentage">The threshold percentage.</param>
             <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
         </member>
+        <member name="M:ImageMagick.IMagickImage.Threshold(ImageMagick.Percentage,ImageMagick.Channels)">
+            <summary>
+            Threshold image.
+            </summary>
+            <param name="percentage">The threshold percentage.</param>
+            <param name="channels">The channel(s) that should be thresholded.</param>
+            <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
+        </member>
         <member name="M:ImageMagick.IMagickImage.Thumbnail(System.Int32,System.Int32)">
             <summary>
             Resize image to thumbnail size.
@@ -7760,6 +7812,16 @@
             <param name="height">The height of the pixel neighborhood.</param>
             <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
         </member>
+        <member name="M:ImageMagick.MagickImage.AdaptiveThreshold(System.Int32,System.Int32,ImageMagick.Channels)">
+            <summary>
+            Local adaptive threshold image.
+            http://www.dai.ed.ac.uk/HIPR2/adpthrsh.htm.
+            </summary>
+            <param name="width">The width of the pixel neighborhood.</param>
+            <param name="height">The height of the pixel neighborhood.</param>
+            <param name="channels">The channel(s) that should be thresholded.</param>
+            <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
+        </member>
         <member name="M:ImageMagick.MagickImage.AdaptiveThreshold(System.Int32,System.Int32,System.Double)">
             <summary>
             Local adaptive threshold image.
@@ -7770,6 +7832,17 @@
             <param name="bias">Constant to subtract from pixel neighborhood mean (+/-)(0-QuantumRange).</param>
             <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
         </member>
+        <member name="M:ImageMagick.MagickImage.AdaptiveThreshold(System.Int32,System.Int32,System.Double,ImageMagick.Channels)">
+            <summary>
+            Local adaptive threshold image.
+            http://www.dai.ed.ac.uk/HIPR2/adpthrsh.htm.
+            </summary>
+            <param name="width">The width of the pixel neighborhood.</param>
+            <param name="height">The height of the pixel neighborhood.</param>
+            <param name="bias">Constant to subtract from pixel neighborhood mean (+/-)(0-QuantumRange).</param>
+            <param name="channels">The channel(s) that should be thresholded.</param>
+            <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
+        </member>
         <member name="M:ImageMagick.MagickImage.AdaptiveThreshold(System.Int32,System.Int32,ImageMagick.Percentage)">
             <summary>
             Local adaptive threshold image.
@@ -7778,6 +7851,17 @@
             <param name="width">The width of the pixel neighborhood.</param>
             <param name="height">The height of the pixel neighborhood.</param>
             <param name="biasPercentage">Constant to subtract from pixel neighborhood mean.</param>
+            <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
+        </member>
+        <member name="M:ImageMagick.MagickImage.AdaptiveThreshold(System.Int32,System.Int32,ImageMagick.Percentage,ImageMagick.Channels)">
+            <summary>
+            Local adaptive threshold image.
+            http://www.dai.ed.ac.uk/HIPR2/adpthrsh.htm.
+            </summary>
+            <param name="width">The width of the pixel neighborhood.</param>
+            <param name="height">The height of the pixel neighborhood.</param>
+            <param name="biasPercentage">Constant to subtract from pixel neighborhood mean.</param>
+            <param name="channels">The channel(s) that should be thresholded.</param>
             <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
         </member>
         <member name="M:ImageMagick.MagickImage.AddNoise(ImageMagick.NoiseType)">
@@ -8896,6 +8980,18 @@
             </summary>
             <param name="threshold">The threshold.</param>
             <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
+            <returns>The angle that was used.</returns>
+        </member>
+        <member name="M:ImageMagick.MagickImage.Deskew(ImageMagick.DeskewSettings)">
+            <summary>
+            Removes skew from the image. Skew is an artifact that occurs in scanned images because of
+            the camera being misaligned, imperfections in the scanning or surface, or simply because
+            the paper was not placed completely flat when scanned. The value of threshold ranges
+            from 0 to QuantumRange.
+            </summary>
+            <param name="settings">The deskew settings.</param>
+            <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
+            <returns>The angle that was used.</returns>
         </member>
         <member name="M:ImageMagick.MagickImage.Despeckle">
             <summary>
@@ -11387,6 +11483,14 @@
             Threshold image.
             </summary>
             <param name="percentage">The threshold percentage.</param>
+            <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
+        </member>
+        <member name="M:ImageMagick.MagickImage.Threshold(ImageMagick.Percentage,ImageMagick.Channels)">
+            <summary>
+            Threshold image.
+            </summary>
+            <param name="percentage">The threshold percentage.</param>
+            <param name="channels">The channel(s) that should be thresholded.</param>
             <exception cref="T:ImageMagick.MagickException">Thrown when an error is raised by ImageMagick.</exception>
         </member>
         <member name="M:ImageMagick.MagickImage.Thumbnail(System.Int32,System.Int32)">
@@ -13890,11 +13994,6 @@
             Class that contains setting for the montage operation.
             </summary>
         </member>
-        <member name="M:ImageMagick.MontageSettings.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:ImageMagick.MontageSettings"/> class.
-            </summary>
-        </member>
         <member name="P:ImageMagick.MontageSettings.BackgroundColor">
             <summary>
             Gets or sets the color of the background that thumbnails are composed on.
@@ -14311,6 +14410,11 @@
         <member name="T:ImageMagick.ConnectedComponent">
             <summary>
             Encapsulation of the ImageMagick connected component object.
+            </summary>
+        </member>
+        <member name="P:ImageMagick.ConnectedComponent.Area">
+            <summary>
+            Gets the pixel count of the area.
             </summary>
         </member>
         <member name="P:ImageMagick.ConnectedComponent.Centroid">
@@ -15725,6 +15829,14 @@
             <param name="value">The value of the define.</param>
             <returns>A <see cref="T:ImageMagick.MagickDefine"/> instance.</returns>
         </member>
+        <member name="M:ImageMagick.Defines.DefinesCreator.CreateDefine(System.String,System.Double)">
+            <summary>
+            Create a define with the specified name and value.
+            </summary>
+            <param name="name">The name of the define.</param>
+            <param name="value">The value of the define.</param>
+            <returns>A <see cref="T:ImageMagick.MagickDefine"/> instance.</returns>
+        </member>
         <member name="M:ImageMagick.Defines.DefinesCreator.CreateDefine(System.String,System.Int32)">
             <summary>
             Create a define with the specified name and value.
@@ -15944,7 +16056,7 @@
         </member>
         <member name="T:ImageMagick.BmpWriteDefines">
             <summary>
-            Class for defines that are used when a bmp image is written.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Bmp"/> image is written.
             </summary>
         </member>
         <member name="M:ImageMagick.BmpWriteDefines.#ctor">
@@ -15962,9 +16074,29 @@
             Gets the defines that should be set as a define on an image.
             </summary>
         </member>
+        <member name="T:ImageMagick.CaptionReadDefines">
+            <summary>
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Caption"/> image is read.
+            </summary>
+        </member>
+        <member name="M:ImageMagick.CaptionReadDefines.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ImageMagick.CaptionReadDefines"/> class.
+            </summary>
+        </member>
+        <member name="P:ImageMagick.CaptionReadDefines.MaxFontPointsize">
+            <summary>
+            Gets or sets a the maximum font pointsize (caption:max-pointsize).
+            </summary>
+        </member>
+        <member name="P:ImageMagick.CaptionReadDefines.Defines">
+            <summary>
+            Gets the defines that should be set as a define on an image.
+            </summary>
+        </member>
         <member name="T:ImageMagick.DdsReadDefines">
             <summary>
-            Class for defines that are used when a dds image is read.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Dds"/> image is read.
             </summary>
         </member>
         <member name="M:ImageMagick.DdsReadDefines.#ctor">
@@ -15984,7 +16116,7 @@
         </member>
         <member name="T:ImageMagick.DdsWriteDefines">
             <summary>
-            Class for defines that are used when a dds image is written.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Dds"/> image is written.
             </summary>
         </member>
         <member name="M:ImageMagick.DdsWriteDefines.#ctor">
@@ -16079,7 +16211,7 @@
         </member>
         <member name="T:ImageMagick.Jp2ReadDefines">
             <summary>
-            Class for defines that are used when a jp2 image is read.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Jp2"/> image is read.
             </summary>
         </member>
         <member name="M:ImageMagick.Jp2ReadDefines.#ctor">
@@ -16104,7 +16236,7 @@
         </member>
         <member name="T:ImageMagick.Jp2WriteDefines">
             <summary>
-            Class for defines that are used when a jp2 image is written.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Jp2"/> image is written.
             </summary>
         </member>
         <member name="M:ImageMagick.Jp2WriteDefines.#ctor">
@@ -16140,7 +16272,7 @@
         </member>
         <member name="T:ImageMagick.JpegReadDefines">
             <summary>
-            Class for defines that are used when a jpeg image is read.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Jpeg"/> image is read.
             </summary>
         </member>
         <member name="M:ImageMagick.JpegReadDefines.#ctor">
@@ -16186,7 +16318,7 @@
         </member>
         <member name="T:ImageMagick.JpegWriteDefines">
             <summary>
-            Class for defines that are used when a jpeg image is written.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Jpeg"/> image is written.
             </summary>
         </member>
         <member name="M:ImageMagick.JpegWriteDefines.#ctor">
@@ -16266,7 +16398,7 @@
         </member>
         <member name="T:ImageMagick.PdfReadDefines">
             <summary>
-            Class for defines that are used when a pdf image is read.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Pdf"/> image is read.
             </summary>
         </member>
         <member name="M:ImageMagick.PdfReadDefines.#ctor">
@@ -16301,7 +16433,7 @@
         </member>
         <member name="T:ImageMagick.PngReadDefines">
             <summary>
-            Class for defines that are used when a png image is read.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Png"/> image is read.
             </summary>
         </member>
         <member name="M:ImageMagick.PngReadDefines.#ctor">
@@ -16370,7 +16502,7 @@
         </member>
         <member name="T:ImageMagick.PsdReadDefines">
             <summary>
-            Class for defines that are used when a psd image is read.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Psd"/> image is read.
             </summary>
         </member>
         <member name="M:ImageMagick.PsdReadDefines.#ctor">
@@ -16390,7 +16522,7 @@
         </member>
         <member name="T:ImageMagick.PsdWriteDefines">
             <summary>
-            Class for defines that are used when a psd image is written.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Psd"/> image is written.
             </summary>
         </member>
         <member name="M:ImageMagick.PsdWriteDefines.#ctor">
@@ -16410,7 +16542,7 @@
         </member>
         <member name="T:ImageMagick.TiffReadDefines">
             <summary>
-            Class for defines that are used when a tiff image is read.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Tiff"/> image is read.
             </summary>
         </member>
         <member name="M:ImageMagick.TiffReadDefines.#ctor">
@@ -16435,7 +16567,7 @@
         </member>
         <member name="T:ImageMagick.TiffWriteDefines">
             <summary>
-            Class for defines that are used when a tiff image is written.
+            Class for defines that are used when a <see cref="F:ImageMagick.MagickFormat.Tiff"/> image is written.
             </summary>
         </member>
         <member name="M:ImageMagick.TiffWriteDefines.#ctor">
@@ -19821,6 +19953,16 @@
         <member name="F:ImageMagick.CompressionMethod.WebP">
             <summary>
             WebP
+            </summary>
+        </member>
+        <member name="F:ImageMagick.CompressionMethod.DWAA">
+            <summary>
+            DWAA
+            </summary>
+        </member>
+        <member name="F:ImageMagick.CompressionMethod.DWAB">
+            <summary>
+            DWAB
             </summary>
         </member>
         <member name="T:ImageMagick.DensityUnit">
@@ -26146,7 +26288,7 @@
         </member>
         <member name="T:ImageMagick.ExifByteArray">
             <summary>
-            Exif value that contains a <see cref="T:byte[]"/>.
+            Exif value that contains a <see cref="T:System.Byte"/> array.
             </summary>
         </member>
         <member name="T:ImageMagick.ExifDouble">
@@ -26168,7 +26310,7 @@
         </member>
         <member name="T:ImageMagick.ExifDoubleArray">
             <summary>
-            Exif value that contains a <see cref="T:double[]"/>.
+            Exif value that contains a <see cref="T:System.Double"/> array.
             </summary>
         </member>
         <member name="T:ImageMagick.ExifFloat">
@@ -26190,7 +26332,7 @@
         </member>
         <member name="T:ImageMagick.ExifFloatArray">
             <summary>
-            Exif value that contains a <see cref="T:float[]"/>.
+            Exif value that contains a <see cref="T:System.Single"/> array.
             </summary>
         </member>
         <member name="T:ImageMagick.ExifLong">
@@ -26212,7 +26354,7 @@
         </member>
         <member name="T:ImageMagick.ExifLongArray">
             <summary>
-            Exif value that contains a <see cref="T:uint[]"/>.
+            Exif value that contains a <see cref="T:System.UInt32"/> array.
             </summary>
         </member>
         <member name="T:ImageMagick.ExifRational">
@@ -26234,7 +26376,7 @@
         </member>
         <member name="T:ImageMagick.ExifRationalArray">
             <summary>
-            Exif value that contains a <see cref="T:Rational[]"/>.
+            Exif value that contains a <see cref="T:ImageMagick.Rational"/> array.
             </summary>
         </member>
         <member name="T:ImageMagick.ExifShort">
@@ -26256,7 +26398,7 @@
         </member>
         <member name="T:ImageMagick.ExifShortArray">
             <summary>
-            Exif value that contains a <see cref="T:ushort[]"/>.
+            Exif value that contains a <see cref="T:System.UInt16"/> array.
             </summary>
         </member>
         <member name="T:ImageMagick.ExifSignedByte">
@@ -26278,7 +26420,7 @@
         </member>
         <member name="T:ImageMagick.ExifSignedByteArray">
             <summary>
-            Exif value that contains a <see cref="T:sbyte[]"/>.
+            Exif value that contains a <see cref="T:System.SByte"/> array.
             </summary>
         </member>
         <member name="T:ImageMagick.ExifSignedLong">
@@ -26300,7 +26442,7 @@
         </member>
         <member name="T:ImageMagick.ExifSignedLongArray">
             <summary>
-            Exif value that contains a <see cref="T:int[]"/>.
+            Exif value that contains a <see cref="T:System.Int32"/> array.
             </summary>
         </member>
         <member name="T:ImageMagick.ExifSignedRational">
@@ -26322,7 +26464,7 @@
         </member>
         <member name="T:ImageMagick.ExifSignedRationalArray">
             <summary>
-            Exif value that contains a <see cref="T:SignedRational[]"/>.
+            Exif value that contains a <see cref="T:ImageMagick.SignedRational"/> array.
             </summary>
         </member>
         <member name="T:ImageMagick.ExifSignedShort">
@@ -26344,7 +26486,7 @@
         </member>
         <member name="T:ImageMagick.ExifSignedShortArray">
             <summary>
-            Exif value that contains a <see cref="T:short[]"/>.
+            Exif value that contains a <see cref="T:System.Int16"/> array.
             </summary>
         </member>
         <member name="T:ImageMagick.ExifString">
@@ -28596,6 +28738,21 @@
         <member name="P:ImageMagick.ConnectedComponentsSettings.MeanColor">
             <summary>
             Gets or sets a value indicating whether the object color in the labeled image will be replaced with the mean-color from the source image.
+            </summary>
+        </member>
+        <member name="T:ImageMagick.DeskewSettings">
+            <summary>
+            Class that contains setting for the deskew operation.
+            </summary>
+        </member>
+        <member name="P:ImageMagick.DeskewSettings.AutoCrop">
+            <summary>
+            Gets or sets a value indicating whether the image should be auto cropped after deskewing.
+            </summary>
+        </member>
+        <member name="P:ImageMagick.DeskewSettings.Threshold">
+            <summary>
+            Gets or sets the threshold.
             </summary>
         </member>
         <member name="T:ImageMagick.DistortSettings">

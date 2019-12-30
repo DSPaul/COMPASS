@@ -13,7 +13,7 @@ namespace COMPASS
         {
         BitmapImage bi = new BitmapImage();
         bi.BeginInit();
-        bi.DecodePixelWidth = 200;
+        bi.DecodePixelWidth = 400;
         bi.CacheOption = BitmapCacheOption.OnLoad;
         bi.UriSource = new Uri(value.ToString() );
         bi.EndInit();

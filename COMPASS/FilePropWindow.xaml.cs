@@ -24,27 +24,24 @@ namespace COMPASS
     /// </summary>
     public partial class FilePropWindow : Window
     {
+        //Tempfile to save changes in, Only apply changes after "OK" is clicked
         public MyFile Tempfile = new MyFile();
 
+        //Constructor
         public FilePropWindow()
         {
             InitializeComponent();
+            //Make Tempfile a copy of the edited file
             Tempfile.Copy(Data.EditedFile);
+            //Set Datacontexts and Itemsources
             this.DataContext = Tempfile;
             TagSelection.DataContext = Data.RootTags;
-
             FileAuthorTB.ItemsSource = Data.AuthorList.OrderBy(n => n);
 
+            //Apply right checkboxes in Alltags
             foreach (Tag t in Data.AllTags)
             {
-                if (Tempfile.Tags.Contains(t))
-                {
-                    t.Check = true;
-                }
-                else
-                {
-                    t.Check = false;
-                }
+                t.Check = Tempfile.Tags.Contains(t)? true : false;
             }
         }
 
@@ -62,28 +59,23 @@ namespace COMPASS
 
         private void ManageTagsBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (TagSelection.Visibility == Visibility.Collapsed)
-            {
-                TagSelection.Visibility = Visibility.Visible;
-                ManageTagsBtn.Content = "Hide";
-            }
-            else
-            {
-                TagSelection.Visibility = Visibility.Collapsed;
-                ManageTagsBtn.Content = "Manage";
-            }
+            //Display or hide TagTree
+            TagSelection.Visibility = (TagSelection.Visibility == Visibility.Collapsed) ? Visibility.Visible : Visibility.Collapsed;
+            ManageTagsBtn.Content = (TagSelection.Visibility == Visibility.Collapsed) ? "Manage" : "Hide";
         }
 
         private void OKBtn_Click(object sender, RoutedEventArgs e)
         {
             Update_Taglist();
+            //Uncheck all Tags
             foreach (Tag t in Data.AllTags) t.Check = false;
+            //Copy changes into Database
             Data.EditedFile.Copy(Tempfile);
-            if(FileAuthorTB.Text != "" && !Data.AuthorList.Contains(FileAuthorTB.Text))
-            {
-                Data.AuthorList.Add(FileAuthorTB.Text);
-            }               
-            MainWindow.Update_ActiveFiles();
+            //Add new Author and Publishers to lists
+            if(FileAuthorTB.Text != "" && !Data.AuthorList.Contains(FileAuthorTB.Text)) Data.AuthorList.Add(FileAuthorTB.Text);
+            if (FilePublisherTB.Text != "" && !Data.PublisherList.Contains(FilePublisherTB.Text)) Data.PublisherList.Add(FilePublisherTB.Text);
+            
+            Data.Update_ActiveFiles();
             this.Close();
         }
 
@@ -116,17 +108,11 @@ namespace COMPASS
 
         private void DeleteFileBtn_Click(object sender, RoutedEventArgs e)
         {
-            Data.AllFiles.Remove(Data.EditedFile);
-            Data.TagFilteredFiles.Clear();
-            Data.SearchFilteredFiles.Clear();
-            foreach (MyFile f in Data.AllFiles)
-            {
-                Data.SearchFilteredFiles.Add(f);
-                Data.TagFilteredFiles.Add(f);
-            }
-            MainWindow.Update_ActiveFiles();
-            CoverIm.Source = null;
-            //File.Delete(Tempfile.CoverArt);
+            //Unload Image Before deleting
+            //CoverIm.Source = null;
+            //Delete
+            Data.DeleteFile(Data.EditedFile);      
+            //Close Window
             this.Close();
         }
 
