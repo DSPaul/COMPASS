@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMPASS.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,12 +12,17 @@ namespace COMPASS
     {
         public Tag()
         {
-            int tempID = 0;
-            while (Data.AllTags.Any(t => t.ID == tempID))
+            try
             {
-                tempID++;
+                int tempID = 0;
+                while (UserSettings.CurrentData.AllTags.Any(t => t.ID == tempID))
+                {
+                    tempID++;
+                }
+                ID = tempID;
             }
-            ID = tempID;
+
+            catch { }
             this.Items = new ObservableCollection<Tag>();
         }
 
@@ -43,7 +49,7 @@ namespace COMPASS
         public Tag GetParent()
         {
             if (ParentID == -1) return null;
-            return Data.AllTags.First(par => par.ID == ParentID);
+            return UserSettings.CurrentData.AllTags.First(par => par.ID == ParentID);
         }
 
         public override bool Equals(object obj)

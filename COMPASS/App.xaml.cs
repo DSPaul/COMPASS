@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
-
+using COMPASS.Models;
 
 namespace COMPASS
 {
@@ -22,7 +22,10 @@ namespace COMPASS
     /// </summary>
     public partial class App : Application
     {
-
+        public App()
+        {
+            UserSettings.SetData("DnD");
+        }
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMPASS.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -10,12 +11,18 @@ namespace COMPASS
         public MyFile()
         {
             this.Tags = new ObservableCollection<Tag>();
-            int tempID = 0;
-            while(Data.AllFiles.Any(f => f.ID == tempID))
+
+            try
             {
-                tempID++;
+                int tempID = 0;
+                while (UserSettings.CurrentData.AllFiles.Any(f => f.ID == tempID))
+                {
+                    tempID++;
+                }
+                ID = tempID;
             }
-            ID = tempID;
+
+            catch { }
             CoverArt = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\CoverArt\" + ID.ToString() + ".png");
         }
 
