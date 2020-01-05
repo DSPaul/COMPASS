@@ -18,6 +18,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Xml.Serialization;
 using ImageMagick;
+using COMPASS.Models;
 
 namespace COMPASS
 {
@@ -30,17 +31,16 @@ namespace COMPASS
         public MainWindow()
         {
             InitializeComponent();
-            Data.LoadTags();
-            Data.LoadFiles();
+
             MagickNET.SetGhostscriptDirectory(@"C:\Users\pauld\Documents\COMPASS\COMPASS\Libraries");
             
             //set Itemsources for databinding
-            CurrentTagList.ItemsSource = Data.ActiveTags;
-            FileListView.ItemsSource = Data.ActiveFiles;
-            FileMixView.ItemsSource = Data.ActiveFiles;
-            FileTileView.ItemsSource = Data.ActiveFiles;
-            TagTree.DataContext = Data.RootTags;
-            ParentSelectionTree.DataContext = Data.RootTags;
+            CurrentTagList.ItemsSource = UserSettings.CurrentData.ActiveTags;
+            FileListView.ItemsSource = UserSettings.CurrentData.ActiveFiles;
+            FileMixView.ItemsSource = UserSettings.CurrentData.ActiveFiles;
+            FileTileView.ItemsSource = UserSettings.CurrentData.ActiveFiles;
+            TagTree.DataContext = UserSettings.CurrentData.RootTags;
+            ParentSelectionTree.DataContext = UserSettings.CurrentData.RootTags;
             ParentSelectionPanel.DataContext = ParentSelectionTree.SelectedItem as Tag;
 
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
@@ -54,8 +54,8 @@ namespace COMPASS
         {
             ClearTreeViewSelection(TagTree);
             Searchbox.Text = "Search";
-            Data.ActiveFiles.Clear();
-            Data.Rebuild_FileData();
+            UserSettings.CurrentData.ActiveFiles.Clear();
+            UserSettings.CurrentData.Rebuild_FileData();
             RefreshTreeViews();
         }
 
@@ -64,8 +64,8 @@ namespace COMPASS
             //redraws treeviews
             TagTree.DataContext = null;
             ParentSelectionTree.DataContext = null;
-            TagTree.DataContext = Data.RootTags;
-            ParentSelectionTree.DataContext = Data.RootTags;
+            TagTree.DataContext = UserSettings.CurrentData.RootTags;
+            ParentSelectionTree.DataContext = UserSettings.CurrentData.RootTags;
         }
 
         //Activates filter when a tag is clicked in the treeview
@@ -74,37 +74,16 @@ namespace COMPASS
             //var track = ((TreeView)sender).SelectedItem as System.Windows.Controls.Primitives.Track; //Casting back to the binded Track
             dynamic selectedtag = TagTree.SelectedItem;
             if (selectedtag == null) return;
-            if (Data.ActiveTags.All(p => p.ID != selectedtag.ID)) 
+            if (UserSettings.CurrentData.ActiveTags.All(p => p.ID != selectedtag.ID)) 
             {
-                Data.ActiveTags.Add(selectedtag);
+                UserSettings.CurrentData.ActiveTags.Add(selectedtag);
             }   
-            foreach(MyFile f in Data.AllFiles)
+            foreach(MyFile f in UserSettings.CurrentData.AllFiles)
             {
-                if (!f.Tags.Contains(selectedtag) && Data.TagFilteredFiles.Contains(f)) Data.TagFilteredFiles.Remove(f);
+                if (!f.Tags.Contains(selectedtag) && UserSettings.CurrentData.TagFilteredFiles.Contains(f)) UserSettings.CurrentData.TagFilteredFiles.Remove(f);
             }
-            Data.Update_ActiveFiles();
+            UserSettings.CurrentData.Update_ActiveFiles();
             ClearTreeViewSelection(TagTree);
-        }
-
-        //Convert PDFs to image previews
-        public void ConvertPDF(MyFile pdf)
-        {
-            MagickReadSettings settings = new MagickReadSettings()
-            {
-                Density = new Density(100, 100),
-                FrameIndex = 0, // First page
-                FrameCount = 1, // Number of pages
-            };
-            using (MagickImage image = new MagickImage())
-            {
-                // Add all the pages of the pdf file to the collection
-                image.Read(pdf.Path, settings);
-                image.Format = MagickFormat.Png;
-                image.Trim();
-                image.Alpha(AlphaOption.Remove);
-
-                image.Write(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\CoverArt\" + pdf.ID.ToString() + ".png");
-            }
         }
 
         #region Clears Selection From TreeView
@@ -149,7 +128,7 @@ namespace COMPASS
         //removes tag from filter list when clicked
         private void ActiveTag_Click(object sender, RoutedEventArgs e)
         {
-            Data.Deactivate_Tag((Tag)CurrentTagList.SelectedItem);
+            UserSettings.CurrentData.Deactivate_Tag((Tag)CurrentTagList.SelectedItem);
         }
 
         //import files
@@ -164,11 +143,11 @@ namespace COMPASS
             {
                 foreach(string path in openFileDialog.FileNames)
                 {
-                    if(Data.AllFiles.All(p => p.Path != path))
+                    if(UserSettings.CurrentData.AllFiles.All(p => p.Path != path))
                     {
                     MyFile pdf = new MyFile { Path = path, Title = System.IO.Path.GetFileNameWithoutExtension(path)};
-                        Data.AllFiles.Add(pdf);
-                        ConvertPDF(pdf);
+                        UserSettings.CurrentData.AllFiles.Add(pdf);
+                        CoverArtGenerator.ConvertPDF(pdf);
                     }
                 }
                 Reset();
@@ -207,8 +186,8 @@ namespace COMPASS
 
         private void Searchbtn_Click(object sender, RoutedEventArgs e)
         {
-            Data.SearchFilteredFiles.Clear();
-            foreach (MyFile f in Data.AllFiles) Data.SearchFilteredFiles.Add(f);
+            UserSettings.CurrentData.SearchFilteredFiles.Clear();
+            foreach (MyFile f in UserSettings.CurrentData.AllFiles) UserSettings.CurrentData.SearchFilteredFiles.Add(f);
 
             if (Searchbox.Text == "" || Searchbox.Text == "Search")
             {
@@ -216,12 +195,12 @@ namespace COMPASS
             }
             else
             {
-                foreach(MyFile f in Data.AllFiles)
+                foreach(MyFile f in UserSettings.CurrentData.AllFiles)
                 {
-                    if (f.Title.IndexOf(Searchbox.Text, StringComparison.OrdinalIgnoreCase) < 0) Data.SearchFilteredFiles.Remove(f);
+                    if (f.Title.IndexOf(Searchbox.Text, StringComparison.OrdinalIgnoreCase) < 0) UserSettings.CurrentData.SearchFilteredFiles.Remove(f);
                 }
             }
-            Data.Update_ActiveFiles();
+            UserSettings.CurrentData.Update_ActiveFiles();
         }
 
         private void Searchbox_KeyDown(object sender, KeyEventArgs e)
@@ -237,34 +216,15 @@ namespace COMPASS
         //EDIT File
         private void Edit_File_Btn(object sender, RoutedEventArgs e)
         {
-            Data.EditedFile = FileListView.SelectedItem as MyFile;
+            UserSettings.CurrentData.EditedFile = FileListView.SelectedItem as MyFile;
             FilePropWindow fpw = new FilePropWindow();
             fpw.Show();
         }
 
-        
-        public static void SaveTagsToFile()
-        {
-            System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Tag>));
-            using (var writer = new StreamWriter(@"C:\Users\pauld\Documents\Tags.xml"))
-            {
-                serializer.Serialize(writer, Data.RootTags);
-            }
-        }
-
-        public static void SaveFilesToFile()
-        {
-            System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<MyFile>));
-            using (var writer = new StreamWriter(@"C:\Users\pauld\Documents\Files.xml"))
-            {
-                serializer.Serialize(writer, Data.AllFiles);
-            }
-        }
-
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            SaveFilesToFile();
-            SaveTagsToFile();
+            UserSettings.CurrentData.SaveFilesToFile();
+            UserSettings.CurrentData.SaveTagsToFile();
         }
 
         private void CreateTagBtn_Click(object sender, RoutedEventArgs e)
@@ -279,10 +239,10 @@ namespace COMPASS
             }
             else
             {
-                Data.RootTags.Add(newtag);
+                UserSettings.CurrentData.RootTags.Add(newtag);
             }
 
-            Data.AllTags.Add(newtag);
+            UserSettings.CurrentData.AllTags.Add(newtag);
             TagNameTextBlock.Text = "";
             TagCreation.Visibility = Visibility.Collapsed;
         }
@@ -434,9 +394,9 @@ namespace COMPASS
 
         private void EditTag(object sender, RoutedEventArgs e)
         {
-            Data.EditedTag = TagTree.SelectedItem as Tag;
+            UserSettings.CurrentData.EditedTag = TagTree.SelectedItem as Tag;
             ClearTreeViewSelection(TagTree);
-            if (Data.EditedTag != null)
+            if (UserSettings.CurrentData.EditedTag != null)
             {
                 TagPropWindow tpw = new TagPropWindow();
                 tpw.Closed += EditTagClosedHandler;
@@ -455,7 +415,7 @@ namespace COMPASS
             var todel = TagTree.SelectedItem as Tag;
             DeleteTag(todel);
             //Go over all files and refresh tags list
-            foreach (var f in Data.AllFiles)
+            foreach (var f in UserSettings.CurrentData.AllFiles)
             {
                 int i = 0;
                 //iterate over all the tags in the file
@@ -465,7 +425,7 @@ namespace COMPASS
                     //try to find the tag in alltags, if found, increase i to go to next tag
                     try
                     {
-                        Data.AllTags.First(tag => tag.ID == currenttag.ID);
+                        UserSettings.CurrentData.AllTags.First(tag => tag.ID == currenttag.ID);
                         i++;
                     }
                     //if the tag in not found in alltags, delete it
@@ -486,9 +446,9 @@ namespace COMPASS
                 DeleteTag(todel.Items[0]);
                 DeleteTag(todel);
             }
-            Data.AllTags.Remove(todel);
+            UserSettings.CurrentData.AllTags.Remove(todel);
             //remove from parent items list
-            if (todel.ParentID == -1) Data.RootTags.Remove(todel);
+            if (todel.ParentID == -1) UserSettings.CurrentData.RootTags.Remove(todel);
             else todel.GetParent().Items.Remove(todel);
         }
         #endregion

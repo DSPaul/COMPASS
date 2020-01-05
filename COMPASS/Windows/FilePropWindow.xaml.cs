@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using COMPASS.Models;
 
 namespace COMPASS
 {
@@ -32,14 +33,15 @@ namespace COMPASS
         {
             InitializeComponent();
             //Make Tempfile a copy of the edited file
-            Tempfile.Copy(Data.EditedFile);
+            Tempfile.Copy(UserSettings.CurrentData.EditedFile);
             //Set Datacontexts and Itemsources
             this.DataContext = Tempfile;
-            TagSelection.DataContext = Data.RootTags;
-            FileAuthorTB.ItemsSource = Data.AuthorList.OrderBy(n => n);
+            TagSelection.DataContext = UserSettings.CurrentData.RootTags;
+            FileAuthorTB.ItemsSource = UserSettings.CurrentData.AuthorList.OrderBy(n => n);
+            FilePublisherTB.ItemsSource = UserSettings.CurrentData.PublisherList.OrderBy(n => n);
 
             //Apply right checkboxes in Alltags
-            foreach (Tag t in Data.AllTags)
+            foreach (Tag t in UserSettings.CurrentData.AllTags)
             {
                 t.Check = Tempfile.Tags.Contains(t)? true : false;
             }
@@ -68,14 +70,14 @@ namespace COMPASS
         {
             Update_Taglist();
             //Uncheck all Tags
-            foreach (Tag t in Data.AllTags) t.Check = false;
+            foreach (Tag t in UserSettings.CurrentData.AllTags) t.Check = false;
             //Copy changes into Database
-            Data.EditedFile.Copy(Tempfile);
+            UserSettings.CurrentData.EditedFile.Copy(Tempfile);
             //Add new Author and Publishers to lists
-            if(FileAuthorTB.Text != "" && !Data.AuthorList.Contains(FileAuthorTB.Text)) Data.AuthorList.Add(FileAuthorTB.Text);
-            if (FilePublisherTB.Text != "" && !Data.PublisherList.Contains(FilePublisherTB.Text)) Data.PublisherList.Add(FilePublisherTB.Text);
+            if(FileAuthorTB.Text != "" && !UserSettings.CurrentData.AuthorList.Contains(FileAuthorTB.Text)) UserSettings.CurrentData.AuthorList.Add(FileAuthorTB.Text);
+            if(FilePublisherTB.Text != "" && !UserSettings.CurrentData.PublisherList.Contains(FilePublisherTB.Text)) UserSettings.CurrentData.PublisherList.Add(FilePublisherTB.Text);
             
-            Data.Update_ActiveFiles();
+            UserSettings.CurrentData.Update_ActiveFiles();
             this.Close();
         }
 
@@ -97,7 +99,7 @@ namespace COMPASS
         public void Update_Taglist()
         {
             Tempfile.Tags.Clear();
-            foreach (Tag t in Data.AllTags)
+            foreach (Tag t in UserSettings.CurrentData.AllTags)
             {
                 if (t.Check)
                 {
@@ -111,7 +113,7 @@ namespace COMPASS
             //Unload Image Before deleting
             //CoverIm.Source = null;
             //Delete
-            Data.DeleteFile(Data.EditedFile);      
+            UserSettings.CurrentData.DeleteFile(UserSettings.CurrentData.EditedFile);      
             //Close Window
             this.Close();
         }

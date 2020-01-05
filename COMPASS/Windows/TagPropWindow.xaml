@@ -201,7 +201,7 @@
                 </Border>
                 <Button x:Name="ClearParent" Click="ClearParent_Click"
                         Background="{x:Null}" BorderBrush="{x:Null}" Width="40" VerticalAlignment="Center">
-                    <Image Source="Icons/Cross.png"/>
+                    <Image Source="/Icons/Cross.png"/>
                 </Button>
             </StackPanel>
             <Grid Grid.Row="5">
@@ -211,13 +211,13 @@
                 </Grid.ColumnDefinitions>
                 <Button Background="Green" x:Name="OKBtn" Click="OKBtn_Click">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="Icons/Done.png"/>
+                        <Image Source="/Icons/Done.png"/>
                         <TextBlock Text="OK"/>
                     </StackPanel>
                 </Button>
                 <Button Grid.Column="1" Name="CancelBtn" Click="CancelBtn_Click" Background="Red">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="Icons/Cross.png"/>
+                        <Image Source="/Icons/Cross.png"/>
                         <TextBlock Text="Cancel"/>
                     </StackPanel>
                 </Button>
@@ -252,7 +252,7 @@
                 </TreeView>
                 <Button Click="ShowParentSelection_Click" Margin="5" Background="Red">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="Icons/Cross.png"/>
+                        <Image Source="/Icons/Cross.png"/>
                         <TextBlock Text="Cancel"/>
                     </StackPanel>
                 </Button>
@@ -263,7 +263,7 @@
                               x:Name="ColorSelector" Foreground="{x:Null}" UsingAlphaChannel="False"/>
             <Button Click="ShowColorSelection_Click" Margin="5" Background="Green">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="Icons/Done.png"/>
+                    <Image Source="/Icons/Done.png"/>
                     <TextBlock Text="Select Color"/>
                 </StackPanel>
             </Button>
