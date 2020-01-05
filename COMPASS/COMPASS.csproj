@@ -111,9 +111,6 @@
     <Compile Include="Models\Data.cs" />
     <Compile Include="Models\MyFile.cs" />
     <Compile Include="Models\Tag.cs" />
-    <Compile Include="Windows\SplashScreen.xaml.cs">
-      <DependentUpon>SplashScreen.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\TagPropWindow.xaml.cs">
       <DependentUpon>TagPropWindow.xaml</DependentUpon>
     </Compile>
@@ -149,10 +146,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Windows\SplashScreen.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Windows\TagPropWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -221,12 +214,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Close.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\Compass.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\compass.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Browse.png" />
