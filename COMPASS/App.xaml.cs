@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using COMPASS.Models;
+using System.IO;
 
 namespace COMPASS
 {
@@ -24,6 +25,10 @@ namespace COMPASS
     {
         public App()
         {
+            //Create necessary Romaing Folders
+            Directory.CreateDirectory((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\"));
+            Directory.CreateDirectory((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\CoverArt\"));
+
             UserSettings.SetData("DnD");
         }
     }
