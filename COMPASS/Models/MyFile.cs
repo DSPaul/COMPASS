@@ -6,12 +6,13 @@ using System.Linq;
 using System.Text;
 namespace COMPASS
 {
-    public class MyFile
+    public class MyFile : ObservableObject
     {
         public MyFile()
         {
-            this.Tags = new ObservableCollection<Tag>();
+            Tags = new ObservableCollection<Tag>();
 
+            //Give each tag an ID, "try" because can only be done when app has a Currentdata object
             try
             {
                 int tempID = 0;
@@ -33,9 +34,10 @@ namespace COMPASS
             Author = f.Author;
             Publisher = f.Publisher;
             Version = f.Version;
-            Source = f.Source;
+            SourceURL = f.SourceURL;
             ID = f.ID;
             CoverArt = f.CoverArt;
+            Physically_Owned = f.Physically_Owned;
             Tags.Clear();
             foreach (Tag t in f.Tags)
             {
@@ -47,9 +49,10 @@ namespace COMPASS
         public string Author { get; set; }
         public string Publisher { get; set; }
         public string Version { get; set; }
-        public string Source { get; set; }
+        public string SourceURL { get; set; }
         public int ID { get; set; }
         public string CoverArt { get; set; }
+        public bool Physically_Owned { get; set; }
 
         public ObservableCollection<Tag> Tags { get; set; } 
     }

@@ -48,7 +48,6 @@ namespace COMPASS
         #region Metadata Data
         //Metadata Lists
         public ObservableCollection<String> AuthorList = new ObservableCollection<string>();
-        public ObservableCollection<String> SourceList = new ObservableCollection<string>();
         public ObservableCollection<String> PublisherList = new ObservableCollection<string>();
         #endregion
 
@@ -95,7 +94,6 @@ namespace COMPASS
                 {
                     if (f.Author != "" && !AuthorList.Contains(f.Author)) AuthorList.Add(f.Author);
                     if (f.Publisher != "" && !PublisherList.Contains(f.Publisher)) PublisherList.Add(f.Publisher);
-                    if (f.Source != "" && !SourceList.Contains(f.Source)) SourceList.Add(f.Source);
                 }
             }
         }
