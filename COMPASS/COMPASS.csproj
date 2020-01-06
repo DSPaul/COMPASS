@@ -106,6 +106,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\ObservableObject.cs" />
     <Compile Include="Models\UserSettings.cs" />
     <Compile Include="Tools\CoverArtGenerator.cs" />
     <Compile Include="Models\Data.cs" />
