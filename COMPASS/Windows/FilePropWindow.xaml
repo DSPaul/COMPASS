@@ -62,7 +62,7 @@
             <Style TargetType="TextBox">
                 <Setter Property="Background" Value="#00000000"/>
                 <Setter Property="Foreground" Value ="#cccccc"/>
-                <Setter Property="BorderBrush" Value="{x:Null}"/>
+                <Setter Property="BorderBrush" Value="#FF97A0A5"/>
                 <Setter Property="MaxWidth" Value="{Binding ActualWidth}"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
@@ -81,16 +81,23 @@
         <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
         <ComboBox Text="{Binding Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"
                   IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}"/>
-        <TextBlock Text="Source:" Grid.Column="1" Grid.Row="7"/>
-        <TextBox Text="{Binding Source, Mode=TwoWay}" Grid.Column="1" Grid.Row="8" Name="FileSourceTB"/>
-        <TextBlock Text="Version:" Grid.Column="1" Grid.Row="9"/>
-        <TextBox Text="{Binding Version, Mode=TwoWay}" Grid.Column="1" Grid.Row="10" Name="FileVersionTB"/>
-
+        <TextBlock Text="Source URL:" Grid.Column="1" Grid.Row="7"/>
+        <TextBox Text="{Binding SourceURL, Mode=TwoWay}" Grid.Column="1" Grid.Row="8" Name="FileSourceTB"/>
+        <UniformGrid Grid.Column="1" Grid.Row="9" Margin="0,5" Columns="2">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Version:"/>
+                <TextBox Text="{Binding Version, Mode=TwoWay}" MinWidth="100" Name="FileVersionTB" Margin="5,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Hard Copy:"/>
+                <CheckBox Name="FileOwnedCB" IsChecked="{Binding Physically_Owned, Mode=TwoWay}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </UniformGrid>
         <!--#region Tags-->
         <Grid Grid.Column="1" Grid.Row="11">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="41*"/>
+                <ColumnDefinition Width="435*"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="Tags:"/>
@@ -165,7 +172,7 @@
             </TreeView.ItemTemplate>
         </TreeView>
 
-        <!--#region Confirmation Buttons --> 
+        <!--#region Confirmation Buttons -->
         <Grid Grid.Column="1" Grid.Row="16" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
