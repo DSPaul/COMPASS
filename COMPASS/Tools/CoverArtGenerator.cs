@@ -1,4 +1,5 @@
-﻿using ImageMagick;
+﻿using COMPASS.Models;
+using ImageMagick;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace COMPASS
                 image.Trim();
                 image.Alpha(AlphaOption.Remove);
 
-                image.Write(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\CoverArt\" + pdf.ID.ToString() + ".png");
+                image.Write(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + UserSettings.CurrentData.Folder +  @"\CoverArt\" + pdf.ID.ToString() + ".png");
             }
         }
     }

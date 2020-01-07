@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMPASS.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -8,10 +9,12 @@ using System.Windows;
 
 namespace COMPASS
 {
-    public class Data
+    public class Data : ObservableObject
     {
-        public Data(String Folder)
+        public Data(String FolderLocation)
         {
+            Folder = FolderLocation;
+
             BooksFilepath = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Files.xml");
             TagsFilepath = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Tags.xml");
 
@@ -23,8 +26,15 @@ namespace COMPASS
             ActiveFiles = new ObservableCollection<MyFile>(AllFiles);
         }
 
+        private String _Folder;
         private String BooksFilepath;
         private String TagsFilepath;
+
+        public String Folder
+        {
+            get { return _Folder; }
+            set { SetProperty(ref _Folder, value);}
+        }
 
         #region Tag Data
         //Tag Lists
