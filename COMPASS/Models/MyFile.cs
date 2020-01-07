@@ -21,10 +21,10 @@ namespace COMPASS
                     tempID++;
                 }
                 ID = tempID;
+                CoverArt = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + UserSettings.CurrentData.Folder + @"\CoverArt\" + ID.ToString() + ".png");
             }
 
             catch { }
-            CoverArt = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\CoverArt\" + ID.ToString() + ".png");
         }
 
         public void Copy(MyFile f)
