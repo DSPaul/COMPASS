@@ -44,17 +44,69 @@ namespace COMPASS
                 Tags.Add(t);
             }
         }
-        public string Path { get; set; }
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public string Publisher { get; set; }
-        public string Version { get; set; }
-        public string SourceURL { get; set; }
-        public int ID { get; set; }
-        public string CoverArt { get; set; }
-        public bool Physically_Owned { get; set; }
 
-        public ObservableCollection<Tag> Tags { get; set; } 
+        private string _Path;
+        private string _Title;
+        private string _Author;
+        private string _Publisher;
+        private string _Version;
+        private string _SourceURL;
+        private int _ID;
+        private string _CoverArt;
+        private bool _Physically_Owned;
+
+        public string Path
+        {
+            get { return _Path; }
+            set { SetProperty(ref _Path, value); }
+        }
+        public string Title
+        {
+            get { return _Title; }
+            set { SetProperty(ref _Title, value); }
+        }
+        public string Author
+        {
+            get { return _Author; }
+            set { SetProperty(ref _Author, value); }
+        }
+        public string Publisher
+        {
+            get { return _Publisher; }
+            set { SetProperty(ref _Publisher, value); }
+        }
+        public string Version
+        {
+            get { return _Version; }
+            set { SetProperty(ref _Version, value); }
+        }
+        public string SourceURL
+        {
+            get { return _SourceURL; }
+            set { SetProperty(ref _SourceURL, value); }
+        }
+        public int ID
+        {
+            get { return _ID; }
+            set { SetProperty(ref _ID, value); }
+        }
+        public string CoverArt
+        {
+            get { return _CoverArt; }
+            set { SetProperty(ref _CoverArt, value); }
+        }
+        public bool Physically_Owned
+        {
+            get { return _Physically_Owned; }
+            set { SetProperty(ref _Physically_Owned, value); }
+        }
+
+        private ObservableCollection<Tag> _Tags;
+        public ObservableCollection<Tag> Tags
+        {
+            get { return _Tags; }
+            set { SetProperty(ref _Tags, value); }
+        }
     }
 }
 
