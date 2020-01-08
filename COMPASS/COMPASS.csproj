@@ -190,45 +190,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\Done.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\Add.png" />
-    <Resource Include="Icons\MainWindowIcon.ico" />
-    <Resource Include="Icons\Edit.png" />
-    <Resource Include="Icons\Import.png" />
-    <Resource Include="Icons\ListView.png" />
-    <Resource Include="Icons\MixView.png" />
-    <Resource Include="Icons\Search.png" />
-    <Resource Include="Icons\Settings.png" />
-    <Resource Include="Icons\TileView.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\Cross.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Libraries\" />
     <Folder Include="Resources\Controls\" />
     <Folder Include="ViewModels\" />
     <Folder Include="Views\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\Trash.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\Minimize.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\Maximize.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\Window.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\Close.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\Browse.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
