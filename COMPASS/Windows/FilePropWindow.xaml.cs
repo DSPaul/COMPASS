@@ -83,7 +83,7 @@ namespace COMPASS
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -110,17 +110,18 @@ namespace COMPASS
 
         private void DeleteFileBtn_Click(object sender, RoutedEventArgs e)
         {
-            //Unload Image Before deleting
-            //CoverIm.Source = null;
-            //Delete
-            UserSettings.CurrentData.DeleteFile(UserSettings.CurrentData.EditedFile);      
-            //Close Window
-            this.Close();
+            UserSettings.CurrentData.DeleteFile(UserSettings.CurrentData.EditedFile);
+            Close();
         }
 
         private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             MainGrid.Focus();
+        }
+
+        private void BrowseURLBtn_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(Tempfile.SourceURL);
         }
     }
 }
