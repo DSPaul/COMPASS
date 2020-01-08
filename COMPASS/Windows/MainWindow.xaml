@@ -7,8 +7,9 @@
         xmlns:local="clr-namespace:COMPASS"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="COMPASS.MainWindow"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="COMPASS" Height="500" Width="800" FontSize="20"
+        Title="COMPASS" Height="540" Width="960" FontSize="20"
         Foreground="White" Icon="/Icons/compass_new.ico"
         Closing="Window_Closing" WindowState="Maximized" WindowStyle="None" 
         WindowStartupLocation="CenterScreen" MouseDown="Window_MouseDown">
@@ -45,7 +46,7 @@
         <Grid Grid.ColumnSpan="7" x:Name="WindowsBar" 
               MouseDown="WindowsBar_MouseDown" MouseMove="OnMouseMove">
             <Grid.Background>
-                <SolidColorBrush Color="Black" Opacity="0"/>
+                <SolidColorBrush Color="#FF403F3F" Opacity="0"/>
             </Grid.Background>
 
             <Grid.ColumnDefinitions>
@@ -56,8 +57,8 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Horizontal" Margin="10,0">
-                <Image Source="/Icons/Compass.png" Width="35" SnapsToDevicePixels="True"/>
-                <TextBlock Text="C.O.M.P.A.S.S." VerticalAlignment="Center" Margin="10,0"/>
+                <Image Source="/Icons/Compass_new.png" Width="35" SnapsToDevicePixels="True"/>
+                <TextBlock Text="COMPASS" VerticalAlignment="Center" Margin="10,0"/>
             </StackPanel>
 
             <Border Grid.Column="1" CornerRadius="15" MinWidth="200"
@@ -80,7 +81,7 @@
                                 Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Right" 
                                 Margin="0,0,10,0"
                                 Click="Searchbtn_Click">
-                        <Image Source="C:\Users\pauld\source\repos\pdfOrganizer\Assets\/Icons\2x\Search.png"/>
+                        <materialDesign:PackIcon Kind="Search"/>
                     </Button>
                 </Grid>
             </Border>
@@ -92,7 +93,11 @@
                     <Style TargetType="{x:Type Button}" >
                         <Setter Property="Width" Value="40"/>
                         <Setter Property="Padding" Value="7"/>
-                        <Setter Property="Background" Value="{x:Null}"/>
+                        <Setter Property="Background">
+                            <Setter.Value>
+                                <SolidColorBrush Color="Black" Opacity="0"/>
+                            </Setter.Value>
+                        </Setter>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type Button}">
@@ -113,21 +118,21 @@
                 <Button x:Name="MinimizeButton"
                         KeyboardNavigation.IsTabStop="False"
                         Click="MinimizeWindow" BorderBrush="{x:Null}">
-                    <Image Source="/Icons/Minimize.png" Width="15"/>
+                    <materialDesign:PackIcon Kind="WindowMinimize" VerticalAlignment="Bottom"/>
                 </Button>
 
                 <Button x:Name="MaximizeButton"
                         KeyboardNavigation.IsTabStop="False"
                         Click="MaximizeClick" BorderBrush="{x:Null}" >
                     <Grid>
-                        <Image  x:Name="Maximizeimage" Source="/Icons/Maximize.png" Visibility="Collapsed" Width="15"/>
-                        <Image x:Name="NotMaximizeimage" Source="/Icons/Window.png" Width="15"/>
+                        <materialDesign:PackIcon Kind="WindowMaximize"  x:Name="Maximizeimage" Visibility="Collapsed" Width="15"/>
+                        <materialDesign:PackIcon Kind="WindowRestore"  x:Name="NotMaximizeimage"  Width="15"/>
                     </Grid>
                 </Button>
 
                 <Button x:Name="CloseButton"
                         Click="CloseButton_Click" BorderBrush="{x:Null}">
-                    <Image Source="/Icons/Cross.png" Width="20"/>
+                    <materialDesign:PackIcon Kind="WindowClose"/>
                     <Button.Style>
                         <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
                             <Style.Triggers>
@@ -266,7 +271,7 @@
             </TabControl>
             <Button x:Name="AddtagBtn" Grid.Column="1" Grid.Row="2" Click="Addtag_Click" Style="{StaticResource SquareBtn}">
                 <StackPanel Orientation="Horizontal" Margin="0,0">
-                    <Image Source="/Icons/Add.png" Height="30" Margin="0,0,10,0"/>
+                    <materialDesign:PackIcon Kind="TagPlusOutline" Height="30" Margin="0,0,10,0" Foreground="#FFCBCBCB"/>
                     <TextBlock Text="Add Tag" Foreground="#FFCBCBCB" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
@@ -274,13 +279,13 @@
                         Click="ImportBtn_Click" Style="{StaticResource SquareBtn}"
                         >
                 <StackPanel Orientation="Horizontal" Margin="0,0">
-                    <Image Source="/Icons/Import.png" Height="30" Margin="0,0,10,0"/>
+                    <materialDesign:PackIcon Kind="FileImportOutline" Height="30" Margin="0,0,10,0" Foreground="#FFCBCBCB"/>
                     <TextBlock Text="Import  " Foreground="#FFCBCBCB" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
             <Button x:Name="SettingsBtn" Grid.Column="1" Grid.Row="4" Style="{StaticResource SquareBtn}">
                 <StackPanel Orientation="Horizontal" Margin="5,0">
-                    <Image Source="/Icons/Settings.png" Height="30" Margin="0,0,10,0"/>
+                    <materialDesign:PackIcon Kind="Settings" Height="30" Margin="0,0,10,0" Foreground="#FFCBCBCB"/>
                     <TextBlock Text="Settings" Foreground="#FFCBCBCB" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
@@ -300,7 +305,7 @@
                                         <ControlTemplate>
                                             <Border CornerRadius="15" Background="#FF1CE81C" Margin="5,0">
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,2">
-                                                    <Image Source="/Icons/Done.png"/>
+                                                    <materialDesign:PackIcon Kind="Check"/>
                                                     <TextBlock Text="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Foreground="White"/>
                                                 </StackPanel>
                                             </Border>
@@ -314,7 +319,7 @@
                                         <ControlTemplate>
                                             <Border CornerRadius="15" Background="#FFEB1313" Margin="5,0">
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,2">
-                                                    <Image Source="/Icons/Cross.png"/>
+                                                    <materialDesign:PackIcon Kind="WindowClose"/>
                                                     <TextBlock Text="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Foreground="White"/>
                                                 </StackPanel>
                                             </Border>
@@ -379,7 +384,7 @@
                                 <Button x:Name="ClearParent" Click="ClearParent_Click"  Background="{x:Null}"
                                     BorderBrush="{x:Null}" VerticalAlignment="Center">
                                     <Border Background="Red" CornerRadius="10" Width="20">
-                                        <Image Source="/Icons/Cross.png"/>
+                                        <materialDesign:PackIcon Kind="WindowClose"/>
                                     </Border>
                                 </Button>
                             </StackPanel>
@@ -435,7 +440,7 @@
         <!--#endregion-->
 
         <!--#region Main Dock-->
-        <Grid Grid.Column="3" Grid.Row="1">
+        <Grid x:Name="ViewsGrid" Grid.Column="3" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
@@ -456,13 +461,13 @@
             <!--#region View Selection-->
             <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal">
                 <Button Background="{x:Null}" BorderBrush="{x:Null}" Click="ShowListView">
-                    <Image Source="/Icons/ListView.png"/>
+                    <materialDesign:PackIcon Kind="ViewHeadline" Width="45" Height="45"/>
                 </Button>
                 <Button Background="{x:Null}" BorderBrush="{x:Null}" Click="ShowMixView">
-                    <Image Source="/Icons/MixView.png"/>
+                    <materialDesign:PackIcon Kind="ViewList" Width="45" Height="45"/>
                 </Button>
                 <Button Background="{x:Null}" BorderBrush="{x:Null}" Click="ShowTileView">
-                    <Image Source="/Icons/TileView.png"/>
+                    <materialDesign:PackIcon Kind="ViewModule" Width="45" Height="45"/>
                 </Button>
             </StackPanel>
             <!--#endregion-->
@@ -492,7 +497,7 @@
                     </ListBox>
                     <Button x:Name="ResetBtn" Click="ResetBtn_Click" Margin="10,0"
                         Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="30">
-                        <Image Source="/Icons/Cross.png"/>
+                        <materialDesign:PackIcon Kind="WindowClose"/>
                     </Button>
                 </Grid>
             </Border>
@@ -501,7 +506,7 @@
             <!--#region ListView-->
             <DataGrid x:Name="FileListView" Grid.Column="0 " Grid.Row="3" Grid.ColumnSpan="4" 
                             Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Margin="10,0,0,0"
-                            AutoGenerateColumns="False" ItemsSource="{Binding}"
+                            AutoGenerateColumns="False" ItemsSource="{Binding ActiveFiles}"
                             CanUserAddRows="False" SelectionMode="Single"
                             RowHeaderWidth="0" GridLinesVisibility="None">
                 <DataGrid.Resources>
@@ -582,7 +587,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Click="Edit_File_Btn" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" >
-                                    <Image Source="/Icons\Edit.png"/>
+                                    <materialDesign:PackIcon Kind="Pencil"/>
                                 </Button>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
