@@ -1,6 +1,3 @@
-#random crap
-Assets_that_could_be_helpful/
-
 # User-specific files
 *.suo
 *.user
@@ -84,3 +81,4 @@ ClientBin/
 *.jfm
 *.pfx
 *.publishsettings
+*.pdn
