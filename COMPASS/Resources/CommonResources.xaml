@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
     <!--#region ScrollBar Style-->
     <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
         <Setter Property="Visibility" Value="Hidden"/>
@@ -192,9 +193,9 @@
                   Grid.Column="0"
                   CornerRadius="0" 
                   Margin="1" 
-                  Background="{x:Null}" 
-                  BorderBrush="#FF97A0A5"
-                  BorderThickness="0,0,1,0" />
+                  Background="{x:Null}"
+                  BorderThickness="0,0,1,0" 
+                  BorderBrush="#FF97A0A5" />
             <Path 
                   x:Name="Arrow"
                   Grid.Column="1"     
@@ -330,5 +331,45 @@
         </Setter>
     </Style>
     <!--#endregion-->
-    
+
+    <!--#region Checkbox style-->
+    <Style TargetType="{x:Type CheckBox}">
+        <Setter Property="MinWidth" Value="30"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <Border>
+                        <Border.Background>
+                            <SolidColorBrush Color="Black" Opacity="0"/>
+                        </Border.Background>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon x:Name="checkboxIcon" Kind="CheckboxBlankOutline"/>
+                            <ContentPresenter/>
+                        </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckboxMarkedOutline"/>
+                        </Trigger>
+                        <!--<MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                                <Condition Property="IsChecked" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="checkboxImage" Property="Source" Value="hover_image.png"/>
+                        </MultiTrigger>-->
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+
+    <Style TargetType="materialDesign:PackIcon">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="Height" Value="20"/>
+    </Style>
+
 </ResourceDictionary>
