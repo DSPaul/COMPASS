@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:self="clr-namespace:COMPASS"
         mc:Ignorable="d"
         Title="File Properties" Height="450" Width="900" FontSize="16" 
@@ -81,9 +82,7 @@
         <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
         <ComboBox Text="{Binding Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"
                   IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}"/>
-        <TextBlock Text="Source URL:" Grid.Column="1" Grid.Row="7"/>
-        <TextBox Text="{Binding SourceURL, Mode=TwoWay}" Grid.Column="1" Grid.Row="8" Name="FileSourceTB"/>
-        <UniformGrid Grid.Column="1" Grid.Row="9" Margin="0,5" Columns="2">
+        <UniformGrid Grid.Column="1" Grid.Row="7" Margin="0,5" Columns="2">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Version:"/>
                 <TextBox Text="{Binding Version, Mode=TwoWay}" MinWidth="100" Name="FileVersionTB" Margin="5,0"/>
@@ -94,10 +93,10 @@
             </StackPanel>
         </UniformGrid>
         <!--#region Tags-->
-        <Grid Grid.Column="1" Grid.Row="11">
+        <Grid Grid.Column="1" Grid.Row="8">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="41*"/>
-                <ColumnDefinition Width="435*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="Tags:"/>
@@ -110,7 +109,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border CornerRadius="10" Margin="3,0" VerticalAlignment="Center">
+                        <Border CornerRadius="10" Margin="3" VerticalAlignment="Center">
                             <Border.Background>
                                 <SolidColorBrush Color="{Binding BackgroundColor}"/>
                             </Border.Background>
@@ -127,8 +126,9 @@
             </Button>
         </Grid>
         <!--#endregion-->
+        
         <!--#region Path-->
-        <Grid Grid.Column="1" Grid.Row="12">
+        <Grid Grid.Column="1" Grid.Row="9">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
@@ -140,7 +140,26 @@
             <Button Name="BrowsepathBtn" Click="BrowsepathBtn_Click" 
                 Grid.Column="2" Background="Gray">
                 <StackPanel Orientation="Horizontal" Margin="2,0">
-                    <Image Source="/Icons/Browse.png"/>
+                    <materialDesign:PackIcon Kind="FolderOpen"/>
+                    <TextBlock Text="Browse"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region SourceURL-->
+        <Grid Grid.Column="1" Grid.Row="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Source URL:" Grid.Column="0"/>
+            <TextBox Text="{Binding SourceURL, Mode=TwoWay}" Grid.Column="1" Name="FileSourceTB"/>
+            <Button Name="BrowseURLBtn" Click="BrowseURLBtn_Click" 
+                Grid.Column="2" Background="Gray">
+                <StackPanel Orientation="Horizontal" Margin="2,0">
+                    <materialDesign:PackIcon Kind="Compass"/>
                     <TextBlock Text="Browse"/>
                 </StackPanel>
             </Button>
@@ -182,19 +201,19 @@
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Background="Red" Name="DeleteFileBtn" Click="DeleteFileBtn_Click">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="/Icons/Trash.png"/>
+                    <materialDesign:PackIcon Kind="Delete" />
                     <TextBlock Text="Delete"/>
                 </StackPanel>
             </Button>
             <Button Grid.Column="2" Name="OKBtn" Click="OKBtn_Click" Background="Green">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="/Icons/Done.png"/>
+                    <materialDesign:PackIcon Kind="Check"/>
                     <TextBlock Text="OK"/>
                 </StackPanel>
             </Button>
             <Button Grid.Column="3" Name="CancelBtn" Click="Cancel_Click" Background="Red">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="/Icons/Cross.png"/>
+                    <materialDesign:PackIcon Kind="WindowClose"/>
                     <TextBlock Text="Cancel"/>
                 </StackPanel>
             </Button>
