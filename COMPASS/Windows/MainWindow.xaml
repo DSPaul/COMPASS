@@ -160,7 +160,8 @@
                             <ControlTemplate TargetType="{x:Type Button}">
                                 <Border Background="{TemplateBinding Background}" BorderThickness="1" CornerRadius="7" HorizontalAlignment="Stretch">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <materialDesign:PackIcon Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}" Height="30" Margin="0,0,10,0"/>
+                                        <materialDesign:PackIcon Height="30" Margin="0,0,10,0"
+                                            Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}"/>
                                         <ContentPresenter VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Border>
@@ -223,7 +224,7 @@
                         <Setter Property="Foreground" Value="White"/>
                         <Setter Property="BorderThickness" Value="0"/>
                         <Setter Property="VerticalAlignment" Value="Bottom"/>
-                        <Setter Property="MaxWidth" Value="200"/>
+                        <Setter Property="MaxWidth" Value="300"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="TabItem">
@@ -294,24 +295,18 @@
                 </TabItem>
                 <TabItem Header="Filter" tools:AP.IconKind="Filter"/>
             </TabControl>
+
             <Rectangle Grid.ColumnSpan="10" Grid.Row="1" Fill="#FFB9B9B9" Height="3" Margin="0,10"/>
+            
             <Button x:Name="AddtagBtn" Grid.Column="1" Grid.Row="2" tools:AP.IconKind="TagPlusOutline"
-                    Click="Addtag_Click" Style="{StaticResource SquareBtn}" Content="AddTag">
-            </Button>
-            <Button x:Name="ImportBtn" Grid.Column="1" Grid.Row="3"
-                        Click="ImportBtn_Click" Style="{StaticResource SquareBtn}"
-                        >
-                <StackPanel Orientation="Horizontal" Margin="0,0">
-                    <materialDesign:PackIcon Kind="FileImportOutline" Height="30" Margin="0,0,10,0"/>
-                    <TextBlock Text="Import" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
-            <Button x:Name="SettingsBtn" Grid.Column="1" Grid.Row="4" Style="{StaticResource SquareBtn}">
-                <StackPanel Orientation="Horizontal" Margin="5,0">
-                    <materialDesign:PackIcon Kind="Settings" Height="30" Margin="0,0,10,0"/>
-                    <TextBlock Text="Settings" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
+                    Click="Addtag_Click" Style="{StaticResource SquareBtn}" Content="Add Tag"/>
+            
+            <Button x:Name="ImportBtn" Grid.Column="1" Grid.Row="3" tools:AP.IconKind="FileImportOutline"
+                        Click="ImportBtn_Click" Style="{StaticResource SquareBtn}" Content="Import"/>
+
+            <Button x:Name="SettingsBtn" Grid.Column="1" Grid.Row="4" Style="{StaticResource SquareBtn}"
+                    tools:AP.IconKind="Settings" Content="Settings"/>
+
             <!--#region Add Tag Popup-->
             <Grid Grid.Row="1" Grid.Column="1" Margin="5"
                     VerticalAlignment="Bottom" x:Name="TagCreation" Visibility="Collapsed">
