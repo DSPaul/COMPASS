@@ -119,6 +119,7 @@
     </ApplicationDefinition>
     <Compile Include="Models\ObservableObject.cs" />
     <Compile Include="Models\UserSettings.cs" />
+    <Compile Include="Tools\AP.cs" />
     <Compile Include="Tools\CoverArtGenerator.cs" />
     <Compile Include="Models\Data.cs" />
     <Compile Include="Models\MyFile.cs" />
