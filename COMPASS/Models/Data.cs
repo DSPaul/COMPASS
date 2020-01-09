@@ -50,7 +50,7 @@ namespace COMPASS
         public ObservableCollection<MyFile> AllFiles = new ObservableCollection<MyFile>();
         public ObservableCollection<MyFile> TagFilteredFiles;
         public ObservableCollection<MyFile> SearchFilteredFiles;
-        public ObservableCollection<MyFile> ActiveFiles;
+        public ObservableCollection<MyFile> ActiveFiles { get; set; }
 
         public MyFile EditedFile = new MyFile();
         #endregion
