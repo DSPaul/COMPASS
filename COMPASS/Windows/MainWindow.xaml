@@ -62,7 +62,7 @@
             </StackPanel>
 
             <Border Grid.Column="1" CornerRadius="15" MinWidth="200"
-                        Background="#FFB7B7B7" OpacityMask="#FF222222" Margin="10">
+                        Background="#FFB7B7B7" OpacityMask="#FF222222" Margin="10,5">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width ="*"/>
@@ -152,13 +152,17 @@
             <Grid.Resources>
                 <Style TargetType="{x:Type Button}" x:Key="SquareBtn">
                     <Setter Property="Background" Value="Gray"/>
+                    <Setter Property="Foreground" Value="#FFF3F3F3"/>
                     <Setter Property="BorderBrush" Value="{x:Null}"/>
                     <Setter Property="Margin" Value="10,3"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type Button}">
                                 <Border Background="{TemplateBinding Background}" BorderThickness="1" CornerRadius="7" HorizontalAlignment="Stretch">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <materialDesign:PackIcon Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}" Height="30" Margin="0,0,10,0"/>
+                                        <ContentPresenter VerticalAlignment="Center"/>
+                                    </StackPanel>
                                 </Border>
                             </ControlTemplate>
                         </Setter.Value>
@@ -169,11 +173,38 @@
                         </Trigger>
                     </Style.Triggers>
                 </Style>
+                <Style TargetType="{x:Type TabControl}">
+                    <Setter Property="SnapsToDevicePixels" Value="True" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TabControl}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <Border>
+                                        <UniformGrid x:Name="HeaderPanel" IsItemsHost="True" 
+                                     Rows="1" />
+                                    </Border>
+
+                                    <Border x:Name="Border" Grid.Row="1" 
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}">
+                                        <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" />
+                                    </Border>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
             </Grid.Resources>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width =" auto"/>
-                <ColumnDefinition Width ="*"/>
+                <ColumnDefinition Width ="auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -192,6 +223,7 @@
                         <Setter Property="Foreground" Value="White"/>
                         <Setter Property="BorderThickness" Value="0"/>
                         <Setter Property="VerticalAlignment" Value="Bottom"/>
+                        <Setter Property="MaxWidth" Value="200"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="TabItem">
@@ -202,7 +234,7 @@
                                             <ContentPresenter 
                                                 VerticalAlignment="Center"
                                                 ContentSource="Header"
-                                                Margin="5,0,10,0"/> 
+                                                Margin="5,0,10,0"/>
                                         </StackPanel>
                                     </Border>
                                     <ControlTemplate.Triggers>
@@ -262,25 +294,22 @@
                 </TabItem>
                 <TabItem Header="Filter" tools:AP.IconKind="Filter"/>
             </TabControl>
-            <Rectangle Grid.ColumnSpan="10" Grid.Row="1" Fill="#FFB9B9B9" Height="3"/>
-            <Button x:Name="AddtagBtn" Grid.Column="1" Grid.Row="2" Click="Addtag_Click" Style="{StaticResource SquareBtn}">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="TagPlusOutline" Height="30" Margin="0,0,10,0" Foreground="#FFCBCBCB"/>
-                    <TextBlock Text="Add Tag" Foreground="#FFCBCBCB" VerticalAlignment="Center"/>
-                </StackPanel>
+            <Rectangle Grid.ColumnSpan="10" Grid.Row="1" Fill="#FFB9B9B9" Height="3" Margin="0,10"/>
+            <Button x:Name="AddtagBtn" Grid.Column="1" Grid.Row="2" tools:AP.IconKind="TagPlusOutline"
+                    Click="Addtag_Click" Style="{StaticResource SquareBtn}" Content="AddTag">
             </Button>
             <Button x:Name="ImportBtn" Grid.Column="1" Grid.Row="3"
                         Click="ImportBtn_Click" Style="{StaticResource SquareBtn}"
                         >
                 <StackPanel Orientation="Horizontal" Margin="0,0">
-                    <materialDesign:PackIcon Kind="FileImportOutline" Height="30" Margin="0,0,10,0" Foreground="#FFCBCBCB"/>
-                    <TextBlock Text="Import  " Foreground="#FFCBCBCB" VerticalAlignment="Center"/>
+                    <materialDesign:PackIcon Kind="FileImportOutline" Height="30" Margin="0,0,10,0"/>
+                    <TextBlock Text="Import" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
             <Button x:Name="SettingsBtn" Grid.Column="1" Grid.Row="4" Style="{StaticResource SquareBtn}">
                 <StackPanel Orientation="Horizontal" Margin="5,0">
-                    <materialDesign:PackIcon Kind="Settings" Height="30" Margin="0,0,10,0" Foreground="#FFCBCBCB"/>
-                    <TextBlock Text="Settings" Foreground="#FFCBCBCB" VerticalAlignment="Center"/>
+                    <materialDesign:PackIcon Kind="Settings" Height="30" Margin="0,0,10,0"/>
+                    <TextBlock Text="Settings" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
             <!--#region Add Tag Popup-->
