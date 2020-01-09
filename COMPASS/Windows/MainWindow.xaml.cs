@@ -36,9 +36,8 @@ namespace COMPASS
             
             //set Itemsources for databinding
             CurrentTagList.ItemsSource = UserSettings.CurrentData.ActiveTags;
-            FileListView.ItemsSource = UserSettings.CurrentData.ActiveFiles;
-            FileMixView.ItemsSource = UserSettings.CurrentData.ActiveFiles;
-            FileTileView.ItemsSource = UserSettings.CurrentData.ActiveFiles;
+
+            ViewsGrid.DataContext = UserSettings.CurrentData;
             TagTree.DataContext = UserSettings.CurrentData.RootTags;
             ParentSelectionTree.DataContext = UserSettings.CurrentData.RootTags;
             ParentSelectionPanel.DataContext = ParentSelectionTree.SelectedItem as Tag;
