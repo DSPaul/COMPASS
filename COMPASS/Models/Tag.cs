@@ -8,8 +8,9 @@ using System.Windows.Media;
 
 namespace COMPASS
 {
-    public class Tag
+    public class Tag : ObservableObject
     {
+        //Contructor
         public Tag()
         {
             try
@@ -26,6 +27,61 @@ namespace COMPASS
             this.Items = new ObservableCollection<Tag>();
         }
 
+        private ObservableCollection<Tag> _Items;
+
+        private int _ID;
+        private string _Content;
+        private int _ParentID = -1;
+        private bool _Check;
+        private bool _Expanded;
+        private Color _BackgroundColor;
+
+        #region Getter and Setters
+        public ObservableCollection<Tag> Items
+        {
+            get { return _Items; }
+            set { SetProperty(ref _Items, value); }
+        }
+
+        public int ID
+        {
+            get { return _ID; }
+            set { SetProperty(ref _ID, value); }
+        }
+        public string Content
+        {
+            get { return _Content; }
+            set { SetProperty(ref _Content, value); }
+        }
+        public int ParentID
+        {
+            get { return _ParentID; }
+            set { SetProperty(ref _ParentID, value); }
+        }
+        public bool Check
+        {
+            get { return _Check; }
+            set { SetProperty(ref _Check, value); }
+        }
+        public bool Expanded
+        {
+            get { return _Expanded; }
+            set { SetProperty(ref _Expanded, value); }
+        }
+        public Color BackgroundColor
+        {
+            get { return _BackgroundColor; }
+            set { SetProperty(ref _BackgroundColor, value); }
+        }
+        #endregion
+
+        public Tag GetParent()
+        {
+            if (ParentID == -1) return null;
+            return UserSettings.CurrentData.AllTags.First(par => par.ID == ParentID);
+        }
+
+        #region Equal and Copy Fucntions
         public void Copy(Tag t)
         {
             ID = t.ID;
@@ -35,21 +91,6 @@ namespace COMPASS
             Expanded = t.Expanded;
             BackgroundColor = t.BackgroundColor;
             Items = new ObservableCollection<Tag>(t.Items);
-        }
-
-        public ObservableCollection<Tag> Items { get; set; }
-
-        public int ID { get; set; }
-        public string Content { get; set; }
-        public int ParentID { get; set; } = -1;
-        public bool Check { get; set; }
-        public bool Expanded { get; set; }
-        public Color BackgroundColor { get; set; }
-
-        public Tag GetParent()
-        {
-            if (ParentID == -1) return null;
-            return UserSettings.CurrentData.AllTags.First(par => par.ID == ParentID);
         }
 
         public override bool Equals(object obj)
@@ -70,5 +111,6 @@ namespace COMPASS
         {
             return ID;
         }
+        #endregion
     }
 }
