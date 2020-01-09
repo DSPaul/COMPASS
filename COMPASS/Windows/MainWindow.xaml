@@ -1,11 +1,11 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            xmlns:self="clr-namespace:COMPASS"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:COMPASS"
-        xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="COMPASS.MainWindow"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:COMPASS"
+    xmlns:tools ="clr-namespace:COMPASS.Tools"
+    x:Class="COMPASS.MainWindow"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
@@ -46,7 +46,7 @@
         <Grid Grid.ColumnSpan="7" x:Name="WindowsBar" 
               MouseDown="WindowsBar_MouseDown" MouseMove="OnMouseMove">
             <Grid.Background>
-                <SolidColorBrush Color="#FF403F3F" Opacity="0"/>
+                <SolidColorBrush Color="#5E5E5E"/>
             </Grid.Background>
 
             <Grid.ColumnDefinitions>
@@ -148,12 +148,12 @@
         <!--#endregion-->
 
         <!--#region Left Dock-->
-        <Grid Grid.Column="2" Grid.Row="1">
+        <Grid Grid.Column="2" Grid.Row="1" Background="#6C6C6C">
             <Grid.Resources>
                 <Style TargetType="{x:Type Button}" x:Key="SquareBtn">
                     <Setter Property="Background" Value="Gray"/>
                     <Setter Property="BorderBrush" Value="{x:Null}"/>
-                    <Setter Property="Margin" Value="10,3,0,3"/>
+                    <Setter Property="Margin" Value="10,3"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type Button}">
@@ -176,8 +176,8 @@
                 <ColumnDefinition Width ="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
@@ -185,38 +185,34 @@
                 <RowDefinition Height="10"/>
             </Grid.RowDefinitions>
 
-            <TabControl  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Background="{x:Null}" Margin="10,0,0,5"
+            <TabControl  Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Background="{x:Null}"
                          BorderThickness="0">
                 <TabControl.Resources>
                     <Style TargetType="TabItem">
                         <Setter Property="Foreground" Value="White"/>
-                        <Setter Property="Margin" Value="0,0,0,-2"/>
+                        <Setter Property="BorderThickness" Value="0"/>
                         <Setter Property="VerticalAlignment" Value="Bottom"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="TabItem">
-                                    <Border CornerRadius="10,10,0,0" x:Name="TabBorder">
-                                        <Border.Background>
-                                            <SolidColorBrush Color="#FFD9D9D9" Opacity="0.6"/>
-                                        </Border.Background>
-                                        <ContentPresenter 
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Center"
-                                        ContentSource="Header"
-                                        Margin="10,2"/>
+                                    <Border x:Name="TabBorder">
+                                        <StackPanel Orientation="Horizontal" Margin="5,2">
+                                            <materialDesign:PackIcon Height="25" Width="25" HorizontalAlignment="Right"
+                                                Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}"/>
+                                            <ContentPresenter 
+                                                VerticalAlignment="Center"
+                                                ContentSource="Header"
+                                                Margin="5,0,10,0"/> 
+                                        </StackPanel>
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="TabBorder" Property="Background">
-                                                <Setter.Value>
-                                                    <SolidColorBrush Color="#FFD9D9D9" Opacity="0.6"/>
-                                                </Setter.Value>
-                                            </Setter>
+                                            <Setter TargetName="TabBorder" Property="Background" Value="{x:Null}"/>
                                         </Trigger>
                                         <Trigger Property="IsSelected" Value="False">
                                             <Setter TargetName="TabBorder" Property="Background">
                                                 <Setter.Value>
-                                                    <SolidColorBrush Color="#FFD9D9D9" Opacity="0.3"/>
+                                                    <SolidColorBrush Color="#FFA09C9C"/>
                                                 </Setter.Value>
                                             </Setter>
                                         </Trigger>
@@ -226,11 +222,8 @@
                         </Setter>
                     </Style>
                 </TabControl.Resources>
-                <TabItem Header="Tags">
-                    <Border CornerRadius="0,0,15,15">
-                        <Border.Background>
-                            <SolidColorBrush Color="#FF6E6E6E" Opacity="0.6"/>
-                        </Border.Background>
+                <TabItem Header="Tags" tools:AP.IconKind="TagMultiple">
+                    <Border>
                         <TreeView x:Name="TagTree" Grid.Column="1" Grid.Row="1" BorderBrush="{x:Null}"
                                     ItemsSource="{Binding}" Grid.ColumnSpan="2" Background="{x:Null}"
                                     MouseLeftButtonUp="Tag_Selected"
@@ -267,10 +260,11 @@
                         </TreeView>
                     </Border>
                 </TabItem>
-                <TabItem Header=" Filter"/>
+                <TabItem Header="Filter" tools:AP.IconKind="Filter"/>
             </TabControl>
+            <Rectangle Grid.ColumnSpan="10" Grid.Row="1" Fill="#FFB9B9B9" Height="3"/>
             <Button x:Name="AddtagBtn" Grid.Column="1" Grid.Row="2" Click="Addtag_Click" Style="{StaticResource SquareBtn}">
-                <StackPanel Orientation="Horizontal" Margin="0,0">
+                <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="TagPlusOutline" Height="30" Margin="0,0,10,0" Foreground="#FFCBCBCB"/>
                     <TextBlock Text="Add Tag" Foreground="#FFCBCBCB" VerticalAlignment="Center"/>
                 </StackPanel>
