@@ -73,8 +73,8 @@
     <ApplicationIcon>Icons\compass_new.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Magick.NET-Q16-AnyCPU, Version=7.14.5.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magick.NET-Q16-AnyCPU.7.14.5\lib\net40\Magick.NET-Q16-AnyCPU.dll</HintPath>
+    <Reference Include="Magick.NET-Q16-AnyCPU, Version=7.15.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=MSIL">
+      <HintPath>..\packages\Magick.NET-Q16-AnyCPU.7.15.0\lib\net40\Magick.NET-Q16-AnyCPU.dll</HintPath>
     </Reference>
     <Reference Include="MaterialDesignColors, Version=1.2.2.920, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MaterialDesignColors.1.2.2\lib\net45\MaterialDesignColors.dll</HintPath>
