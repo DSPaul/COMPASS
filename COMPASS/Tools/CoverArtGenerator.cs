@@ -10,7 +10,7 @@ namespace COMPASS
     public static class CoverArtGenerator
     { 
         //Convert PDFs to image previews
-        public static void ConvertPDF(MyFile pdf)
+        public static void ConvertPDF(MyFile pdf, string folder)
         {
             MagickReadSettings settings = new MagickReadSettings()
             {
@@ -26,7 +26,7 @@ namespace COMPASS
                 image.Trim();
                 image.Alpha(AlphaOption.Remove);
 
-                image.Write(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + UserSettings.CurrentData.Folder +  @"\CoverArt\" + pdf.ID.ToString() + ".png");
+                image.Write(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + folder +  @"\CoverArt\" + pdf.ID.ToString() + ".png");
             }
         }
     }

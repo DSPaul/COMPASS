@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,19 +14,22 @@ namespace COMPASS
         //Contructor
         public Tag()
         {
-            try
-            {
-                int tempID = 0;
-                while (UserSettings.CurrentData.AllTags.Any(t => t.ID == tempID))
-                {
-                    tempID++;
-                }
-                ID = tempID;
-            }
 
-            catch { }
+        }
+
+        public Tag(MainViewModel vm)
+        {
+            this.vm = vm; 
+            int tempID = 0;
+            while (vm.CurrentData.AllTags.Any(t => t.ID == tempID))
+            {
+                tempID++;
+            }
+            ID = tempID;
             this.Items = new ObservableCollection<Tag>();
         }
+
+        private MainViewModel vm;
 
         private ObservableCollection<Tag> _Items;
 
@@ -78,7 +82,7 @@ namespace COMPASS
         public Tag GetParent()
         {
             if (ParentID == -1) return null;
-            return UserSettings.CurrentData.AllTags.First(par => par.ID == ParentID);
+            return vm.CurrentData.AllTags.First(par => par.ID == ParentID);
         }
 
         #region Equal and Copy Fucntions

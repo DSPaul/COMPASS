@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,20 +12,19 @@ namespace COMPASS
         public MyFile()
         {
             Tags = new ObservableCollection<Tag>();
+        }
 
-            //Give each tag an ID, "try" because can only be done when app has a Currentdata object
-            try
+        public MyFile(MainViewModel vm)
+        {
+            Tags = new ObservableCollection<Tag>();
+
+            int tempID = 0;
+            while (vm.CurrentData.AllFiles.Any(f => f.ID == tempID))
             {
-                int tempID = 0;
-                while (UserSettings.CurrentData.AllFiles.Any(f => f.ID == tempID))
-                {
-                    tempID++;
-                }
-                ID = tempID;
-                CoverArt = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + UserSettings.CurrentData.Folder + @"\CoverArt\" + ID.ToString() + ".png");
+                tempID++;
             }
-
-            catch { }
+            ID = tempID;
+            CoverArt = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + vm.CurrentData.Folder + @"\CoverArt\" + ID.ToString() + ".png");
         }
 
         public void Copy(MyFile f)
@@ -55,6 +55,9 @@ namespace COMPASS
         private string _CoverArt;
         private bool _Physically_Owned;
 
+        private ObservableCollection<Tag> _Tags;
+
+        #region Getters and Setters
         public string Path
         {
             get { return _Path; }
@@ -100,13 +103,12 @@ namespace COMPASS
             get { return _Physically_Owned; }
             set { SetProperty(ref _Physically_Owned, value); }
         }
-
-        private ObservableCollection<Tag> _Tags;
         public ObservableCollection<Tag> Tags
         {
             get { return _Tags; }
             set { SetProperty(ref _Tags, value); }
         }
+        #endregion 
     }
 }
 

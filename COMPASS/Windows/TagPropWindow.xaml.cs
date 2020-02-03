@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +22,15 @@ namespace COMPASS
     {
         public Tag tempTag = new Tag();
 
-        public TagPropWindow()
+        public MainViewModel MainViewModel;
+
+        public TagPropWindow(MainViewModel vm)
         {
+            MainViewModel = vm;
             InitializeComponent();
-            tempTag.Copy(UserSettings.CurrentData.EditedTag);
+            tempTag.Copy(MainViewModel.CurrentData.EditedTag);
             this.DataContext = tempTag;
-            ParentSelection.DataContext = UserSettings.CurrentData.RootTags;
+            ParentSelection.DataContext = MainViewModel.CurrentData.RootTags;
             ShowParentSelectionBorder.DataContext = tempTag.GetParent();
             ColorSelector.SelectedColor = tempTag.BackgroundColor;
         }
@@ -40,9 +44,9 @@ namespace COMPASS
         //Refreshes all the files to apply changes in Tag
         private void UpdateAllFiles()
         {
-            foreach (var f in UserSettings.CurrentData.AllFiles.Where(f => f.Tags.Contains(tempTag)))
+            foreach (var f in MainViewModel.CurrentData.AllFiles.Where(f => f.Tags.Contains(tempTag)))
             {
-                foreach (Tag t in UserSettings.CurrentData.AllTags)
+                foreach (Tag t in MainViewModel.CurrentData.AllTags)
                 {
                     if (f.Tags.Contains(t))
                     {
@@ -54,7 +58,7 @@ namespace COMPASS
                     }
                 }
                 f.Tags.Clear();
-                foreach (Tag t in UserSettings.CurrentData.AllTags)
+                foreach (Tag t in MainViewModel.CurrentData.AllTags)
                 {
                     if (t.Check)
                     {
@@ -109,29 +113,29 @@ namespace COMPASS
             tempTag.BackgroundColor = (Color)ColorSelector.SelectedColor;
 
             //set Parent if changed
-            if (UserSettings.CurrentData.EditedTag.ParentID != tempTag.ParentID)
+            if (MainViewModel.CurrentData.EditedTag.ParentID != tempTag.ParentID)
             {
-                if(UserSettings.CurrentData.EditedTag.ParentID == -1)
+                if(MainViewModel.CurrentData.EditedTag.ParentID == -1)
                 {
-                    UserSettings.CurrentData.RootTags.Remove(UserSettings.CurrentData.EditedTag);
+                    MainViewModel.CurrentData.RootTags.Remove(MainViewModel.CurrentData.EditedTag);
                 }
                 else
                 {
-                    UserSettings.CurrentData.EditedTag.GetParent().Items.Remove(tempTag);
+                    MainViewModel.CurrentData.EditedTag.GetParent().Items.Remove(tempTag);
                 }
        
                 if(tempTag.ParentID == -1)
                 {
-                    UserSettings.CurrentData.RootTags.Add(UserSettings.CurrentData.EditedTag);
+                    MainViewModel.CurrentData.RootTags.Add(MainViewModel.CurrentData.EditedTag);
                 }
                 else
                 {
-                    tempTag.GetParent().Items.Add(UserSettings.CurrentData.EditedTag);
+                    tempTag.GetParent().Items.Add(MainViewModel.CurrentData.EditedTag);
                 }
             }
 
             //Apply changes 
-            UserSettings.CurrentData.EditedTag.Copy(tempTag);
+            MainViewModel.CurrentData.EditedTag.Copy(tempTag);
             UpdateAllFiles();
             this.Close();
         }
