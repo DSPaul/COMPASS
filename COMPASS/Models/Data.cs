@@ -15,8 +15,8 @@ namespace COMPASS
         {
             Folder = FolderLocation;
 
-            BooksFilepath = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Files.xml");
-            TagsFilepath = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Tags.xml");
+            _BooksFilepath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Files.xml";
+            _TagsFilepath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Tags.xml";
 
             LoadFiles();
             LoadTags();
@@ -27,8 +27,8 @@ namespace COMPASS
         }
 
         private String _Folder;
-        private String BooksFilepath;
-        private String TagsFilepath;
+        private String _BooksFilepath;
+        private String _TagsFilepath;
 
         public String Folder
         {
@@ -42,7 +42,7 @@ namespace COMPASS
         public ObservableCollection<Tag> RootTags = new ObservableCollection<Tag>();
         public ObservableCollection<Tag> ActiveTags = new ObservableCollection<Tag>();
 
-        public Tag EditedTag = new Tag();
+        public Tag EditedTag;
         #endregion
 
         #region File Data
@@ -52,7 +52,7 @@ namespace COMPASS
         public ObservableCollection<MyFile> SearchFilteredFiles;
         public ObservableCollection<MyFile> ActiveFiles { get; set; }
 
-        public MyFile EditedFile = new MyFile();
+        public MyFile EditedFile;
         #endregion
 
         #region Metadata Data
@@ -65,11 +65,11 @@ namespace COMPASS
         //Loads the RootTags from a file and constructs the Alltags list from it
         public void LoadTags()
         {
-            if (File.Exists(TagsFilepath))
+            if (File.Exists(_TagsFilepath))
             {
                 //loading root tags
                 System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Tag>));
-                using (var Reader = new StreamReader(TagsFilepath))
+                using (var Reader = new StreamReader(_TagsFilepath))
                 {
                     this.RootTags = serializer.Deserialize(Reader) as ObservableCollection<Tag>;
                 }
@@ -91,10 +91,10 @@ namespace COMPASS
         //Loads AllFiles list from Files
         public void LoadFiles()
         {
-            if (File.Exists(BooksFilepath))
+            if (File.Exists(_BooksFilepath))
             {
                 System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<MyFile>));
-                using (var Reader = new StreamReader(BooksFilepath))
+                using (var Reader = new StreamReader(_BooksFilepath))
                 {
                     AllFiles = serializer.Deserialize(Reader) as ObservableCollection<MyFile>;
                 }
@@ -114,7 +114,7 @@ namespace COMPASS
         public void SaveTagsToFile()
         {
             System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Tag>));
-            using (var writer = new StreamWriter(TagsFilepath))
+            using (var writer = new StreamWriter(_TagsFilepath))
             {
                 serializer.Serialize(writer, RootTags);
             }
@@ -123,7 +123,7 @@ namespace COMPASS
         public void SaveFilesToFile()
         {
             System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<MyFile>));
-            using (var writer = new StreamWriter(BooksFilepath))
+            using (var writer = new StreamWriter(_BooksFilepath))
             {
                 serializer.Serialize(writer, AllFiles);
             }
@@ -180,8 +180,6 @@ namespace COMPASS
             }
             Update_ActiveFiles();
         }
-
-
         #endregion
     }
 }
