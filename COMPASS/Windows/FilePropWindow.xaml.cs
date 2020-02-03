@@ -17,6 +17,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using COMPASS.Models;
+using COMPASS.ViewModels;
 
 namespace COMPASS
 {
@@ -29,24 +30,26 @@ namespace COMPASS
         public MyFile Tempfile = new MyFile();
 
         //Constructor
-        public FilePropWindow()
+        public FilePropWindow(MainViewModel vm)
         {
+            MainViewModel = vm;
             InitializeComponent();
             //Make Tempfile a copy of the edited file
-            Tempfile.Copy(UserSettings.CurrentData.EditedFile);
+            Tempfile.Copy(MainViewModel.CurrentData.EditedFile);
             //Set Datacontexts and Itemsources
             this.DataContext = Tempfile;
-            TagSelection.DataContext = UserSettings.CurrentData.RootTags;
-            FileAuthorTB.ItemsSource = UserSettings.CurrentData.AuthorList.OrderBy(n => n);
-            FilePublisherTB.ItemsSource = UserSettings.CurrentData.PublisherList.OrderBy(n => n);
+            TagSelection.DataContext = MainViewModel.CurrentData.RootTags;
+            FileAuthorTB.ItemsSource = MainViewModel.CurrentData.AuthorList.OrderBy(n => n);
+            FilePublisherTB.ItemsSource = MainViewModel.CurrentData.PublisherList.OrderBy(n => n);
 
             //Apply right checkboxes in Alltags
-            foreach (Tag t in UserSettings.CurrentData.AllTags)
+            foreach (Tag t in MainViewModel.CurrentData.AllTags)
             {
                 t.Check = Tempfile.Tags.Contains(t)? true : false;
             }
         }
 
+        public MainViewModel MainViewModel;
         private void BrowsepathBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -70,14 +73,14 @@ namespace COMPASS
         {
             Update_Taglist();
             //Uncheck all Tags
-            foreach (Tag t in UserSettings.CurrentData.AllTags) t.Check = false;
+            foreach (Tag t in MainViewModel.CurrentData.AllTags) t.Check = false;
             //Copy changes into Database
-            UserSettings.CurrentData.EditedFile.Copy(Tempfile);
+            MainViewModel.CurrentData.EditedFile.Copy(Tempfile);
             //Add new Author and Publishers to lists
-            if(FileAuthorTB.Text != "" && !UserSettings.CurrentData.AuthorList.Contains(FileAuthorTB.Text)) UserSettings.CurrentData.AuthorList.Add(FileAuthorTB.Text);
-            if(FilePublisherTB.Text != "" && !UserSettings.CurrentData.PublisherList.Contains(FilePublisherTB.Text)) UserSettings.CurrentData.PublisherList.Add(FilePublisherTB.Text);
+            if(FileAuthorTB.Text != "" && !MainViewModel.CurrentData.AuthorList.Contains(FileAuthorTB.Text)) MainViewModel.CurrentData.AuthorList.Add(FileAuthorTB.Text);
+            if(FilePublisherTB.Text != "" && !MainViewModel.CurrentData.PublisherList.Contains(FilePublisherTB.Text)) MainViewModel.CurrentData.PublisherList.Add(FilePublisherTB.Text);
             
-            UserSettings.CurrentData.Update_ActiveFiles();
+            MainViewModel.CurrentData.Update_ActiveFiles();
             this.Close();
         }
 
@@ -99,7 +102,7 @@ namespace COMPASS
         public void Update_Taglist()
         {
             Tempfile.Tags.Clear();
-            foreach (Tag t in UserSettings.CurrentData.AllTags)
+            foreach (Tag t in MainViewModel.CurrentData.AllTags)
             {
                 if (t.Check)
                 {
@@ -110,7 +113,7 @@ namespace COMPASS
 
         private void DeleteFileBtn_Click(object sender, RoutedEventArgs e)
         {
-            UserSettings.CurrentData.DeleteFile(UserSettings.CurrentData.EditedFile);
+            MainViewModel.CurrentData.DeleteFile(MainViewModel.CurrentData.EditedFile);
             Close();
         }
 

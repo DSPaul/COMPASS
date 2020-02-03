@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Xml.Serialization;
 using ImageMagick;
 using COMPASS.Models;
+using COMPASS.ViewModels;
 
 namespace COMPASS
 {
@@ -27,6 +28,7 @@ namespace COMPASS
     /// </summary>
     public partial class MainWindow : Window
     {
+        public MainViewModel MainViewModel = new MainViewModel("DnD");
 
         public MainWindow()
         {
@@ -35,11 +37,11 @@ namespace COMPASS
             MagickNET.SetGhostscriptDirectory(@"C:\Users\pauld\Documents\COMPASS\COMPASS\Libraries");
             
             //set Itemsources for databinding
-            CurrentTagList.ItemsSource = UserSettings.CurrentData.ActiveTags;
+            CurrentTagList.ItemsSource = MainViewModel.CurrentData.ActiveTags;
 
-            ViewsGrid.DataContext = UserSettings.CurrentData;
-            TagTree.DataContext = UserSettings.CurrentData.RootTags;
-            ParentSelectionTree.DataContext = UserSettings.CurrentData.RootTags;
+            ViewsGrid.DataContext = MainViewModel.CurrentData;
+            TagTree.DataContext = MainViewModel.CurrentData.RootTags;
+            ParentSelectionTree.DataContext = MainViewModel.CurrentData.RootTags;
             ParentSelectionPanel.DataContext = ParentSelectionTree.SelectedItem as Tag;
 
             this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
@@ -53,8 +55,8 @@ namespace COMPASS
         {
             ClearTreeViewSelection(TagTree);
             Searchbox.Text = "Search";
-            UserSettings.CurrentData.ActiveFiles.Clear();
-            UserSettings.CurrentData.Rebuild_FileData();
+            MainViewModel.CurrentData.ActiveFiles.Clear();
+            MainViewModel.CurrentData.Rebuild_FileData();
             RefreshTreeViews();
         }
 
@@ -63,8 +65,8 @@ namespace COMPASS
             //redraws treeviews
             TagTree.DataContext = null;
             ParentSelectionTree.DataContext = null;
-            TagTree.DataContext = UserSettings.CurrentData.RootTags;
-            ParentSelectionTree.DataContext = UserSettings.CurrentData.RootTags;
+            TagTree.DataContext = MainViewModel.CurrentData.RootTags;
+            ParentSelectionTree.DataContext = MainViewModel.CurrentData.RootTags;
         }
 
         //Activates filter when a tag is clicked in the treeview
@@ -73,15 +75,15 @@ namespace COMPASS
             //var track = ((TreeView)sender).SelectedItem as System.Windows.Controls.Primitives.Track; //Casting back to the binded Track
             dynamic selectedtag = TagTree.SelectedItem;
             if (selectedtag == null) return;
-            if (UserSettings.CurrentData.ActiveTags.All(p => p.ID != selectedtag.ID)) 
+            if (MainViewModel.CurrentData.ActiveTags.All(p => p.ID != selectedtag.ID)) 
             {
-                UserSettings.CurrentData.ActiveTags.Add(selectedtag);
+                MainViewModel.CurrentData.ActiveTags.Add(selectedtag);
             }   
-            foreach(MyFile f in UserSettings.CurrentData.AllFiles)
+            foreach(MyFile f in MainViewModel.CurrentData.AllFiles)
             {
-                if (!f.Tags.Contains(selectedtag) && UserSettings.CurrentData.TagFilteredFiles.Contains(f)) UserSettings.CurrentData.TagFilteredFiles.Remove(f);
+                if (!f.Tags.Contains(selectedtag) && MainViewModel.CurrentData.TagFilteredFiles.Contains(f)) MainViewModel.CurrentData.TagFilteredFiles.Remove(f);
             }
-            UserSettings.CurrentData.Update_ActiveFiles();
+            MainViewModel.CurrentData.Update_ActiveFiles();
             ClearTreeViewSelection(TagTree);
         }
 
@@ -127,7 +129,7 @@ namespace COMPASS
         //removes tag from filter list when clicked
         private void ActiveTag_Click(object sender, RoutedEventArgs e)
         {
-            UserSettings.CurrentData.Deactivate_Tag((Tag)CurrentTagList.SelectedItem);
+            MainViewModel.CurrentData.Deactivate_Tag((Tag)CurrentTagList.SelectedItem);
         }
 
         //import files
@@ -142,11 +144,11 @@ namespace COMPASS
             {
                 foreach(string path in openFileDialog.FileNames)
                 {
-                    if(UserSettings.CurrentData.AllFiles.All(p => p.Path != path))
+                    if(MainViewModel.CurrentData.AllFiles.All(p => p.Path != path))
                     {
-                    MyFile pdf = new MyFile { Path = path, Title = System.IO.Path.GetFileNameWithoutExtension(path)};
-                        UserSettings.CurrentData.AllFiles.Add(pdf);
-                        CoverArtGenerator.ConvertPDF(pdf);
+                    MyFile pdf = new MyFile(MainViewModel) { Path = path, Title = System.IO.Path.GetFileNameWithoutExtension(path)};
+                        MainViewModel.CurrentData.AllFiles.Add(pdf);
+                        CoverArtGenerator.ConvertPDF(pdf, MainViewModel.CurrentData.Folder);
                     }
                 }
                 Reset();
@@ -185,8 +187,8 @@ namespace COMPASS
 
         private void Searchbtn_Click(object sender, RoutedEventArgs e)
         {
-            UserSettings.CurrentData.SearchFilteredFiles.Clear();
-            foreach (MyFile f in UserSettings.CurrentData.AllFiles) UserSettings.CurrentData.SearchFilteredFiles.Add(f);
+            MainViewModel.CurrentData.SearchFilteredFiles.Clear();
+            foreach (MyFile f in MainViewModel.CurrentData.AllFiles) MainViewModel.CurrentData.SearchFilteredFiles.Add(f);
 
             if (Searchbox.Text == "" || Searchbox.Text == "Search")
             {
@@ -194,12 +196,12 @@ namespace COMPASS
             }
             else
             {
-                foreach(MyFile f in UserSettings.CurrentData.AllFiles)
+                foreach(MyFile f in MainViewModel.CurrentData.AllFiles)
                 {
-                    if (f.Title.IndexOf(Searchbox.Text, StringComparison.OrdinalIgnoreCase) < 0) UserSettings.CurrentData.SearchFilteredFiles.Remove(f);
+                    if (f.Title.IndexOf(Searchbox.Text, StringComparison.OrdinalIgnoreCase) < 0) MainViewModel.CurrentData.SearchFilteredFiles.Remove(f);
                 }
             }
-            UserSettings.CurrentData.Update_ActiveFiles();
+            MainViewModel.CurrentData.Update_ActiveFiles();
         }
 
         private void Searchbox_KeyDown(object sender, KeyEventArgs e)
@@ -215,20 +217,20 @@ namespace COMPASS
         //EDIT File
         private void Edit_File_Btn(object sender, RoutedEventArgs e)
         {
-            UserSettings.CurrentData.EditedFile = FileListView.SelectedItem as MyFile;
-            FilePropWindow fpw = new FilePropWindow();
+            MainViewModel.CurrentData.EditedFile = FileListView.SelectedItem as MyFile;
+            FilePropWindow fpw = new FilePropWindow(MainViewModel);
             fpw.Show();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            UserSettings.CurrentData.SaveFilesToFile();
-            UserSettings.CurrentData.SaveTagsToFile();
+            MainViewModel.CurrentData.SaveFilesToFile();
+            MainViewModel.CurrentData.SaveTagsToFile();
         }
 
         private void CreateTagBtn_Click(object sender, RoutedEventArgs e)
         {
-            Tag newtag = new Tag() { Content = TagNameTextBlock.Text, BackgroundColor = (Color)ColorSelector.SelectedColor};
+            Tag newtag = new Tag(MainViewModel) { Content = TagNameTextBlock.Text, BackgroundColor = (Color)ColorSelector.SelectedColor};
             if (ParentSelectionTree.SelectedItem != null)
             {
                 Tag Parent = ParentSelectionTree.SelectedItem as Tag;
@@ -238,10 +240,10 @@ namespace COMPASS
             }
             else
             {
-                UserSettings.CurrentData.RootTags.Add(newtag);
+                MainViewModel.CurrentData.RootTags.Add(newtag);
             }
 
-            UserSettings.CurrentData.AllTags.Add(newtag);
+            MainViewModel.CurrentData.AllTags.Add(newtag);
             TagNameTextBlock.Text = "";
             TagCreation.Visibility = Visibility.Collapsed;
         }
@@ -393,11 +395,11 @@ namespace COMPASS
 
         private void EditTag(object sender, RoutedEventArgs e)
         {
-            UserSettings.CurrentData.EditedTag = TagTree.SelectedItem as Tag;
+            MainViewModel.CurrentData.EditedTag = TagTree.SelectedItem as Tag;
             ClearTreeViewSelection(TagTree);
-            if (UserSettings.CurrentData.EditedTag != null)
+            if (MainViewModel.CurrentData.EditedTag != null)
             {
-                TagPropWindow tpw = new TagPropWindow();
+                TagPropWindow tpw = new TagPropWindow(MainViewModel);
                 tpw.Closed += EditTagClosedHandler;
                 tpw.Show();
             }
@@ -414,7 +416,7 @@ namespace COMPASS
             var todel = TagTree.SelectedItem as Tag;
             DeleteTag(todel);
             //Go over all files and refresh tags list
-            foreach (var f in UserSettings.CurrentData.AllFiles)
+            foreach (var f in MainViewModel.CurrentData.AllFiles)
             {
                 int i = 0;
                 //iterate over all the tags in the file
@@ -424,7 +426,7 @@ namespace COMPASS
                     //try to find the tag in alltags, if found, increase i to go to next tag
                     try
                     {
-                        UserSettings.CurrentData.AllTags.First(tag => tag.ID == currenttag.ID);
+                        MainViewModel.CurrentData.AllTags.First(tag => tag.ID == currenttag.ID);
                         i++;
                     }
                     //if the tag in not found in alltags, delete it
@@ -445,9 +447,9 @@ namespace COMPASS
                 DeleteTag(todel.Items[0]);
                 DeleteTag(todel);
             }
-            UserSettings.CurrentData.AllTags.Remove(todel);
+            MainViewModel.CurrentData.AllTags.Remove(todel);
             //remove from parent items list
-            if (todel.ParentID == -1) UserSettings.CurrentData.RootTags.Remove(todel);
+            if (todel.ParentID == -1) MainViewModel.CurrentData.RootTags.Remove(todel);
             else todel.GetParent().Items.Remove(todel);
         }
         #endregion
