@@ -118,6 +118,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\ObservableObject.cs" />
+    <Compile Include="Tools\Enums.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\FileListViewModel.cs" />
     <Compile Include="ViewModels\FileBaseViewModel.cs" />
