@@ -118,12 +118,26 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\ObservableObject.cs" />
-    <Compile Include="Models\UserSettings.cs" />
+    <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\FileListViewModel.cs" />
+    <Compile Include="ViewModels\FileBaseViewModel.cs" />
+    <Compile Include="ViewModels\FileMixViewModel.cs" />
+    <Compile Include="ViewModels\FileTileViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Tools\AP.cs" />
     <Compile Include="Tools\CoverArtGenerator.cs" />
     <Compile Include="Models\Data.cs" />
     <Compile Include="Models\MyFile.cs" />
     <Compile Include="Models\Tag.cs" />
+    <Compile Include="Views\FileListView.xaml.cs">
+      <DependentUpon>FileListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FileMixView.xaml.cs">
+      <DependentUpon>FileMixView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FileTileView.xaml.cs">
+      <DependentUpon>FileTileView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\TagPropWindow.xaml.cs">
       <DependentUpon>TagPropWindow.xaml</DependentUpon>
     </Compile>
@@ -137,6 +151,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Themes\LightTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FileListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FileMixView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FileTileView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -193,8 +219,6 @@
   <ItemGroup>
     <Folder Include="Libraries\" />
     <Folder Include="Resources\Controls\" />
-    <Folder Include="ViewModels\" />
-    <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
