@@ -23,19 +23,11 @@ namespace COMPASS
     /// </summary>
     public partial class App : Application
     {
-        enum RPG
-        {
-            DnD,
-            Pathfinder
-        }
-
         public App()
         {
             //Create necessary Romaing Folders
             Directory.CreateDirectory((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\DnD\CoverArt"));
             Directory.CreateDirectory((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\PathFinder\CoverArt"));
-
-            UserSettings.SetData(nameof(RPG.Pathfinder));
         }
     }
 
