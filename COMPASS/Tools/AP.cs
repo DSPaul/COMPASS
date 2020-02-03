@@ -13,7 +13,7 @@ namespace COMPASS.Tools
     /// </summary>
     public sealed class AP : DependencyObject
     {
-
+        #region IconKind
         public static PackIconKind GetIconKind(DependencyObject obj)
         {
             return (PackIconKind)obj.GetValue(IconKindProperty);
@@ -27,5 +27,7 @@ namespace COMPASS.Tools
         // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IconKindProperty =
             DependencyProperty.RegisterAttached("IconKind", typeof(PackIconKind), typeof(AP));
+        #endregion
+
     }
 }
