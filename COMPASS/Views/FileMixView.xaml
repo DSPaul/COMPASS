@@ -4,9 +4,102 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:COMPASS.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local1="clr-namespace:COMPASS"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            
+        <Grid.Resources>
+            <local1:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+        </Grid.Resources>
+        <!--#region MixView-->
+        <ListBox x:Name="FileView" ItemsSource="{Binding ActiveFiles}" Background="{x:Null}"
+                 BorderBrush="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="RenderTransform">
+                                <Setter.Value>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleY="1.05" ScaleX="1.05"/>
+                                    </TransformGroup>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileView}"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border CornerRadius="15" Margin="10">
+                        <Border.Background>
+                            <SolidColorBrush Color="Gray" Opacity="0.5"/>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="15" Direction="300"/>
+                        </Border.Effect>
+                        <Grid VerticalAlignment="Top">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="125"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.Resources>
+                                <Style TargetType="TextBlock" x:Key="Type">
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="Foreground" Value="#FFD0D0D0"/>
+                                    <Setter Property="Margin" Value="3,2"/>
+                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                </Style>
+                                <Style TargetType="TextBlock" x:Key="Data">
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="Margin" Value="3,2"/>
+                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                </Style>
+                            </Grid.Resources>
+                            <Image  Grid.Row="0" Grid.RowSpan="4"
+                                   Source="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Type}" Text="Title:" />
+                            <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Type}" Text="Author:" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Type}" Text="Publisher:" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource Type}" Text="Version:" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Title}" />
+                            <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Author}" />
+                            <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Publisher}" />
+                            <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Version}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <!--#endregion-->
     </Grid>
 </UserControl>
