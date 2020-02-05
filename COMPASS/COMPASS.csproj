@@ -119,7 +119,10 @@
     </ApplicationDefinition>
     <Compile Include="Models\ObservableObject.cs" />
     <Compile Include="Tools\Enums.cs" />
+    <Compile Include="Tools\FilterHandler.cs" />
+    <Compile Include="Tools\Converters\StringtoVisibiltyConverter.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\Commands\SimpleCommand.cs" />
     <Compile Include="ViewModels\FileListViewModel.cs" />
     <Compile Include="ViewModels\FileBaseViewModel.cs" />
     <Compile Include="ViewModels\FileMixViewModel.cs" />
@@ -142,7 +145,7 @@
     <Compile Include="Windows\TagPropWindow.xaml.cs">
       <DependentUpon>TagPropWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tools\UriToBitmapConverter.cs" />
+    <Compile Include="Tools\Converters\UriToBitmapConverter.cs" />
     <Page Include="Resources\CommonResources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
