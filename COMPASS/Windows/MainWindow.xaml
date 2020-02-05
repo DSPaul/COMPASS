@@ -4,17 +4,28 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMPASS"
-        xmlns:tools ="clr-namespace:COMPASS.Tools"
         x:Class="COMPASS.MainWindow"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        mc:Ignorable="d"
+        xmlns:views="clr-namespace:COMPASS.Views"
+        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
+        xmlns:Tools ="clr-namespace:COMPASS.Tools"
+    mc:Ignorable="d"
         Title="COMPASS" Height="540" Width="960" FontSize="20"
         Foreground="White" Icon="/Icons/compass_new.ico"
         Closing="Window_Closing" WindowState="Maximized" WindowStyle="None" 
         WindowStartupLocation="CenterScreen" MouseDown="Window_MouseDown">
     <Window.Resources>
-        <local:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+        <Tools:StringtoVisibiltyConverter x:Key="StringtoVisibilityConverter"/>
+        <DataTemplate DataType="{x:Type viewmodels:FileListViewModel}">
+            <views:FileListView DataContext="{Binding}"/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:FileMixViewModel}">
+            <views:FileMixView DataContext="{Binding}"/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:FileTileViewModel}">
+            <views:FileTileView DataContext="{Binding}"/>
+        </DataTemplate>
     </Window.Resources>
     <Window.Background>
         <!--<ImageBrush ImageSource="C:\Users\pauld\Pictures\Wallpapers\neverwinter_seascape.jpg" Opacity="0.6"/>-->
@@ -69,18 +80,17 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBox Grid.Column="0" 
-                                    x:Name="Searchbox" Text="Search" 
-                                    Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF636363" 
-                                    Margin="10,0,0,0"
-                                    KeyDown="Searchbox_KeyDown"
-                                    PreviewMouseLeftButtonUp="Searchbox_MouseLeftButtonUp"
+                    <TextBlock Text="Search"  Margin="10,0,0,0"
+                               Visibility="{Binding FilterHandler.SearchTerm, Converter={StaticResource StringtoVisibilityConverter}}"/>
+                    <TextBox Grid.Column="0" x:Name="Searchbox" Margin="10,0,0,0"
+                             Text="{Binding FilterHandler.SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
+                             Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF636363" 
+                             
                                     />
                     <Button Grid.Column="1"
                                 x:Name="Searchbtn" 
                                 Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Right" 
-                                Margin="0,0,10,0"
-                                Click="Searchbtn_Click">
+                                Margin="0,0,10,0">
                         <materialDesign:PackIcon Kind="Search"/>
                     </Button>
                 </Grid>
@@ -161,7 +171,7 @@
                                 <Border Background="{TemplateBinding Background}" BorderThickness="1" CornerRadius="7" HorizontalAlignment="Stretch">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <materialDesign:PackIcon Height="30" Margin="0,0,10,0"
-                                            Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}"/>
+                                            Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
                                         <ContentPresenter VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Border>
@@ -231,7 +241,7 @@
                                     <Border x:Name="TabBorder">
                                         <StackPanel Orientation="Horizontal" Margin="5,2">
                                             <materialDesign:PackIcon Height="25" Width="25" HorizontalAlignment="Right"
-                                                Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}"/>
+                                                Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
                                             <ContentPresenter 
                                                 VerticalAlignment="Center"
                                                 ContentSource="Header"
@@ -255,11 +265,11 @@
                         </Setter>
                     </Style>
                 </TabControl.Resources>
-                <TabItem Header="Tags" tools:AP.IconKind="TagMultiple">
+                <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple">
                     <Border>
                         <TreeView x:Name="TagTree" Grid.Column="1" Grid.Row="1" BorderBrush="{x:Null}"
                                     ItemsSource="{Binding}" Grid.ColumnSpan="2" Background="{x:Null}"
-                                    MouseLeftButtonUp="Tag_Selected"
+                                    SelectedItemChanged="TagTree_SelectedItemChanged"   
                                     MouseRightButtonDown="TagTree_MouseRightButtonDown">
                             <TreeView.Resources>
                                 <Style TargetType="{x:Type TreeViewItem}">
@@ -293,19 +303,19 @@
                         </TreeView>
                     </Border>
                 </TabItem>
-                <TabItem Header="Filter" tools:AP.IconKind="Filter"/>
+                <TabItem Header="Filter" Tools:AP.IconKind="Filter"/>
             </TabControl>
 
             <Rectangle Grid.ColumnSpan="10" Grid.Row="1" Fill="#FFB9B9B9" Height="3" Margin="0,10"/>
             
-            <Button x:Name="AddtagBtn" Grid.Column="1" Grid.Row="2" tools:AP.IconKind="TagPlusOutline"
+            <Button x:Name="AddtagBtn" Grid.Column="1" Grid.Row="2" Tools:AP.IconKind="TagPlusOutline"
                     Click="Addtag_Click" Style="{StaticResource SquareBtn}" Content="Add Tag"/>
             
-            <Button x:Name="ImportBtn" Grid.Column="1" Grid.Row="3" tools:AP.IconKind="FileImportOutline"
+            <Button x:Name="ImportBtn" Grid.Column="1" Grid.Row="3" Tools:AP.IconKind="FileImportOutline"
                         Click="ImportBtn_Click" Style="{StaticResource SquareBtn}" Content="Import"/>
 
             <Button x:Name="SettingsBtn" Grid.Column="1" Grid.Row="4" Style="{StaticResource SquareBtn}"
-                    tools:AP.IconKind="Settings" Content="Settings"/>
+                    Tools:AP.IconKind="Settings" Content="Settings"/>
 
             <!--#region Add Tag Popup-->
             <Grid Grid.Row="1" Grid.Column="1" Margin="5"
@@ -478,13 +488,16 @@
 
             <!--#region View Selection-->
             <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal">
-                <Button Background="{x:Null}" BorderBrush="{x:Null}" Click="ShowListView">
+                <Button Background="{x:Null}" BorderBrush="{x:Null}"
+                        Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.ListView}">
                     <materialDesign:PackIcon Kind="ViewHeadline" Width="45" Height="45"/>
                 </Button>
-                <Button Background="{x:Null}" BorderBrush="{x:Null}" Click="ShowMixView">
+                <Button Background="{x:Null}" BorderBrush="{x:Null}" 
+                        Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.MixView}">
                     <materialDesign:PackIcon Kind="ViewList" Width="45" Height="45"/>
                 </Button>
-                <Button Background="{x:Null}" BorderBrush="{x:Null}" Click="ShowTileView">
+                <Button Background="{x:Null}" BorderBrush="{x:Null}"
+                        Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.TileView}">
                     <materialDesign:PackIcon Kind="ViewModule" Width="45" Height="45"/>
                 </Button>
             </StackPanel>
@@ -495,7 +508,7 @@
             <Border CornerRadius="15" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row ="1"
                     Margin="0,10" Background="#FF565656">
                 <Grid>
-                    <ListBox x:Name="CurrentTagList"  ItemsSource="{Binding ActiveTags}" BorderBrush="{x:Null}" 
+                    <ListBox x:Name="CurrentTagList" ItemsSource="{Binding FilterHandler.ActiveTags}" BorderBrush="{x:Null}" 
                      SelectionChanged="ActiveTag_Click" Background="{x:Null}">
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -513,7 +526,7 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <Button x:Name="ResetBtn" Click="ResetBtn_Click" Margin="10,0"
+                    <Button x:Name="ResetBtn" Command="{Binding ResetCommand}" Margin="10,0"
                         Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="30">
                         <materialDesign:PackIcon Kind="WindowClose"/>
                     </Button>
@@ -521,253 +534,7 @@
             </Border>
             <!--#endregion-->
 
-            <!--#region ListView-->
-            <DataGrid x:Name="FileListView" Grid.Column="0 " Grid.Row="3" Grid.ColumnSpan="4" 
-                            Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Margin="10,0,0,0"
-                            AutoGenerateColumns="False" ItemsSource="{Binding ActiveFiles}"
-                            CanUserAddRows="False" SelectionMode="Single"
-                            RowHeaderWidth="0" GridLinesVisibility="None">
-                <DataGrid.Resources>
-                    <Style TargetType="{x:Type DataGridColumnHeader}">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
-                                    <TextBlock Text="{TemplateBinding Content}" Margin="5,0" Width="{TemplateBinding Width}" TextAlignment="Left" FontSize="14" FontWeight="Bold" Foreground="#FFC8C8C8"/>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </DataGrid.Resources>
-                <DataGrid.ItemContainerStyle>
-                    <Style TargetType="{x:Type DataGridRow}">
-                        <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        <Setter Property="Background" Value="{x:Null}"/>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" Value="#FF5E5F65"/>
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="true">
-                                <Setter Property="Background" Value="#FF2E2F34"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.ItemContainerStyle>
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="TITLE" Width="auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text ="{Binding Title}" TextWrapping="Wrap" FontSize="17" Margin="0,0,10,0"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="AUTHOR" Width="auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text ="{Binding Author}" TextWrapping="Wrap" FontSize="17" Margin="0,0,10,0"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="PUBLISHER" Width="auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text ="{Binding Publisher}" TextWrapping="Wrap" FontSize="17" Margin="0,0,10,0"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="TAGS" Width="auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <ItemsControl ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" 
-                                                        Foreground="Black" FontSize="14" VerticalAlignment="Center">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <WrapPanel Width="{Binding ActualWidth}"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border CornerRadius="10" Margin="3,0" VerticalAlignment="Center">
-                                                <Border.Background>
-                                                    <SolidColorBrush Color="{Binding BackgroundColor}"/>
-                                                </Border.Background>
-                                                <TextBlock Text="{Binding Content}" Margin ="10,2" Foreground="White"
-                                                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Width="*"/>
-                    <DataGridTemplateColumn Width="auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Click="Edit_File_Btn" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" >
-                                    <materialDesign:PackIcon Kind="Pencil"/>
-                                </Button>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-            <!--#endregion-->
-
-            <!--#region MixView-->
-            <ListBox  Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4"  Visibility="Collapsed" x:Name="FileMixView" 
-                       ItemsSource="{Binding ActiveFiles}" Background="{x:Null}" BorderBrush="{x:Null}"
-                      ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0"
-                      >
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListBoxItem}">
-                        <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="RenderTransform">
-                                    <Setter.Value>
-                                        <TransformGroup>
-                                            <ScaleTransform ScaleY="1.05" ScaleX="1.05"/>
-                                        </TransformGroup>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileMixView}"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border CornerRadius="15" Margin="10">
-                            <Border.Background>
-                                <SolidColorBrush Color="Gray" Opacity="0.5"/>
-                            </Border.Background>
-                            <Border.Effect>
-                                <DropShadowEffect BlurRadius="15" Direction="300"/>
-                            </Border.Effect>
-                            <Grid VerticalAlignment="Top">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="70"/>
-                                    <ColumnDefinition Width="125"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.Resources>
-                                    <Style TargetType="TextBlock" x:Key="Type">
-                                        <Setter Property="FontSize" Value="14"/>
-                                        <Setter Property="Foreground" Value="#FFD0D0D0"/>
-                                        <Setter Property="Margin" Value="3,2"/>
-                                        <Setter Property="TextWrapping" Value="Wrap"/>
-                                        <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    </Style>
-                                    <Style TargetType="TextBlock" x:Key="Data">
-                                        <Setter Property="FontSize" Value="14"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                        <Setter Property="Margin" Value="3,2"/>
-                                        <Setter Property="TextWrapping" Value="Wrap"/>
-                                    </Style>
-                                </Grid.Resources>
-                                <Image  Grid.Row="0" Grid.RowSpan="4"
-                                   Source="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}}"/>
-                                <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Type}" Text="Title:" />
-                                <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Type}" Text="Author:" />
-                                <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Type}" Text="Publisher:" />
-                                <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource Type}" Text="Version:" />
-                                <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Title}" />
-                                <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Author}" />
-                                <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Publisher}" />
-                                <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Version}" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <!--#endregion-->
-
-            <!--#region TileView-->
-            <ListBox  Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4"  Visibility="Collapsed" x:Name="FileTileView" 
-                       ItemsSource="{Binding ActiveFiles}" Background="{x:Null}" BorderBrush="{x:Null}"
-                      ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0"
-                      FocusVisualStyle="{x:Null}"
-                      >
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListBoxItem}">
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="RenderTransform">
-                                    <Setter.Value>
-                                        <TransformGroup>
-                                            <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
-                                        </TransformGroup>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileTileView}"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border CornerRadius="15" Margin="10">
-                            <Border.Background>
-                                <SolidColorBrush Color="Gray" Opacity="0.5"/>
-                            </Border.Background>
-                            <Border.Effect>
-                                <DropShadowEffect BlurRadius="15" Direction="300"/>
-                            </Border.Effect>
-                            <Grid VerticalAlignment="Top">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-                                <Image  Grid.Row="0" Width="150"
-                                        Source="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}}"/>
-                                <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" MaxWidth="150"
-                                        Text="{Binding Title}" Foreground="White" HorizontalAlignment="Center" TextAlignment="Center"/>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <!--#endregion-->
+            <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" Content="{Binding CurrentFileViewModel}"/>
         </Grid>
         <!--#endregion-->
     </Grid>

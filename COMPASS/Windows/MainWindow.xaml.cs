@@ -1,24 +1,12 @@
 ﻿using System;
-using System.IO;
 using Microsoft.Win32;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Xml.Serialization;
 using ImageMagick;
-using COMPASS.Models;
 using COMPASS.ViewModels;
 
 namespace COMPASS
@@ -35,11 +23,14 @@ namespace COMPASS
             InitializeComponent();
 
             MagickNET.SetGhostscriptDirectory(@"C:\Users\pauld\Documents\COMPASS\COMPASS\Libraries");
-            
-            //set Itemsources for databinding
-            CurrentTagList.ItemsSource = MainViewModel.CurrentData.ActiveTags;
 
-            ViewsGrid.DataContext = MainViewModel.CurrentData;
+            //set Itemsources for databinding
+            DataContext = MainViewModel;
+            //temp
+            MainViewModel.CurrentFileViewModel = new FileListViewModel() { ActiveFiles = MainViewModel.FilterHandler.ActiveFiles};
+            //
+
+            //ViewsGrid.DataContext = MainViewModel.CurrentData;
             TagTree.DataContext = MainViewModel.CurrentData.RootTags;
             ParentSelectionTree.DataContext = MainViewModel.CurrentData.RootTags;
             ParentSelectionPanel.DataContext = ParentSelectionTree.SelectedItem as Tag;
@@ -50,16 +41,6 @@ namespace COMPASS
         // is true if we hold left mouse button on windows tilebar
         private bool DragWindow = false;
 
-        //resets Filters and searchfield
-        public void Reset()
-        {
-            ClearTreeViewSelection(TagTree);
-            Searchbox.Text = "Search";
-            MainViewModel.CurrentData.ActiveFiles.Clear();
-            MainViewModel.CurrentData.Rebuild_FileData();
-            RefreshTreeViews();
-        }
-
         public void RefreshTreeViews()
         {
             //redraws treeviews
@@ -67,24 +48,6 @@ namespace COMPASS
             ParentSelectionTree.DataContext = null;
             TagTree.DataContext = MainViewModel.CurrentData.RootTags;
             ParentSelectionTree.DataContext = MainViewModel.CurrentData.RootTags;
-        }
-
-        //Activates filter when a tag is clicked in the treeview
-        private void Tag_Selected(object sender, RoutedEventArgs e)
-        {
-            //var track = ((TreeView)sender).SelectedItem as System.Windows.Controls.Primitives.Track; //Casting back to the binded Track
-            dynamic selectedtag = TagTree.SelectedItem;
-            if (selectedtag == null) return;
-            if (MainViewModel.CurrentData.ActiveTags.All(p => p.ID != selectedtag.ID)) 
-            {
-                MainViewModel.CurrentData.ActiveTags.Add(selectedtag);
-            }   
-            foreach(MyFile f in MainViewModel.CurrentData.AllFiles)
-            {
-                if (!f.Tags.Contains(selectedtag) && MainViewModel.CurrentData.TagFilteredFiles.Contains(f)) MainViewModel.CurrentData.TagFilteredFiles.Remove(f);
-            }
-            MainViewModel.CurrentData.Update_ActiveFiles();
-            ClearTreeViewSelection(TagTree);
         }
 
         #region Clears Selection From TreeView
@@ -120,16 +83,10 @@ namespace COMPASS
             MainGrid.Focus();
         }
 
-        //resets all filters
-        private void ResetBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Reset();
-        }
-
         //removes tag from filter list when clicked
         private void ActiveTag_Click(object sender, RoutedEventArgs e)
         {
-            MainViewModel.CurrentData.Deactivate_Tag((Tag)CurrentTagList.SelectedItem);
+            MainViewModel.FilterHandler.RemoveTagFilter((Tag)CurrentTagList.SelectedItem);
         }
 
         //import files
@@ -151,30 +108,8 @@ namespace COMPASS
                         CoverArtGenerator.ConvertPDF(pdf, MainViewModel.CurrentData.Folder);
                     }
                 }
-                Reset();
+                MainViewModel.Reset();
             }         
-        }
-
-        //Open file on doubleclick
-        protected void HandleDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (FileListView.Visibility == Visibility.Visible)
-            {
-                dynamic selectedItem = FileListView.SelectedItem;
-                Process.Start(selectedItem.Path);
-            }
-
-            if (FileMixView.Visibility == Visibility.Visible)
-            {
-                dynamic selectedItem = FileMixView.SelectedItem;
-                Process.Start(selectedItem.Path);
-            }
-
-            if (FileTileView.Visibility == Visibility.Visible)
-            {
-                dynamic selectedItem = FileTileView.SelectedItem;
-                Process.Start(selectedItem.Path);
-            }
         }
 
         private void TagNameTextBlock_KeyDown(object sender, KeyEventArgs e)
@@ -185,30 +120,6 @@ namespace COMPASS
             }
         }
 
-        private void Searchbtn_Click(object sender, RoutedEventArgs e)
-        {
-            MainViewModel.CurrentData.SearchFilteredFiles.Clear();
-            foreach (MyFile f in MainViewModel.CurrentData.AllFiles) MainViewModel.CurrentData.SearchFilteredFiles.Add(f);
-
-            if (Searchbox.Text == "" || Searchbox.Text == "Search")
-            {
-                Searchbox.Text = "Search";
-            }
-            else
-            {
-                foreach(MyFile f in MainViewModel.CurrentData.AllFiles)
-                {
-                    if (f.Title.IndexOf(Searchbox.Text, StringComparison.OrdinalIgnoreCase) < 0) MainViewModel.CurrentData.SearchFilteredFiles.Remove(f);
-                }
-            }
-            MainViewModel.CurrentData.Update_ActiveFiles();
-        }
-
-        private void Searchbox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.Key == Key.Return) Searchbtn_Click(sender, e);
-        }
-
         private void Searchbox_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             Searchbox.Text = "";
@@ -217,9 +128,9 @@ namespace COMPASS
         //EDIT File
         private void Edit_File_Btn(object sender, RoutedEventArgs e)
         {
-            MainViewModel.CurrentData.EditedFile = FileListView.SelectedItem as MyFile;
-            FilePropWindow fpw = new FilePropWindow(MainViewModel);
-            fpw.Show();
+            //MainViewModel.CurrentData.EditedFile = FileListView.SelectedItem as MyFile;
+            //FilePropWindow fpw = new FilePropWindow(MainViewModel);
+            //fpw.Show();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -277,28 +188,6 @@ namespace COMPASS
                 TagCreationMain.Visibility = Visibility.Visible;
             }
         }
-
-        #region View Selection Buttons
-                //*****************View Selection **************
-        public void ShowListView(object sender, RoutedEventArgs e)
-        {
-            FileListView.Visibility = Visibility.Visible;
-            FileMixView.Visibility = Visibility.Collapsed;
-            FileTileView.Visibility = Visibility.Collapsed;
-        }
-        public void ShowMixView(object sender, RoutedEventArgs e)
-        {
-            FileListView.Visibility = Visibility.Collapsed;
-            FileMixView.Visibility = Visibility.Visible;
-            FileTileView.Visibility = Visibility.Collapsed;
-        }
-        public void ShowTileView(object sender, RoutedEventArgs e)
-        {
-            FileListView.Visibility = Visibility.Collapsed;
-            FileMixView.Visibility = Visibility.Collapsed;
-            FileTileView.Visibility = Visibility.Visible;
-        }
-        #endregion
 
         #region Windows Tile Bar Buttons
                 private void MinimizeWindow(object sender, RoutedEventArgs e)
@@ -414,7 +303,7 @@ namespace COMPASS
         private void DeleteTag(object sender, RoutedEventArgs e)
         {
             var todel = TagTree.SelectedItem as Tag;
-            DeleteTag(todel);
+            MainViewModel.CurrentData.DeleteTag(todel);
             //Go over all files and refresh tags list
             foreach (var f in MainViewModel.CurrentData.AllFiles)
             {
@@ -436,21 +325,8 @@ namespace COMPASS
                     }                  
                 }
             }
-            Reset();
+            MainViewModel.Reset();
             ClearTreeViewSelection(TagTree);
-        }
-        private void DeleteTag(Tag todel)
-        {
-            //Recursive loop to delete all childeren
-            if (todel.Items.Count > 0)
-            {
-                DeleteTag(todel.Items[0]);
-                DeleteTag(todel);
-            }
-            MainViewModel.CurrentData.AllTags.Remove(todel);
-            //remove from parent items list
-            if (todel.ParentID == -1) MainViewModel.CurrentData.RootTags.Remove(todel);
-            else todel.GetParent().Items.Remove(todel);
         }
         #endregion
 
@@ -465,6 +341,14 @@ namespace COMPASS
             ScrollViewer scv = (ScrollViewer)sender;
             scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
             e.Handled = true;
+        }
+
+        private void TagTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            Tag selectedtag = (Tag)e.NewValue;
+            if (selectedtag == null) return;
+            MainViewModel.FilterHandler.AddTagFilter(selectedtag);
+            ClearTreeViewSelection(TagTree);
         }
     }
 

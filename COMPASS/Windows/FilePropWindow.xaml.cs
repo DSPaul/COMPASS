@@ -80,7 +80,7 @@ namespace COMPASS
             if(FileAuthorTB.Text != "" && !MainViewModel.CurrentData.AuthorList.Contains(FileAuthorTB.Text)) MainViewModel.CurrentData.AuthorList.Add(FileAuthorTB.Text);
             if(FilePublisherTB.Text != "" && !MainViewModel.CurrentData.PublisherList.Contains(FilePublisherTB.Text)) MainViewModel.CurrentData.PublisherList.Add(FilePublisherTB.Text);
             
-            MainViewModel.CurrentData.Update_ActiveFiles();
+            MainViewModel.FilterHandler.Update_ActiveFiles();
             this.Close();
         }
 
@@ -114,6 +114,7 @@ namespace COMPASS
         private void DeleteFileBtn_Click(object sender, RoutedEventArgs e)
         {
             MainViewModel.CurrentData.DeleteFile(MainViewModel.CurrentData.EditedFile);
+            MainViewModel.FilterHandler.RemoveFile(MainViewModel.CurrentData.EditedFile);
             Close();
         }
 
