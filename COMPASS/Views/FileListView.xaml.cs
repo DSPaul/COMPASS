@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMPASS.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,11 @@ namespace COMPASS.Views
         public FileListView()
         {
             InitializeComponent();
+        }
+
+        public void HandleDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ((FileBaseViewModel)DataContext).OpenSelectedFile();
         }
     }
 }

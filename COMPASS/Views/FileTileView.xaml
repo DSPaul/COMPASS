@@ -4,9 +4,75 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:COMPASS.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local1="clr-namespace:COMPASS"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            
+        <Grid.Resources>
+            <local1:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+        </Grid.Resources>
+       
+        <!--#region TileView-->
+        <ListBox x:Name="FileView" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
+                       ItemsSource="{Binding ActiveFiles}" Background="{x:Null}" BorderBrush="{x:Null}"
+                      ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="RenderTransform">
+                                <Setter.Value>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
+                                    </TransformGroup>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileView}"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border CornerRadius="15" Margin="10">
+                        <Border.Background>
+                            <SolidColorBrush Color="Gray" Opacity="0.5"/>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="15" Direction="300"/>
+                        </Border.Effect>
+                        <Grid VerticalAlignment="Top">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Image  Grid.Row="0" Width="150"
+                                        Source="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}}"/>
+                            <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" MaxWidth="150"
+                                        Text="{Binding Title}" Foreground="White" HorizontalAlignment="Center" TextAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <!--#endregion-->
     </Grid>
 </UserControl>
