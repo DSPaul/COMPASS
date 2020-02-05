@@ -8,5 +8,9 @@ namespace COMPASS.ViewModels
 {
     public class FileMixViewModel : FileBaseViewModel
     {
+        public FileMixViewModel()
+        {
+
+        }
     }
 }
