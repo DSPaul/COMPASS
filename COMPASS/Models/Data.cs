@@ -20,10 +20,6 @@ namespace COMPASS
 
             LoadFiles();
             LoadTags();
-
-            TagFilteredFiles = new ObservableCollection<MyFile>(AllFiles);
-            SearchFilteredFiles = new ObservableCollection<MyFile>(AllFiles);
-            ActiveFiles = new ObservableCollection<MyFile>(AllFiles);
         }
 
         private String _Folder;
@@ -40,7 +36,6 @@ namespace COMPASS
         //Tag Lists
         public ObservableCollection<Tag> AllTags = new ObservableCollection<Tag>();
         public ObservableCollection<Tag> RootTags = new ObservableCollection<Tag>();
-        public ObservableCollection<Tag> ActiveTags = new ObservableCollection<Tag>();
 
         public Tag EditedTag;
         #endregion
@@ -48,9 +43,6 @@ namespace COMPASS
         #region File Data
         //File Lists
         public ObservableCollection<MyFile> AllFiles = new ObservableCollection<MyFile>();
-        public ObservableCollection<MyFile> TagFilteredFiles;
-        public ObservableCollection<MyFile> SearchFilteredFiles;
-        public ObservableCollection<MyFile> ActiveFiles { get; set; }
 
         public MyFile EditedFile;
         #endregion
@@ -131,55 +123,27 @@ namespace COMPASS
 
         #endregion 
 
-        #region File Functions
-        //Reset all Filtered File Lists to include all Files
-        public void Rebuild_FileData()
-        {
-            TagFilteredFiles.Clear();
-            SearchFilteredFiles.Clear();
-            foreach (MyFile f in AllFiles)
-            {
-                SearchFilteredFiles.Add(f);
-                TagFilteredFiles.Add(f);
-            }
-            Update_ActiveFiles();
-        }
-
-        //Construct ActiveFiles by taking the intersection of Tagfilered and Searchfiltered files
-        public void Update_ActiveFiles()
-        {
-            ActiveFiles.Clear();
-            foreach (var p in TagFilteredFiles.Intersect(SearchFilteredFiles))
-                ActiveFiles.Add(p);
-        }
-
         public void DeleteFile(MyFile Todelete)
         {
             //Delete file from all lists
             AllFiles.Remove(Todelete);
-            TagFilteredFiles.Remove(Todelete);
-            SearchFilteredFiles.Remove(Todelete);
-            
-            Update_ActiveFiles();
 
             //Delete Coverart
             File.Delete(Todelete.CoverArt);
         }
-        #endregion
 
-        #region Tag Functions
-        public void Deactivate_Tag(Tag ToDeactivate)
+        public void DeleteTag(Tag todel)
         {
-            ActiveTags.Remove(ToDeactivate);
-            //foreach (Tag t in ActiveTags) if (t == ToDeactivate) ActiveTags.Remove(t);
-            TagFilteredFiles.Clear();
-            foreach (MyFile f in AllFiles)
+            //Recursive loop to delete all childeren
+            if (todel.Items.Count > 0)
             {
-                if (ActiveTags.All(i => f.Tags.Contains(i)))
-                    TagFilteredFiles.Add(f);
+                DeleteTag(todel.Items[0]);
+                DeleteTag(todel);
             }
-            Update_ActiveFiles();
+            AllTags.Remove(todel);
+            //remove from parent items list
+            if (todel.ParentID == -1) RootTags.Remove(todel);
+            else todel.GetParent().Items.Remove(todel);
         }
-        #endregion
     }
 }
