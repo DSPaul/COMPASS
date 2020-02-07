@@ -94,8 +94,7 @@
                     <DataTemplate>
                         <Button BorderBrush="{x:Null}" Foreground="{x:Null}" 
                                  Command="{Binding Path=DataContext.EditFileCommmand,
-                                RelativeSource={RelativeSource 
-                                FindAncestor,
+                                RelativeSource={RelativeSource FindAncestor,
                                 AncestorType={x:Type UserControl}}}">
                             <Button.Background>
                                 <SolidColorBrush Color="Black" Opacity="0"/>

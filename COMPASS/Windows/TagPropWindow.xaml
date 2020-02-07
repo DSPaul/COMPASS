@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMPASS"
+        xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
@@ -12,6 +13,11 @@
         Foreground="White" Background="#FF383838" MouseDown="MainGrid_MouseDown" SizeToContent="WidthAndHeight"
         MinHeight="200" MinWidth="200" MaxHeight="600">
     <Grid Name="MainGrid" Focusable="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
         <Grid.Resources>
             <ControlTemplate x:Key="Btn" TargetType="Button">
                 <Border Background="{TemplateBinding Background}" CornerRadius="5" Margin="3">
@@ -32,9 +38,10 @@
                 <Setter Property="TextWrapping" Value="Wrap"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
+            <Converters:BooltoVisibilityConverter x:Key ="BooltoVisibilityConverter"/>
         </Grid.Resources>
-        <Grid  x:Name="TagCreationMain">
-             <Grid.RowDefinitions>
+        <Grid  x:Name="TagCreationMain" Grid.Column ="0">
+            <Grid.RowDefinitions>
                 <RowDefinition Height =" 10"/>
                 <RowDefinition Height =" auto"/>
                 <RowDefinition Height =" auto"/>
@@ -47,39 +54,40 @@
             <Label Content="Tag Name:" Grid.Row="1"/>
             <Border Margin="10,0" Grid.Row="2" Background="#FF575757" CornerRadius="10">
                 <TextBox x:Name="TagNameTextBlock" BorderBrush="{x:Null}"
-                         Text="{Binding Content}" Background="{x:Null}" Foreground="White" Margin="10,0"/>
+                         Text="{Binding TempTag.Content}" Background="{x:Null}" Foreground="White" Margin="10,0"/>
             </Border>
             <StackPanel Grid.Row="3" Orientation="Horizontal">
                 <Label Content="Color:"/>
-                <Button x:Name="ShowColorSelection" Click="ShowColorSelection_Click">
-                    <Button.Background>
-                        <SolidColorBrush Color="{Binding SelectedColor, ElementName=ColorSelector}"/>
-                    </Button.Background>
-                    <Button.Template>
+                <ToggleButton x:Name="ShowColorSelection" IsChecked="{Binding ShowColorSelection, Mode=TwoWay}">
+                    <ToggleButton.Background>
+                        <SolidColorBrush Color="{Binding TempTag.BackgroundColor}"/>
+                    </ToggleButton.Background>
+                    <ToggleButton.Template>
                         <ControlTemplate>
-                            <Border Background="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" 
+                            <Border Background="{Binding Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}" 
                                     Width="60" Height="15" CornerRadius="8"/>
                         </ControlTemplate>
-                    </Button.Template>
-                </Button>
+                    </ToggleButton.Template>
+                </ToggleButton>
             </StackPanel>
             <StackPanel Grid.Row="4" Orientation="Horizontal">
                 <Label Content="Parent:"/>
                 <Border CornerRadius="8" Margin="0,5" x:Name="ShowParentSelectionBorder">
                     <Border.Background>
-                        <SolidColorBrush Color="{Binding BackgroundColor}"/>
+                        <SolidColorBrush Color="{Binding ParentTempTag.BackgroundColor}"/>
                     </Border.Background>
-                    <Button x:Name="ShowParentSelectionBtn" Click="ShowParentSelection_Click"
-                                        FontSize="13" Foreground="White" Content="{Binding Content, TargetNullValue='None', FallbackValue='None'}">
-                        <Button.Template>
+                    <ToggleButton x:Name="ShowParentSelectionBtn" IsChecked="{Binding ShowParentSelection, Mode=TwoWay}"
+                                        FontSize="13" Foreground="White" 
+                                  Content="{Binding ParentTempTag.Content, TargetNullValue='None', FallbackValue='None'}">
+                        <ToggleButton.Template>
                             <ControlTemplate>
-                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" 
+                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}" 
                                            VerticalAlignment="Center" Margin="5,0"/>
                             </ControlTemplate>
-                        </Button.Template>
-                    </Button>
+                        </ToggleButton.Template>
+                    </ToggleButton>
                 </Border>
-                <Button x:Name="ClearParent" Click="ClearParent_Click"
+                <Button x:Name="ClearParent" Command="{Binding ClearParentCommand}"
                         Background="{x:Null}" BorderBrush="{x:Null}" Width="40" VerticalAlignment="Center">
                     <materialDesign:PackIcon Kind="WindowClose"/>
                 </Button>
@@ -89,13 +97,13 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button Background="Green" x:Name="OKBtn" Click="OKBtn_Click">
+                <Button Background="Green" x:Name="OKBtn" Command="{Binding OKCommand}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Check"/>
                         <TextBlock Text="OK"/>
                     </StackPanel>
                 </Button>
-                <Button Grid.Column="1" Name="CancelBtn" Click="CancelBtn_Click" Background="Red">
+                <Button Grid.Column="1" Name="CancelBtn" Command ="{Binding CancelCommand}" Background="Red">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="WindowClose"/>
                         <TextBlock Text="Cancel"/>
@@ -103,15 +111,15 @@
                 </Button>
             </Grid>
         </Grid>
-        <ScrollViewer x:Name="ParentSelection" Visibility="Collapsed" PreviewMouseWheel="ParentSelection_PreviewMouseWheel">
+        <ScrollViewer x:Name="ParentSelection" PreviewMouseWheel="ParentSelection_PreviewMouseWheel" Grid.Column="1"
+                      Visibility="{Binding ShowParentSelection, Converter={StaticResource BooltoVisibilityConverter}}">
             <StackPanel>
-                <TreeView x:Name="ParentSelectionTree" BorderBrush="{x:Null}"
-                                    ItemsSource="{Binding}"
-                                    Background="{x:Null}" SelectedItemChanged="ShowParentSelection_Click"
-                                    HorizontalAlignment="Left">
+                <TreeView x:Name="ParentSelectionTree" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentData.RootTags}"
+                                    Background="{x:Null}" HorizontalAlignment="Left" SelectedItemChanged="TagTree_SelectedItemChanged">
                     <TreeView.Resources>
                         <Style TargetType="{x:Type TreeViewItem}">
                             <Setter Property="IsExpanded" Value="True"/>
+                            <Setter Property="IsSelected" Value="{Binding Check, Mode=TwoWay}"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="true">
                                     <Setter Property="BorderBrush" Value="Black"/>
@@ -130,7 +138,7 @@
                         </HierarchicalDataTemplate>
                     </TreeView.ItemTemplate>
                 </TreeView>
-                <Button Click="ShowParentSelection_Click" Margin="5" Background="Red">
+                <Button Margin="5" Background="Red" Command="{Binding CancelParentSelectionCommand}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="WindowClose"/>
                         <TextBlock Text="Cancel"/>
@@ -138,10 +146,10 @@
                 </Button>
             </StackPanel>
         </ScrollViewer>
-        <StackPanel x:Name="ColorSelection" Visibility="Collapsed">
-            <xctk:ColorCanvas Grid.Column="1" Background="{x:Null}" BorderBrush="{x:Null}"
+        <StackPanel x:Name="ColorSelection" Grid.Column="2" Visibility="{Binding ShowColorSelection, Converter= {StaticResource BooltoVisibilityConverter}}">
+            <xctk:ColorCanvas Grid.Column="1" Background="{x:Null}" BorderBrush="{x:Null}" SelectedColor="{Binding TempTag.BackgroundColor, Mode=TwoWay}"
                               x:Name="ColorSelector" Foreground="{x:Null}" UsingAlphaChannel="False"/>
-            <Button Click="ShowColorSelection_Click" Margin="5" Background="Green">
+            <Button Margin="5" Background="Green" Command="{Binding CloseColorSelectionCommand}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Check"/>
                     <TextBlock Text="Select Color"/>

@@ -42,7 +42,6 @@ namespace COMPASS
             set { SetProperty(ref rootTags, value); }
         }
 
-        public Tag EditedTag;
         #endregion
 
         #region File Data
@@ -87,6 +86,8 @@ namespace COMPASS
                 {
                     Tag t = Currentlist[i];
                     AllTags.Add(t);
+                    t.Check = false;
+                    t.SetAllTags(AllTags);
                     if (t.Items.Count > 0)
                     {
                         foreach (Tag t2 in t.Items) Currentlist.Add(t2);

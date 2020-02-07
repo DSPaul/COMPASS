@@ -1,0 +1,149 @@
+﻿<UserControl x:Class="COMPASS.Views.Tag_FilterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:Tools ="clr-namespace:COMPASS.Tools"
+             xmlns:local="clr-namespace:COMPASS"
+             xmlns:Views="clr-namespace:COMPASS.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="200">
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="{x:Type Button}" x:Key="SquareBtn">
+                <Setter Property="Background" Value="Gray"/>
+                <Setter Property="Foreground" Value="#FFF3F3F3"/>
+                <Setter Property="BorderBrush" Value="{x:Null}"/>
+                <Setter Property="Margin" Value="10,3"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border Background="{TemplateBinding Background}" BorderThickness="1" CornerRadius="7" HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon Height="30" Margin="0,0,10,0"
+                                            Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
+                                    <ContentPresenter VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="true">
+                        <Setter Property="Background" Value="#FF999999" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="{x:Type TabControl}">
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TabControl}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <Border>
+                                    <UniformGrid x:Name="HeaderPanel" IsItemsHost="True" 
+                                     Rows="1" />
+                                </Border>
+
+                                <Border x:Name="Border" Grid.Row="1" 
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}">
+                                    <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" />
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
+        </Grid.Resources>
+        
+        <TabControl Background="{x:Null}"
+                         BorderThickness="0">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="VerticalAlignment" Value="Bottom"/>
+                    <Setter Property="MaxWidth" Value="300"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border x:Name="TabBorder">
+                                    <StackPanel Orientation="Horizontal" Margin="5,2">
+                                        <materialDesign:PackIcon Height="25" Width="25" HorizontalAlignment="Right"
+                                                Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
+                                        <ContentPresenter 
+                                                VerticalAlignment="Center"
+                                                ContentSource="Header"
+                                                Margin="5,0,10,0"/>
+                                    </StackPanel>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="TabBorder" Property="Background" Value="{x:Null}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="False">
+                                        <Setter TargetName="TabBorder" Property="Background">
+                                            <Setter.Value>
+                                                <SolidColorBrush Color="#FFA09C9C"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple">
+                <Border>
+                    <TreeView x:Name="TagTree" Grid.Column="1" Grid.Row="1" BorderBrush="{x:Null}"
+                                    ItemsSource="{Binding MVM.CurrentData.RootTags}" Grid.ColumnSpan="2" Background="{x:Null}"
+                                    SelectedItemChanged="TagTree_SelectedItemChanged" 
+                                    MouseRightButtonDown="TagTree_MouseRightButtonDown">
+                        <TreeView.Resources>
+                            <Style TargetType="{x:Type TreeViewItem}">
+                                <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
+                                <Setter Property="IsSelected" Value="{Binding Check, Mode=TwoWay}"/>
+                                <Setter Property="Opacity" Value="1"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="true">
+                                        <Setter Property="Opacity" Value="1"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TreeView.Resources>
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate DataType="{x:Type local:Tag}" ItemsSource="{Binding Items}">
+                                <Border CornerRadius="10" Margin="0,3">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{Binding BackgroundColor}"/>
+                                    </Border.Background>
+                                    <TextBlock Text="{Binding Content}" Margin="7,0" Foreground="White" FontSize="15">
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Assign to Files"/>
+                                                <MenuItem Header="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
+                                                <MenuItem Header="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
+                                    </TextBlock>
+                                </Border>
+                            </HierarchicalDataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                </Border>
+            </TabItem>
+            <TabItem Header="Filter" Tools:AP.IconKind="Filter"/>
+        </TabControl>
+        <ContentPresenter Content="{Binding ElementName=TagTree, Path=SelectedItem}" />
+    </Grid>
+</UserControl>

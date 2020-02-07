@@ -17,11 +17,11 @@ namespace COMPASS
 
         }
 
-        public Tag(MainViewModel vm)
+        public Tag(ObservableCollection<Tag> alltags)
         {
-            this.vm = vm; 
+            _allTags = alltags; 
             int tempID = 0;
-            while (vm.CurrentData.AllTags.Any(t => t.ID == tempID))
+            while (_allTags.Any(t => t.ID == tempID))
             {
                 tempID++;
             }
@@ -29,14 +29,14 @@ namespace COMPASS
             this.Items = new ObservableCollection<Tag>();
         }
 
-        private MainViewModel vm;
+        private ObservableCollection<Tag> _allTags;
 
         private ObservableCollection<Tag> _Items;
 
         private int _ID;
         private string _Content;
         private int _ParentID = -1;
-        private bool _Check;
+        private bool _Check = false;
         private bool _Expanded;
         private Color _BackgroundColor;
 
@@ -82,7 +82,12 @@ namespace COMPASS
         public Tag GetParent()
         {
             if (ParentID == -1) return null;
-            return vm.CurrentData.AllTags.First(par => par.ID == ParentID);
+            return _allTags.First(par => par.ID == ParentID);
+        }
+
+        public void SetAllTags(ObservableCollection<Tag> at)
+        {
+            _allTags = at;
         }
 
         #region Equal and Copy Fucntions
@@ -95,6 +100,7 @@ namespace COMPASS
             Expanded = t.Expanded;
             BackgroundColor = t.BackgroundColor;
             Items = new ObservableCollection<Tag>(t.Items);
+            _allTags = t._allTags;
         }
 
         public override bool Equals(object obj)

@@ -118,6 +118,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\ObservableObject.cs" />
+    <Compile Include="Tools\BindingProxy.cs" />
+    <Compile Include="Tools\Converters\BooltoVisibilityConverter.cs" />
     <Compile Include="Tools\Enums.cs" />
     <Compile Include="Tools\FilterHandler.cs" />
     <Compile Include="Tools\Converters\StringtoVisibiltyConverter.cs" />
@@ -137,6 +139,7 @@
     <Compile Include="Models\MyFile.cs" />
     <Compile Include="Models\Tag.cs" />
     <Compile Include="ViewModels\TagEditViewModel.cs" />
+    <Compile Include="ViewModels\TagsFiltersViewModel.cs" />
     <Compile Include="Views\FileListView.xaml.cs">
       <DependentUpon>FileListView.xaml</DependentUpon>
     </Compile>
@@ -145,6 +148,9 @@
     </Compile>
     <Compile Include="Views\FileTileView.xaml.cs">
       <DependentUpon>FileTileView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tag_FilterView.xaml.cs">
+      <DependentUpon>Tag_FilterView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\TagPropWindow.xaml.cs">
       <DependentUpon>TagPropWindow.xaml</DependentUpon>
@@ -171,6 +177,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\FileTileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Tag_FilterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

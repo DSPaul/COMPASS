@@ -9,9 +9,11 @@ namespace COMPASS.ViewModels
 {
     public class BaseEditViewModel : BaseViewModel
     {
-        public BaseEditViewModel()
+        public BaseEditViewModel(MainViewModel vm)
         {
+            MVM = vm;
             CancelCommand = new BasicCommand(Cancel);
+            OKCommand = new BasicCommand(OKBtn);
         }
 
         //MainViewModel
@@ -29,6 +31,9 @@ namespace COMPASS.ViewModels
         {
             CloseAction();
         }
+
+        public BasicCommand OKCommand { get; private set; }
+        public virtual void OKBtn() { }
 
     }
 }
