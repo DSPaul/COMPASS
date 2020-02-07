@@ -23,8 +23,8 @@ namespace COMPASS
         }
 
         private String _Folder;
-        private String _BooksFilepath;
-        private String _TagsFilepath;
+        readonly String _BooksFilepath;
+        readonly String _TagsFilepath;
 
         public String Folder
         {
@@ -35,7 +35,12 @@ namespace COMPASS
         #region Tag Data
         //Tag Lists
         public ObservableCollection<Tag> AllTags = new ObservableCollection<Tag>();
-        public ObservableCollection<Tag> RootTags = new ObservableCollection<Tag>();
+        private ObservableCollection<Tag> rootTags;
+        public ObservableCollection<Tag> RootTags
+        {
+            get { return rootTags; }
+            set { SetProperty(ref rootTags, value); }
+        }
 
         public Tag EditedTag;
         #endregion
@@ -44,13 +49,23 @@ namespace COMPASS
         //File Lists
         public ObservableCollection<MyFile> AllFiles = new ObservableCollection<MyFile>();
 
-        public MyFile EditedFile;
         #endregion
 
         #region Metadata Data
         //Metadata Lists
-        public ObservableCollection<String> AuthorList = new ObservableCollection<string>();
-        public ObservableCollection<String> PublisherList = new ObservableCollection<string>();
+        private ObservableCollection<String> authorList;
+        public ObservableCollection<String> AuthorList
+        {
+            get { return authorList; }
+            set { SetProperty(ref authorList, value); }
+        }
+
+        private ObservableCollection<String> publisherList;
+        public ObservableCollection<String> PublisherList
+        {
+            get { return publisherList; }
+            set { SetProperty(ref publisherList, value); }
+        }
         #endregion
 
         #region Load Data From File
@@ -92,11 +107,18 @@ namespace COMPASS
                 }
 
                 //build metadatalists
+                AuthorList = new ObservableCollection<string>();
+                PublisherList = new ObservableCollection<string>();
+
                 foreach (MyFile f in AllFiles)
                 {
                     if (f.Author != "" && !AuthorList.Contains(f.Author)) AuthorList.Add(f.Author);
-                    if (f.Publisher != "" && !PublisherList.Contains(f.Publisher)) PublisherList.Add(f.Publisher);
+                    if (f.Publisher != "" && !PublisherList.Contains(f.Publisher)) PublisherList.Add(f.Publisher);                   
                 }
+
+                //Sort them
+                AuthorList = new ObservableCollection<string>(AuthorList.OrderBy(n => n));
+                PublisherList = new ObservableCollection<string>(PublisherList.OrderBy(n => n));
             }
         }
         #endregion

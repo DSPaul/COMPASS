@@ -39,15 +39,11 @@ namespace COMPASS.Tools
             { 
                 SetProperty(ref searchterm, value);
 
-                SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
-
-                if(searchterm != "")
+                if (searchterm != "")
                 {
-                    foreach (MyFile f in data.AllFiles)
-                    {
-                        if (f.Title.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) < 0) SearchFilteredFiles.Remove(f);
-                    }
+                    SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles.Where(f => f.Title.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0));
                 }
+                else SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
                 Update_ActiveFiles();
             }
         }       
@@ -59,8 +55,8 @@ namespace COMPASS.Tools
 
             TagFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
             SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
-            ActiveFiles = new ObservableCollection<MyFile>(data.AllFiles);
-            ActiveTags = new ObservableCollection<Tag>();
+            ActiveTags.Clear();
+            Update_ActiveFiles();
         }
 
         public void AddTagFilter(Tag t)

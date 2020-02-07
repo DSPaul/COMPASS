@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class FileMixViewModel : FileBaseViewModel
+    public class TagEditViewModel : BaseViewModel
     {
-        public FileMixViewModel(MainViewModel vm = null) : base(vm)
-        {
 
-        }
     }
 }

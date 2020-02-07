@@ -121,8 +121,11 @@
     <Compile Include="Tools\Enums.cs" />
     <Compile Include="Tools\FilterHandler.cs" />
     <Compile Include="Tools\Converters\StringtoVisibiltyConverter.cs" />
+    <Compile Include="ViewModels\BaseEditViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\Commands\BasicCommand.cs" />
     <Compile Include="ViewModels\Commands\SimpleCommand.cs" />
+    <Compile Include="ViewModels\FileEditViewModel.cs" />
     <Compile Include="ViewModels\FileListViewModel.cs" />
     <Compile Include="ViewModels\FileBaseViewModel.cs" />
     <Compile Include="ViewModels\FileMixViewModel.cs" />
@@ -133,6 +136,7 @@
     <Compile Include="Models\Data.cs" />
     <Compile Include="Models\MyFile.cs" />
     <Compile Include="Models\Tag.cs" />
+    <Compile Include="ViewModels\TagEditViewModel.cs" />
     <Compile Include="Views\FileListView.xaml.cs">
       <DependentUpon>FileListView.xaml</DependentUpon>
     </Compile>
