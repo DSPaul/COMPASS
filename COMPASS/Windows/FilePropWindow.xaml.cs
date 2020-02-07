@@ -27,7 +27,7 @@ namespace COMPASS
     public partial class FilePropWindow : Window
     {
         //Constructor
-        public FilePropWindow(BaseEditViewModel vm)
+        public FilePropWindow(FileEditViewModel vm)
         {
             DataContext = vm;
             InitializeComponent();

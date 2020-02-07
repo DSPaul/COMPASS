@@ -11,9 +11,8 @@ namespace COMPASS.ViewModels
 {
     public class FileEditViewModel : BaseEditViewModel
     {
-        public FileEditViewModel(MainViewModel vm)
+        public FileEditViewModel(MainViewModel vm) : base(vm)
         {
-            MVM = vm;
             EditedFile = MVM.CurrentFileViewModel.SelectedFile;
             TempFile = new MyFile();
             tempFile.Copy(EditedFile);
@@ -26,7 +25,6 @@ namespace COMPASS.ViewModels
 
             //Commands
             BrowsePathCommand = new BasicCommand(BrowsePath);
-            OKCommand = new BasicCommand(OKBtn);
             TagCheckCommand = new BasicCommand(Update_Taglist);
             DeleteFileCommand = new BasicCommand(DeleteFile);
             BrowseURLCommand = new BasicCommand(BrowseURL);
@@ -60,8 +58,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public BasicCommand OKCommand { get; private set; }
-        private void OKBtn()
+        public override void OKBtn()
         {
             Update_Taglist();
             ////Uncheck all Tags

@@ -54,7 +54,7 @@ namespace COMPASS.ViewModels
         public void EditFile(object a = null)
         {
             MVM.CurrentEditViewModel = new FileEditViewModel(MVM);
-            FilePropWindow fpw = new FilePropWindow(MVM.CurrentEditViewModel);
+            FilePropWindow fpw = new FilePropWindow((FileEditViewModel)MVM.CurrentEditViewModel);
             fpw.Show();
         }
 

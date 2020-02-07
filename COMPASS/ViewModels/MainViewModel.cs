@@ -16,6 +16,7 @@ namespace COMPASS.ViewModels
             currentData = new Data(FolderName);
             filterHandler = new FilterHandler(currentData);
             CurrentFileViewModel = new FileListViewModel(this);
+            TFViewModel = new TagsFiltersViewModel(this);
 
             //Commands
             ChangeFileViewCommand = new SimpleCommand(ChangeFileView);
@@ -54,6 +55,14 @@ namespace COMPASS.ViewModels
         {
             get { return currentEditViewModel; }
             set { SetProperty(ref currentEditViewModel, value); }
+        }
+
+        //Tags and Filters ViewModel
+        private TagsFiltersViewModel tfViewModel;
+        public TagsFiltersViewModel TFViewModel
+        {
+            get { return tfViewModel; }
+            set { SetProperty(ref tfViewModel, value); }
         }
 
         #endregion

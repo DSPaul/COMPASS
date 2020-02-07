@@ -30,7 +30,7 @@ namespace COMPASS.Tools
         public ObservableCollection<MyFile> SearchFilteredFiles { get; set; }
         public ObservableCollection<MyFile> ActiveFiles { get; set; }
 
-        //Properties
+        #region Properties
         private string searchterm;
         public string SearchTerm
         {
@@ -46,9 +46,12 @@ namespace COMPASS.Tools
                 else SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
                 Update_ActiveFiles();
             }
-        }       
+        }
 
-        //Funcitons
+        #endregion
+
+        #region Functions
+
         public void ClearFilters()
         {
             SearchTerm = "";
@@ -74,6 +77,7 @@ namespace COMPASS.Tools
 
         public void RemoveTagFilter(Tag t)
         {
+            t.Check = false;
             ActiveTags.Remove(t);
             TagFilteredFiles.Clear();
             foreach (MyFile f in data.AllFiles)
@@ -109,5 +113,7 @@ namespace COMPASS.Tools
             SearchFilteredFiles.Remove(f);
             Update_ActiveFiles();
         }
+
+        #endregion
     }
 }

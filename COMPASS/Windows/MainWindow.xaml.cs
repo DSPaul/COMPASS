@@ -27,8 +27,6 @@ namespace COMPASS
             //set Itemsources for databinding
             DataContext = MainViewModel;
 
-            //ViewsGrid.DataContext = MainViewModel.CurrentData;
-            TagTree.DataContext = MainViewModel.CurrentData.RootTags;
             ParentSelectionTree.DataContext = MainViewModel.CurrentData.RootTags;
             ParentSelectionPanel.DataContext = ParentSelectionTree.SelectedItem as Tag;
 
@@ -41,9 +39,7 @@ namespace COMPASS
         public void RefreshTreeViews()
         {
             //redraws treeviews
-            TagTree.DataContext = null;
             ParentSelectionTree.DataContext = null;
-            TagTree.DataContext = MainViewModel.CurrentData.RootTags;
             ParentSelectionTree.DataContext = MainViewModel.CurrentData.RootTags;
         }
 
@@ -83,7 +79,7 @@ namespace COMPASS
         //removes tag from filter list when clicked
         private void ActiveTag_Click(object sender, RoutedEventArgs e)
         {
-            MainViewModel.FilterHandler.RemoveTagFilter((Tag)CurrentTagList.SelectedItem);
+            if((Tag)CurrentTagList.SelectedItem != null) MainViewModel.FilterHandler.RemoveTagFilter((Tag)CurrentTagList.SelectedItem);
         }
 
         //import files
@@ -130,7 +126,7 @@ namespace COMPASS
 
         private void CreateTagBtn_Click(object sender, RoutedEventArgs e)
         {
-            Tag newtag = new Tag(MainViewModel) { Content = TagNameTextBlock.Text, BackgroundColor = (Color)ColorSelector.SelectedColor};
+            Tag newtag = new Tag(MainViewModel.CurrentData.AllTags) { Content = TagNameTextBlock.Text, BackgroundColor = (Color)ColorSelector.SelectedColor};
             if (ParentSelectionTree.SelectedItem != null)
             {
                 Tag Parent = ParentSelectionTree.SelectedItem as Tag;
@@ -252,73 +248,6 @@ namespace COMPASS
                 }
         #endregion
 
-        #region Context Menu Tags
-        private void TagTree_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            TreeViewItem treeViewItem = VisualUpwardSearch(e.OriginalSource as DependencyObject);
-
-            if (treeViewItem != null)
-            {
-                treeViewItem.Focus();
-                e.Handled = true;
-            }
-        }
-        static TreeViewItem VisualUpwardSearch(DependencyObject source)
-        {
-            while (source != null && !(source is TreeViewItem))
-                source = VisualTreeHelper.GetParent(source);
-
-            return source as TreeViewItem;
-        }
-
-        private void EditTag(object sender, RoutedEventArgs e)
-        {
-            MainViewModel.CurrentData.EditedTag = TagTree.SelectedItem as Tag;
-            ClearTreeViewSelection(TagTree);
-            if (MainViewModel.CurrentData.EditedTag != null)
-            {
-                TagPropWindow tpw = new TagPropWindow(MainViewModel);
-                tpw.Closed += EditTagClosedHandler;
-                tpw.Show();
-            }
-        }
-
-        public void EditTagClosedHandler(object sender, EventArgs e)
-        {
-            RefreshTreeViews();
-        }
-
-        //Delete Tag, event funtion and recursive help function
-        private void DeleteTag(object sender, RoutedEventArgs e)
-        {
-            var todel = TagTree.SelectedItem as Tag;
-            MainViewModel.CurrentData.DeleteTag(todel);
-            //Go over all files and refresh tags list
-            foreach (var f in MainViewModel.CurrentData.AllFiles)
-            {
-                int i = 0;
-                //iterate over all the tags in the file
-                while (i<f.Tags.Count)
-                {
-                    Tag currenttag = f.Tags[i];
-                    //try to find the tag in alltags, if found, increase i to go to next tag
-                    try
-                    {
-                        MainViewModel.CurrentData.AllTags.First(tag => tag.ID == currenttag.ID);
-                        i++;
-                    }
-                    //if the tag in not found in alltags, delete it
-                    catch (System.InvalidOperationException)
-                    {
-                        f.Tags.Remove(currenttag);
-                    }                  
-                }
-            }
-            MainViewModel.Reset();
-            ClearTreeViewSelection(TagTree);
-        }
-        #endregion
-
         private void ClearParent_Click(object sender, RoutedEventArgs e)
         {
             ClearTreeViewSelection(ParentSelectionTree);
@@ -330,14 +259,6 @@ namespace COMPASS
             ScrollViewer scv = (ScrollViewer)sender;
             scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
             e.Handled = true;
-        }
-
-        private void TagTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            Tag selectedtag = (Tag)e.NewValue;
-            if (selectedtag == null) return;
-            MainViewModel.FilterHandler.AddTagFilter(selectedtag);
-            ClearTreeViewSelection(TagTree);
         }
     }
 
