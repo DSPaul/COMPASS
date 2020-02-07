@@ -16,7 +16,7 @@ namespace COMPASS
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainViewModel MainViewModel = new MainViewModel("DnD");
+        public MainViewModel MainViewModel = new MainViewModel("PathFinder");
 
         public MainWindow()
         {
@@ -26,9 +26,6 @@ namespace COMPASS
 
             //set Itemsources for databinding
             DataContext = MainViewModel;
-            //temp
-            MainViewModel.CurrentFileViewModel = new FileListViewModel() { ActiveFiles = MainViewModel.FilterHandler.ActiveFiles};
-            //
 
             //ViewsGrid.DataContext = MainViewModel.CurrentData;
             TagTree.DataContext = MainViewModel.CurrentData.RootTags;
@@ -123,14 +120,6 @@ namespace COMPASS
         private void Searchbox_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             Searchbox.Text = "";
-        }
-
-        //EDIT File
-        private void Edit_File_Btn(object sender, RoutedEventArgs e)
-        {
-            //MainViewModel.CurrentData.EditedFile = FileListView.SelectedItem as MyFile;
-            //FilePropWindow fpw = new FilePropWindow(MainViewModel);
-            //fpw.Show();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

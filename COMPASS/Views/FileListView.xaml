@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <DataGrid x:Name="FileView"
@@ -69,7 +70,7 @@
                                                         Foreground="Black" FontSize="14" VerticalAlignment="Center">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <WrapPanel Width="{Binding ActualWidth}"/>
+                                    <WrapPanel/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
@@ -91,7 +92,14 @@
             <DataGridTemplateColumn Width="auto">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <Button Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" >
+                        <Button BorderBrush="{x:Null}" Foreground="{x:Null}" 
+                                 Command="{Binding Path=DataContext.EditFileCommmand,
+                                RelativeSource={RelativeSource 
+                                FindAncestor,
+                                AncestorType={x:Type UserControl}}}">
+                            <Button.Background>
+                                <SolidColorBrush Color="Black" Opacity="0"/>
+                            </Button.Background>
                             <materialDesign:PackIcon Kind="Pencil"/>
                         </Button>
                     </DataTemplate>

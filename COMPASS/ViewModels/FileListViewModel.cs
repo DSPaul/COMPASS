@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMPASS.ViewModels.Commands;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace COMPASS.ViewModels
 {
     public class FileListViewModel : FileBaseViewModel
     {
-        public FileListViewModel()
+        public FileListViewModel( MainViewModel vm) : base(vm)
         {
-          
+
         }
     }
 }

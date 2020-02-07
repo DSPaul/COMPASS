@@ -15,11 +15,14 @@ namespace COMPASS.ViewModels
         {
             currentData = new Data(FolderName);
             filterHandler = new FilterHandler(currentData);
+            CurrentFileViewModel = new FileListViewModel(this);
 
             //Commands
             ChangeFileViewCommand = new SimpleCommand(ChangeFileView);
-            ResetCommand = new SimpleCommand(Reset);
+            ResetCommand = new BasicCommand(Reset);
         }
+
+        #region Properties
 
         //Data 
         private Data currentData;
@@ -37,13 +40,25 @@ namespace COMPASS.ViewModels
             private set { SetProperty(ref filterHandler, value); }
         }
 
-        //File View Model
+        //File ViewModel
         private FileBaseViewModel currentFileViewModel;
         public FileBaseViewModel CurrentFileViewModel
         {
             get { return currentFileViewModel; }
             set { SetProperty(ref currentFileViewModel, value); }
-        }        
+        }
+
+        //Edit ViewModel
+        private BaseEditViewModel currentEditViewModel;
+        public BaseEditViewModel CurrentEditViewModel
+        {
+            get { return currentEditViewModel; }
+            set { SetProperty(ref currentEditViewModel, value); }
+        }
+
+        #endregion
+
+        #region Functions and Commands
 
         //Change Fileview
         public SimpleCommand ChangeFileViewCommand { get; private set; }
@@ -53,21 +68,20 @@ namespace COMPASS.ViewModels
             switch (v)
             {
                 case FileView.ListView:
-                    CurrentFileViewModel = new FileListViewModel();
+                    CurrentFileViewModel = new FileListViewModel(this);
                     break;
                 case FileView.MixView:
-                    CurrentFileViewModel = new FileMixViewModel();
+                    CurrentFileViewModel = new FileMixViewModel(this);
                     break;
                 case FileView.TileView:
-                    CurrentFileViewModel = new FileTileViewModel();
+                    CurrentFileViewModel = new FileTileViewModel(this);
                     break;
             }
-            CurrentFileViewModel.ActiveFiles = FilterHandler.ActiveFiles;
         }
 
         //Reset
-        public SimpleCommand ResetCommand { get; private set; }
-        public void Reset(object a = null)
+        public BasicCommand ResetCommand { get; private set; }
+        public void Reset()
         {
             //ClearTreeViewSelection(TagTree);
             FilterHandler.ClearFilters();
@@ -91,6 +105,8 @@ namespace COMPASS.ViewModels
                     }
                 }
         }
+        #endregion
+
         #endregion
     }
 }

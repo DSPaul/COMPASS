@@ -8,6 +8,9 @@ namespace COMPASS.ViewModels
 {
     public class FileTileViewModel : FileBaseViewModel
     {
+        public FileTileViewModel(MainViewModel vm = null) : base(vm)
+        {
 
+        }
     }
 }
