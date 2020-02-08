@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMPASS"
         xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
+        xmlns:Models="clr-namespace:COMPASS.Models"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
@@ -114,12 +115,12 @@
         <ScrollViewer x:Name="ParentSelection" PreviewMouseWheel="ParentSelection_PreviewMouseWheel" Grid.Column="1"
                       Visibility="{Binding ShowParentSelection, Converter={StaticResource BooltoVisibilityConverter}}">
             <StackPanel>
-                <TreeView x:Name="ParentSelectionTree" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentData.RootTags}"
+                <TreeView x:Name="ParentSelectionTree" BorderBrush="{x:Null}" ItemsSource="{Binding TreeViewSource}"
                                     Background="{x:Null}" HorizontalAlignment="Left" SelectedItemChanged="TagTree_SelectedItemChanged">
                     <TreeView.Resources>
                         <Style TargetType="{x:Type TreeViewItem}">
                             <Setter Property="IsExpanded" Value="True"/>
-                            <Setter Property="IsSelected" Value="{Binding Check, Mode=TwoWay}"/>
+                            <Setter Property="IsSelected" Value="{Binding Selected, Mode=TwoWay}"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="true">
                                     <Setter Property="BorderBrush" Value="Black"/>
@@ -128,12 +129,12 @@
                         </Style>
                     </TreeView.Resources>
                     <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate DataType="{x:Type local:Tag}" ItemsSource="{Binding Items}">
+                        <HierarchicalDataTemplate DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
                             <Border CornerRadius="10" Margin="0,3">
                                 <Border.Background>
-                                    <SolidColorBrush Color="{Binding BackgroundColor}"/>
+                                    <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
                                 </Border.Background>
-                                <TextBlock Text="{Binding Content}" Margin="10,2" Foreground="White" FontSize="13"/>
+                                <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="White" FontSize="13"/>
                             </Border>
                         </HierarchicalDataTemplate>
                     </TreeView.ItemTemplate>

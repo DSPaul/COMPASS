@@ -86,7 +86,6 @@ namespace COMPASS
                 {
                     Tag t = Currentlist[i];
                     AllTags.Add(t);
-                    t.Check = false;
                     t.SetAllTags(AllTags);
                     if (t.Items.Count > 0)
                     {

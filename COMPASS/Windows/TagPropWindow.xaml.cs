@@ -29,7 +29,7 @@ namespace COMPASS
 
         public void TagTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            Tag selectedtag = (Tag)e.NewValue;
+            Tag selectedtag = ((TreeViewNode)e.NewValue).Tag;
             if (selectedtag == null) return;
             ((TagEditViewModel)DataContext).SelectedTag = selectedtag;
         }
