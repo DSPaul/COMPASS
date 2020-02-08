@@ -124,7 +124,7 @@
                         </TreeView.Resources>
                         <TreeView.ItemTemplate>
                             <HierarchicalDataTemplate DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                                <Border CornerRadius="10" Margin="0,3">
+                                <Border CornerRadius="5" Margin="0,3">
                                     <Border.Background>
                                         <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
                                     </Border.Background>

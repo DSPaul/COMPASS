@@ -73,7 +73,7 @@
             </StackPanel>
             <StackPanel Grid.Row="4" Orientation="Horizontal">
                 <Label Content="Parent:"/>
-                <Border CornerRadius="8" Margin="0,5" x:Name="ShowParentSelectionBorder">
+                <Border CornerRadius="5" Margin="0,5" x:Name="ShowParentSelectionBorder">
                     <Border.Background>
                         <SolidColorBrush Color="{Binding ParentTempTag.BackgroundColor}"/>
                     </Border.Background>
