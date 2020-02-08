@@ -364,6 +364,26 @@
         </Setter>
     </Style>
     <!--#endregion-->
+    
+    <!--#region Tags Style-->
+    <DataTemplate x:Key="TagTemplate">
+        <Border CornerRadius="5" Margin="2,3">
+            <Border.Background>
+                <SolidColorBrush Color="{Binding BackgroundColor}"/>
+            </Border.Background>
+            <TextBlock Text="{Binding Content}" Margin="7,2" Foreground="White" FontSize="15"/>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="TagInTreeTemplate">
+        <Border CornerRadius="5" Margin="0,3">
+            <Border.Background>
+                <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
+            </Border.Background>
+            <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/>
+        </Border>
+    </DataTemplate>
+    <!--#endregion-->
 
     <Style TargetType="materialDesign:PackIcon">
         <Setter Property="VerticalAlignment" Value="Center"/>

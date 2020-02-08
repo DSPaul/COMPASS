@@ -21,7 +21,9 @@ namespace COMPASS.ViewModels
             //Apply right checkboxes in Alltags
             foreach (TreeViewNode t in AllTreeViewNodes)
             {
+                t.Expanded = false;
                 t.Selected = TempFile.Tags.Contains(t.Tag) ? true : false;
+                if (t.Children.Any(node => TempFile.Tags.Contains(node.Tag))) t.Expanded = true;
             }
 
             //Commands

@@ -104,22 +104,13 @@
             </Grid.ColumnDefinitions>
             <TextBlock Text="Tags:"/>
             <ItemsControl ItemsSource="{Binding TempFile.Tags}" Background="{x:Null}" BorderBrush="{x:Null}" 
-                      Foreground="Black" FontSize="15" Grid.Column="1" VerticalAlignment="Center">
+                      Foreground="Black" FontSize="15" Grid.Column="1" VerticalAlignment="Center" 
+                          ItemTemplate="{StaticResource TagTemplate}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal" MaxWidth="{Binding ActualWidth}"/>
+                        <WrapPanel Orientation="Horizontal"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border CornerRadius="10" Margin="3" VerticalAlignment="Center">
-                            <Border.Background>
-                                <SolidColorBrush Color="{Binding BackgroundColor}"/>
-                            </Border.Background>
-                            <TextBlock Text="{Binding Content}" Margin ="10,2" Foreground="White"/>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
             </ItemsControl>
             <ToggleButton Name="ManageTagsBtn" Visibility="Collapsed"
                  Background="Gray" Grid.Column="2">
@@ -176,7 +167,7 @@
                   Grid.RowSpan="16" Visibility="Visible" Margin="-15,0,10,0">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}">
-                    <Setter Property="IsExpanded" Value="False"/>
+                    <Setter Property="IsExpanded" Value="{Binding Expanded}"/>
                     <Setter Property="Focusable" Value="False"/>
                 </Style>
             </TreeView.Resources>
