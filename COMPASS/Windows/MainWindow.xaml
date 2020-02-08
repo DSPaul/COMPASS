@@ -10,13 +10,16 @@
         xmlns:views="clr-namespace:COMPASS.Views"
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
         xmlns:Tools ="clr-namespace:COMPASS.Tools"
-    mc:Ignorable="d"
+        xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
+        mc:Ignorable="d"
         Title="COMPASS" Height="540" Width="960" FontSize="20"
         Foreground="White" Icon="/Icons/compass_new.ico"
         Closing="Window_Closing" WindowState="Maximized" WindowStyle="None" 
         WindowStartupLocation="CenterScreen" MouseDown="Window_MouseDown">
     <Window.Resources>
-        <Tools:StringtoVisibiltyConverter x:Key="StringtoVisibilityConverter"/>
+        <Converters:StringtoVisibiltyConverter x:Key="StringtoVisibilityConverter"/>
+        <Converters:BooltoVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <Converters:WindowStatetoBoolConverter x:Key="IsMaximizedConverter"/>
         <DataTemplate DataType="{x:Type viewmodels:FileListViewModel}">
             <views:FileListView DataContext="{Binding}"/>
         </DataTemplate>
@@ -42,7 +45,36 @@
             <GradientStop Color="#FF15202B" Offset="1"/>
         </LinearGradientBrush>-->
     </Window.Background>
-    <Grid Name="MainGrid" Focusable="True">
+    <Window.Style>
+        <Style>
+            <Setter Property="WindowChrome.WindowChrome">
+                <Setter.Value>
+                    <WindowChrome CaptionHeight="0"
+                CornerRadius="2"
+                GlassFrameThickness="0"
+                NonClientFrameEdges="None"
+                ResizeBorderThickness="3"/> 
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Style>
+    <Border BorderThickness="0">
+        <Border.Style>
+            <Style TargetType="{x:Type Border}">
+                <Style.Triggers>
+                    <!-- Add to avoid border disappearing when window is maximised -->
+                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                 Value="Maximized">
+                        <Setter Property="Margin" Value="7"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                 Value="Normal">
+                        <Setter Property="Margin" Value="0"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        <Grid Name="MainGrid" Focusable="True">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width ="0"/>
             <ColumnDefinition Width ="auto"/>
@@ -55,7 +87,6 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
         <!--#region Top Bar-->
         <Grid Grid.ColumnSpan="7" x:Name="WindowsBar" 
               MouseDown="WindowsBar_MouseDown" MouseMove="OnMouseMove">
@@ -76,7 +107,7 @@
             </StackPanel>
 
             <Border Grid.Column="1" CornerRadius="15" MinWidth="200"
-                        Background="#FFB7B7B7" OpacityMask="#FF222222" Margin="10,5">
+                        Background="#FFB7B7B7" OpacityMask="#FF222222" Margin="30,5">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width ="*"/>
@@ -87,15 +118,9 @@
                                Visibility="{Binding FilterHandler.SearchTerm, Converter={StaticResource StringtoVisibilityConverter}}"/>
                     <TextBox Grid.Column="0" x:Name="Searchbox" Margin="10,0,0,0"
                              Text="{Binding FilterHandler.SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
-                             Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF636363" 
-                             
-                                    />
-                    <Button Grid.Column="1"
-                                x:Name="Searchbtn" 
-                                Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Right" 
-                                Margin="0,0,10,0">
-                        <materialDesign:PackIcon Kind="Search"/>
-                    </Button>
+                             Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF636363" />
+                    <materialDesign:PackIcon Kind="Search" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Right" 
+                                Margin="0,0,10,0" Grid.Column="1"/>
                 </Grid>
             </Border>
 
@@ -126,22 +151,48 @@
                             </Trigger>
                         </Style.Triggers>
                     </Style>
+                    <Style TargetType="{x:Type ToggleButton}" >
+                        <Setter Property="Width" Value="40"/>
+                        <Setter Property="Padding" Value="7"/>
+                        <Setter Property="Background">
+                            <Setter.Value>
+                                <SolidColorBrush Color="Black" Opacity="0"/>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                    <Border Background="{TemplateBinding Background}" HorizontalAlignment="Stretch">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" Value="Gray" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
                 </StackPanel.Resources>
 
                 <Button x:Name="MinimizeButton"
-                        KeyboardNavigation.IsTabStop="False"
                         Click="MinimizeWindow" BorderBrush="{x:Null}">
                     <materialDesign:PackIcon Kind="WindowMinimize" VerticalAlignment="Bottom"/>
                 </Button>
 
-                <Button x:Name="MaximizeButton"
-                        KeyboardNavigation.IsTabStop="False"
-                        Click="MaximizeClick" BorderBrush="{x:Null}" >
+                <ToggleButton x:Name="MaximizeButton" IsChecked="{Binding WindowState, RelativeSource={RelativeSource FindAncestor,
+                        AncestorType=Window}, Converter={StaticResource IsMaximizedConverter}, Mode=TwoWay}"
+                        BorderBrush="{x:Null}" >
                     <Grid>
-                        <materialDesign:PackIcon Kind="WindowMaximize"  x:Name="Maximizeimage" Visibility="Collapsed" Width="15"/>
-                        <materialDesign:PackIcon Kind="WindowRestore"  x:Name="NotMaximizeimage"  Width="15"/>
+                        <materialDesign:PackIcon Kind="WindowMaximize"  x:Name="Maximizeimage" Width="15"
+                          Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
+                            AncestorType={x:Type ToggleButton}}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
+                        <materialDesign:PackIcon Kind="WindowRestore"  x:Name="NotMaximizeimage" Width="15"
+                            Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
+                            AncestorType={x:Type ToggleButton}}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}"/>
                     </Grid>
-                </Button>
+                </ToggleButton>
 
                 <Button x:Name="CloseButton"
                         Click="CloseButton_Click" BorderBrush="{x:Null}">
@@ -427,6 +478,10 @@
                         Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.TileView}">
                     <materialDesign:PackIcon Kind="ViewModule" Width="45" Height="45"/>
                 </Button>
+                <Rectangle Width="3" Fill="Gray" Margin="3,8"/>
+                <Button Background="{x:Null}" BorderBrush="{x:Null}">
+                    <materialDesign:PackIcon Kind="Tune" Width="35" Height="35"/>
+                </Button>
             </StackPanel>
             <!--#endregion-->
 
@@ -467,6 +522,8 @@
         </Grid>
         <!--#endregion-->
     </Grid>
+    </Border>
+    
 </Window>
     
  

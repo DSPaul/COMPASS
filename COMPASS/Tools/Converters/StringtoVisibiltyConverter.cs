@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
-namespace COMPASS.Tools
+namespace COMPASS.Tools.Converters
 {
     public class StringtoVisibiltyConverter : IValueConverter
     {
