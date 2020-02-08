@@ -36,8 +36,6 @@ namespace COMPASS
         private int _ID;
         private string _Content;
         private int _ParentID = -1;
-        private bool _Check = false;
-        private bool _Expanded;
         private Color _BackgroundColor;
 
         #region Getter and Setters
@@ -62,16 +60,7 @@ namespace COMPASS
             get { return _ParentID; }
             set { SetProperty(ref _ParentID, value); }
         }
-        public bool Check
-        {
-            get { return _Check; }
-            set { SetProperty(ref _Check, value); }
-        }
-        public bool Expanded
-        {
-            get { return _Expanded; }
-            set { SetProperty(ref _Expanded, value); }
-        }
+
         public Color BackgroundColor
         {
             get { return _BackgroundColor; }
@@ -96,8 +85,6 @@ namespace COMPASS
             ID = t.ID;
             Content = t.Content;
             ParentID = t.ParentID;
-            Check = t.Check;
-            Expanded = t.Expanded;
             BackgroundColor = t.BackgroundColor;
             Items = new ObservableCollection<Tag>(t.Items);
             _allTags = t._allTags;
@@ -106,9 +93,7 @@ namespace COMPASS
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            Tag objAsTag = obj as Tag;
-            if (objAsTag == null) return false;
-            else return Equals(objAsTag);
+            return !(obj is Tag objAsTag) ? false : Equals(objAsTag);
         }
 
         public bool Equals(Tag other)

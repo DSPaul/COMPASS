@@ -77,7 +77,6 @@ namespace COMPASS.Tools
 
         public void RemoveTagFilter(Tag t)
         {
-            t.Check = false;
             ActiveTags.Remove(t);
             TagFilteredFiles.Clear();
             foreach (MyFile f in data.AllFiles)

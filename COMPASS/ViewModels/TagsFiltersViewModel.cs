@@ -1,6 +1,8 @@
-﻿using COMPASS.ViewModels.Commands;
+﻿using COMPASS.Models;
+using COMPASS.ViewModels.Commands;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +14,8 @@ namespace COMPASS.ViewModels
         public TagsFiltersViewModel(MainViewModel vm)
         {
             MVM = vm;
+            TreeViewSource = CreateTreeViewSourceFromCollection(MVM.CurrentData.RootTags);
+            AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
             EditTagCommand = new BasicCommand(EditTag);
             DeleteTagCommand = new BasicCommand(DeleteTag);
         }
@@ -26,23 +30,39 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref mainViewModel, value); }
         }
 
+        //TreeViewSource
+        private ObservableCollection<TreeViewNode> treeviewsource;
+        public ObservableCollection<TreeViewNode> TreeViewSource
+        {
+            get { return treeviewsource; }
+            set { SetProperty(ref treeviewsource, value); }
+        }
+
+        //AllTreeViewNodes For iterating
+        private ObservableCollection<TreeViewNode> alltreeViewNodes;
+        public ObservableCollection<TreeViewNode> AllTreeViewNodes
+        {
+            get { return alltreeViewNodes; }
+            set { SetProperty(ref alltreeViewNodes, value); }
+        }
+
         //selected Tag in Treeview
         public Tag SelectedTag
         {
             get
             {
-                foreach(Tag t in MVM.CurrentData.AllTags)
+                foreach(TreeViewNode t in AllTreeViewNodes)
                 {
-                    if (t.Check) return t;
+                    if (t.Selected) return t.Tag;
                 }
                 return null;
             }
             set 
             {
-                foreach (Tag t in MVM.CurrentData.AllTags)
+                foreach (TreeViewNode t in AllTreeViewNodes)
                 {
-                    if (t == value) t.Check = true;
-                    else t.Check = false;
+                    if (t.Tag == value) t.Selected = true;
+                    else t.Selected = false;
                 }
             }
         }
@@ -91,8 +111,11 @@ namespace COMPASS.ViewModels
                     }
                 }
             }
+            TreeViewSource = CreateTreeViewSourceFromCollection(MVM.CurrentData.RootTags);
+            AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
             MVM.Reset();
-            SelectedTag = null;
+
+            //SelectedTag = null;
         }
 
         #endregion

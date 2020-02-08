@@ -1,4 +1,5 @@
-﻿using COMPASS.ViewModels.Commands;
+﻿using COMPASS.Models;
+using COMPASS.ViewModels.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,21 +67,21 @@ namespace COMPASS.ViewModels
         {
             get
             {
-                foreach (Tag t in MVM.CurrentData.AllTags)
+                foreach (TreeViewNode t in AllTreeViewNodes)
                 {
-                    if (t.Check) return t;
+                    if (t.Selected) return t.Tag;
                 }
                 return null;
             }
             set
             {
-                foreach (Tag t in MVM.CurrentData.AllTags)
+                foreach (TreeViewNode t in AllTreeViewNodes)
                 {
-                    if (t == value)
+                    if (t.Tag == value)
                     {
-                        t.Check = true;
+                        t.Selected = true;
                         //Set Parent tag when different tag is selected
-                        ParentTempTag = t;
+                        ParentTempTag = t.Tag;
                         ShowParentSelection = false;
                     }
                 }
@@ -94,25 +95,25 @@ namespace COMPASS.ViewModels
         {
             foreach (var f in MVM.CurrentData.AllFiles.Where(f => f.Tags.Contains(TempTag)))
             {
-                foreach (Tag t in MVM.CurrentData.AllTags)
+                foreach (TreeViewNode t in AllTreeViewNodes)
                 {
-                    if (f.Tags.Contains(t))
+                    if (f.Tags.Contains(t.Tag))
                     {
-                        t.Check = true;
+                        t.Selected = true;
                     }
                     else
                     {
-                        t.Check = false;
+                        t.Selected = false;
                     }
                 }
                 f.Tags.Clear();
-                foreach (Tag t in MVM.CurrentData.AllTags)
+                foreach (TreeViewNode t in AllTreeViewNodes)
                 {
-                    if (t.Check)
+                    if (t.Selected)
                     {
-                        f.Tags.Add(t);
+                        f.Tags.Add(t.Tag);
                     }
-                    t.Check = false;
+                    t.Selected = false;
                 }
             }
         }
@@ -120,7 +121,9 @@ namespace COMPASS.ViewModels
         public BasicCommand ClearParentCommand { get; private set; }
         private void ClearParent()
         {
-            ParentTempTag.ID = -1;
+            TempTag.ParentID = -1;
+            SelectedTag = null;
+            RaisePropertyChanged("ParentTempTag");
         }
 
         public override void OKBtn()
@@ -149,6 +152,7 @@ namespace COMPASS.ViewModels
             //Apply changes 
             EditedTag.Copy(tempTag);
             UpdateAllFiles();
+            MVM.Reset();
             CloseAction();
         }
 

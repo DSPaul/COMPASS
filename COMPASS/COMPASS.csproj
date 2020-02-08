@@ -118,6 +118,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\ObservableObject.cs" />
+    <Compile Include="Models\TreeViewNode.cs" />
     <Compile Include="Tools\BindingProxy.cs" />
     <Compile Include="Tools\Converters\BooltoVisibilityConverter.cs" />
     <Compile Include="Tools\Enums.cs" />
@@ -226,6 +227,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="App.config" />
     <None Include="COMPASS_TemporaryKey.pfx" />
     <None Include="packages.config" />

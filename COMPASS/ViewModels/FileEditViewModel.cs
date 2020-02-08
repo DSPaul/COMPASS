@@ -1,4 +1,5 @@
-﻿using COMPASS.ViewModels.Commands;
+﻿using COMPASS.Models;
+using COMPASS.ViewModels.Commands;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,9 @@ namespace COMPASS.ViewModels
             tempFile.Copy(EditedFile);
 
             //Apply right checkboxes in Alltags
-            foreach (Tag t in MVM.CurrentData.AllTags)
+            foreach (TreeViewNode t in AllTreeViewNodes)
             {
-                t.Check = TempFile.Tags.Contains(t) ? true : false;
+                t.Selected = TempFile.Tags.Contains(t.Tag) ? true : false;
             }
 
             //Commands
@@ -32,7 +33,7 @@ namespace COMPASS.ViewModels
 
         #region Properties
 
-        private MyFile EditedFile;
+        readonly MyFile EditedFile;
 
         private MyFile tempFile;
         public MyFile TempFile
@@ -61,8 +62,6 @@ namespace COMPASS.ViewModels
         public override void OKBtn()
         {
             Update_Taglist();
-            ////Uncheck all Tags
-            foreach (Tag t in MVM.CurrentData.AllTags) t.Check = false;
             ////Copy changes into Database
             EditedFile.Copy(TempFile);
             ////Add new Author and Publishers to lists
@@ -77,11 +76,11 @@ namespace COMPASS.ViewModels
         public void Update_Taglist()
         {
             TempFile.Tags.Clear();
-            foreach (Tag t in MVM.CurrentData.AllTags)
+            foreach (TreeViewNode t in AllTreeViewNodes)
             {
-                if (t.Check)
+                if (t.Selected)
                 {
-                    TempFile.Tags.Add(t);
+                    TempFile.Tags.Add(t.Tag);
                 }
             }
         }

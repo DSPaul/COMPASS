@@ -7,6 +7,7 @@
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
              xmlns:local="clr-namespace:COMPASS"
              xmlns:Views="clr-namespace:COMPASS.Views"
+             xmlns:Models="clr-namespace:COMPASS.Models"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="200">
     <Grid>
@@ -64,7 +65,7 @@
             </Style>
             <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
         </Grid.Resources>
-        
+
         <TabControl Background="{x:Null}"
                          BorderThickness="0">
             <TabControl.Resources>
@@ -106,13 +107,13 @@
             <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple">
                 <Border>
                     <TreeView x:Name="TagTree" Grid.Column="1" Grid.Row="1" BorderBrush="{x:Null}"
-                                    ItemsSource="{Binding MVM.CurrentData.RootTags}" Grid.ColumnSpan="2" Background="{x:Null}"
+                                    ItemsSource="{Binding TreeViewSource}" Grid.ColumnSpan="2" Background="{x:Null}"
                                     SelectedItemChanged="TagTree_SelectedItemChanged" 
                                     MouseRightButtonDown="TagTree_MouseRightButtonDown">
                         <TreeView.Resources>
                             <Style TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
-                                <Setter Property="IsSelected" Value="{Binding Check, Mode=TwoWay}"/>
+                                <Setter Property="IsSelected" Value="{Binding Selected, Mode=TwoWay}"/>
                                 <Setter Property="Opacity" Value="1"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="true">
@@ -122,12 +123,12 @@
                             </Style>
                         </TreeView.Resources>
                         <TreeView.ItemTemplate>
-                            <HierarchicalDataTemplate DataType="{x:Type local:Tag}" ItemsSource="{Binding Items}">
+                            <HierarchicalDataTemplate DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
                                 <Border CornerRadius="10" Margin="0,3">
                                     <Border.Background>
-                                        <SolidColorBrush Color="{Binding BackgroundColor}"/>
+                                        <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
                                     </Border.Background>
-                                    <TextBlock Text="{Binding Content}" Margin="7,0" Foreground="White" FontSize="15">
+                                    <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem Header="Assign to Files"/>
@@ -144,6 +145,5 @@
             </TabItem>
             <TabItem Header="Filter" Tools:AP.IconKind="Filter"/>
         </TabControl>
-        <ContentPresenter Content="{Binding ElementName=TagTree, Path=SelectedItem}" />
     </Grid>
 </UserControl>

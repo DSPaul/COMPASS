@@ -36,33 +36,6 @@ namespace COMPASS
         // is true if we hold left mouse button on windows tilebar
         private bool DragWindow = false;
 
-        public void RefreshTreeViews()
-        {
-            //redraws treeviews
-            ParentSelectionTree.DataContext = null;
-            ParentSelectionTree.DataContext = MainViewModel.CurrentData.RootTags;
-        }
-
-        #region Clears Selection From TreeView
-        public static void ClearTreeViewSelection(TreeView tv)
-        {
-            if (tv != null)
-                ClearTreeViewItemsControlSelection(tv.Items, tv.ItemContainerGenerator);
-        }
-        private static void ClearTreeViewItemsControlSelection(ItemCollection ic, ItemContainerGenerator icg)
-        {
-            if ((ic != null) && (icg != null))
-                for (int i = 0; i < ic.Count; i++)
-                {
-                    if (icg.ContainerFromIndex(i) is TreeViewItem tvi)
-                    {
-                        ClearTreeViewItemsControlSelection(tvi.Items, tvi.ItemContainerGenerator);
-                        tvi.IsSelected = false;
-                    }
-                }
-        }
-        #endregion
-
         //Opens tag creation popup
         private void Addtag_Click(object sender, RoutedEventArgs e)
         {
@@ -113,11 +86,6 @@ namespace COMPASS
             }
         }
 
-        private void Searchbox_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            Searchbox.Text = "";
-        }
-
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             MainViewModel.CurrentData.SaveFilesToFile();
@@ -130,7 +98,6 @@ namespace COMPASS
             if (ParentSelectionTree.SelectedItem != null)
             {
                 Tag Parent = ParentSelectionTree.SelectedItem as Tag;
-                Parent.Expanded = true;
                 Parent.Items.Add(newtag);
                 newtag.ParentID = Parent.ID;
             }
@@ -140,6 +107,8 @@ namespace COMPASS
             }
 
             MainViewModel.CurrentData.AllTags.Add(newtag);
+            MainViewModel.TFViewModel.TreeViewSource = MainViewModel.TFViewModel.CreateTreeViewSourceFromCollection(MainViewModel.CurrentData.RootTags);
+            MainViewModel.TFViewModel.AllTreeViewNodes = MainViewModel.TFViewModel.CreateAllTreeViewNodes(MainViewModel.TFViewModel.TreeViewSource);
             TagNameTextBlock.Text = "";
             TagCreation.Visibility = Visibility.Collapsed;
         }
@@ -250,7 +219,7 @@ namespace COMPASS
 
         private void ClearParent_Click(object sender, RoutedEventArgs e)
         {
-            ClearTreeViewSelection(ParentSelectionTree);
+            //ClearTreeViewSelection(ParentSelectionTree);
         }
 
         //makes scrolwheel work in parent selection tree

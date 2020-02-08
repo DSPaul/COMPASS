@@ -1,4 +1,5 @@
-﻿using COMPASS.ViewModels;
+﻿using COMPASS.Models;
+using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,10 +28,10 @@ namespace COMPASS.Views
         }
         public void TagTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            Tag selectedtag = (Tag)e.NewValue;
-            if (selectedtag == null) return;
-            ((TagsFiltersViewModel)DataContext).MVM.FilterHandler.AddTagFilter(selectedtag);
-            ((TagsFiltersViewModel)DataContext).SelectedTag = null;
+            TreeViewNode selectednode = (TreeViewNode)e.NewValue;
+            if (selectednode == null) return;
+            ((TagsFiltersViewModel)DataContext).MVM.FilterHandler.AddTagFilter(selectednode.Tag);
+            selectednode.Selected = false;
         }
 
         private void TagTree_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -39,7 +40,7 @@ namespace COMPASS.Views
 
             if (treeViewItem != null)
             {
-                ((TagsFiltersViewModel)DataContext).Context = treeViewItem.Header as Tag;
+                ((TagsFiltersViewModel)DataContext).Context = ((TreeViewNode)treeViewItem.Header).Tag as Tag;
                 e.Handled = true;
             }
         }
