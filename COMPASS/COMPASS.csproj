@@ -121,6 +121,7 @@
     <Compile Include="Models\TreeViewNode.cs" />
     <Compile Include="Tools\BindingProxy.cs" />
     <Compile Include="Tools\Converters\BooltoVisibilityConverter.cs" />
+    <Compile Include="Tools\Converters\BooltoWindowStateConverter.cs" />
     <Compile Include="Tools\Enums.cs" />
     <Compile Include="Tools\FilterHandler.cs" />
     <Compile Include="Tools\Converters\StringtoVisibiltyConverter.cs" />

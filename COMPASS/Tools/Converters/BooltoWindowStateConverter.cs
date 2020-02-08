@@ -9,20 +9,18 @@ using System.Windows.Data;
 
 namespace COMPASS.Tools.Converters
 {
-    public class BooltoVisibilityConverter : IValueConverter
+    class WindowStatetoBoolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            //Parameter is is true if inverted
-            bool Invert = System.Convert.ToBoolean(parameter);
-            bool temp = Invert ? !(bool)value : (bool)value;
-            if (temp) return Visibility.Visible;
-            else return Visibility.Collapsed;
+            if ((WindowState)value == WindowState.Maximized) return true;
+            else return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            if ((bool)value) return WindowState.Maximized;
+            else return WindowState.Normal;
         }
     }
 }

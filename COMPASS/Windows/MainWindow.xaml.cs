@@ -16,8 +16,6 @@ namespace COMPASS
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainViewModel MainViewModel = new MainViewModel("PathFinder");
-
         public MainWindow()
         {
             InitializeComponent();
@@ -25,13 +23,16 @@ namespace COMPASS
             MagickNET.SetGhostscriptDirectory(@"C:\Users\pauld\Documents\COMPASS\COMPASS\Libraries");
 
             //set Itemsources for databinding
+            MainViewModel = new MainViewModel("PathFinder");
             DataContext = MainViewModel;
 
             ParentSelectionTree.DataContext = MainViewModel.CurrentData.RootTags;
             ParentSelectionPanel.DataContext = ParentSelectionTree.SelectedItem as Tag;
 
-            this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+            MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
         }
+
+        public MainViewModel MainViewModel; 
 
         // is true if we hold left mouse button on windows tilebar
         private bool DragWindow = false;
@@ -148,40 +149,19 @@ namespace COMPASS
                 {
                     App.Current.MainWindow.WindowState = WindowState.Minimized;
                 }
-                private void MaximizeClick(object sender, RoutedEventArgs e)
-                {
-                    if (App.Current.MainWindow.WindowState == WindowState.Maximized)
-                    {
-                        App.Current.MainWindow.WindowState = WindowState.Normal;
-                        Maximizeimage.Visibility = Visibility.Visible;
-                        NotMaximizeimage.Visibility = Visibility.Collapsed;
-
-                    }
-                    else
-                    {
-                        App.Current.MainWindow.WindowState = WindowState.Maximized;
-                        Maximizeimage.Visibility = Visibility.Collapsed;
-                        NotMaximizeimage.Visibility = Visibility.Visible;
-                    }
-                }
                 private void WindowsBar_MouseDown(object sender, MouseButtonEventArgs e)
                 {
                     if (e.ClickCount == 2)
                     {
-                        MaximizeClick(sender, e);
+                        WindowState = WindowState.Maximized;
                         DragWindow = false;
                     }
 
                     else
                     {
-                        App.Current.MainWindow.DragMove();
-                        if (App.Current.MainWindow.WindowState == WindowState.Maximized)
-                        {
-                            DragWindow = WindowState == WindowState.Maximized;
-                        }
+                        DragMove();
+                        if (WindowState == WindowState.Maximized) DragWindow = WindowState == WindowState.Maximized;
                     }
-
-
                 }
                 private void OnMouseMove(object sender, MouseEventArgs e)
                 {
@@ -189,15 +169,12 @@ namespace COMPASS
                     {
                         DragWindow = false;
 
-                        var point = PointToScreen(e.MouseDevice.GetPosition(this));
+                        var point = e.MouseDevice.GetPosition(this);
 
                         Left = point.X - (RestoreBounds.Width * 0.5);
-                        Top = point.Y;
+                        Top = point.Y - 20;
 
                         WindowState = WindowState.Normal;
-
-                        Maximizeimage.Visibility = Visibility.Visible;
-                        NotMaximizeimage.Visibility = Visibility.Collapsed;
 
                         try
                         {
@@ -206,7 +183,7 @@ namespace COMPASS
 
                         catch (InvalidOperationException)
                         {
-                            MaximizeClick(sender, e);
+                            WindowState = WindowState.Maximized;
                         }
                    
                     }
