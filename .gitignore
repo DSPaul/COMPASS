@@ -82,3 +82,4 @@ ClientBin/
 *.pfx
 *.publishsettings
 *.pdn
+.editorconfig
