@@ -151,6 +151,9 @@
     <Compile Include="Views\FileTileView.xaml.cs">
       <DependentUpon>FileTileView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TagEditView.xaml.cs">
+      <DependentUpon>TagEditView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Tag_FilterView.xaml.cs">
       <DependentUpon>Tag_FilterView.xaml</DependentUpon>
     </Compile>
@@ -179,6 +182,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\FileTileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TagEditView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

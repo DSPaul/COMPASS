@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ImageMagick;
 using System.Windows.Controls;
 using static COMPASS.Tools.Enums;
 
@@ -18,9 +19,12 @@ namespace COMPASS.ViewModels
             CurrentFileViewModel = new FileListViewModel(this);
             TFViewModel = new TagsFiltersViewModel(this);
 
+            MagickNET.SetGhostscriptDirectory(@"C:\Users\pauld\Documents\COMPASS\COMPASS\Libraries");
+
             //Commands
             ChangeFileViewCommand = new SimpleCommand(ChangeFileView);
             ResetCommand = new BasicCommand(Reset);
+            AddTagCommand = new BasicCommand(AddTag);
         }
 
         #region Properties
@@ -55,6 +59,14 @@ namespace COMPASS.ViewModels
         {
             get { return currentEditViewModel; }
             set { SetProperty(ref currentEditViewModel, value); }
+        }
+
+        //Tag Creation ViewModel
+        private BaseEditViewModel addTagViewModel;
+        public BaseEditViewModel AddTagViewModel
+        {
+            get { return addTagViewModel; }
+            set { SetProperty(ref addTagViewModel, value); }
         }
 
         //Tags and Filters ViewModel
@@ -92,8 +104,14 @@ namespace COMPASS.ViewModels
         public BasicCommand ResetCommand { get; private set; }
         public void Reset()
         {
-            //ClearTreeViewSelection(TagTree);
             FilterHandler.ClearFilters();
+            TFViewModel.RefreshTreeView();
+        }
+
+        public BasicCommand AddTagCommand { get; private set; }
+        public void AddTag()
+        {
+            AddTagViewModel = new TagEditViewModel(this, null);
         }
 
         #region Clears Selection From TreeView

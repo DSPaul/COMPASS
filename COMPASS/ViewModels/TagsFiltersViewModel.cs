@@ -118,6 +118,12 @@ namespace COMPASS.ViewModels
             //SelectedTag = null;
         }
 
+        public void RefreshTreeView()
+        {
+            TreeViewSource = CreateTreeViewSourceFromCollection(MVM.CurrentData.RootTags);
+            AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
+        }
+
         #endregion
     }
 }

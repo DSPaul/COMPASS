@@ -53,10 +53,7 @@ namespace COMPASS.ViewModels
         public Action CloseAction { get; set; }
 
         public BasicCommand CancelCommand { get; private set; }
-        public void Cancel()
-        {
-            CloseAction();
-        }
+        public virtual void Cancel(){}
 
         public BasicCommand OKCommand { get; private set; }
         public virtual void OKBtn() { }
