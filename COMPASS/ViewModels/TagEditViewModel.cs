@@ -13,8 +13,8 @@ namespace COMPASS.ViewModels
         public TagEditViewModel(MainViewModel vm, Tag ToEdit) : base(vm)
         {
             EditedTag = ToEdit;
-            TempTag = new Tag();
-            tempTag.Copy(EditedTag);
+            TempTag = new Tag(vm.CurrentData.AllTags);
+            if (ToEdit != null) TempTag.Copy(EditedTag);
 
             //Commands
             ClearParentCommand = new BasicCommand(ClearParent);
@@ -44,14 +44,17 @@ namespace COMPASS.ViewModels
                 RaisePropertyChanged();
             }
         }
-        #endregion
 
         //visibility of parenttree
         private bool showparentselection = false;
         public bool ShowParentSelection
         {
             get { return showparentselection; }
-            set { SetProperty(ref showparentselection, value); }
+            set 
+            {                
+                SetProperty(ref showparentselection, value);
+                RaisePropertyChanged("ShowInfoGrid");
+            }
         }
 
         //visibility of Color Selection
@@ -59,7 +62,18 @@ namespace COMPASS.ViewModels
         public bool ShowColorSelection
         {
             get { return showcolorselection; }
-            set { SetProperty(ref showcolorselection, value); }
+            set 
+            { 
+                SetProperty(ref showcolorselection, value);
+                RaisePropertyChanged("ShowInfoGrid");
+            }
+        }
+
+        //visibility of General Info Selection
+        public bool ShowInfoGrid
+        {
+            get { return !(ShowParentSelection || ShowColorSelection); }
+            set { }
         }
 
         //Selected Item for Treeview
@@ -75,6 +89,9 @@ namespace COMPASS.ViewModels
             }
             set
             {
+                //In case value = null
+                TempTag.ParentID = -1;
+                //in other case this will it will be overwritten
                 foreach (TreeViewNode t in AllTreeViewNodes)
                 {
                     if (t.Tag == value)
@@ -88,72 +105,45 @@ namespace COMPASS.ViewModels
             }
         }
 
+        #endregion
+
         #region Functions and Commands
 
         //Refreshes all the files to apply changes in Tag
-        private void UpdateAllFiles()
-        {
-            foreach (var f in MVM.CurrentData.AllFiles.Where(f => f.Tags.Contains(TempTag)))
-            {
-                foreach (TreeViewNode t in AllTreeViewNodes)
-                {
-                    if (f.Tags.Contains(t.Tag))
-                    {
-                        t.Selected = true;
-                    }
-                    else
-                    {
-                        t.Selected = false;
-                    }
-                }
-                f.Tags.Clear();
-                foreach (TreeViewNode t in AllTreeViewNodes)
-                {
-                    if (t.Selected)
-                    {
-                        f.Tags.Add(t.Tag);
-                    }
-                    t.Selected = false;
-                }
-            }
-        }
-
         public BasicCommand ClearParentCommand { get; private set; }
         private void ClearParent()
         {
-            TempTag.ParentID = -1;
+            //TempTag.ParentID = -1;
             SelectedTag = null;
             RaisePropertyChanged("ParentTempTag");
         }
 
         public override void OKBtn()
         {
+            bool NewTag = EditedTag == null;
+            if(NewTag)
+            {
+                EditedTag = new Tag(MVM.CurrentData.AllTags);
+            }
             //set Parent if changed
             if (EditedTag.ParentID != tempTag.ParentID)
             {
-                if (EditedTag.ParentID == -1)
-                {
-                    MVM.CurrentData.RootTags.Remove(EditedTag);
-                }
-                else
-                {
-                    EditedTag.GetParent().Items.Remove(tempTag);
-                }
+                if (EditedTag.ParentID == -1) MVM.CurrentData.RootTags.Remove(EditedTag);
+                else EditedTag.GetParent().Items.Remove(tempTag);
 
-                if (tempTag.ParentID == -1)
-                {
-                    MVM.CurrentData.RootTags.Add(EditedTag);
-                }
-                else
-                {
-                    tempTag.GetParent().Items.Add(EditedTag);
-                }
+                if (tempTag.ParentID == -1) MVM.CurrentData.RootTags.Add(EditedTag);
+                else tempTag.GetParent().Items.Add(EditedTag);
             }
             //Apply changes 
             EditedTag.Copy(tempTag);
-            UpdateAllFiles();
             MVM.Reset();
-            CloseAction();
+            if (!NewTag) CloseAction();
+            else MVM.CurrentData.AllTags.Add(EditedTag);
+        }
+
+        public override void Cancel()
+        {
+            if(EditedTag != null) CloseAction();
         }
 
         public BasicCommand CancelParentSelectionCommand { get; private set;}

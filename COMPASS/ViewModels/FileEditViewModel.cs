@@ -74,6 +74,11 @@ namespace COMPASS.ViewModels
             CloseAction();
         }
 
+        public override void Cancel()
+        {
+            CloseAction();
+        }
+
         public BasicCommand TagCheckCommand { get; private set; }
         public void Update_Taglist()
         {

@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.ComponentModel;
-using ImageMagick;
 using COMPASS.ViewModels;
 
 namespace COMPASS
@@ -20,29 +19,17 @@ namespace COMPASS
         {
             InitializeComponent();
 
-            MagickNET.SetGhostscriptDirectory(@"C:\Users\pauld\Documents\COMPASS\COMPASS\Libraries");
-
             //set Itemsources for databinding
-            MainViewModel = new MainViewModel("PathFinder");
+            MainViewModel = new MainViewModel("DnD");
             DataContext = MainViewModel;
-
-            ParentSelectionTree.DataContext = MainViewModel.CurrentData.RootTags;
-            ParentSelectionPanel.DataContext = ParentSelectionTree.SelectedItem as Tag;
 
             MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
         }
 
-        public MainViewModel MainViewModel; 
+        private MainViewModel MainViewModel;
 
         // is true if we hold left mouse button on windows tilebar
         private bool DragWindow = false;
-
-        //Opens tag creation popup
-        private void Addtag_Click(object sender, RoutedEventArgs e)
-        {
-            if (TagCreation.Visibility == Visibility.Collapsed) TagCreation.Visibility = Visibility.Visible;
-            else TagCreation.Visibility = Visibility.Collapsed;
-        }
 
         //Deselects when you click away
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -79,69 +66,10 @@ namespace COMPASS
             }         
         }
 
-        private void TagNameTextBlock_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.Key == Key.Return && TagCreation.Visibility == Visibility.Visible)
-            {
-                CreateTagBtn_Click(sender,e);
-            }
-        }
-
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             MainViewModel.CurrentData.SaveFilesToFile();
             MainViewModel.CurrentData.SaveTagsToFile();
-        }
-
-        private void CreateTagBtn_Click(object sender, RoutedEventArgs e)
-        {
-            Tag newtag = new Tag(MainViewModel.CurrentData.AllTags) { Content = TagNameTextBlock.Text, BackgroundColor = (Color)ColorSelector.SelectedColor};
-            if (ParentSelectionTree.SelectedItem != null)
-            {
-                Tag Parent = ParentSelectionTree.SelectedItem as Tag;
-                Parent.Items.Add(newtag);
-                newtag.ParentID = Parent.ID;
-            }
-            else
-            {
-                MainViewModel.CurrentData.RootTags.Add(newtag);
-            }
-
-            MainViewModel.CurrentData.AllTags.Add(newtag);
-            MainViewModel.TFViewModel.TreeViewSource = MainViewModel.TFViewModel.CreateTreeViewSourceFromCollection(MainViewModel.CurrentData.RootTags);
-            MainViewModel.TFViewModel.AllTreeViewNodes = MainViewModel.TFViewModel.CreateAllTreeViewNodes(MainViewModel.TFViewModel.TreeViewSource);
-            TagNameTextBlock.Text = "";
-            TagCreation.Visibility = Visibility.Collapsed;
-        }
-
-        private void ShowParentSelection_Click(object sender, RoutedEventArgs e)
-        {
-            if (ParentSelection.Visibility == Visibility.Collapsed && sender.GetType().Name == "Button")
-            {
-                ParentSelection.Visibility = Visibility.Visible;
-                TagCreationMain.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                ParentSelectionPanel.DataContext = null;
-                ParentSelectionPanel.DataContext = ParentSelectionTree.SelectedItem as Tag;
-                ParentSelection.Visibility = Visibility.Collapsed;
-                TagCreationMain.Visibility = Visibility.Visible;
-            }  
-        }
-
-        private void ShowColorSelection_Click(object sender, RoutedEventArgs e)
-        {
-            if (ColorSelection.Visibility == Visibility.Collapsed)
-            {
-                ColorSelection.Visibility = Visibility.Visible;
-                TagCreationMain.Visibility = Visibility.Collapsed;
-            }
-            else
-            {                
-                ColorSelection.Visibility = Visibility.Collapsed;
-                TagCreationMain.Visibility = Visibility.Visible;
-            }
         }
 
         #region Windows Tile Bar Buttons
@@ -194,18 +122,6 @@ namespace COMPASS
                 }
         #endregion
 
-        private void ClearParent_Click(object sender, RoutedEventArgs e)
-        {
-            //ClearTreeViewSelection(ParentSelectionTree);
-        }
-
-        //makes scrolwheel work in parent selection tree
-        private void ParentSelectionScroll_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            ScrollViewer scv = (ScrollViewer)sender;
-            scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
-            e.Handled = true;
-        }
     }
 
 }

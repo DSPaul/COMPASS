@@ -15,11 +15,14 @@ namespace COMPASS
         {
             Folder = FolderLocation;
 
+            AuthorList = new ObservableCollection<string>();
+            PublisherList = new ObservableCollection<string>();
+
             _BooksFilepath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Files.xml";
             _TagsFilepath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Tags.xml";
 
-            LoadFiles();
             LoadTags();
+            LoadFiles();
         }
 
         private String _Folder;
@@ -106,19 +109,25 @@ namespace COMPASS
                     AllFiles = serializer.Deserialize(Reader) as ObservableCollection<MyFile>;
                 }
 
-                //build metadatalists
-                AuthorList = new ObservableCollection<string>();
-                PublisherList = new ObservableCollection<string>();
-
                 foreach (MyFile f in AllFiles)
                 {
+                    //Populate Author and Publisher List
                     if (f.Author != "" && !AuthorList.Contains(f.Author)) AuthorList.Add(f.Author);
-                    if (f.Publisher != "" && !PublisherList.Contains(f.Publisher)) PublisherList.Add(f.Publisher);                   
-                }
+                    if (f.Publisher != "" && !PublisherList.Contains(f.Publisher)) PublisherList.Add(f.Publisher);
 
+                    //Replace Serialized Tags with Tags From Taglist
+                    int TagCount = f.Tags.Count;
+                    for (int i = 0; i < TagCount; i++)
+                    {
+                        Tag temp = f.Tags[0];
+                        f.Tags.Add(AllTags.First(t => t.ID == temp.ID));
+                        f.Tags.Remove(temp);
+                    }
+                }
                 //Sort them
                 AuthorList = new ObservableCollection<string>(AuthorList.OrderBy(n => n));
                 PublisherList = new ObservableCollection<string>(PublisherList.OrderBy(n => n));
+
             }
         }
         #endregion
