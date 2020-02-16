@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
@@ -15,7 +16,10 @@ namespace COMPASS.ViewModels
         public FileBaseViewModel(MainViewModel vm)
         {
             mainViewModel = vm;
-            EditFileCommmand = new SimpleCommand(EditFile);
+            EditFileCommand = new BasicCommand(EditFile);
+            OpenSelectedFileCommand = new RelayCommand<object>(OpenSelectedFile, CanOpenSelectedFile);
+            OpenFileOnlineCommand = new RelayCommand<object>(OpenFileOnline,CanOpenFileOnline);
+            DeleteFileCommand = new BasicCommand(DeleteFile);
         }
 
         #region Properties
@@ -44,18 +48,63 @@ namespace COMPASS.ViewModels
 
         #region Functions and Commands
 
-        public void OpenSelectedFile()
+        //Open File Offline
+        public RelayCommand<object> OpenSelectedFileCommand { get; private set; }
+        public void OpenSelectedFile(object o = null)
         {
-            Process.Start(SelectedFile.Path);
+            try
+            {
+                Process.Start(MVM.CurrentFileViewModel.SelectedFile.Path);
+            }
+            catch
+            {
+                MessageBox.Show("File Path Invalid");
+            }
+        }
+        public bool CanOpenSelectedFile(object o = null)
+        {
+            if (SelectedFile == null) return false;
+            String ToOpen = MVM.CurrentFileViewModel.SelectedFile.Path;
+            if (ToOpen == null) return false;
+            if (!ToOpen.Contains(".pdf")) return false;
+            return true;
+        }
+
+        public RelayCommand<object> OpenFileOnlineCommand { get; private set; }
+        public void OpenFileOnline(object o = null)
+        {
+            try
+            {
+                Process.Start(MVM.CurrentFileViewModel.SelectedFile.SourceURL);
+            }
+            catch
+            {
+                MessageBox.Show("URL Invalid");
+            }
+            
+        }
+        public bool CanOpenFileOnline(object o = null)
+        {
+            if (SelectedFile == null) return false;
+            String ToOpen = MVM.CurrentFileViewModel.SelectedFile.SourceURL;
+            if (ToOpen == null || ToOpen == "") return false;
+            return true;
         }
 
         //Edit File
-        public SimpleCommand EditFileCommmand { get; set; }
-        public void EditFile(object a = null)
+        public BasicCommand EditFileCommand { get; private set; }
+        public void EditFile()
         {
             MVM.CurrentEditViewModel = new FileEditViewModel(MVM);
             FilePropWindow fpw = new FilePropWindow((FileEditViewModel)MVM.CurrentEditViewModel);
             fpw.Show();
+        }
+
+        public BasicCommand DeleteFileCommand { get; private set; }
+        public void DeleteFile()
+        {
+            MVM.CurrentData.DeleteFile(MVM.CurrentFileViewModel.SelectedFile);
+            MVM.FilterHandler.RemoveFile(MVM.CurrentFileViewModel.SelectedFile);
         }
 
         #endregion

@@ -83,7 +83,7 @@
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <Button BorderBrush="{x:Null}" Foreground="{x:Null}" 
-                                 Command="{Binding Path=DataContext.EditFileCommmand,
+                                 Command="{Binding Path=DataContext.EditFileCommand,
                                 RelativeSource={RelativeSource FindAncestor,
                                 AncestorType={x:Type UserControl}}}">
                             <Button.Background>
