@@ -34,7 +34,7 @@ namespace COMPASS
         private ObservableCollection<Tag> _Items;
 
         private int _ID;
-        private string _Content;
+        private string _Content = "";
         private int _ParentID = -1;
         private Color _BackgroundColor;
 
