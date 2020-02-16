@@ -63,7 +63,7 @@ namespace COMPASS.ViewModels
         }
         public bool CanOpenSelectedFile(object o = null)
         {
-            if (SelectedFile == null) return false;
+            if (MVM.CurrentFileViewModel.SelectedFile == null) return false;
             String ToOpen = MVM.CurrentFileViewModel.SelectedFile.Path;
             if (ToOpen == null) return false;
             if (!ToOpen.Contains(".pdf")) return false;
@@ -85,7 +85,7 @@ namespace COMPASS.ViewModels
         }
         public bool CanOpenFileOnline(object o = null)
         {
-            if (SelectedFile == null) return false;
+            if (MVM.CurrentFileViewModel.SelectedFile == null) return false;
             String ToOpen = MVM.CurrentFileViewModel.SelectedFile.SourceURL;
             if (ToOpen == null || ToOpen == "") return false;
             return true;
