@@ -14,6 +14,8 @@
     <WarningLevel>4</WarningLevel>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <PublishUrl>C:\Apps\Compass\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -29,8 +31,6 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -119,6 +119,9 @@
     </ApplicationDefinition>
     <Compile Include="Models\ObservableObject.cs" />
     <Compile Include="Models\TreeViewNode.cs" />
+    <Compile Include="Resources\Controls\ExpandingButton.xaml.cs">
+      <DependentUpon>ExpandingButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Tools\BindingProxy.cs" />
     <Compile Include="Tools\Converters\BooltoVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\BooltoWindowStateConverter.cs" />
@@ -162,6 +165,10 @@
     </Compile>
     <Compile Include="Tools\Converters\UriToBitmapConverter.cs" />
     <Page Include="Resources\CommonResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Controls\ExpandingButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -248,7 +255,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Libraries\" />
-    <Folder Include="Resources\Controls\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
