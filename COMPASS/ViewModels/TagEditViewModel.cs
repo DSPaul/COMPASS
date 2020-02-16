@@ -14,7 +14,7 @@ namespace COMPASS.ViewModels
         {
             EditedTag = ToEdit;
             TempTag = new Tag(vm.CurrentData.AllTags);
-            if (ToEdit != null) TempTag.Copy(EditedTag);
+            if (!CreateNewTag) TempTag.Copy(EditedTag);
 
             //Commands
             ClearParentCommand = new BasicCommand(ClearParent);
@@ -25,6 +25,10 @@ namespace COMPASS.ViewModels
         #region Properties
 
         private Tag EditedTag;
+        private bool CreateNewTag
+        {
+            get { return EditedTag == null; }
+        }
 
         //TempTag to work with
         private Tag tempTag;
@@ -120,10 +124,12 @@ namespace COMPASS.ViewModels
 
         public override void OKBtn()
         {
-            bool NewTag = EditedTag == null;
-            if(NewTag)
+            bool CreatingTag = false;
+            if(CreateNewTag)
             {
                 EditedTag = new Tag(MVM.CurrentData.AllTags);
+                CreatingTag = true;
+                if (TempTag.ParentID == -1) MVM.CurrentData.RootTags.Add(EditedTag);
             }
             //set Parent if changed
             if (EditedTag.ParentID != tempTag.ParentID)
@@ -131,19 +137,29 @@ namespace COMPASS.ViewModels
                 if (EditedTag.ParentID == -1) MVM.CurrentData.RootTags.Remove(EditedTag);
                 else EditedTag.GetParent().Items.Remove(tempTag);
 
-                if (tempTag.ParentID == -1) MVM.CurrentData.RootTags.Add(EditedTag);
-                else tempTag.GetParent().Items.Add(EditedTag);
+                if (TempTag.ParentID == -1) MVM.CurrentData.RootTags.Add(EditedTag);
+                else TempTag.GetParent().Items.Add(EditedTag);
             }
             //Apply changes 
-            EditedTag.Copy(tempTag);
+            EditedTag.Copy(TempTag);
             MVM.Reset();
-            if (!NewTag) CloseAction();
-            else MVM.CurrentData.AllTags.Add(EditedTag);
+            if (!CreatingTag) CloseAction();
+            else
+            {
+                MVM.CurrentData.AllTags.Add(EditedTag);
+                TempTag = new Tag(MVM.CurrentData.AllTags);
+                EditedTag = null;
+            }
         }
 
         public override void Cancel()
         {
-            if(EditedTag != null) CloseAction();
+            if (!CreateNewTag) CloseAction();
+            else
+            {
+                TempTag = new Tag(MVM.CurrentData.AllTags);
+            }
+            EditedTag = null;
         }
 
         public BasicCommand CancelParentSelectionCommand { get; private set;}
