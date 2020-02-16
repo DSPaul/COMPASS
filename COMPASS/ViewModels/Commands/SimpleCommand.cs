@@ -11,9 +11,9 @@ namespace COMPASS.ViewModels.Commands
     {
         public event EventHandler CanExecuteChanged;
 
-        readonly Action<Object> _execute;
+        readonly Action<object> _execute;
 
-        public SimpleCommand(Action<Object> Execute)
+        public SimpleCommand(Action<object> Execute)
         {
             _execute = Execute;
         }

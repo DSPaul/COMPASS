@@ -131,6 +131,7 @@
     <Compile Include="ViewModels\BaseEditViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\Commands\BasicCommand.cs" />
+    <Compile Include="ViewModels\Commands\RelayCommand.cs" />
     <Compile Include="ViewModels\Commands\SimpleCommand.cs" />
     <Compile Include="ViewModels\FileEditViewModel.cs" />
     <Compile Include="ViewModels\FileListViewModel.cs" />

@@ -140,9 +140,9 @@
                                 <VisualBrush.Visual>
                                     <Border Background="Black"
                                                 SnapsToDevicePixels="True"
-                                                CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=Border}}"
-                                                Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}}"
-                                                Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Border}}"/>
+                                                CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=Border}, FallbackValue=10}"
+                                                Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}, FallbackValue=10}"
+                                                Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Border}, FallbackValue=10}"/>
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Border.OpacityMask>
@@ -177,12 +177,18 @@
     </Style>
 
     <ContextMenu x:Key="FileContextMenu">
-        <MenuItem Header="Open File"/>
-        <MenuItem Header="Open Online"/>
-        <MenuItem Header="Edit" Command="{Binding Path=DataContext.EditFileCommmand,
+        <MenuItem Header="Open File" Command="{Binding Path=DataContext.OpenSelectedFileCommand,
                                 RelativeSource={RelativeSource FindAncestor,
                                 AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Delete"/>
+        <MenuItem Header="Open Online" Command="{Binding Path=DataContext.OpenFileOnlineCommand,
+                                RelativeSource={RelativeSource FindAncestor,
+                                AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Edit" Command="{Binding Path=DataContext.EditFileCommand,
+                                RelativeSource={RelativeSource FindAncestor,
+                                AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Delete" Command="{Binding Path=DataContext.DeleteFileCommand,
+                                RelativeSource={RelativeSource FindAncestor,
+                                AncestorType={x:Type UserControl}}}"/>
     </ContextMenu>
     <!--#endregion-->
 
