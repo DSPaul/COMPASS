@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"  x:Name="FileListControl"
              d:DesignHeight="450" d:DesignWidth="800">
-    <DataGrid x:Name="FileView"
+    <DataGrid x:Name="FileView" 
                     Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Margin="10,0"
                     AutoGenerateColumns="False" ItemsSource="{Binding ActiveFiles}"
                     CanUserAddRows="False" SelectionMode="Single"
@@ -18,12 +18,17 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
-                            <TextBlock Text="{TemplateBinding Content}" Margin="5,0" 
+                            <TextBlock Text="{TemplateBinding Content}" Margin="5,0"
                                             Width="{TemplateBinding Width}" TextAlignment="Left" 
                                             FontSize="14" FontWeight="Bold" Foreground="#FFC8C8C8"/>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+            </Style>
+            <Style TargetType="{x:Type TextBlock}" x:Key="default">
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="Margin" Value="0,0,10,0"/>
             </Style>
         </DataGrid.Resources>
         <DataGrid.ItemContainerStyle>
@@ -43,24 +48,24 @@
             </Style>
         </DataGrid.ItemContainerStyle>
         <DataGrid.Columns>
-            <DataGridTemplateColumn Header="TITLE" Width="auto">
+            <DataGridTemplateColumn Header="TITLE" Width="auto" MinWidth="100">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <TextBlock Text ="{Binding Title}" TextWrapping="Wrap" FontSize="17" Margin="0,0,10,0"/>
+                        <TextBlock Text ="{Binding Title}" Style="{StaticResource default}"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="AUTHOR" Width="auto">
+            <DataGridTemplateColumn Header="AUTHOR" Width="auto" MinWidth="100">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <TextBlock Text ="{Binding Author}" TextWrapping="Wrap" FontSize="17" Margin="0,0,10,0"/>
+                        <TextBlock Text ="{Binding Author}" Style="{StaticResource default}"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="PUBLISHER" Width="auto">
+            <DataGridTemplateColumn Header="PUBLISHER" Width="auto" MinWidth="100">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <TextBlock Text ="{Binding Publisher}" TextWrapping="Wrap" FontSize="17" Margin="0,0,10,0"/>
+                        <TextBlock Text ="{Binding Publisher}" Style="{StaticResource default}"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
@@ -79,7 +84,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTextColumn Width="*"/>
-            <DataGridTemplateColumn Width="auto">
+            <DataGridTemplateColumn Width="25">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <Button BorderBrush="{x:Null}" Foreground="{x:Null}" 
