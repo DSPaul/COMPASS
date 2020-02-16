@@ -19,6 +19,8 @@
                       ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
+                    <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+                    <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="Template">
                         <Setter.Value>
@@ -29,7 +31,6 @@
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
-                    <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
                     <Style.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
