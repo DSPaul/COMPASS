@@ -128,15 +128,14 @@
                                     <Border.Background>
                                         <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
                                     </Border.Background>
-                                    <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15">
-                                        <TextBlock.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Assign to Files"/>
-                                                <MenuItem Header="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
-                                                <MenuItem Header="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
-                                            </ContextMenu>
-                                        </TextBlock.ContextMenu>
-                                    </TextBlock>
+                                    <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/>
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Assign to Files"/>
+                                            <MenuItem Header="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
+                                            <MenuItem Header="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
                                 </Border>
                             </HierarchicalDataTemplate>
                         </TreeView.ItemTemplate>
