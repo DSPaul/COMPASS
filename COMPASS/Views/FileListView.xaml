@@ -29,6 +29,7 @@
         <DataGrid.ItemContainerStyle>
             <Style TargetType="{x:Type DataGridRow}">
                 <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+                <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                 <Setter Property="Background" Value="{x:Null}"/>
                 <Style.Triggers>

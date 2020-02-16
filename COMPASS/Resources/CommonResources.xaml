@@ -124,12 +124,13 @@
     </Style>
     <!--#endregion-->
 
-    <!--#region Contextmenu Style-->
+    <!--#region Contextmenu-->
     <Style TargetType="ContextMenu">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="HasDropShadow" Value="True"/>
         <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Foreground" Value="White"/>
         <Setter Property="Template" >
             <Setter.Value>
                 <ControlTemplate TargetType="ContextMenu">
@@ -174,6 +175,15 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <ContextMenu x:Key="FileContextMenu">
+        <MenuItem Header="Open File"/>
+        <MenuItem Header="Open Online"/>
+        <MenuItem Header="Edit" Command="{Binding Path=DataContext.EditFileCommmand,
+                                RelativeSource={RelativeSource FindAncestor,
+                                AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Delete"/>
+    </ContextMenu>
     <!--#endregion-->
 
     <!--#region Dropdownbox Style-->

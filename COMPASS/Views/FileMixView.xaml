@@ -19,6 +19,7 @@
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+                    <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="Template">
                         <Setter.Value>
