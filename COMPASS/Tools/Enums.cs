@@ -14,5 +14,11 @@ namespace COMPASS.Tools
             MixView,
             TileView
         }
+
+        public enum ImportMode
+        {
+            Pdf,
+            Manual
+        }
     }
 }

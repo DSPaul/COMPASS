@@ -43,29 +43,6 @@ namespace COMPASS
             if((Tag)CurrentTagList.SelectedItem != null) MainViewModel.FilterHandler.RemoveTagFilter((Tag)CurrentTagList.SelectedItem);
         }
 
-        //import files
-        private void ImportBtn_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                AddExtension = false,
-                Multiselect = true   
-            };
-            if (openFileDialog.ShowDialog() == true)
-            {
-                foreach(string path in openFileDialog.FileNames)
-                {
-                    if(MainViewModel.CurrentData.AllFiles.All(p => p.Path != path))
-                    {
-                    MyFile pdf = new MyFile(MainViewModel) { Path = path, Title = System.IO.Path.GetFileNameWithoutExtension(path)};
-                        MainViewModel.CurrentData.AllFiles.Add(pdf);
-                        CoverArtGenerator.ConvertPDF(pdf, MainViewModel.CurrentData.Folder);
-                    }
-                }
-                MainViewModel.Reset();
-            }         
-        }
-
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             MainViewModel.CurrentData.SaveFilesToFile();
