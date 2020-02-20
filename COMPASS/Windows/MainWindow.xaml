@@ -304,7 +304,7 @@
                 </CustomControls:ExpandingButton>
             
             <Button x:Name="ImportBtn" Grid.Column="1" Grid.Row="3" Tools:AP.IconKind="FileImportOutline"
-                        Click="ImportBtn_Click" Style="{StaticResource SquareBtn}" Content="Import"/>
+                        Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Pdf}" Style="{StaticResource SquareBtn}" Content="Import"/>
 
             <Button x:Name="SettingsBtn" Grid.Column="1" Grid.Row="4" Style="{StaticResource SquareBtn}"
                     Tools:AP.IconKind="Settings" Content="Settings"/>

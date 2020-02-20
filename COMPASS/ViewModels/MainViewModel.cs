@@ -1,11 +1,7 @@
 ﻿using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using ImageMagick;
-using System.Windows.Controls;
+using System;
 using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
@@ -25,6 +21,7 @@ namespace COMPASS.ViewModels
             ChangeFileViewCommand = new SimpleCommand(ChangeFileView);
             ResetCommand = new BasicCommand(Reset);
             AddTagCommand = new BasicCommand(AddTag);
+            ImportFilesCommand = new SimpleCommand(ImportFiles);
         }
 
         #region Properties
@@ -36,6 +33,10 @@ namespace COMPASS.ViewModels
             get { return currentData; }
             private set { SetProperty(ref currentData, value); }
         }
+
+        #endregion
+
+        #region Handlers and ViewModels
 
         //Filter Handler
         private FilterHandler filterHandler;
@@ -69,12 +70,20 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref addTagViewModel, value); }
         }
 
-        //Tags and Filters ViewModel
+        //Tags and Filters Tabs ViewModel (Left Dock)
         private TagsFiltersViewModel tfViewModel;
         public TagsFiltersViewModel TFViewModel
         {
             get { return tfViewModel; }
             set { SetProperty(ref tfViewModel, value); }
+        }
+
+        //Import ViewModel
+        private ImportViewModel currentimportViewModel;
+        public ImportViewModel CurrentImportViewModel
+        {
+            get { return currentimportViewModel; }
+            set { SetProperty(ref currentimportViewModel, value); }
         }
 
         #endregion
@@ -108,32 +117,19 @@ namespace COMPASS.ViewModels
             TFViewModel.RefreshTreeView();
         }
 
+        //Add Tag Btn
         public BasicCommand AddTagCommand { get; private set; }
         public void AddTag()
         {
             AddTagViewModel = new TagEditViewModel(this, null);
         }
 
-        #region Clears Selection From TreeView
-        public static void ClearTreeViewSelection(TreeView tv)
+        //Import Btn
+        public SimpleCommand ImportFilesCommand { get; private set; }
+        public void ImportFiles(object mode)
         {
-            if (tv != null)
-                ClearTreeViewItemsControlSelection(tv.Items, tv.ItemContainerGenerator);
-        }
-        private static void ClearTreeViewItemsControlSelection(ItemCollection ic, ItemContainerGenerator icg)
-        {
-            if ((ic != null) && (icg != null))
-                for (int i = 0; i < ic.Count; i++)
-                {
-                    if (icg.ContainerFromIndex(i) is TreeViewItem tvi)
-                    {
-                        ClearTreeViewItemsControlSelection(tvi.Items, tvi.ItemContainerGenerator);
-                        tvi.IsSelected = false;
-                    }
-                }
-        }
-        #endregion
-
+            CurrentImportViewModel = new ImportViewModel(this, (ImportMode)mode);
+        } 
         #endregion
     }
 }
