@@ -138,6 +138,7 @@
     <Compile Include="ViewModels\FileBaseViewModel.cs" />
     <Compile Include="ViewModels\FileMixViewModel.cs" />
     <Compile Include="ViewModels\FileTileViewModel.cs" />
+    <Compile Include="ViewModels\ImportViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Tools\AP.cs" />
     <Compile Include="Tools\CoverArtGenerator.cs" />
@@ -160,6 +161,9 @@
     </Compile>
     <Compile Include="Views\Tag_FilterView.xaml.cs">
       <DependentUpon>Tag_FilterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\ProgressWindow.xaml.cs">
+      <DependentUpon>ProgressWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\TagPropWindow.xaml.cs">
       <DependentUpon>TagPropWindow.xaml</DependentUpon>
@@ -220,6 +224,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\ProgressWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\TagPropWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
