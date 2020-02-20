@@ -7,7 +7,7 @@
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
              mc:Ignorable="d"  x:Name="FileListControl"
              d:DesignHeight="450" d:DesignWidth="800">
-    <DataGrid x:Name="FileView" 
+    <DataGrid x:Name="FileView" MaxWidth="{Binding ActualWidth, ElementName=FileListControl}"
                     Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Margin="10,0"
                     AutoGenerateColumns="False" ItemsSource="{Binding ActiveFiles}"
                     CanUserAddRows="False" SelectionMode="Single"
