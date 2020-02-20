@@ -1,0 +1,17 @@
+﻿<Window x:Class="COMPASS.Windows.ProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:COMPASS.Windows"
+        mc:Ignorable="d"
+        Title="ProgressWindow" Height="222" Width="595.2" FontSize="30">
+    <Grid>
+        <StackPanel Margin="50">
+            <TextBlock Text="Progress : X out of Y" Margin="30,5"/>
+            <ProgressBar x:Name="ProgBar"
+                Minimum="0" Maximum="100" Value="{Binding Progress}" Height="30" Width="400"
+                HorizontalAlignment="Left" Margin="30,0" ValueChanged="ProgressBar_ValueChanged"   />
+        </StackPanel>
+    </Grid>
+</Window>
