@@ -14,17 +14,17 @@ namespace COMPASS
             Tags = new ObservableCollection<Tag>();
         }
 
-        public MyFile(MainViewModel vm)
+        public MyFile(Data d)
         {
             Tags = new ObservableCollection<Tag>();
 
             int tempID = 0;
-            while (vm.CurrentData.AllFiles.Any(f => f.ID == tempID))
+            while (d.AllFiles.Any(f => f.ID == tempID))
             {
                 tempID++;
             }
             ID = tempID;
-            CoverArt = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + vm.CurrentData.Folder + @"\CoverArt\" + ID.ToString() + ".png");
+            CoverArt = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + d.Folder + @"\CoverArt\" + ID.ToString() + ".png");
         }
 
         public void Copy(MyFile f)
