@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
+             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
              mc:Ignorable="d"  x:Name="FileListControl"
              d:DesignHeight="450" d:DesignWidth="800">
     <DataGrid x:Name="FileView" MaxWidth="{Binding ActualWidth, ElementName=FileListControl}"
@@ -14,6 +15,7 @@
                     RowHeaderWidth="0" GridLinesVisibility="None"
                     SelectedItem="{Binding SelectedFile, Mode=TwoWay}">
         <DataGrid.Resources>
+            <Converters:BooltoVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <Style TargetType="{x:Type DataGridColumnHeader}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -29,6 +31,20 @@
                 <Setter Property="TextWrapping" Value="Wrap"/>
                 <Setter Property="FontSize" Value="16"/>
                 <Setter Property="Margin" Value="0,0,10,0"/>
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <SolidColorBrush Color="Black" Opacity="0"/>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Foreground" Value="{x:Null}"/>
+                <Setter Property="BorderBrush" Value="{x:Null}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </Trigger>
+                </Style.Triggers>
             </Style>
         </DataGrid.Resources>
         <DataGrid.ItemContainerStyle>
@@ -84,16 +100,32 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTextColumn Width="*"/>
-            <DataGridTemplateColumn Width="25">
+            <DataGridTemplateColumn MinWidth="70" Width="auto">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <Button BorderBrush="{x:Null}" Foreground="{x:Null}" 
-                                 Command="{Binding Path=DataContext.EditFileCommand,
+                        <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Command="{Binding Path=DataContext.OpenSelectedFileCommand,
+                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                                    CommandParameter="{Binding}">
+                                <materialDesign:PackIcon Kind="FilePdfOutline"/>
+                            </Button>
+                            <Button Command="{Binding Path=DataContext.OpenFileOnlineCommand,
+                                RelativeSource={RelativeSource FindAncestor,  AncestorType={x:Type UserControl}}}"
+                                    CommandParameter="{Binding}">
+                                <materialDesign:PackIcon Kind="Web"/>
+                            </Button>
+                            <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
+                                Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Width="auto" MinWidth="25">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <Button Command="{Binding Path=DataContext.EditFileCommand,
                                 RelativeSource={RelativeSource FindAncestor,
                                 AncestorType={x:Type UserControl}}}">
-                            <Button.Background>
-                                <SolidColorBrush Color="Black" Opacity="0"/>
-                            </Button.Background>
                             <materialDesign:PackIcon Kind="Pencil"/>
                         </Button>
                     </DataTemplate>

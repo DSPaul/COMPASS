@@ -52,9 +52,12 @@ namespace COMPASS.ViewModels
         public RelayCommand<object> OpenSelectedFileCommand { get; private set; }
         public void OpenSelectedFile(object o = null)
         {
+            MyFile ToOpen;
+            if (o != null) ToOpen = (MyFile)o;
+            else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
             try
             {
-                Process.Start(MVM.CurrentFileViewModel.SelectedFile.Path);
+                Process.Start(ToOpen.Path);
             }
             catch
             {
@@ -63,19 +66,25 @@ namespace COMPASS.ViewModels
         }
         public bool CanOpenSelectedFile(object o = null)
         {
-            if (MVM.CurrentFileViewModel.SelectedFile == null) return false;
-            String ToOpen = MVM.CurrentFileViewModel.SelectedFile.Path;
+            MyFile ToOpen;
+            if (o != null) ToOpen = (MyFile)o;
+            else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
+
             if (ToOpen == null) return false;
-            if (!ToOpen.Contains(".pdf")) return false;
+            if (ToOpen.Path == null) return false;
+            if (!ToOpen.Path.Contains(".pdf")) return false;
             return true;
         }
 
         public RelayCommand<object> OpenFileOnlineCommand { get; private set; }
         public void OpenFileOnline(object o = null)
         {
+            MyFile ToOpen;
+            if (o != null) ToOpen = (MyFile)o;
+            else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
             try
             {
-                Process.Start(MVM.CurrentFileViewModel.SelectedFile.SourceURL);
+                Process.Start(ToOpen.SourceURL);
             }
             catch
             {
@@ -85,9 +94,12 @@ namespace COMPASS.ViewModels
         }
         public bool CanOpenFileOnline(object o = null)
         {
-            if (MVM.CurrentFileViewModel.SelectedFile == null) return false;
-            String ToOpen = MVM.CurrentFileViewModel.SelectedFile.SourceURL;
-            if (ToOpen == null || ToOpen == "") return false;
+            MyFile ToOpen;
+            if (o != null) ToOpen = (MyFile)o;
+            else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
+
+            if (ToOpen == null) return false;
+            if (ToOpen.SourceURL == null || ToOpen.SourceURL == "") return false;
             return true;
         }
 
