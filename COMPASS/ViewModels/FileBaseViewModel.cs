@@ -95,7 +95,7 @@ namespace COMPASS.ViewModels
         public BasicCommand EditFileCommand { get; private set; }
         public void EditFile()
         {
-            MVM.CurrentEditViewModel = new FileEditViewModel(MVM);
+            MVM.CurrentEditViewModel = new FileEditViewModel(MVM, MVM.CurrentFileViewModel.SelectedFile);
             FilePropWindow fpw = new FilePropWindow((FileEditViewModel)MVM.CurrentEditViewModel);
             fpw.Show();
         }
