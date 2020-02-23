@@ -24,28 +24,21 @@ namespace COMPASS.ViewModels
             MVM = vm;
 
             //Start new threat (so program doesn't freeze while importing)
-            BackgroundWorker worker = new BackgroundWorker
-            {
-                WorkerReportsProgress = true
-            };
+            BackgroundWorker worker;
 
             //Call Relevant funcion
             switch (mode)
             {
                 case ImportMode.Pdf:
+                    worker= new BackgroundWorker { WorkerReportsProgress = true };
                     worker.DoWork += ImportFromPdf;
+                    worker.ProgressChanged += ProgressChanged;
+                    worker.RunWorkerAsync();
                     break;
                 case ImportMode.Manual:
-                    ProgressWindow pgw = new ProgressWindow(this);
-                    pgw.Show();
-                    worker.DoWork += ImportManual;
+                    ImportManual();
                     break;
-            }
-
-            
-            worker.ProgressChanged += ProgressChanged;
-
-            worker.RunWorkerAsync();
+            }  
         }
 
 
@@ -81,6 +74,8 @@ namespace COMPASS.ViewModels
                 Multiselect = true
             };
 
+            MyFile SelectWhenDone = null;
+
             if (openFileDialog.ShowDialog() == true)
             {
                 ProgressWindow pgw;
@@ -105,18 +100,22 @@ namespace COMPASS.ViewModels
                         MyFile pdf = new MyFile(_data) { Path = path, Title = System.IO.Path.GetFileNameWithoutExtension(path) };
                         _data.AllFiles.Add(pdf);
                         CoverArtGenerator.ConvertPDF(pdf, _data.Folder);
+                        SelectWhenDone = pdf;
                     }
                 }
             }
             Application.Current.Dispatcher.Invoke(() =>
             {
                 MVM.Reset();
-            });  
+            });
+            if(SelectWhenDone!=null) MVM.CurrentFileViewModel.SelectedFile = SelectWhenDone;
         }
 
-        void ImportManual(object sender, DoWorkEventArgs e)
+        private void ImportManual()
         {
-            
+            MVM.CurrentEditViewModel = new FileEditViewModel(MVM,null);
+            FilePropWindow fpw = new FilePropWindow((FileEditViewModel)MVM.CurrentEditViewModel);
+            fpw.Show();
         }
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)

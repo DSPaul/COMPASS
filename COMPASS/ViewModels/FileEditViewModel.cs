@@ -12,11 +12,11 @@ namespace COMPASS.ViewModels
 {
     public class FileEditViewModel : BaseEditViewModel
     {
-        public FileEditViewModel(MainViewModel vm) : base(vm)
+        public FileEditViewModel(MainViewModel vm, MyFile ToEdit) : base(vm)
         {
-            EditedFile = MVM.CurrentFileViewModel.SelectedFile;
-            TempFile = new MyFile();
-            tempFile.Copy(EditedFile);
+            EditedFile = ToEdit;
+            TempFile = new MyFile(MVM.CurrentData);
+            if(!CreateNewFile) TempFile.Copy(EditedFile);
 
             //Apply right checkboxes in Alltags
             foreach (TreeViewNode t in AllTreeViewNodes)
@@ -37,11 +37,16 @@ namespace COMPASS.ViewModels
 
         readonly MyFile EditedFile;
 
-        private MyFile tempFile;
+        private bool CreateNewFile
+        {
+            get { return EditedFile == null; }
+        }
+
+        private MyFile _tempFile;
         public MyFile TempFile
         {
-            get { return tempFile; }
-            set { SetProperty(ref tempFile, value); }
+            get { return _tempFile; }
+            set { SetProperty(ref _tempFile, value); }
         }
 
         #endregion
@@ -63,14 +68,19 @@ namespace COMPASS.ViewModels
 
         public override void OKBtn()
         {
-            Update_Taglist();
-            ////Copy changes into Database
-            EditedFile.Copy(TempFile);
-            ////Add new Author and Publishers to lists
+            //Copy changes into Database
+            if(!CreateNewFile) EditedFile.Copy(TempFile);
+            else
+            {
+                MyFile ToAdd = new MyFile();
+                ToAdd.Copy(TempFile);
+                MVM.CurrentData.AllFiles.Add(ToAdd);
+            }
+            //Add new Author and Publishers to lists
             if(TempFile.Author != "" && !MVM.CurrentData.AuthorList.Contains(TempFile.Author)) MVM.CurrentData.AuthorList.Add(TempFile.Author);
             if(TempFile.Publisher != "" && !MVM.CurrentData.PublisherList.Contains(TempFile.Publisher)) MVM.CurrentData.PublisherList.Add(TempFile.Publisher);
 
-            MVM.FilterHandler.Update_ActiveFiles();
+            MVM.Reset();
             CloseAction();
         }
 
@@ -95,8 +105,11 @@ namespace COMPASS.ViewModels
         public BasicCommand DeleteFileCommand { get; private set; }
         private void DeleteFile()
         {
-            MVM.CurrentData.DeleteFile(EditedFile);
-            MVM.FilterHandler.RemoveFile(EditedFile);
+            if (!CreateNewFile)
+            {
+                MVM.CurrentData.DeleteFile(EditedFile);
+                MVM.FilterHandler.RemoveFile(EditedFile);
+            }
             CloseAction();
         }
 
