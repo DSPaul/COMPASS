@@ -66,7 +66,7 @@
                 <Setter Property="Background" Value="#00000000"/>
                 <Setter Property="Foreground" Value ="#cccccc"/>
                 <Setter Property="BorderBrush" Value="#FF97A0A5"/>
-                <Setter Property="MaxWidth" Value="{Binding ActualWidth}"/>
+                <!--<Setter Property="MaxWidth" Value="{Binding ActualWidth}"/>-->
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
             <Style TargetType="Button">
@@ -88,11 +88,11 @@
         <UniformGrid Grid.Column="1" Grid.Row="7" Margin="0,5" Columns="2">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Version:"/>
-                <TextBox Text="{Binding Version, Mode=TwoWay}" MinWidth="100" Name="FileVersionTB" Margin="5,0"/>
+                <TextBox Text="{Binding TempFile.Version, Mode=TwoWay}" MinWidth="100" Name="FileVersionTB" Margin="5,0"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Hard Copy:"/>
-                <CheckBox Name="FileOwnedCB" IsChecked="{Binding Physically_Owned, Mode=TwoWay}" VerticalAlignment="Center"/>
+                <CheckBox Name="FileOwnedCB" IsChecked="{Binding TempFile.Physically_Owned, Mode=TwoWay}" VerticalAlignment="Center"/>
             </StackPanel>
         </UniformGrid>
         
