@@ -8,10 +8,9 @@
              xmlns:local1="clr-namespace:COMPASS"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <Grid.Resources>
-            <local1:UriToBitmapConverter x:Key="UriToBitmapConverter" />
-        </Grid.Resources>
+    <UserControl.Resources>
+        <local1:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+    </UserControl.Resources>
         <!--#region MixView-->
         <ListBox x:Name="FileView" ItemsSource="{Binding ActiveFiles}" Background="{x:Null}"
                  BorderBrush="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
@@ -47,7 +46,7 @@
             </ListBox.ItemContainerStyle>
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileView}"/>
+                    <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileView}" HorizontalAlignment="Center"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
@@ -102,5 +101,4 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <!--#endregion-->
-    </Grid>
 </UserControl>

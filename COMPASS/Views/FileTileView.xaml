@@ -48,7 +48,7 @@
             </ListBox.ItemContainerStyle>
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileView}"/>
+                    <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileView}" HorizontalAlignment="Center"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
