@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -71,9 +72,8 @@ namespace COMPASS.ViewModels
             else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
 
             if (ToOpen == null) return false;
-            if (ToOpen.Path == null) return false;
-            if (!ToOpen.Path.Contains(".pdf")) return false;
-            return true;
+            if (File.Exists(ToOpen.Path)) return true;
+            return false;
         }
 
         public RelayCommand<object> OpenFileOnlineCommand { get; private set; }
