@@ -356,8 +356,12 @@
                     <materialDesign:PackIcon Kind="ViewModule" Width="45" Height="45"/>
                 </Button>
                 <Rectangle Width="3" Fill="Gray" Margin="3,8"/>
-                <Button Background="{x:Null}" BorderBrush="{x:Null}">
+                <Button Background="{x:Null}" BorderBrush="{x:Null}" Click="ViewConfig_Click">
                     <materialDesign:PackIcon Kind="Tune" Width="35" Height="35"/>
+                        <Button.ContextMenu>
+                            <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding CurrentFileViewModel.ViewOptions}"
+                                         Style="{StaticResource DropdownMenu}" ItemContainerStyle="{StaticResource DropdownMenuItem}"/>
+                        </Button.ContextMenu>
                 </Button>
             </StackPanel>
             <!--#endregion-->
