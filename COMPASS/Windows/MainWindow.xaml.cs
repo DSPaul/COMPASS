@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.ComponentModel;
 using COMPASS.ViewModels;
+using COMPASS.Models;
 
 namespace COMPASS
 {
@@ -99,6 +100,11 @@ namespace COMPASS
                 }
         #endregion
 
+        private void ViewConfig_Click(object sender, RoutedEventArgs e)
+        {
+            (sender as Button).ContextMenu.PlacementTarget = (sender as Button);
+            (sender as Button).ContextMenu.IsOpen = true;
+        }
     }
 
 }

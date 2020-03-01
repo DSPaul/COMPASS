@@ -1,4 +1,5 @@
-﻿using COMPASS.ViewModels.Commands;
+﻿using COMPASS.Models;
+using COMPASS.ViewModels.Commands;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -33,18 +34,26 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref mainViewModel, value); }
         }
 
+        //Collection of files to bind to
         public ObservableCollection<MyFile> ActiveFiles
         {
             get { return MVM.FilterHandler.ActiveFiles; }
             set { }  
         }
 
+        //Selected File
         private MyFile selectedFile;
         public MyFile SelectedFile {
             get { return selectedFile; } 
             set { SetProperty(ref selectedFile, value); }
         }
 
+        private ObservableCollection<MyMenuItem> viewOptions;
+        public ObservableCollection<MyMenuItem> ViewOptions
+        {
+            get { return viewOptions; }
+            set { SetProperty(ref viewOptions, value); }
+        }
         #endregion
 
         #region Functions and Commands
