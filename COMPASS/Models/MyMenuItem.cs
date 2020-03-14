@@ -10,12 +10,15 @@ namespace COMPASS.Models
 {
     public class MyMenuItem : ObservableObject
     {
-        public MyMenuItem(string header)
+        public MyMenuItem(string header, Action<object> UpdateProp = null)
         {
-            Header = header;     
+            Header = header;
+            _updateProp = UpdateProp;
         }
 
         #region Properties
+
+        private Action<object> _updateProp;
 
         //Name of Item
         private string _header;
@@ -30,7 +33,11 @@ namespace COMPASS.Models
         public object Prop
         {
             get { return _prop; }
-            set { SetProperty(ref _prop, value); }
+            set 
+            { 
+                SetProperty(ref _prop, value);
+                _updateProp?.Invoke(value);
+            }
         }
 
         //Command to execute on click

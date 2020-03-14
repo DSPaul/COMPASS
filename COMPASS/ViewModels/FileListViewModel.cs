@@ -3,6 +3,7 @@ using COMPASS.ViewModels.Commands;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,53 +20,54 @@ namespace COMPASS.ViewModels
             {
                 Submenus = new ObservableCollection<MyMenuItem>()
             };
-            Columnvisibility.Submenus.Add(new MyMenuItem("Title") { Prop = (bool)ShowTitle });
-            Columnvisibility.Submenus.Add(new MyMenuItem("Author") { Prop = (bool)ShowAuthor });
-            Columnvisibility.Submenus.Add(new MyMenuItem("Publisher") { Prop = (bool)ShowPublisher });
-            Columnvisibility.Submenus.Add(new MyMenuItem("Tags") { Prop = (bool)ShowTags });
-            Columnvisibility.Submenus.Add(new MyMenuItem("File Icons") { Prop = (bool)ShowFileIcons });
-            Columnvisibility.Submenus.Add(new MyMenuItem("Edit Icon") { Prop = (bool)ShowEditIcon });
+
+            Columnvisibility.Submenus.Add(new MyMenuItem("Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
+            Columnvisibility.Submenus.Add(new MyMenuItem("Author", value => ShowAuthor = (bool)value) { Prop = ShowAuthor});
+            Columnvisibility.Submenus.Add(new MyMenuItem("Publisher", value => ShowPublisher= (bool)value) { Prop = ShowPublisher });
+            Columnvisibility.Submenus.Add(new MyMenuItem("Tags", value => ShowTags = (bool)value) { Prop = ShowTags });
+            Columnvisibility.Submenus.Add(new MyMenuItem("File Icons", value => ShowFileIcons = (bool)value) { Prop = ShowFileIcons });
+            Columnvisibility.Submenus.Add(new MyMenuItem("Edit Icon", value => ShowEditIcon = (bool)value) { Prop = ShowEditIcon });
             ViewOptions.Add(Columnvisibility);
         }
 
         #region ViewOptions
 
-        private bool _showTitle;
+        private bool _showTitle = true;
         public bool ShowTitle 
         {
             get {return _showTitle; }
             set{ SetProperty(ref _showTitle, value); }
         }
 
-        private bool _showAuthor;
+        private bool _showAuthor = true;
         public bool ShowAuthor
         {
             get { return _showAuthor; }
             set { SetProperty(ref _showAuthor, value); }
         }
 
-        private bool _showPublisher;
+        private bool _showPublisher = false;
         public bool ShowPublisher
         {
             get { return _showPublisher; }
             set { SetProperty(ref _showPublisher, value); }
         }
 
-        private bool _showTags;
+        private bool _showTags = true;
         public bool ShowTags
         {
             get { return _showTags; }
             set { SetProperty(ref _showTags, value); }
         }
 
-        private bool _showFileIcons;
+        private bool _showFileIcons = true;
         public bool ShowFileIcons
         {
             get { return _showFileIcons; }
             set { SetProperty(ref _showFileIcons, value); }
         }
 
-        private bool _showEditIcon;
+        private bool _showEditIcon = true;
         public bool ShowEditIcon
         {
             get { return _showEditIcon; }
