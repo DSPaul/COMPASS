@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
+             xmlns:Tools ="clr-namespace:COMPASS.Tools"
              xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
              mc:Ignorable="d"  x:Name="FileListControl"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -15,6 +16,7 @@
                     RowHeaderWidth="0" GridLinesVisibility="None"
                     SelectedItem="{Binding SelectedFile, Mode=TwoWay}">
         <DataGrid.Resources>
+            <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
             <Converters:BooltoVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <Style TargetType="{x:Type DataGridColumnHeader}">
                 <Setter Property="Template">
@@ -64,28 +66,32 @@
             </Style>
         </DataGrid.ItemContainerStyle>
         <DataGrid.Columns>
-            <DataGridTemplateColumn Header="TITLE" Width="auto" MinWidth="100">
+            <DataGridTemplateColumn Header="TITLE" Width="auto" MinWidth="100" 
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTitle, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Title}" Style="{StaticResource default}"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="AUTHOR" Width="auto" MinWidth="100">
+            <DataGridTemplateColumn Header="AUTHOR" Width="auto" MinWidth="100"
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowAuthor, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Author}" Style="{StaticResource default}"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="PUBLISHER" Width="auto" MinWidth="100">
+            <DataGridTemplateColumn Header="PUBLISHER" Width="auto" MinWidth="100"
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowPublisher, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Publisher}" Style="{StaticResource default}"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="TAGS" Width="auto">
+            <DataGridTemplateColumn Header="TAGS" Width="auto"
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTags, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <ItemsControl ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
@@ -100,7 +106,8 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTextColumn Width="*"/>
-            <DataGridTemplateColumn MinWidth="70" Width="auto">
+            <DataGridTemplateColumn MinWidth="70" Width="auto"
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowFileIcons, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -120,7 +127,8 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Width="auto" MinWidth="25">
+            <DataGridTemplateColumn Width="auto" MinWidth="25"
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowEditIcon, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <Button Command="{Binding Path=DataContext.EditFileCommand,
