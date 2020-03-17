@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
-namespace COMPASS
+namespace COMPASS.Tools.Converters
 {
     class UriToBitmapConverter : IValueConverter
     {
