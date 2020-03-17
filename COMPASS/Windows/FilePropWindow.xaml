@@ -6,6 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:self="clr-namespace:COMPASS"
         xmlns:Models ="clr-namespace:COMPASS.Models"
+        xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
         mc:Ignorable="d"
         Title="File Properties" Height="450" Width="1000" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
@@ -17,7 +18,7 @@
         </LinearGradientBrush>
     </Window.Background>-->
     <Window.Resources>
-        <self:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+        <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
     </Window.Resources>
 
     <Grid Name="MainGrid" Focusable="True" Margin="5,0">

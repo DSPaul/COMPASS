@@ -5,11 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:COMPASS.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:local1="clr-namespace:COMPASS"
+             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <local1:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+        <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
     </UserControl.Resources>
         <!--#region MixView-->
         <ListBox x:Name="FileView" ItemsSource="{Binding ActiveFiles}" Background="{x:Null}"
