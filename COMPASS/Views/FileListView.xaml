@@ -127,7 +127,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTextColumn Width="*" CanUserResize="False"/>
+            <DataGridTextColumn Width="*"/>
             <DataGridTemplateColumn MinWidth="70" Width="auto" CanUserResize="False"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowFileIcons, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
