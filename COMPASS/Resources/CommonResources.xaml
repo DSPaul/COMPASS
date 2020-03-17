@@ -126,6 +126,76 @@
         </Setter>
     </Style>
     <!--#endregion-->
+    
+    <!--#region Slider-->
+    <Style x:Key="SliderRepeatButtonL" TargetType="RepeatButton">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border BorderThickness="0" Background="White" Height="3" CornerRadius="1,0,0,1"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="SliderRepeatButtonR" TargetType="RepeatButton">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton">
+                    <Border BorderThickness="0" Background="White" Height="3" CornerRadius="0,1,1,0"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="SliderThumb" TargetType="Thumb">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border CornerRadius="1" Height="15" Width="3" Background="White"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <ControlTemplate x:Key="Slider"  TargetType="Slider">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Track Grid.Row="1" x:Name="PART_Track"   >
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Style="{StaticResource SliderRepeatButtonL}"  Command="Slider.DecreaseLarge" />
+                </Track.DecreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource SliderThumb}"  />
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Style="{StaticResource SliderRepeatButtonR}" Command="Slider.IncreaseLarge" />
+                </Track.IncreaseRepeatButton>
+            </Track>
+        </Grid>
+    </ControlTemplate>
+    <Style TargetType="Slider">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Template" Value="{StaticResource Slider}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <!--#endregion-->
 
     <!--#region Contextmenu-->
     <Style TargetType="ContextMenu">
@@ -418,6 +488,22 @@
                 <ControlTemplate TargetType="{x:Type MenuItem}">
                     <Border Padding="5" Background="{TemplateBinding Background}">
                         <DockPanel Background="{x:Null}">
+                            <Slider DockPanel.Dock="Bottom" Value="{Binding Prop, Mode=TwoWay}" Minimum="50" Interval="1" Maximum="400" IsSnapToTickEnabled="True">
+                                <Slider.Style>
+                                    <Style TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
+                                        <Setter Property="Visibility">
+                                            <Setter.Value>
+                                                <Binding Path="Prop" ConverterParameter="Number" FallbackValue="Collapsed" TargetNullValue="Collapsed"
+                                                         Mode="OneWay">
+                                                    <Binding.Converter>
+                                                        <Converters:ViewOptionPropTypetoVisibilityConverter/>
+                                                    </Binding.Converter>
+                                                </Binding>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Slider.Style>
+                            </Slider>
                             <CheckBox IsChecked="{Binding Prop, Mode=TwoWay}" Margin="3,0">
                                 <CheckBox.Style>
                                     <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
@@ -435,6 +521,7 @@
                                 </CheckBox.Style>
                             </CheckBox>
                             <ContentPresenter Content="{TemplateBinding Header}" DockPanel.Dock="Left"/>
+                            
                             <!--Little submenu arrow-->
                             <Polygon Points="0,0 4,4, 0,8" Stroke="#FF222222" Fill="#FF222222" 
                                     DockPanel.Dock="Right"  Margin="10,0" VerticalAlignment="Center">
