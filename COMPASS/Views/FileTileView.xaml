@@ -3,14 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:COMPASS.Views"
+             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:local1="clr-namespace:COMPASS"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <Grid x:Name="TileViewGrid">
         <Grid.Resources>
-            <local1:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+            <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+            <Converters:BooltoVisibilityConverter x:Key="BooltoVisibilityConverter"/>
+
         </Grid.Resources>
 
         <ListBox x:Name="FileView" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
@@ -57,7 +58,9 @@
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-                        <Border CornerRadius="5" Margin="10,5" Width="156" Height="211" SnapsToDevicePixels="True" Grid.Row="0">
+                        <Border CornerRadius="5" Margin="10,5" SnapsToDevicePixels="True" Grid.Row="0"
+                                Width="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=2}}" 
+                                Height="{Binding DataContext.TileHeight, RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=2}}">
                             <Border.Background>
                                 <ImageBrush ImageSource="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}}"/>
                             </Border.Background>
@@ -65,8 +68,10 @@
                                 <DropShadowEffect BlurRadius="15" Direction="300"/>
                             </Border.Effect>
                         </Border>
-                        <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" MaxWidth="150"
-                                        Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"/>
+                        <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" 
+                                   MaxWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=2}}"
+                                   Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"
+                                   Visibility="{Binding DataContext.ShowTitle, RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=2}, Converter={StaticResource BooltoVisibilityConverter}}"/>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
