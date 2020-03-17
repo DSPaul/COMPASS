@@ -12,11 +12,10 @@
         <Grid.Resources>
             <local1:UriToBitmapConverter x:Key="UriToBitmapConverter" />
         </Grid.Resources>
-       
-        <!--#region TileView-->
+
         <ListBox x:Name="FileView" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
                        ItemsSource="{Binding ActiveFiles}" Background="{x:Null}" BorderBrush="{x:Null}"
-                      ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0">
+                      ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
@@ -53,27 +52,24 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border CornerRadius="15" Margin="10">
-                        <Border.Background>
-                            <SolidColorBrush Color="Gray" Opacity="0.5"/>
-                        </Border.Background>
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="15" Direction="300"/>
-                        </Border.Effect>
-                        <Grid VerticalAlignment="Top">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
-                            <Image  Grid.Row="0" Width="150"
-                                        Source="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}}"/>
-                            <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" MaxWidth="150"
-                                        Text="{Binding Title}" Foreground="White" HorizontalAlignment="Center" TextAlignment="Center"/>
-                        </Grid>
-                    </Border>
+                    <Grid VerticalAlignment="Top">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Border CornerRadius="5" Margin="10,5" Width="156" Height="211" SnapsToDevicePixels="True" Grid.Row="0">
+                            <Border.Background>
+                                <ImageBrush ImageSource="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}}"/>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="15" Direction="300"/>
+                            </Border.Effect>
+                        </Border>
+                        <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" MaxWidth="150"
+                                        Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"/>
+                    </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <!--#endregion-->
     </Grid>
 </UserControl>
