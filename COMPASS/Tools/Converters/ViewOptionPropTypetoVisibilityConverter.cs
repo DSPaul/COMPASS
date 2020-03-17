@@ -20,8 +20,8 @@ namespace COMPASS.Tools.Converters
                     if (value.GetType() == typeof(bool)) return Visibility.Visible;
                     break;
 
-                case "Float":
-                    if (value.GetType() == typeof(float)) return Visibility.Visible;
+                case "Number":
+                    if (value.GetType() == typeof(float) || value.GetType() == typeof(int) || value.GetType() == typeof(double)) return Visibility.Visible;
                     break;
             }
             return Visibility.Collapsed;
