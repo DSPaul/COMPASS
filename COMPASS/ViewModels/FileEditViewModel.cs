@@ -31,6 +31,7 @@ namespace COMPASS.ViewModels
             TagCheckCommand = new BasicCommand(Update_Taglist);
             DeleteFileCommand = new BasicCommand(DeleteFile);
             BrowseURLCommand = new BasicCommand(BrowseURL);
+            RegenArtCommand = new BasicCommand(RegenArt);
         }
 
         #region Properties
@@ -118,6 +119,16 @@ namespace COMPASS.ViewModels
         {
             if (TempFile.SourceURL == "") return;
             System.Diagnostics.Process.Start(TempFile.SourceURL);
+        }
+
+        public BasicCommand RegenArtCommand { get; private set; }
+        private void RegenArt()
+        {
+            CoverArtGenerator.ConvertPDF(TempFile, MVM.CurrentData.Folder);
+            string CovArt = TempFile.CoverArt;
+            //force refresh
+            TempFile.CoverArt = null;
+            TempFile.CoverArt = CovArt;
         }
         #endregion
     }
