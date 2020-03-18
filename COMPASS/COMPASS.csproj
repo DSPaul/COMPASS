@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\squirrel.windows.1.9.1\build\squirrel.windows.props" Condition="Exists('..\packages\squirrel.windows.1.9.1\build\squirrel.windows.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -8,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>COMPASS</RootNamespace>
     <AssemblyName>COMPASS</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -26,7 +27,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>11</ApplicationRevision>
+    <ApplicationRevision>14</ApplicationRevision>
     <ApplicationVersion>0.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -73,6 +74,15 @@
     <ApplicationIcon>Icons\compass_new.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DeltaCompressionDotNet, Version=1.1.0.0, Culture=neutral, PublicKeyToken=1d14d6e5194e7f4a, processorArchitecture=MSIL">
+      <HintPath>..\packages\DeltaCompressionDotNet.1.1.0\lib\net20\DeltaCompressionDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaCompressionDotNet.MsDelta, Version=1.1.0.0, Culture=neutral, PublicKeyToken=46b2138a390abf55, processorArchitecture=MSIL">
+      <HintPath>..\packages\DeltaCompressionDotNet.1.1.0\lib\net20\DeltaCompressionDotNet.MsDelta.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaCompressionDotNet.PatchApi, Version=1.1.0.0, Culture=neutral, PublicKeyToken=3e8888ee913ed789, processorArchitecture=MSIL">
+      <HintPath>..\packages\DeltaCompressionDotNet.1.1.0\lib\net20\DeltaCompressionDotNet.PatchApi.dll</HintPath>
+    </Reference>
     <Reference Include="Magick.NET-Q16-AnyCPU, Version=7.15.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=MSIL">
       <HintPath>..\packages\Magick.NET-Q16-AnyCPU.7.15.0\lib\net40\Magick.NET-Q16-AnyCPU.dll</HintPath>
     </Reference>
@@ -81,6 +91,30 @@
     </Reference>
     <Reference Include="MaterialDesignThemes.Wpf, Version=3.0.1.920, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MaterialDesignThemes.3.0.1\lib\net45\MaterialDesignThemes.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Squirrel, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\squirrel.windows.1.9.1\lib\Net45\NuGet.Squirrel.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpCompress, Version=0.17.1.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpCompress.0.17.1\lib\net45\SharpCompress.dll</HintPath>
+    </Reference>
+    <Reference Include="Splat, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Splat.1.6.2\lib\Net45\Splat.dll</HintPath>
+    </Reference>
+    <Reference Include="Squirrel, Version=1.9.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\squirrel.windows.1.9.1\lib\Net45\Squirrel.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -96,20 +130,20 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=3.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.3.7.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock, Version=3.8.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.8.1\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=3.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.3.7.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=3.8.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.8.1\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=3.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.3.7.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=3.8.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.8.1\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=3.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.3.7.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=3.8.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.8.1\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
     </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit, Version=3.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.3.7.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    <Reference Include="Xceed.Wpf.Toolkit, Version=3.8.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.8.1\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -287,5 +321,8 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\MaterialDesignThemes.3.0.1\build\MaterialDesignThemes.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MaterialDesignThemes.3.0.1\build\MaterialDesignThemes.targets'))" />
+    <Error Condition="!Exists('..\packages\squirrel.windows.1.9.1\build\squirrel.windows.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\squirrel.windows.1.9.1\build\squirrel.windows.props'))" />
+    <Error Condition="!Exists('..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets'))" />
   </Target>
+  <Import Project="..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets" Condition="Exists('..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets')" />
 </Project>
