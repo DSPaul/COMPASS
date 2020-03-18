@@ -1,7 +1,9 @@
 ﻿using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using ImageMagick;
+using Squirrel;
 using System;
+using System.Threading.Tasks;
 using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
@@ -15,8 +17,8 @@ namespace COMPASS.ViewModels
             CurrentFileViewModel = new FileListViewModel(this);
             TFViewModel = new TagsFiltersViewModel(this);
 
-            MagickNET.SetGhostscriptDirectory(@"C:\Users\pauld\Documents\COMPASS\COMPASS\Libraries");
-
+            MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            //CheckForUpdates();
             //Commands
             ChangeFileViewCommand = new SimpleCommand(ChangeFileView);
             ResetCommand = new BasicCommand(Reset);
@@ -131,5 +133,13 @@ namespace COMPASS.ViewModels
             CurrentImportViewModel = new ImportViewModel(this, (ImportMode)mode);
         } 
         #endregion
+
+        private async Task CheckForUpdates()
+        {
+            using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/DSPAUL/COMPASS"))
+            {
+              await mgr.Result.UpdateApp();
+            }
+        }
     }
 }
