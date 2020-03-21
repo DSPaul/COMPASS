@@ -51,24 +51,23 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border CornerRadius="15" Margin="10">
-                        <Border.Background>
-                            <SolidColorBrush Color="Gray" Opacity="0.5"/>
-                        </Border.Background>
+                    <Border CornerRadius="5" Margin="5" Height="160" Width="400" Background="#434343" SnapsToDevicePixels="True">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="15" Direction="300"/>
                         </Border.Effect>
-                        <Grid VerticalAlignment="Top">
+                        <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="70"/>
-                                <ColumnDefinition Width="125"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.Resources>
                                 <Style TargetType="TextBlock" x:Key="Type">
@@ -85,7 +84,7 @@
                                     <Setter Property="TextWrapping" Value="Wrap"/>
                                 </Style>
                             </Grid.Resources>
-                            <Image  Grid.Row="0" Grid.RowSpan="4"
+                            <Image Grid.Row="0" Grid.RowSpan="20" Grid.Column="0" MaxHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualHeight}"
                                    Source="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}}"/>
                             <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Type}" Text="Title:" />
                             <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Type}" Text="Author:" />
@@ -95,7 +94,15 @@
                             <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Author}" />
                             <TextBlock Grid.Row="2" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Publisher}" />
                             <TextBlock Grid.Row="3" Grid.Column="2" Style="{StaticResource Data}" Text="{Binding Version}" />
-                        </Grid>
+                        <ItemsControl Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Foreground="Black" VerticalAlignment="Center" Margin="10,3"
+                                ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                    </Grid>
                     </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
