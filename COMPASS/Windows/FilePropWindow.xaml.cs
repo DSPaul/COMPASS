@@ -38,6 +38,5 @@ namespace COMPASS
         {
             MainGrid.Focus();
         }
-
     }
 }
