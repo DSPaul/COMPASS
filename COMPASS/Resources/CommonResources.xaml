@@ -573,7 +573,7 @@
             <Border.Background>
                 <SolidColorBrush Color="{Binding BackgroundColor}"/>
             </Border.Background>
-            <TextBlock Text="{Binding Content}" Margin="7,2" Foreground="White" FontSize="15"/>
+            <TextBlock Text="{Binding Content}" Margin="7,2" Foreground="White" FontSize="14"/>
         </Border>
     </DataTemplate>
 
