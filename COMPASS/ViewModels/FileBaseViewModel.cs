@@ -118,7 +118,8 @@ namespace COMPASS.ViewModels
         {
             MVM.CurrentEditViewModel = new FileEditViewModel(MVM, MVM.CurrentFileViewModel.SelectedFile);
             FilePropWindow fpw = new FilePropWindow((FileEditViewModel)MVM.CurrentEditViewModel);
-            fpw.Show();
+            fpw.ShowDialog();
+            fpw.Topmost = true;
         }
 
         public BasicCommand DeleteFileCommand { get; private set; }

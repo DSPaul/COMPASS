@@ -51,53 +51,53 @@ namespace COMPASS
         }
 
         #region Windows Tile Bar Buttons
-                private void MinimizeWindow(object sender, RoutedEventArgs e)
+        private void MinimizeWindow(object sender, RoutedEventArgs e)
+        {
+            App.Current.MainWindow.WindowState = WindowState.Minimized;
+        }
+        private void WindowsBar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                WindowState = WindowState.Maximized;
+                DragWindow = false;
+            }
+
+            else
+            {
+                DragMove();
+                if (WindowState == WindowState.Maximized) DragWindow = WindowState == WindowState.Maximized;
+            }
+        }
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (DragWindow)
+            {
+                DragWindow = false;
+
+                var point = e.MouseDevice.GetPosition(this);
+
+                Left = point.X - (RestoreBounds.Width * 0.5);
+                Top = point.Y - 20;
+
+                WindowState = WindowState.Normal;
+
+                try
                 {
-                    App.Current.MainWindow.WindowState = WindowState.Minimized;
+                    DragMove();
                 }
-                private void WindowsBar_MouseDown(object sender, MouseButtonEventArgs e)
+
+                catch (InvalidOperationException)
                 {
-                    if (e.ClickCount == 2)
-                    {
-                        WindowState = WindowState.Maximized;
-                        DragWindow = false;
-                    }
-
-                    else
-                    {
-                        DragMove();
-                        if (WindowState == WindowState.Maximized) DragWindow = WindowState == WindowState.Maximized;
-                    }
-                }
-                private void OnMouseMove(object sender, MouseEventArgs e)
-                {
-                    if (DragWindow)
-                    {
-                        DragWindow = false;
-
-                        var point = e.MouseDevice.GetPosition(this);
-
-                        Left = point.X - (RestoreBounds.Width * 0.5);
-                        Top = point.Y - 20;
-
-                        WindowState = WindowState.Normal;
-
-                        try
-                        {
-                            DragMove();
-                        }
-
-                        catch (InvalidOperationException)
-                        {
-                            WindowState = WindowState.Maximized;
-                        }
-                   
-                    }
-                }
-                private void CloseButton_Click(object sender, RoutedEventArgs e)
-                {
-                    this.Close();
-                }
+                    WindowState = WindowState.Maximized;
+                }    
+            }
+        }
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            //this.Close();
+            Application.Current.Shutdown();
+        }
         #endregion
 
         private void ViewConfig_Click(object sender, RoutedEventArgs e)

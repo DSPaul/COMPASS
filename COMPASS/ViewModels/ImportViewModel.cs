@@ -116,7 +116,8 @@ namespace COMPASS.ViewModels
         {
             MVM.CurrentEditViewModel = new FileEditViewModel(MVM,null);
             FilePropWindow fpw = new FilePropWindow((FileEditViewModel)MVM.CurrentEditViewModel);
-            fpw.Show();
+            fpw.ShowDialog();
+            fpw.Topmost = true;
         }
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
