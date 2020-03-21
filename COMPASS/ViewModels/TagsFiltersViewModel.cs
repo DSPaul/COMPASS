@@ -81,7 +81,8 @@ namespace COMPASS.ViewModels
             {
                 MVM.CurrentEditViewModel = new TagEditViewModel(MVM, Context);
                 TagPropWindow tpw = new TagPropWindow((TagEditViewModel)MVM.CurrentEditViewModel);
-                tpw.Show();
+                tpw.ShowDialog();
+                tpw.Topmost = true;
             }
         }
 
