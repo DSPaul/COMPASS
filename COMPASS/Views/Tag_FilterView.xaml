@@ -103,12 +103,39 @@
                         </Setter.Value>
                     </Setter>
                 </Style>
+                <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+                    <Border CornerRadius="5" Margin="0,3">
+                        <Border.Background>
+                            <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
+                        </Border.Background>
+                        <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="14"/>
+                        <Border.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Assign to Files"/>
+                                <MenuItem Header="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
+                                <MenuItem Header="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
+                            </ContextMenu>
+                        </Border.ContextMenu>
+                    </Border>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+                    <Border CornerRadius="5" Margin="0,3" Background="{x:Null}">
+                        <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="LightGray" FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
+                        <Border.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
+                                <MenuItem Header="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
+                            </ContextMenu>
+                        </Border.ContextMenu>
+                    </Border>
+                </HierarchicalDataTemplate>
+                <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
             </TabControl.Resources>
             <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple">
                 <Border>
                     <TreeView x:Name="TagTree" Grid.Column="1" Grid.Row="1" BorderBrush="{x:Null}"
                                     ItemsSource="{Binding TreeViewSource}" Grid.ColumnSpan="2" Background="{x:Null}"
-                                    SelectedItemChanged="TagTree_SelectedItemChanged" 
+                                    SelectedItemChanged="TagTree_SelectedItemChanged" ItemTemplateSelector="{StaticResource TagTemplateSelector}"
                                     MouseRightButtonDown="TagTree_MouseRightButtonDown">
                         <TreeView.Resources>
                             <Style TargetType="{x:Type TreeViewItem}">
@@ -122,23 +149,6 @@
                                 </Style.Triggers>
                             </Style>
                         </TreeView.Resources>
-                        <TreeView.ItemTemplate>
-                            <HierarchicalDataTemplate DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                                <Border CornerRadius="5" Margin="0,3">
-                                    <Border.Background>
-                                        <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
-                                    </Border.Background>
-                                    <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/>
-                                    <Border.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Assign to Files"/>
-                                            <MenuItem Header="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
-                                            <MenuItem Header="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
-                                        </ContextMenu>
-                                    </Border.ContextMenu>
-                                </Border>
-                            </HierarchicalDataTemplate>
-                        </TreeView.ItemTemplate>
                     </TreeView>
                 </Border>
             </TabItem>

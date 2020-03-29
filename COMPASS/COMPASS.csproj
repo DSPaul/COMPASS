@@ -164,6 +164,7 @@
     <Compile Include="Tools\Enums.cs" />
     <Compile Include="Tools\FilterHandler.cs" />
     <Compile Include="Tools\Converters\StringtoVisibiltyConverter.cs" />
+    <Compile Include="Tools\TagTemplateSelector.cs" />
     <Compile Include="ViewModels\BaseEditViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\Commands\BasicCommand.cs" />

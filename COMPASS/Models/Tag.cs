@@ -19,7 +19,7 @@ namespace COMPASS.Models
 
         public Tag(ObservableCollection<Tag> alltags)
         {
-            _allTags = alltags; 
+            _allTags = alltags;
             int tempID = 0;
             while (_allTags.Any(t => t.ID == tempID))
             {
@@ -37,6 +37,7 @@ namespace COMPASS.Models
         private string _Content = "";
         private int _ParentID = -1;
         private Color _BackgroundColor;
+        private bool _isGroup;
 
         #region Getter and Setters
         public ObservableCollection<Tag> Items
@@ -66,6 +67,12 @@ namespace COMPASS.Models
             get { return _BackgroundColor; }
             set { SetProperty(ref _BackgroundColor, value); }
         }
+
+        public bool IsGroup
+        {
+            get { return _isGroup; }
+            set { SetProperty(ref _isGroup, value); }
+        }
         #endregion
 
         public Tag GetParent()
@@ -85,6 +92,7 @@ namespace COMPASS.Models
             ID = t.ID;
             Content = t.Content;
             ParentID = t.ParentID;
+            IsGroup = t.IsGroup;
             BackgroundColor = t.BackgroundColor;
             Items = new ObservableCollection<Tag>(t.Items);
             _allTags = t._allTags;
