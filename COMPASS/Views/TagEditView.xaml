@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:COMPASS.Views"
             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
+            xmlns:Tools="clr-namespace:COMPASS.Tools"
             xmlns:Models="clr-namespace:COMPASS.Models"
             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -36,11 +36,26 @@
                 <Setter Property="TextWrapping" Value="Wrap"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
+            <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+                <Border CornerRadius="5" Margin="0,3">
+                    <Border.Background>
+                        <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
+                    </Border.Background>
+                    <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="White" FontSize="13"/>
+                </Border>
+            </HierarchicalDataTemplate>
+            <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+                <Border CornerRadius="5" Margin="0,3" Background="{x:Null}">
+                    <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="LightGray" FontWeight="Bold" FontSize="15" Typography.Capitals="AllSmallCaps"/>
+                </Border>
+            </HierarchicalDataTemplate>
+            <Tools:TagTemplateSelector x:Key="TagDataTemplateSelector"/>
             <Converters:BooltoVisibilityConverter x:Key ="BooltoVisibilityConverter"/>
         </Grid.Resources>
         <Grid  x:Name="InfoGrid" Visibility="{Binding ShowInfoGrid, Converter={StaticResource BooltoVisibilityConverter}}" Grid.Column ="0" Margin="10,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height ="5"/>
+                <RowDefinition Height =" auto"/>
                 <RowDefinition Height =" auto"/>
                 <RowDefinition Height =" auto"/>
                 <RowDefinition Height =" auto"/>
@@ -54,7 +69,11 @@
                 <TextBox x:Name="TagNameTextBlock" BorderBrush="{x:Null}"
                          Text="{Binding TempTag.Content, TargetNullValue=''}" Background="{x:Null}" Foreground="White" Margin="10,0"/>
             </Border>
-            <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Grid.Row="3">
+                <Label Content="Group Tag:"/>
+                <CheckBox x:Name="IsGroupCheckBox" HorizontalAlignment="Right" IsChecked="{Binding TempTag.IsGroup}"/>
+            </StackPanel>
+            <StackPanel Grid.Row="4" Orientation="Horizontal" Visibility="{Binding ElementName=IsGroupCheckBox, Path=IsChecked, Converter= {StaticResource BooltoVisibilityConverter}, ConverterParameter=True}">
                 <Label Content="Color:"/>
                 <ToggleButton x:Name="ShowColorSelection" IsChecked="{Binding ShowColorSelection, Mode=TwoWay}">
                     <ToggleButton.Background>
@@ -68,19 +87,49 @@
                     </ToggleButton.Template>
                 </ToggleButton>
             </StackPanel>
-            <StackPanel Grid.Row="4" Orientation="Horizontal">
+            <StackPanel Grid.Row="5" Orientation="Horizontal">
                 <Label Content="Parent:"/>
                 <Border CornerRadius="5" Margin="0,5" x:Name="ShowParentSelectionBorder">
-                    <Border.Background>
-                        <SolidColorBrush Color="{Binding ParentTempTag.BackgroundColor}"/>
-                    </Border.Background>
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ParentTempTag.IsGroup}" Value="True">
+                                    <Setter Property="Background" Value="{x:Null}"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ParentTempTag.IsGroup}" Value="False">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <SolidColorBrush Color="{Binding ParentTempTag.BackgroundColor}"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
                     <ToggleButton x:Name="ShowParentSelectionBtn" IsChecked="{Binding ShowParentSelection, Mode=TwoWay}"
-                                        FontSize="13" Foreground="White" 
+                                        FontSize="13" VerticalContentAlignment="Center" Margin="5,0"
                                   Content="{Binding ParentTempTag.Content, TargetNullValue='None', FallbackValue='None'}">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ParentTempTag.IsGroup}" Value="True">
+                                        <Setter Property="Foreground" Value="LightGray"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="Typography.Capitals" Value="AllSmallCaps"/>
+                                        <Setter Property="FontSize" Value="15"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ParentTempTag.IsGroup}" Value="False">
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
                         <ToggleButton.Template>
                             <ControlTemplate>
-                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}" 
-                                           VerticalAlignment="Center" Margin="5,0"/>
+                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}"
+                                           FontWeight="{Binding FontWeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}"
+                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}"
+                                           />
                             </ControlTemplate>
                         </ToggleButton.Template>
                     </ToggleButton>
@@ -93,7 +142,7 @@
                     <materialDesign:PackIcon Kind="WindowClose"/>
                 </Button>
             </StackPanel>
-            <Grid Grid.Row="5">
+            <Grid Grid.Row="6">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
@@ -115,7 +164,7 @@
         <ScrollViewer x:Name="ParentSelection" PreviewMouseWheel="ParentSelection_PreviewMouseWheel" Grid.Column="1"
                       Visibility="{Binding ShowParentSelection, Converter={StaticResource BooltoVisibilityConverter}}">
             <StackPanel HorizontalAlignment="Center">
-                <TreeView x:Name="ParentSelectionTree" BorderBrush="{x:Null}" ItemsSource="{Binding TreeViewSource}"
+                <TreeView x:Name="ParentSelectionTree" BorderBrush="{x:Null}" ItemsSource="{Binding TreeViewSource}" ItemTemplateSelector="{StaticResource TagDataTemplateSelector}"
                                     Background="{x:Null}" HorizontalAlignment="Left" SelectedItemChanged="TagTree_SelectedItemChanged">
                     <TreeView.Resources>
                         <Style TargetType="{x:Type TreeViewItem}">
@@ -128,16 +177,6 @@
                             </Style.Triggers>
                         </Style>
                     </TreeView.Resources>
-                    <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                            <Border CornerRadius="10" Margin="0,3">
-                                <Border.Background>
-                                    <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
-                                </Border.Background>
-                                <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="White" FontSize="13"/>
-                            </Border>
-                        </HierarchicalDataTemplate>
-                    </TreeView.ItemTemplate>
                 </TreeView>
                 <Button Margin="5" Background="Red" Command="{Binding CancelParentSelectionCommand}" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal">

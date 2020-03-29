@@ -8,6 +8,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:Models ="clr-namespace:COMPASS.Models"
         xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
+        xmlns:Tools ="clr-namespace:COMPASS.Tools"
         mc:Ignorable="d"
         Title="File Properties" Height="450" Width="1000" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
@@ -74,6 +75,29 @@
             <Style TargetType="Button">
                 <Setter Property="Template" Value="{StaticResource  Btn}"/>
             </Style>
+            <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+                <Border CornerRadius="5" Margin="0,3">
+                    <Border.Background>
+                        <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
+                    </Border.Background>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Background="{x:Null}" BorderBrush="#FF626262" Foreground="#FF979797"
+                                       Margin="5,0,0,0" Command="{Binding Path=DataContext.TagCheckCommand,
+                                       RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeView}}}"
+                                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                                       IsChecked="{Binding Selected, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="White"/>
+                    </StackPanel>
+                </Border>
+            </HierarchicalDataTemplate>
+            <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+                <Border CornerRadius="5" Margin="0,3" Background="{x:Null}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="LightGray" Typography.Capitals="AllSmallCaps" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+            </HierarchicalDataTemplate>
+            <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
         </Grid.Resources>
 
         <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="100" x:Name="CoverIm" Margin="10,0" Width="300">
@@ -182,7 +206,7 @@
         <Rectangle Grid.Column="2" Grid.Row="1" Grid.RowSpan="16" Fill="DarkGray" Width="3" Margin="10,0"/>
 
         <TreeView x:Name="TagSelection" Grid.Column="3" Grid.Row="1" BorderBrush="{x:Null}"
-                  ItemsSource="{Binding TreeViewSource}" Background="{x:Null}"
+                  ItemsSource="{Binding TreeViewSource}" Background="{x:Null}" ItemTemplateSelector="{StaticResource TagTemplateSelector}"
                   Grid.RowSpan="16" Visibility="Visible" Margin="-15,0,10,0">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}">
@@ -190,23 +214,6 @@
                     <Setter Property="Focusable" Value="False"/>
                 </Style>
             </TreeView.Resources>
-            <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                    <Border CornerRadius="5" Margin="0,3">
-                        <Border.Background>
-                            <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
-                        </Border.Background>
-                        <StackPanel Orientation="Horizontal">
-                            <CheckBox Background="{x:Null}" BorderBrush="#FF626262" Foreground="#FF979797"
-                                       Margin="5,0,0,0" Command="{Binding Path=DataContext.TagCheckCommand,
-                                       RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeView}}}"
-                                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
-                                       IsChecked="{Binding Selected, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                            <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="White"/>
-                        </StackPanel>
-                    </Border>
-                </HierarchicalDataTemplate>
-            </TreeView.ItemTemplate>
         </TreeView>
 
         <!--#region Confirmation Buttons -->
