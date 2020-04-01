@@ -96,6 +96,10 @@ namespace COMPASS
                     }
                 }
             }
+            else
+            {
+                RootTags = new ObservableCollection<Tag>();
+            }
         }
 
         //Loads AllFiles list from Files
@@ -127,7 +131,10 @@ namespace COMPASS
                 //Sort them
                 AuthorList = new ObservableCollection<string>(AuthorList.OrderBy(n => n));
                 PublisherList = new ObservableCollection<string>(PublisherList.OrderBy(n => n));
-
+            }
+            else
+            {
+                AllFiles = new ObservableCollection<MyFile>();
             }
         }
         #endregion
