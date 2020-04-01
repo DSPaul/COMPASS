@@ -100,117 +100,260 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width ="auto"/>
                 <ColumnDefinition Width ="auto"/>
+                <ColumnDefinition Width ="auto"/>
                 <ColumnDefinition Width ="*"/>
                 <ColumnDefinition Width ="auto"/>
             </Grid.ColumnDefinitions>
+
+            <Grid.Resources>
+                <!--#region Dropdownbox Style-->
+                    <ControlTemplate x:Key="RPGArrow" TargetType="{x:Type ToggleButton}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="20" />
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="Border" Grid.ColumnSpan="3" CornerRadius="4,0,0,4" Background="Gray" BorderThickness="0" ClipToBounds="True">
+                                <!--<Border BorderThickness="1" Margin="5" Background="{x:Null}" BorderBrush="Black">
+                                    <Border.Effect>
+                                        <DropShadowEffect ShadowDepth="0" BlurRadius="4" />
+                                    </Border.Effect>
+                                </Border>-->
+                            </Border>
+                            <Path x:Name="Arrow" Grid.Column="1" Fill="#FF494949" HorizontalAlignment="Center"
+                                 VerticalAlignment="Center" Data="M0,0 L4,5 L8,0 "/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="ToggleButton.IsMouseOver" Value="true">
+                                <Setter TargetName="Arrow" Property="RenderTransformOrigin" Value="0.5, 0.5"/>
+                                <Setter TargetName="Arrow" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleY="1.3" ScaleX="1.3"/>
+                                        </TransformGroup>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="Border" Property="Background" Value="Gray" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                    <Style x:Key="RPGDropdownStyle" TargetType="{x:Type ComboBox}">
+                        <Setter Property="SnapsToDevicePixels" Value="true"/>
+                        <Setter Property="OverridesDefaultStyle" Value="true"/>
+                        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+                        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+                        <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+                        <Setter Property="MinWidth" Value="120"/>
+                        <Setter Property="MinHeight" Value="20"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ComboBox}">
+                                    <Grid>
+                                        <ToggleButton Template="{StaticResource RPGArrow}" Focusable="false" ClickMode="Press"
+                                                    IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"/>
+                                        <ContentPresenter Name="ContentSite" IsHitTestVisible="False"  Content="{TemplateBinding SelectionBoxItem}"
+                                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                            ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                            Margin="10,3,25,3" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}"
+                                            AllowsTransparency="True" Focusable="False" PopupAnimation="Slide" VerticalOffset="-6">
+                                            <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}"
+                                                MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                                <Border x:Name="DropDownBorder" Background="Gray" BorderThickness="0" CornerRadius="0,0,4,4"/>
+                                                <ScrollViewer Margin="0,6,0,6" SnapsToDevicePixels="True">
+                                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                                </ScrollViewer>
+                                            </Grid>
+                                        </Popup>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="HasItems" Value="false">
+                                            <Setter TargetName="DropDownBorder" Property="MinHeight" Value="50"/>
+                                        </Trigger>
+                                        <Trigger Property="IsGrouping" Value="true">
+                                            <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+
+                    <Style x:Key="{x:Type ComboBoxItem}" TargetType="{x:Type ComboBoxItem}">
+                        <Setter Property="SnapsToDevicePixels" Value="true"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="OverridesDefaultStyle" Value="true"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                                    <Border Name="Border" Padding="10,0" SnapsToDevicePixels="true" BorderThickness="0">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsHighlighted" Value="true">
+                                            <Setter TargetName="Border" Property="Background" Value="DimGray"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <!--#endregion-->
+            </Grid.Resources>
 
             <StackPanel Orientation="Horizontal" Margin="10,0">
                 <Image Source="/Icons/Compass_new.png" Width="35" SnapsToDevicePixels="True"/>
                 <TextBlock Text="COMPASS" VerticalAlignment="Center" Margin="10,0"/>
             </StackPanel>
 
-            <Border Grid.Column="1" CornerRadius="15" MinWidth="200"
-                        Background="#FFB7B7B7" OpacityMask="#FF222222" Margin="30,5">
+            <Border Grid.Column="1" CornerRadius="4" MinWidth="300"
+                        Background="Gray" OpacityMask="#FF222222" Margin="30,5">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width ="*"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Search"  Margin="10,0,0,0"
+                    <TextBlock Text="Search"  Margin="10,0,0,0" VerticalAlignment="Center"
                                Visibility="{Binding FilterHandler.SearchTerm, Converter={StaticResource StringtoVisibilityConverter}}"/>
                     <TextBox Grid.Column="0" x:Name="Searchbox" Margin="10,0,0,0"
                              Text="{Binding FilterHandler.SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
-                             Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF636363" />
+                             Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" />
                     <materialDesign:PackIcon Kind="Search" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Right" 
                                 Margin="0,0,10,0" Grid.Column="1"/>
                 </Grid>
             </Border>
 
+            <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="50,5">
+                    <ComboBox  Style="{StaticResource RPGDropdownStyle}" SelectedValue="{Binding CurrentFolder, Mode=TwoWay}"
+                    ItemsSource="{Binding Folders}"/>
+                    <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
+                    <Border Background="Gray" CornerRadius="0,4,4,0">
+                        <Grid>
+                            <Grid.Resources>
+                                <Style TargetType="{x:Type ToggleButton}">
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                                <Border>
+                                                    <Border.Background>
+                                                        <SolidColorBrush Color="Black" Opacity="0"/>
+                                                    </Border.Background>
+                                                    <ContentPresenter/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Grid.Resources>
+                            <ToggleButton Style="{x:Null}" Background="{x:Null}" BorderThickness="0" x:Name="ShowFolderCreation"
+                                          Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=True}">
+                                <materialDesign:PackIcon Kind="Add" Foreground="#FF494949" Width="30" Height="30"/>
+                            </ToggleButton>
+                            <StackPanel Orientation="Horizontal" x:Name="FolderCreation"
+                                        Visibility="{Binding ElementName=ShowFolderCreation, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBox x:Name="NewFolderName" Text="Type Name Here" FontSize="16" VerticalAlignment="Center" Background="{x:Null}"
+                                         Foreground="White" Margin="5,0" BorderThickness="0" MinWidth="50"/>
+                                <ToggleButton Background="{x:Null}" BorderThickness="0" Command="{Binding CreateFolderCommand}"
+                                              CommandParameter="{Binding ElementName=NewFolderName, Path=Text}"
+                                              IsChecked="{Binding ElementName=ShowFolderCreation, Path=IsChecked}">
+                                    <materialDesign:PackIcon Kind="Check" Foreground="Green" Width="30" Height="30"/>
+                                </ToggleButton>
+                                <ToggleButton Background="{x:Null}" BorderThickness="0"
+                                              IsChecked="{Binding ElementName=ShowFolderCreation, Path=IsChecked}">
+                                    <materialDesign:PackIcon Kind="Close" Foreground="Red" Width="30" Height="30"/>
+                                </ToggleButton>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+            </StackPanel>
+
             <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Stretch" Grid.Column="3">
-                <StackPanel.Resources>
-                    <Style TargetType="{x:Type Button}" >
-                        <Setter Property="Width" Value="40"/>
-                        <Setter Property="Padding" Value="7"/>
-                        <Setter Property="Background">
-                            <Setter.Value>
-                                <SolidColorBrush Color="Black" Opacity="0"/>
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type Button}">
-                                    <Border Background="{TemplateBinding Background}" HorizontalAlignment="Stretch">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" Value="Gray" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                    <Style TargetType="{x:Type ToggleButton}" >
-                        <Setter Property="Width" Value="40"/>
-                        <Setter Property="Padding" Value="7"/>
-                        <Setter Property="Background">
-                            <Setter.Value>
-                                <SolidColorBrush Color="Black" Opacity="0"/>
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                    <Border Background="{TemplateBinding Background}" HorizontalAlignment="Stretch">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" Value="Gray" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </StackPanel.Resources>
-
-                <Button x:Name="MinimizeButton"
-                        Click="MinimizeWindow" BorderBrush="{x:Null}">
-                    <materialDesign:PackIcon Kind="WindowMinimize" VerticalAlignment="Bottom"/>
-                </Button>
-
-                <ToggleButton x:Name="MaximizeButton" IsChecked="{Binding WindowState, RelativeSource={RelativeSource FindAncestor,
-                        AncestorType=Window}, Converter={StaticResource IsMaximizedConverter}, Mode=TwoWay}"
-                        BorderBrush="{x:Null}" >
-                    <Grid>
-                        <materialDesign:PackIcon Kind="WindowMaximize"  x:Name="Maximizeimage" Width="15"
-                          Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
-                            AncestorType={x:Type ToggleButton}}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
-                        <materialDesign:PackIcon Kind="WindowRestore"  x:Name="NotMaximizeimage" Width="15"
-                            Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
-                            AncestorType={x:Type ToggleButton}}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}"/>
-                    </Grid>
-                </ToggleButton>
-
-                <Button x:Name="CloseButton"
-                        Click="CloseButton_Click" BorderBrush="{x:Null}">
-                    <materialDesign:PackIcon Kind="WindowClose"/>
-                    <Button.Style>
-                        <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                HorizontalAlignment="Right"
+                VerticalAlignment="Stretch" Grid.Column="3">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type Button}" >
+                            <Setter Property="Width" Value="40"/>
+                            <Setter Property="Padding" Value="7"/>
+                            <Setter Property="Background">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="Black" Opacity="0"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Border Background="{TemplateBinding Background}" HorizontalAlignment="Stretch">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="true">
-                                    <Setter Property="Background" Value="Red" />
+                                    <Setter Property="Background" Value="Gray" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
-                    </Button.Style>
-                </Button>
-            </StackPanel>
+                        <Style TargetType="{x:Type ToggleButton}" >
+                            <Setter Property="Width" Value="40"/>
+                            <Setter Property="Padding" Value="7"/>
+                            <Setter Property="Background">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="Black" Opacity="0"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                        <Border Background="{TemplateBinding Background}" HorizontalAlignment="Stretch">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter Property="Background" Value="Gray" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Resources>
+
+                    <Button x:Name="MinimizeButton"
+                    Click="MinimizeWindow" BorderBrush="{x:Null}">
+                        <materialDesign:PackIcon Kind="WindowMinimize" VerticalAlignment="Bottom"/>
+                    </Button>
+
+                    <ToggleButton x:Name="MaximizeButton" IsChecked="{Binding WindowState, RelativeSource={RelativeSource FindAncestor,
+                    AncestorType=Window}, Converter={StaticResource IsMaximizedConverter}, Mode=TwoWay}"
+                    BorderBrush="{x:Null}" >
+                        <Grid>
+                            <materialDesign:PackIcon Kind="WindowMaximize"  x:Name="Maximizeimage" Width="15"
+                        Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
+                        AncestorType={x:Type ToggleButton}}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
+                            <materialDesign:PackIcon Kind="WindowRestore"  x:Name="NotMaximizeimage" Width="15"
+                        Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
+                        AncestorType={x:Type ToggleButton}}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}"/>
+                        </Grid>
+                    </ToggleButton>
+
+                    <Button x:Name="CloseButton"
+                    Click="CloseButton_Click" BorderBrush="{x:Null}">
+                        <materialDesign:PackIcon Kind="WindowClose"/>
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="true">
+                                        <Setter Property="Background" Value="Red" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
         </Grid>
         <!--#endregion-->
 
@@ -241,7 +384,7 @@
                         </Trigger>
                     </Style.Triggers>
                 </Style>
-                    <Style TargetType="{x:Type CustomControls:ExpandingButton}">
+                <Style TargetType="{x:Type CustomControls:ExpandingButton}">
                         <Setter Property="Margin" Value="10,4"/>
                     </Style>
                 <Style TargetType="{x:Type TabControl}">
@@ -289,10 +432,8 @@
 
             <UserControl Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Content="{Binding TFViewModel}"/>
             
-
             <Rectangle Grid.ColumnSpan="10" Grid.Row="1" Fill="#FFB9B9B9" Height="3" Margin="0,10"/>
             
-
             <CustomControls:ExpandingButton Grid.Column="1" Grid.Row="2" HiddenContent="{Binding AddTagViewModel}">
                 <CustomControls:ExpandingButton.Toggle>
                     <Button Tools:AP.IconKind="TagPlusOutline" Style="{StaticResource SquareBtn}" 
@@ -300,23 +441,23 @@
                 </CustomControls:ExpandingButton.Toggle>
             </CustomControls:ExpandingButton>
 
-                <CustomControls:ExpandingButton Grid.Column="1" Grid.Row="3">
-                    <CustomControls:ExpandingButton.Toggle>
-                        <Button Tools:AP.IconKind="FileImportOutline" 
-                                Style="{StaticResource SquareBtn}" Content="Import"/>
-                    </CustomControls:ExpandingButton.Toggle>
-                    <CustomControls:ExpandingButton.HiddenContent>
-                        <StackPanel>
-                            <Button Tools:AP.IconKind="FilePdfOutline" Style="{StaticResource SquareBtn}" Content="From PDF"
-                                    Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Pdf}"/>
-                            <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource SquareBtn}" Content="Manual"
-                                    Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Manual}"/>
-                        </StackPanel>
-                    </CustomControls:ExpandingButton.HiddenContent>
-                </CustomControls:ExpandingButton>
+            <CustomControls:ExpandingButton Grid.Column="1" Grid.Row="3">
+                <CustomControls:ExpandingButton.Toggle>
+                    <Button Tools:AP.IconKind="FileImportOutline" 
+                            Style="{StaticResource SquareBtn}" Content="Import"/>
+                </CustomControls:ExpandingButton.Toggle>
+                <CustomControls:ExpandingButton.HiddenContent>
+                    <StackPanel>
+                        <Button Tools:AP.IconKind="FilePdfOutline" Style="{StaticResource SquareBtn}" Content="From PDF"
+                                Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Pdf}"/>
+                        <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource SquareBtn}" Content="Manual"
+                                Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Manual}"/>
+                    </StackPanel>
+                </CustomControls:ExpandingButton.HiddenContent>
+            </CustomControls:ExpandingButton>
 
-                <Button x:Name="SettingsBtn" Grid.Column="1" Grid.Row="4" Style="{StaticResource SquareBtn}"
-                    Tools:AP.IconKind="Settings" Content="Settings" Margin="10,4"/>
+            <Button x:Name="SettingsBtn" Grid.Column="1" Grid.Row="4" Style="{StaticResource SquareBtn}"
+                Tools:AP.IconKind="Settings" Content="Settings" Margin="10,4"/>
 
             
         </Grid>
