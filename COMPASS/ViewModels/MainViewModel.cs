@@ -3,6 +3,8 @@ using COMPASS.ViewModels.Commands;
 using ImageMagick;
 using Squirrel;
 using System;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
 using static COMPASS.Tools.Enums;
 
@@ -12,10 +14,14 @@ namespace COMPASS.ViewModels
     {
         public MainViewModel(string FolderName)
         {
-            currentData = new Data(FolderName);
-            filterHandler = new FilterHandler(currentData);
-            CurrentFileViewModel = new FileListViewModel(this);
-            TFViewModel = new TagsFiltersViewModel(this);
+            //Get all RPG systems by folder name
+            Folders = new ObservableCollection<string>();
+            string [] FullPathFolders = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\");
+            foreach(string p in FullPathFolders){
+                Folders.Add(Path.GetFileName(p));
+            }
+
+            CurrentFolder = FolderName;
 
             MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory);
             //CheckForUpdates();
@@ -24,9 +30,33 @@ namespace COMPASS.ViewModels
             ResetCommand = new BasicCommand(Reset);
             AddTagCommand = new BasicCommand(AddTag);
             ImportFilesCommand = new SimpleCommand(ImportFiles);
+            CreateFolderCommand = new SimpleCommand(CreateFolder);
         }
 
         #region Properties
+        private ObservableCollection<string> _Folders;
+        public ObservableCollection<string> Folders
+        {
+            get { return _Folders; }
+            set { SetProperty(ref _Folders, value); }
+        }
+
+        private string currentFolder;
+        public string CurrentFolder
+        {
+            get { return currentFolder; }
+            set
+            {
+                if (CurrentData != null)
+                {
+                    CurrentData.SaveFilesToFile();
+                    CurrentData.SaveTagsToFile();
+                }
+                
+                ChangeFolder(value);
+                SetProperty(ref currentFolder, value);
+            }
+        }
 
         //Data 
         private Data currentData;
@@ -132,8 +162,26 @@ namespace COMPASS.ViewModels
         {
             CurrentImportViewModel = new ImportViewModel(this, (ImportMode)mode);
         } 
+
+        //Change Folder
+        public void ChangeFolder(string folder)
+        {
+            CurrentData = new Data(folder);
+            FilterHandler = new FilterHandler(currentData);
+            CurrentFileViewModel = new FileListViewModel(this);
+            TFViewModel = new TagsFiltersViewModel(this);
+        }
         #endregion
 
+        //Add new Folder/collection/RPG System
+        public SimpleCommand CreateFolderCommand { get; private set; }
+        public void CreateFolder(object folder)
+        {
+            string f = (string)folder;
+            Directory.CreateDirectory((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + f + @"\CoverArt"));
+            _Folders.Add(f);
+            CurrentFolder = f;
+        }
         private async Task CheckForUpdates()
         {
             using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/DSPAUL/COMPASS"))
