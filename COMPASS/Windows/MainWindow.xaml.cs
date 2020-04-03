@@ -41,7 +41,12 @@ namespace COMPASS
         //removes tag from filter list when clicked
         private void ActiveTag_Click(object sender, RoutedEventArgs e)
         {
-            if((Tag)CurrentTagList.SelectedItem != null) MainViewModel.FilterHandler.RemoveTagFilter((Tag)CurrentTagList.SelectedItem);
+            if ((Tag)CurrentTagList.SelectedItem != null)
+            {
+                Tag t = (Tag)CurrentTagList.SelectedItem;
+                if (!t.GetType().IsSubclassOf(typeof(Tag))) MainViewModel.FilterHandler.RemoveTagFilter(t);
+                else MainViewModel.FilterHandler.ActiveFilters.Remove(t);
+            }
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

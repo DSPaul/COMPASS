@@ -151,6 +151,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\FilterTag.cs" />
     <Compile Include="Models\MyMenuItem.cs" />
     <Compile Include="Models\ObservableObject.cs" />
     <Compile Include="Models\TreeViewNode.cs" />
