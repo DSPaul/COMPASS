@@ -20,5 +20,11 @@ namespace COMPASS.Tools
             Pdf,
             Manual
         }
+
+        public enum MetaData
+        {
+            Author,
+            Publisher
+        }
     }
 }

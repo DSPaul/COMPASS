@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
 {
@@ -18,6 +20,7 @@ namespace COMPASS.ViewModels
             AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
             EditTagCommand = new BasicCommand(EditTag);
             DeleteTagCommand = new BasicCommand(DeleteTag);
+            ClearFiltersCommand = new BasicCommand(ClearFilters);
         }
 
         #region Properties
@@ -51,13 +54,13 @@ namespace COMPASS.ViewModels
         {
             get
             {
-                foreach(TreeViewNode t in AllTreeViewNodes)
+                foreach (TreeViewNode t in AllTreeViewNodes)
                 {
                     if (t.Selected) return t.Tag;
                 }
                 return null;
             }
-            set 
+            set
             {
                 foreach (TreeViewNode t in AllTreeViewNodes)
                 {
@@ -67,14 +70,40 @@ namespace COMPASS.ViewModels
             }
         }
 
+        //Selected Autor in FilterTab
+        private string selectedAuthor;
+        public string SelectedAuthor
+        {
+            get { return selectedAuthor; }
+            set
+            {
+                SetProperty(ref selectedAuthor, value);
+                Tag AuthorTag = new FilterTag(MVM.FilterHandler.ActiveFilters,MetaData.Author) { Content = "Author: " + value, BackgroundColor = Colors.Orange };
+                MVM.FilterHandler.ActiveFilters.Add(AuthorTag);
+            }
+        }
+
+        //Selected Autor in FilterTab
+        private string selectedPublisher;
+        public string SelectedPublisher
+        {
+            get { return selectedPublisher; }
+            set
+            {
+                SetProperty(ref selectedPublisher, value);
+                Tag PublTag = new FilterTag(MVM.FilterHandler.ActiveFilters,MetaData.Publisher) { Content = "Publisher: " + value, BackgroundColor = Colors.MediumPurple };
+                MVM.FilterHandler.ActiveFilters.Add(PublTag);
+            }
+        }
+
         //Tag for Context Menu
         public Tag Context;
 
         #endregion
 
         #region Functions and Commands
-
-        public BasicCommand EditTagCommand { get; private set;}
+        //-------------------For Tags Tab ---------------------//
+        public BasicCommand EditTagCommand { get; private set; }
         public void EditTag()
         {
             if (Context != null)
@@ -124,7 +153,17 @@ namespace COMPASS.ViewModels
             TreeViewSource = CreateTreeViewSourceFromCollection(MVM.CurrentData.RootTags);
             AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
         }
+        //-----------------------------------------------------//
 
+        //----------------For Filters Tab---------------------//
+        public BasicCommand ClearFiltersCommand { get; private set; }
+        public void ClearFilters()
+        {
+            MVM.FilterHandler.ActiveFilters.Clear();
+            SelectedAuthor = null;
+            SelectedPublisher = null;
+        }
+        //-----------------------------------------------------//
         #endregion
     }
 }

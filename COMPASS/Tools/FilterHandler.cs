@@ -21,13 +21,17 @@ namespace COMPASS.Tools
             SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
             ActiveFiles = new ObservableCollection<MyFile>(data.AllFiles);
             ActiveTags = new ObservableCollection<Tag>();
+            ActiveFilters = new ObservableCollection<Tag>();
         }
 
         //Collections
         public ObservableCollection<Tag> ActiveTags { get; set; }
+        public ObservableCollection<Tag> ActiveFilters { get; set; }
 
         public ObservableCollection<MyFile> TagFilteredFiles { get; set; }
         public ObservableCollection<MyFile> SearchFilteredFiles { get; set; }
+        public ObservableCollection<MyFile> FieldFilteredFiles { get; set; }
+
         public ObservableCollection<MyFile> ActiveFiles { get; set; }
 
         #region Properties
@@ -59,9 +63,11 @@ namespace COMPASS.Tools
             TagFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
             SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
             ActiveTags.Clear();
+            ActiveFilters.Clear();
             Update_ActiveFiles();
         }
 
+        //-------------For Tags---------------//
         public void AddTagFilter(Tag t)
         {
             if (ActiveTags.All(p => p.ID != t.ID))
@@ -86,7 +92,18 @@ namespace COMPASS.Tools
             }
             Update_ActiveFiles();
         }
+        //------------------------------------//
 
+        //-------------For Filters------------//
+        public void AddFieldFilter(FilterTag t)
+        {
+
+        }
+        public void RemoveFieldFilter(FilterTag t)
+        {
+
+        }
+        //------------------------------------//
         public void Update_ActiveFiles()
         {
             if (ActiveFiles == null) return;
