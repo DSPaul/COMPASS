@@ -15,7 +15,7 @@
         </Grid.Resources>
 
         <ListBox x:Name="FileView" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
-                       ItemsSource="{Binding ActiveFiles}" Background="{x:Null}" BorderBrush="{x:Null}"
+                       ItemsSource="{Binding MVM.FilterHandler.ActiveFiles}" Background="{x:Null}" BorderBrush="{x:Null}"
                       ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
