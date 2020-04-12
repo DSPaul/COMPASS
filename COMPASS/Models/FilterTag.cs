@@ -12,11 +12,27 @@ namespace COMPASS.Models
     {
         public FilterTag():base() 
         { }
-        public FilterTag(ObservableCollection<Tag> alltags,MetaData mdtype) : base(alltags)
+        public FilterTag(ObservableCollection<FilterTag> alltags,MetaData mdtype)
         {
+            int tempID = 0;
+            while (alltags.Any(t => t.ID == tempID))
+            {
+                tempID++;
+            }
+            ID = tempID;
             MD = mdtype;
         }
 
-        public MetaData MD; 
+        public MetaData MD;
+
+        public override object GetGroup()
+        {
+            return MD;
+        }
+
+        public string GetFilterTerm()
+        {
+            return Content.Split(':')[1].Substring(1);
+        }
     }
 }

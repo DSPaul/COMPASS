@@ -16,23 +16,37 @@ namespace COMPASS.Tools
         public FilterHandler(Data CurrentData)
         {
             data = CurrentData;
-            SearchTerm = "";
-            TagFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
-            SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
+
             ActiveFiles = new ObservableCollection<MyFile>(data.AllFiles);
+
+            TagFilteredFiles = new ObservableCollection<MyFile>();
+            SearchFilteredFiles = new ObservableCollection<MyFile>();
+            FieldFilteredFiles = new ObservableCollection<MyFile>();
+            TagFilteredFiles.CollectionChanged += (e, v) => Update_ActiveFiles();
+            SearchFilteredFiles.CollectionChanged += (e, v) => Update_ActiveFiles();
+            FieldFilteredFiles.CollectionChanged += (e, v) => Update_ActiveFiles();
+
+            SearchTerm = "";
             ActiveTags = new ObservableCollection<Tag>();
-            ActiveFilters = new ObservableCollection<Tag>();
+            ActiveTags.CollectionChanged += (e, v) => UpdateTagFilteredFiles();
+            ActiveFilters = new ObservableCollection<FilterTag>();
+            ActiveFilters.CollectionChanged += (e, v) => UpdateFieldFilteredFiles();
         }
 
         //Collections
         public ObservableCollection<Tag> ActiveTags { get; set; }
-        public ObservableCollection<Tag> ActiveFilters { get; set; }
+        public ObservableCollection<FilterTag> ActiveFilters { get; set; }
 
         public ObservableCollection<MyFile> TagFilteredFiles { get; set; }
         public ObservableCollection<MyFile> SearchFilteredFiles { get; set; }
         public ObservableCollection<MyFile> FieldFilteredFiles { get; set; }
 
-        public ObservableCollection<MyFile> ActiveFiles { get; set; }
+        private ObservableCollection<MyFile> _activeFiles;
+        public ObservableCollection<MyFile> ActiveFiles 
+        {
+            get { return _activeFiles; }
+            set { SetProperty(ref _activeFiles, value); }
+        }
 
         #region Properties
         private string searchterm;
@@ -45,9 +59,9 @@ namespace COMPASS.Tools
 
                 if (searchterm != "")
                 {
-                    SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles.Where(f => f.Title.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) >= 0));
+                    SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles.Where(f => f.Title.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) < 0));
                 }
-                else SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
+                else SearchFilteredFiles = new ObservableCollection<MyFile>();
                 Update_ActiveFiles();
             }
         }
@@ -60,25 +74,58 @@ namespace COMPASS.Tools
         {
             SearchTerm = "";
 
-            TagFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
-            SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
+            //TagFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
+            //SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
+            TagFilteredFiles.Clear();
+            SearchFilteredFiles.Clear();
             ActiveTags.Clear();
             ActiveFilters.Clear();
-            Update_ActiveFiles();
+            ActiveFiles = new ObservableCollection<MyFile>(data.AllFiles);
         }
 
         //-------------For Tags---------------//
+        public void UpdateTagFilteredFiles()
+        {
+            
+        }
+
+        public void UpdateFieldFilteredFiles()
+        {
+            FieldFilteredFiles.Clear();
+            //List<List<FilterTag>> FieldFilters = new List<List<FilterTag>>(Enum.GetNames(typeof(Enums.MetaData)).Length);
+            foreach (Enums.MetaData MD in (Enums.MetaData[])Enum.GetValues(typeof(Enums.MetaData)))
+            {
+                //FieldFilters.Add(new List<FilterTag>(ActiveFilters.Where(filter => (Enums.MetaData)filter.GetGroup()==MD)));
+                List<FilterTag> SingleFieldFilterTags = new List<FilterTag>(ActiveFilters.Where(filter => (Enums.MetaData)filter.GetGroup() == MD));
+                List<string> SingleFieldFilters = new List<string>(SingleFieldFilterTags.Select(t => t.GetFilterTerm()));
+                if (SingleFieldFilters.Count == 0) continue;
+                List<MyFile> SingleFieldFilteredFiles = new List<MyFile>();
+                switch (MD)
+                {
+                    case Enums.MetaData.Author:
+                         SingleFieldFilteredFiles= new List<MyFile>(data.AllFiles.Where(f => !SingleFieldFilters.Contains(f.Author)));
+                        break;
+                    case Enums.MetaData.Publisher:
+                        SingleFieldFilteredFiles = new List<MyFile>(data.AllFiles.Where(f => !SingleFieldFilters.Contains(f.Publisher)));
+                        break;
+                }
+                FieldFilteredFiles = new ObservableCollection<MyFile>(FieldFilteredFiles.Union(SingleFieldFilteredFiles));
+            }
+            Update_ActiveFiles();
+        }
+
         public void AddTagFilter(Tag t)
         {
+            //only add if not yet in activetags
             if (ActiveTags.All(p => p.ID != t.ID))
             {
                 ActiveTags.Add(t);
             }
+
             foreach (MyFile f in data.AllFiles)
             {
-                if (!f.Tags.Contains(t) && TagFilteredFiles.Contains(f)) TagFilteredFiles.Remove(f);
+                if (!f.Tags.Contains(t) && !TagFilteredFiles.Contains(f)) TagFilteredFiles.Add(f);
             }
-            Update_ActiveFiles();
         }
 
         public void RemoveTagFilter(Tag t)
@@ -87,10 +134,9 @@ namespace COMPASS.Tools
             TagFilteredFiles.Clear();
             foreach (MyFile f in data.AllFiles)
             {
-                if (ActiveTags.All(i => f.Tags.Contains(i)))
+                if (!ActiveTags.All(i => f.Tags.Contains(i)))
                     TagFilteredFiles.Add(f);
             }
-            Update_ActiveFiles();
         }
         //------------------------------------//
 
@@ -101,26 +147,18 @@ namespace COMPASS.Tools
         }
         public void RemoveFieldFilter(FilterTag t)
         {
-
+            ActiveFilters.Remove(t);
         }
         //------------------------------------//
         public void Update_ActiveFiles()
         {
-            if (ActiveFiles == null) return;
-
-            //if (SearchFilteredFiles.Count == data.AllTags.Count) 
-            //{
-            //    ActiveFiles = new ObservableCollection<MyFile>(TagFilteredFiles);
-            //    return;
-            //}
-            //if (TagFilteredFiles.Count == data.AllTags.Count)
-            //{
-            //    ActiveFiles = new ObservableCollection<MyFile>(TagFilteredFiles);
-            //    return;
-            //}
-            ActiveFiles.Clear();
-            foreach (var p in TagFilteredFiles.Intersect(SearchFilteredFiles))
-                ActiveFiles.Add(p);
+            ActiveFiles = new ObservableCollection<MyFile>(data.AllFiles);
+            foreach (MyFile f in SearchFilteredFiles) ActiveFiles.Remove(f);
+            foreach (MyFile f in TagFilteredFiles) ActiveFiles.Remove(f);
+            foreach (MyFile f in FieldFilteredFiles) ActiveFiles.Remove(f);
+            //    ActiveFiles.Clear();
+            //    foreach (var p in TagFilteredFiles.Intersect(SearchFilteredFiles))
+            //        ActiveFiles.Add(p);
         }
 
         public void RemoveFile(MyFile f)

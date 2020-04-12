@@ -45,7 +45,7 @@ namespace COMPASS
             {
                 Tag t = (Tag)CurrentTagList.SelectedItem;
                 if (!t.GetType().IsSubclassOf(typeof(Tag))) MainViewModel.FilterHandler.RemoveTagFilter(t);
-                else MainViewModel.FilterHandler.ActiveFilters.Remove(t);
+                else MainViewModel.FilterHandler.RemoveFieldFilter((FilterTag)t);
             }
         }
 

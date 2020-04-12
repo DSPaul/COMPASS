@@ -81,6 +81,20 @@ namespace COMPASS.Models
             return _allTags.First(par => par.ID == ParentID);
         }
 
+        public virtual object GetGroup()
+        //returns the first parent that is a group or null if no parents are group
+        {
+            if (IsGroup) return this;
+            if (ParentID == -1) return null;
+            Tag temp = this.GetParent();
+            while (!temp.IsGroup)
+            {
+                if (temp.ParentID != -1) temp = temp.GetParent();
+                else return null;
+            }
+            return temp;
+        }
+
         public void SetAllTags(ObservableCollection<Tag> at)
         {
             _allTags = at;
