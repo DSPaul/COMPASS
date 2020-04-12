@@ -12,7 +12,7 @@
         <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
     </UserControl.Resources>
         <!--#region MixView-->
-        <ListBox x:Name="FileView" ItemsSource="{Binding ActiveFiles}" Background="{x:Null}"
+    <ListBox x:Name="FileView" ItemsSource="{Binding MVM.FilterHandler.ActiveFiles}" Background="{x:Null}"
                  BorderBrush="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
                  ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0">
             <ListBox.ItemContainerStyle>

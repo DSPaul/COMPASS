@@ -34,13 +34,6 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref mainViewModel, value); }
         }
 
-        //Collection of files to bind to
-        public ObservableCollection<MyFile> ActiveFiles
-        {
-            get { return MVM.FilterHandler.ActiveFiles; }
-            set { }  
-        }
-
         //Selected File
         private MyFile selectedFile;
         public MyFile SelectedFile {

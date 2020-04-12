@@ -11,7 +11,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <DataGrid x:Name="FileView" MaxWidth="{Binding ActualWidth, ElementName=FileListControl}"
                     Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Margin="10,0"
-                    AutoGenerateColumns="False" ItemsSource="{Binding ActiveFiles}"
+                    AutoGenerateColumns="False" ItemsSource="{Binding MVM.FilterHandler.ActiveFiles}"
                     CanUserAddRows="False" SelectionMode="Single" CanUserSortColumns="True"
                     RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
                     SelectedItem="{Binding SelectedFile, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848">
