@@ -78,7 +78,7 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref selectedAuthor, value);
-                Tag AuthorTag = new FilterTag(MVM.FilterHandler.ActiveFilters,MetaData.Author) { Content = "Author: " + value, BackgroundColor = Colors.Orange };
+                FilterTag AuthorTag = new FilterTag(MVM.FilterHandler.ActiveFilters,MetaData.Author) { Content = "Author: " + value, BackgroundColor = Colors.Orange };
                 MVM.FilterHandler.ActiveFilters.Add(AuthorTag);
             }
         }
@@ -91,7 +91,7 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref selectedPublisher, value);
-                Tag PublTag = new FilterTag(MVM.FilterHandler.ActiveFilters,MetaData.Publisher) { Content = "Publisher: " + value, BackgroundColor = Colors.MediumPurple };
+                FilterTag PublTag = new FilterTag(MVM.FilterHandler.ActiveFilters,MetaData.Publisher) { Content = "Publisher: " + value, BackgroundColor = Colors.MediumPurple };
                 MVM.FilterHandler.ActiveFilters.Add(PublTag);
             }
         }
