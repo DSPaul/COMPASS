@@ -90,7 +90,7 @@ namespace COMPASS.Models
             while (!temp.IsGroup)
             {
                 if (temp.ParentID != -1) temp = temp.GetParent();
-                else return null;
+                else break;
             }
             return temp;
         }
@@ -115,7 +115,7 @@ namespace COMPASS.Models
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            return !(obj is Tag objAsTag) ? false : Equals(objAsTag);
+            return obj is Tag objAsTag && Equals(objAsTag);
         }
 
         public bool Equals(Tag other)
