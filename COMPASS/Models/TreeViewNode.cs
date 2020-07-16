@@ -13,6 +13,7 @@ namespace COMPASS.Models
         {
             Tag = t;
             Children = new ObservableCollection<TreeViewNode>();
+            Expanded = t.IsGroup;
         }
 
 
@@ -37,7 +38,7 @@ namespace COMPASS.Models
             set { SetProperty(ref _selected, value); }
         }
 
-        private bool _expanded = true;
+        private bool _expanded;
         public bool Expanded
         {
             get { return _expanded; }
