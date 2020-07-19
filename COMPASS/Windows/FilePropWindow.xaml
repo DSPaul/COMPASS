@@ -195,10 +195,16 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="11" Grid.Column="1">
             <TextBlock Text="Cover Art:"/>
-            <Button Background="Gray" Command="{Binding RegenArtCommand}">
+            <Button Background="Gray" Command="{Binding RegenArtCommand}" Margin="10,0">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Refresh"/>
                     <TextBlock Text="Regenerate"/>
+                </StackPanel>
+            </Button>
+            <Button Background="Gray" Command="{Binding SelectArtCommand}"  Margin="10,0">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="FolderMultipleImage"/>
+                    <TextBlock Text="Set Manually"/>
                 </StackPanel>
             </Button>
         </StackPanel>
