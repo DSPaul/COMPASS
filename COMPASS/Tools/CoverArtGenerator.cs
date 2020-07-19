@@ -20,13 +20,22 @@ namespace COMPASS
             };
             using (MagickImage image = new MagickImage())
             {
-                // Add all the pages of the pdf file to the collection
                 image.Read(pdf.Path, settings);
                 image.Format = MagickFormat.Png;
                 image.Trim();
                 image.Alpha(AlphaOption.Remove);
 
                 image.Write(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + folder +  @"\CoverArt\" + pdf.ID.ToString() + ".png");
+            }
+        }
+
+        //convert image to image preview
+        public static void ConvertImage(string imagepath, MyFile destfile, string folder)
+        {
+            using (MagickImage image = new MagickImage(imagepath))
+            {
+                if (image.Width > 600) image.Resize(600, 0);
+                image.Write(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + folder + @"\CoverArt\" + destfile.ID.ToString() + ".png");
             }
         }
     }

@@ -32,6 +32,7 @@ namespace COMPASS.ViewModels
             DeleteFileCommand = new BasicCommand(DeleteFile);
             BrowseURLCommand = new BasicCommand(BrowseURL);
             RegenArtCommand = new BasicCommand(RegenArt);
+            SelectArtCommand = new BasicCommand(SelectArt);
         }
 
         #region Properties
@@ -59,7 +60,8 @@ namespace COMPASS.ViewModels
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                AddExtension = false
+                AddExtension = false,
+                Filter = "PDF (*.pdf) | *.pdf"
             };
             if (openFileDialog.ShowDialog() == true)
             {
@@ -125,8 +127,27 @@ namespace COMPASS.ViewModels
         private void RegenArt()
         {
             CoverArtGenerator.ConvertPDF(TempFile, MVM.CurrentData.Folder);
-            string CovArt = TempFile.CoverArt;
             //force refresh
+            string CovArt = TempFile.CoverArt; 
+            TempFile.CoverArt = null;
+            TempFile.CoverArt = CovArt;
+        }
+
+        public BasicCommand SelectArtCommand { get; private set; }
+        private void SelectArt()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                AddExtension = false,
+                Multiselect = false,
+                Filter = "Image files (*.jpg, *.jpeg, *.png) | *.jpg; *.jpeg; *.png"
+        };
+            if (openFileDialog.ShowDialog() == true)
+            {
+                CoverArtGenerator.ConvertImage(openFileDialog.FileName, TempFile, MVM.CurrentData.Folder);
+            }
+            //force refresh
+            string CovArt = TempFile.CoverArt;
             TempFile.CoverArt = null;
             TempFile.CoverArt = CovArt;
         }
