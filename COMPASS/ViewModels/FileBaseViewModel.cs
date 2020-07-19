@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Xceed.Wpf.Toolkit.PropertyGrid;
 using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
@@ -21,6 +22,7 @@ namespace COMPASS.ViewModels
             EditFileCommand = new BasicCommand(EditFile);
             OpenSelectedFileCommand = new RelayCommand<object>(OpenSelectedFile, CanOpenSelectedFile);
             OpenFileOnlineCommand = new RelayCommand<object>(OpenFileOnline,CanOpenFileOnline);
+            MoveToFolderCommand = new RelayCommand<object>(MoveToFolder);
             DeleteFileCommand = new BasicCommand(DeleteFile);
         }
 
@@ -78,6 +80,7 @@ namespace COMPASS.ViewModels
             return false;
         }
 
+        //Open File online
         public RelayCommand<object> OpenFileOnlineCommand { get; private set; }
         public void OpenFileOnline(object o = null)
         {
@@ -115,6 +118,64 @@ namespace COMPASS.ViewModels
             fpw.Topmost = true;
         }
 
+        //Move File to other folder
+        public RelayCommand<object> MoveToFolderCommand { get; private set; }
+        public void MoveToFolder(object o = null)
+        {
+            var par = (object[])o;
+            MyFile ToMove;
+            string targetfolder;
+
+            //extract folder parameter
+            if (par[0] != null) targetfolder = (string)(par[0]);
+            else return;
+            if (targetfolder == MVM.CurrentFolder) return;
+
+            //extract file parameter
+            if (par[1] != null) ToMove = (MyFile)(par[1]);
+            else ToMove = MVM.CurrentFileViewModel.SelectedFile;
+
+            //MessageBox "Are you Sure?"
+            string sMessageBoxText = "Moving " + ToMove.Title + " to " + targetfolder + " will remove all tags from the file, are you sure you wish to continue?";
+            string sCaption = "Are you Sure?";
+
+            MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
+            MessageBoxImage imgMessageBox = MessageBoxImage.Warning;
+
+            MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, imgMessageBox);
+
+            if (rsltMessageBox == MessageBoxResult.Yes) 
+            {
+                ToMove.Tags.Clear();
+                // Give file new ID and move it to other folder
+                Data TargetData = new Data(targetfolder);
+                MyFile GetIDfile = new MyFile(TargetData); //create new file in target data to check the first available ID
+                ToMove.ID = GetIDfile.ID;
+
+                //Add file to target dataset
+                TargetData.AllFiles.Add(ToMove);
+
+                //Update Author and Publisher List
+                if (ToMove.Author != "" && !TargetData.AuthorList.Contains(ToMove.Author)) TargetData.AuthorList.Add(ToMove.Author);
+                if (ToMove.Publisher != "" && !TargetData.PublisherList.Contains(ToMove.Publisher)) TargetData.PublisherList.Add(ToMove.Publisher);
+
+                //Move cover art to right folder with new ID
+                string newCoverArt = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + targetfolder + @"\CoverArt\" + ToMove.ID + ".png";
+                File.Copy(ToMove.CoverArt, newCoverArt);
+
+                //Delete file in original folder
+                MVM.CurrentData.DeleteFile(ToMove);
+                MVM.FilterHandler.RemoveFile(ToMove);
+
+                //Update the cover art metadata to new path, has to happen after delete so old one gets deleted
+                ToMove.CoverArt = newCoverArt;
+
+                //Save changes to TargetData
+                TargetData.SaveFilesToFile();
+            }
+        }
+
+        //Delete File
         public BasicCommand DeleteFileCommand { get; private set; }
         public void DeleteFile()
         {
