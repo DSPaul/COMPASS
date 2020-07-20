@@ -34,23 +34,9 @@
         <Grid.RowDefinitions>
             <RowDefinition Height ="10"/>
             <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
             <RowDefinition Height ="*"/>
             <RowDefinition Height ="auto"/>
             <RowDefinition Height ="10"/>
-
         </Grid.RowDefinitions>
 
         <Grid.Resources>
@@ -100,7 +86,7 @@
             <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
         </Grid.Resources>
 
-        <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="100" x:Name="CoverIm" Margin="10,0" Width="300">
+        <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="30" x:Name="CoverIm" Margin="10,0" Width="300">
             <Image.Source>
                 <Binding Path="TempFile.CoverArt" Converter="{StaticResource UriToBitmapConverter}" FallbackValue="{x:Null}" >
                     <Binding.ConverterParameter>
@@ -109,111 +95,167 @@
                 </Binding>
             </Image.Source>
         </Image>
-        <TextBlock Text="Title:" Grid.Column="1" Grid.Row="1"/>
-        <TextBox Text="{Binding TempFile.Title, Mode=TwoWay}" Grid.Column="1" Grid.Row="2" Name="FilenameTB"/>
-        <TextBlock Text="Author:" Grid.Column="1" Grid.Row="3"/>
-        <ComboBox Text="{Binding TempFile.Author, Mode=TwoWay}" Grid.Column="1" Grid.Row="4" Name="FileAuthorTB"
+        <TabControl Grid.Column="1" Grid.Row="1" Background="{x:Null}" BorderThickness="0,1,0,0"
+                    Padding="0,5">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="VerticalAlignment" Value="Bottom"/>
+                    <Setter Property="MaxWidth" Value="300"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border x:Name="TabBorder" CornerRadius="2,2,0,0" Margin="0,-1,0,0">
+                                    <ContentPresenter VerticalAlignment="Center" ContentSource="Header" Margin="5,0,10,0"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="False">
+                                        <Setter TargetName="TabBorder" Property="Background" Value="{x:Null}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="TabBorder" Property="Background">
+                                            <Setter.Value>
+                                                <SolidColorBrush Color="#FFACACAC"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="General">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="auto"/>
+                        <RowDefinition Height ="*"/>
+                        <RowDefinition Height ="auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Title:" Grid.Column="1" Grid.Row="1"/>
+                    <TextBox Text="{Binding TempFile.Title, Mode=TwoWay}" Grid.Column="1" Grid.Row="2" Name="FilenameTB"/>
+                    <TextBlock Text="Author:" Grid.Column="1" Grid.Row="3"/>
+                    <ComboBox Text="{Binding TempFile.Author, Mode=TwoWay}" Grid.Column="1" Grid.Row="4" Name="FileAuthorTB"
                   IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentData.AuthorList}"/>
-        <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
-        <ComboBox Text="{Binding TempFile.Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"
+                    <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
+                    <ComboBox Text="{Binding TempFile.Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"
                   IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentData.PublisherList}"/>
-        <UniformGrid Grid.Column="1" Grid.Row="7" Margin="0,5" Columns="2">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Version:"/>
-                <TextBox Text="{Binding TempFile.Version, Mode=TwoWay}" MinWidth="100" Name="FileVersionTB" Margin="5,0"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Hard Copy:"/>
-                <CheckBox Name="FileOwnedCB" IsChecked="{Binding TempFile.Physically_Owned, Mode=TwoWay}" VerticalAlignment="Center"/>
-            </StackPanel>
-        </UniformGrid>
-        
-        <!--#region Tags-->
-        <Grid Grid.Column="1" Grid.Row="8">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Tags:"/>
-            <ItemsControl ItemsSource="{Binding TempFile.Tags}" Background="{x:Null}" BorderBrush="{x:Null}" 
+                    <UniformGrid Grid.Column="1" Grid.Row="7" Margin="0,5" Columns="2">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Version:"/>
+                            <TextBox Text="{Binding TempFile.Version, Mode=TwoWay}" MinWidth="100" Name="FileVersionTB" Margin="5,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Hard Copy:"/>
+                            <CheckBox Name="FileOwnedCB" IsChecked="{Binding TempFile.Physically_Owned, Mode=TwoWay}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </UniformGrid>
+
+                    <!--#region Tags-->
+                    <Grid Grid.Column="1" Grid.Row="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Tags:"/>
+                        <ItemsControl ItemsSource="{Binding TempFile.Tags}" Background="{x:Null}" BorderBrush="{x:Null}" 
                       Foreground="Black" FontSize="15" Grid.Column="1" VerticalAlignment="Center" 
                           ItemTemplate="{StaticResource TagTemplate}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-            <ToggleButton Name="ManageTagsBtn" Visibility="Collapsed"
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                        <ToggleButton Name="ManageTagsBtn" Visibility="Collapsed"
                  Background="Gray" Grid.Column="2">
-                <StackPanel Orientation="Horizontal" Margin="2,0">
-                    <TextBlock Text="Manage" VerticalAlignment="Center"/>
-                </StackPanel>
-            </ToggleButton>
-        </Grid>
-        <!--#endregion-->
-        
-        <!--#region Path-->
-        <Grid Grid.Column="1" Grid.Row="9">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Path:" Grid.Column="0" VerticalAlignment="Center"/>
-            <TextBox Text="{Binding TempFile.Path, Mode=TwoWay}" Grid.Column="1" Name ="FilepathTB" 
+                            <StackPanel Orientation="Horizontal" Margin="2,0">
+                                <TextBlock Text="Manage" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </ToggleButton>
+                    </Grid>
+                    <!--#endregion-->
+
+                    <!--#region Path-->
+                    <Grid Grid.Column="1" Grid.Row="9">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Path:" Grid.Column="0" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding TempFile.Path, Mode=TwoWay}" Grid.Column="1" Name ="FilepathTB" 
                      />
-            <Button Name="BrowsepathBtn" Command="{Binding BrowsePathCommand}"
+                        <Button Name="BrowsepathBtn" Command="{Binding BrowsePathCommand}"
                 Grid.Column="2" Background="Gray">
-                <StackPanel Orientation="Horizontal" Margin="2,0">
-                    <materialDesign:PackIcon Kind="FolderOpen"/>
-                    <TextBlock Text="Browse"/>
-                </StackPanel>
-            </Button>
-        </Grid>
-        <!--#endregion-->
+                            <StackPanel Orientation="Horizontal" Margin="2,0">
+                                <materialDesign:PackIcon Kind="FolderOpen"/>
+                                <TextBlock Text="Browse"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <!--#endregion-->
 
-        <!--#region SourceURL-->
-        <Grid Grid.Column="1" Grid.Row="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Source URL:" Grid.Column="0"/>
-            <TextBox Text="{Binding TempFile.SourceURL, Mode=TwoWay}" Grid.Column="1" Name="FileSourceTB"/>
-            <Button Name="BrowseURLBtn" Command="{Binding BrowseURLCommand}" 
+                    <!--#region SourceURL-->
+                    <Grid Grid.Column="1" Grid.Row="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Source URL:" Grid.Column="0"/>
+                        <TextBox Text="{Binding TempFile.SourceURL, Mode=TwoWay}" Grid.Column="1" Name="FileSourceTB"/>
+                        <Button Name="BrowseURLBtn" Command="{Binding BrowseURLCommand}" 
                 Grid.Column="2" Background="Gray">
-                <StackPanel Orientation="Horizontal" Margin="2,0">
-                    <materialDesign:PackIcon Kind="Compass"/>
-                    <TextBlock Text="Browse"/>
-                </StackPanel>
-            </Button>
-        </Grid>
-        <!--#endregion-->
+                            <StackPanel Orientation="Horizontal" Margin="2,0">
+                                <materialDesign:PackIcon Kind="Compass"/>
+                                <TextBlock Text="Browse"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <!--#endregion-->
 
-        <StackPanel Orientation="Horizontal" Grid.Row="11" Grid.Column="1">
-            <TextBlock Text="Cover Art:"/>
-            <Button Background="Gray" Command="{Binding RegenArtCommand}" Margin="10,0">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Refresh"/>
-                    <TextBlock Text="Regenerate"/>
-                </StackPanel>
-            </Button>
-            <Button Background="Gray" Command="{Binding SelectArtCommand}"  Margin="10,0">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="FolderMultipleImage"/>
-                    <TextBlock Text="Set Manually"/>
-                </StackPanel>
-            </Button>
-        </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Row="11" Grid.Column="1">
+                        <TextBlock Text="Cover Art:"/>
+                        <Button Background="Gray" Command="{Binding RegenArtCommand}" Margin="10,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Refresh"/>
+                                <TextBlock Text="Regenerate"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Background="Gray" Command="{Binding SelectArtCommand}"  Margin="10,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="FolderMultipleImage"/>
+                                <TextBlock Text="Set Manually"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Description">
+                <TextBox Text="{Binding TempFile.Description, Mode=TwoWay}" MinHeight="250" AcceptsReturn="True" TextWrapping="Wrap"/>
+            </TabItem>
+        </TabControl>
 
-        <Rectangle Grid.Column="2" Grid.Row="1" Grid.RowSpan="16" Fill="DarkGray" Width="3" Margin="10,0"/>
+        <Rectangle Grid.Column="2" Grid.Row="1" Grid.RowSpan="3" Fill="DarkGray" Width="3" Margin="10,0"/>
 
         <TreeView x:Name="TagSelection" Grid.Column="3" Grid.Row="1" BorderBrush="{x:Null}"
                   ItemsSource="{Binding TreeViewSource}" Background="{x:Null}" ItemTemplateSelector="{StaticResource TagTemplateSelector}"
-                  Grid.RowSpan="16" Visibility="Visible" Margin="-15,0,10,0">
+                  Grid.RowSpan="3" Visibility="Visible" Margin="-15,0,10,0">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="IsExpanded" Value="{Binding Expanded}"/>
@@ -223,7 +265,7 @@
         </TreeView>
 
         <!--#region Confirmation Buttons -->
-        <Grid Grid.Column="1" Grid.Row="16" Grid.ColumnSpan="1">
+        <Grid Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
