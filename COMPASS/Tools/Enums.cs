@@ -21,10 +21,12 @@ namespace COMPASS.Tools
             Manual
         }
 
-        public enum MetaData
+        public enum FilterType
         {
             Author,
-            Publisher
+            Publisher,
+            StartReleaseDate,
+            StopReleaseDate
         }
     }
 }
