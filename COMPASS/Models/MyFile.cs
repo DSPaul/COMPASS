@@ -39,6 +39,7 @@ namespace COMPASS.Models
             CoverArt = f.CoverArt;
             Physically_Owned = f.Physically_Owned;
             Description = f.Description;
+            ReleaseDate = f.ReleaseDate;
             Tags.Clear();
             foreach (Tag t in f.Tags)
             {
@@ -56,6 +57,7 @@ namespace COMPASS.Models
         private string _CoverArt;
         private bool _Physically_Owned;
         private string _Description;
+        private DateTime? _ReleaseDate = null;
 
         private ObservableCollection<Tag> _Tags;
 
@@ -115,6 +117,12 @@ namespace COMPASS.Models
         {
             get { return _Description; }
             set { SetProperty(ref _Description, value); }
+        }
+
+        public DateTime? ReleaseDate
+        {
+            get { return _ReleaseDate; }
+            set { SetProperty(ref _ReleaseDate, value); }
         }
         #endregion 
     }

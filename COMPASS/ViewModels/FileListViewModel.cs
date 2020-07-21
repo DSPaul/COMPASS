@@ -24,6 +24,7 @@ namespace COMPASS.ViewModels
             Columnvisibility.Submenus.Add(new MyMenuItem("Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
             Columnvisibility.Submenus.Add(new MyMenuItem("Author", value => ShowAuthor = (bool)value) { Prop = ShowAuthor});
             Columnvisibility.Submenus.Add(new MyMenuItem("Publisher", value => ShowPublisher= (bool)value) { Prop = ShowPublisher });
+            Columnvisibility.Submenus.Add(new MyMenuItem("Release Date", value => ShowReleaseDate = (bool)value) { Prop = ShowReleaseDate });
             Columnvisibility.Submenus.Add(new MyMenuItem("Version", value => ShowVersion = (bool)value) { Prop = ShowVersion });
             Columnvisibility.Submenus.Add(new MyMenuItem("Tags", value => ShowTags = (bool)value) { Prop = ShowTags });
             Columnvisibility.Submenus.Add(new MyMenuItem("File Icons", value => ShowFileIcons = (bool)value) { Prop = ShowFileIcons });
@@ -53,6 +54,13 @@ namespace COMPASS.ViewModels
         {
             get { return _showPublisher; }
             set { SetProperty(ref _showPublisher, value); }
+        }
+
+        private bool _ShowReleaseDate = true;
+        public bool ShowReleaseDate
+        {
+            get { return _ShowReleaseDate; }
+            set { SetProperty(ref _ShowReleaseDate, value); }
         }
 
         private bool _showVersion = true;

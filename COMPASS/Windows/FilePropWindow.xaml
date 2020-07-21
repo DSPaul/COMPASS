@@ -145,27 +145,44 @@
                         <RowDefinition Height ="*"/>
                         <RowDefinition Height ="auto"/>
                     </Grid.RowDefinitions>
+                    
                     <TextBlock Text="Title:" Grid.Column="1" Grid.Row="1"/>
                     <TextBox Text="{Binding TempFile.Title, Mode=TwoWay}" Grid.Column="1" Grid.Row="2" Name="FilenameTB"/>
+                    
                     <TextBlock Text="Author:" Grid.Column="1" Grid.Row="3"/>
                     <ComboBox Text="{Binding TempFile.Author, Mode=TwoWay}" Grid.Column="1" Grid.Row="4" Name="FileAuthorTB"
                   IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentData.AuthorList}"/>
+                    
                     <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
                     <ComboBox Text="{Binding TempFile.Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"
                   IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentData.PublisherList}"/>
-                    <UniformGrid Grid.Column="1" Grid.Row="7" Margin="0,5" Columns="2">
+
+                    <Grid Grid.Column="1" Grid.Row="7" Margin="0,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Version:"/>
                             <TextBox Text="{Binding TempFile.Version, Mode=TwoWay}" MinWidth="100" Name="FileVersionTB" Margin="5,0"/>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" Grid.Column="1">
+                            <TextBlock Text="Release Date:"/>
+                            <DatePicker SelectedDate="{Binding TempFile.ReleaseDate, TargetNullValue={x:Null}, FallbackValue={x:Null}}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1">
                             <TextBlock Text="Hard Copy:"/>
                             <CheckBox Name="FileOwnedCB" IsChecked="{Binding TempFile.Physically_Owned, Mode=TwoWay}" VerticalAlignment="Center"/>
                         </StackPanel>
-                    </UniformGrid>
+                    </Grid>
 
                     <!--#region Tags-->
-                    <Grid Grid.Column="1" Grid.Row="8">
+                    <Grid Grid.Column="1" Grid.Row="9">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="*"/>
@@ -190,8 +207,30 @@
                     </Grid>
                     <!--#endregion-->
 
+                    <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.Column="1">
+                        <TextBlock Text="Cover Art:"/>
+                        <Button Background="Gray" Command="{Binding RegenArtCommand}" Margin="10,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Refresh"/>
+                                <TextBlock Text="Regenerate"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Background="Gray" Command="{Binding SelectArtCommand}"  Margin="10,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="FolderMultipleImage"/>
+                                <TextBlock Text="Set Manually"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Description">
+                <TextBox Text="{Binding TempFile.Description, Mode=TwoWay}" MinHeight="250" AcceptsReturn="True" TextWrapping="Wrap"/>
+            </TabItem>
+            <TabItem Header="Sources">
+                <StackPanel>
                     <!--#region Path-->
-                    <Grid Grid.Column="1" Grid.Row="9">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="*"/>
@@ -211,7 +250,7 @@
                     <!--#endregion-->
 
                     <!--#region SourceURL-->
-                    <Grid Grid.Column="1" Grid.Row="10">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="*"/>
@@ -228,26 +267,7 @@
                         </Button>
                     </Grid>
                     <!--#endregion-->
-
-                    <StackPanel Orientation="Horizontal" Grid.Row="11" Grid.Column="1">
-                        <TextBlock Text="Cover Art:"/>
-                        <Button Background="Gray" Command="{Binding RegenArtCommand}" Margin="10,0">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Refresh"/>
-                                <TextBlock Text="Regenerate"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Background="Gray" Command="{Binding SelectArtCommand}"  Margin="10,0">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="FolderMultipleImage"/>
-                                <TextBlock Text="Set Manually"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Description">
-                <TextBox Text="{Binding TempFile.Description, Mode=TwoWay}" MinHeight="250" AcceptsReturn="True" TextWrapping="Wrap"/>
+                </StackPanel>
             </TabItem>
         </TabControl>
 
