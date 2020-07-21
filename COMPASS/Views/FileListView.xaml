@@ -112,6 +112,14 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="RELEASE DATE" Width="auto" MinWidth="100" CanUserSort="True" SortMemberPath="ReleaseDate"
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowReleaseDate, Converter={StaticResource BoolToVisibilityConverter}}">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text ="{Binding ReleaseDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource default}" HorizontalAlignment="Center"/>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="VERSION" Width="auto" MinWidth="20"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowVersion, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
