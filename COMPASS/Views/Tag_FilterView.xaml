@@ -170,6 +170,12 @@
                             <ComboBox ItemsSource="{Binding MVM.CurrentData.PublisherList}" FontSize="15"
                                       SelectedValue="{Binding SelectedPublisher}"/>
                         </StackPanel>
+                        <StackPanel Margin="10">
+                            <TextBlock Text="Released Between:"/>
+                            <DatePicker SelectedDate="{Binding StartReleaseDate}"/>
+                            <TextBlock Text="And" HorizontalAlignment="Center"/>
+                            <DatePicker SelectedDate="{Binding StopReleaseDate}"/>
+                        </StackPanel>
                     </StackPanel>
                     <Button Content="Clear All Filters" Grid.Row="2" Margin="30" Command="{Binding ClearFiltersCommand}"/>
                 </Grid>

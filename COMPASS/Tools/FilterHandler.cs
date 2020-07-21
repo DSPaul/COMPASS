@@ -149,21 +149,27 @@ namespace COMPASS.Tools
         public void UpdateFieldFilteredFiles()
         {
             FieldFilteredFiles.Clear();
-            //List<List<FilterTag>> FieldFilters = new List<List<FilterTag>>(Enum.GetNames(typeof(Enums.MetaData)).Length);
-            foreach (Enums.MetaData MD in (Enums.MetaData[])Enum.GetValues(typeof(Enums.MetaData)))
+            //List<List<FilterTag>> FieldFilters = new List<List<FilterTag>>(Enum.GetNames(typeof(Enums.FilterType)).Length);
+            foreach (Enums.FilterType FT in (Enums.FilterType[])Enum.GetValues(typeof(Enums.FilterType)))
             {
-                //FieldFilters.Add(new List<FilterTag>(ActiveFilters.Where(filter => (Enums.MetaData)filter.GetGroup()==MD)));
-                List<FilterTag> SingleFieldFilterTags = new List<FilterTag>(ActiveFilters.Where(filter => (Enums.MetaData)filter.GetGroup() == MD));
-                List<string> SingleFieldFilters = new List<string>(SingleFieldFilterTags.Select(t => t.GetFilterTerm()));
+                //FieldFilters.Add(new List<FilterTag>(ActiveFilters.Where(filter => (Enums.FilterType)filter.GetGroup()==FT)));
+                List<FilterTag> SingleFieldFilterTags = new List<FilterTag>(ActiveFilters.Where(filter => (Enums.FilterType)filter.GetGroup() == FT));
+                List<object> SingleFieldFilters = new List<object>(SingleFieldFilterTags.Select(t => t.FilterData));
                 if (SingleFieldFilters.Count == 0) continue;
                 List<MyFile> SingleFieldFilteredFiles = new List<MyFile>();
-                switch (MD)
+                switch (FT)
                 {
-                    case Enums.MetaData.Author:
+                    case Enums.FilterType.Author:
                         SingleFieldFilteredFiles = new List<MyFile>(data.AllFiles.Where(f => !SingleFieldFilters.Contains(f.Author)));
                         break;
-                    case Enums.MetaData.Publisher:
+                    case Enums.FilterType.Publisher:
                         SingleFieldFilteredFiles = new List<MyFile>(data.AllFiles.Where(f => !SingleFieldFilters.Contains(f.Publisher)));
+                        break;
+                    case Enums.FilterType.StartReleaseDate:
+                        SingleFieldFilteredFiles = new List<MyFile>(data.AllFiles.Where(f => f.ReleaseDate < (DateTime?)SingleFieldFilters.First()));
+                        break;
+                    case Enums.FilterType.StopReleaseDate:
+                        SingleFieldFilteredFiles = new List<MyFile>(data.AllFiles.Where(f => f.ReleaseDate > (DateTime?)SingleFieldFilters.First()));
                         break;
                 }
                 FieldFilteredFiles = new ObservableCollection<MyFile>(FieldFilteredFiles.Union(SingleFieldFilteredFiles));
