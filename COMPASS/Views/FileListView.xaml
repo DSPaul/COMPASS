@@ -128,6 +128,14 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="RATING" Width="auto" CanUserSort="True" SortMemberPath="Rating"
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowRating, Converter={StaticResource BoolToVisibilityConverter}}">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <materialDesign:RatingBar Value ="{Binding Rating,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="TAGS" Width="auto"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTags, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>

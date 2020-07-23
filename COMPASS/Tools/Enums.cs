@@ -26,7 +26,8 @@ namespace COMPASS.Tools
             Author,
             Publisher,
             StartReleaseDate,
-            StopReleaseDate
+            StopReleaseDate,
+            MinimumRating
         }
     }
 }
