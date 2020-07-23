@@ -41,6 +41,7 @@ namespace COMPASS.Models
             Description = f.Description;
             ReleaseDate = f.ReleaseDate;
             Rating = f.Rating;
+            PageCount = f.PageCount;
             Tags.Clear();
             foreach (Tag t in f.Tags)
             {
@@ -60,6 +61,7 @@ namespace COMPASS.Models
         private string _Description;
         private DateTime? _ReleaseDate = null;
         private int _Rating;
+        private int _PageCount;
 
         private ObservableCollection<Tag> _Tags;
 
@@ -131,6 +133,12 @@ namespace COMPASS.Models
         {
             get { return _Rating; }
             set { SetProperty(ref _Rating, value); }
+        }
+
+        public int PageCount
+        {
+            get { return _PageCount; }
+            set { SetProperty(ref _PageCount, value); }
         }
         #endregion 
     }
