@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using static COMPASS.Tools.Enums;
+using iText;
+using iText.Kernel.Pdf;
 
 namespace COMPASS.ViewModels
 {
@@ -98,7 +100,16 @@ namespace COMPASS.ViewModels
                     //Import File
                     if (_data.AllFiles.All(p => p.Path != path))
                     {
-                        MyFile pdf = new MyFile(_data) { Path = path, Title = System.IO.Path.GetFileNameWithoutExtension(path) };
+                        PdfDocument pdfdoc = new PdfDocument(new PdfReader(path));
+                        var info = pdfdoc.GetDocumentInfo();
+                        MyFile pdf = new MyFile(_data)
+                        {
+                            Path = path,
+                            Title = info.GetTitle() ?? System.IO.Path.GetFileNameWithoutExtension(path),
+                            Author = info.GetAuthor(),
+                            PageCount = pdfdoc.GetNumberOfPages()
+                        };
+                        pdfdoc.Close();
                         _data.AllFiles.Add(pdf);
                         CoverArtGenerator.ConvertPDF(pdf, _data.Folder);
                         SelectWhenDone = pdf;
