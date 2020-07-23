@@ -171,6 +171,9 @@ namespace COMPASS.Tools
                     case Enums.FilterType.StopReleaseDate:
                         SingleFieldFilteredFiles = new List<MyFile>(data.AllFiles.Where(f => f.ReleaseDate > (DateTime?)SingleFieldFilters.First()));
                         break;
+                    case Enums.FilterType.MinimumRating:
+                        SingleFieldFilteredFiles = new List<MyFile>(data.AllFiles.Where(f => f.Rating < (int)SingleFieldFilters.First()));
+                        break;
                 }
                 FieldFilteredFiles = new ObservableCollection<MyFile>(FieldFilteredFiles.Union(SingleFieldFilteredFiles));
             }

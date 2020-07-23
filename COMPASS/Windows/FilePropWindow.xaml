@@ -179,6 +179,10 @@
                             <TextBlock Text="Hard Copy:"/>
                             <CheckBox Name="FileOwnedCB" IsChecked="{Binding TempFile.Physically_Owned, Mode=TwoWay}" VerticalAlignment="Center"/>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+                            <TextBlock Text="Rating:"/>
+                            <materialDesign:RatingBar Value="{Binding TempFile.Rating, Mode=TwoWay}" Margin="50,0,0,0"/>
+                        </StackPanel>
                     </Grid>
 
                     <!--#region Tags-->

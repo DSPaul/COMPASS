@@ -176,6 +176,10 @@
                             <TextBlock Text="And" HorizontalAlignment="Center"/>
                             <DatePicker SelectedDate="{Binding StopReleaseDate}"/>
                         </StackPanel>
+                        <StackPanel Margin="10">
+                            <TextBlock Text="Minimum Rating:"/>
+                            <materialDesign:RatingBar Value="{Binding MinRating, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
                     </StackPanel>
                     <Button Content="Clear All Filters" Grid.Row="2" Margin="30" Command="{Binding ClearFiltersCommand}"/>
                 </Grid>

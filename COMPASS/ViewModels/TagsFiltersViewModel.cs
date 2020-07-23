@@ -106,10 +106,13 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref startReleaseDate, value);
-                FilterTag startDateTag = new FilterTag(MVM.FilterHandler.ActiveFilters, FilterType.StartReleaseDate,value) { Content = "After: " + value.Value.Date.ToShortDateString(), BackgroundColor = Colors.DeepSkyBlue };
-                //Remove existing start date, replacing it
-                MVM.FilterHandler.ActiveFilters.Remove(MVM.FilterHandler.ActiveFilters.Where(filter => (FilterType)filter.GetGroup() == FilterType.StartReleaseDate).FirstOrDefault());
-                MVM.FilterHandler.ActiveFilters.Add(startDateTag);
+                if(value != null)
+                {
+                    FilterTag startDateTag = new FilterTag(MVM.FilterHandler.ActiveFilters, FilterType.StartReleaseDate, value) { Content = "After: " + value.Value.Date.ToShortDateString(), BackgroundColor = Colors.DeepSkyBlue };
+                    //Remove existing start date, replacing it
+                    MVM.FilterHandler.ActiveFilters.Remove(MVM.FilterHandler.ActiveFilters.Where(filter => (FilterType)filter.GetGroup() == FilterType.StartReleaseDate).FirstOrDefault());
+                    MVM.FilterHandler.ActiveFilters.Add(startDateTag);
+                }
             }
         }
 
@@ -119,10 +122,31 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref stopReleaseDate, value);
-                FilterTag stopDateTag = new FilterTag(MVM.FilterHandler.ActiveFilters, FilterType.StopReleaseDate,value) { Content = "Before: " + value.Value.Date.ToShortDateString(), BackgroundColor = Colors.DeepSkyBlue };
-                //Remove existing end date, replacing it
-                MVM.FilterHandler.ActiveFilters.Remove(MVM.FilterHandler.ActiveFilters.Where(filter => (FilterType)filter.GetGroup() == FilterType.StopReleaseDate).FirstOrDefault());
-                MVM.FilterHandler.ActiveFilters.Add(stopDateTag);
+                if(value!= null)
+                {
+                    FilterTag stopDateTag = new FilterTag(MVM.FilterHandler.ActiveFilters, FilterType.StopReleaseDate,value) { Content = "Before: " + value.Value.Date.ToShortDateString(), BackgroundColor = Colors.DeepSkyBlue };
+                    //Remove existing end date, replacing it
+                    MVM.FilterHandler.ActiveFilters.Remove(MVM.FilterHandler.ActiveFilters.Where(filter => (FilterType)filter.GetGroup() == FilterType.StopReleaseDate).FirstOrDefault());
+                    MVM.FilterHandler.ActiveFilters.Add(stopDateTag);
+                }
+            }
+        }
+
+        //Selected minimum rating
+        private int minRating;
+        public int MinRating
+        {
+            get { return minRating; }
+            set
+            {
+                SetProperty(ref minRating, value);
+                if(value>0 && value< 6)
+                {
+                    FilterTag minRatTag = new FilterTag(MVM.FilterHandler.ActiveFilters, FilterType.MinimumRating, value) { Content = "At least " + value + " stars", BackgroundColor = Colors.Goldenrod };
+                    //Remove existing minimum rating, replacing it
+                    MVM.FilterHandler.ActiveFilters.Remove(MVM.FilterHandler.ActiveFilters.Where(filter => (FilterType)filter.GetGroup() == FilterType.MinimumRating).FirstOrDefault());
+                    MVM.FilterHandler.ActiveFilters.Add(minRatTag);
+                }
             }
         }
 
@@ -191,6 +215,9 @@ namespace COMPASS.ViewModels
         {
             SelectedAuthor = null;
             SelectedPublisher = null;
+            StartReleaseDate = null;
+            StopReleaseDate = null;
+            minRating = 0;
             MVM.FilterHandler.ActiveFilters.Clear();
         }
         //-----------------------------------------------------//
