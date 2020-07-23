@@ -176,12 +176,16 @@
                             <DatePicker SelectedDate="{Binding TempFile.ReleaseDate, TargetNullValue={x:Null}, FallbackValue={x:Null}}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="1">
-                            <TextBlock Text="Hard Copy:"/>
+                            <TextBlock Text="Hard Copy:" Margin="3,1,3,0" VerticalAlignment="Top"/>
                             <CheckBox Name="FileOwnedCB" IsChecked="{Binding TempFile.Physically_Owned, Mode=TwoWay}" VerticalAlignment="Center"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
                             <TextBlock Text="Rating:"/>
                             <materialDesign:RatingBar Value="{Binding TempFile.Rating, Mode=TwoWay}" Margin="50,0,0,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="2">
+                            <TextBlock Text="PageCount:"/>
+                            <TextBox Text="{Binding TempFile.PageCount, Mode=TwoWay}" MinWidth="30" Margin="5,0"/>
                         </StackPanel>
                     </Grid>
 
