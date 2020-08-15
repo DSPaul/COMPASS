@@ -74,6 +74,7 @@ artifacts/
 
 # Others
 ClientBin/
+Branding/
 ~$*
 *~
 *.dbmdl
