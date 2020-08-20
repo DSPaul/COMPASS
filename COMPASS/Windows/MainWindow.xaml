@@ -564,7 +564,7 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type Button}">
-                                <Border Background="{TemplateBinding Background}" BorderThickness="1" CornerRadius="7" HorizontalAlignment="Stretch">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <materialDesign:PackIcon Height="30" Margin="0,0,10,0"
                                             Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
@@ -576,8 +576,10 @@
                     </Setter>
                     <Style.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Background" Value="#FF999999" />
-                        </Trigger>
+                            <!--<Setter Property="Background" Value="#FF999999" />-->
+                                <Setter Property="Background" Value="#54babf" />
+                                <!--<Setter Property="Foreground" Value="#66C199"/>-->
+                            </Trigger>
                     </Style.Triggers>
                 </Style>
                 <Style TargetType="{x:Type CustomControls:ExpandingButton}">

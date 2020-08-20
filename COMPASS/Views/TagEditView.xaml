@@ -161,8 +161,8 @@
                 </Button>
             </Grid>
         </Grid>
-        <ScrollViewer x:Name="ParentSelection" PreviewMouseWheel="ParentSelection_PreviewMouseWheel" Grid.Column="1"
-                      Visibility="{Binding ShowParentSelection, Converter={StaticResource BooltoVisibilityConverter}}">
+        <ScrollViewer x:Name="ParentSelection" PreviewMouseWheel="ParentSelection_PreviewMouseWheel" Grid.Column="1" MaxHeight="500"
+                      Visibility="{Binding ShowParentSelection, Converter={StaticResource BooltoVisibilityConverter}, FallbackValue=Collapsed}">
             <StackPanel HorizontalAlignment="Center">
                 <TreeView x:Name="ParentSelectionTree" BorderBrush="{x:Null}" ItemsSource="{Binding TreeViewSource}" ItemTemplateSelector="{StaticResource TagDataTemplateSelector}"
                                     Background="{x:Null}" HorizontalAlignment="Left" SelectedItemChanged="TagTree_SelectedItemChanged">
@@ -186,7 +186,7 @@
                 </Button>
             </StackPanel>
         </ScrollViewer>
-        <StackPanel x:Name="ColorSelection" Grid.Column="2" Visibility="{Binding ShowColorSelection, Converter= {StaticResource BooltoVisibilityConverter}}">
+        <StackPanel x:Name="ColorSelection" Grid.Column="2" Visibility="{Binding ShowColorSelection, Converter= {StaticResource BooltoVisibilityConverter}, FallbackValue=collapsed}">
             <xctk:ColorCanvas Grid.Column="1" BorderBrush="{x:Null}" SelectedColor="{Binding TempTag.BackgroundColor, Mode=TwoWay, TargetNullValue=Black, FallbackValue=Black}"
                               x:Name="ColorSelector" Foreground="White" UsingAlphaChannel="True">
                 <xctk:ColorCanvas.Background>
