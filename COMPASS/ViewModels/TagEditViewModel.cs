@@ -16,6 +16,9 @@ namespace COMPASS.ViewModels
             TempTag = new Tag(vm.CurrentData.AllTags);
             if (!CreateNewTag) TempTag.Copy(EditedTag);
 
+            ShowColorSelection = false;
+            ShowParentSelection = false;
+
             //Commands
             ClearParentCommand = new BasicCommand(ClearParent);
             CancelParentSelectionCommand = new BasicCommand(CancelParentSelection);

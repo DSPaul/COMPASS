@@ -170,6 +170,7 @@ namespace COMPASS.ViewModels
             FilterHandler = new FilterHandler(currentData);
             CurrentFileViewModel = new FileListViewModel(this);
             TFViewModel = new TagsFiltersViewModel(this);
+            AddTagViewModel = new TagEditViewModel(this, null);
         }
         #endregion
 
