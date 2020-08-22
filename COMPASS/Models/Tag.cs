@@ -27,6 +27,9 @@ namespace COMPASS.Models
             }
             ID = tempID;
             this.Items = new ObservableCollection<Tag>();
+
+            //set a default color for add tag
+            BackgroundColor = Colors.Black;
         }
 
         private ObservableCollection<Tag> _allTags;
