@@ -578,7 +578,6 @@
                         <Trigger Property="IsMouseOver" Value="true">
                             <!--<Setter Property="Background" Value="#FF999999" />-->
                                 <Setter Property="Background" Value="#54babf" />
-                                <!--<Setter Property="Foreground" Value="#66C199"/>-->
                             </Trigger>
                     </Style.Triggers>
                 </Style>
