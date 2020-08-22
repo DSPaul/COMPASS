@@ -191,6 +191,9 @@
     <Compile Include="Models\MyMenuItem.cs" />
     <Compile Include="Models\ObservableObject.cs" />
     <Compile Include="Models\TreeViewNode.cs" />
+    <Compile Include="Resources\Controls\ColorPicker.xaml.cs">
+      <DependentUpon>ColorPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Resources\Controls\ExpandingButton.xaml.cs">
       <DependentUpon>ExpandingButton.xaml</DependentUpon>
     </Compile>
@@ -245,6 +248,10 @@
     </Compile>
     <Compile Include="Tools\Converters\UriToBitmapConverter.cs" />
     <Page Include="Resources\CommonResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Controls\ColorPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
