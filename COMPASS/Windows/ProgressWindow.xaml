@@ -27,8 +27,7 @@
             <TextBlock Text="{Binding ImportText}" Margin="30,5"/>
             <ProgressBar x:Name="ProgBar"
                 Minimum="0" Maximum="100" Value="{Binding Progress}" Height="30" Width="400"
-                HorizontalAlignment="Left" Margin="30,0" ValueChanged="ProgressBar_ValueChanged" Foreground="#FF9110DB"
-                         />
+                HorizontalAlignment="Left" Margin="30,0" ValueChanged="ProgressBar_ValueChanged" Foreground="#54babf"/>
         </StackPanel>
     </Grid>
 </Window>
