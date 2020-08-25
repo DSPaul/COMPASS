@@ -12,7 +12,7 @@
     <DataGrid x:Name="FileView" MaxWidth="{Binding ActualWidth, ElementName=FileListControl}"
                     Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Margin="10,0"
                     AutoGenerateColumns="False" ItemsSource="{Binding MVM.FilterHandler.ActiveFiles}"
-                    CanUserAddRows="False" SelectionMode="Single" CanUserSortColumns="True"
+                    CanUserAddRows="False" SelectionMode="Extended" CanUserSortColumns="True"
                     RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
                     SelectedItem="{Binding SelectedFile, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848">
         <DataGrid.Resources>
@@ -78,8 +78,7 @@
         <DataGrid.ItemContainerStyle>
             <Style TargetType="{x:Type DataGridRow}">
                 <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
-                <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>
-                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
                 <Setter Property="Background" Value="{x:Null}"/>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="true">
@@ -94,7 +93,7 @@
         <DataGrid.RowStyle>
             <Style TargetType="{x:Type DataGridRow}">
                 <Setter Property="Background" Value="{x:Null}"/>
-
+                <Setter Property="ContextMenu" Value="{StaticResource MultiFileContextMenu}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type DataGridRow}">
@@ -124,6 +123,9 @@
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter Property="Background" Value="Gray"/>
                     </Trigger>
+                    <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Value="1">
+                        <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>
+                    </DataTrigger>
                 </Style.Triggers>
             </Style>
         </DataGrid.RowStyle>
