@@ -1,6 +1,8 @@
 ﻿using COMPASS.Models;
 using COMPASS.ViewModels.Commands;
+using Org.BouncyCastle.Asn1.Crmf;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -23,7 +25,8 @@ namespace COMPASS.ViewModels
             OpenSelectedFileCommand = new RelayCommand<object>(OpenSelectedFile, CanOpenSelectedFile);
             OpenFileOnlineCommand = new RelayCommand<object>(OpenFileOnline,CanOpenFileOnline);
             MoveToFolderCommand = new RelayCommand<object>(MoveToFolder);
-            DeleteFileCommand = new BasicCommand(DeleteFile);
+            DeleteFileCommand = new RelayCommand<object>(DeleteFile);
+            OpenSelectedFilesCommand = new RelayCommand<object>(OpenSelectedFiles);
         }
 
         #region Properties
@@ -108,6 +111,39 @@ namespace COMPASS.ViewModels
             return true;
         }
 
+        //Open Multiple Files
+        public RelayCommand<object> OpenSelectedFilesCommand { get; private set; }
+        public void OpenSelectedFiles(object o = null)
+        {
+            if (o == null) return;
+            IList list = o as IList;
+            List<MyFile> ToOpen = list.Cast<MyFile>().ToList();
+            //MessageBox "Are you Sure?"
+            string sMessageBoxText = "You are about to open " + ToOpen.Count + " Files. Are you sure you wish to continue?";
+            string sCaption = "Are you Sure?";
+
+            MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
+            MessageBoxImage imgMessageBox = MessageBoxImage.Warning;
+
+            MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, imgMessageBox);
+
+            if (rsltMessageBox == MessageBoxResult.Yes)
+            {
+                foreach(MyFile f in ToOpen)
+                {
+                    try
+                    {
+                        if(f.Path != null) Process.Start(f.Path);
+                        else Process.Start(f.SourceURL);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("File Path Invalid");
+                    }
+                }
+            }
+        }
+
         //Edit File
         public BasicCommand EditFileCommand { get; private set; }
         public void EditFile()
@@ -123,7 +159,7 @@ namespace COMPASS.ViewModels
         public void MoveToFolder(object o = null)
         {
             var par = (object[])o;
-            MyFile ToMove;
+            List<MyFile> ToMoveList = new List<MyFile>();
             string targetfolder;
 
             //extract folder parameter
@@ -132,12 +168,19 @@ namespace COMPASS.ViewModels
             if (targetfolder == MVM.CurrentFolder) return;
 
             //extract file parameter
-            if (par[1] != null) ToMove = (MyFile)(par[1]);
-            else ToMove = MVM.CurrentFileViewModel.SelectedFile;
+            if (par[1] != null)
+            {
+                IList list = par[1] as IList;
+                ToMoveList = list.Cast<MyFile>().ToList();
+            }
+            else ToMoveList.Add(MVM.CurrentFileViewModel.selectedFile);
 
             //MessageBox "Are you Sure?"
-            string sMessageBoxText = "Moving " + ToMove.Title + " to " + targetfolder + " will remove all tags from the file, are you sure you wish to continue?";
+            string MessageSingle = "Moving " + ToMoveList[0].Title + " to " + targetfolder + " will remove all tags from the file, are you sure you wish to continue?";
+            string MessageMultiple = "Moving these " + ToMoveList.Count() + " files to " + targetfolder + " will remove all tags from the files, are you sure you wish to continue?";
+
             string sCaption = "Are you Sure?";
+            string sMessageBoxText = ToMoveList.Count == 1 ? MessageSingle : MessageMultiple;
 
             MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
             MessageBoxImage imgMessageBox = MessageBoxImage.Warning;
@@ -146,43 +189,55 @@ namespace COMPASS.ViewModels
 
             if (rsltMessageBox == MessageBoxResult.Yes) 
             {
-                ToMove.Tags.Clear();
-                // Give file new ID and move it to other folder
                 Data TargetData = new Data(targetfolder);
-                MyFile GetIDfile = new MyFile(TargetData); //create new file in target data to check the first available ID
-                ToMove.ID = GetIDfile.ID;
+                foreach (MyFile ToMove in ToMoveList)
+                {
+                    ToMove.Tags.Clear();
+                    // Give file new ID and move it to other folder
+                    MyFile GetIDfile = new MyFile(TargetData); //create new file in target data to check the first available ID
+                    ToMove.ID = GetIDfile.ID;
 
-                //Add file to target dataset
-                TargetData.AllFiles.Add(ToMove);
+                    //Add file to target dataset
+                    TargetData.AllFiles.Add(ToMove);
 
-                //Update Author and Publisher List
-                if (ToMove.Author != "" && !TargetData.AuthorList.Contains(ToMove.Author)) TargetData.AuthorList.Add(ToMove.Author);
-                if (ToMove.Publisher != "" && !TargetData.PublisherList.Contains(ToMove.Publisher)) TargetData.PublisherList.Add(ToMove.Publisher);
+                    //Update Author and Publisher List
+                    if (ToMove.Author != "" && !TargetData.AuthorList.Contains(ToMove.Author)) TargetData.AuthorList.Add(ToMove.Author);
+                    if (ToMove.Publisher != "" && !TargetData.PublisherList.Contains(ToMove.Publisher)) TargetData.PublisherList.Add(ToMove.Publisher);
 
-                //Move cover art to right folder with new ID
-                string newCoverArt = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + targetfolder + @"\CoverArt\" + ToMove.ID + ".png";
-                File.Copy(ToMove.CoverArt, newCoverArt);
+                    //Move cover art to right folder with new ID
+                    string newCoverArt = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + targetfolder + @"\CoverArt\" + ToMove.ID + ".png";
+                    File.Copy(ToMove.CoverArt, newCoverArt);
 
-                //Delete file in original folder
-                MVM.CurrentData.DeleteFile(ToMove);
-                MVM.FilterHandler.RemoveFile(ToMove);
+                    //Delete file in original folder
+                    MVM.CurrentData.DeleteFile(ToMove);
+                    MVM.FilterHandler.RemoveFile(ToMove);
 
-                //Update the cover art metadata to new path, has to happen after delete so old one gets deleted
-                ToMove.CoverArt = newCoverArt;
-
+                    //Update the cover art metadata to new path, has to happen after delete so old one gets deleted
+                    ToMove.CoverArt = newCoverArt;
+                }
                 //Save changes to TargetData
                 TargetData.SaveFilesToFile();
             }
         }
 
         //Delete File
-        public BasicCommand DeleteFileCommand { get; private set; }
-        public void DeleteFile()
+        public RelayCommand<object> DeleteFileCommand { get; private set; }
+        public void DeleteFile(object o = null)
         {
-            MVM.CurrentData.DeleteFile(MVM.CurrentFileViewModel.SelectedFile);
-            MVM.FilterHandler.RemoveFile(MVM.CurrentFileViewModel.SelectedFile);
+            List<MyFile> ToDeleteList = new List<MyFile>();
+            if (o == null) ToDeleteList.Add(MVM.CurrentFileViewModel.SelectedFile);
+            else
+            {
+                IList list = o as IList;
+                ToDeleteList = list.Cast<MyFile>().ToList();
+            }
+            foreach(MyFile ToDelete in ToDeleteList)
+            {
+                MVM.CurrentData.DeleteFile(ToDelete);
+                MVM.FilterHandler.RemoveFile(ToDelete);
+            }
+            
         }
-
         #endregion
     }
 }
