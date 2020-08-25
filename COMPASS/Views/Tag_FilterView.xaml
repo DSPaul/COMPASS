@@ -111,7 +111,6 @@
                         <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="14"/>
                         <Border.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Assign to Files"/>
                                 <MenuItem Header="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
                                 <MenuItem Header="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
                             </ContextMenu>
