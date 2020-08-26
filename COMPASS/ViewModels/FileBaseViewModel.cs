@@ -22,6 +22,7 @@ namespace COMPASS.ViewModels
         {
             mainViewModel = vm;
             EditFileCommand = new BasicCommand(EditFile);
+            EditFilesCommand = new RelayCommand<object>(EditFiles);
             OpenSelectedFileCommand = new RelayCommand<object>(OpenSelectedFile, CanOpenSelectedFile);
             OpenFileOnlineCommand = new RelayCommand<object>(OpenFileOnline,CanOpenFileOnline);
             MoveToFolderCommand = new RelayCommand<object>(MoveToFolder);
@@ -150,6 +151,19 @@ namespace COMPASS.ViewModels
         {
             MVM.CurrentEditViewModel = new FileEditViewModel(MVM, MVM.CurrentFileViewModel.SelectedFile);
             FilePropWindow fpw = new FilePropWindow((FileEditViewModel)MVM.CurrentEditViewModel);
+            fpw.ShowDialog();
+            fpw.Topmost = true;
+        }
+
+        //Edit Multiple files
+        public RelayCommand<object> EditFilesCommand { get; private set; }
+        public void EditFiles(object o = null)
+        {
+            if (o == null) return;
+            IList list = o as IList;
+            List<MyFile> ToEdit = list.Cast<MyFile>().ToList();
+            MVM.CurrentEditViewModel = new FileBulkEditViewModel(MVM, ToEdit);
+            FileBulkEditWindow fpw = new FileBulkEditWindow((FileBulkEditViewModel)MVM.CurrentEditViewModel);
             fpw.ShowDialog();
             fpw.Topmost = true;
         }

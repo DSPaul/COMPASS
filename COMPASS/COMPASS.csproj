@@ -211,6 +211,7 @@
     <Compile Include="ViewModels\Commands\BasicCommand.cs" />
     <Compile Include="ViewModels\Commands\RelayCommand.cs" />
     <Compile Include="ViewModels\Commands\SimpleCommand.cs" />
+    <Compile Include="ViewModels\FileBulkEditViewModel.cs" />
     <Compile Include="ViewModels\FileEditViewModel.cs" />
     <Compile Include="ViewModels\FileListViewModel.cs" />
     <Compile Include="ViewModels\FileBaseViewModel.cs" />
@@ -239,6 +240,9 @@
     </Compile>
     <Compile Include="Views\Tag_FilterView.xaml.cs">
       <DependentUpon>Tag_FilterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\FileBulkEditWindow.xaml.cs">
+      <DependentUpon>FileBulkEditWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\ProgressWindow.xaml.cs">
       <DependentUpon>ProgressWindow.xaml</DependentUpon>
@@ -286,6 +290,10 @@
     <Page Include="Views\Tag_FilterView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\FileBulkEditWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\FilePropWindow.xaml">
       <SubType>Designer</SubType>

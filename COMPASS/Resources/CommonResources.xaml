@@ -315,7 +315,9 @@
                     RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
                   Command="{Binding Path=DataContext.OpenSelectedFilesCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Bulk Edit" Command="{Binding Path=DataContext.EditFileCommand,
+        <MenuItem Header="Bulk Edit" CommandParameter="{Binding SelectedItems,
+                    RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
+                  Command="{Binding Path=DataContext.EditFilesCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
         <MenuItem Header="Move All to Folder" ItemsSource="{Binding Path=DataContext.MVM.Folders,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
