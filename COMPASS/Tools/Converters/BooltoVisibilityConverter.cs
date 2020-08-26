@@ -13,7 +13,7 @@ namespace COMPASS.Tools.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            //Parameter is is true if inverted
+            //Parameter is true if inverted
             bool Invert = System.Convert.ToBoolean(parameter);
             bool temp = Invert ? !(bool)value : (bool)value;
             if (temp) return Visibility.Visible;
