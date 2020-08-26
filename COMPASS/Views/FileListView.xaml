@@ -77,7 +77,7 @@
         </DataGrid.Resources>
         <DataGrid.ItemContainerStyle>
             <Style TargetType="{x:Type DataGridRow}">
-                <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+                
                 <Setter Property="HorizontalContentAlignment" Value="Left"/>
                 <Setter Property="Background" Value="{x:Null}"/>
                 <Style.Triggers>
@@ -92,6 +92,7 @@
         </DataGrid.ItemContainerStyle>
         <DataGrid.RowStyle>
             <Style TargetType="{x:Type DataGridRow}">
+                <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
                 <Setter Property="Background" Value="{x:Null}"/>
                 <Setter Property="ContextMenu" Value="{StaticResource MultiFileContextMenu}"/>
                 <Setter Property="Template">
