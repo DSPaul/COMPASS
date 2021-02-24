@@ -7,18 +7,17 @@
              xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
              mc:Ignorable="d" 
              x:Name="ExpandingBtnControl"
-             d:DesignHeight="400" d:DesignWidth="200">
+             d:DesignHeight="200" d:DesignWidth="200">
     <UserControl.Resources>
         <Converters:BooltoVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </UserControl.Resources>
     <Border CornerRadius="7" Background="Gray">
-        <StackPanel Orientation="Vertical">
+        <StackPanel Orientation="Vertical"  x:Name="OutsidePanel">
             <ToggleButton x:Name="ToggleBtn" Click="CheckedChanged">
                 <ToggleButton.Template>
                     <ControlTemplate>
                         <Grid>
-                            <ContentControl Content="{Binding Toggle, FallbackValue='Binding Failed', ElementName=ExpandingBtnControl}">
-                            </ContentControl>
+                            <ContentControl x:Name="ToggleBtnContent" Content="{Binding Toggle, FallbackValue='Binding Failed', ElementName=ExpandingBtnControl}"/>
                             <Border Background="White" IsHitTestVisible="False" CornerRadius="7,7,0,0">
                                 <Border.Style>
                                     <Style TargetType="Border">
@@ -37,16 +36,11 @@
                     </ControlTemplate>
                 </ToggleButton.Template>
             </ToggleButton>
-            <Grid Visibility="{Binding IsChecked, ElementName=ToggleBtn, Converter={StaticResource BoolToVisibilityConverter}}">
-                <Border CornerRadius="0,0,7,7" Background="Gray" BorderThickness="1" ClipToBounds="True">
-                    <Border BorderThickness="1" Margin="-2" Background="Transparent" BorderBrush="Black">
-                        <Border.Effect>
-                            <DropShadowEffect ShadowDepth="0" BlurRadius="10" />
-                        </Border.Effect>
-                    </Border>
-                </Border>
-                <Border CornerRadius="0,0,7,7">
-                    <ContentControl Margin="10" x:Name="HiddenContentControl" Content="{Binding HiddenContent, ElementName=ExpandingBtnControl}"/>
+            <Grid x:Name="HiddenContentGrid"
+                  Visibility="{Binding IsChecked, ElementName=ToggleBtn, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Border CornerRadius="0,0,7,7" Background="Gray">
+                    <ContentControl Margin="10" x:Name="HiddenContentControl" Content="{Binding HiddenContent, ElementName=ExpandingBtnControl}"
+                                    />
                 </Border>
             </Grid>
         </StackPanel>
