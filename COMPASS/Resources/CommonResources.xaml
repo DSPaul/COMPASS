@@ -319,7 +319,7 @@
                     RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
                   Command="{Binding Path=DataContext.EditFilesCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Move All to Folder" ItemsSource="{Binding Path=DataContext.MVM.Folders,
+        <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
             <MenuItem.ItemContainerStyle>
                 <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
