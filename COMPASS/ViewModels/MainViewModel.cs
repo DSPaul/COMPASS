@@ -6,6 +6,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
 using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
@@ -24,13 +25,17 @@ namespace COMPASS.ViewModels
             CurrentFolder = FolderName;
 
             MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory);
+
             //CheckForUpdates();
+
             //Commands
             ChangeFileViewCommand = new SimpleCommand(ChangeFileView);
             ResetCommand = new BasicCommand(Reset);
             AddTagCommand = new BasicCommand(AddTag);
             ImportFilesCommand = new SimpleCommand(ImportFiles);
             CreateFolderCommand = new SimpleCommand(CreateFolder);
+            EditFolderCommand = new SimpleCommand(EditFolder);
+            DeleteFolderCommand = new BasicCommand(RaiseDeleteFolderWarning);
         }
 
         #region Properties
@@ -52,8 +57,7 @@ namespace COMPASS.ViewModels
                     CurrentData.SaveFilesToFile();
                     CurrentData.SaveTagsToFile();
                 }
-                
-                ChangeFolder(value);
+                if(value != null) ChangeFolder(value);
                 SetProperty(ref currentFolder, value);
             }
         }
@@ -183,6 +187,55 @@ namespace COMPASS.ViewModels
             _Folders.Add(f);
             CurrentFolder = f;
         }
+
+        //Rename Folder/Collection/RPG System
+        public SimpleCommand EditFolderCommand { get; private set; }
+        public void EditFolder(object folder)
+        {
+            string f = (string)folder;
+            var index = Folders.IndexOf(CurrentFolder);
+            CurrentData.RenameFolder(f);
+            Folders[index] = f;
+            CurrentFolder = f;
+        }
+
+        //Delete Folder/Collection/RPG System
+        public BasicCommand DeleteFolderCommand { get; private set; }
+        public void RaiseDeleteFolderWarning()
+        {
+            if (CurrentData.AllFiles.Count > 0)
+            {
+                //MessageBox "Are you Sure?"
+                string sCaption = "Are you Sure?";
+
+                string MessageSingle = "There is still one file in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
+                string MessageMultiple = "There are still" + currentData.AllFiles.Count + " files in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
+
+                string sMessageBoxText = CurrentData.AllFiles.Count == 1 ? MessageSingle : MessageMultiple;
+
+                MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
+                MessageBoxImage imgMessageBox = MessageBoxImage.Warning;
+
+                MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, imgMessageBox);
+
+                if (rsltMessageBox == MessageBoxResult.Yes)
+                {
+                    DeleteFolder(CurrentFolder);
+                }
+            }
+            else
+            {
+                DeleteFolder(CurrentFolder);
+            }
+        }
+        public void DeleteFolder(string todelete)
+        {
+            Folders.Remove(todelete);
+            CurrentFolder = Folders[0];
+            Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + todelete,true);
+        }
+
+
         private async Task CheckForUpdates()
         {
             using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/DSPAUL/COMPASS"))
@@ -190,5 +243,8 @@ namespace COMPASS.ViewModels
               await mgr.Result.UpdateApp();
             }
         }
+
+
+
     }
 }
