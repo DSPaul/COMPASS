@@ -18,21 +18,26 @@ namespace COMPASS
             AuthorList = new ObservableCollection<string>();
             PublisherList = new ObservableCollection<string>();
 
-            _BooksFilepath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Files.xml";
-            _TagsFilepath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Tags.xml";
-
             LoadTags();
             LoadFiles();
         }
 
         private String _Folder;
-        readonly String _BooksFilepath;
-        readonly String _TagsFilepath;
 
         public String Folder
         {
             get { return _Folder; }
             set { SetProperty(ref _Folder, value);}
+        }
+
+        public String BooksFilepath
+        {
+            get { return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Files.xml"; ; }
+        }
+
+        public String TagsFilepath
+        {
+            get { return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Tags.xml"; ; }
         }
 
         #region Tag Data
@@ -74,13 +79,14 @@ namespace COMPASS
         //Loads the RootTags from a file and constructs the Alltags list from it
         public void LoadTags()
         {
-            if (File.Exists(_TagsFilepath))
+            if (File.Exists(TagsFilepath))
             {
-                //loading root tags
-                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Tag>));
-                using (var Reader = new StreamReader(_TagsFilepath))
+                //loading root tags          
+                using (var Reader = new StreamReader(TagsFilepath))
                 {
+                    System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Tag>));
                     this.RootTags = serializer.Deserialize(Reader) as ObservableCollection<Tag>;
+                    Reader.Close();
                 }
 
                 //Creating All Tags
@@ -105,12 +111,13 @@ namespace COMPASS
         //Loads AllFiles list from Files
         public void LoadFiles()
         {
-            if (File.Exists(_BooksFilepath))
+            if (File.Exists(BooksFilepath))
             {
-                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<MyFile>));
-                using (var Reader = new StreamReader(_BooksFilepath))
+                using (var Reader = new StreamReader(BooksFilepath))
                 {
+                    System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<MyFile>));
                     AllFiles = serializer.Deserialize(Reader) as ObservableCollection<MyFile>;
+                    Reader.Close();
                 }
 
                 foreach (MyFile f in AllFiles)
@@ -143,18 +150,18 @@ namespace COMPASS
 
         public void SaveTagsToFile()
         {
-            System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Tag>));
-            using (var writer = new StreamWriter(_TagsFilepath))
+            using (var writer = new StreamWriter(TagsFilepath))
             {
+                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Tag>));
                 serializer.Serialize(writer, RootTags);
             }
         }
 
         public void SaveFilesToFile()
         {
-            System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<MyFile>));
-            using (var writer = new StreamWriter(_BooksFilepath))
+            using (var writer = new StreamWriter(BooksFilepath))
             {
+                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<MyFile>));
                 serializer.Serialize(writer, AllFiles);
             }
         }
@@ -182,6 +189,16 @@ namespace COMPASS
             //remove from parent items list
             if (todel.ParentID == -1) RootTags.Remove(todel);
             else todel.GetParent().Items.Remove(todel);
+        }
+
+        public void RenameFolder(string NewFoldername)
+        {
+            Directory.Move(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + NewFoldername);
+            Folder = NewFoldername;
+            foreach(MyFile file in AllFiles)
+            {
+                file.CoverArt = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + NewFoldername + @"\CoverArt\" + file.ID + ".png";
+            }
         }
     }
 }

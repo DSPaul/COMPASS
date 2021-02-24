@@ -425,7 +425,7 @@
                     <ComboBox  Style="{StaticResource RPGDropdownStyle}" SelectedValue="{Binding CurrentFolder, Mode=TwoWay}"
                     ItemsSource="{Binding Folders}"/>
                     <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
-                    <Border Background="Gray" CornerRadius="0,4,4,0">
+                    <Border Background="Gray">
                         <Grid>
                             <Grid.Resources>
                                 <Style TargetType="{x:Type ToggleButton}">
@@ -449,8 +449,8 @@
                                 <materialDesign:PackIcon Kind="Add" Foreground="#FF494949" Width="30" Height="30"/>
                             </ToggleButton>
                             <StackPanel Orientation="Horizontal" x:Name="FolderCreation"
-                                        Visibility="{Binding ElementName=ShowFolderCreation, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <TextBox x:Name="NewFolderName" Text="Type Name Here" FontSize="16" VerticalAlignment="Center" Background="{x:Null}"
+                                        Visibility="{Binding ElementName=ShowFolderCreation, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                                <TextBox x:Name="NewFolderName" Text="New Game" FontSize="16" VerticalAlignment="Center" Background="{x:Null}"
                                          Foreground="White" Margin="5,0" BorderThickness="0" MinWidth="50"/>
                                 <ToggleButton Background="{x:Null}" BorderThickness="0" Command="{Binding CreateFolderCommand}"
                                               CommandParameter="{Binding ElementName=NewFolderName, Path=Text}"
@@ -464,7 +464,55 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-            </StackPanel>
+                    <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
+                    <Border Background="Gray">
+                        <Grid>
+                            <Grid.Resources>
+                                <Style TargetType="{x:Type ToggleButton}">
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                                <Border>
+                                                    <Border.Background>
+                                                        <SolidColorBrush Color="Black" Opacity="0"/>
+                                                    </Border.Background>
+                                                    <ContentPresenter/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Grid.Resources>
+                            <ToggleButton Style="{x:Null}" Background="{x:Null}" BorderThickness="0" x:Name="ShowFolderEditing"
+                                          Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=True}">
+                                <materialDesign:PackIcon Kind="Edit" Foreground="#FF494949" Width="25" Height="25"/>
+                            </ToggleButton>
+                            <StackPanel Orientation="Horizontal" x:Name="FolderEditing"
+                                        Visibility="{Binding ElementName=ShowFolderEditing, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                                <TextBox x:Name="EditFolderName" Text="New Name" FontSize="16" VerticalAlignment="Center" Background="{x:Null}"
+                                         Foreground="White" Margin="5,0" BorderThickness="0" MinWidth="50"/>
+                                <ToggleButton Background="{x:Null}" BorderThickness="0" Command="{Binding EditFolderCommand}"
+                                              CommandParameter="{Binding ElementName=EditFolderName, Path=Text}"
+                                              IsChecked="{Binding ElementName=ShowFolderEditing, Path=IsChecked}">
+                                    <materialDesign:PackIcon Kind="Check" Foreground="Green" Width="30" Height="30"/>
+                                </ToggleButton>
+                                <ToggleButton Background="{x:Null}" BorderThickness="0"
+                                              IsChecked="{Binding ElementName=ShowFolderEditing, Path=IsChecked}">
+                                    <materialDesign:PackIcon Kind="Close" Foreground="Red" Width="30" Height="30"/>
+                                </ToggleButton>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
+                    <Border Background="Gray" CornerRadius="0,4,4,0">
+                        <Grid>
+                            <Button Style="{x:Null}" Background="{x:Null}" BorderThickness="0" Command="{Binding DeleteFolderCommand}">
+                                <materialDesign:PackIcon Kind="Delete" Foreground="#FF494949" Width="25" Height="25"/>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </StackPanel>
 
             <StackPanel Orientation="Horizontal"
                 HorizontalAlignment="Right"
