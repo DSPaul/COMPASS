@@ -94,7 +94,7 @@
                                     <Trigger Property="IsSelected" Value="False">
                                         <Setter TargetName="TabBorder" Property="Background">
                                             <Setter.Value>
-                                                <SolidColorBrush Color="#FFA09C9C"/>
+                                                <SolidColorBrush Color="#808080"/>
                                             </Setter.Value>
                                         </Setter>
                                     </Trigger>
