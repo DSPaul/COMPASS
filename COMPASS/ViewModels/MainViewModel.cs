@@ -5,8 +5,10 @@ using Squirrel;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
@@ -27,6 +29,12 @@ namespace COMPASS.ViewModels
             MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
             //CheckForUpdates();
+
+            //Start internet checkup timer
+            DispatcherTimer CheckConnectionTimer = new DispatcherTimer();
+            CheckConnectionTimer.Tick += new EventHandler(CheckConnection);
+            CheckConnectionTimer.Interval = new TimeSpan(0, 0, 30);
+            CheckConnectionTimer.Start();
 
             //Commands
             ChangeFileViewCommand = new SimpleCommand(ChangeFileView);
@@ -68,6 +76,13 @@ namespace COMPASS.ViewModels
         {
             get { return currentData; }
             private set { SetProperty(ref currentData, value); }
+        }
+
+        private bool isOnline;
+        public bool IsOnline
+        {
+            get { return IsConnectedToInternet(); }
+            private set { SetProperty(ref isOnline, value); }
         }
 
         #endregion
@@ -176,7 +191,6 @@ namespace COMPASS.ViewModels
             TFViewModel = new TagsFiltersViewModel(this);
             AddTagViewModel = new TagEditViewModel(this, null);
         }
-        #endregion
 
         //Add new Folder/collection/RPG System
         public SimpleCommand CreateFolderCommand { get; private set; }
@@ -234,6 +248,25 @@ namespace COMPASS.ViewModels
             CurrentFolder = Folders[0];
             Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + todelete,true);
         }
+
+        //check internet connection
+        public bool IsConnectedToInternet()
+        { 
+            Ping p = new Ping();
+            try
+            {
+                PingReply reply = p.Send("8.8.8.8", 3000);
+                if (reply.Status == IPStatus.Success)
+                    return true;
+            }
+            catch { }
+            return false;
+        }
+        private void CheckConnection(object sender, EventArgs e)
+        {
+            IsOnline = IsConnectedToInternet();
+        }
+        #endregion
 
 
         private async Task CheckForUpdates()
