@@ -12,7 +12,7 @@
         xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
         xmlns:CustomControls ="clr-namespace:COMPASS.Resources.Controls"
         mc:Ignorable="d"
-        Title="COMPASS" Height="540" Width="960" FontSize="20"
+        Title="COMPASS" Height="540" Width="1156.8" FontSize="20"
         Foreground="White" Icon="/Icons/IconDesign.ico"
         Closing="Window_Closing" WindowState="Maximized" WindowStyle="None" 
         WindowStartupLocation="CenterScreen" MouseDown="Window_MouseDown">
@@ -100,8 +100,9 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width ="auto"/>
                 <ColumnDefinition Width ="auto"/>
-                <ColumnDefinition Width ="auto"/>
                 <ColumnDefinition Width ="*"/>
+                <ColumnDefinition Width ="auto"/>
+                <ColumnDefinition Width ="auto"/>
                 <ColumnDefinition Width ="auto"/>
             </Grid.ColumnDefinitions>
 
@@ -203,9 +204,9 @@
             </Grid.Resources>
 
             <StackPanel Orientation="Horizontal" Margin="10,0">
-                    <!--<Image Source="/Icons/Compass_new.png" Width="35" SnapsToDevicePixels="True"/>
-                    <TextBlock Text="COMPASS" VerticalAlignment="Center" Margin="10,0"/>-->
-                    <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+                <!--<Image Source="/Icons/Compass_new.png" Width="35" SnapsToDevicePixels="True"/>
+                <TextBlock Text="COMPASS" VerticalAlignment="Center" Margin="10,0"/>-->
+                <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
                         <Canvas Name="svg2047" Width="150" Height="20">
                             <Canvas.RenderTransform>
                                 <TranslateTransform X="0" Y="0"/>
@@ -401,7 +402,7 @@
                         </Canvas>
                     </Viewbox>
 
-                </StackPanel>
+            </StackPanel>
 
             <Border Grid.Column="1" CornerRadius="4" MinWidth="300"
                         Background="Gray" OpacityMask="#FF222222" Margin="30,5">
@@ -422,101 +423,132 @@
             </Border>
 
             <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="50,5">
-                    <ComboBox  Style="{StaticResource RPGDropdownStyle}" SelectedValue="{Binding CurrentFolder, Mode=TwoWay}"
-                    ItemsSource="{Binding Folders}"/>
-                    <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
-                    <Border Background="Gray">
-                        <Grid>
-                            <Grid.Resources>
-                                <Style TargetType="{x:Type ToggleButton}">
-                                    <Setter Property="Cursor" Value="Hand"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                                <Border>
-                                                    <Border.Background>
-                                                        <SolidColorBrush Color="Black" Opacity="0"/>
-                                                    </Border.Background>
-                                                    <ContentPresenter/>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Grid.Resources>
-                            <ToggleButton Style="{x:Null}" Background="{x:Null}" BorderThickness="0" x:Name="ShowFolderCreation"
-                                          Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=True}">
-                                <materialDesign:PackIcon Kind="Add" Foreground="#FF494949" Width="30" Height="30"/>
+                <ComboBox  Style="{StaticResource RPGDropdownStyle}" SelectedValue="{Binding CurrentFolder, Mode=TwoWay}"
+                ItemsSource="{Binding Folders}"/>
+                <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
+                <Border Background="Gray">
+                    <Grid>
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type ToggleButton}">
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                            <Border>
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="Black" Opacity="0"/>
+                                                </Border.Background>
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Grid.Resources>
+                        <ToggleButton Style="{x:Null}" Background="{x:Null}" BorderThickness="0" x:Name="ShowFolderCreation"
+                                        Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=True}">
+                            <materialDesign:PackIcon Kind="Add" Foreground="#FF494949" Width="30" Height="30"/>
+                        </ToggleButton>
+                        <StackPanel Orientation="Horizontal" x:Name="FolderCreation"
+                                    Visibility="{Binding ElementName=ShowFolderCreation, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                            <TextBox x:Name="NewFolderName" Text="New Game" FontSize="16" VerticalAlignment="Center" Background="{x:Null}"
+                                        Foreground="White" Margin="5,0" BorderThickness="0" MinWidth="50"/>
+                            <ToggleButton Background="{x:Null}" BorderThickness="0" Command="{Binding CreateFolderCommand}"
+                                            CommandParameter="{Binding ElementName=NewFolderName, Path=Text}"
+                                            IsChecked="{Binding ElementName=ShowFolderCreation, Path=IsChecked}">
+                                <materialDesign:PackIcon Kind="Check" Foreground="Green" Width="30" Height="30"/>
                             </ToggleButton>
-                            <StackPanel Orientation="Horizontal" x:Name="FolderCreation"
-                                        Visibility="{Binding ElementName=ShowFolderCreation, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
-                                <TextBox x:Name="NewFolderName" Text="New Game" FontSize="16" VerticalAlignment="Center" Background="{x:Null}"
-                                         Foreground="White" Margin="5,0" BorderThickness="0" MinWidth="50"/>
-                                <ToggleButton Background="{x:Null}" BorderThickness="0" Command="{Binding CreateFolderCommand}"
-                                              CommandParameter="{Binding ElementName=NewFolderName, Path=Text}"
-                                              IsChecked="{Binding ElementName=ShowFolderCreation, Path=IsChecked}">
-                                    <materialDesign:PackIcon Kind="Check" Foreground="Green" Width="30" Height="30"/>
-                                </ToggleButton>
-                                <ToggleButton Background="{x:Null}" BorderThickness="0"
-                                              IsChecked="{Binding ElementName=ShowFolderCreation, Path=IsChecked}">
-                                    <materialDesign:PackIcon Kind="Close" Foreground="Red" Width="30" Height="30"/>
-                                </ToggleButton>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                    <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
-                    <Border Background="Gray">
-                        <Grid>
-                            <Grid.Resources>
-                                <Style TargetType="{x:Type ToggleButton}">
-                                    <Setter Property="Cursor" Value="Hand"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                                <Border>
-                                                    <Border.Background>
-                                                        <SolidColorBrush Color="Black" Opacity="0"/>
-                                                    </Border.Background>
-                                                    <ContentPresenter/>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Grid.Resources>
-                            <ToggleButton Style="{x:Null}" Background="{x:Null}" BorderThickness="0" x:Name="ShowFolderEditing"
-                                          Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=True}">
-                                <materialDesign:PackIcon Kind="Edit" Foreground="#FF494949" Width="25" Height="25"/>
+                            <ToggleButton Background="{x:Null}" BorderThickness="0"
+                                            IsChecked="{Binding ElementName=ShowFolderCreation, Path=IsChecked}">
+                                <materialDesign:PackIcon Kind="Close" Foreground="Red" Width="30" Height="30"/>
                             </ToggleButton>
-                            <StackPanel Orientation="Horizontal" x:Name="FolderEditing"
-                                        Visibility="{Binding ElementName=ShowFolderEditing, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
-                                <TextBox x:Name="EditFolderName" Text="New Name" FontSize="16" VerticalAlignment="Center" Background="{x:Null}"
-                                         Foreground="White" Margin="5,0" BorderThickness="0" MinWidth="50"/>
-                                <ToggleButton Background="{x:Null}" BorderThickness="0" Command="{Binding EditFolderCommand}"
-                                              CommandParameter="{Binding ElementName=EditFolderName, Path=Text}"
-                                              IsChecked="{Binding ElementName=ShowFolderEditing, Path=IsChecked}">
-                                    <materialDesign:PackIcon Kind="Check" Foreground="Green" Width="30" Height="30"/>
-                                </ToggleButton>
-                                <ToggleButton Background="{x:Null}" BorderThickness="0"
-                                              IsChecked="{Binding ElementName=ShowFolderEditing, Path=IsChecked}">
-                                    <materialDesign:PackIcon Kind="Close" Foreground="Red" Width="30" Height="30"/>
-                                </ToggleButton>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                    <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
-                    <Border Background="Gray" CornerRadius="0,4,4,0">
-                        <Grid>
-                            <Button Style="{x:Null}" Background="{x:Null}" BorderThickness="0" Command="{Binding DeleteFolderCommand}">
-                                <materialDesign:PackIcon Kind="Delete" Foreground="#FF494949" Width="25" Height="25"/>
-                            </Button>
-                        </Grid>
-                    </Border>
-                </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
+                <Border Background="Gray">
+                    <Grid>
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type ToggleButton}">
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                            <Border>
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="Black" Opacity="0"/>
+                                                </Border.Background>
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Grid.Resources>
+                        <ToggleButton Style="{x:Null}" Background="{x:Null}" BorderThickness="0" x:Name="ShowFolderEditing"
+                                        Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=True}">
+                            <materialDesign:PackIcon Kind="Edit" Foreground="#FF494949" Width="25" Height="25"/>
+                        </ToggleButton>
+                        <StackPanel Orientation="Horizontal" x:Name="FolderEditing"
+                                    Visibility="{Binding ElementName=ShowFolderEditing, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                            <TextBox x:Name="EditFolderName" Text="New Name" FontSize="16" VerticalAlignment="Center" Background="{x:Null}"
+                                        Foreground="White" Margin="5,0" BorderThickness="0" MinWidth="50"/>
+                            <ToggleButton Background="{x:Null}" BorderThickness="0" Command="{Binding EditFolderCommand}"
+                                            CommandParameter="{Binding ElementName=EditFolderName, Path=Text}"
+                                            IsChecked="{Binding ElementName=ShowFolderEditing, Path=IsChecked}">
+                                <materialDesign:PackIcon Kind="Check" Foreground="Green" Width="30" Height="30"/>
+                            </ToggleButton>
+                            <ToggleButton Background="{x:Null}" BorderThickness="0"
+                                            IsChecked="{Binding ElementName=ShowFolderEditing, Path=IsChecked}">
+                                <materialDesign:PackIcon Kind="Close" Foreground="Red" Width="30" Height="30"/>
+                            </ToggleButton>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
+                <Border Background="Gray" CornerRadius="0,4,4,0">
+                    <Grid>
+                        <Button Style="{x:Null}" Background="{x:Null}" BorderThickness="0" Command="{Binding DeleteFolderCommand}">
+                            <materialDesign:PackIcon Kind="Delete" Foreground="#FF494949" Width="25" Height="25"/>
+                        </Button>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="4" Margin="30,5,15,5">
+                    <Ellipse Width="10" Height="10" Margin="10,5">
+                        <Ellipse.Style>
+                            <Style>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsOnline}" Value="True">
+                                        <Setter Property="Ellipse.Fill" Value="#00b000"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsOnline}" Value="False">
+                                        <Setter Property="Ellipse.Fill" Value="Red"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Ellipse.Style>
+                    </Ellipse>
+                    <TextBlock Foreground="Gray" VerticalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsOnline}" Value="True">
+                                        <Setter Property="TextBlock.Text" Value="Online"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsOnline}" Value="False">
+                                        <Setter Property="TextBlock.Text" Value="Offline"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+            </StackPanel>
 
             <StackPanel Orientation="Horizontal"
                 HorizontalAlignment="Right"
-                VerticalAlignment="Stretch" Grid.Column="3">
+                VerticalAlignment="Stretch" Grid.Column="5">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type Button}" >
                             <Setter Property="Width" Value="40"/>
