@@ -53,6 +53,7 @@ namespace COMPASS
         {
             MainViewModel.CurrentData.SaveFilesToFile();
             MainViewModel.CurrentData.SaveTagsToFile();
+            Properties.Settings.Default.Save();
         }
 
         #region Windows Tile Bar Buttons

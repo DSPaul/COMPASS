@@ -146,6 +146,7 @@ namespace COMPASS.ViewModels
         public void ChangeFileView(Object v)
         {
             v = (FileView)v;
+            Properties.Settings.Default.PreferedView = (int)v;
             switch (v)
             {
                 case FileView.ListView:
@@ -187,7 +188,7 @@ namespace COMPASS.ViewModels
         {
             CurrentData = new Data(folder);
             FilterHandler = new FilterHandler(currentData);
-            CurrentFileViewModel = new FileListViewModel(this);
+            ChangeFileView(Properties.Settings.Default.PreferedView);
             TFViewModel = new TagsFiltersViewModel(this);
             AddTagViewModel = new TagEditViewModel(this, null);
         }
