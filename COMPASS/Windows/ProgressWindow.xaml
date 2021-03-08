@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMPASS.Windows" WindowStyle="None"
         mc:Ignorable="d" Foreground="White"
-        Title="ProgressWindow" Height="150" Width="576" FontSize="20" WindowStartupLocation="CenterScreen">
+        Title="ProgressWindow" Height="80" Width="450" FontSize="20" WindowStartupLocation="CenterScreen">
     <Window.Background>
         <SolidColorBrush Color="#FF3C3C3C"/>
     </Window.Background>
@@ -14,7 +14,7 @@
             <Setter Property="WindowChrome.WindowChrome">
                 <Setter.Value>
                     <WindowChrome CaptionHeight="0"
-                CornerRadius="2"
+                CornerRadius="4"
                 GlassFrameThickness="0"
                 NonClientFrameEdges="None"
                 ResizeBorderThickness="3"/>
@@ -23,11 +23,12 @@
         </Style>
     </Window.Style>
     <Grid>
-        <StackPanel Margin="50,20">
-            <TextBlock Text="{Binding ImportText}" Margin="30,5"/>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="{Binding ImportText, FallbackValue=Import in Progress: x out of y}" FontFamily="Segoe UI Light"/>
             <ProgressBar x:Name="ProgBar"
-                Minimum="0" Maximum="100" Value="{Binding Progress}" Height="30" Width="400"
-                HorizontalAlignment="Left" Margin="30,0" ValueChanged="ProgressBar_ValueChanged" Foreground="#54babf"/>
+                Minimum="0" Maximum="100" Value="{Binding Progress, FallbackValue=30}" Height="12" Width="400"
+                ValueChanged="ProgressBar_ValueChanged" Foreground="#54babf" Background="#202020" Margin="0,5"
+                Style="{DynamicResource RoundedProgressBar}"/>
         </StackPanel>
     </Grid>
 </Window>
