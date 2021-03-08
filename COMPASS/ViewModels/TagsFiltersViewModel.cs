@@ -11,44 +11,16 @@ using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
 {
-    public class TagsFiltersViewModel : BaseViewModel
+    public class TagsFiltersViewModel : BaseEditViewModel
     {
-        public TagsFiltersViewModel(MainViewModel vm)
+        public TagsFiltersViewModel(MainViewModel vm): base(vm)
         {
-            MVM = vm;
-            TreeViewSource = CreateTreeViewSourceFromCollection(MVM.CurrentData.RootTags);
-            AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
             EditTagCommand = new BasicCommand(EditTag);
             DeleteTagCommand = new BasicCommand(DeleteTag);
             ClearFiltersCommand = new BasicCommand(ClearFilters);
         }
 
         #region Properties
-
-        //MainViewModel
-        private MainViewModel mainViewModel;
-        public MainViewModel MVM
-        {
-            get { return mainViewModel; }
-            set { SetProperty(ref mainViewModel, value); }
-        }
-
-        //TreeViewSource
-        private ObservableCollection<TreeViewNode> treeviewsource;
-        public ObservableCollection<TreeViewNode> TreeViewSource
-        {
-            get { return treeviewsource; }
-            set { SetProperty(ref treeviewsource, value); }
-        }
-
-        //AllTreeViewNodes For iterating
-        private ObservableCollection<TreeViewNode> alltreeViewNodes;
-        public ObservableCollection<TreeViewNode> AllTreeViewNodes
-        {
-            get { return alltreeViewNodes; }
-            set { SetProperty(ref alltreeViewNodes, value); }
-        }
-
         //selected Tag in Treeview
         public Tag SelectedTag
         {
@@ -200,12 +172,6 @@ namespace COMPASS.ViewModels
             MVM.Reset();
 
             //SelectedTag = null;
-        }
-
-        public void RefreshTreeView()
-        {
-            TreeViewSource = CreateTreeViewSourceFromCollection(MVM.CurrentData.RootTags);
-            AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
         }
         //-----------------------------------------------------//
 
