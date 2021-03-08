@@ -9,12 +9,14 @@
              xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
              mc:Ignorable="d"  x:Name="FileListControl"
              d:DesignHeight="450" d:DesignWidth="800">
-    <DataGrid x:Name="FileView" MaxWidth="{Binding ActualWidth, ElementName=FileListControl}"
+    <!--<ScrollViewer>-->
+        <DataGrid x:Name="FileView" MaxWidth="{Binding ActualWidth, ElementName=FileListControl}"
                     Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Margin="10,0"
                     AutoGenerateColumns="False" ItemsSource="{Binding MVM.FilterHandler.ActiveFiles}"
                     CanUserAddRows="False" SelectionMode="Extended" CanUserSortColumns="True"
                     RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
-                    SelectedItem="{Binding SelectedFile, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848">
+                    SelectedItem="{Binding SelectedFile, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848"
+                    ClipToBounds="True">
         <DataGrid.Resources>
             <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
             <Converters:BooltoVisibilityConverter x:Key="BoolToVisibilityConverter"/>
@@ -22,10 +24,10 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
-                            <DockPanel>
+                            <DockPanel Margin="0,8">
                                 <TextBlock Text="{TemplateBinding Content}" Margin="5,0" DockPanel.Dock="Left"
                                             Width="{TemplateBinding Width}" TextAlignment="Left" 
-                                            FontSize="14" FontWeight="Bold" Foreground="#FFC8C8C8"/>
+                                            FontSize="14" FontWeight="Bold" Foreground="#808080"/>
                                 <Path x:Name="SortArrow" VerticalAlignment="Center" Width="8" Height="6" Margin="2,0,5,0" 
                                             Stretch="Fill" Opacity="0.5" Fill="White" RenderTransformOrigin="0.5,0.4" DockPanel.Dock="Left"
                                             Visibility="Collapsed" Data="M0,0 L1,0 0.5,1 z" />
@@ -131,7 +133,7 @@
             </Style>
         </DataGrid.RowStyle>
         <DataGrid.Columns>
-            <DataGridTemplateColumn Header="TITLE" Width="auto" MinWidth="100" CanUserSort="True" SortMemberPath="Title"
+            <DataGridTemplateColumn Header="TITLE" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="Title"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTitle, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
@@ -139,7 +141,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="AUTHOR" Width="auto" MinWidth="100" CanUserSort="True" SortMemberPath="Author"
+            <DataGridTemplateColumn Header="AUTHOR" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="Author"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowAuthor, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
@@ -147,7 +149,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="PUBLISHER" Width="auto" MinWidth="100" CanUserSort="True" SortMemberPath="Publisher"
+            <DataGridTemplateColumn Header="PUBLISHER" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="Publisher"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowPublisher, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
@@ -155,11 +157,11 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="RELEASE DATE" Width="auto" MinWidth="100" CanUserSort="True" SortMemberPath="ReleaseDate"
+            <DataGridTemplateColumn Header="RELEASE DATE" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="ReleaseDate"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowReleaseDate, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <TextBlock Text ="{Binding ReleaseDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource default}" HorizontalAlignment="Center"/>
+                        <TextBlock Text ="{Binding ReleaseDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource default}"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
@@ -171,15 +173,24 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="RATING" Width="auto" CanUserSort="True" SortMemberPath="Rating"
+            <DataGridTemplateColumn Header="RATING" Width="auto" CanUserSort="True" SortMemberPath="Rating" MinWidth="120"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowRating, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <materialDesign:RatingBar Value ="{Binding Rating,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                        <materialDesign:RatingBar Value ="{Binding Rating,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RenderTransformOrigin="0.5,0.5">
+                            <materialDesign:RatingBar.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
+                                    <SkewTransform/>
+                                    <RotateTransform/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </materialDesign:RatingBar.RenderTransform>
+                        </materialDesign:RatingBar>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="TAGS" Width="auto"
+            <DataGridTemplateColumn Header="TAGS" Width="2*"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTags, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
@@ -194,7 +205,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTextColumn Width="*"/>
+            <!--<DataGridTextColumn Width="*"/>-->
             <DataGridTemplateColumn MinWidth="70" Width="auto" CanUserResize="False"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowFileIcons, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
@@ -230,4 +241,5 @@
             </DataGridTemplateColumn>
         </DataGrid.Columns>
     </DataGrid>
+    <!--</ScrollViewer>-->
 </UserControl>
