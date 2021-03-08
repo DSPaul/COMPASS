@@ -32,6 +32,8 @@ namespace COMPASS.Views
             if (e.NewValue == null) return;
             Tag selectedtag = ((TreeViewNode)e.NewValue).Tag;
             if (selectedtag == null) return;
+            //if selection switches when tree is not visible: unwanted selection change, ignore
+            if (ShowParentSelectionBtn.IsChecked == false) return;
             ((TagEditViewModel)DataContext).SelectedTag = selectedtag;
         }
 
