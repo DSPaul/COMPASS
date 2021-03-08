@@ -34,5 +34,101 @@ namespace COMPASS.Properties {
                 this["PreferedView"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ListShowAuthor {
+            get {
+                return ((bool)(this["ListShowAuthor"]));
+            }
+            set {
+                this["ListShowAuthor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ListShowPublisher {
+            get {
+                return ((bool)(this["ListShowPublisher"]));
+            }
+            set {
+                this["ListShowPublisher"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ListShowRelease {
+            get {
+                return ((bool)(this["ListShowRelease"]));
+            }
+            set {
+                this["ListShowRelease"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ListShowVersion {
+            get {
+                return ((bool)(this["ListShowVersion"]));
+            }
+            set {
+                this["ListShowVersion"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ListShowRating {
+            get {
+                return ((bool)(this["ListShowRating"]));
+            }
+            set {
+                this["ListShowRating"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ListShowTags {
+            get {
+                return ((bool)(this["ListShowTags"]));
+            }
+            set {
+                this["ListShowTags"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ListShowFileIcons {
+            get {
+                return ((bool)(this["ListShowFileIcons"]));
+            }
+            set {
+                this["ListShowFileIcons"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ListShowEditIcon {
+            get {
+                return ((bool)(this["ListShowEditIcon"]));
+            }
+            set {
+                this["ListShowEditIcon"] = value;
+            }
+        }
     }
 }
