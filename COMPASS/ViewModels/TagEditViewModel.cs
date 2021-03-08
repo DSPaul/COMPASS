@@ -15,6 +15,7 @@ namespace COMPASS.ViewModels
             EditedTag = ToEdit;
             TempTag = new Tag(vm.CurrentData.AllTags);
             if (!CreateNewTag) TempTag.Copy(EditedTag);
+            else ClearParent();
 
             ShowColorSelection = false;
             ShowParentSelection = false;
@@ -83,7 +84,7 @@ namespace COMPASS.ViewModels
             set { }
         }
 
-        //Selected Item for Treeview
+        //Selected Parent from Treeview
         public Tag SelectedTag
         {
             get
@@ -96,19 +97,29 @@ namespace COMPASS.ViewModels
             }
             set
             {
-                //In case value = null
-                TempTag.ParentID = -1;
-                //in other case this will it will be overwritten
-                foreach (TreeViewNode t in AllTreeViewNodes)
+                if (value == null)
                 {
-                    if (t.Tag == value)
+                    TempTag.ParentID = -1;
+                    foreach (TreeViewNode t in AllTreeViewNodes)
                     {
-                        t.Selected = true;
-                        //Set Parent tag when different tag is selected
-                        ParentTempTag = t.Tag;
-                        ShowParentSelection = false;
+                        t.Selected = false;
                     }
                 }
+
+                else
+                {
+                    foreach (TreeViewNode t in AllTreeViewNodes)
+                    {
+                        if (t.Tag == value)
+                        {
+                            t.Selected = true;
+                            //Set Parent tag when different tag is selected
+                            ParentTempTag = t.Tag;
+                            ShowParentSelection = false;
+                        }
+                    }
+                }
+                
             }
         }
 
@@ -120,7 +131,6 @@ namespace COMPASS.ViewModels
         public BasicCommand ClearParentCommand { get; private set; }
         private void ClearParent()
         {
-            //TempTag.ParentID = -1;
             SelectedTag = null;
             RaisePropertyChanged("ParentTempTag");
         }
