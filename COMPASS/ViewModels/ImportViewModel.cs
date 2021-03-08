@@ -57,7 +57,7 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _progress, value); }
         }
 
-        private readonly string _importText = "Import in Progress: \n {0} out of {1}";
+        private readonly string _importText = "Import in Progress: {0} out of {1}";
         private int _importcounter;
         private int _importamount;
         public string ImportText
