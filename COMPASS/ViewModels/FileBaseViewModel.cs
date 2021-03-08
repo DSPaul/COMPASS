@@ -16,7 +16,7 @@ using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
 {
-    public class FileBaseViewModel : BaseViewModel
+    public class FileBaseViewModel : ObservableObject
     {
         public FileBaseViewModel(MainViewModel vm)
         {

@@ -16,7 +16,7 @@ using iText.Kernel.Pdf;
 
 namespace COMPASS.ViewModels
 {
-    public class ImportViewModel : BaseViewModel
+    public class ImportViewModel : ObservableObject
     {
         public ImportViewModel(MainViewModel vm, ImportMode mode)
         {

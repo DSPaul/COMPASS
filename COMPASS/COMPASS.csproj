@@ -207,7 +207,6 @@
     <Compile Include="Tools\Converters\StringtoVisibiltyConverter.cs" />
     <Compile Include="Tools\TagTemplateSelector.cs" />
     <Compile Include="ViewModels\BaseEditViewModel.cs" />
-    <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\Commands\BasicCommand.cs" />
     <Compile Include="ViewModels\Commands\RelayCommand.cs" />
     <Compile Include="ViewModels\Commands\SimpleCommand.cs" />
