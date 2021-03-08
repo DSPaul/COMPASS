@@ -58,6 +58,12 @@ namespace COMPASS.ViewModels
         public BasicCommand OKCommand { get; private set; }
         public virtual void OKBtn() { }
 
+
+        public void RefreshTreeView()
+        {
+            TreeViewSource = CreateTreeViewSourceFromCollection(MVM.CurrentData.RootTags);
+            AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
+        }
         #endregion
     }
 }
