@@ -1,4 +1,5 @@
-﻿using COMPASS.ViewModels;
+﻿using COMPASS.Models;
+using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace COMPASS.Windows
     /// </summary>
     public partial class ProgressWindow : Window
     {
-        public ProgressWindow(BaseViewModel vm)
+        public ProgressWindow(ObservableObject vm)
         {
             InitializeComponent();
             DataContext = vm;

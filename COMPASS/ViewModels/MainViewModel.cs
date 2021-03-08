@@ -1,4 +1,5 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Models;
+using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using ImageMagick;
 using Squirrel;
@@ -13,7 +14,7 @@ using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
 {
-    public class MainViewModel : BaseViewModel
+    public class MainViewModel : ObservableObject
     {
         public MainViewModel(string FolderName)
         {
