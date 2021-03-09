@@ -7,6 +7,7 @@ using System.Windows.Input;
 
 namespace COMPASS.ViewModels.Commands
 {
+    //Command without parameters
     public class BasicCommand : ICommand
     {
         public event EventHandler CanExecuteChanged;
