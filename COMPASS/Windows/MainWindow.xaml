@@ -794,7 +794,7 @@
                         <CollectionViewSource x:Key="Filters" Source="{Binding FilterHandler.ActiveFilters}"/>
                     </Grid.Resources>
                     <ListBox x:Name="CurrentTagList" BorderBrush="{x:Null}" 
-                     SelectionChanged="ActiveTag_Click" Background="{x:Null}" ItemTemplate="{StaticResource TagTemplate}">
+                     SelectionChanged="ActiveTag_Click" Background="{x:Null}" ItemTemplate="{StaticResource TagDeletableTemplate}">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="Horizontal" MaxWidth="{Binding ActualWidth, ElementName=CurrentTagList}"/>
