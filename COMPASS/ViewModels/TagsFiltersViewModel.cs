@@ -167,8 +167,6 @@ namespace COMPASS.ViewModels
                     }
                 }
             }
-            TreeViewSource = CreateTreeViewSourceFromCollection(MVM.CurrentData.RootTags);
-            AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
             MVM.Reset();
 
             //SelectedTag = null;
