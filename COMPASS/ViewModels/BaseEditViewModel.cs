@@ -30,7 +30,7 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref mainViewModel, value); }
         }
 
-        //TreeViewSource
+        //TreeViewSource with hierarchy
         private ObservableCollection<TreeViewNode> treeviewsource;
         public ObservableCollection<TreeViewNode> TreeViewSource
         {
@@ -38,7 +38,7 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref treeviewsource, value); }
         }
 
-        //AllTreeViewNodes For iterating
+        //AllTreeViewNodes without hierarchy for iterating purposes
         private ObservableCollection<TreeViewNode> alltreeViewNodes;
         public ObservableCollection<TreeViewNode> AllTreeViewNodes
         {
