@@ -720,7 +720,7 @@
     <DataTemplate x:Key="TagTemplate">
         <Border CornerRadius="5" Margin="2,3">
             <Border.Background>
-                <SolidColorBrush Color="{Binding BackgroundColor}"/>
+                <SolidColorBrush Color="{Binding BackgroundColor}" Opacity=".8"/>
             </Border.Background>
             <TextBlock Text="{Binding Content}" Margin="7,2" Foreground="White" FontSize="14"/>
         </Border>

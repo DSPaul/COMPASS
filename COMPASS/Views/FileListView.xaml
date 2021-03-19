@@ -124,7 +124,7 @@
                         <Setter Property="Background" Value="#FF606060"/>
                     </Trigger>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="Gray"/>
+                        <Setter Property="Background" Value="#80808080"/>
                     </Trigger>
                     <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Value="1">
                         <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>
@@ -133,7 +133,7 @@
             </Style>
         </DataGrid.RowStyle>
         <DataGrid.Columns>
-            <DataGridTemplateColumn Header="TITLE" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="Title"
+            <DataGridTemplateColumn Header="TITLE" Width="3*" MinWidth="100" CanUserSort="True" SortMemberPath="Title"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTitle, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
@@ -141,7 +141,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="AUTHOR" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="Author"
+            <DataGridTemplateColumn Header="AUTHOR" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="Author"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowAuthor, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
@@ -149,7 +149,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="PUBLISHER" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="Publisher"
+            <DataGridTemplateColumn Header="PUBLISHER" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="Publisher"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowPublisher, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
@@ -165,7 +165,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="VERSION" Width="auto" MinWidth="20"
+            <DataGridTemplateColumn Header="VERSION" Width="*" MinWidth="20"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowVersion, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
@@ -173,7 +173,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="RATING" Width="auto" CanUserSort="True" SortMemberPath="Rating" MinWidth="120"
+            <DataGridTemplateColumn Header="RATING" Width="*" CanUserSort="True" SortMemberPath="Rating" MinWidth="120"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowRating, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
@@ -190,7 +190,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="TAGS" Width="2*"
+            <DataGridTemplateColumn Header="TAGS" Width="5*"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTags, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
