@@ -18,7 +18,8 @@ namespace COMPASS.Tools
         public enum ImportMode
         {
             Pdf,
-            Manual
+            Manual,
+            GmBinder
         }
 
         public enum FilterType

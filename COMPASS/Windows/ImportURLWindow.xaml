@@ -1,0 +1,28 @@
+﻿<Window x:Class="COMPASS.Windows.ImportURLWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:COMPASS.Windows"
+        mc:Ignorable="d" Foreground="White" WindowStyle="SingleBorderWindow"
+        Title="Import URL" Height="150" Width="450" WindowStartupLocation="CenterScreen">
+    <Window.Background>
+        <SolidColorBrush Color="#FF3C3C3C"/>
+    </Window.Background>
+    <Window.Style>
+        <Style>
+            <Setter Property="WindowChrome.WindowChrome">
+                <Setter.Value>
+                    <WindowChrome CaptionHeight="0"
+                CornerRadius="4"
+                GlassFrameThickness="0"
+                NonClientFrameEdges="None"
+                ResizeBorderThickness="3"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Style>
+    <Grid>
+                
+    </Grid>
+</Window>

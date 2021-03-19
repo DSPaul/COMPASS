@@ -41,6 +41,8 @@ namespace COMPASS.ViewModels
                 case ImportMode.Manual:
                     ImportManual();
                     break;
+                case ImportMode.GmBinder:
+                    break;
             }  
         }
 
@@ -69,7 +71,7 @@ namespace COMPASS.ViewModels
 
         #region Functions and Events
 
-        void ImportFromPdf(object sender, DoWorkEventArgs e)
+        private void ImportFromPdf(object sender, DoWorkEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
@@ -129,6 +131,11 @@ namespace COMPASS.ViewModels
             FilePropWindow fpw = new FilePropWindow((FileEditViewModel)MVM.CurrentEditViewModel);
             fpw.ShowDialog();
             fpw.Topmost = true;
+        }
+
+        private void ImportGmBinder()
+        {
+
         }
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
