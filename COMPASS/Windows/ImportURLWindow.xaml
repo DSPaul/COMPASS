@@ -4,25 +4,48 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMPASS.Windows"
-        mc:Ignorable="d" Foreground="White" WindowStyle="SingleBorderWindow"
-        Title="Import URL" Height="150" Width="450" WindowStartupLocation="CenterScreen">
-    <Window.Background>
-        <SolidColorBrush Color="#FF3C3C3C"/>
-    </Window.Background>
-    <Window.Style>
+        mc:Ignorable="d" Foreground="White" WindowStyle="ToolWindow" Background="#242528"
+        Title="Import URL" Height="170" Width="600" WindowStartupLocation="CenterScreen">
+    <!--<Window.Style>
         <Style>
             <Setter Property="WindowChrome.WindowChrome">
                 <Setter.Value>
                     <WindowChrome CaptionHeight="0"
-                CornerRadius="4"
+                CornerRadius="5"
                 GlassFrameThickness="0"
                 NonClientFrameEdges="None"
                 ResizeBorderThickness="3"/>
                 </Setter.Value>
             </Setter>
         </Style>
-    </Window.Style>
+    </Window.Style>-->
     <Grid>
-                
+        <StackPanel Margin="15">
+            <TextBlock Text="{Binding ImportTitle, FallbackValue= GM_Binder_URL:}" FontSize="16" Margin="5"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Border Background="#909090" CornerRadius="5" Margin="5">
+                    <Grid>
+                        <TextBox Margin="3,5" Background="{x:Null}" BorderThickness="0" FontSize="15" Foreground="White" Panel.ZIndex="1"
+                                 Text="{Binding InputURL, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock  Margin="5"  FontSize="15" Foreground="LightGray"
+                                            Text="{Binding PreviewTitle, FallbackValue=https://www.gmbinder.com/share}"/>
+                    </Grid>
+                </Border>
+                <Button Grid.Column="1" Background="{x:Null}" BorderThickness="0" Click="CloseWindow">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="5" Background="#1d9dd4" Margin="5">
+                                <TextBlock Text="Import" Foreground="White" Margin="15,5" FontSize="15"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+            <TextBlock Foreground="Red" Text="Errors will come here" Margin="5"/>
+        </StackPanel>
     </Grid>
 </Window>

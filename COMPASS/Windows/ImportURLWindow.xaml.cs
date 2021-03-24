@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMPASS.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,16 @@ namespace COMPASS.Windows
     /// </summary>
     public partial class ImportURLWindow : Window
     {
-        public ImportURLWindow()
+        public ImportURLWindow(ObservableObject vm)
         {
             InitializeComponent();
+            DataContext = vm;
+        }
+
+        private void CloseWindow(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = true;
+            this.Close();
         }
     }
 }
