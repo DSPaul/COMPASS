@@ -7,7 +7,7 @@
         mc:Ignorable="d" Foreground="White"
         Title="ProgressWindow" Height="80" Width="450" FontSize="20" WindowStartupLocation="CenterScreen">
     <Window.Background>
-        <SolidColorBrush Color="#FF3C3C3C"/>
+        <SolidColorBrush Color="#242528"/>
     </Window.Background>
     <Window.Style>
         <Style>
@@ -24,10 +24,10 @@
     </Window.Style>
     <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="{Binding ImportText, FallbackValue=Import in Progress: x out of y}" FontFamily="Segoe UI Light"/>
+            <TextBlock Text="{Binding ProgresstText, FallbackValue=Import in Progress: x out of y}" FontFamily="Segoe UI Light"/>
             <ProgressBar x:Name="ProgBar"
                 Minimum="0" Maximum="100" Value="{Binding Progress, FallbackValue=30}" Height="12" Width="400"
-                ValueChanged="ProgressBar_ValueChanged" Foreground="#54babf" Background="#202020" Margin="0,5"
+                ValueChanged="ProgressBar_ValueChanged" Foreground="#54babf" Background="LightGray" Margin="0,5"
                 Style="{DynamicResource RoundedProgressBar}"/>
         </StackPanel>
     </Grid>
