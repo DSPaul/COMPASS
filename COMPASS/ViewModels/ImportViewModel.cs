@@ -13,6 +13,10 @@ using System.Windows.Threading;
 using static COMPASS.Tools.Enums;
 using iText;
 using iText.Kernel.Pdf;
+using System.Net.NetworkInformation;
+using ScrapySharp.Network;
+using HtmlAgilityPack;
+using System.Net;
 
 namespace COMPASS.ViewModels
 {
@@ -42,6 +46,7 @@ namespace COMPASS.ViewModels
                     ImportManual();
                     break;
                 case ImportMode.GmBinder:
+                    ImportURL(mode);
                     break;
             }  
         }
@@ -62,9 +67,30 @@ namespace COMPASS.ViewModels
         private readonly string _importText = "Import in Progress: {0} out of {1}";
         private int _importcounter;
         private int _importamount;
-        public string ImportText
+        public string ProgressText
         {
             get { return string.Format(_importText,_importcounter,_importamount); }
+        }
+
+        private string _previewURL;
+        public string PreviewURL
+        {
+            get { return _previewURL; }
+            set { SetProperty(ref _previewURL, value); }
+        }
+
+        private string _inputURL = "";
+        public string InputURL
+        {
+            get { return _inputURL; }
+            set { SetProperty(ref _inputURL, value); }
+        }
+
+        private string _importTitle;
+        public string ImportTitle
+        {
+            get { return _importTitle; }
+            set { SetProperty(ref _importTitle, value); }
         }
 
         #endregion
@@ -133,9 +159,67 @@ namespace COMPASS.ViewModels
             fpw.Topmost = true;
         }
 
-        private void ImportGmBinder()
+        private void ImportURL(ImportMode mode)
         {
+            switch (mode)
+            {
+                case ImportMode.GmBinder:
+                    ImportTitle = "GM Binder URL:";
+                    PreviewURL = "https://www.gmbinder.com/share";
+                    break;
+            }
+            ImportURLWindow popup = new ImportURLWindow(this);
 
+            if(popup.ShowDialog() == true)
+            {
+                if (!InputURL.Contains(PreviewURL))
+                {
+                    //TODO add error: "is not a valid *source* URL
+                    return;
+                }
+                else
+                {
+                    HtmlWeb web = new HtmlWeb();
+                    HtmlDocument doc = web.Load(InputURL);
+                    if(doc.ParsedText == null)
+                    {
+                        //TODO add error "invalid URL"
+                        return;
+                    }
+                    HtmlNode src = doc.DocumentNode;
+
+                    MyFile newFile = new MyFile(_data)
+                    {
+                        SourceURL = InputURL
+                    };
+
+                    HtmlNode sourcecode = doc.DocumentNode;
+                    switch (mode)
+                    {
+                        case ImportMode.GmBinder:
+                            newFile.Publisher = "GM Binder";
+                            newFile.Title = src.OwnerDocument.DocumentNode.SelectSingleNode("//html/head/title").InnerText.Split('|')[0];
+                            newFile.Author = src.OwnerDocument.DocumentNode.SelectSingleNode("//meta[@property='og:author']").GetAttributeValue("content", String.Empty);
+
+                            //download image
+                            string imgURL = HtmlEntity.DeEntitize(src.OwnerDocument.DocumentNode.SelectSingleNode("//meta[@property='og:image']").GetAttributeValue("content", String.Empty));
+                            using (WebClient client = new WebClient())
+                            {
+                                client.DownloadFileAsync(new Uri(imgURL), newFile.CoverArt);
+                            }
+
+                            //get pagecount
+                            var previewDiv = doc.GetElementbyId("preview");
+                            var pages = previewDiv.ChildNodes.Where(node => node.Id.Contains("p"));
+                            newFile.PageCount = pages.Count();
+
+                            //add file to data
+                            _data.AllFiles.Add(newFile);
+                            break;
+                    }
+                }
+
+            }
         }
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
