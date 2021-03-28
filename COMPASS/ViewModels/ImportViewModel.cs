@@ -48,6 +48,9 @@ namespace COMPASS.ViewModels
                 case ImportMode.GmBinder:
                     ImportURL(mode);
                     break;
+                case ImportMode.Homebrewery:
+                    ImportURL(mode);
+                    break;
             }  
         }
 
@@ -165,7 +168,11 @@ namespace COMPASS.ViewModels
             {
                 case ImportMode.GmBinder:
                     ImportTitle = "GM Binder URL:";
-                    PreviewURL = "https://www.gmbinder.com/share";
+                    PreviewURL = "https://www.gmbinder.com/share/";
+                    break;
+                case ImportMode.Homebrewery:
+                    ImportTitle = "Homebrewery URL";
+                    PreviewURL = "https://homebrewery.naturalcrit.com/share/";
                     break;
             }
             ImportURLWindow popup = new ImportURLWindow(this);
@@ -193,6 +200,9 @@ namespace COMPASS.ViewModels
                         SourceURL = InputURL
                     };
 
+                    HtmlNode previewDiv;
+                    IEnumerable<HtmlNode> pages;
+
                     HtmlNode sourcecode = doc.DocumentNode;
                     switch (mode)
                     {
@@ -209,8 +219,20 @@ namespace COMPASS.ViewModels
                             }
 
                             //get pagecount
-                            var previewDiv = doc.GetElementbyId("preview");
-                            var pages = previewDiv.ChildNodes.Where(node => node.Id.Contains("p"));
+                            previewDiv = doc.GetElementbyId("preview");
+                            pages = previewDiv.ChildNodes.Where(node => node.Id.Contains("p"));
+                            newFile.PageCount = pages.Count();
+
+                            //add file to data
+                            _data.AllFiles.Add(newFile);
+                            break;
+
+                        case ImportMode.Homebrewery:
+                            newFile.Publisher = "Homebrewery";
+                            newFile.Title = src.OwnerDocument.DocumentNode.SelectSingleNode("//html/head/title").InnerText.Split('-')[0];
+
+                            //get pagecount
+                            pages = src.OwnerDocument.DocumentNode.SelectNodes("//div[class='phb'");
                             newFile.PageCount = pages.Count();
 
                             //add file to data
