@@ -19,7 +19,8 @@ namespace COMPASS.Tools
         {
             Pdf,
             Manual,
-            GmBinder
+            GmBinder,
+            Homebrewery
         }
 
         public enum FilterType
