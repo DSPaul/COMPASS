@@ -20,14 +20,11 @@ namespace COMPASS.Tools
         {
             data = CurrentData;
 
-            ActiveFiles = new ObservableCollection<MyFile>(data.AllFiles);
+            ActiveFiles = new List<MyFile>(data.AllFiles);
 
-            TagFilteredFiles = new ObservableCollection<MyFile>();
-            SearchFilteredFiles = new ObservableCollection<MyFile>();
-            FieldFilteredFiles = new ObservableCollection<MyFile>();
-            TagFilteredFiles.CollectionChanged += (e, v) => Update_ActiveFiles();
-            SearchFilteredFiles.CollectionChanged += (e, v) => Update_ActiveFiles();
-            FieldFilteredFiles.CollectionChanged += (e, v) => Update_ActiveFiles();
+            TagFilteredFiles = new List<MyFile>();
+            SearchFilteredFiles = new List<MyFile>();
+            FieldFilteredFiles = new List<MyFile>();
 
             SearchTerm = "";
             ActiveTags = new ObservableCollection<Tag>();
@@ -40,12 +37,12 @@ namespace COMPASS.Tools
         public ObservableCollection<Tag> ActiveTags { get; set; }
         public ObservableCollection<FilterTag> ActiveFilters { get; set; }
 
-        public ObservableCollection<MyFile> TagFilteredFiles { get; set; }
-        public ObservableCollection<MyFile> SearchFilteredFiles { get; set; }
-        public ObservableCollection<MyFile> FieldFilteredFiles { get; set; }
+        public List<MyFile> TagFilteredFiles { get; set; }
+        public List<MyFile> SearchFilteredFiles { get; set; }
+        public List<MyFile> FieldFilteredFiles { get; set; }
 
-        private ObservableCollection<MyFile> _activeFiles;
-        public ObservableCollection<MyFile> ActiveFiles 
+        private List<MyFile> _activeFiles;
+        public List<MyFile> ActiveFiles 
         {
             get { return _activeFiles; }
             set { SetProperty(ref _activeFiles, value); }
@@ -62,10 +59,12 @@ namespace COMPASS.Tools
 
                 if (searchterm != "")
                 {
-                    SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles.Where(f => f.Title.IndexOf(SearchTerm, StringComparison.OrdinalIgnoreCase) < 0));
+                    SearchFilteredFiles = new List<MyFile>(data.AllFiles.Where(f => f.Title.IndexOf(SearchTerm, StringComparison.InvariantCultureIgnoreCase) < 0));
                 }
-                else SearchFilteredFiles = new ObservableCollection<MyFile>();
-                Update_ActiveFiles();
+                else SearchFilteredFiles = new List<MyFile>();
+
+                UpdateActiveFiles();
+                
             }
         }
 
@@ -76,14 +75,11 @@ namespace COMPASS.Tools
         public void ClearFilters()
         {
             SearchTerm = "";
-
-            //TagFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
-            //SearchFilteredFiles = new ObservableCollection<MyFile>(data.AllFiles);
             TagFilteredFiles.Clear();
             SearchFilteredFiles.Clear();
             ActiveTags.Clear();
             ActiveFilters.Clear();
-            ActiveFiles = new ObservableCollection<MyFile>(data.AllFiles);
+            ActiveFiles = new List<MyFile>(data.AllFiles);
         }
 
         //-------------For Tags---------------//
@@ -127,7 +123,7 @@ namespace COMPASS.Tools
                 foreach (MyFile f in SingleGroupFilteredFiles) if(!TagFilteredFiles.Contains(f)) TagFilteredFiles.Add(f);
             }
 
-            Update_ActiveFiles();
+            UpdateActiveFiles();
         } 
 
         public void AddTagFilter(Tag t)
@@ -175,31 +171,29 @@ namespace COMPASS.Tools
                         SingleFieldFilteredFiles = new List<MyFile>(data.AllFiles.Where(f => f.Rating < (int)SingleFieldFilters.First()));
                         break;
                 }
-                FieldFilteredFiles = new ObservableCollection<MyFile>(FieldFilteredFiles.Union(SingleFieldFilteredFiles));
+                FieldFilteredFiles = new List<MyFile>(FieldFilteredFiles.Union(SingleFieldFilteredFiles));
             }
-            Update_ActiveFiles();
+            UpdateActiveFiles();
         }
         public void RemoveFieldFilter(FilterTag t)
         {
             ActiveFilters.Remove(t);
         }
         //------------------------------------//
-        public void Update_ActiveFiles()
+        public void UpdateActiveFiles()
         {
-            ActiveFiles = new ObservableCollection<MyFile>(data.AllFiles);
-            foreach (MyFile f in SearchFilteredFiles) ActiveFiles.Remove(f);
-            foreach (MyFile f in TagFilteredFiles) ActiveFiles.Remove(f);
-            foreach (MyFile f in FieldFilteredFiles) ActiveFiles.Remove(f);
-            //    ActiveFiles.Clear();
-            //    foreach (var p in TagFilteredFiles.Intersect(SearchFilteredFiles))
-            //        ActiveFiles.Add(p);
+            var tempActiveFiles = new List<MyFile>(data.AllFiles);
+            var temp1 = tempActiveFiles.Except(SearchFilteredFiles);
+            var temp2 = temp1.Except(TagFilteredFiles);
+            var temp3 = temp2.Except(FieldFilteredFiles);
+            ActiveFiles = new List<MyFile>(temp3);
         }
 
         public void RemoveFile(MyFile f)
         {
             TagFilteredFiles.Remove(f);
             SearchFilteredFiles.Remove(f);
-            Update_ActiveFiles();
+            UpdateActiveFiles();
         }
 
         #endregion
