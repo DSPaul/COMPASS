@@ -22,8 +22,10 @@ namespace COMPASS
             {
                 image.Read(pdf.Path, settings);
                 image.Format = MagickFormat.Png;
-                image.Trim();
-                image.Alpha(AlphaOption.Remove);
+                image.BackgroundColor = new MagickColor("#000000"); //set backgroun color as transparant
+                image.Border(20); //adds transparant border around image
+                image.Trim(); //cut off all transparancy
+                image.RePage(); //resize image to fit what was cropped
 
                 image.Write(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + folder +  @"\CoverArt\" + pdf.ID.ToString() + ".png");
             }
