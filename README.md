@@ -15,14 +15,14 @@ If you are an RPG fan like me, you probably have lots of pdf's both homebrew and
 	- The Genre such as *Horror* *Fantasy* or *Sci-Fi*.
 	- Whatever works for you, you can create tags for everything.
 - **Organize** Tags in a folder like hierarchy to more easily find what you are looking for, example:
-	>RuleSet:
-		>>DnD
-			>>> 3.5e
-			 4e
-			 5e
-		>> Pathfinder
-			>>> 1e
-			>>> 2e
+	- RuleSet:
+		- DnD
+			- 3.5e
+			- 4e
+			- 5e
+		- Pathfinder
+			- 1e
+			- 2e
 - **Filter and Sort** all your books by *Title, Author, Publisher, Releasedate and Personal Rating*.
 - Have **Redundant** access to your books by having both a offline path to a pdf and a link to an online version hosted on Google Drive, GM Binder. COMPASS will check your internet connection and open the online file if internet is available to get the most up-to-date version and the offline pdf if you have no internet. 
 - **Group** your books into collections. Each collection has their own list of tags and authors and helps you keep an overview by reducing the amount of books that are on your screen at once.
