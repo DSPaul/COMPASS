@@ -59,10 +59,10 @@
     </StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>9230354E915958B22F04E864B75CCF6F5FF290D7</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>197FF9156DAD839BFC730CD919640347D57DE1A7</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>COMPASS_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>COMPASS_2_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -171,6 +171,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -368,6 +369,7 @@
     </None>
     <None Include="App.config" />
     <None Include="COMPASS_1_TemporaryKey.pfx" />
+    <None Include="COMPASS_2_TemporaryKey.pfx" />
     <None Include="COMPASS_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
