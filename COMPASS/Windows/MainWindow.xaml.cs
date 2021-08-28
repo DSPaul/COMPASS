@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.ComponentModel;
 using COMPASS.ViewModels;
 using COMPASS.Models;
+using System.Drawing;
 
 namespace COMPASS
 {
@@ -24,7 +25,9 @@ namespace COMPASS
             MainViewModel = new MainViewModel("DnD");
             DataContext = MainViewModel;
 
-            MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+            //MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+            //MaxHeight = SystemParameters.VirtualScreenHeight;
+            MaximizeWindow(this);
         }
 
         private MainViewModel MainViewModel;
@@ -56,16 +59,59 @@ namespace COMPASS
             Properties.Settings.Default.Save();
         }
 
-        #region Windows Tile Bar Buttons
+        #region Window management
+        public static System.Windows.Forms.Screen CurrentScreen(Window window)
+        {
+            return System.Windows.Forms.Screen.FromPoint(new System.Drawing.Point((int)window.Left + (int)window.ActualWidth/2, (int)window.Top + (int)window.ActualHeight/2));
+        }
+
+        //get size of a virtual window to limit size when maximizing main window
+        private (double height, double width) GetVirtualWindowSize()
+        {
+            Window virtualWindow = new Window();
+            System.Windows.Forms.Screen targetScreen = CurrentScreen(this);
+            Rectangle viewport = targetScreen.WorkingArea;
+            virtualWindow.Top = viewport.Top;
+            virtualWindow.Left = viewport.Left;
+            virtualWindow.Show();
+            virtualWindow.Opacity = 0;
+            virtualWindow.WindowState = WindowState.Maximized;
+            double returnHeight = virtualWindow.Height;
+            double returnWidth = virtualWindow.Width;
+            virtualWindow.Close();
+            return (returnHeight, returnWidth);
+        }
+
         private void MinimizeWindow(object sender, RoutedEventArgs e)
         {
-            App.Current.MainWindow.WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
         }
+        private void MaximizeWindow(Window window)
+        {
+            var sizingParams = GetVirtualWindowSize();
+            MaxHeight = sizingParams.height;
+            MaxWidth = sizingParams.width;
+            WindowState = WindowState.Maximized;
+        }
+
+        private void MaximizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            switch (WindowState)
+            {
+                case (WindowState.Maximized):
+                    WindowState = WindowState.Normal;
+                    break;
+                case (WindowState.Normal):
+                    MaximizeWindow(this);
+                    break;
+            }
+        }
+
         private void WindowsBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2)
             {
-                WindowState = WindowState.Maximized;
+                MaximizeWindow(this);
                 DragWindow = false;
             }
 
@@ -81,10 +127,13 @@ namespace COMPASS
             {
                 DragWindow = false;
 
+                System.Windows.Forms.Screen targetScreen = CurrentScreen(this);
+                Rectangle viewport = targetScreen.WorkingArea;
+
                 var point = e.MouseDevice.GetPosition(this);
 
-                Left = point.X - (RestoreBounds.Width * 0.5);
-                Top = point.Y - 20;
+                Left = viewport.Left + point.X - (RestoreBounds.Width * 0.5);
+                Top = viewport.Top + point.Y - 20;
 
                 WindowState = WindowState.Normal;
 
@@ -95,8 +144,8 @@ namespace COMPASS
 
                 catch (InvalidOperationException)
                 {
-                    WindowState = WindowState.Maximized;
-                }    
+                    MaximizeWindow(this);
+                }
             }
         }
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -112,7 +161,6 @@ namespace COMPASS
             (sender as Button).ContextMenu.IsOpen = true;
         }
     }
-
 }
 
 
