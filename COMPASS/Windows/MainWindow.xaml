@@ -604,9 +604,9 @@
                         <materialDesign:PackIcon Kind="WindowMinimize" VerticalAlignment="Bottom"/>
                     </Button>
 
-                    <ToggleButton x:Name="MaximizeButton" IsChecked="{Binding WindowState, RelativeSource={RelativeSource FindAncestor,
-                    AncestorType=Window}, Converter={StaticResource IsMaximizedConverter}, Mode=TwoWay}"
-                    BorderBrush="{x:Null}" >
+                    <ToggleButton x:Name="MaximizeButton" Click="MaximizeButton_Click" BorderBrush="{x:Null}" 
+                                   IsChecked="{Binding WindowState, RelativeSource={RelativeSource FindAncestor,
+                    AncestorType=Window}, Converter={StaticResource IsMaximizedConverter}, Mode=OneWay}">
                         <Grid>
                             <materialDesign:PackIcon Kind="WindowMaximize"  x:Name="Maximizeimage" Width="15"
                         Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
@@ -718,7 +718,7 @@
             </Grid.Resources>
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width =" auto"/>
+                <ColumnDefinition Width ="auto"/>
                 <ColumnDefinition Width ="auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
