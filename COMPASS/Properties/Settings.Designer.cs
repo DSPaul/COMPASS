@@ -130,5 +130,101 @@ namespace COMPASS.Properties {
                 this["ListShowEditIcon"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TileShowTitle {
+            get {
+                return ((bool)(this["TileShowTitle"]));
+            }
+            set {
+                this["TileShowTitle"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CardShowAuthor {
+            get {
+                return ((bool)(this["CardShowAuthor"]));
+            }
+            set {
+                this["CardShowAuthor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CardShowPublisher {
+            get {
+                return ((bool)(this["CardShowPublisher"]));
+            }
+            set {
+                this["CardShowPublisher"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CardShowRelease {
+            get {
+                return ((bool)(this["CardShowRelease"]));
+            }
+            set {
+                this["CardShowRelease"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CardShowVersion {
+            get {
+                return ((bool)(this["CardShowVersion"]));
+            }
+            set {
+                this["CardShowVersion"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CardShowRating {
+            get {
+                return ((bool)(this["CardShowRating"]));
+            }
+            set {
+                this["CardShowRating"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CardShowTags {
+            get {
+                return ((bool)(this["CardShowTags"]));
+            }
+            set {
+                this["CardShowTags"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CardShowFileIcons {
+            get {
+                return ((bool)(this["CardShowFileIcons"]));
+            }
+            set {
+                this["CardShowFileIcons"] = value;
+            }
+        }
     }
 }
