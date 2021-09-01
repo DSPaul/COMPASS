@@ -1,6 +1,5 @@
 ﻿using COMPASS.Models;
 using COMPASS.ViewModels.Commands;
-using Org.BouncyCastle.Asn1.Crmf;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,11 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using Xceed.Wpf.Toolkit.PropertyGrid;
-using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
 {
