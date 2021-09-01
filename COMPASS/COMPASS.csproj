@@ -71,7 +71,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icons\IconDesign.ico</ApplicationIcon>
+    <ApplicationIcon>JadeCompass.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.5.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
@@ -402,6 +402,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\gmbinderfull.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="JadeCompass.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
