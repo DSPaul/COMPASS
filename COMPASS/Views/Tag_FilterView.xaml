@@ -8,8 +8,8 @@
              xmlns:local="clr-namespace:COMPASS"
              xmlns:Views="clr-namespace:COMPASS.Views"
              xmlns:Models="clr-namespace:COMPASS.Models"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="200">
+             mc:Ignorable="d"
+             d:DesignHeight="250" d:DesignWidth="200">
     <Grid>
         <Grid.Resources>
             <Style TargetType="{x:Type Button}" x:Key="SquareBtn">
@@ -152,37 +152,39 @@
                 </Border>
             </TabItem>
             <TabItem Header="Filter" Tools:AP.IconKind="Filter">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="auto"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Margin="10">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                    <Grid Margin="0 0 -10 0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
                         <StackPanel Margin="10">
-                            <TextBlock Text="Author:"/>
-                            <ComboBox ItemsSource="{Binding MVM.CurrentData.AuthorList}" FontSize="15"
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Author:"/>
+                                <ComboBox ItemsSource="{Binding MVM.CurrentData.AuthorList}" FontSize="15"
                                       SelectedValue="{Binding SelectedAuthor}"/>
-                        </StackPanel>
-                        <StackPanel Margin="10">
-                            <TextBlock Text="Publisher:"/>
-                            <ComboBox ItemsSource="{Binding MVM.CurrentData.PublisherList}" FontSize="15"
+                            </StackPanel>
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Publisher:"/>
+                                <ComboBox ItemsSource="{Binding MVM.CurrentData.PublisherList}" FontSize="15"
                                       SelectedValue="{Binding SelectedPublisher}"/>
+                            </StackPanel>
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Released Between:"/>
+                                <DatePicker SelectedDate="{Binding StartReleaseDate}" HorizontalAlignment="Left" Margin="-5 0"/>
+                                <TextBlock Text="And"/>
+                                <DatePicker SelectedDate="{Binding StopReleaseDate}"  HorizontalAlignment="Left" Margin="-5 0"/>
+                            </StackPanel>
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Minimum Rating:"/>
+                                <materialDesign:RatingBar Value="{Binding MinRating, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Margin="-2 0"/>
+                            </StackPanel>
                         </StackPanel>
-                        <StackPanel Margin="10">
-                            <TextBlock Text="Released Between:"/>
-                            <DatePicker SelectedDate="{Binding StartReleaseDate}"/>
-                            <TextBlock Text="And" HorizontalAlignment="Center"/>
-                            <DatePicker SelectedDate="{Binding StopReleaseDate}"/>
-                        </StackPanel>
-                        <StackPanel Margin="10">
-                            <TextBlock Text="Minimum Rating:"/>
-                            <materialDesign:RatingBar Value="{Binding MinRating, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
-                    </StackPanel>
-                    <Button Content="Clear All" Grid.Row="2" Margin="30" Command="{Binding ClearFiltersCommand}"
+                        <Button Content="Clear All" Grid.Row="2" Margin="30" Command="{Binding ClearFiltersCommand}"
                             Style="{StaticResource SquareBtn}" Tools:AP.IconKind="FilterRemove" Background="Red"/>
-                </Grid>
+                    </Grid>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
     </Grid>
