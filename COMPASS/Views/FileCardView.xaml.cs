@@ -17,11 +17,11 @@ using System.Windows.Shapes;
 namespace COMPASS.Views
 {
     /// <summary>
-    /// Interaction logic for FileMixView.xaml
+    /// Interaction logic for FileCardView.xaml
     /// </summary>
-    public partial class FileMixView : UserControl
+    public partial class FileCardView : UserControl
     {
-        public FileMixView()
+        public FileCardView()
         {
             InitializeComponent();
         }

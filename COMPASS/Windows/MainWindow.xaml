@@ -24,8 +24,8 @@
         <DataTemplate DataType="{x:Type viewmodels:FileListViewModel}">
             <views:FileListView DataContext="{Binding}"/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type viewmodels:FileMixViewModel}">
-            <views:FileMixView DataContext="{Binding}"/>
+        <DataTemplate DataType="{x:Type viewmodels:FileCardViewModel}">
+            <views:FileCardView DataContext="{Binding}"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewmodels:FileTileViewModel}">
             <views:FileTileView DataContext="{Binding}"/>
@@ -40,14 +40,6 @@
     <Window.Background>
         <!--<ImageBrush ImageSource="C:\Users\pauld\Pictures\Wallpapers\neverwinter_seascape.jpg" Opacity="0.6"/>-->
         <SolidColorBrush Color="#FF242528"/>
-        <!--<LinearGradientBrush EndPoint="0.8,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0.0" Opacity="0.4">
-            <GradientStop Color="#FF183DE9"/>
-            <GradientStop Color="#FFF10927" Offset="1"/>
-        </LinearGradientBrush>-->
-        <!--<LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-            <GradientStop Color="#FF1DA1F2"/>
-            <GradientStop Color="#FF15202B" Offset="1"/>
-        </LinearGradientBrush>-->
     </Window.Background>
     <Window.Style>
         <Style>
@@ -880,8 +872,12 @@
                         </Style.Triggers>
                     </Style> 
                 </StackPanel.Resources>
-                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.ListView}" Tools:AP.IconKind="ViewHeadline" Height="40" Click="Button_Click"/>
-                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.MixView}" Tools:AP.IconKind="ViewList" Height="40"/>
+                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.ListView}" Tools:AP.IconKind="ViewHeadline" Height="40"/>
+                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.CardView}" Tools:AP.IconKind="ViewCompact" Height="40" RenderTransformOrigin="0.5 0.5">
+                        <Button.RenderTransform>
+                            <ScaleTransform ScaleY="-1"/>
+                        </Button.RenderTransform>
+                    </Button>
                     <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.TileView}" Tools:AP.IconKind="ViewModule" Height="43"/>
                     <Rectangle Width="2" Fill="Gray" Margin="3,8"/>
                     <Button Click="ViewConfig_Click" Tools:AP.IconKind="TuneVariant" Height="30">

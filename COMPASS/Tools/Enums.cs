@@ -11,7 +11,7 @@ namespace COMPASS.Tools
         public enum FileView
         {
             ListView,
-            MixView,
+            CardView,
             TileView
         }
 
