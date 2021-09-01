@@ -12,7 +12,6 @@ namespace COMPASS.ViewModels
     {
         public FileTileViewModel(MainViewModel vm = null) : base(vm)
         {
-            ViewOptions = new ObservableCollection<MyMenuItem>();
             ViewOptions.Add(new MyMenuItem("Cover Size", value => TileWidth = (double)value) { Prop = TileWidth });
             ViewOptions.Add(new MyMenuItem("Show Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
         }
@@ -33,11 +32,15 @@ namespace COMPASS.ViewModels
             get { return (int)(_width * 4/3); }
         }
 
-        private bool _showtitle = false;
+        private bool _showtitle = Properties.Settings.Default.TileShowTitle;
         public bool ShowTitle
         {
             get { return _showtitle; }
-            set { SetProperty(ref _showtitle, value); }
+            set 
+            { 
+                SetProperty(ref _showtitle, value);
+                Properties.Settings.Default.TileShowTitle = value;
+            }
         }
 
         #endregion
