@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class FileMixViewModel : FileBaseViewModel
+    public class FileCardViewModel : FileBaseViewModel
     {
-        public FileMixViewModel(MainViewModel vm = null) : base(vm)
+        public FileCardViewModel(MainViewModel vm = null) : base(vm)
         {
 
         }

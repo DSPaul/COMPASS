@@ -153,8 +153,8 @@ namespace COMPASS.ViewModels
                 case FileView.ListView:
                     CurrentFileViewModel = new FileListViewModel(this);
                     break;
-                case FileView.MixView:
-                    CurrentFileViewModel = new FileMixViewModel(this);
+                case FileView.CardView:
+                    CurrentFileViewModel = new FileCardViewModel(this);
                     break;
                 case FileView.TileView:
                     CurrentFileViewModel = new FileTileViewModel(this);
