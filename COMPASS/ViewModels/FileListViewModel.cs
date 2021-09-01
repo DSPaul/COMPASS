@@ -14,8 +14,6 @@ namespace COMPASS.ViewModels
     {
         public FileListViewModel( MainViewModel vm) : base(vm)
         {
-            ViewOptions = new ObservableCollection<MyMenuItem>();
-
             MyMenuItem Columnvisibility = new MyMenuItem("Column Visibility")
             {
                 Submenus = new ObservableCollection<MyMenuItem>()
