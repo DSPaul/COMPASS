@@ -162,6 +162,7 @@ namespace COMPASS.ViewModels
                 MVM.CurrentData.AllTags.Add(EditedTag);
                 TempTag = new Tag(MVM.CurrentData.AllTags);
                 EditedTag = null;
+                RaisePropertyChanged("ParentTempTag");
             }
         }
 
