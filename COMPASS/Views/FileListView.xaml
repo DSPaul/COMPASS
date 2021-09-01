@@ -27,6 +27,9 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
                             <DockPanel Margin="0,8">
+                                <DockPanel.Background>
+                                    <SolidColorBrush Color="Black" Opacity="0"/>
+                                </DockPanel.Background>
                                 <TextBlock Text="{TemplateBinding Content}" Margin="5,0" DockPanel.Dock="Left"
                                             Width="{TemplateBinding Width}" TextAlignment="Left" 
                                             FontSize="14" FontWeight="Bold" Foreground="#808080"/>
@@ -52,6 +55,12 @@
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ContextMenu">
+                    <Setter.Value>
+                        <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding Source = {StaticResource Proxy}, Path=Data.ViewOptions[0].Submenus}"
+                                     ItemContainerStyle="{StaticResource DropdownMenuItem}"/>
                     </Setter.Value>
                 </Setter>
             </Style>
