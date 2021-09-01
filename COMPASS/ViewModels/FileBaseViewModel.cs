@@ -23,6 +23,8 @@ namespace COMPASS.ViewModels
             MoveToFolderCommand = new RelayCommand<object>(MoveToFolder);
             DeleteFileCommand = new RelayCommand<object>(DeleteFile);
             OpenSelectedFilesCommand = new RelayCommand<object>(OpenSelectedFiles);
+
+            ViewOptions = new ObservableCollection<MyMenuItem>();
         }
 
         #region Properties
