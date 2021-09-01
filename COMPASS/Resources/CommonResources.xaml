@@ -674,6 +674,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="FirstDayOfWeek" Value="Monday"/>
     </Style>
     
     <Style TargetType="{x:Type DatePickerTextBox}">
