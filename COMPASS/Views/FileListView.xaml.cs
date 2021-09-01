@@ -30,5 +30,15 @@ namespace COMPASS.Views
         {
             ((FileBaseViewModel)DataContext).OpenSelectedFile();
         }
+
+        //Make sure selected Item is always in view
+        private void FileView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            DataGrid dataGrid = sender as DataGrid;
+            if (dataGrid != null && e.AddedItems != null && e.AddedItems.Count > 0)
+            {
+                dataGrid.ScrollIntoView(e.AddedItems[0]);
+            }
+        }
     }
 }

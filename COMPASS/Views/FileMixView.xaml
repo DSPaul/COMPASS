@@ -14,7 +14,7 @@
         <!--#region MixView-->
     <ListBox x:Name="FileView" ItemsSource="{Binding MVM.FilterHandler.ActiveFiles}" Background="{x:Null}"
                  BorderBrush="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
-                 ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0">
+                 ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" SelectionChanged="FileView_SelectionChanged">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />

@@ -16,8 +16,9 @@
                 CanUserAddRows="False" SelectionMode="Extended" CanUserSortColumns="True"
                 RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
                 SelectedItem="{Binding SelectedFile, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848"
-                ClipToBounds="True" VirtualizingStackPanel.IsVirtualizing ="True"
-                VirtualizingStackPanel.VirtualizationMode = "Recycling" MaxHeight="4000">
+                ClipToBounds="True" VirtualizingPanel.IsVirtualizing ="True"
+                VirtualizingStackPanel.VirtualizationMode = "Recycling" MaxHeight="4000"
+                SelectionChanged="FileView_SelectionChanged">
         <DataGrid.Resources>
             <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
             <Converters:BooltoVisibilityConverter x:Key="BoolToVisibilityConverter"/>
