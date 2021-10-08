@@ -32,7 +32,7 @@
                         <TextBox Margin="3,5" Background="{x:Null}" BorderThickness="0" FontSize="15" Foreground="White" Panel.ZIndex="1"
                                  Text="{Binding InputURL, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock  Margin="5"  FontSize="15" Foreground="LightGray"
-                                            Text="{Binding PreviewTitle, FallbackValue=https://www.gmbinder.com/share}"/>
+                                            Text="{Binding PreviewURL, FallbackValue=https://www.gmbinder.com/share}"/>
                     </Grid>
                 </Border>
                 <Button Grid.Column="1" Background="{x:Null}" BorderThickness="0" Click="CloseWindow">
