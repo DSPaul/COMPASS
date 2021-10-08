@@ -13,10 +13,8 @@ using System.Windows.Threading;
 using static COMPASS.Tools.Enums;
 using iText;
 using iText.Kernel.Pdf;
-using System.Net.NetworkInformation;
-using ScrapySharp.Network;
 using HtmlAgilityPack;
-using System.Net;
+using System.Globalization;
 
 namespace COMPASS.ViewModels
 {
@@ -108,7 +106,7 @@ namespace COMPASS.ViewModels
                 Multiselect = true
             };
 
-            MyFile SelectWhenDone = null;
+            Codex SelectWhenDone = null;
 
             if (openFileDialog.ShowDialog() == true)
             {
@@ -133,7 +131,7 @@ namespace COMPASS.ViewModels
                     {
                         PdfDocument pdfdoc = new PdfDocument(new PdfReader(path));
                         var info = pdfdoc.GetDocumentInfo();
-                        MyFile pdf = new MyFile(_data)
+                        Codex pdf = new Codex(_data)
                         {
                             Path = path,
                             Title = info.GetTitle() ?? System.IO.Path.GetFileNameWithoutExtension(path),
@@ -184,63 +182,95 @@ namespace COMPASS.ViewModels
                     //TODO add error: "is not a valid *source* URL
                     return;
                 }
+                if (!MVM.pingURL())
+                {
+                    //TODO add error: "You need to be connected to the internet to add online sources
+                }
                 else
                 {
+                    //Webscraper for metadata using HtmlAgilityPack
                     HtmlWeb web = new HtmlWeb();
                     HtmlDocument doc = web.Load(InputURL);
-                    if(doc.ParsedText == null)
+
+                    if (doc.ParsedText == null)
                     {
                         //TODO add error "invalid URL"
                         return;
                     }
                     HtmlNode src = doc.DocumentNode;
 
-                    MyFile newFile = new MyFile(_data)
+                    Codex newFile = new Codex(_data)
                     {
                         SourceURL = InputURL
                     };
 
-                    HtmlNode previewDiv;
                     IEnumerable<HtmlNode> pages;
 
-                    HtmlNode sourcecode = doc.DocumentNode;
                     switch (mode)
                     {
                         case ImportMode.GmBinder:
+                            //Scrape metadata
                             newFile.Publisher = "GM Binder";
-                            newFile.Title = src.OwnerDocument.DocumentNode.SelectSingleNode("//html/head/title").InnerText.Split('|')[0];
-                            newFile.Author = src.OwnerDocument.DocumentNode.SelectSingleNode("//meta[@property='og:author']").GetAttributeValue("content", String.Empty);
-
-                            //download image
-                            string imgURL = HtmlEntity.DeEntitize(src.OwnerDocument.DocumentNode.SelectSingleNode("//meta[@property='og:image']").GetAttributeValue("content", String.Empty));
-                            using (WebClient client = new WebClient())
-                            {
-                                client.DownloadFileAsync(new Uri(imgURL), newFile.CoverArt);
-                            }
+                            newFile.Title = src.SelectSingleNode("//html/head/title").InnerText.Split('|')[0];
+                            newFile.Author = src.SelectSingleNode("//meta[@property='og:author']").GetAttributeValue("content", String.Empty);
 
                             //get pagecount
-                            previewDiv = doc.GetElementbyId("preview");
+                            HtmlNode previewDiv = doc.GetElementbyId("preview");
                             pages = previewDiv.ChildNodes.Where(node => node.Id.Contains("p"));
                             newFile.PageCount = pages.Count();
 
+                            //Get Cover Art
+                            CoverArtGenerator.GetCoverFromURL(InputURL, newFile, ImportMode.GmBinder);
+
                             //add file to data
                             _data.AllFiles.Add(newFile);
+                            RaisePropertyChanged("_data.AllFiles");
                             break;
 
                         case ImportMode.Homebrewery:
+                            //Scrape metadata
                             newFile.Publisher = "Homebrewery";
-                            newFile.Title = src.OwnerDocument.DocumentNode.SelectSingleNode("//html/head/title").InnerText.Split('-')[0];
+
+                            //Select script tag with all metadata
+                            HtmlNode script = src.SelectSingleNode("/html/body/script[2]");
+                            List<string> BrewInfo = script.InnerText.Split(',').Skip(2).ToList();
+
+                            //Cut of end starting from text(bin)
+                            int lastIndex = BrewInfo.FindIndex(text => text.Contains("\"text"));
+                            BrewInfo = BrewInfo.GetRange(0, lastIndex);
+                            //cut of "brew":{ from start
+                            BrewInfo[0] = BrewInfo[0].Substring(8);
+
+                            //make temp dictionary out of list, chars like " [ ]  still need to be removed
+                            Dictionary<string, string> tempBrewInfoDict = BrewInfo.Select(item => item.Split(':')).ToDictionary(s => s[0], s => s[1]);
+                            //make clean dict to use
+                            Dictionary<string, string> BrewInfoDict = new Dictionary<string, string>();
+                            foreach(KeyValuePair<string,string> info in tempBrewInfoDict)
+                            {
+                                var newkey = info.Key.Trim('"');
+                                var newval = info.Value.Trim(new Char[] { '"', '[', ']' });
+                                BrewInfoDict.Add(newkey, newval);
+                            }
+                            if (BrewInfoDict.ContainsKey("title"))      newFile.Title = BrewInfoDict["title"];
+                            if (BrewInfoDict.ContainsKey("authors"))    newFile.Author = BrewInfoDict["authors"];
+                            if (BrewInfoDict.ContainsKey("description")) newFile.Description = BrewInfoDict["description"];
+                            if (BrewInfoDict.ContainsKey("version"))    newFile.Version = BrewInfoDict["version"];
+
+                            if (BrewInfoDict.ContainsKey("createdAt"))  newFile.ReleaseDate = DateTime.Parse(BrewInfoDict["createdAt"].Split('T')[0], CultureInfo.InvariantCulture);                            
 
                             //get pagecount
-                            pages = src.OwnerDocument.DocumentNode.SelectNodes("//div[class='phb'");
-                            newFile.PageCount = pages.Count();
+                            HtmlNode pageInfo = src.SelectSingleNode("//div[@class='pageInfo']");
+                            newFile.PageCount = int.Parse(pageInfo.InnerText.Split('/')[1]);
+
+                            //Get Cover Art
+                            CoverArtGenerator.GetCoverFromURL(InputURL, newFile, ImportMode.Homebrewery);
 
                             //add file to data
                             _data.AllFiles.Add(newFile);
+                            RaisePropertyChanged("_data.AllFiles");
                             break;
-                    }
+                    }                    
                 }
-
             }
         }
 
@@ -252,7 +282,6 @@ namespace COMPASS.ViewModels
             _importamount = args.Item2;
             RaisePropertyChanged("ImportText");
         }
-
         #endregion
     }
 }
