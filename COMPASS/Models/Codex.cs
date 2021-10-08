@@ -7,14 +7,14 @@ using System.Linq;
 using System.Text;
 namespace COMPASS.Models
 {
-    public class MyFile : ObservableObject
+    public class Codex : ObservableObject
     {
-        public MyFile()
+        public Codex()
         {
             Tags = new ObservableCollection<Tag>();
         }
 
-        public MyFile(Data d)
+        public Codex(Data d)
         {
             Tags = new ObservableCollection<Tag>();
 
@@ -27,7 +27,7 @@ namespace COMPASS.Models
             CoverArt = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + d.Folder + @"\CoverArt\" + ID.ToString() + ".png");
         }
 
-        public void Copy(MyFile f)
+        public void Copy(Codex f)
         {
             Title = f.Title;
             Path = f.Path;

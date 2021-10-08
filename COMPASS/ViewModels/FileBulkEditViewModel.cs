@@ -12,10 +12,10 @@ namespace COMPASS.ViewModels
 {
     public class FileBulkEditViewModel : BaseEditViewModel
     {
-        public FileBulkEditViewModel(MainViewModel vm, List<MyFile> ToEdit) : base(vm)
+        public FileBulkEditViewModel(MainViewModel vm, List<Codex> ToEdit) : base(vm)
         {
             EditedFiles = ToEdit;
-            TempFile = new MyFile(MVM.CurrentData);
+            TempFile = new Codex(MVM.CurrentData);
 
             //set common metadata
             if (EditedFiles.All(f => f.Author == EditedFiles[0].Author)) TempFile.Author = EditedFiles[0].Author;
@@ -32,7 +32,7 @@ namespace COMPASS.ViewModels
 
         #region Properties
 
-        readonly List<MyFile> EditedFiles;
+        readonly List<Codex> EditedFiles;
 
         //True if adding tags, false if removing
         private bool _TagMode = true;
@@ -58,8 +58,8 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _TagsToRemove, value); }
         }
 
-        private MyFile _tempFile;
-        public MyFile TempFile
+        private Codex _tempFile;
+        public Codex TempFile
         {
             get { return _tempFile; }
             set { SetProperty(ref _tempFile, value); }
@@ -116,7 +116,7 @@ namespace COMPASS.ViewModels
             //Copy changes into Database
             if(TempFile.Author != "" && TempFile.Author!= null)
             {
-                foreach(MyFile f in EditedFiles)
+                foreach(Codex f in EditedFiles)
                 {
                     f.Author = TempFile.Author;
                 }
@@ -124,7 +124,7 @@ namespace COMPASS.ViewModels
 
             if (TempFile.Publisher != "" && TempFile.Publisher != null)
             {
-                foreach (MyFile f in EditedFiles)
+                foreach (Codex f in EditedFiles)
                 {
                     f.Publisher = TempFile.Publisher;
                 }
@@ -132,7 +132,7 @@ namespace COMPASS.ViewModels
 
             if(TempFile.Physically_Owned == true)
             {
-                foreach (MyFile f in EditedFiles)
+                foreach (Codex f in EditedFiles)
                 {
                     f.Physically_Owned = true;
                 }
@@ -140,7 +140,7 @@ namespace COMPASS.ViewModels
 
             if(TempFile.Rating > 0)
             {
-                foreach (MyFile f in EditedFiles)
+                foreach (Codex f in EditedFiles)
                 {
                     f.Rating = TempFile.Rating;
                 }
@@ -148,7 +148,7 @@ namespace COMPASS.ViewModels
 
             if (TempFile.Version != null)
             {
-                foreach (MyFile f in EditedFiles)
+                foreach (Codex f in EditedFiles)
                 {
                     f.Version = TempFile.Version;
                 }
@@ -156,7 +156,7 @@ namespace COMPASS.ViewModels
 
             if(TempFile.ReleaseDate != null)
             {
-                    foreach (MyFile f in EditedFiles)
+                    foreach (Codex f in EditedFiles)
                     {
                         f.ReleaseDate = TempFile.ReleaseDate;
                     }
@@ -167,7 +167,7 @@ namespace COMPASS.ViewModels
             if(TempFile.Publisher != "" && !MVM.CurrentData.PublisherList.Contains(TempFile.Publisher)) MVM.CurrentData.PublisherList.Add(TempFile.Publisher);
 
             //Add and remove Tags
-            foreach(MyFile f in EditedFiles)
+            foreach(Codex f in EditedFiles)
             {
                 if (TagsToAdd.Count > 0)
                 {

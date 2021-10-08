@@ -12,10 +12,10 @@ namespace COMPASS.ViewModels
 {
     public class FileEditViewModel : BaseEditViewModel
     {
-        public FileEditViewModel(MainViewModel vm, MyFile ToEdit) : base(vm)
+        public FileEditViewModel(MainViewModel vm, Codex ToEdit) : base(vm)
         {
             EditedFile = ToEdit;
-            TempFile = new MyFile(MVM.CurrentData);
+            TempFile = new Codex(MVM.CurrentData);
             if(!CreateNewFile) TempFile.Copy(EditedFile);
 
             //Apply right checkboxes in Alltags
@@ -37,15 +37,15 @@ namespace COMPASS.ViewModels
 
         #region Properties
 
-        readonly MyFile EditedFile;
+        readonly Codex EditedFile;
 
         private bool CreateNewFile
         {
             get { return EditedFile == null; }
         }
 
-        private MyFile _tempFile;
-        public MyFile TempFile
+        private Codex _tempFile;
+        public Codex TempFile
         {
             get { return _tempFile; }
             set { SetProperty(ref _tempFile, value); }
@@ -75,7 +75,7 @@ namespace COMPASS.ViewModels
             if(!CreateNewFile) EditedFile.Copy(TempFile);
             else
             {
-                MyFile ToAdd = new MyFile();
+                Codex ToAdd = new Codex();
                 ToAdd.Copy(TempFile);
                 MVM.CurrentData.AllFiles.Add(ToAdd);
             }
@@ -144,7 +144,7 @@ namespace COMPASS.ViewModels
         };
             if (openFileDialog.ShowDialog() == true)
             {
-                CoverArtGenerator.ConvertImage(openFileDialog.FileName, TempFile, MVM.CurrentData.Folder);
+                CoverArtGenerator.SaveImageAsCover(openFileDialog.FileName, TempFile);
             }
             //force refresh
             string CovArt = TempFile.CoverArt;

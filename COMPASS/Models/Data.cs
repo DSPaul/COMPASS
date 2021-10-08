@@ -54,7 +54,7 @@ namespace COMPASS
 
         #region File Data
         //File Lists
-        public ObservableCollection<MyFile> AllFiles = new ObservableCollection<MyFile>();
+        public ObservableCollection<Codex> AllFiles = new ObservableCollection<Codex>();
 
         #endregion
 
@@ -115,12 +115,12 @@ namespace COMPASS
             {
                 using (var Reader = new StreamReader(BooksFilepath))
                 {
-                    System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<MyFile>));
-                    AllFiles = serializer.Deserialize(Reader) as ObservableCollection<MyFile>;
+                    System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Codex>));
+                    AllFiles = serializer.Deserialize(Reader) as ObservableCollection<Codex>;
                     Reader.Close();
                 }
 
-                foreach (MyFile f in AllFiles)
+                foreach (Codex f in AllFiles)
                 {
                     //Populate Author and Publisher List
                     if (f.Author != "" && !AuthorList.Contains(f.Author)) AuthorList.Add(f.Author);
@@ -141,7 +141,7 @@ namespace COMPASS
             }
             else
             {
-                AllFiles = new ObservableCollection<MyFile>();
+                AllFiles = new ObservableCollection<Codex>();
             }
         }
         #endregion
@@ -161,14 +161,14 @@ namespace COMPASS
         {
             using (var writer = new StreamWriter(BooksFilepath))
             {
-                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<MyFile>));
+                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Codex>));
                 serializer.Serialize(writer, AllFiles);
             }
         }
 
         #endregion 
 
-        public void DeleteFile(MyFile Todelete)
+        public void DeleteFile(Codex Todelete)
         {
             //Delete file from all lists
             AllFiles.Remove(Todelete);
@@ -195,7 +195,7 @@ namespace COMPASS
         {
             Directory.Move(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + NewFoldername);
             Folder = NewFoldername;
-            foreach(MyFile file in AllFiles)
+            foreach(Codex file in AllFiles)
             {
                 file.CoverArt = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + NewFoldername + @"\CoverArt\" + file.ID + ".png";
             }

@@ -38,8 +38,8 @@ namespace COMPASS.ViewModels
         }
 
         //Selected File
-        private MyFile selectedFile;
-        public MyFile SelectedFile {
+        private Codex selectedFile;
+        public Codex SelectedFile {
             get { return selectedFile; } 
             set { SetProperty(ref selectedFile, value); }
         }
@@ -58,8 +58,8 @@ namespace COMPASS.ViewModels
         public RelayCommand<object> OpenSelectedFileCommand { get; private set; }
         public void OpenSelectedFile(object o = null)
         {
-            MyFile ToOpen;
-            if (o != null) ToOpen = (MyFile)o;
+            Codex ToOpen;
+            if (o != null) ToOpen = (Codex)o;
             else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
             try
             {
@@ -72,8 +72,8 @@ namespace COMPASS.ViewModels
         }
         public bool CanOpenSelectedFile(object o = null)
         {
-            MyFile ToOpen;
-            if (o != null) ToOpen = (MyFile)o;
+            Codex ToOpen;
+            if (o != null) ToOpen = (Codex)o;
             else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
 
             if (ToOpen == null) return false;
@@ -85,8 +85,8 @@ namespace COMPASS.ViewModels
         public RelayCommand<object> OpenFileOnlineCommand { get; private set; }
         public void OpenFileOnline(object o = null)
         {
-            MyFile ToOpen;
-            if (o != null) ToOpen = (MyFile)o;
+            Codex ToOpen;
+            if (o != null) ToOpen = (Codex)o;
             else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
             try
             {
@@ -100,8 +100,8 @@ namespace COMPASS.ViewModels
         }
         public bool CanOpenFileOnline(object o = null)
         {
-            MyFile ToOpen;
-            if (o != null) ToOpen = (MyFile)o;
+            Codex ToOpen;
+            if (o != null) ToOpen = (Codex)o;
             else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
 
             if (ToOpen == null) return false;
@@ -115,7 +115,7 @@ namespace COMPASS.ViewModels
         {
             if (o == null) return;
             IList list = o as IList;
-            List<MyFile> ToOpen = list.Cast<MyFile>().ToList();
+            List<Codex> ToOpen = list.Cast<Codex>().ToList();
             //MessageBox "Are you Sure?"
             string sMessageBoxText = "You are about to open " + ToOpen.Count + " Files. Are you sure you wish to continue?";
             string sCaption = "Are you Sure?";
@@ -127,7 +127,7 @@ namespace COMPASS.ViewModels
 
             if (rsltMessageBox == MessageBoxResult.Yes)
             {
-                foreach(MyFile f in ToOpen)
+                foreach(Codex f in ToOpen)
                 {
                     try
                     {
@@ -158,7 +158,7 @@ namespace COMPASS.ViewModels
         {
             if (o == null) return;
             IList list = o as IList;
-            List<MyFile> ToEdit = list.Cast<MyFile>().ToList();
+            List<Codex> ToEdit = list.Cast<Codex>().ToList();
             MVM.CurrentEditViewModel = new FileBulkEditViewModel(MVM, ToEdit);
             FileBulkEditWindow fpw = new FileBulkEditWindow((FileBulkEditViewModel)MVM.CurrentEditViewModel);
             fpw.ShowDialog();
@@ -170,7 +170,7 @@ namespace COMPASS.ViewModels
         public void MoveToFolder(object o = null)
         {
             var par = (object[])o;
-            List<MyFile> ToMoveList = new List<MyFile>();
+            List<Codex> ToMoveList = new List<Codex>();
             string targetfolder;
 
             //extract folder parameter
@@ -182,7 +182,7 @@ namespace COMPASS.ViewModels
             if (par[1] != null)
             {
                 IList list = par[1] as IList;
-                ToMoveList = list.Cast<MyFile>().ToList();
+                ToMoveList = list.Cast<Codex>().ToList();
             }
             else ToMoveList.Add(MVM.CurrentFileViewModel.selectedFile);
 
@@ -201,11 +201,11 @@ namespace COMPASS.ViewModels
             if (rsltMessageBox == MessageBoxResult.Yes) 
             {
                 Data TargetData = new Data(targetfolder);
-                foreach (MyFile ToMove in ToMoveList)
+                foreach (Codex ToMove in ToMoveList)
                 {
                     ToMove.Tags.Clear();
                     // Give file new ID and move it to other folder
-                    MyFile GetIDfile = new MyFile(TargetData); //create new file in target data to check the first available ID
+                    Codex GetIDfile = new Codex(TargetData); //create new file in target data to check the first available ID
                     ToMove.ID = GetIDfile.ID;
 
                     //Add file to target dataset
@@ -235,14 +235,14 @@ namespace COMPASS.ViewModels
         public RelayCommand<object> DeleteFileCommand { get; private set; }
         public void DeleteFile(object o = null)
         {
-            List<MyFile> ToDeleteList = new List<MyFile>();
+            List<Codex> ToDeleteList = new List<Codex>();
             if (o == null) ToDeleteList.Add(MVM.CurrentFileViewModel.SelectedFile);
             else
             {
                 IList list = o as IList;
-                ToDeleteList = list.Cast<MyFile>().ToList();
+                ToDeleteList = list.Cast<Codex>().ToList();
             }
-            foreach(MyFile ToDelete in ToDeleteList)
+            foreach(Codex ToDelete in ToDeleteList)
             {
                 MVM.CurrentData.DeleteFile(ToDelete);
                 MVM.FilterHandler.RemoveFile(ToDelete);
