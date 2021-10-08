@@ -2,7 +2,6 @@
 using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using ImageMagick;
-using Squirrel;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -82,7 +81,7 @@ namespace COMPASS.ViewModels
         private bool isOnline;
         public bool IsOnline
         {
-            get { return IsConnectedToInternet(); }
+            get { return pingURL(); }
             private set { SetProperty(ref isOnline, value); }
         }
 
@@ -252,31 +251,30 @@ namespace COMPASS.ViewModels
         }
 
         //check internet connection
-        public bool IsConnectedToInternet()
+        public bool pingURL(string URL = "8.8.8.8")
         { 
             Ping p = new Ping();
             try
             {
-                PingReply reply = p.Send("8.8.8.8", 3000);
+                PingReply reply = p.Send(URL, 3000);
                 if (reply.Status == IPStatus.Success)
                     return true;
             }
             catch { }
             return false;
         }
+
+        //used to Update IsOnline
         private void CheckConnection(object sender, EventArgs e)
         {
-            IsOnline = IsConnectedToInternet();
+            IsOnline = pingURL();
         }
         #endregion
 
 
         private async Task CheckForUpdates()
         {
-            using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/DSPAUL/COMPASS"))
-            {
-              await mgr.Result.UpdateApp();
-            }
+            //TODO
         }
 
 
