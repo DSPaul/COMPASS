@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.Tools
 {
-    public class Enums
+    public static class Enums
     {
         public enum FileView
         {
