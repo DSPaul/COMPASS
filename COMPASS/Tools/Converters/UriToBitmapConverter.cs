@@ -14,12 +14,21 @@ namespace COMPASS.Tools.Converters
         {
             if (File.Exists((string)value))
             {
-                //Parameter true if instant refresh for Edit View, false for mass view
+                //Parameter is true if instant refresh is needed for Edit View, false for mass view
                 bool ignoreCache = (parameter == null)? false: (bool)parameter;
                 BitmapImage bi = new BitmapImage();
                 bi.BeginInit();
-                if(ignoreCache) bi.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-                bi.DecodePixelWidth = 400;
+
+                if (ignoreCache)
+                {
+                    bi.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                }
+                else
+                {
+                    bi.CreateOptions = BitmapCreateOptions.DelayCreation;
+                }
+
+                bi.DecodePixelWidth = 200;
                 bi.CacheOption = BitmapCacheOption.OnLoad;
                 bi.UriSource = new Uri(value.ToString());
                 bi.EndInit();
