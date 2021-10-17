@@ -192,6 +192,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\FilterTag.cs" />
+    <Compile Include="Models\LogEntry.cs" />
     <Compile Include="Models\MyMenuItem.cs" />
     <Compile Include="Models\ObservableObject.cs" />
     <Compile Include="Models\TreeViewNode.cs" />
@@ -204,6 +205,7 @@
     <Compile Include="Tools\BindingProxy.cs" />
     <Compile Include="Tools\Converters\BooltoVisibilityConverter.cs" />
     <Compile Include="Tools\Converters\BooltoWindowStateConverter.cs" />
+    <Compile Include="Tools\Converters\MsgTypetoColorConverter.cs" />
     <Compile Include="Tools\Converters\MultiParamConverter.cs" />
     <Compile Include="Tools\Converters\ViewOptionPropTypetoVisibilityConverter.cs" />
     <Compile Include="Tools\Enums.cs" />

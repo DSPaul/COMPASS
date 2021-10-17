@@ -15,6 +15,7 @@ using iText;
 using iText.Kernel.Pdf;
 using HtmlAgilityPack;
 using System.Globalization;
+using System.Collections.ObjectModel;
 
 namespace COMPASS.ViewModels
 {
@@ -31,7 +32,7 @@ namespace COMPASS.ViewModels
             //Start new threat (so program doesn't freeze while importing)
             BackgroundWorker worker;
 
-            //Call Relevant funcion
+            //Call Relevant function
             switch (mode)
             {
                 case ImportMode.Pdf:
@@ -44,33 +45,40 @@ namespace COMPASS.ViewModels
                     ImportManual();
                     break;
                 case ImportMode.GmBinder:
-                    ImportURL(mode);
+                    worker = new BackgroundWorker { WorkerReportsProgress = true };
+                    worker.DoWork += ImportURL;
+                    worker.ProgressChanged += ProgressChanged;
+                    worker.RunWorkerAsync(mode);
                     break;
                 case ImportMode.Homebrewery:
-                    ImportURL(mode);
+                    worker = new BackgroundWorker { WorkerReportsProgress = true };
+                    worker.DoWork += ImportURL;
+                    worker.ProgressChanged += ProgressChanged;
+                    worker.RunWorkerAsync(mode);
                     break;
             }  
         }
-
 
         #region Properties
         readonly MainViewModel MVM;
 
         private Data _data;
 
-        private float _progress;
-        public float Progress
+        private float _progressPercentage;
+        public float ProgressPercentage
         {
-            get { return _progress; }
-            set { SetProperty(ref _progress, value); }
+            get { return _progressPercentage; }
+            set { SetProperty(ref _progressPercentage, value); }
         }
 
-        private readonly string _importText = "Import in Progress: {0} out of {1}";
+        private readonly string _importText = "Import in Progress: {0} {1} / {2}";
         private int _importcounter;
         private int _importamount;
+        private string _importtype = "";
+
         public string ProgressText
         {
-            get { return string.Format(_importText,_importcounter,_importamount); }
+            get { return string.Format(_importText, _importtype,_importcounter, _importamount); }
         }
 
         private string _previewURL;
@@ -94,12 +102,21 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _importTitle, value); }
         }
 
+        private ObservableCollection<LogEntry> _log = new ObservableCollection<LogEntry>();
+        public ObservableCollection<LogEntry> Log
+        {
+            get { return _log; }
+            set { SetProperty(ref _log, value); }
+        }
+
         #endregion
 
         #region Functions and Events
 
         private void ImportFromPdf(object sender, DoWorkEventArgs e)
         {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 AddExtension = false,
@@ -111,6 +128,7 @@ namespace COMPASS.ViewModels
             if (openFileDialog.ShowDialog() == true)
             {
                 ProgressWindow pgw;
+                _importtype = "File";
 
                 //needed to avoid error "The calling Thread must be STA" when creating progress window
                 Application.Current.Dispatcher.Invoke(() =>
@@ -118,17 +136,21 @@ namespace COMPASS.ViewModels
                         pgw = new ProgressWindow(this);
                         pgw.Show();
                     });
-                int progcounter = 1;
-                foreach (string path in openFileDialog.FileNames)
-                {
-                    //Update Progress Bar
-                    float prog = (float)progcounter / openFileDialog.FileNames.Length  * 100;               
-                    (sender as BackgroundWorker).ReportProgress((int)prog, new Tuple<int, int>(progcounter, openFileDialog.FileNames.Length));
-                    progcounter++;
+                
+                //init progress tracking variables
+                _importcounter = 0;
+                _importamount = openFileDialog.FileNames.Length;
+                LogEntry logEntry = null;
+                worker.ReportProgress(_importcounter);
 
+                foreach (string path in openFileDialog.FileNames)
+                { 
                     //Import File
                     if (_data.AllFiles.All(p => p.Path != path))
                     {
+                        logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Importing {0}", System.IO.Path.GetFileName(path)));
+                        worker.ReportProgress(_importcounter, logEntry);
+
                         PdfDocument pdfdoc = new PdfDocument(new PdfReader(path));
                         var info = pdfdoc.GetDocumentInfo();
                         Codex pdf = new Codex(_data)
@@ -143,6 +165,17 @@ namespace COMPASS.ViewModels
                         CoverArtGenerator.ConvertPDF(pdf, _data.Folder);
                         SelectWhenDone = pdf;
                     }
+
+                    else
+                    {
+                        //if already in collection, skip
+                        logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Skipped {0}, already imported", System.IO.Path.GetFileName(path)));
+                        worker.ReportProgress(_importcounter,logEntry);
+                    }
+
+                    //Update Progress Bar when done
+                    _importcounter++;
+                    worker.ReportProgress(_importcounter);
                 }
             }
             Application.Current.Dispatcher.Invoke(() =>
@@ -160,8 +193,9 @@ namespace COMPASS.ViewModels
             fpw.Topmost = true;
         }
 
-        private void ImportURL(ImportMode mode)
+        private void ImportURL(object sender, DoWorkEventArgs e)
         {
+            ImportMode mode = (ImportMode)e.Argument;
             switch (mode)
             {
                 case ImportMode.GmBinder:
@@ -276,11 +310,13 @@ namespace COMPASS.ViewModels
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            Progress = e.ProgressPercentage;
-            var args = (Tuple<int, int>)e.UserState;
-            _importcounter = args.Item1;
-            _importamount = args.Item2;
-            RaisePropertyChanged("ImportText");
+            //calculate current percentage for progressbar
+            ProgressPercentage = (int)((float)_importcounter /_importamount * 100);
+            //update text
+            RaisePropertyChanged("ProgressText");
+            //write log entry if any
+            LogEntry logEntry = e.UserState as LogEntry;
+            if (logEntry != null) Log.Add(logEntry);
         }
         #endregion
     }
