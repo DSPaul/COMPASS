@@ -3,32 +3,53 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:conv="clr-namespace:COMPASS.Tools.Converters"
         xmlns:local="clr-namespace:COMPASS.Windows" WindowStyle="None"
-        mc:Ignorable="d" Foreground="White"
-        Title="ProgressWindow" Height="80" Width="450" FontSize="20" WindowStartupLocation="CenterScreen">
-    <Window.Background>
-        <SolidColorBrush Color="#242528"/>
-    </Window.Background>
+        mc:Ignorable="d" Foreground="White" AllowsTransparency="True" Background="Transparent"
+        Title="ProgressWindow" Height="150" Width="450" WindowStartupLocation="CenterScreen">
     <Window.Style>
         <Style>
             <Setter Property="WindowChrome.WindowChrome">
                 <Setter.Value>
-                    <WindowChrome CaptionHeight="0"
-                CornerRadius="4"
-                GlassFrameThickness="0"
-                NonClientFrameEdges="None"
-                ResizeBorderThickness="3"/>
+                    <WindowChrome CaptionHeight="0" CornerRadius="5" GlassFrameThickness="0"
+                        NonClientFrameEdges="None" ResizeBorderThickness="4"/>
                 </Setter.Value>
             </Setter>
         </Style>
     </Window.Style>
-    <Grid>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="{Binding ProgresstText, FallbackValue=Import in Progress: x out of y}" FontFamily="Segoe UI Light"/>
-            <ProgressBar x:Name="ProgBar"
-                Minimum="0" Maximum="100" Value="{Binding Progress, FallbackValue=30}" Height="12" Width="400"
-                ValueChanged="ProgressBar_ValueChanged" Foreground="#54babf" Background="LightGray" Margin="0,5"
-                Style="{DynamicResource RoundedProgressBar}"/>
-        </StackPanel>
-    </Grid>
+    <Window.Resources>
+        <conv:MsgTypetoColorConverter x:Key="MsgTypetoColorConverter"/>
+    </Window.Resources>
+    <Border Background="#242528" CornerRadius="5" BorderThickness="0">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="15" Direction="-90"
+                                  RenderingBias="Quality" ShadowDepth="5"/>
+        </Border.Effect>
+        <Grid >
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="{Binding ProgressText, Mode=OneWay, FallbackValue=Import in Progress}" FontSize="20" FontFamily="Segoe UI Light"/>
+                <ProgressBar x:Name="ProgBar"
+                    Minimum="0" Maximum="100" Value="{Binding ProgressPercentage, FallbackValue=30}" Height="12" Width="400"
+                    ValueChanged="ProgressBar_ValueChanged" Foreground="#16D68A" Background="LightGray" Margin="0,5"
+                    Style="{DynamicResource RoundedProgressBar}"/>
+                <Border Height="75" Width="400" Background="#FF171717" CornerRadius="5" BorderBrush="#FF535353" BorderThickness="1" Margin="0,5">
+                    <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{Binding Log, Mode=OneWay}" Margin="10,5">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel IsItemsHost="True"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Msg, FallbackValue=Message}" FontSize="12" 
+                                               Foreground="{Binding Type, Mode=OneWay,Converter={StaticResource MsgTypetoColorConverter}}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </Border>
 </Window>
