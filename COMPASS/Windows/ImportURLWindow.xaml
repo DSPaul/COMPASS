@@ -38,7 +38,7 @@
                 <Button Grid.Column="1" Background="{x:Null}" BorderThickness="0" Click="CloseWindow">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="5" Background="#1d9dd4" Margin="5">
+                            <Border CornerRadius="5" Background="#16D68A" Margin="5">
                                 <TextBlock Text="Import" Foreground="White" Margin="15,5" FontSize="15"/>
                             </Border>
                         </ControlTemplate>
