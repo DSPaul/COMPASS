@@ -35,7 +35,7 @@
                                             Text="{Binding PreviewURL, FallbackValue=https://www.gmbinder.com/share}"/>
                     </Grid>
                 </Border>
-                <Button Grid.Column="1" Background="{x:Null}" BorderThickness="0" Click="CloseWindow">
+                <Button Grid.Column="1" Background="{x:Null}" BorderThickness="0" Command="{Binding SubmitURLCommand}">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
                             <Border CornerRadius="5" Background="#16D68A" Margin="5">
@@ -45,7 +45,7 @@
                     </Button.Template>
                 </Button>
             </Grid>
-            <TextBlock Foreground="Red" Text="Errors will come here" Margin="5"/>
+            <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" Margin="5"/>
         </StackPanel>
     </Grid>
 </Window>
