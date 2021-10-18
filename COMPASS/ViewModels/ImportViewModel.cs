@@ -16,27 +16,29 @@ using iText.Kernel.Pdf;
 using HtmlAgilityPack;
 using System.Globalization;
 using System.Collections.ObjectModel;
+using COMPASS.ViewModels.Commands;
 
 namespace COMPASS.ViewModels
 {
     public class ImportViewModel : ObservableObject
     {
-        public ImportViewModel(MainViewModel vm, ImportMode mode)
+        public ImportViewModel(MainViewModel vm, ImportMode importmode)
         {
             //set data so we know where to import to
             _data = vm.CurrentData;
 
+            mode = importmode;
+            SubmitURLCommand = new BasicCommand(SubmitURL);
+
             //Only needed for Reset method
             MVM = vm;
-
-            //Start new threat (so program doesn't freeze while importing)
-            BackgroundWorker worker;
 
             //Call Relevant function
             switch (mode)
             {
                 case ImportMode.Pdf:
-                    worker= new BackgroundWorker { WorkerReportsProgress = true };
+                    //Start new threat (so program doesn't freeze while importing)
+                    worker = new BackgroundWorker { WorkerReportsProgress = true };
                     worker.DoWork += ImportFromPdf;
                     worker.ProgressChanged += ProgressChanged;
                     worker.RunWorkerAsync();
@@ -45,16 +47,10 @@ namespace COMPASS.ViewModels
                     ImportManual();
                     break;
                 case ImportMode.GmBinder:
-                    worker = new BackgroundWorker { WorkerReportsProgress = true };
-                    worker.DoWork += ImportURL;
-                    worker.ProgressChanged += ProgressChanged;
-                    worker.RunWorkerAsync(mode);
+                    OpenImportURLDialog();
                     break;
                 case ImportMode.Homebrewery:
-                    worker = new BackgroundWorker { WorkerReportsProgress = true };
-                    worker.DoWork += ImportURL;
-                    worker.ProgressChanged += ProgressChanged;
-                    worker.RunWorkerAsync(mode);
+                    OpenImportURLDialog();
                     break;
             }  
         }
@@ -63,6 +59,10 @@ namespace COMPASS.ViewModels
         readonly MainViewModel MVM;
 
         private Data _data;
+
+        private ImportMode mode;
+        private BackgroundWorker worker;
+        private ImportURLWindow iURLw;
 
         private float _progressPercentage;
         public float ProgressPercentage
@@ -78,7 +78,7 @@ namespace COMPASS.ViewModels
 
         public string ProgressText
         {
-            get { return string.Format(_importText, _importtype,_importcounter, _importamount); }
+            get { return string.Format(_importText, _importtype,_importcounter + 1, _importamount); }
         }
 
         private string _previewURL;
@@ -102,6 +102,13 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _importTitle, value); }
         }
 
+        private string _importError = "";
+        public string ImportError
+        {
+            get { return _importError; }
+            set { SetProperty(ref _importError, value); }
+        }
+
         private ObservableCollection<LogEntry> _log = new ObservableCollection<LogEntry>();
         public ObservableCollection<LogEntry> Log
         {
@@ -113,7 +120,7 @@ namespace COMPASS.ViewModels
 
         #region Functions and Events
 
-        private void ImportFromPdf(object sender, DoWorkEventArgs e)
+        public void ImportFromPdf(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
@@ -193,119 +200,147 @@ namespace COMPASS.ViewModels
             fpw.Topmost = true;
         }
 
-        private void ImportURL(object sender, DoWorkEventArgs e)
+        public void OpenImportURLDialog()
         {
-            ImportMode mode = (ImportMode)e.Argument;
             switch (mode)
             {
                 case ImportMode.GmBinder:
-                    ImportTitle = "GM Binder URL:";
+                    ImportTitle = "GM Binder:";
                     PreviewURL = "https://www.gmbinder.com/share/";
                     break;
                 case ImportMode.Homebrewery:
-                    ImportTitle = "Homebrewery URL";
+                    ImportTitle = "Homebrewery";
                     PreviewURL = "https://homebrewery.naturalcrit.com/share/";
                     break;
             }
-            ImportURLWindow popup = new ImportURLWindow(this);
 
-            if(popup.ShowDialog() == true)
+            iURLw = new ImportURLWindow(this);
+            iURLw.Show();
+        }
+
+        public BasicCommand SubmitURLCommand { get; private set; }
+        public void SubmitURL()
+        {
+            if (!InputURL.Contains(PreviewURL))
             {
-                if (!InputURL.Contains(PreviewURL))
-                {
-                    //TODO add error: "is not a valid *source* URL
-                    return;
-                }
-                if (!MVM.pingURL())
-                {
-                    //TODO add error: "You need to be connected to the internet to add online sources
-                }
-                else
-                {
-                    //Webscraper for metadata using HtmlAgilityPack
-                    HtmlWeb web = new HtmlWeb();
-                    HtmlDocument doc = web.Load(InputURL);
-
-                    if (doc.ParsedText == null)
-                    {
-                        //TODO add error "invalid URL"
-                        return;
-                    }
-                    HtmlNode src = doc.DocumentNode;
-
-                    Codex newFile = new Codex(_data)
-                    {
-                        SourceURL = InputURL
-                    };
-
-                    IEnumerable<HtmlNode> pages;
-
-                    switch (mode)
-                    {
-                        case ImportMode.GmBinder:
-                            //Scrape metadata
-                            newFile.Publisher = "GM Binder";
-                            newFile.Title = src.SelectSingleNode("//html/head/title").InnerText.Split('|')[0];
-                            newFile.Author = src.SelectSingleNode("//meta[@property='og:author']").GetAttributeValue("content", String.Empty);
-
-                            //get pagecount
-                            HtmlNode previewDiv = doc.GetElementbyId("preview");
-                            pages = previewDiv.ChildNodes.Where(node => node.Id.Contains("p"));
-                            newFile.PageCount = pages.Count();
-
-                            //Get Cover Art
-                            CoverArtGenerator.GetCoverFromURL(InputURL, newFile, ImportMode.GmBinder);
-
-                            //add file to data
-                            _data.AllFiles.Add(newFile);
-                            RaisePropertyChanged("_data.AllFiles");
-                            break;
-
-                        case ImportMode.Homebrewery:
-                            //Scrape metadata
-                            newFile.Publisher = "Homebrewery";
-
-                            //Select script tag with all metadata
-                            HtmlNode script = src.SelectSingleNode("/html/body/script[2]");
-                            List<string> BrewInfo = script.InnerText.Split(',').Skip(2).ToList();
-
-                            //Cut of end starting from text(bin)
-                            int lastIndex = BrewInfo.FindIndex(text => text.Contains("\"text"));
-                            BrewInfo = BrewInfo.GetRange(0, lastIndex);
-                            //cut of "brew":{ from start
-                            BrewInfo[0] = BrewInfo[0].Substring(8);
-
-                            //make temp dictionary out of list, chars like " [ ]  still need to be removed
-                            Dictionary<string, string> tempBrewInfoDict = BrewInfo.Select(item => item.Split(':')).ToDictionary(s => s[0], s => s[1]);
-                            //make clean dict to use
-                            Dictionary<string, string> BrewInfoDict = new Dictionary<string, string>();
-                            foreach(KeyValuePair<string,string> info in tempBrewInfoDict)
-                            {
-                                var newkey = info.Key.Trim('"');
-                                var newval = info.Value.Trim(new Char[] { '"', '[', ']' });
-                                BrewInfoDict.Add(newkey, newval);
-                            }
-                            if (BrewInfoDict.ContainsKey("title"))      newFile.Title = BrewInfoDict["title"];
-                            if (BrewInfoDict.ContainsKey("authors"))    newFile.Author = BrewInfoDict["authors"];
-                            if (BrewInfoDict.ContainsKey("description")) newFile.Description = BrewInfoDict["description"];
-                            if (BrewInfoDict.ContainsKey("version"))    newFile.Version = BrewInfoDict["version"];
-
-                            if (BrewInfoDict.ContainsKey("createdAt"))  newFile.ReleaseDate = DateTime.Parse(BrewInfoDict["createdAt"].Split('T')[0], CultureInfo.InvariantCulture);                            
-
-                            //get pagecount
-                            HtmlNode pageInfo = src.SelectSingleNode("//div[@class='pageInfo']");
-                            newFile.PageCount = int.Parse(pageInfo.InnerText.Split('/')[1]);
-
-                            //Get Cover Art
-                            CoverArtGenerator.GetCoverFromURL(InputURL, newFile, ImportMode.Homebrewery);
-
-                            //add file to data
-                            _data.AllFiles.Add(newFile);
-                            RaisePropertyChanged("_data.AllFiles");
-                            break;
-                    }                    
-                }
+                ImportError = String.Format("{0} is not a valid URL for {1}", InputURL, ImportTitle);
+                return;
             }
+            if (!MVM.pingURL())
+            {
+                ImportError = String.Format("You need to be connected to the internet to import on online source.");
+                return;
+            }
+            iURLw.Close();
+            worker = new BackgroundWorker { WorkerReportsProgress = true };
+            worker.DoWork += ImportURL;
+            worker.ProgressChanged += ProgressChanged;
+            worker.RunWorkerAsync();
+        }
+
+        private void ImportURL(object sender, DoWorkEventArgs e)
+        {
+            ProgressWindow pgw;
+            _importtype = "Step";
+            _importcounter = 0;
+            //3 steps: 1. connect to site, 2. get metadata, 3. get Cover
+            _importamount = 3; 
+
+            //needed to avoid error "The calling Thread must be STA" when creating progress window
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                pgw = new ProgressWindow(this);
+                pgw.Show();
+            });
+
+            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info,String.Format("Connecting to {0}", ImportTitle)));
+
+            //Webscraper for metadata using HtmlAgilityPack
+            HtmlWeb web = new HtmlWeb();
+            HtmlDocument doc = web.Load(InputURL);
+
+            if (doc.ParsedText == null)
+            {
+                worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Error, String.Format("{0} could not be reached", ImportTitle)));
+                return;
+            }
+            HtmlNode src = doc.DocumentNode;
+
+            Codex newFile = new Codex(_data)
+            {
+                SourceURL = InputURL
+            };
+
+            //loading complete
+            _importcounter++;
+            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, "File loaded, scraping metadata"));
+
+            //Start scraping metadata, website specific
+            switch (mode)
+            {
+                case ImportMode.GmBinder:
+                    //Scrape metadata
+                    newFile.Publisher = "GM Binder";
+                    newFile.Title = src.SelectSingleNode("//html/head/title").InnerText.Split('|')[0];
+                    newFile.Author = src.SelectSingleNode("//meta[@property='og:author']").GetAttributeValue("content", String.Empty);
+
+                    //get pagecount
+                    HtmlNode previewDiv = doc.GetElementbyId("preview");
+                    IEnumerable<HtmlNode> pages = previewDiv.ChildNodes.Where(node => node.Id.Contains("p"));
+                    newFile.PageCount = pages.Count();
+                    break;
+
+                case ImportMode.Homebrewery:
+                    //Scrape metadata
+                    newFile.Publisher = "Homebrewery";
+
+                    //Select script tag with all metadata
+                    HtmlNode script = src.SelectSingleNode("/html/body/script[2]");
+                    List<string> BrewInfo = script.InnerText.Split(',').Skip(2).ToList();
+
+                    //Cut of end starting from text(bin)
+                    int lastIndex = BrewInfo.FindIndex(text => text.Contains("\"text"));
+                    BrewInfo = BrewInfo.GetRange(0, lastIndex);
+                    //cut of "brew":{ from start
+                    BrewInfo[0] = BrewInfo[0].Substring(8);
+
+                    //make temp dictionary out of list, chars like " [ ]  still need to be removed
+                    Dictionary<string, string> tempBrewInfoDict = BrewInfo.Select(item => item.Split(':')).ToDictionary(s => s[0], s => s[1]);
+                    //make clean dict to use
+                    Dictionary<string, string> BrewInfoDict = new Dictionary<string, string>();
+                    foreach(KeyValuePair<string,string> info in tempBrewInfoDict)
+                    {
+                        var newkey = info.Key.Trim('"');
+                        var newval = info.Value.Trim(new Char[] { '"', '[', ']' });
+                        BrewInfoDict.Add(newkey, newval);
+                    }
+                    if (BrewInfoDict.ContainsKey("title"))      newFile.Title = BrewInfoDict["title"];
+                    if (BrewInfoDict.ContainsKey("authors"))    newFile.Author = BrewInfoDict["authors"];
+                    if (BrewInfoDict.ContainsKey("description")) newFile.Description = BrewInfoDict["description"];
+                    if (BrewInfoDict.ContainsKey("version"))    newFile.Version = BrewInfoDict["version"];
+
+                    if (BrewInfoDict.ContainsKey("createdAt"))  newFile.ReleaseDate = DateTime.Parse(BrewInfoDict["createdAt"].Split('T')[0], CultureInfo.InvariantCulture);                            
+
+                    //get pagecount
+                    HtmlNode pageInfo = src.SelectSingleNode("//div[@class='pageInfo']");
+                    newFile.PageCount = int.Parse(pageInfo.InnerText.Split('/')[1]);
+                    break;
+            }
+
+            //Scraping complete
+            _importcounter++;
+            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, "Metadata loaded. Generating cover art."));
+
+            //Get Cover Art
+            CoverArtGenerator.GetCoverFromURL(InputURL, newFile, mode);
+
+            //add file to data
+            _data.AllFiles.Add(newFile);
+            RaisePropertyChanged("_data.ActiveFiles");
+
+            //import done
+            _importcounter++;
+            worker.ReportProgress(_importcounter);
         }
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
