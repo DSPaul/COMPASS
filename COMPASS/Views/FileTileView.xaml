@@ -62,7 +62,7 @@
                                 Width="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=2}}" 
                                 Height="{Binding DataContext.TileHeight, RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=2}}">
                             <Border.Background>
-                                <ImageBrush ImageSource="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay}"/>
+                                <ImageBrush ImageSource="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Icons\\CoverPlaceholder.png}"/>
                             </Border.Background>
                             <Border.Effect>
                                 <DropShadowEffect BlurRadius="15" Direction="300"/>

@@ -88,7 +88,8 @@
 
         <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="30" x:Name="CoverIm" Margin="10,0" Width="300">
             <Image.Source>
-                <Binding Path="TempFile.CoverArt" Converter="{StaticResource UriToBitmapConverter}" FallbackValue="{x:Null}" >
+                <Binding Path="TempFile.CoverArt" Converter="{StaticResource UriToBitmapConverter}" 
+                         TargetNullValue="Icons\CoverPlaceholder.png">
                     <Binding.ConverterParameter>
                         <sys:Boolean>true</sys:Boolean>
                     </Binding.ConverterParameter>
