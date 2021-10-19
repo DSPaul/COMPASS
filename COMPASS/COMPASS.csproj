@@ -367,7 +367,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\IconDesign.ico" />
+    <Content Include="Icons\CoverPlaceholder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -375,18 +377,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\IconDesignThinBorder.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\gmbinder.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\gmbinderfull.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="JadeCompass.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="faviconv4.ico" />
