@@ -13,7 +13,7 @@
         xmlns:CustomControls ="clr-namespace:COMPASS.Resources.Controls"
         mc:Ignorable="d"
         Title="COMPASS" Height="540" Width="1156.8" FontSize="20"
-        Foreground="White" Icon="/Icons/IconDesign.ico"
+        Foreground="White"
         Closing="Window_Closing" WindowState="Maximized" WindowStyle="None" 
         WindowStartupLocation="CenterScreen" MouseDown="Window_MouseDown">
     <Window.Resources>
@@ -196,214 +196,10 @@
                     <!--#endregion-->
             </Grid.Resources>
 
-            <StackPanel Orientation="Horizontal" Margin="10,0">
-                <!--<Image Source="/Icons/Compass_new.png" Width="35" SnapsToDevicePixels="True"/>
-                <TextBlock Text="COMPASS" VerticalAlignment="Center" Margin="10,0"/>-->
-                <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
-                        <Canvas Name="svg2047" Width="150" Height="20">
-                            <Canvas.RenderTransform>
-                                <TranslateTransform X="0" Y="0"/>
-                            </Canvas.RenderTransform>
-                            <Canvas.Resources/>
-                            <!--Unknown tag: sodipodi:namedview-->
-                            <!--Unknown tag: metadata-->
-                            <Canvas Name="layer1">
-                                <Canvas.Resources>
-                                    <Style TargetType="Path">
-                                        <Setter Property="Fill" Value="#16d68a"/>
-                                    </Style>
-                                </Canvas.Resources>
-                                <Canvas.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleX="1.6" ScaleY="1.6"/>
-                                        <SkewTransform/>
-                                        <RotateTransform/>
-                                        <TranslateTransform Y="-57" X="-11"/>
-                                    </TransformGroup>
-                                </Canvas.RenderTransform>
-                                <Canvas Name="g11849">
-                                    <Canvas.RenderTransform>
-                                        <MatrixTransform Matrix="0.02889583 0 0 0.02889583 102.0507 53.769351"/>
-                                    </Canvas.RenderTransform>
-                                    <Canvas Name="g11725">
-                                        <Canvas.RenderTransform>
-                                            <TranslateTransform X="-2268.7721" Y="-744.10479"/>
-                                        </Canvas.RenderTransform>
-                                        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path11706" StrokeThickness="0.264583">
-                                            <Path.Data>
-                                                <PathGeometry Figures="M -113.13391 69.054348 -319.99829 188.48737 V 427.35393 L -113.13391 546.78746 93.730464 427.35393 V 188.48737 Z m 0 28.725897 L 68.852914 202.85032 V 412.99098 L -113.13391 518.06104 -295.12074 412.99098 V 202.85032 Z" FillRule="NonZero"/>
-                                            </Path.Data>
-                                        </Path>
-                                    </Canvas>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path11748"  StrokeThickness="0.226676" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
-                                        <Path.Data>
-                                            <PathGeometry Figures="m -2381.906 -613.27208 41.0585 139.25532 -41.0585 37.81175 z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="use11762"  StrokeThickness="0.226676" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
-                                        <Path.Data>
-                                            <PathGeometry Figures="m -2558.9731 -419.8584 139.2553 -41.0585 37.8118 41.0585 z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="use11783"  StrokeThickness="0.226676" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
-                                        <Path.Data>
-                                            <PathGeometry Figures="m -2204.8389 -452.55159 -139.2553 41.0585 -37.8118 -41.0585 z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="use11801"  StrokeThickness="0.226676" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
-                                        <Path.Data>
-                                            <PathGeometry Figures="m -2365.5594 -259.13795 -41.0585 -139.25532 41.0585 -37.81176 z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path11824"  StrokeThickness="0.264583">
-                                        <Path.Data>
-                                            <PathGeometry Figures="m -2381.9058 -566.61145 v 13.98519 a 116.44239 116.44239 0 0 1 114.9909 98.11857 l 14.6829 4.32945 a 130.42751 130.42751 0 0 0 -129.6738 -116.43321 z m -13.9795 0.75138 a 130.42751 130.42751 0 0 0 -116.4482 129.65514 h 13.9852 a 116.44239 116.44239 0 0 1 98.1341 -114.97284 z m 130.4215 129.65514 a 116.44239 116.44239 0 0 1 0 0.0212 116.44239 116.44239 0 0 1 -98.1469 114.99608 l -4.3285 14.68075 a 130.42751 130.42751 0 0 0 116.4606 -129.67683 130.42751 130.42751 0 0 0 0 -0.0212 z m -246.1209 13.97226 a 130.42751 130.42751 0 0 0 129.6784 116.47609 130.42751 130.42751 0 0 0 5e-4 0 v -13.98468 a 116.44239 116.44239 0 0 1 -5e-4 0 116.44239 116.44239 0 0 1 -114.9976 -98.16301 z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                                <Canvas Name="g11886">
-                                    <Canvas.RenderTransform>
-                                        <MatrixTransform Matrix="0.02889583 0 0 0.02889583 22.528175 32.269387"/>
-                                    </Canvas.RenderTransform>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path11865"  StrokeThickness="0.264583">
-                                        <Path.Data>
-                                            <PathGeometry Figures="M 68.852914 412.99098 -113.13391 518.06104 -295.12074 412.99098 V 202.85032 L -113.13391 97.780245 68.852914 202.85032 93.730464 188.48737 -113.13391 69.054348 -319.99829 188.48737 V 427.35393 L -113.13391 546.78746 93.730464 427.35393" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                                <Canvas Name="g11960">
-                                    <Canvas.RenderTransform>
-                                        <MatrixTransform Matrix="0.02889583 0 0 0.02889583 64.421591 32.269387"/>
-                                    </Canvas.RenderTransform>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path11946"  StrokeThickness="0.264583">
-                                        <Path.Data>
-                                            <PathGeometry Figures="M -113.13391 69.054348 -319.99829 188.48737 V 427.35393 L -113.13391 546.78746 93.730464 427.35393 V 188.48737 Z m 0 28.725897 L 68.852914 202.85032 V 412.99098 L -113.13391 518.06104 -295.12074 412.99098 V 202.85032 Z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                                <Canvas Name="g12000">
-                                    <Canvas.RenderTransform>
-                                        <MatrixTransform Matrix="-0.02883515 0 0 -0.02889852 71.867283 50.084373"/>
-                                    </Canvas.RenderTransform>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path11984"  StrokeThickness="0.264583">
-                                        <Path.Data>
-                                            <PathGeometry Figures="M -319.99829 188.48737 V 427.35393 L -113.13391 546.78746 93.730464 427.35393 V 188.48737 l -24.87755 14.36295 V 412.99098 L -113.13391 518.06104 -295.12074 412.99098 V 202.85032 Z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12068"  StrokeThickness="0.00906408" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
-                                    <Path.Data>
-                                        <PathGeometry Figures="m 42.091456 46.036959 -0.718867 0.390856 v -9.701716 l 0.718867 0.389494 z" FillRule="NonZero"/>
-                                    </Path.Data>
-                                </Path>
-                                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12086"  StrokeThickness="0.00764532" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
-                                    <Path.Data>
-                                        <PathGeometry Figures="m 55.898144 44.709326 -0.718866 -0.415027 v 6.902243 l 0.718866 -0.415027 z" FillRule="NonZero"/>
-                                    </Path.Data>
-                                </Path>
-                                <Canvas Name="g12128">
-                                    <Canvas.RenderTransform>
-                                        <MatrixTransform Matrix="0.02924077 0 0 -0.02924077 78.348384 49.63716"/>
-                                    </Canvas.RenderTransform>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12108"  StrokeThickness="0.264583">
-                                        <Path.Data>
-                                            <PathGeometry Figures="M -313.95067 78.10393 -113.13391 187.71008 93.730464 78.96733 93.97625 53.37906 -113.13391 158.98366 -314.01955 53.913599 Z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12149"  StrokeThickness="0.00629184" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
-                                    <Path.Data>
-                                        <PathGeometry Figures="m 69.883218 43.067839 -0.718867 -0.28109 v 4.674716 l 0.718867 -0.281091 z" FillRule="NonZero"/>
-                                    </Path.Data>
-                                </Path>
-                                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12165"  StrokeThickness="0.00605172" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
-                                    <Path.Data>
-                                        <PathGeometry Figures="m 80.375622 43.475241 0.718853 -0.260039 v 4.324673 l -0.718853 -0.260039 z" FillRule="NonZero"/>
-                                    </Path.Data>
-                                </Path>
-                                <Canvas Name="g12224">
-                                    <Canvas.RenderTransform>
-                                        <MatrixTransform Matrix="0.02889583 0 0 0.02889583 50.444462 32.754105"/>
-                                    </Canvas.RenderTransform>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12206"  StrokeThickness="0.264583">
-                                        <Path.Data>
-                                            <PathGeometry Figures="M -313.95067 78.10393 -113.13391 187.71008 93.730464 78.96733 93.97625 53.37906 -113.13391 158.98366 -314.01955 53.913599 Z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12241"  StrokeThickness="0.00906408" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
-                                    <Path.Data>
-                                        <PathGeometry Figures="m 52.434021 37.11696 0.718867 -0.390861 v 9.701716 l -0.718867 -0.389494 z" FillRule="NonZero"/>
-                                    </Path.Data>
-                                </Path>
-                                <Canvas Name="g12409">
-                                    <Canvas.RenderTransform>
-                                        <MatrixTransform Matrix="0.02924077 0 0 -0.02887599 91.915205 39.688833"/>
-                                    </Canvas.RenderTransform>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12388"  StrokeThickness="0.264583">
-                                        <Path.Data>
-                                            <PathGeometry Figures="M -313.95067 78.10393 -113.13391 187.71008 93.730464 78.96733 93.97625 53.37906 -113.13391 158.98366 -314.01955 53.913599 Z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                                <Canvas Name="g12446">
-                                    <Canvas.RenderTransform>
-                                        <MatrixTransform Matrix="0.02889583 0 0 0.02853534 92.034272 42.637039"/>
-                                    </Canvas.RenderTransform>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12425"  StrokeThickness="0.264583">
-                                        <Path.Data>
-                                            <PathGeometry Figures="M -313.95067 78.10393 -113.13391 187.71008 93.730464 78.96733 93.97625 53.37906 -113.13391 158.98366 -314.01955 53.913599 Z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                                <Canvas Name="g12483">
-                                    <Canvas.RenderTransform>
-                                        <MatrixTransform Matrix="0.02889583 0 0 0.02853534 91.815842 39.65824"/>
-                                    </Canvas.RenderTransform>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12463"  StrokeThickness="0.264583">
-                                        <Path.Data>
-                                            <PathGeometry Figures="M -314.32942 -53.485109 99.151817 183.35709 99.397607 157.76882 -314.25972 -77.964219 Z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                                <Canvas Name="g12529">
-                                    <Canvas.RenderTransform>
-                                        <MatrixTransform Matrix="0.02924077 0 0 -0.02887599 105.28365 39.688833"/>
-                                    </Canvas.RenderTransform>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12507"  StrokeThickness="0.264583">
-                                        <Path.Data>
-                                            <PathGeometry Figures="M -313.95067 78.10393 -113.13391 187.71008 93.730464 78.96733 93.97625 53.37906 -113.13391 158.98366 -314.01955 53.913599 Z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                                <Canvas Name="g12576">
-                                    <Canvas.RenderTransform>
-                                        <MatrixTransform Matrix="0.02889583 0 0 0.02889583 105.40273 42.742754"/>
-                                    </Canvas.RenderTransform>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12558"  StrokeThickness="0.262927">
-                                        <Path.Data>
-                                            <PathGeometry Figures="M -313.95067 73.470995 -113.13391 181.70979 93.730464 74.323624 93.97625 49.054572 -113.13391 153.34174 -314.01955 49.582442 Z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                                <Canvas Name="g12611">
-                                    <Canvas.RenderTransform>
-                                        <MatrixTransform Matrix="0.02889583 0 0 0.02853534 105.18428 39.65824"/>
-                                    </Canvas.RenderTransform>
-                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path12599"  StrokeThickness="0.264583">
-                                        <Path.Data>
-                                            <PathGeometry Figures="M -314.32942 -53.485109 99.151817 183.35709 99.397607 157.76882 -314.25972 -77.964219 Z" FillRule="NonZero"/>
-                                        </Path.Data>
-                                    </Path>
-                                </Canvas>
-                            </Canvas>
-                        </Canvas>
-                    </Viewbox>
-
-            </StackPanel>
+            <ContentControl Content="{StaticResource CompassLogo}" Margin="10,0"/>
 
             <Border Grid.Column="1" CornerRadius="4" MinWidth="300"
-                        Background="Gray" OpacityMask="#FF222222" Margin="30,5">
+                    Background="Gray" OpacityMask="#FF222222" Margin="30,5">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width ="*"/>
@@ -745,77 +541,40 @@
                             Style="{StaticResource outerIconBtn}" Content="Import"/>
                 </CustomControls:ExpandingButton.Toggle>
                 <CustomControls:ExpandingButton.HiddenContent>
-                        <StackPanel Margin="-0">
-                            <Button Tools:AP.IconKind="FilePdfOutline" Style="{StaticResource innerIconBtn}" Content="From PDF"
-                                Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Pdf}"/>
-                            <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource innerIconBtn}" Content="Manual"
-                                Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Manual}"/>
-                            <Button Style="{StaticResource GrayBtn}"
-                                Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Homebrewery}">
-                                <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
-                                    BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Canvas Height="30" Width="55">
-                                            <Canvas.RenderTransform>
-                                                <TransformGroup>
-                                                    <ScaleTransform ScaleX="0.20" ScaleY="0.20"/>
-                                                    <TranslateTransform X="25" Y="5"/>
-                                                </TransformGroup>
-                                            </Canvas.RenderTransform>
-                                            <Canvas.Resources/>
-                                            <Canvas>
-                                                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="White">
-                                                    <Path.Data>
-                                                        <PathGeometry Figures="M25.363 25.54c0 1.906 8.793 3.454 19.636 3.454c10.848 0 19.638-1.547 19.638-3.454c0-1.12-3.056-2.117-7.774-2.75  c-1.418 1.891-3.659 3.133-6.208 3.133c-2.85 0-5.315-1.547-6.67-3.833C33.617 22.185 25.363 23.692 25.363 25.54z" FillRule="NonZero"/>
-                                                    </Path.Data>
-                                                </Path>
-                                                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="White">
-                                                    <Path.Data>
-                                                        <PathGeometry Figures="M84.075 54.142c0-8.68-2.868-17.005-8.144-23.829c1.106-1.399 1.41-2.771 1.41-3.854c0-6.574-10.245-9.358-19.264-10.533  c0.209 0.706 0.359 1.439 0.359 2.215c0 0.09-0.022 0.17-0.028 0.26l0 0c-0.028 0.853-0.195 1.667-0.479 2.429  c9.106 1.282 14.508 3.754 14.508 5.63c0 2.644-10.688 6.486-27.439 6.486c-16.748 0-27.438-3.842-27.438-6.486  c0-2.542 9.904-6.183 25.559-6.459c-0.098-0.396-0.159-0.807-0.2-1.223c0.006 0 0.013 0 0.017 0  c-0.017-0.213-0.063-0.417-0.063-0.636c0-1.084 0.226-2.119 0.628-3.058c-6.788 0.129-30.846 1.299-30.846 11.376  c0 1.083 0.305 2.455 1.411 3.854c-5.276 6.823-8.145 15.149-8.145 23.829c0 11.548 5.187 20.107 14.693 25.115  c-0.902 3.146-1.391 7.056 1.111 8.181c2.626 1.178 5.364-2.139 7.111-5.005c4.73 1.261 10.13 1.923 16.161 1.923  c6.034 0 11.428-0.661 16.158-1.922c1.75 2.865 4.493 6.18 7.112 5.004c2.504-1.123 2.014-5.035 1.113-8.179  C78.889 74.249 84.075 65.689 84.075 54.142z M70.39 31.392c5.43 6.046 8.78 14 8.78 22.75c0 20.919-18.582 25.309-34.171 25.309  c-15.587 0-34.17-4.39-34.17-25.309c0-8.75 3.35-16.7 8.781-22.753c5.561 2.643 15.502 4.009 25.389 4.009  C54.886 35.397 64.829 34.031 70.39 31.392z" FillRule="NonZero"/>
-                                                    </Path.Data>
-                                                </Path>
-                                                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="White">
-                                                    <Path.Data>
-                                                        <PathGeometry Figures="M50.654 23.374c2.892 0 5.234-2.341 5.234-5.233c0-2.887-2.343-5.23-5.234-5.23c-2.887 0-5.231 2.343-5.231 5.23  C45.423 21.032 47.768 23.374 50.654 23.374z" FillRule="NonZero"/>
-                                                    </Path.Data>
-                                                </Path>
-                                                <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="59.3" Canvas.Top="6.5" Width="7.2" Height="7.2"  Fill="White"/>
-                                                <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="49.9" Canvas.Top="2.3" Width="5.5" Height="5.5"  Fill="White"/>
-                                            </Canvas>
-                                        </Canvas>
+                    <StackPanel Margin="-0">
+                        <Button Tools:AP.IconKind="FilePdfOutline" Style="{StaticResource innerIconBtn}" Content="From PDF"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Pdf}"/>
+                        <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource innerIconBtn}" Content="Manual"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Manual}"/>
+                        <Button Style="{StaticResource GrayBtn}"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Homebrewery}">
+                            <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
+                                BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal">
+                                        <ContentControl Content="{StaticResource HomebreweryLogo}"/>
                                         <TextBlock Text="Homebrewery"/>
-                                    </StackPanel>
-                                </Border>
-                            </Button>
-                            <Button Style="{StaticResource GrayBtn}"
-                                Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.GmBinder}">
-                                <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
-                                    BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
-                                    <Canvas Height="30">
-                                        <Canvas.RenderTransform>
-                                            <TransformGroup>
-                                                <ScaleTransform ScaleX="0.35" ScaleY="0.35"/>
-                                                <TranslateTransform X="24" Y="-30"/>
-                                            </TransformGroup>
-                                        </Canvas.RenderTransform>
-                                        <Canvas.Resources/>
-                                        <Canvas>
-                                            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  StrokeThickness="0" Fill="White">
-                                                <Path.Data>
-                                                    <PathGeometry Figures="m -17.29627 146.69 0.0016 -4.29948 5.521174 -9.26041 c 7.5393691 -12.64543 10.1039751 -16.88619 10.4004661 -17.19792 0.330751 -0.34775 -2.758996 5.61253 -8.523652 16.44256 l -4.6679461 8.76965 2.932838 0.40906 c 3.1421961 0.43826 8.7889701 1.16073 10.73804707 1.37387 0.654843 0.0716 2.38125003 0.30061 3.83645803 0.50888 1.455209 0.20827 4.491303 0.62778 6.746876 0.93223 8.1532179 1.10049 16.3169769 2.23181 19.0155389 2.63512 1.251479 0.18704 6.845867 -0.3416 9.559462 -0.90332 0.627283 -0.12985 4.376098 -0.64219 8.731251 -1.19327 1.091406 -0.1381 3.234538 -0.43158 4.762508 -0.65216 2.72508 -0.39341 7.85137 -1.07499 14.15521 -1.88204 5.68959 -0.72841 9.12812 -1.22838 9.12812 -1.32725 0 -0.10253 -0.72328 -1.46803 -3.84227 -7.25396 -3.61764 -6.71094 -9.39207 -17.8101 -9.30905 -17.89313 0.0456 -0.0456 0.80572 1.13399 1.68918 2.62127 0.88346 1.48729 3.42413 5.74025 5.64595 9.45103 2.22182 3.71078 5.09423 8.51597 6.38314 10.6782 l 2.34347 3.93132 v 4.20461 4.20462 H 30.327106 -17.297897 l 0.0016 -4.29948 z m 43.919209 -5.12837 c -0.363802 -0.0525 -2.14974 -0.28281 -3.96875 -0.51191 -3.963861 -0.49923 -10.156117 -1.29916 -14.1552089 -1.8286 -1.60073 -0.21192 -4.874949 -0.63864 -7.276043 -0.94827 -2.401093 -0.30962 -5.169297 -0.68143 -6.151562 -0.82623 -1.711098 -0.25225 -2.108978 -0.54714 -1.558012 -1.15474 0.125359 -0.13825 2.590897 -4.92456 5.478973 -10.63625 l 5.251048 -10.3849 H 16.226912 28.210439 v 2.24896 2.24896 h -9.092674 -9.092674 l -0.5864539 1.65364 c -0.731171 2.06172 -2.268519 6.22474 -2.985889 8.08558 -0.314868 0.81676 -0.442966 1.50081 -0.306007 1.6341 0.129564 0.12609 1.485728 0.30269 3.013697 0.39244 1.5279689 0.0897 4.3746999 0.33751 6.3260689 0.55059 1.951371 0.21308 3.597267 0.33809 3.65755 0.27781 0.202411 -0.20242 0.706104 -3.58014 0.556223 -3.73002 -0.174551 -0.17455 -2.521408 -0.3487 -5.083554 -0.37722 l -1.819754 -0.0203 0.178906 -1.12448 c 0.0984 -0.61846 0.365022 -1.76618 0.592497 -2.55049 l 0.413597 -1.42601 3.476213 0.16581 c 1.911916 0.0912 5.113322 0.2442 7.114233 0.34002 l 3.638021 0.1742 v 8.95735 c 0 9.88132 0.151818 9.0407 -1.5875 8.78992 z m 5.291667 -13.02755 v -13.26335 l 4.29948 0.0173 4.299479 0.0172 3.161348 3.45205 3.161347 3.45205 1.732349 -3.47634 1.732352 -3.47633 3.54959 0.0732 3.5496 0.0732 0.72679 1.85209 c 0.39973 1.01864 1.5244 3.93567 2.49925 6.48229 2.35634 6.15547 3.45361 8.99112 4.39475 11.35724 0.42977 1.0805 0.72087 2.1223 0.64688 2.31511 -0.0826 0.21526 -0.57175 0.35096 -1.26731 0.35157 -0.62303 5.3e-4 -2.20434 0.17707 -3.51403 0.39226 -3.7001 0.60794 -3.7659 0.59633 -4.10408 -0.72399 -0.46095 -1.79963 -1.32318 -4.86166 -2.28181 -8.10332 -0.48958 -1.65555 -0.89015 -3.25694 -0.89015 -3.55865 0 -0.35533 -0.0906 -0.45793 -0.25728 -0.29128 -0.19913 0.19914 -2.7134 6.29034 -3.78514 9.1701 -0.19233 0.51679 -0.67355 0.0375 -5.455826 -5.4341 -1.501749 -1.71821 -2.78896 -3.06552 -2.860466 -2.99401 -0.120272 0.12027 0.03744 1.55084 1.149897 10.43033 0.224216 1.78969 0.34135 3.4268 0.260295 3.63802 -0.09274 0.24169 -0.518242 0.38445 -1.147866 0.38511 -0.55027 5.3e-4 -2.072053 0.17193 -3.38174 0.38077 -1.309688 0.20883 -3.244454 0.46186 -4.29948 0.56229 l -1.918229 0.18259 z" FillRule="NonZero"/>
-                                                </Path.Data>
-                                            </Path>
-                                            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  StrokeThickness="0" Fill="White">
-                                                <Path.Data>
-                                                    <PathGeometry Figures="m 94.842329 151.39709 c -0.19761 -0.19759 -0.35931 -8.2297 -0.35931 -17.84904 v -17.48974 l 10.651931 0.20966 c 9.978 0.19638 10.7788 0.28804 12.65703 1.44886 5.45216 3.36961 6.34484 9.50898 1.98559 13.65582 -2.01806 1.91976 -2.05111 2.0068 -0.89441 2.35608 1.72607 0.52119 4.1776 2.9241 5.04026 4.94026 1.0304 2.40819 0.92722 4.68288 -0.32366 7.13479 -2.35322 4.61271 -6.65054 5.90513 -19.72963 5.93368 -4.767661 0.0102 -8.830171 -0.14279 -9.027801 -0.34037 z m 20.488301 -7.50908 c 2.08424 -1.55141 2.2799 -3.87915 0.46905 -5.58036 -1.27841 -1.20099 -1.79848 -1.29078 -7.70573 -1.33046 l -6.3348 -0.0426 -0.16247 3.44654 c -0.24521 5.20122 -0.46879 5.03082 6.32445 4.82044 4.96197 -0.15359 6.12914 -0.36059 7.40951 -1.31363 z m -1.46175 -14.48345 c 0.84268 -0.76263 1.10467 -1.54668 0.98651 -2.95235 -0.23497 -2.7952 -2.51884 -3.79843 -8.64971 -3.79951 l -4.71601 -8.4e-4 v 4.10342 4.10344 l 5.6159 -0.2079 c 4.5981 -0.1703 5.82386 -0.39606 6.76331 -1.24626 z m 15.64739 4.56574 v -17.78611 h 3.50332 3.50331 v 17.78611 17.78611 h -3.50331 -3.50332 z m 14.01331 -0.0246 v -17.81075 l 3.59657 0.1593 3.59658 0.1593 7.94375 10.4941 c 4.36905 5.77178 8.2077 10.5821 8.53031 10.68964 0.4098 0.13668 0.58657 -3.06663 0.58657 -10.62886 v -10.82436 h 3.50332 3.50333 v 17.78611 17.78612 h -2.92586 c -1.75784 0 -3.21016 -0.29253 -3.63807 -0.73276 -0.39171 -0.40301 -4.35027 -5.52225 -8.7968 -11.3761 l -8.08459 -10.64336 -0.14545 11.37611 -0.14545 11.37611 h -3.76209 -3.76208 v -17.81075 z m 38.08742 17.45142 c -0.1976 -0.19759 -0.35932 -8.23147 -0.35932 -17.85297 v -17.49367 l 9.56679 0.23976 c 9.13497 0.22893 9.70999 0.30829 12.74014 1.75807 4.00642 1.91686 7.06525 4.95858 8.80245 8.75312 1.2033 2.62834 1.32856 3.48637 1.11312 7.62536 -0.48555 9.32894 -5.49997 15.04325 -14.69179 16.74246 -3.44907 0.63758 -16.58732 0.81193 -17.17139 0.22787 z m 18.90572 -8.02695 c 2.2589 -1.12566 3.02245 -1.88921 4.14812 -4.14813 1.86432 -3.74117 1.83112 -6.95924 -0.11021 -10.67519 -2.15212 -4.11962 -4.68934 -5.35599 -10.9914 -5.35599 h -4.76598 v 10.77947 10.77945 h 4.47545 c 3.72127 0 4.94196 -0.23248 7.24397 -1.37961 z m 18.28343 8.02695 c -0.1976 -0.19759 -0.35932 -8.20138 -0.35932 -17.78611 v -17.4268 h 13.47432 13.47433 v 3.50331 3.50333 h -9.70151 -9.70152 v 3.50332 3.50332 h 8.35409 8.35407 v 3.50334 3.50332 h -8.35407 -8.35409 v 3.77281 3.77281 h 9.70152 9.70151 v 3.50334 3.50331 h -13.11501 c -7.21324 0 -13.27671 -0.16174 -13.47432 -0.35931 z m 31.97907 -17.49068 v -17.84999 l 10.37522 0.22946 c 8.65131 0.19127 10.68868 0.39152 12.26164 1.20485 4.52996 2.34234 6.11615 4.98802 6.16405 10.28137 0.0426 4.70187 -1.62496 7.96097 -5.06139 9.89235 -1.2303 0.69146 -2.1636 1.41647 -2.07401 1.61113 0.0896 0.19474 1.9213 2.95313 4.07046 6.12991 2.14914 3.17681 3.90754 5.91556 3.90754 6.08614 0 0.17051 -1.87966 0.23927 -4.17704 0.15278 l -4.17704 -0.15747 -3.94975 -5.8196 -3.94974 -5.81961 -3.0569 0.16032 -3.0569 0.16032 -0.15299 5.79396 -0.15298 5.79396 h -3.48511 -3.48508 z m 18.8939 -1.03004 c 2.90685 -1.5557 3.3039 -6.52492 0.68588 -8.58424 -1.20544 -0.94819 -2.17671 -1.1013 -6.9866 -1.1013 h -5.58654 v 5.12024 5.12024 h 5.42516 c 2.98385 0 5.89178 -0.24973 6.4621 -0.55494 z" FillRule="NonZero"/>
-                                                </Path.Data>
-                                            </Path>
-                                        </Canvas>
-                                    </Canvas>
-                                </Border>
-                            </Button>
-                        </StackPanel>
-                    </CustomControls:ExpandingButton.HiddenContent>
+                                </StackPanel>
+                            </Border>
+                        </Button>
+                        <Button Style="{StaticResource GrayBtn}"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.DnDBeyond}">
+                            <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
+                                BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal">
+                                    <ContentControl Content="{StaticResource DnDBeyondLogo}"/>
+                                    <TextBlock Text="DnD Beyond"/>
+                                </StackPanel>
+                            </Border>
+                        </Button>
+                        <Button Style="{StaticResource GrayBtn}"
+                        Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.GmBinder}">
+                            <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
+                                BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
+                                <ContentControl Content="{StaticResource GMBinderLogo}"/>
+                            </Border>
+                        </Button>
+                    </StackPanel>
+                </CustomControls:ExpandingButton.HiddenContent>
             </CustomControls:ExpandingButton>
 
             <Button x:Name="SettingsBtn" Grid.Column="1" Grid.Row="4" Style="{StaticResource outerIconBtn}"
@@ -860,31 +619,31 @@
                                 <ControlTemplate TargetType="Button">
                                     <Border Background="{TemplateBinding Background}">
                                         <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Foreground="{TemplateBinding Foreground}"
-                                            Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
+                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
                                     </Border>
                                 </ControlTemplate>
-                            </Setter.Value>  
+                            </Setter.Value>
                         </Setter>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Foreground" Value="#16d68a"/>
+                                <Setter Property="Foreground" Value="#16d68a"/>
                             </Trigger>
                         </Style.Triggers>
-                    </Style> 
+                    </Style>
                 </StackPanel.Resources>
-                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.ListView}" Tools:AP.IconKind="ViewHeadline" Height="40"/>
-                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.CardView}" Tools:AP.IconKind="ViewCompact" Height="40" RenderTransformOrigin="0.5 0.5">
-                        <Button.RenderTransform>
-                            <ScaleTransform ScaleY="-1"/>
-                        </Button.RenderTransform>
-                    </Button>
-                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.TileView}" Tools:AP.IconKind="ViewModule" Height="43"/>
-                    <Rectangle Width="2" Fill="Gray" Margin="3,8"/>
-                    <Button Click="ViewConfig_Click" Tools:AP.IconKind="TuneVariant" Height="30">
-                        <Button.ContextMenu>
-                            <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding CurrentFileViewModel.ViewOptions}"
-                                         Style="{StaticResource DropdownMenu}" ItemContainerStyle="{StaticResource DropdownMenuItem}"/>
-                        </Button.ContextMenu>
+                <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.ListView}" Tools:AP.IconKind="ViewHeadline" Height="40"/>
+                <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.CardView}" Tools:AP.IconKind="ViewCompact" Height="40" RenderTransformOrigin="0.5 0.5">
+                    <Button.RenderTransform>
+                        <ScaleTransform ScaleY="-1"/>
+                    </Button.RenderTransform>
+                </Button>
+                <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.TileView}" Tools:AP.IconKind="ViewModule" Height="43"/>
+                <Rectangle Width="2" Fill="Gray" Margin="3,8"/>
+                <Button Click="ViewConfig_Click" Tools:AP.IconKind="TuneVariant" Height="30">
+                    <Button.ContextMenu>
+                        <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding CurrentFileViewModel.ViewOptions}"
+                            Style="{StaticResource DropdownMenu}" ItemContainerStyle="{StaticResource DropdownMenuItem}"/>
+                    </Button.ContextMenu>
                 </Button>
             </StackPanel>
             <!--#endregion-->
