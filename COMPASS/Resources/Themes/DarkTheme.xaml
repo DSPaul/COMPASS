@@ -1,5 +1,41 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:COMPASS.Resources.Themes">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="LightGray">    #999999 </Color>
+    <Color x:Key="KindaDarkGray">#717171</Color>
+    <Color x:Key="DarkGray">    #5E5E5E </Color>
+    <Color x:Key="DarkerGray">  #525252 </Color>
+    <Color x:Key="DarkestGray"> #242528 </Color>
+
+    <Color x:Key="OnlineGreen"> #00B000 </Color>
     
+    <Color x:Key="CompassJade">     #16D6A8 </Color>
+    <Color x:Key="CompassJadeDark"> #2e826e</Color>
+
+    <SolidColorBrush x:Key="SelectableTransparent" Color="Black" Opacity="0"/>
+
+    <SolidColorBrush x:Key="WindowBackground" Color="{StaticResource DarkestGray}"/>
+    <SolidColorBrush x:Key="LeftDockBackground" Color="{StaticResource DarkerGray}"/>
+    <SolidColorBrush x:Key="FiltersBackground" Color="{StaticResource DarkerGray}"/>
+
+    <SolidColorBrush x:Key="TitlebarBackground" Color="{StaticResource DarkGray}"/>
+    <SolidColorBrush x:Key="TitlebarElementBackground" Color="Gray"/>
+    <SolidColorBrush x:Key="TitlebarElementHoverBackground" Color="DimGray"/>
+    <SolidColorBrush x:Key="TitlebarElementSeperator" Color="{StaticResource KindaDarkGray}"/>
+
+    <SolidColorBrush x:Key="CollectionIconFill" Color="{StaticResource DarkerGray}"/>
+    <SolidColorBrush x:Key="AcceptFill" Color="Green"/>
+    <SolidColorBrush x:Key="CancelFill" Color="Red"/>
+    <SolidColorBrush x:Key="OnlineFill" Color="{StaticResource OnlineGreen}"/>
+    <SolidColorBrush x:Key="OfflineFill" Color="Red"/>
+
+    <SolidColorBrush x:Key="TextColor" Color="White"/>
+    <SolidColorBrush x:Key="TextMutedColor" Color="LightGray"/>
+    
+    <SolidColorBrush x:Key="AccentColor" Color="{StaticResource CompassJade}"/>
+    <SolidColorBrush x:Key="AccentColorMuted" Color="{StaticResource CompassJadeDark}"/>
+
+    <SolidColorBrush x:Key="ButtonBackground" Color="Gray"/>
+    <SolidColorBrush x:Key="ButtonFocus" Color="{StaticResource LightGray}"/>
+
 </ResourceDictionary>
