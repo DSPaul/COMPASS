@@ -13,7 +13,7 @@
         xmlns:CustomControls ="clr-namespace:COMPASS.Resources.Controls"
         mc:Ignorable="d"
         Title="COMPASS" Height="540" Width="1156.8" FontSize="20"
-        Foreground="White"
+        Foreground="White"  Background="{StaticResource WindowBackground}"
         Closing="Window_Closing" WindowState="Maximized" WindowStyle="None" 
         WindowStartupLocation="CenterScreen" MouseDown="Window_MouseDown">
     <Window.Resources>
@@ -37,19 +37,12 @@
             <views:TagEditView DataContext="{Binding}"/>
         </DataTemplate>
     </Window.Resources>
-    <Window.Background>
-        <!--<ImageBrush ImageSource="C:\Users\pauld\Pictures\Wallpapers\neverwinter_seascape.jpg" Opacity="0.6"/>-->
-        <SolidColorBrush Color="#FF242528"/>
-    </Window.Background>
     <Window.Style>
         <Style>
             <Setter Property="WindowChrome.WindowChrome">
                 <Setter.Value>
-                    <WindowChrome CaptionHeight="0"
-                CornerRadius="4"
-                GlassFrameThickness="0"
-                NonClientFrameEdges="None"
-                ResizeBorderThickness="3"/> 
+                    <WindowChrome CaptionHeight="0" CornerRadius="4" GlassFrameThickness="0"
+                        NonClientFrameEdges="None" ResizeBorderThickness="3"/> 
                 </Setter.Value>
             </Setter>
         </Style>
@@ -83,12 +76,9 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <!--#region Top Bar-->
-        <Grid Grid.ColumnSpan="7" x:Name="WindowsBar" 
+        <!--#region Title Bar-->
+            <Grid Grid.ColumnSpan="7" x:Name="WindowsBar" Background="{StaticResource TitlebarBackground}"
               MouseDown="WindowsBar_MouseDown" MouseMove="OnMouseMove">
-            <Grid.Background>
-                <SolidColorBrush Color="#5E5E5E"/>
-            </Grid.Background>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width ="auto"/>
@@ -107,15 +97,10 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="20" />
                             </Grid.ColumnDefinitions>
-                            <Border x:Name="Border" Grid.ColumnSpan="3" CornerRadius="4,0,0,4" Background="Gray" BorderThickness="0" ClipToBounds="True">
-                                <!--<Border BorderThickness="1" Margin="5" Background="{x:Null}" BorderBrush="Black">
-                                    <Border.Effect>
-                                        <DropShadowEffect ShadowDepth="0" BlurRadius="4" />
-                                    </Border.Effect>
-                                </Border>-->
-                            </Border>
-                            <Path x:Name="Arrow" Grid.Column="1" Fill="#FF494949" HorizontalAlignment="Center"
-                                 VerticalAlignment="Center" Data="M0,0 L4,5 L8,0 "/>
+                            <Border x:Name="Border" Grid.ColumnSpan="3" CornerRadius="4,0,0,4" BorderThickness="0"
+                                    Background="{StaticResource TitlebarElementBackground}" ClipToBounds="True" />
+                            <Path x:Name="Arrow" Grid.Column="1" Fill="{StaticResource CollectionIconFill}" HorizontalAlignment="Center"
+                                 VerticalAlignment="Center" Data="M0,0 L6,8 L12,0 "/>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="ToggleButton.IsMouseOver" Value="true">
@@ -123,14 +108,14 @@
                                 <Setter TargetName="Arrow" Property="RenderTransform">
                                     <Setter.Value>
                                         <TransformGroup>
-                                            <ScaleTransform ScaleY="1.3" ScaleX="1.3"/>
+                                            <ScaleTransform ScaleY="1.2" ScaleX="1.2"/>
                                         </TransformGroup>
                                     </Setter.Value>
                                 </Setter>
-                                <Setter TargetName="Border" Property="Background" Value="Gray" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
+                
                     <Style x:Key="RPGDropdownStyle" TargetType="{x:Type ComboBox}">
                         <Setter Property="SnapsToDevicePixels" Value="true"/>
                         <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -139,7 +124,7 @@
                         <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
                         <Setter Property="MinWidth" Value="120"/>
                         <Setter Property="MinHeight" Value="20"/>
-                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type ComboBox}">
@@ -154,7 +139,7 @@
                                             AllowsTransparency="True" Focusable="False" PopupAnimation="Slide" VerticalOffset="-6">
                                             <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}"
                                                 MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                                <Border x:Name="DropDownBorder" Background="Gray" BorderThickness="0" CornerRadius="0,0,4,4"/>
+                                                <Border x:Name="DropDownBorder" Background="{StaticResource TitlebarElementBackground}" BorderThickness="0" CornerRadius="0,0,4,4"/>
                                                 <ScrollViewer Margin="0,6,0,6" SnapsToDevicePixels="True">
                                                     <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
                                                 </ScrollViewer>
@@ -176,7 +161,7 @@
 
                     <Style x:Key="{x:Type ComboBoxItem}" TargetType="{x:Type ComboBoxItem}">
                         <Setter Property="SnapsToDevicePixels" Value="true"/>
-                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                         <Setter Property="OverridesDefaultStyle" Value="true"/>
                         <Setter Property="Template">
                             <Setter.Value>
@@ -186,7 +171,7 @@
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsHighlighted" Value="true">
-                                            <Setter TargetName="Border" Property="Background" Value="DimGray"/>
+                                            <Setter TargetName="Border" Property="Background" Value="{StaticResource TitlebarElementHoverBackground}"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -219,8 +204,8 @@
             <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="50,5">
                 <ComboBox  Style="{StaticResource RPGDropdownStyle}" SelectedValue="{Binding CurrentFolder, Mode=TwoWay}"
                 ItemsSource="{Binding Folders}"/>
-                <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
-                <Border Background="Gray">
+                <Rectangle Fill="{StaticResource TitlebarElementSeperator}" Width="2" Height="auto"/>
+                <Border Background="{StaticResource TitlebarElementBackground}">
                     <Grid>
                         <Grid.Resources>
                             <Style TargetType="{x:Type ToggleButton}">
@@ -228,10 +213,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                            <Border>
-                                                <Border.Background>
-                                                    <SolidColorBrush Color="Black" Opacity="0"/>
-                                                </Border.Background>
+                                            <Border Background="{StaticResource SelectableTransparent}">
                                                 <ContentPresenter/>
                                             </Border>
                                         </ControlTemplate>
@@ -239,28 +221,29 @@
                                 </Setter>
                             </Style>
                         </Grid.Resources>
-                        <ToggleButton Style="{x:Null}" Background="{x:Null}" BorderThickness="0" x:Name="ShowFolderCreation"
+                        <ToggleButton Style="{x:Null}" Background="{StaticResource SelectableTransparent}" BorderThickness="0" x:Name="ShowFolderCreation"
                                         Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=True}">
-                            <materialDesign:PackIcon Kind="Add" Foreground="#FF494949" Width="30" Height="30"/>
+                            <materialDesign:PackIcon Kind="Add" Foreground="{StaticResource CollectionIconFill}" Width="30" Height="30"/>
                         </ToggleButton>
                         <StackPanel Orientation="Horizontal" x:Name="FolderCreation"
-                                    Visibility="{Binding ElementName=ShowFolderCreation, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
-                            <TextBox x:Name="NewFolderName" Text="New Game" FontSize="16" VerticalAlignment="Center" Background="{x:Null}"
-                                        Foreground="White" Margin="5,0" BorderThickness="0" MinWidth="50"/>
+                                    Visibility="{Binding ElementName=ShowFolderCreation, Path=IsChecked, 
+                                    Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                            <TextBox x:Name="NewFolderName" Text="New Collection" FontSize="16" VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}"
+                                        Foreground="White" Margin="5,0" BorderThickness="0" MinWidth="80"/>
                             <ToggleButton Background="{x:Null}" BorderThickness="0" Command="{Binding CreateFolderCommand}"
                                             CommandParameter="{Binding ElementName=NewFolderName, Path=Text}"
                                             IsChecked="{Binding ElementName=ShowFolderCreation, Path=IsChecked}">
-                                <materialDesign:PackIcon Kind="Check" Foreground="Green" Width="30" Height="30"/>
+                                <materialDesign:PackIcon Kind="Check" Foreground="{StaticResource AcceptFill}" Width="30" Height="30"/>
                             </ToggleButton>
                             <ToggleButton Background="{x:Null}" BorderThickness="0"
                                             IsChecked="{Binding ElementName=ShowFolderCreation, Path=IsChecked}">
-                                <materialDesign:PackIcon Kind="Close" Foreground="Red" Width="30" Height="30"/>
+                                <materialDesign:PackIcon Kind="Close" Foreground="{StaticResource CancelFill}" Width="30" Height="30"/>
                             </ToggleButton>
                         </StackPanel>
                     </Grid>
                 </Border>
-                <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
-                <Border Background="Gray">
+                <Rectangle Fill="{StaticResource TitlebarElementSeperator}" Width="2" Height="auto"/>
+                <Border Background="{StaticResource TitlebarElementBackground}">
                     <Grid>
                         <Grid.Resources>
                             <Style TargetType="{x:Type ToggleButton}">
@@ -268,10 +251,7 @@
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                            <Border>
-                                                <Border.Background>
-                                                    <SolidColorBrush Color="Black" Opacity="0"/>
-                                                </Border.Background>
+                                            <Border Background="{StaticResource SelectableTransparent}">
                                                 <ContentPresenter/>
                                             </Border>
                                         </ControlTemplate>
@@ -279,31 +259,31 @@
                                 </Setter>
                             </Style>
                         </Grid.Resources>
-                        <ToggleButton Style="{x:Null}" Background="{x:Null}" BorderThickness="0" x:Name="ShowFolderEditing"
+                        <ToggleButton Style="{x:Null}" Background="{StaticResource SelectableTransparent}" BorderThickness="0" x:Name="ShowFolderEditing"
                                         Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=True}">
-                            <materialDesign:PackIcon Kind="Edit" Foreground="#FF494949" Width="25" Height="25"/>
+                            <materialDesign:PackIcon Kind="Edit" Foreground="{StaticResource CollectionIconFill}" Width="25" Height="25"/>
                         </ToggleButton>
                         <StackPanel Orientation="Horizontal" x:Name="FolderEditing"
                                     Visibility="{Binding ElementName=ShowFolderEditing, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
-                            <TextBox x:Name="EditFolderName" Text="New Name" FontSize="16" VerticalAlignment="Center" Background="{x:Null}"
-                                        Foreground="White" Margin="5,0" BorderThickness="0" MinWidth="50"/>
+                            <TextBox x:Name="EditFolderName" Text="New Collection" FontSize="16" VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}"
+                                        Foreground="{StaticResource TextColor}" Margin="5,0" BorderThickness="0" MinWidth="50"/>
                             <ToggleButton Background="{x:Null}" BorderThickness="0" Command="{Binding EditFolderCommand}"
                                             CommandParameter="{Binding ElementName=EditFolderName, Path=Text}"
                                             IsChecked="{Binding ElementName=ShowFolderEditing, Path=IsChecked}">
-                                <materialDesign:PackIcon Kind="Check" Foreground="Green" Width="30" Height="30"/>
+                                <materialDesign:PackIcon Kind="Check" Foreground="{StaticResource AcceptFill}" Width="30" Height="30"/>
                             </ToggleButton>
                             <ToggleButton Background="{x:Null}" BorderThickness="0"
                                             IsChecked="{Binding ElementName=ShowFolderEditing, Path=IsChecked}">
-                                <materialDesign:PackIcon Kind="Close" Foreground="Red" Width="30" Height="30"/>
+                                <materialDesign:PackIcon Kind="Close" Foreground="{StaticResource CancelFill}" Width="30" Height="30"/>
                             </ToggleButton>
                         </StackPanel>
                     </Grid>
                 </Border>
-                <Rectangle Fill="#FF717171" Width="2" Height="auto"/>
-                <Border Background="Gray" CornerRadius="0,4,4,0">
+                <Rectangle Fill="{StaticResource TitlebarElementSeperator}" Width="2" Height="auto"/>
+                <Border Background="{StaticResource TitlebarElementBackground}" CornerRadius="0,4,4,0">
                     <Grid>
-                        <Button Style="{x:Null}" Background="{x:Null}" BorderThickness="0" Command="{Binding DeleteFolderCommand}">
-                            <materialDesign:PackIcon Kind="Delete" Foreground="#FF494949" Width="25" Height="25"/>
+                        <Button Style="{x:Null}" Background="{StaticResource SelectableTransparent}" BorderThickness="0" Command="{Binding DeleteFolderCommand}">
+                            <materialDesign:PackIcon Kind="Delete" Foreground="{StaticResource CollectionIconFill}" Width="25" Height="25"/>
                         </Button>
                     </Grid>
                 </Border>
@@ -315,16 +295,16 @@
                             <Style>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsOnline}" Value="True">
-                                        <Setter Property="Ellipse.Fill" Value="#00b000"/>
+                                        <Setter Property="Ellipse.Fill" Value="{StaticResource OnlineFill}"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding IsOnline}" Value="False">
-                                        <Setter Property="Ellipse.Fill" Value="Red"/>
+                                        <Setter Property="Ellipse.Fill" Value="{StaticResource OfflineFill}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </Ellipse.Style>
                     </Ellipse>
-                    <TextBlock Foreground="Gray" VerticalAlignment="Center">
+                    <TextBlock Foreground="{StaticResource TitlebarElementBackground}" VerticalAlignment="Center">
                         <TextBlock.Style>
                             <Style>
                                 <Style.Triggers>
@@ -347,11 +327,7 @@
                         <Style TargetType="{x:Type Button}" >
                             <Setter Property="Width" Value="40"/>
                             <Setter Property="Padding" Value="7"/>
-                            <Setter Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="Black" Opacity="0"/>
-                                </Setter.Value>
-                            </Setter>
+                            <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type Button}">
@@ -363,18 +339,14 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="true">
-                                    <Setter Property="Background" Value="Gray" />
+                                    <Setter Property="Background" Value="{StaticResource TitlebarElementBackground}" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
                         <Style TargetType="{x:Type ToggleButton}" >
                             <Setter Property="Width" Value="40"/>
                             <Setter Property="Padding" Value="7"/>
-                            <Setter Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="Black" Opacity="0"/>
-                                </Setter.Value>
-                            </Setter>
+                            <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -386,7 +358,7 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="true">
-                                    <Setter Property="Background" Value="Gray" />
+                                    <Setter Property="Background" Value="{StaticResource TitlebarElementBackground}" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -428,11 +400,11 @@
         <!--#endregion-->
 
         <!--#region Left Dock-->
-            <Grid Grid.Column="2" Grid.Row="1" Background="#FF525151">
+            <Grid Grid.Column="2" Grid.Row="1" Background="{StaticResource LeftDockBackground}">
             <Grid.Resources>
                 <Style TargetType="{x:Type Button}" x:Key="GrayBtn">
-                    <Setter Property="Background" Value="Gray"/>
-                    <Setter Property="Foreground" Value="#FFF3F3F3"/>
+                    <Setter Property="Background" Value="{StaticResource ButtonBackground}"/>
+                    <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                     <Setter Property="BorderBrush" Value="{x:Null}"/>
                     <Setter Property="Margin" Value="0"/>
                     <Setter Property="Template">
@@ -444,7 +416,7 @@
                     </Setter>
                     <Style.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Background" Value="#FF999999" />
+                            <Setter Property="Background" Value="{StaticResource ButtonFocus}" />
                         </Trigger>
                     </Style.Triggers>
                 </Style>
@@ -484,29 +456,26 @@
                 <Style TargetType="{x:Type TabControl}">
                     <Setter Property="SnapsToDevicePixels" Value="True" />
                     <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type TabControl}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TabControl}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
 
-                                <Border>
-                                    <UniformGrid x:Name="HeaderPanel" IsItemsHost="True" 
-                                    Rows="1" />
-                                </Border>
+                                    <Border>
+                                        <UniformGrid x:Name="HeaderPanel" IsItemsHost="True" Rows="1" />
+                                    </Border>
 
-                                <Border x:Name="Border" Grid.Row="1" 
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}">
-                                    <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" />
-                                </Border>
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
+                                    <Border x:Name="Border" Grid.Row="1" BorderThickness="{TemplateBinding BorderThickness}"
+                                    Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}">
+                                        <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent"/>
+                                    </Border>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </Grid.Resources>
 
@@ -526,7 +495,7 @@
 
             <UserControl Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Content="{Binding TFViewModel}"/>
             
-            <Rectangle Grid.ColumnSpan="10" Grid.Row="1" Fill="#808080" Height="3" Margin="0,10"/>
+            <Rectangle Grid.ColumnSpan="10" Grid.Row="1" Fill="{StaticResource TitlebarElementSeperator}" Height="3" Margin="0,10"/>
             
             <CustomControls:ExpandingButton Grid.Column="1" Grid.Row="2" HiddenContent="{Binding AddTagViewModel}">
                 <CustomControls:ExpandingButton.Toggle>
@@ -551,8 +520,8 @@
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                 BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
                                 <StackPanel Orientation="Horizontal">
-                                        <ContentControl Content="{StaticResource HomebreweryLogo}"/>
-                                        <TextBlock Text="Homebrewery"/>
+                                    <ContentControl Content="{StaticResource HomebreweryLogo}"/>
+                                    <TextBlock Text="Homebrewery"/>
                                 </StackPanel>
                             </Border>
                         </Button>
@@ -579,9 +548,7 @@
 
             <Button x:Name="SettingsBtn" Grid.Column="1" Grid.Row="4" Style="{StaticResource outerIconBtn}"
                 Tools:AP.IconKind="Settings" Content="Settings" Margin="10,4"/>
-
-            
-        </Grid>
+            </Grid>
         <!--#endregion-->
 
         <!--#region Main Dock-->
@@ -607,13 +574,9 @@
             <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal">
                 <StackPanel.Resources>
                     <Style TargetType="Button">
-                        <Setter Property="Background">
-                            <Setter.Value>
-                                <SolidColorBrush Color="Black" Opacity="0"/>
-                            </Setter.Value>
-                        </Setter>
+                        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
                         <Setter Property="BorderBrush" Value="{x:Null}"/>
-                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="Button">
@@ -626,7 +589,7 @@
                         </Setter>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" Value="#16d68a"/>
+                                <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -651,7 +614,7 @@
             <!--#region Current Filters-->
             <TextBlock Grid.Column="0" Grid.Row="1" x:Name="CurrentTagTextBlock" Text="Filters:" Margin="10,0" VerticalAlignment="Center"/>
             <Border CornerRadius="5" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row ="1"
-                    Margin="0,10" Background="#FF565656">
+                    Margin="0,10" Background="{StaticResource FiltersBackground}">
                 <Grid>
                     <Grid.Resources>
                         <CollectionViewSource x:Key="Tags" Source="{Binding FilterHandler.ActiveTags}"/>
@@ -672,7 +635,7 @@
                             </ListBox.ItemsSource>
                         </ListBox>
                     <Button x:Name="ResetBtn" Command="{Binding ResetCommand}" Margin="10,0"
-                        Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="30">
+                        Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" HorizontalAlignment="Right" Width="30">
                         <materialDesign:PackIcon Kind="WindowClose"/>
                     </Button>
                 </Grid>
