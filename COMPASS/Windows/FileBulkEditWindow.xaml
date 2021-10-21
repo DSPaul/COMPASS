@@ -12,7 +12,7 @@
         mc:Ignorable="d"
         Title="Bulk Edit" Height="450" Width="800" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
-        Foreground="White" Background="#FF242528" MouseDown="MainGrid_MouseDown">
+        Foreground="{StaticResource TextColor}" Background="{StaticResource WindowBackground}" MouseDown="MainGrid_MouseDown">
     <Window.Resources>
         <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
         <Converters:BooltoVisibilityConverter x:Key="BooltoVisibilityConverter"/>
@@ -43,16 +43,15 @@
                 </Border>
             </ControlTemplate>
             <Style TargetType="TextBlock">
-                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                 <Setter Property="Margin" Value="3,0"/>
                 <Setter Property="TextWrapping" Value="Wrap"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
             <Style TargetType="TextBox">
-                <Setter Property="Background" Value="#00000000"/>
-                <Setter Property="Foreground" Value ="#cccccc"/>
-                <Setter Property="BorderBrush" Value="#FF97A0A5"/>
-                <!--<Setter Property="MaxWidth" Value="{Binding ActualWidth}"/>-->
+                <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                <Setter Property="Foreground" Value ="{StaticResource TextMutedColor}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TextColor}"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
             <Style TargetType="Button">
@@ -64,19 +63,19 @@
                         <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
                     </Border.Background>
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox Background="{x:Null}" BorderBrush="#FF626262" Foreground="#FF979797"
+                        <CheckBox Background="{StaticResource SelectableTransparent}"
                                        Margin="5,0,0,0" Command="{Binding Path=DataContext.TagCheckCommand,
                                        RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeView}}}"
                                       CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
                                        IsChecked="{Binding Selected, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="White"/>
+                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2"/>
                     </StackPanel>
                 </Border>
             </HierarchicalDataTemplate>
             <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                <Border CornerRadius="5" Margin="0,3" Background="{x:Null}">
+                <Border CornerRadius="5" Margin="0,3" Background="{StaticResource SelectableTransparent}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="LightGray" Typography.Capitals="AllSmallCaps" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="{StaticResource TextMutedColor}" Typography.Capitals="AllSmallCaps" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
             </HierarchicalDataTemplate>
@@ -103,11 +102,11 @@
 
             <TextBlock Text="Author:" Grid.Column="1" Grid.Row="3"/>
             <ComboBox Text="{Binding TempFile.Author, Mode=TwoWay}" Grid.Column="1" Grid.Row="4" Name="FileAuthorTB"
-                  IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentData.AuthorList}"/>
+                  IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentData.AuthorList}"/>
 
             <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
             <ComboBox Text="{Binding TempFile.Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"
-                  IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentData.PublisherList}"/>
+                  IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentData.PublisherList}"/>
 
             <Grid Grid.Column="1" Grid.Row="7" Margin="0,5">
                 <Grid.RowDefinitions>
@@ -159,7 +158,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-                <Button Background="Gray" Grid.Column="2" Command="{Binding SetTagModeCommand}" CommandParameter="{StaticResource True}">
+                <Button Background="{StaticResource ButtonBackground}" Grid.Column="2" Command="{Binding SetTagModeCommand}" CommandParameter="{StaticResource True}">
                     <StackPanel Orientation="Horizontal" Margin="2,0">
                         <materialDesign:PackIcon Kind="Plus"/>
                         <TextBlock Text="Add Tag" VerticalAlignment="Center"/>
@@ -176,7 +175,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-                <Button Grid.Row="1" Background="Gray" Grid.Column="2" Command="{Binding SetTagModeCommand}" CommandParameter="{StaticResource False}">
+                <Button Grid.Row="1" Background="{StaticResource ButtonBackground}" Grid.Column="2" Command="{Binding SetTagModeCommand}" CommandParameter="{StaticResource False}">
                     <StackPanel Orientation="Horizontal" Margin="2,0">
                         <materialDesign:PackIcon Kind="Plus"/>
                         <TextBlock Text="Add Tag" VerticalAlignment="Center"/>
@@ -212,13 +211,13 @@
                 <ColumnDefinition Width="*"/>
 
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Name="OKBtn" Command ="{Binding OKCommand}"  Background="Green">
+            <Button Grid.Column="0" Name="OKBtn" Command ="{Binding OKCommand}"  Background="{StaticResource AcceptFill}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Check"/>
                     <TextBlock Text="OK"/>
                 </StackPanel>
             </Button>
-            <Button Grid.Column="1" Name="CancelBtn" Command="{Binding CancelCommand}" Background="Red">
+            <Button Grid.Column="1" Name="CancelBtn" Command="{Binding CancelCommand}" Background="{StaticResource CancelFill}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="WindowClose"/>
                     <TextBlock Text="Cancel"/>
