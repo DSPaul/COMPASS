@@ -1,5 +1,6 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
+using HtmlAgilityPack;
 using ImageMagick;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -9,6 +10,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace COMPASS
@@ -40,6 +42,21 @@ namespace COMPASS
         //Get coverart fom URL
         public static void GetCoverFromURL(string URL, Codex destfile, Enums.ImportMode import)
         {
+            if (import == Enums.ImportMode.DnDBeyond)
+            {
+                HtmlWeb web = new HtmlWeb();
+                //cover art is on store page, redirect there by going to /credits which every book has
+                HtmlDocument doc = web.Load(string.Concat(URL, "/credits"));
+                HtmlNode src = doc.DocumentNode;
+
+                string imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);
+
+                using (WebClient client = new WebClient())
+                {
+                    client.DownloadFile(new Uri(imgURL), destfile.CoverArt);
+                }
+            }
+
             //Use Selenium for screenshotting pages
             var driverService = ChromeDriverService.CreateDefaultService();
             driverService.HideCommandPromptWindow = true;
@@ -48,9 +65,8 @@ namespace COMPASS
             CO.AddArgument("--headless");
             ChromeDriver driver = new ChromeDriver(driverService, CO);
 
-            IWebElement Coverpage = null;
+            IWebElement Coverpage;
             MagickImage image = null;
-
             try
             {
                 driver.Navigate().GoToUrl(URL);
