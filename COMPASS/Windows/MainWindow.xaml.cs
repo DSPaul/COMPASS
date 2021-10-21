@@ -9,6 +9,8 @@ using System.ComponentModel;
 using COMPASS.ViewModels;
 using COMPASS.Models;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace COMPASS
 {
@@ -24,16 +26,9 @@ namespace COMPASS
             //set Itemsources for databinding
             MainViewModel = new MainViewModel("DnD");
             DataContext = MainViewModel;
-
-            //MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
-            //MaxHeight = SystemParameters.VirtualScreenHeight;
-            MaximizeWindow(this);
         }
 
         private MainViewModel MainViewModel;
-
-        // is true if we hold left mouse button on windows tilebar
-        private bool DragWindow = false;
 
         //Deselects when you click away
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -60,38 +55,106 @@ namespace COMPASS
         }
 
         #region Window management
-        public static System.Windows.Forms.Screen CurrentScreen(Window window)
+
+        protected override void OnSourceInitialized(EventArgs e)
         {
-            return System.Windows.Forms.Screen.FromPoint(new System.Drawing.Point((int)window.Left + (int)window.ActualWidth/2, (int)window.Top + (int)window.ActualHeight/2));
+            base.OnSourceInitialized(e);
+            ((HwndSource)PresentationSource.FromVisual(this)).AddHook(HookProc);
         }
 
-        //get size of a virtual window to limit size when maximizing main window
-        private (double height, double width) GetVirtualWindowSize()
+        public static IntPtr HookProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            Window virtualWindow = new Window();
-            System.Windows.Forms.Screen targetScreen = CurrentScreen(this);
-            Rectangle viewport = targetScreen.WorkingArea;
-            virtualWindow.Top = viewport.Top;
-            virtualWindow.Left = viewport.Left;
-            virtualWindow.Show();
-            virtualWindow.Opacity = 0;
-            virtualWindow.WindowState = WindowState.Maximized;
-            double returnHeight = virtualWindow.Height;
-            double returnWidth = virtualWindow.Width;
-            virtualWindow.Close();
-            return (returnHeight, returnWidth);
+            if (msg == WM_GETMINMAXINFO)
+            {
+                // We need to tell the system what our size should be when maximized. Otherwise it will cover the whole screen,
+                // including the task bar.
+                MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
+
+                // Adjust the maximized size and position to fit the work area of the correct monitor
+                IntPtr monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+
+                if (monitor != IntPtr.Zero)
+                {
+                    MONITORINFO monitorInfo = new MONITORINFO();
+                    monitorInfo.cbSize = Marshal.SizeOf(typeof(MONITORINFO));
+                    GetMonitorInfo(monitor, ref monitorInfo);
+                    RECT rcWorkArea = monitorInfo.rcWork;
+                    RECT rcMonitorArea = monitorInfo.rcMonitor;
+                    mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
+                    mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
+                    mmi.ptMaxSize.X = Math.Abs(rcWorkArea.Right - rcWorkArea.Left);
+                    mmi.ptMaxSize.Y = Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top);
+                }
+
+                Marshal.StructureToPtr(mmi, lParam, true);
+            }
+
+            return IntPtr.Zero;
         }
 
+        private const int WM_GETMINMAXINFO = 0x0024;
+
+        private const uint MONITOR_DEFAULTTONEAREST = 0x00000002;
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromWindow(IntPtr handle, uint flags);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+
+        [Serializable]
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+
+            public RECT(int left, int top, int right, int bottom)
+            {
+                this.Left = left;
+                this.Top = top;
+                this.Right = right;
+                this.Bottom = bottom;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MONITORINFO
+        {
+            public int cbSize;
+            public RECT rcMonitor;
+            public RECT rcWork;
+            public uint dwFlags;
+        }
+
+        [Serializable]
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int X;
+            public int Y;
+
+            public POINT(int x, int y)
+            {
+                this.X = x;
+                this.Y = y;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MINMAXINFO
+        {
+            public POINT ptReserved;
+            public POINT ptMaxSize;
+            public POINT ptMaxPosition;
+            public POINT ptMinTrackSize;
+            public POINT ptMaxTrackSize;
+        }
         private void MinimizeWindow(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
-        }
-        private void MaximizeWindow(Window window)
-        {
-            var sizingParams = GetVirtualWindowSize();
-            MaxHeight = sizingParams.height;
-            MaxWidth = sizingParams.width;
-            WindowState = WindowState.Maximized;
         }
 
         private void MaximizeButton_Click(object sender, RoutedEventArgs e)
@@ -102,52 +165,11 @@ namespace COMPASS
                     WindowState = WindowState.Normal;
                     break;
                 case (WindowState.Normal):
-                    MaximizeWindow(this);
+                    WindowState = WindowState.Maximized;
                     break;
             }
         }
 
-        private void WindowsBar_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2)
-            {
-                MaximizeWindow(this);
-                DragWindow = false;
-            }
-
-            else
-            {
-                DragMove();
-                if (WindowState == WindowState.Maximized) DragWindow = WindowState == WindowState.Maximized;
-            }
-        }
-        private void OnMouseMove(object sender, MouseEventArgs e)
-        {
-            if (DragWindow)
-            {
-                DragWindow = false;
-
-                System.Windows.Forms.Screen targetScreen = CurrentScreen(this);
-                Rectangle viewport = targetScreen.WorkingArea;
-
-                var point = e.MouseDevice.GetPosition(this);
-
-                Left = viewport.Left + point.X - (RestoreBounds.Width * 0.5);
-                Top = viewport.Top + point.Y - 20;
-
-                WindowState = WindowState.Normal;
-
-                try
-                {
-                    DragMove();
-                }
-
-                catch (InvalidOperationException)
-                {
-                    MaximizeWindow(this);
-                }
-            }
-        }
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             //this.Close();

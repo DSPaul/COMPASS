@@ -41,28 +41,13 @@
         <Style>
             <Setter Property="WindowChrome.WindowChrome">
                 <Setter.Value>
-                    <WindowChrome CaptionHeight="0" CornerRadius="4" GlassFrameThickness="0"
-                        NonClientFrameEdges="None" ResizeBorderThickness="3"/> 
+                    <WindowChrome CaptionHeight="40" CornerRadius="4" GlassFrameThickness="0"
+                        NonClientFrameEdges="None" ResizeBorderThickness="4"/> 
                 </Setter.Value>
             </Setter>
         </Style>
     </Window.Style>
     <Border BorderThickness="0">
-        <Border.Style>
-            <Style TargetType="{x:Type Border}">
-                <Style.Triggers>
-                    <!-- Add to avoid border disappearing when window is maximised -->
-                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" 
-                                 Value="Maximized">
-                        <Setter Property="Margin" Value="7"/>
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" 
-                                 Value="Normal">
-                        <Setter Property="Margin" Value="0"/>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Border.Style>
         <Grid Name="MainGrid" Focusable="True">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width ="0"/>
@@ -77,11 +62,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <!--#region Title Bar-->
-            <Grid Grid.ColumnSpan="7" x:Name="WindowsBar" Background="{StaticResource TitlebarBackground}"
-              MouseDown="WindowsBar_MouseDown" MouseMove="OnMouseMove">
+            <Grid Grid.ColumnSpan="7" x:Name="WindowsBar" Background="{StaticResource TitlebarBackground}">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width ="auto"/>
+                <ColumnDefinition Width ="*"/>
                 <ColumnDefinition Width ="auto"/>
                 <ColumnDefinition Width ="*"/>
                 <ColumnDefinition Width ="auto"/>
@@ -181,9 +165,9 @@
                     <!--#endregion-->
             </Grid.Resources>
 
-            <ContentControl Content="{StaticResource CompassLogo}" Margin="10,0"/>
+            <ContentControl Content="{StaticResource CompassLogo}" Margin="10,0" HorizontalAlignment="Left"/>
 
-            <Border Grid.Column="1" CornerRadius="4" MinWidth="300"
+            <Border Grid.Column="1" CornerRadius="4" MinWidth="300" WindowChrome.IsHitTestVisibleInChrome="True"
                     Background="Gray" OpacityMask="#FF222222" Margin="30,5">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -201,7 +185,7 @@
                 </Grid>
             </Border>
 
-            <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="50,5">
+            <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="0,5" WindowChrome.IsHitTestVisibleInChrome="True">
                 <ComboBox  Style="{StaticResource RPGDropdownStyle}" SelectedValue="{Binding CurrentFolder, Mode=TwoWay}"
                 ItemsSource="{Binding Folders}"/>
                 <Rectangle Fill="{StaticResource TitlebarElementSeperator}" Width="2" Height="auto"/>
@@ -289,7 +273,7 @@
                 </Border>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.Column="4" Margin="30,5,15,5">
+            <StackPanel Orientation="Horizontal" Grid.Column="4" Margin="15,5">
                     <Ellipse Width="10" Height="10" Margin="10,5">
                         <Ellipse.Style>
                             <Style>
@@ -320,7 +304,7 @@
                     </TextBlock>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal"
+                <StackPanel Orientation="Horizontal" WindowChrome.IsHitTestVisibleInChrome="True"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Stretch" Grid.Column="5">
                     <StackPanel.Resources>
@@ -365,25 +349,25 @@
                     </StackPanel.Resources>
 
                     <Button x:Name="MinimizeButton"
-                    Click="MinimizeWindow" BorderBrush="{x:Null}">
+                Click="MinimizeWindow" BorderBrush="{x:Null}">
                         <materialDesign:PackIcon Kind="WindowMinimize" VerticalAlignment="Bottom"/>
                     </Button>
 
                     <ToggleButton x:Name="MaximizeButton" Click="MaximizeButton_Click" BorderBrush="{x:Null}" 
-                                   IsChecked="{Binding WindowState, RelativeSource={RelativeSource FindAncestor,
-                    AncestorType=Window}, Converter={StaticResource IsMaximizedConverter}, Mode=OneWay}">
+                            IsChecked="{Binding WindowState, RelativeSource={RelativeSource FindAncestor,
+            AncestorType=Window}, Converter={StaticResource IsMaximizedConverter}, Mode=OneWay}">
                         <Grid>
                             <materialDesign:PackIcon Kind="WindowMaximize"  x:Name="Maximizeimage" Width="15"
-                        Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
-                        AncestorType={x:Type ToggleButton}}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
+                Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
+                AncestorType={x:Type ToggleButton}}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
                             <materialDesign:PackIcon Kind="WindowRestore"  x:Name="NotMaximizeimage" Width="15"
-                        Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
-                        AncestorType={x:Type ToggleButton}}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}"/>
+                Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
+                AncestorType={x:Type ToggleButton}}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}"/>
                         </Grid>
                     </ToggleButton>
 
                     <Button x:Name="CloseButton"
-                    Click="CloseButton_Click" BorderBrush="{x:Null}">
+                Click="CloseButton_Click" BorderBrush="{x:Null}">
                         <materialDesign:PackIcon Kind="WindowClose"/>
                         <Button.Style>
                             <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
@@ -396,7 +380,7 @@
                         </Button.Style>
                     </Button>
                 </StackPanel>
-        </Grid>
+            </Grid>
         <!--#endregion-->
 
         <!--#region Left Dock-->
