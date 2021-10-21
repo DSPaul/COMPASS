@@ -11,7 +11,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <DataGrid x:Name="FileView" MaxWidth="{Binding ActualWidth, ElementName=FileListControl}"
-                Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Margin="10,0"
+                Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
                 AutoGenerateColumns="False" ItemsSource="{Binding MVM.FilterHandler.ActiveFiles, IsAsync=True}"
                 CanUserAddRows="False" SelectionMode="Extended" CanUserSortColumns="True"
                 RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
@@ -90,17 +90,7 @@
         </DataGrid.Resources>
         <DataGrid.ItemContainerStyle>
             <Style TargetType="{x:Type DataGridRow}">
-                
                 <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                <Setter Property="Background" Value="{x:Null}"/>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="true">
-                        <Setter Property="Background" Value="#FF5E5F65"/>
-                    </Trigger>
-                    <Trigger Property="IsSelected" Value="true">
-                        <Setter Property="Background" Value="#FF2E2F34"/>
-                    </Trigger>
-                </Style.Triggers>
             </Style>
         </DataGrid.ItemContainerStyle>
         <DataGrid.RowStyle>
@@ -123,8 +113,10 @@
                                         <RowDefinition Height="0"/>
                                     </SelectiveScrollingGrid.RowDefinitions>
                                     <DataGridCellsPresenter Grid.Column="1" ItemsPanel="{TemplateBinding ItemsPanel}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                    <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen, ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical}, Converter={x:Static DataGrid.RowDetailsScrollingConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Visibility="{TemplateBinding DetailsVisibility}"/>
-                                    <DataGridRowHeader Grid.RowSpan="2" SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Row}, Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                    <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen, ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical}, 
+                                        Converter={x:Static DataGrid.RowDetailsScrollingConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Visibility="{TemplateBinding DetailsVisibility}"/>
+                                    <DataGridRowHeader Grid.RowSpan="2" SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Row}, 
+                                        Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
                                 </SelectiveScrollingGrid>
                             </Border>
                         </ControlTemplate>
@@ -132,10 +124,10 @@
                 </Setter>
                 <Style.Triggers>
                     <Trigger Property="IsSelected" Value="True">
-                        <Setter Property="Background" Value="#FF606060"/>
+                        <Setter Property="Background" Value="{StaticResource ListSelected}"/>
                     </Trigger>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#80808080"/>
+                        <Setter Property="Background" Value="{StaticResource ListHover}"/>
                     </Trigger>
                     <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Value="1">
                         <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>

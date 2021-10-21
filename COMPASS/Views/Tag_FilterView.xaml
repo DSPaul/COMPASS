@@ -13,8 +13,8 @@
     <Grid>
         <Grid.Resources>
             <Style TargetType="{x:Type Button}" x:Key="SquareBtn">
-                <Setter Property="Background" Value="Gray"/>
-                <Setter Property="Foreground" Value="#FFF3F3F3"/>
+                <Setter Property="Background" Value="{StaticResource ButtonBackground}"/>
+                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                 <Setter Property="BorderBrush" Value="{x:Null}"/>
                 <Setter Property="Margin" Value="10,3"/>
                 <Setter Property="Template">
@@ -30,11 +30,6 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="true">
-                        <Setter Property="Background" Value="#FF999999" />
-                    </Trigger>
-                </Style.Triggers>
             </Style>
             <Style TargetType="{x:Type TabControl}">
                 <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -70,7 +65,7 @@
                          BorderThickness="0">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
-                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                     <Setter Property="BorderThickness" Value="0"/>
                     <Setter Property="VerticalAlignment" Value="Bottom"/>
                     <Setter Property="MaxWidth" Value="300"/>
@@ -92,11 +87,7 @@
                                         <Setter TargetName="TabBorder" Property="Background" Value="{x:Null}"/>
                                     </Trigger>
                                     <Trigger Property="IsSelected" Value="False">
-                                        <Setter TargetName="TabBorder" Property="Background">
-                                            <Setter.Value>
-                                                <SolidColorBrush Color="#808080"/>
-                                            </Setter.Value>
-                                        </Setter>
+                                        <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource UIElementBackground}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>

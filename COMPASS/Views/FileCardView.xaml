@@ -52,7 +52,7 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Border CornerRadius="5" Margin="5" Width="400" Background="#434343" SnapsToDevicePixels="True">
+                    <Border CornerRadius="5" Margin="5" Width="400" Background="{StaticResource CardBackground}" SnapsToDevicePixels="True">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="15" Direction="300"/>
                         </Border.Effect>
@@ -72,15 +72,10 @@
                                 </Grid.ColumnDefinitions>
                             <Image Source="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Icons\\CoverPlaceholder.png }" HorizontalAlignment="Center"/>
                             <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                                         Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox},
-                                           Converter={StaticResource BooltoVisibilityConverter}}">
+                                         Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooltoVisibilityConverter}}">
                                 <StackPanel.Resources>
                                     <Style TargetType="Button">
-                                        <Setter Property="Background">
-                                            <Setter.Value>
-                                                <SolidColorBrush Color="Black" Opacity="0"/>
-                                            </Setter.Value>
-                                        </Setter>
+                                        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
                                         <Setter Property="Foreground" Value="{x:Null}"/>
                                         <Setter Property="BorderBrush" Value="{x:Null}"/>
                                         <Style.Triggers>
@@ -119,14 +114,14 @@
                                 <Grid.Resources>
                                     <Style TargetType="TextBlock" x:Key="Type">
                                         <Setter Property="FontSize" Value="14"/>
-                                        <Setter Property="Foreground" Value="#FFD0D0D0"/>
+                                        <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
                                         <Setter Property="Margin" Value="3,2"/>
                                         <Setter Property="TextWrapping" Value="Wrap"/>
                                         <Setter Property="HorizontalAlignment" Value="Right"/>
                                     </Style>
                                     <Style TargetType="TextBlock" x:Key="Data">
                                         <Setter Property="FontSize" Value="14"/>
-                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                                         <Setter Property="Margin" Value="3,2"/>
                                         <Setter Property="TextWrapping" Value="Wrap"/>
                                     </Style>
@@ -167,7 +162,7 @@
                                            Converter={StaticResource BooltoVisibilityConverter}}"/>
                             </Grid>
                         </Grid>
-                        <Rectangle Grid.Row="1" Fill="#16d68a" Height="3"/>
+                        <Rectangle Grid.Row="1" Fill="{StaticResource AccentColor}" Height="3"/>
                         <ItemsControl Grid.Row="2" Grid.Column="0" Foreground="Black" VerticalAlignment="Center" Margin="10,3" HorizontalAlignment="Left"
                                       ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
                                       Visibility="{Binding DataContext.ShowTags, RelativeSource={RelativeSource AncestorType=ListBox},

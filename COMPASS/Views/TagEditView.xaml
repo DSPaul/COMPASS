@@ -66,9 +66,9 @@
             </Grid.RowDefinitions>
 
             <Label Content="Tag Name:" Grid.Row="1"/>
-            <Border Margin="10,0" Grid.Row="2" Background="#FF575757" CornerRadius="2">
+            <Border Margin="10,0" Grid.Row="2" Background="{StaticResource UIElementBackground}" CornerRadius="2">
                 <TextBox x:Name="TagNameTextBlock" BorderBrush="{x:Null}" FontSize="14"
-                         Text="{Binding TempTag.Content, TargetNullValue=''}" Background="{x:Null}" Foreground="White" Margin="2,0"/>
+                         Text="{Binding TempTag.Content, TargetNullValue=''}" Background="{x:Null}" Margin="2,0"/>
             </Border>
             <StackPanel Orientation="Horizontal" Grid.Row="3">
                 <Label Content="Group Tag:"/>
@@ -114,13 +114,13 @@
                             <Style TargetType="ToggleButton">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding ParentTempTag.IsGroup}" Value="True">
-                                        <Setter Property="Foreground" Value="LightGray"/>
+                                        <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
                                         <Setter Property="FontWeight" Value="Bold"/>
                                         <Setter Property="Typography.Capitals" Value="AllSmallCaps"/>
                                         <Setter Property="FontSize" Value="15"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding ParentTempTag.IsGroup}" Value="False">
-                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -136,10 +136,7 @@
                     </ToggleButton>
                 </Border>
                 <Button x:Name="ClearParent" Command="{Binding ClearParentCommand}"
-                         BorderBrush="{x:Null}" Width="40" VerticalAlignment="Center">
-                    <Button.Background>
-                        <SolidColorBrush Color="Black" Opacity="0"/>
-                    </Button.Background>
+                         BorderBrush="{x:Null}" Width="40" VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}">
                     <materialDesign:PackIcon Kind="WindowClose"/>
                 </Button>
             </StackPanel>
@@ -148,13 +145,13 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button Background="Green" x:Name="OKBtn" Command="{Binding OKCommand}">
+                <Button Background="{StaticResource AcceptFill}" x:Name="OKBtn" Command="{Binding OKCommand}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Check"/>
                         <TextBlock Text="OK" FontSize="15"/>
                     </StackPanel>
                 </Button>
-                <Button Grid.Column="1" Name="CancelBtn" Command ="{Binding CancelCommand}" Background="Red">
+                <Button Grid.Column="1" Name="CancelBtn" Command ="{Binding CancelCommand}" Background="{StaticResource CancelFill}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="WindowClose"/>
                         <TextBlock Text="Cancel" FontSize="15"/>
@@ -179,7 +176,7 @@
                         </Style>
                     </TreeView.Resources>
                 </TreeView>
-                <Button Margin="5" Background="Red" Command="{Binding CancelParentSelectionCommand}" HorizontalAlignment="Center">
+                <Button Margin="5" Background="{StaticResource CancelFill}" Command="{Binding CancelParentSelectionCommand}" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="WindowClose"/>
                         <TextBlock Text="Cancel" FontSize="15"/>
@@ -190,7 +187,7 @@
         <StackPanel x:Name="ColorSelection" Grid.Column="2" Visibility="{Binding ShowColorSelection, Converter= {StaticResource BooltoVisibilityConverter}}">
             <CustomControls:ColorPicker Height="135" Width="166" 
                                         SelectedColor="{Binding TempTag.BackgroundColor, Mode=TwoWay, TargetNullValue=Black}"/>
-            <Button Margin="5" Background="Green" Command="{Binding CloseColorSelectionCommand}">
+            <Button Margin="5" Background="{StaticResource AcceptFill}" Command="{Binding CloseColorSelectionCommand}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Check"/>
                     <TextBlock Text="Select Color"/>

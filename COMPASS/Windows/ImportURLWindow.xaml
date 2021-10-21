@@ -4,41 +4,39 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMPASS.Windows"
-        mc:Ignorable="d" Foreground="White" WindowStyle="ToolWindow" Background="#242528"
+        mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" Background="{StaticResource WindowBackground}"
         Title="Import URL" Height="170" Width="600" WindowStartupLocation="CenterScreen">
-    <!--<Window.Style>
-        <Style>
-            <Setter Property="WindowChrome.WindowChrome">
-                <Setter.Value>
-                    <WindowChrome CaptionHeight="0"
-                CornerRadius="5"
-                GlassFrameThickness="0"
-                NonClientFrameEdges="None"
-                ResizeBorderThickness="3"/>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Style>-->
     <Grid>
         <StackPanel Margin="15">
-            <TextBlock Text="{Binding ImportTitle, FallbackValue= GM_Binder_URL:}" FontSize="16" Margin="5"/>
+            <TextBlock Text="{Binding ImportTitle, FallbackValue= URL:}" FontSize="16" Margin="5"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <Border Background="#909090" CornerRadius="5" Margin="5">
+                <Border Background="{StaticResource UIElementBackground}" CornerRadius="5" Margin="5">
                     <Grid>
-                        <TextBox Margin="3,5" Background="{x:Null}" BorderThickness="0" FontSize="15" Foreground="White" Panel.ZIndex="1"
-                                 Text="{Binding InputURL, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock  Margin="5"  FontSize="15" Foreground="LightGray"
-                                            Text="{Binding PreviewURL, FallbackValue=https://www.gmbinder.com/share}"/>
+                        <TextBox Margin="3,5" Background="{StaticResource SelectableTransparent}" BorderThickness="0" FontSize="15" Foreground="{StaticResource TextColor}" Panel.ZIndex="1"
+                                 Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock  Margin="5"  FontSize="15" Foreground="{StaticResource TextMutedColor}"
+                                            Text="{Binding PreviewURL, Mode=TwoWay, FallbackValue=https://www.gmbinder.com/share}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding InputURL}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </Grid>
                 </Border>
                 <Button Grid.Column="1" Background="{x:Null}" BorderThickness="0" Command="{Binding SubmitURLCommand}">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="5" Background="#16D68A" Margin="5">
+                            <Border CornerRadius="5" Background="{StaticResource AccentColorMuted}" Margin="5">
                                 <TextBlock Text="Import" Foreground="White" Margin="15,5" FontSize="15"/>
                             </Border>
                         </ControlTemplate>
