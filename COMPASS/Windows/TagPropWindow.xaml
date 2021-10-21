@@ -13,7 +13,7 @@
         mc:Ignorable="d"
         Title="File Properties" FontSize="16" MaxHeight="600"
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
-        Foreground="White" Background="#FF383838" SizeToContent="WidthAndHeight">
+        Foreground="{StaticResource TextColor}" Background="{StaticResource WindowBackground}" SizeToContent="WidthAndHeight">
     <Window.Resources>
         <DataTemplate DataType="{x:Type ViewModels:TagEditViewModel}">
             <Views:TagEditView DataContext="{Binding}"/>

@@ -82,7 +82,7 @@
                                 <ColumnDefinition Width="20" />
                             </Grid.ColumnDefinitions>
                             <Border x:Name="Border" Grid.ColumnSpan="3" CornerRadius="4,0,0,4" BorderThickness="0"
-                                    Background="{StaticResource TitlebarElementBackground}" ClipToBounds="True" />
+                                    Background="{StaticResource UIElementBackground}" ClipToBounds="True" />
                             <Path x:Name="Arrow" Grid.Column="1" Fill="{StaticResource CollectionIconFill}" HorizontalAlignment="Center"
                                  VerticalAlignment="Center" Data="M0,0 L6,8 L12,0 "/>
                         </Grid>
@@ -123,7 +123,7 @@
                                             AllowsTransparency="True" Focusable="False" PopupAnimation="Slide" VerticalOffset="-6">
                                             <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}"
                                                 MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                                <Border x:Name="DropDownBorder" Background="{StaticResource TitlebarElementBackground}" BorderThickness="0" CornerRadius="0,0,4,4"/>
+                                                <Border x:Name="DropDownBorder" Background="{StaticResource UIElementBackground}" BorderThickness="0" CornerRadius="0,0,4,4"/>
                                                 <ScrollViewer Margin="0,6,0,6" SnapsToDevicePixels="True">
                                                     <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
                                                 </ScrollViewer>
@@ -168,7 +168,7 @@
             <ContentControl Content="{StaticResource CompassLogo}" Margin="10,0" HorizontalAlignment="Left"/>
 
             <Border Grid.Column="1" CornerRadius="4" MinWidth="300" WindowChrome.IsHitTestVisibleInChrome="True"
-                    Background="Gray" OpacityMask="#FF222222" Margin="30,5">
+                    Background="{StaticResource UIElementBackground}" OpacityMask="#FF222222" Margin="30,5">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width ="*"/>
@@ -188,8 +188,8 @@
             <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="0,5" WindowChrome.IsHitTestVisibleInChrome="True">
                 <ComboBox  Style="{StaticResource RPGDropdownStyle}" SelectedValue="{Binding CurrentFolder, Mode=TwoWay}"
                 ItemsSource="{Binding Folders}"/>
-                <Rectangle Fill="{StaticResource TitlebarElementSeperator}" Width="2" Height="auto"/>
-                <Border Background="{StaticResource TitlebarElementBackground}">
+                <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
+                <Border Background="{StaticResource UIElementBackground}">
                     <Grid>
                         <Grid.Resources>
                             <Style TargetType="{x:Type ToggleButton}">
@@ -226,8 +226,8 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-                <Rectangle Fill="{StaticResource TitlebarElementSeperator}" Width="2" Height="auto"/>
-                <Border Background="{StaticResource TitlebarElementBackground}">
+                <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
+                <Border Background="{StaticResource UIElementBackground}">
                     <Grid>
                         <Grid.Resources>
                             <Style TargetType="{x:Type ToggleButton}">
@@ -263,8 +263,8 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-                <Rectangle Fill="{StaticResource TitlebarElementSeperator}" Width="2" Height="auto"/>
-                <Border Background="{StaticResource TitlebarElementBackground}" CornerRadius="0,4,4,0">
+                <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
+                <Border Background="{StaticResource UIElementBackground}" CornerRadius="0,4,4,0">
                     <Grid>
                         <Button Style="{x:Null}" Background="{StaticResource SelectableTransparent}" BorderThickness="0" Command="{Binding DeleteFolderCommand}">
                             <materialDesign:PackIcon Kind="Delete" Foreground="{StaticResource CollectionIconFill}" Width="25" Height="25"/>
@@ -288,7 +288,7 @@
                             </Style>
                         </Ellipse.Style>
                     </Ellipse>
-                    <TextBlock Foreground="{StaticResource TitlebarElementBackground}" VerticalAlignment="Center">
+                    <TextBlock Foreground="{StaticResource UIElementBackground}" VerticalAlignment="Center">
                         <TextBlock.Style>
                             <Style>
                                 <Style.Triggers>
@@ -323,7 +323,7 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="true">
-                                    <Setter Property="Background" Value="{StaticResource TitlebarElementBackground}" />
+                                    <Setter Property="Background" Value="{StaticResource UIElementBackground}" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -342,7 +342,7 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="true">
-                                    <Setter Property="Background" Value="{StaticResource TitlebarElementBackground}" />
+                                    <Setter Property="Background" Value="{StaticResource UIElementBackground}" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -433,7 +433,12 @@
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
-                </Style>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" Value="{StaticResource ButtonFocus}" />
+                        </Trigger>
+                    </Style.Triggers>
+                    </Style>
                 <Style TargetType="{x:Type CustomControls:ExpandingButton}">
                     <Setter Property="Margin" Value="10,4"/>
                 </Style>
@@ -479,7 +484,7 @@
 
             <UserControl Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Content="{Binding TFViewModel}"/>
             
-            <Rectangle Grid.ColumnSpan="10" Grid.Row="1" Fill="{StaticResource TitlebarElementSeperator}" Height="3" Margin="0,10"/>
+            <Rectangle Grid.ColumnSpan="10" Grid.Row="1" Fill="{StaticResource Separator}" Height="3" Margin="0,10"/>
             
             <CustomControls:ExpandingButton Grid.Column="1" Grid.Row="2" HiddenContent="{Binding AddTagViewModel}">
                 <CustomControls:ExpandingButton.Toggle>
@@ -494,7 +499,7 @@
                             Style="{StaticResource outerIconBtn}" Content="Import"/>
                 </CustomControls:ExpandingButton.Toggle>
                 <CustomControls:ExpandingButton.HiddenContent>
-                    <StackPanel Margin="-0">
+                    <StackPanel>
                         <Button Tools:AP.IconKind="FilePdfOutline" Style="{StaticResource innerIconBtn}" Content="From PDF"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Pdf}"/>
                         <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource innerIconBtn}" Content="Manual"
@@ -503,7 +508,7 @@
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Homebrewery}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                 BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
                                     <ContentControl Content="{StaticResource HomebreweryLogo}"/>
                                     <TextBlock Text="Homebrewery"/>
                                 </StackPanel>

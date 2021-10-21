@@ -12,13 +12,7 @@
         mc:Ignorable="d"
         Title="File Properties" Height="450" Width="1000" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
-        Foreground="White" Background="#FF242528" MouseDown="MainGrid_MouseDown">
-    <!--<Window.Background>
-        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-            <GradientStop Color="#FF1DA1F2"/>
-            <GradientStop Color="#FF15202B" Offset="1"/>
-        </LinearGradientBrush>
-    </Window.Background>-->
+        Foreground="{StaticResource TextColor}" Background="{StaticResource WindowBackground}" MouseDown="MainGrid_MouseDown">
     <Window.Resources>
         <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
     </Window.Resources>
@@ -42,20 +36,19 @@
         <Grid.Resources>
             <ControlTemplate x:Key="Btn" TargetType="Button">
                 <Border Background="{TemplateBinding Background}" CornerRadius="5" Margin="3">
-                    <ContentPresenter Margin="7,2" HorizontalAlignment="Center" TextBlock.Foreground="White"/>
+                    <ContentPresenter Margin="7,2" HorizontalAlignment="Center"/>
                 </Border>
             </ControlTemplate>
             <Style TargetType="TextBlock">
-                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                 <Setter Property="Margin" Value="3,0"/>
                 <Setter Property="TextWrapping" Value="Wrap"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
             <Style TargetType="TextBox">
-                <Setter Property="Background" Value="#00000000"/>
-                <Setter Property="Foreground" Value ="#cccccc"/>
-                <Setter Property="BorderBrush" Value="#FF97A0A5"/>
-                <!--<Setter Property="MaxWidth" Value="{Binding ActualWidth}"/>-->
+                <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                <Setter Property="Foreground" Value ="{StaticResource TextMutedColor}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TextColor}"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
             <Style TargetType="Button">
@@ -67,19 +60,18 @@
                         <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
                     </Border.Background>
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox Background="{x:Null}" BorderBrush="#FF626262" Foreground="#FF979797"
-                                       Margin="5,0,0,0" Command="{Binding Path=DataContext.TagCheckCommand,
+                        <CheckBox Margin="5,0,0,0" Command="{Binding Path=DataContext.TagCheckCommand,
                                        RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeView}}}"
                                       CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
-                                       IsChecked="{Binding Selected, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="White"/>
+                                       IsChecked="{Binding Selected, Mode=TwoWay}"/>
+                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="{StaticResource TextColor}"/>
                     </StackPanel>
                 </Border>
             </HierarchicalDataTemplate>
             <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
                 <Border CornerRadius="5" Margin="0,3" Background="{x:Null}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="LightGray" Typography.Capitals="AllSmallCaps" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="{StaticResource TextMutedColor}" Typography.Capitals="AllSmallCaps" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
             </HierarchicalDataTemplate>
@@ -100,7 +92,7 @@
                     Padding="0,5">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
-                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                     <Setter Property="BorderThickness" Value="0"/>
                     <Setter Property="VerticalAlignment" Value="Bottom"/>
                     <Setter Property="MaxWidth" Value="300"/>
@@ -115,11 +107,7 @@
                                         <Setter TargetName="TabBorder" Property="Background" Value="{x:Null}"/>
                                     </Trigger>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter TargetName="TabBorder" Property="Background">
-                                            <Setter.Value>
-                                                <SolidColorBrush Color="#FFACACAC"/>
-                                            </Setter.Value>
-                                        </Setter>
+                                        <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource TabFocus}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -166,28 +154,29 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="0.5*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1.5*"/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Version:"/>
-                            <TextBox Text="{Binding TempFile.Version, Mode=TwoWay}" MinWidth="100" Name="FileVersionTB" Margin="5,0"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Grid.Column="1">
-                            <TextBlock Text="Release Date:"/>
-                            <DatePicker SelectedDate="{Binding TempFile.ReleaseDate, TargetNullValue={x:Null}, FallbackValue={x:Null}}"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Grid.Row="1">
-                            <TextBlock Text="Hard Copy:" Margin="3,1,3,0" VerticalAlignment="Top"/>
-                            <CheckBox Name="FileOwnedCB" IsChecked="{Binding TempFile.Physically_Owned, Mode=TwoWay}" VerticalAlignment="Center"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
-                            <TextBlock Text="Rating:"/>
-                            <materialDesign:RatingBar Value="{Binding TempFile.Rating, Mode=TwoWay}" Margin="50,0,0,0"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Grid.Row="2">
-                            <TextBlock Text="PageCount:"/>
-                            <TextBox Text="{Binding TempFile.PageCount, Mode=TwoWay}" MinWidth="30" Margin="5,0"/>
-                        </StackPanel>
+                        
+                        <TextBlock Text="Version:" Grid.Column="0" Grid.Row="0"/>
+                        <TextBox Text="{Binding TempFile.Version, Mode=TwoWay}" Margin="5,0"  Grid.Column="1" Grid.Row="0"/>
+
+                        <TextBlock Text="Release Date:" Grid.Column="3" Grid.Row="0"/>
+                        <DatePicker SelectedDate="{Binding TempFile.ReleaseDate, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
+                                    Grid.Column="4" Grid.Row="0"/>
+
+                        <TextBlock Text="PageCount:"  Grid.Column="0" Grid.Row="1"/>
+                        <TextBox Text="{Binding TempFile.PageCount, Mode=TwoWay}" MinWidth="30" Margin="5"  Grid.Column="1" Grid.Row="1"/>
+                        
+                        <TextBlock Text="Hard Copy:" VerticalAlignment="Top" Grid.Column="0" Grid.Row="2"/>
+                        <CheckBox Name="FileOwnedCB" IsChecked="{Binding TempFile.Physically_Owned, Mode=TwoWay}" VerticalAlignment="Bottom"
+                                   Grid.Column="1" Grid.Row="2" Margin="2,0"/>
+                        
+                        <TextBlock Text="Rating:"  Grid.Column="3" Grid.Row="1"/>
+                        <materialDesign:RatingBar Value="{Binding TempFile.Rating, Mode=TwoWay}" Margin="5"  Grid.Column="4" Grid.Row="1"/>
+                        
                     </Grid>
 
                     <!--#region Tags-->
@@ -208,7 +197,7 @@
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
                         <ToggleButton Name="ManageTagsBtn" Visibility="Collapsed"
-                 Background="Gray" Grid.Column="2">
+                        Background="{StaticResource ButtonBackground}" Grid.Column="2">
                             <StackPanel Orientation="Horizontal" Margin="2,0">
                                 <TextBlock Text="Manage" VerticalAlignment="Center"/>
                             </StackPanel>
@@ -218,13 +207,13 @@
 
                     <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.Column="1">
                         <TextBlock Text="Cover Art:"/>
-                        <Button Background="Gray" Command="{Binding RegenArtCommand}" Margin="10,0">
+                        <Button Background="{StaticResource ButtonBackground}" Command="{Binding RegenArtCommand}" Margin="10,0">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Refresh"/>
                                 <TextBlock Text="Regenerate"/>
                             </StackPanel>
                         </Button>
-                        <Button Background="Gray" Command="{Binding SelectArtCommand}"  Margin="10,0">
+                        <Button Background="{StaticResource ButtonBackground}" Command="{Binding SelectArtCommand}"  Margin="10,0">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="FolderMultipleImage"/>
                                 <TextBlock Text="Set Manually"/>
@@ -234,53 +223,43 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Description">
-                <TextBox Text="{Binding TempFile.Description, Mode=TwoWay}" MinHeight="250" AcceptsReturn="True" TextWrapping="Wrap"/>
+                <TextBox Text="{Binding TempFile.Description, Mode=TwoWay}" MinHeight="250" 
+                         AcceptsReturn="True" TextWrapping="Wrap" Background="{StaticResource SelectableTransparent}"/>
             </TabItem>
             <TabItem Header="Sources">
-                <StackPanel>
-                    <!--#region Path-->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Path:" Grid.Column="0" VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding TempFile.Path, Mode=TwoWay}" Grid.Column="1" Name ="FilepathTB" 
-                     />
-                        <Button Name="BrowsepathBtn" Command="{Binding BrowsePathCommand}"
-                Grid.Column="2" Background="Gray">
-                            <StackPanel Orientation="Horizontal" Margin="2,0">
-                                <materialDesign:PackIcon Kind="FolderOpen"/>
-                                <TextBlock Text="Browse"/>
-                            </StackPanel>
-                        </Button>
-                    </Grid>
-                    <!--#endregion-->
-
-                    <!--#region SourceURL-->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Source URL:" Grid.Column="0"/>
-                        <TextBox Text="{Binding TempFile.SourceURL, Mode=TwoWay}" Grid.Column="1" Name="FileSourceTB"/>
-                        <Button Name="BrowseURLBtn" Command="{Binding BrowseURLCommand}" 
-                Grid.Column="2" Background="Gray">
-                            <StackPanel Orientation="Horizontal" Margin="2,0">
-                                <materialDesign:PackIcon Kind="Compass"/>
-                                <TextBlock Text="Browse"/>
-                            </StackPanel>
-                        </Button>
-                    </Grid>
-                    <!--#endregion-->
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Path:" Grid.Column="0" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding TempFile.Path, Mode=TwoWay}" Grid.Column="1"/>
+                    <Button Name="BrowsepathBtn" Command="{Binding BrowsePathCommand}"
+                    Grid.Column="2" Background="{StaticResource ButtonBackground}">
+                        <StackPanel Orientation="Horizontal" Margin="2,0">
+                            <materialDesign:PackIcon Kind="FolderOpen"/>
+                            <TextBlock Text="Browse"/>
+                        </StackPanel>
+                    </Button>
+                    <TextBlock Text="Source URL:" Grid.Column="0" Grid.Row="1"/>
+                    <TextBox Text="{Binding TempFile.SourceURL, Mode=TwoWay}" Grid.Column="1" Grid.Row="1"/>
+                    <Button Name="BrowseURLBtn" Command="{Binding BrowseURLCommand}"  Grid.Row="1"
+                        Grid.Column="2" Background="{StaticResource ButtonBackground}">
+                        <StackPanel Orientation="Horizontal" Margin="2,0">
+                            <materialDesign:PackIcon Kind="Compass"/>
+                            <TextBlock Text="Browse"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
             </TabItem>
         </TabControl>
 
-        <Rectangle Grid.Column="2" Grid.Row="1" Grid.RowSpan="3" Fill="DarkGray" Width="3" Margin="10,0"/>
+        <Rectangle Grid.Column="2" Grid.Row="1" Grid.RowSpan="3" Fill="{StaticResource Separator}" Width="3" Margin="10,0"/>
 
         <TreeView x:Name="TagSelection" Grid.Column="3" Grid.Row="1" BorderBrush="{x:Null}"
                   ItemsSource="{Binding TreeViewSource}" Background="{x:Null}" ItemTemplateSelector="{StaticResource TagTemplateSelector}"
@@ -301,19 +280,19 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Background="Red" Name="DeleteFileBtn" Command="{Binding DeleteFileCommand}">
+            <Button Grid.Column="0" Background="{StaticResource CancelFill}" Name="DeleteFileBtn" Command="{Binding DeleteFileCommand}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Delete" />
                     <TextBlock Text="Delete"/>
                 </StackPanel>
             </Button>
-            <Button Grid.Column="2" Name="OKBtn" Command ="{Binding OKCommand}"  Background="Green">
+            <Button Grid.Column="2" Name="OKBtn" Command ="{Binding OKCommand}"  Background="{StaticResource AcceptFill}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Check"/>
                     <TextBlock Text="OK"/>
                 </StackPanel>
             </Button>
-            <Button Grid.Column="3" Name="CancelBtn" Command="{Binding CancelCommand}" Background="Red">
+            <Button Grid.Column="3" Name="CancelBtn" Command="{Binding CancelCommand}" Background="{StaticResource CancelFill}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="WindowClose"/>
                     <TextBlock Text="Cancel"/>
