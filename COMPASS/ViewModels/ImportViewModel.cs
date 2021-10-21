@@ -17,6 +17,7 @@ using HtmlAgilityPack;
 using System.Globalization;
 using System.Collections.ObjectModel;
 using COMPASS.ViewModels.Commands;
+using OpenQA.Selenium.Chrome;
 
 namespace COMPASS.ViewModels
 {
@@ -50,6 +51,9 @@ namespace COMPASS.ViewModels
                     OpenImportURLDialog();
                     break;
                 case ImportMode.Homebrewery:
+                    OpenImportURLDialog();
+                    break;
+                case ImportMode.DnDBeyond:
                     OpenImportURLDialog();
                     break;
             }  
@@ -212,6 +216,10 @@ namespace COMPASS.ViewModels
                     ImportTitle = "Homebrewery";
                     PreviewURL = "https://homebrewery.naturalcrit.com/share/";
                     break;
+                case ImportMode.DnDBeyond:
+                    ImportTitle = "D&D Beyond";
+                    PreviewURL = "https://www.dndbeyond.com/sources/";
+                    break;
             }
 
             iURLw = new ImportURLWindow(this);
@@ -257,7 +265,16 @@ namespace COMPASS.ViewModels
 
             //Webscraper for metadata using HtmlAgilityPack
             HtmlWeb web = new HtmlWeb();
-            HtmlDocument doc = web.Load(InputURL);
+            HtmlDocument doc;
+            switch (mode)
+            {
+                case ImportMode.DnDBeyond:
+                    doc = web.Load(string.Concat(InputURL, "/credits"));
+                    break;
+                default:
+                    doc = web.Load(InputURL);
+                    break;
+            }
 
             if (doc.ParsedText == null)
             {
@@ -279,8 +296,10 @@ namespace COMPASS.ViewModels
             switch (mode)
             {
                 case ImportMode.GmBinder:
-                    //Scrape metadata
+                    //Set known metadata
                     newFile.Publisher = "GM Binder";
+
+                    //Scrape metadata
                     newFile.Title = src.SelectSingleNode("//html/head/title").InnerText.Split('|')[0];
                     newFile.Author = src.SelectSingleNode("//meta[@property='og:author']").GetAttributeValue("content", String.Empty);
 
@@ -291,9 +310,10 @@ namespace COMPASS.ViewModels
                     break;
 
                 case ImportMode.Homebrewery:
-                    //Scrape metadata
+                    //Set known metadata
                     newFile.Publisher = "Homebrewery";
 
+                    //Scrape metadata
                     //Select script tag with all metadata
                     HtmlNode script = src.SelectSingleNode("/html/body/script[2]");
                     List<string> BrewInfo = script.InnerText.Split(',').Skip(2).ToList();
@@ -324,6 +344,17 @@ namespace COMPASS.ViewModels
                     //get pagecount
                     HtmlNode pageInfo = src.SelectSingleNode("//div[@class='pageInfo']");
                     newFile.PageCount = int.Parse(pageInfo.InnerText.Split('/')[1]);
+                    break;
+
+                case ImportMode.DnDBeyond:
+                    //Set known metadata
+                    newFile.Publisher = "D&D Beyond";
+                    newFile.Author = "Wizards of the Coast";
+
+                    //Scrape metadata by going to storepage, get to storepage by using that /credits redirects there
+                    //Doesn't work because DnD Beyond detects bots/scrapers
+                    newFile.Title = src.SelectSingleNode("//meta[@property='og:title']").GetAttributeValue("content", String.Empty);
+                    newFile.Description = src.SelectSingleNode("//meta[@property='og:description']").GetAttributeValue("content", String.Empty);
                     break;
             }
 
