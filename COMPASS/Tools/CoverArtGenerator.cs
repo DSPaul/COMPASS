@@ -74,21 +74,21 @@ namespace COMPASS
                 switch (import)
                 {
                     case Enums.ImportMode.GmBinder:
-                        Coverpage = driver.FindElementById("p1");
+                        Coverpage = driver.FindElement(By.Id("p1"));
                         //screenshot and download the image
                         image = GetCroppedScreenShot(driver, Coverpage.Location, Coverpage.Size);
                         break;
 
                     case Enums.ImportMode.Homebrewery:
                         //get nav height because scraper doesn't see nav anymore after it switched to frame
-                        var nav = driver.FindElementByXPath("//nav");
+                        var nav = driver.FindElement(By.XPath("//nav"));
                         string navhstr = nav.GetCssValue("height");
                         float navheight = float.Parse(navhstr.Substring(0, navhstr.Length - 2), CultureInfo.InvariantCulture);
 
                         //switch to iframe
-                        var iframe = driver.FindElementByXPath("//iframe");
+                        var iframe = driver.FindElement(By.XPath("//iframe"));
                         driver.SwitchTo().Frame(iframe);
-                        Coverpage = driver.FindElementById("p1");
+                        Coverpage = driver.FindElement(By.Id("p1"));
                         //shift page down by nav height because element location is relative to frame, but coords on screenshot is reletaive to page 
                         int newY = (int)Math.Round(Coverpage.Location.Y + navheight, 0);
 

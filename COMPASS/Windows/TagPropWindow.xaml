@@ -8,8 +8,6 @@
         xmlns:Models="clr-namespace:COMPASS.Models"
         xmlns:Views="clr-namespace:COMPASS.Views"
         xmlns:ViewModels="clr-namespace:COMPASS.ViewModels"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="File Properties" FontSize="16" MaxHeight="600"
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
