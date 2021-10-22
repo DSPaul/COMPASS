@@ -10,7 +10,7 @@
         xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
         xmlns:Tools ="clr-namespace:COMPASS.Tools"
         mc:Ignorable="d"
-        Title="File Properties" Height="450" Width="1000" FontSize="16" 
+        Title="File Properties" Height="450" Width="1100" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
         Foreground="{StaticResource TextColor}" Background="{StaticResource WindowBackground}" MouseDown="MainGrid_MouseDown">
     <Window.Resources>
