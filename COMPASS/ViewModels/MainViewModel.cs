@@ -15,16 +15,45 @@ namespace COMPASS.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
-        public MainViewModel(string FolderName)
+        public MainViewModel()
         {
             //Get all RPG systems by folder name
             Folders = new ObservableCollection<string>();
-            string [] FullPathFolders = Directory.GetDirectories(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\");
+            string CollectionsLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\";
+            string [] FullPathFolders = Directory.GetDirectories(CollectionsLocation);
             foreach(string p in FullPathFolders){
                 Folders.Add(Path.GetFileName(p));
             }
 
-            CurrentFolder = FolderName;
+            //in case of first boot, create default folder
+            if (Folders.Count == 0) 
+            {
+                Directory.CreateDirectory(CollectionsLocation + @"Default\CoverArt");
+                Folders.Add("Default");
+                CurrentFolder = "Default";
+            }
+
+            //in case startup collection no longer exists
+            else if(!Directory.Exists(CollectionsLocation + Properties.Settings.Default.StartupCollection))
+            {
+                //TODO: show error "... not found"
+                //pick first one that does exists
+                foreach (string f in Folders)
+                {
+                    if (Directory.Exists(CollectionsLocation + f))
+                    {
+                        CurrentFolder = f;
+                        break;
+                    }
+                }
+            }
+
+            //otherwise, open startup collection
+            else
+            {
+                CurrentFolder = Properties.Settings.Default.StartupCollection;
+            }
+
 
             MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory);
 

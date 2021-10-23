@@ -24,7 +24,7 @@ namespace COMPASS
             InitializeComponent();
 
             //set Itemsources for databinding
-            MainViewModel = new MainViewModel("DnD");
+            MainViewModel = new MainViewModel();
             DataContext = MainViewModel;
         }
 
