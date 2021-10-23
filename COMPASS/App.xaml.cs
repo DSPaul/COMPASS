@@ -25,9 +25,7 @@ namespace COMPASS
     {
         public App()
         {
-            //Create necessary Roaming Folders
-            Directory.CreateDirectory((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\DnD\CoverArt"));
-            Directory.CreateDirectory((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\PathFinder\CoverArt"));
+
         }
     }
 

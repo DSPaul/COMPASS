@@ -53,5 +53,8 @@
     <Setting Name="CardShowFileIcons" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="StartupCollection" Type="System.String" Scope="User">
+      <Value Profile="(Default)">DnD</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -20,6 +20,8 @@ namespace COMPASS
 
             LoadTags();
             LoadFiles();
+
+            Properties.Settings.Default.StartupCollection = FolderLocation;
         }
 
         private String _Folder;

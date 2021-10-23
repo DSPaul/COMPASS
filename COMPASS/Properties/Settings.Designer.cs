@@ -226,5 +226,17 @@ namespace COMPASS.Properties {
                 this["CardShowFileIcons"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("DnD")]
+        public string StartupCollection {
+            get {
+                return ((string)(this["StartupCollection"]));
+            }
+            set {
+                this["StartupCollection"] = value;
+            }
+        }
     }
 }
