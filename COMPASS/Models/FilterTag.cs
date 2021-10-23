@@ -12,7 +12,7 @@ namespace COMPASS.Models
     {
         public FilterTag():base() 
         { }
-        public FilterTag(ObservableCollection<FilterTag> alltags,FilterType filtertype, object filterData = null)
+        public FilterTag(ObservableCollection<FilterTag> alltags,FilterType filtertype, object filterValue = null)
         {
             int tempID = 0;
             while (alltags.Any(t => t.ID == tempID))
@@ -21,11 +21,11 @@ namespace COMPASS.Models
             }
             ID = tempID;
             FT = filtertype;
-            FilterData = filterData;
+            FilterValue = filterValue;
         }
 
         readonly FilterType FT;
-        public object FilterData;
+        public object FilterValue;
 
         public override object GetGroup()
         {

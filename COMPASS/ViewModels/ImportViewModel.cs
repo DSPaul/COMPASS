@@ -25,8 +25,8 @@ namespace COMPASS.ViewModels
     {
         public ImportViewModel(MainViewModel vm, ImportMode importmode)
         {
-            //set data so we know where to import to
-            _data = vm.CurrentData;
+            //set codexCollection so we know where to import to
+            _codexCollection = vm.CurrentCollection;
 
             mode = importmode;
             SubmitURLCommand = new BasicCommand(SubmitURL);
@@ -62,7 +62,7 @@ namespace COMPASS.ViewModels
         #region Properties
         readonly MainViewModel MVM;
 
-        private Data _data;
+        private CodexCollection _codexCollection;
 
         private ImportMode mode;
         private BackgroundWorker worker;
@@ -157,14 +157,14 @@ namespace COMPASS.ViewModels
                 foreach (string path in openFileDialog.FileNames)
                 { 
                     //Import File
-                    if (_data.AllFiles.All(p => p.Path != path))
+                    if (_codexCollection.AllFiles.All(p => p.Path != path))
                     {
                         logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Importing {0}", System.IO.Path.GetFileName(path)));
                         worker.ReportProgress(_importcounter, logEntry);
 
                         PdfDocument pdfdoc = new PdfDocument(new PdfReader(path));
                         var info = pdfdoc.GetDocumentInfo();
-                        Codex pdf = new Codex(_data)
+                        Codex pdf = new Codex(_codexCollection)
                         {
                             Path = path,
                             Title = info.GetTitle() ?? System.IO.Path.GetFileNameWithoutExtension(path),
@@ -172,8 +172,8 @@ namespace COMPASS.ViewModels
                             PageCount = pdfdoc.GetNumberOfPages()
                         };
                         pdfdoc.Close();
-                        _data.AllFiles.Add(pdf);
-                        CoverArtGenerator.ConvertPDF(pdf, _data.Folder);
+                        _codexCollection.AllFiles.Add(pdf);
+                        CoverArtGenerator.ConvertPDF(pdf, _codexCollection.Folder);
                         SelectWhenDone = pdf;
                     }
 
@@ -283,7 +283,7 @@ namespace COMPASS.ViewModels
             }
             HtmlNode src = doc.DocumentNode;
 
-            Codex newFile = new Codex(_data)
+            Codex newFile = new Codex(_codexCollection)
             {
                 SourceURL = InputURL
             };
@@ -365,9 +365,9 @@ namespace COMPASS.ViewModels
             //Get Cover Art
             CoverArtGenerator.GetCoverFromURL(InputURL, newFile, mode);
 
-            //add file to data
-            _data.AllFiles.Add(newFile);
-            RaisePropertyChanged("_data.ActiveFiles");
+            //add file to cc
+            _codexCollection.AllFiles.Add(newFile);
+            RaisePropertyChanged("_codexCollection.ActiveFiles");
 
             //import done
             _importcounter++;

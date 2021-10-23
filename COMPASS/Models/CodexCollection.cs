@@ -1,5 +1,4 @@
-﻿using COMPASS.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -7,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 
-namespace COMPASS
+namespace COMPASS.Models
 {
-    public class Data : ObservableObject
+    public class CodexCollection : ObservableObject
     {
-        public Data(String FolderLocation)
+        public CodexCollection(String FolderLocation)
         {
             Folder = FolderLocation;
 

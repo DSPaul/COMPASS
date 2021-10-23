@@ -13,7 +13,7 @@ namespace COMPASS.ViewModels
         public TagEditViewModel(MainViewModel vm, Tag ToEdit) : base(vm)
         {
             EditedTag = ToEdit;
-            TempTag = new Tag(vm.CurrentData.AllTags);
+            TempTag = new Tag(vm.CurrentCollection.AllTags);
             if (!CreateNewTag) TempTag.Copy(EditedTag);
             else ClearParent();
 
@@ -140,17 +140,17 @@ namespace COMPASS.ViewModels
             bool CreatingTag = false;
             if(CreateNewTag)
             {
-                EditedTag = new Tag(MVM.CurrentData.AllTags);
+                EditedTag = new Tag(MVM.CurrentCollection.AllTags);
                 CreatingTag = true;
-                if (TempTag.ParentID == -1) MVM.CurrentData.RootTags.Add(EditedTag);
+                if (TempTag.ParentID == -1) MVM.CurrentCollection.RootTags.Add(EditedTag);
             }
             //set Parent if changed
             if (EditedTag.ParentID != tempTag.ParentID)
             {
-                if (EditedTag.ParentID == -1) MVM.CurrentData.RootTags.Remove(EditedTag);
+                if (EditedTag.ParentID == -1) MVM.CurrentCollection.RootTags.Remove(EditedTag);
                 else EditedTag.GetParent().Items.Remove(tempTag);
 
-                if (TempTag.ParentID == -1) MVM.CurrentData.RootTags.Add(EditedTag);
+                if (TempTag.ParentID == -1) MVM.CurrentCollection.RootTags.Add(EditedTag);
                 else TempTag.GetParent().Items.Add(EditedTag);
             }
             //Apply changes 
@@ -159,8 +159,8 @@ namespace COMPASS.ViewModels
             if (!CreatingTag) CloseAction();
             else
             {
-                MVM.CurrentData.AllTags.Add(EditedTag);
-                TempTag = new Tag(MVM.CurrentData.AllTags);
+                MVM.CurrentCollection.AllTags.Add(EditedTag);
+                TempTag = new Tag(MVM.CurrentCollection.AllTags);
                 EditedTag = null;
                 RaisePropertyChanged("ParentTempTag");
             }
@@ -171,7 +171,7 @@ namespace COMPASS.ViewModels
             if (!CreateNewTag) CloseAction();
             else
             {
-                TempTag = new Tag(MVM.CurrentData.AllTags);
+                TempTag = new Tag(MVM.CurrentCollection.AllTags);
             }
             EditedTag = null;
         }

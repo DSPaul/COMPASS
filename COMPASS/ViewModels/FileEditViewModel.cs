@@ -15,7 +15,7 @@ namespace COMPASS.ViewModels
         public FileEditViewModel(MainViewModel vm, Codex ToEdit) : base(vm)
         {
             EditedFile = ToEdit;
-            TempFile = new Codex(MVM.CurrentData);
+            TempFile = new Codex(MVM.CurrentCollection);
             if(!CreateNewFile) TempFile.Copy(EditedFile);
 
             //Apply right checkboxes in Alltags
@@ -71,17 +71,17 @@ namespace COMPASS.ViewModels
 
         public override void OKBtn()
         {
-            //Copy changes into Database
+            //Copy changes into Codex
             if(!CreateNewFile) EditedFile.Copy(TempFile);
             else
             {
                 Codex ToAdd = new Codex();
                 ToAdd.Copy(TempFile);
-                MVM.CurrentData.AllFiles.Add(ToAdd);
+                MVM.CurrentCollection.AllFiles.Add(ToAdd);
             }
             //Add new Author and Publishers to lists
-            if(TempFile.Author != "" && !MVM.CurrentData.AuthorList.Contains(TempFile.Author)) MVM.CurrentData.AuthorList.Add(TempFile.Author);
-            if(TempFile.Publisher != "" && !MVM.CurrentData.PublisherList.Contains(TempFile.Publisher)) MVM.CurrentData.PublisherList.Add(TempFile.Publisher);
+            if(TempFile.Author != "" && !MVM.CurrentCollection.AuthorList.Contains(TempFile.Author)) MVM.CurrentCollection.AuthorList.Add(TempFile.Author);
+            if(TempFile.Publisher != "" && !MVM.CurrentCollection.PublisherList.Contains(TempFile.Publisher)) MVM.CurrentCollection.PublisherList.Add(TempFile.Publisher);
 
             MVM.Reset();
             CloseAction();
@@ -110,7 +110,7 @@ namespace COMPASS.ViewModels
         {
             if (!CreateNewFile)
             {
-                MVM.CurrentData.DeleteFile(EditedFile);
+                MVM.CurrentCollection.DeleteFile(EditedFile);
                 MVM.FilterHandler.RemoveFile(EditedFile);
             }
             CloseAction();
@@ -126,7 +126,7 @@ namespace COMPASS.ViewModels
         public BasicCommand RegenArtCommand { get; private set; }
         private void RegenArt()
         {
-            CoverArtGenerator.ConvertPDF(TempFile, MVM.CurrentData.Folder);
+            CoverArtGenerator.ConvertPDF(TempFile, MVM.CurrentCollection.Folder);
             //force refresh
             string CovArt = TempFile.CoverArt; 
             TempFile.CoverArt = null;

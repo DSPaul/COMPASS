@@ -165,20 +165,21 @@ namespace COMPASS.ViewModels
             fpw.Topmost = true;
         }
 
-        //Move File to other folder
+        //Move Codex to other CodexCollection
         public RelayCommand<object> MoveToFolderCommand { get; private set; }
         public void MoveToFolder(object o = null)
         {
+            //par contains 2 parameters
             var par = (object[])o;
             List<Codex> ToMoveList = new List<Codex>();
-            string targetfolder;
+            string targetCollectionName;
 
-            //extract folder parameter
-            if (par[0] != null) targetfolder = (string)(par[0]);
+            //extract Collection parameter
+            if (par[0] != null) targetCollectionName = (string)(par[0]);
             else return;
-            if (targetfolder == MVM.CurrentFolder) return;
+            if (targetCollectionName == MVM.CurrentFolder) return;
 
-            //extract file parameter
+            //extract Codex parameter
             if (par[1] != null)
             {
                 IList list = par[1] as IList;
@@ -187,8 +188,8 @@ namespace COMPASS.ViewModels
             else ToMoveList.Add(MVM.CurrentFileViewModel.selectedFile);
 
             //MessageBox "Are you Sure?"
-            string MessageSingle = "Moving " + ToMoveList[0].Title + " to " + targetfolder + " will remove all tags from the file, are you sure you wish to continue?";
-            string MessageMultiple = "Moving these " + ToMoveList.Count() + " files to " + targetfolder + " will remove all tags from the files, are you sure you wish to continue?";
+            string MessageSingle = "Moving " + ToMoveList[0].Title + " to " + targetCollectionName + " will remove all tags from the Codex, are you sure you wish to continue?";
+            string MessageMultiple = "Moving these " + ToMoveList.Count() + " files to " + targetCollectionName + " will remove all tags from the Codices, are you sure you wish to continue?";
 
             string sCaption = "Are you Sure?";
             string sMessageBoxText = ToMoveList.Count == 1 ? MessageSingle : MessageMultiple;
@@ -200,34 +201,34 @@ namespace COMPASS.ViewModels
 
             if (rsltMessageBox == MessageBoxResult.Yes) 
             {
-                Data TargetData = new Data(targetfolder);
+                CodexCollection TargetCollection = new CodexCollection(targetCollectionName);
                 foreach (Codex ToMove in ToMoveList)
                 {
                     ToMove.Tags.Clear();
                     // Give file new ID and move it to other folder
-                    Codex GetIDfile = new Codex(TargetData); //create new file in target data to check the first available ID
+                    Codex GetIDfile = new Codex(TargetCollection); //create new file in target cc to check the first available ID
                     ToMove.ID = GetIDfile.ID;
 
-                    //Add file to target dataset
-                    TargetData.AllFiles.Add(ToMove);
+                    //Add Codex to target CodexCollection
+                    TargetCollection.AllFiles.Add(ToMove);
 
                     //Update Author and Publisher List
-                    if (ToMove.Author != "" && !TargetData.AuthorList.Contains(ToMove.Author)) TargetData.AuthorList.Add(ToMove.Author);
-                    if (ToMove.Publisher != "" && !TargetData.PublisherList.Contains(ToMove.Publisher)) TargetData.PublisherList.Add(ToMove.Publisher);
+                    if (ToMove.Author != "" && !TargetCollection.AuthorList.Contains(ToMove.Author)) TargetCollection.AuthorList.Add(ToMove.Author);
+                    if (ToMove.Publisher != "" && !TargetCollection.PublisherList.Contains(ToMove.Publisher)) TargetCollection.PublisherList.Add(ToMove.Publisher);
 
                     //Move cover art to right folder with new ID
-                    string newCoverArt = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + targetfolder + @"\CoverArt\" + ToMove.ID + ".png";
+                    string newCoverArt = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + targetCollectionName + @"\CoverArt\" + ToMove.ID + ".png";
                     File.Copy(ToMove.CoverArt, newCoverArt);
 
                     //Delete file in original folder
-                    MVM.CurrentData.DeleteFile(ToMove);
+                    MVM.CurrentCollection.DeleteFile(ToMove);
                     MVM.FilterHandler.RemoveFile(ToMove);
 
                     //Update the cover art metadata to new path, has to happen after delete so old one gets deleted
                     ToMove.CoverArt = newCoverArt;
                 }
-                //Save changes to TargetData
-                TargetData.SaveFilesToFile();
+                //Save changes to TargetCollection
+                TargetCollection.SaveFilesToFile();
             }
         }
 
@@ -244,7 +245,7 @@ namespace COMPASS.ViewModels
             }
             foreach(Codex ToDelete in ToDeleteList)
             {
-                MVM.CurrentData.DeleteFile(ToDelete);
+                MVM.CurrentCollection.DeleteFile(ToDelete);
                 MVM.FilterHandler.RemoveFile(ToDelete);
             }
             

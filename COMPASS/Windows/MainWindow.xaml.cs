@@ -49,8 +49,8 @@ namespace COMPASS
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            MainViewModel.CurrentData.SaveFilesToFile();
-            MainViewModel.CurrentData.SaveTagsToFile();
+            MainViewModel.CurrentCollection.SaveFilesToFile();
+            MainViewModel.CurrentCollection.SaveTagsToFile();
             Properties.Settings.Default.Save();
         }
 

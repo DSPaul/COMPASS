@@ -14,17 +14,17 @@ namespace COMPASS.Models
             Tags = new ObservableCollection<Tag>();
         }
 
-        public Codex(Data d)
+        public Codex(CodexCollection cc)
         {
             Tags = new ObservableCollection<Tag>();
 
             int tempID = 0;
-            while (d.AllFiles.Any(f => f.ID == tempID))
+            while (cc.AllFiles.Any(f => f.ID == tempID))
             {
                 tempID++;
             }
             ID = tempID;
-            CoverArt = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + d.Folder + @"\CoverArt\" + ID.ToString() + ".png");
+            CoverArt = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + cc.Folder + @"\CoverArt\" + ID.ToString() + ".png");
         }
 
         public void Copy(Codex f)

@@ -145,9 +145,9 @@ namespace COMPASS.ViewModels
         public void DeleteTag()
         {
             if (Context == null) return;
-            MVM.CurrentData.DeleteTag(Context);
+            MVM.CurrentCollection.DeleteTag(Context);
             //Go over all files and refresh tags list
-            foreach (var f in MVM.CurrentData.AllFiles)
+            foreach (var f in MVM.CurrentCollection.AllFiles)
             {
                 int i = 0;
                 //iterate over all the tags in the file
@@ -157,7 +157,7 @@ namespace COMPASS.ViewModels
                     //try to find the tag in alltags, if found, increase i to go to next tag
                     try
                     {
-                        MVM.CurrentData.AllTags.First(tag => tag.ID == currenttag.ID);
+                        MVM.CurrentCollection.AllTags.First(tag => tag.ID == currenttag.ID);
                         i++;
                     }
                     //if the tag in not found in alltags, delete it
