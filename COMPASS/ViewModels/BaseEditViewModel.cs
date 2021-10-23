@@ -14,7 +14,7 @@ namespace COMPASS.ViewModels
         public BaseEditViewModel(MainViewModel vm)
         {
             MVM = vm;
-            TreeViewSource = CreateTreeViewSourceFromCollection(MVM.CurrentData.RootTags);
+            TreeViewSource = CreateTreeViewSourceFromCollection(MVM.CurrentCollection.RootTags);
             AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
             CancelCommand = new BasicCommand(Cancel);
             OKCommand = new BasicCommand(OKBtn);
@@ -86,7 +86,7 @@ namespace COMPASS.ViewModels
 
         public void RefreshTreeView()
         {
-            TreeViewSource = CreateTreeViewSourceFromCollection(MVM.CurrentData.RootTags);
+            TreeViewSource = CreateTreeViewSourceFromCollection(MVM.CurrentCollection.RootTags);
             AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
         }
         /*** End of Treeview section ***/

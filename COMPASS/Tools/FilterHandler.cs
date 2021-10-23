@@ -13,14 +13,14 @@ namespace COMPASS.Tools
 {
     public class FilterHandler : ObservableObject
     {
-        readonly Data data;
+        readonly CodexCollection cc;
 
         //Constuctor
-        public FilterHandler(Data CurrentData)
+        public FilterHandler(CodexCollection CurrentCollection)
         {
-            data = CurrentData;
+            cc = CurrentCollection;
 
-            ActiveFiles = new List<Codex>(data.AllFiles);
+            ActiveFiles = new List<Codex>(cc.AllFiles);
 
             TagFilteredFiles = new List<Codex>();
             SearchFilteredFiles = new List<Codex>();
@@ -59,12 +59,11 @@ namespace COMPASS.Tools
 
                 if (searchterm != "")
                 {
-                    SearchFilteredFiles = new List<Codex>(data.AllFiles.Where(f => f.Title.IndexOf(SearchTerm, StringComparison.InvariantCultureIgnoreCase) < 0));
+                    SearchFilteredFiles = new List<Codex>(cc.AllFiles.Where(f => f.Title.IndexOf(SearchTerm, StringComparison.InvariantCultureIgnoreCase) < 0));
                 }
                 else SearchFilteredFiles = new List<Codex>();
 
                 UpdateActiveFiles();
-                
             }
         }
 
@@ -79,7 +78,7 @@ namespace COMPASS.Tools
             SearchFilteredFiles.Clear();
             ActiveTags.Clear();
             ActiveFilters.Clear();
-            ActiveFiles = new List<Codex>(data.AllFiles);
+            ActiveFiles = new List<Codex>(cc.AllFiles);
         }
 
         //-------------For Tags---------------//
@@ -119,7 +118,7 @@ namespace COMPASS.Tools
                     Tag P = SingleGroupTags[i].GetParent();
                     if (P != null && !P.IsGroup && !SingleGroupTags.Contains(P)) SingleGroupTags.Add(P);
                 }
-                SingleGroupFilteredFiles = new List<Codex>(data.AllFiles.Where(f => (SingleGroupTags.Intersect(f.Tags)).Count()==0));
+                SingleGroupFilteredFiles = new List<Codex>(cc.AllFiles.Where(f => (SingleGroupTags.Intersect(f.Tags)).Count()==0));
                 foreach (Codex f in SingleGroupFilteredFiles) if(!TagFilteredFiles.Contains(f)) TagFilteredFiles.Add(f);
             }
 
@@ -150,25 +149,25 @@ namespace COMPASS.Tools
             {
                 //FieldFilters.Add(new List<FilterTag>(ActiveFilters.Where(filter => (Enums.FilterType)filter.GetGroup()==FT)));
                 List<FilterTag> SingleFieldFilterTags = new List<FilterTag>(ActiveFilters.Where(filter => (Enums.FilterType)filter.GetGroup() == FT));
-                List<object> SingleFieldFilters = new List<object>(SingleFieldFilterTags.Select(t => t.FilterData));
+                List<object> SingleFieldFilters = new List<object>(SingleFieldFilterTags.Select(t => t.FilterValue));
                 if (SingleFieldFilters.Count == 0) continue;
                 List<Codex> SingleFieldFilteredFiles = new List<Codex>();
                 switch (FT)
                 {
                     case Enums.FilterType.Author:
-                        SingleFieldFilteredFiles = new List<Codex>(data.AllFiles.Where(f => !SingleFieldFilters.Contains(f.Author)));
+                        SingleFieldFilteredFiles = new List<Codex>(cc.AllFiles.Where(f => !SingleFieldFilters.Contains(f.Author)));
                         break;
                     case Enums.FilterType.Publisher:
-                        SingleFieldFilteredFiles = new List<Codex>(data.AllFiles.Where(f => !SingleFieldFilters.Contains(f.Publisher)));
+                        SingleFieldFilteredFiles = new List<Codex>(cc.AllFiles.Where(f => !SingleFieldFilters.Contains(f.Publisher)));
                         break;
                     case Enums.FilterType.StartReleaseDate:
-                        SingleFieldFilteredFiles = new List<Codex>(data.AllFiles.Where(f => f.ReleaseDate < (DateTime?)SingleFieldFilters.First()));
+                        SingleFieldFilteredFiles = new List<Codex>(cc.AllFiles.Where(f => f.ReleaseDate < (DateTime?)SingleFieldFilters.First()));
                         break;
                     case Enums.FilterType.StopReleaseDate:
-                        SingleFieldFilteredFiles = new List<Codex>(data.AllFiles.Where(f => f.ReleaseDate > (DateTime?)SingleFieldFilters.First()));
+                        SingleFieldFilteredFiles = new List<Codex>(cc.AllFiles.Where(f => f.ReleaseDate > (DateTime?)SingleFieldFilters.First()));
                         break;
                     case Enums.FilterType.MinimumRating:
-                        SingleFieldFilteredFiles = new List<Codex>(data.AllFiles.Where(f => f.Rating < (int)SingleFieldFilters.First()));
+                        SingleFieldFilteredFiles = new List<Codex>(cc.AllFiles.Where(f => f.Rating < (int)SingleFieldFilters.First()));
                         break;
                 }
                 FieldFilteredFiles = new List<Codex>(FieldFilteredFiles.Union(SingleFieldFilteredFiles));
@@ -182,7 +181,7 @@ namespace COMPASS.Tools
         //------------------------------------//
         public void UpdateActiveFiles()
         {
-            var tempActiveFiles = new List<Codex>(data.AllFiles);
+            var tempActiveFiles = new List<Codex>(cc.AllFiles);
             var temp1 = tempActiveFiles.Except(SearchFilteredFiles);
             var temp2 = temp1.Except(TagFilteredFiles);
             var temp3 = temp2.Except(FieldFilteredFiles);

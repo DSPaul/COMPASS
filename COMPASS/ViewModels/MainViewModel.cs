@@ -89,22 +89,22 @@ namespace COMPASS.ViewModels
             get { return currentFolder; }
             set
             {
-                if (CurrentData != null)
+                if (CurrentCollection != null)
                 {
-                    CurrentData.SaveFilesToFile();
-                    CurrentData.SaveTagsToFile();
+                    CurrentCollection.SaveFilesToFile();
+                    CurrentCollection.SaveTagsToFile();
                 }
                 if(value != null) ChangeFolder(value);
                 SetProperty(ref currentFolder, value);
             }
         }
 
-        //Data 
-        private Data currentData;
-        public Data CurrentData
+        //CodexCollection 
+        private CodexCollection currentCollection;
+        public CodexCollection CurrentCollection
         {
-            get { return currentData; }
-            private set { SetProperty(ref currentData, value); }
+            get { return currentCollection; }
+            private set { SetProperty(ref currentCollection, value); }
         }
 
         private bool isOnline;
@@ -215,8 +215,8 @@ namespace COMPASS.ViewModels
         //Change Folder
         public void ChangeFolder(string folder)
         {
-            CurrentData = new Data(folder);
-            FilterHandler = new FilterHandler(currentData);
+            CurrentCollection = new CodexCollection(folder);
+            FilterHandler = new FilterHandler(currentCollection);
             ChangeFileView(Properties.Settings.Default.PreferedView);
             TFViewModel = new TagsFiltersViewModel(this);
             AddTagViewModel = new TagEditViewModel(this, null);
@@ -238,7 +238,7 @@ namespace COMPASS.ViewModels
         {
             string f = (string)folder;
             var index = Folders.IndexOf(CurrentFolder);
-            CurrentData.RenameFolder(f);
+            CurrentCollection.RenameFolder(f);
             Folders[index] = f;
             CurrentFolder = f;
         }
@@ -247,15 +247,15 @@ namespace COMPASS.ViewModels
         public BasicCommand DeleteFolderCommand { get; private set; }
         public void RaiseDeleteFolderWarning()
         {
-            if (CurrentData.AllFiles.Count > 0)
+            if (CurrentCollection.AllFiles.Count > 0)
             {
                 //MessageBox "Are you Sure?"
                 string sCaption = "Are you Sure?";
 
                 string MessageSingle = "There is still one file in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
-                string MessageMultiple = "There are still" + currentData.AllFiles.Count + " files in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
+                string MessageMultiple = "There are still" + currentCollection.AllFiles.Count + " files in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
 
-                string sMessageBoxText = CurrentData.AllFiles.Count == 1 ? MessageSingle : MessageMultiple;
+                string sMessageBoxText = CurrentCollection.AllFiles.Count == 1 ? MessageSingle : MessageMultiple;
 
                 MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
                 MessageBoxImage imgMessageBox = MessageBoxImage.Warning;

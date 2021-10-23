@@ -208,7 +208,7 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Tools\AP.cs" />
     <Compile Include="Tools\CoverArtGenerator.cs" />
-    <Compile Include="Models\Data.cs" />
+    <Compile Include="Models\CodexCollection.cs" />
     <Compile Include="Models\Codex.cs" />
     <Compile Include="Models\Tag.cs" />
     <Compile Include="ViewModels\TagEditViewModel.cs" />
@@ -334,6 +334,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="..\.editorconfig">
       <Link>.editorconfig</Link>
