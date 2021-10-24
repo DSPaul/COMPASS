@@ -19,8 +19,7 @@ namespace COMPASS.ViewModels
         {
             //Get all RPG systems by folder name
             Folders = new ObservableCollection<string>();
-            string CollectionsLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\";
-            string [] FullPathFolders = Directory.GetDirectories(CollectionsLocation);
+            string [] FullPathFolders = Directory.GetDirectories(CodexCollection.CollectionsPath);
             foreach(string p in FullPathFolders){
                 Folders.Add(Path.GetFileName(p));
             }
@@ -28,19 +27,17 @@ namespace COMPASS.ViewModels
             //in case of first boot, create default folder
             if (Folders.Count == 0) 
             {
-                Directory.CreateDirectory(CollectionsLocation + @"Default\CoverArt");
-                Folders.Add("Default");
-                CurrentFolder = "Default";
+                CreateFolder("Default");
             }
 
             //in case startup collection no longer exists
-            else if(!Directory.Exists(CollectionsLocation + Properties.Settings.Default.StartupCollection))
+            else if(!Directory.Exists(CodexCollection.CollectionsPath + Properties.Settings.Default.StartupCollection))
             {
-                //TODO: show error "... not found"
+                MessageBox.Show("The collection " + Properties.Settings.Default.StartupCollection + " could not be found. "); 
                 //pick first one that does exists
                 foreach (string f in Folders)
                 {
-                    if (Directory.Exists(CollectionsLocation + f))
+                    if (Directory.Exists(CodexCollection.CollectionsPath + f))
                     {
                         CurrentFolder = f;
                         break;
@@ -222,13 +219,13 @@ namespace COMPASS.ViewModels
             AddTagViewModel = new TagEditViewModel(this, null);
         }
 
-        //Add new Folder/collection/RPG System
+        //Add new Folder / CodexCollection
         public SimpleCommand CreateFolderCommand { get; private set; }
         public void CreateFolder(object folder)
         {
             string f = (string)folder;
-            Directory.CreateDirectory((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + f + @"\CoverArt"));
-            _Folders.Add(f);
+            Directory.CreateDirectory((CodexCollection.CollectionsPath + f + @"\CoverArt"));
+            Folders.Add(f);
             CurrentFolder = f;
         }
 
@@ -276,7 +273,7 @@ namespace COMPASS.ViewModels
         {
             Folders.Remove(todelete);
             CurrentFolder = Folders[0];
-            Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + todelete,true);
+            Directory.Delete(CodexCollection.CollectionsPath + todelete,true);
         }
 
         //check internet connection

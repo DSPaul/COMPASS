@@ -17,33 +17,27 @@ namespace COMPASS.Models
         public Codex(CodexCollection cc)
         {
             Tags = new ObservableCollection<Tag>();
-
-            int tempID = 0;
-            while (cc.AllFiles.Any(f => f.ID == tempID))
-            {
-                tempID++;
-            }
-            ID = tempID;
-            CoverArt = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + cc.Folder + @"\CoverArt\" + ID.ToString() + ".png");
+            ID = cc.GetAvailableID();
+            CoverArt = CodexCollection.CollectionsPath + cc.Folder + @"\CoverArt\" + ID.ToString() + ".png";
         }
 
-        public void Copy(Codex f)
+        public void Copy(Codex c)
         {
-            Title = f.Title;
-            Path = f.Path;
-            Author = f.Author;
-            Publisher = f.Publisher;
-            Version = f.Version;
-            SourceURL = f.SourceURL;
-            ID = f.ID;
-            CoverArt = f.CoverArt;
-            Physically_Owned = f.Physically_Owned;
-            Description = f.Description;
-            ReleaseDate = f.ReleaseDate;
-            Rating = f.Rating;
-            PageCount = f.PageCount;
+            Title = c.Title;
+            Path = c.Path;
+            Author = c.Author;
+            Publisher = c.Publisher;
+            Version = c.Version;
+            SourceURL = c.SourceURL;
+            ID = c.ID;
+            CoverArt = c.CoverArt;
+            Physically_Owned = c.Physically_Owned;
+            Description = c.Description;
+            ReleaseDate = c.ReleaseDate;
+            Rating = c.Rating;
+            PageCount = c.PageCount;
             Tags.Clear();
-            foreach (Tag t in f.Tags)
+            foreach (Tag t in c.Tags)
             {
                 Tags.Add(t);
             }
