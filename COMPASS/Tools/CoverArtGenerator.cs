@@ -35,7 +35,7 @@ namespace COMPASS
                 image.Trim(); //cut off all transparancy
                 image.RePage(); //resize image to fit what was cropped
 
-                image.Write(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + folder +  @"\CoverArt\" + pdf.ID.ToString() + ".png");
+                image.Write(CodexCollection.CollectionsPath + folder +  @"\CoverArt\" + pdf.ID.ToString() + ".png");
             }
         }
 

@@ -206,8 +206,7 @@ namespace COMPASS.ViewModels
                 {
                     ToMove.Tags.Clear();
                     // Give file new ID and move it to other folder
-                    Codex GetIDfile = new Codex(TargetCollection); //create new file in target cc to check the first available ID
-                    ToMove.ID = GetIDfile.ID;
+                    ToMove.ID = TargetCollection.GetAvailableID();
 
                     //Add Codex to target CodexCollection
                     TargetCollection.AllFiles.Add(ToMove);
@@ -217,7 +216,7 @@ namespace COMPASS.ViewModels
                     if (ToMove.Publisher != "" && !TargetCollection.PublisherList.Contains(ToMove.Publisher)) TargetCollection.PublisherList.Add(ToMove.Publisher);
 
                     //Move cover art to right folder with new ID
-                    string newCoverArt = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + targetCollectionName + @"\CoverArt\" + ToMove.ID + ".png";
+                    string newCoverArt = CodexCollection.CollectionsPath + targetCollectionName + @"\CoverArt\" + ToMove.ID + ".png";
                     File.Copy(ToMove.CoverArt, newCoverArt);
 
                     //Delete file in original folder

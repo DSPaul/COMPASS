@@ -10,7 +10,7 @@ namespace COMPASS.Models
 {
     public class CodexCollection : ObservableObject
     {
-        public CodexCollection(String FolderLocation)
+        public CodexCollection(string FolderLocation)
         {
             Folder = FolderLocation;
 
@@ -23,8 +23,10 @@ namespace COMPASS.Models
             Properties.Settings.Default.StartupCollection = FolderLocation;
         }
 
+        public static string CollectionsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\";
+        
+        #region Properties
         private String _Folder;
-
         public String Folder
         {
             get { return _Folder; }
@@ -33,15 +35,14 @@ namespace COMPASS.Models
 
         public String BooksFilepath
         {
-            get { return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Files.xml"; ; }
+            get { return CollectionsPath + Folder + @"\Files.xml"; ; }
         }
 
         public String TagsFilepath
         {
-            get { return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder + @"\Tags.xml"; ; }
+            get { return CollectionsPath + Folder + @"\Tags.xml"; ; }
         }
 
-        #region Tag Data
         //Tag Lists
         public ObservableCollection<Tag> AllTags = new ObservableCollection<Tag>();
         private ObservableCollection<Tag> rootTags;
@@ -51,15 +52,9 @@ namespace COMPASS.Models
             set { SetProperty(ref rootTags, value); }
         }
 
-        #endregion
-
-        #region File Data
         //File Lists
         public ObservableCollection<Codex> AllFiles = new ObservableCollection<Codex>();
 
-        #endregion
-
-        #region Metadata Data
         //Metadata Lists
         private ObservableCollection<String> authorList;
         public ObservableCollection<String> AuthorList
@@ -90,7 +85,7 @@ namespace COMPASS.Models
                     Reader.Close();
                 }
 
-                //Creating All Tags
+                //Constructing All Tags
                 List<Tag> Currentlist = RootTags.ToList();
                 for (int i = 0; i < Currentlist.Count(); i++)
                 {
@@ -169,6 +164,16 @@ namespace COMPASS.Models
 
         #endregion 
 
+        public int GetAvailableID()
+        {
+            int tempID = 0;
+            while (AllFiles.Any(f => f.ID == tempID))
+            {
+                tempID++;
+            }
+            return tempID;
+        }
+
         public void DeleteFile(Codex Todelete)
         {
             //Delete file from all lists
@@ -194,11 +199,11 @@ namespace COMPASS.Models
 
         public void RenameFolder(string NewFoldername)
         {
-            Directory.Move(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + Folder, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + NewFoldername);
+            Directory.Move(CollectionsPath + Folder, CollectionsPath + NewFoldername);
             Folder = NewFoldername;
             foreach(Codex file in AllFiles)
             {
-                file.CoverArt = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\" + NewFoldername + @"\CoverArt\" + file.ID + ".png";
+                file.CoverArt = CollectionsPath + NewFoldername + @"\CoverArt\" + file.ID + ".png";
             }
         }
     }
