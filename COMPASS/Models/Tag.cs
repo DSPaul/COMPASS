@@ -11,7 +11,7 @@ namespace COMPASS.Models
 {
     public class Tag : ObservableObject
     {
-        //Contructor
+        //Emtpy Contructor needed for serialization
         public Tag()
         {
 
