@@ -14,16 +14,17 @@ namespace COMPASS.ViewModels
     {
         public FileEditViewModel(MainViewModel vm, Codex ToEdit) : base(vm)
         {
-            EditedFile = ToEdit;
-            TempFile = new Codex(MVM.CurrentCollection);
-            if(!CreateNewFile) TempFile.Copy(EditedFile);
+            EditedCodex = ToEdit;
+            //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked
+            TempCodex = new Codex(MVM.CurrentCollection);
+            if(!CreateNewCodex) TempCodex.Copy(EditedCodex);
 
             //Apply right checkboxes in Alltags
             foreach (TreeViewNode t in AllTreeViewNodes)
             {
                 t.Expanded = false;
-                t.Selected = TempFile.Tags.Contains(t.Tag) ? true : false;
-                if (t.Children.Any(node => TempFile.Tags.Contains(node.Tag))) t.Expanded = true;
+                t.Selected = TempCodex.Tags.Contains(t.Tag) ? true : false;
+                if (t.Children.Any(node => TempCodex.Tags.Contains(node.Tag))) t.Expanded = true;
             }
 
             //Commands
@@ -37,18 +38,18 @@ namespace COMPASS.ViewModels
 
         #region Properties
 
-        readonly Codex EditedFile;
+        readonly Codex EditedCodex;
 
-        private bool CreateNewFile
+        private bool CreateNewCodex
         {
-            get { return EditedFile == null; }
+            get { return EditedCodex == null; }
         }
 
-        private Codex _tempFile;
-        public Codex TempFile
+        private Codex _tempCodex;
+        public Codex TempCodex
         {
-            get { return _tempFile; }
-            set { SetProperty(ref _tempFile, value); }
+            get { return _tempCodex; }
+            set { SetProperty(ref _tempCodex, value); }
         }
 
         #endregion
@@ -65,23 +66,25 @@ namespace COMPASS.ViewModels
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                TempFile.Path = openFileDialog.FileName;
+                TempCodex.Path = openFileDialog.FileName;
             }
         }
 
         public override void OKBtn()
         {
             //Copy changes into Codex
-            if(!CreateNewFile) EditedFile.Copy(TempFile);
+            if(!CreateNewCodex) EditedCodex.Copy(TempCodex);
             else
             {
                 Codex ToAdd = new Codex();
-                ToAdd.Copy(TempFile);
+                ToAdd.Copy(TempCodex);
                 MVM.CurrentCollection.AllFiles.Add(ToAdd);
             }
             //Add new Author and Publishers to lists
-            if(TempFile.Author != "" && !MVM.CurrentCollection.AuthorList.Contains(TempFile.Author)) MVM.CurrentCollection.AuthorList.Add(TempFile.Author);
-            if(TempFile.Publisher != "" && !MVM.CurrentCollection.PublisherList.Contains(TempFile.Publisher)) MVM.CurrentCollection.PublisherList.Add(TempFile.Publisher);
+            if(TempCodex.Author != "" && !MVM.CurrentCollection.AuthorList.Contains(TempCodex.Author)) 
+                MVM.CurrentCollection.AuthorList.Add(TempCodex.Author);
+            if(TempCodex.Publisher != "" && !MVM.CurrentCollection.PublisherList.Contains(TempCodex.Publisher)) 
+                MVM.CurrentCollection.PublisherList.Add(TempCodex.Publisher);
 
             MVM.Reset();
             CloseAction();
@@ -95,12 +98,12 @@ namespace COMPASS.ViewModels
         public BasicCommand TagCheckCommand { get; private set; }
         public void Update_Taglist()
         {
-            TempFile.Tags.Clear();
+            TempCodex.Tags.Clear();
             foreach (TreeViewNode t in AllTreeViewNodes)
             {
                 if (t.Selected)
                 {
-                    TempFile.Tags.Add(t.Tag);
+                    TempCodex.Tags.Add(t.Tag);
                 }
             }
         }
@@ -108,10 +111,10 @@ namespace COMPASS.ViewModels
         public BasicCommand DeleteFileCommand { get; private set; }
         private void DeleteFile()
         {
-            if (!CreateNewFile)
+            if (!CreateNewCodex)
             {
-                MVM.CurrentCollection.DeleteFile(EditedFile);
-                MVM.FilterHandler.RemoveFile(EditedFile);
+                MVM.CurrentCollection.DeleteFile(EditedCodex);
+                MVM.FilterHandler.RemoveFile(EditedCodex);
             }
             CloseAction();
         }
@@ -119,18 +122,18 @@ namespace COMPASS.ViewModels
         public BasicCommand BrowseURLCommand { get; private set; }
         private void BrowseURL()
         {
-            if (TempFile.SourceURL == "") return;
-            System.Diagnostics.Process.Start(TempFile.SourceURL);
+            if (TempCodex.SourceURL == "") return;
+            System.Diagnostics.Process.Start(TempCodex.SourceURL);
         }
 
         public BasicCommand RegenArtCommand { get; private set; }
         private void RegenArt()
         {
-            CoverArtGenerator.ConvertPDF(TempFile, MVM.CurrentCollection.Folder);
+            CoverArtGenerator.ConvertPDF(TempCodex, MVM.CurrentCollection.Folder);
             //force refresh
-            string CovArt = TempFile.CoverArt; 
-            TempFile.CoverArt = null;
-            TempFile.CoverArt = CovArt;
+            string CovArt = TempCodex.CoverArt; 
+            TempCodex.CoverArt = null;
+            TempCodex.CoverArt = CovArt;
         }
 
         public BasicCommand SelectArtCommand { get; private set; }
@@ -144,12 +147,12 @@ namespace COMPASS.ViewModels
         };
             if (openFileDialog.ShowDialog() == true)
             {
-                CoverArtGenerator.SaveImageAsCover(openFileDialog.FileName, TempFile);
+                CoverArtGenerator.SaveImageAsCover(openFileDialog.FileName, TempCodex);
             }
-            //force refresh
-            string CovArt = TempFile.CoverArt;
-            TempFile.CoverArt = null;
-            TempFile.CoverArt = CovArt;
+            //force refresh because it is cached
+            string CovArt = TempCodex.CoverArt;
+            TempCodex.CoverArt = null;
+            TempCodex.CoverArt = CovArt;
         }
         #endregion
     }
