@@ -2,7 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
-                    xmlns:Models ="clr-namespace:COMPASS.Models">
+                    xmlns:Models ="clr-namespace:COMPASS.Models" xmlns:Tools="clr-namespace:COMPASS.Tools">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Themes/DarkTheme.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    
     <!--#region ScrollBar Style-->
     <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
         <Setter Property="Visibility" Value="Hidden"/>
@@ -761,10 +765,49 @@
 
     <Style TargetType="materialDesign:PackIcon">
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
         <Setter Property="Width" Value="20"/>
         <Setter Property="Height" Value="20"/>
     </Style>
+
+    <Style TargetType="materialDesign:PackIcon" x:Key="ClickableIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
+        <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--#region IconButton-->
+    <Style TargetType="{x:Type Button}" x:Key="IconBtn">
+        <Setter Property="BorderBrush" Value="{x:Null}"/>
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Style="{StaticResource ClickableIcon}"
+                            Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}">
+                    </materialDesign:PackIcon>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="RenderTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="1.1" ScaleY="1.1"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <!--#endregion-->
     
     <!--#region Progressbar-->
     <Style x:Key="RoundedProgressBar" TargetType="{x:Type ProgressBar}">
