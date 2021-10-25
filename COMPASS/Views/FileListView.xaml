@@ -73,20 +73,6 @@
                 <Setter Property="FontSize" Value="16"/>
                 <Setter Property="Margin" Value="0,0,10,0"/>
             </Style>
-            <Style TargetType="Button">
-                <Setter Property="Background">
-                    <Setter.Value>
-                        <SolidColorBrush Color="Black" Opacity="0"/>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="Foreground" Value="{x:Null}"/>
-                <Setter Property="BorderBrush" Value="{x:Null}"/>
-                <Style.Triggers>
-                    <Trigger Property="IsEnabled" Value="False">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
         </DataGrid.Resources>
         <DataGrid.ItemContainerStyle>
             <Style TargetType="{x:Type DataGridRow}">
@@ -213,14 +199,10 @@
                         <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Command="{Binding Path=DataContext.OpenSelectedFileCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
-                                    CommandParameter="{Binding}">
-                                <materialDesign:PackIcon Kind="FilePdfOutline"/>
-                            </Button>
+                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FilePdfOutline"/>
                             <Button Command="{Binding Path=DataContext.OpenFileOnlineCommand,
                                 RelativeSource={RelativeSource FindAncestor,  AncestorType={x:Type UserControl}}}"
-                                    CommandParameter="{Binding}">
-                                <materialDesign:PackIcon Kind="Web"/>
-                            </Button>
+                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>
                             <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
                                 Converter={StaticResource BoolToVisibilityConverter}}"/>
                         </StackPanel>

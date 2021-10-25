@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:COMPASS.Views"
+             xmlns:Tools ="clr-namespace:COMPASS.Tools"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
              mc:Ignorable="d" 
@@ -71,30 +71,15 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                             <Image Source="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Icons\\CoverPlaceholder.png }" HorizontalAlignment="Center"/>
-                            <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                            <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
                                          Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooltoVisibilityConverter}}">
-                                <StackPanel.Resources>
-                                    <Style TargetType="Button">
-                                        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
-                                        <Setter Property="Foreground" Value="{x:Null}"/>
-                                        <Setter Property="BorderBrush" Value="{x:Null}"/>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsEnabled" Value="False">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Resources>
-                                <Button Command="{Binding Path=DataContext.OpenSelectedFileCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
-                                    CommandParameter="{Binding}">
-                                    <materialDesign:PackIcon Kind="FilePdfOutline"/>
-                                </Button>
-                                <Button Command="{Binding Path=DataContext.OpenFileOnlineCommand,
-                                RelativeSource={RelativeSource FindAncestor,  AncestorType={x:Type UserControl}}}"
-                                    CommandParameter="{Binding}">
-                                    <materialDesign:PackIcon Kind="Web"/>
-                                </Button>
+
+                                <Button Tools:AP.IconKind="FilePdfOutline" Style="{StaticResource IconBtn}"
+                                    Command="{Binding Path=DataContext.OpenSelectedFileCommand,
+                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"/>
+                                <Button Tools:AP.IconKind="Web" Style="{StaticResource IconBtn}"
+                                    Command="{Binding Path=DataContext.OpenFileOnlineCommand,
+                                RelativeSource={RelativeSource FindAncestor,  AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"/>
                                 <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
                                 Converter={StaticResource BooltoVisibilityConverter}}"/>
                             </StackPanel>
