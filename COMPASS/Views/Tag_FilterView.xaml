@@ -153,12 +153,12 @@
                         <StackPanel Margin="10">
                             <StackPanel Margin="10">
                                 <TextBlock Text="Author:"/>
-                                <ComboBox ItemsSource="{Binding MVM.CurrentData.AuthorList}" FontSize="15"
+                                <ComboBox ItemsSource="{Binding MVM.CurrentCollection.AuthorList}" FontSize="15"
                                       SelectedValue="{Binding SelectedAuthor}"/>
                             </StackPanel>
                             <StackPanel Margin="10">
                                 <TextBlock Text="Publisher:"/>
-                                <ComboBox ItemsSource="{Binding MVM.CurrentData.PublisherList}" FontSize="15"
+                                <ComboBox ItemsSource="{Binding MVM.CurrentCollection.PublisherList}" FontSize="15"
                                       SelectedValue="{Binding SelectedPublisher}"/>
                             </StackPanel>
                             <StackPanel Margin="10">

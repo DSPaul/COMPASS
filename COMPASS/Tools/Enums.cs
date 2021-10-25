@@ -26,6 +26,7 @@ namespace COMPASS.Tools
 
         public enum FilterType
         {
+            Search,
             Author,
             Publisher,
             StartReleaseDate,

@@ -179,9 +179,11 @@
                                Visibility="{Binding FilterHandler.SearchTerm, Converter={StaticResource StringtoVisibilityConverter}}"/>
                     <TextBox Grid.Column="0" x:Name="Searchbox" Margin="10,0,0,0"
                              Text="{Binding FilterHandler.SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
-                             Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" />
-                    <materialDesign:PackIcon Kind="Search" Background="{x:Null}" BorderBrush="{x:Null}" HorizontalAlignment="Right" 
-                                Margin="0,0,10,0" Grid.Column="1"/>
+                             Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" PreviewKeyDown="Searchbox_KeyDown"/>
+                    <Button  Grid.Column="1" Style="{x:Null}" Background="{StaticResource SelectableTransparent}" BorderThickness="0"
+                        Command="{Binding SearchCommand}" CommandParameter="{Binding Text, ElementName=Searchbox}">
+                        <materialDesign:PackIcon Kind="Search" HorizontalAlignment="Right" Margin="10,0"/>
+                    </Button>
                 </Grid>
             </Border>
 
@@ -609,6 +611,7 @@
                     <Grid.Resources>
                         <CollectionViewSource x:Key="Tags" Source="{Binding FilterHandler.ActiveTags}"/>
                         <CollectionViewSource x:Key="Filters" Source="{Binding FilterHandler.ActiveFilters}"/>
+                        <CollectionViewSource x:Key="Searches" Source="{Binding FilterHandler.SearchFilters}"/>
                     </Grid.Resources>
                     <ListBox x:Name="CurrentTagList" BorderBrush="{x:Null}" 
                      SelectionChanged="ActiveTag_Click" Background="{x:Null}" ItemTemplate="{StaticResource TagDeletableTemplate}">
@@ -621,6 +624,7 @@
                                 <CompositeCollection>
                                     <CollectionContainer Collection="{Binding Source={StaticResource Tags}}" />
                                     <CollectionContainer Collection="{Binding Source={StaticResource Filters}}" />
+                                    <CollectionContainer Collection="{Binding Source={StaticResource Searches}}" />
                                 </CompositeCollection>
                             </ListBox.ItemsSource>
                         </ListBox>
