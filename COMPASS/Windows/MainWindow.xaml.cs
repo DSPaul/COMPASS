@@ -182,6 +182,15 @@ namespace COMPASS
             (sender as Button).ContextMenu.PlacementTarget = (sender as Button);
             (sender as Button).ContextMenu.IsOpen = true;
         }
+
+        private void Searchbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(Key.Enter == e.Key)
+            {
+                e.Handled = true;
+                MainViewModel.FilterHandler.UpdateSearchFilteredFiles(Searchbox.Text);
+            }
+        }
     }
 }
 

@@ -51,7 +51,6 @@ namespace COMPASS.ViewModels
                 CurrentFolder = Properties.Settings.Default.StartupCollection;
             }
 
-
             MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
             //CheckForUpdates();
@@ -70,6 +69,7 @@ namespace COMPASS.ViewModels
             CreateFolderCommand = new SimpleCommand(CreateFolder);
             EditFolderCommand = new SimpleCommand(EditFolder);
             DeleteFolderCommand = new BasicCommand(RaiseDeleteFolderWarning);
+            SearchCommand = new SimpleCommand(Search);
         }
 
         #region Properties
@@ -274,6 +274,14 @@ namespace COMPASS.ViewModels
             Folders.Remove(todelete);
             CurrentFolder = Folders[0];
             Directory.Delete(CodexCollection.CollectionsPath + todelete,true);
+        }
+
+        //Search
+        public SimpleCommand SearchCommand { get; private set; }
+        public void Search(object o)
+        {
+            string searchterm = (string)o;
+            FilterHandler.UpdateSearchFilteredFiles(searchterm);
         }
 
         //check internet connection

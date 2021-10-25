@@ -8,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace COMPASS.Tools
 {
@@ -31,11 +32,13 @@ namespace COMPASS.Tools
             ActiveTags.CollectionChanged += (e, v) => UpdateTagFilteredFiles();
             ActiveFilters = new ObservableCollection<FilterTag>();
             ActiveFilters.CollectionChanged += (e, v) => UpdateFieldFilteredFiles();
+            SearchFilters = new ObservableCollection<FilterTag>();
         }
 
         //Collections
         public ObservableCollection<Tag> ActiveTags { get; set; }
         public ObservableCollection<FilterTag> ActiveFilters { get; set; }
+        public ObservableCollection<FilterTag> SearchFilters { get; set; }
 
         public List<Codex> TagFilteredFiles { get; set; }
         public List<Codex> SearchFilteredFiles { get; set; }
@@ -53,18 +56,7 @@ namespace COMPASS.Tools
         public string SearchTerm
         {
             get { return searchterm; }
-            set 
-            { 
-                SetProperty(ref searchterm, value);
-
-                if (searchterm != "")
-                {
-                    SearchFilteredFiles = new List<Codex>(cc.AllFiles.Where(f => f.Title.IndexOf(SearchTerm, StringComparison.InvariantCultureIgnoreCase) < 0));
-                }
-                else SearchFilteredFiles = new List<Codex>();
-
-                UpdateActiveFiles();
-            }
+            set { SetProperty(ref searchterm, value); }
         }
 
         #endregion
@@ -74,8 +66,8 @@ namespace COMPASS.Tools
         public void ClearFilters()
         {
             SearchTerm = "";
+            UpdateSearchFilteredFiles("");
             TagFilteredFiles.Clear();
-            SearchFilteredFiles.Clear();
             ActiveTags.Clear();
             ActiveFilters.Clear();
             ActiveFiles = new List<Codex>(cc.AllFiles);
@@ -154,6 +146,9 @@ namespace COMPASS.Tools
                 List<Codex> SingleFieldFilteredFiles = new List<Codex>();
                 switch (FT)
                 {
+                    case Enums.FilterType.Search:
+                        
+                        break;
                     case Enums.FilterType.Author:
                         SingleFieldFilteredFiles = new List<Codex>(cc.AllFiles.Where(f => !SingleFieldFilters.Contains(f.Author)));
                         break;
@@ -176,9 +171,31 @@ namespace COMPASS.Tools
         }
         public void RemoveFieldFilter(FilterTag t)
         {
-            ActiveFilters.Remove(t);
+            if ((Enums.FilterType)t.GetGroup() == Enums.FilterType.Search)
+            {
+                SearchFilters.Remove(t);
+                UpdateSearchFilteredFiles("");
+            }
+
+            else ActiveFilters.Remove(t);
         }
         //------------------------------------//
+
+        //------------ For Search-------------//
+        public void UpdateSearchFilteredFiles(string searchterm)
+        {
+            SearchFilters.Clear();
+            if (searchterm != "")
+            {
+                SearchFilteredFiles = new List<Codex>(cc.AllFiles.Where(f => f.Title.IndexOf(SearchTerm, StringComparison.InvariantCultureIgnoreCase) < 0));
+                FilterTag SearchTag = new FilterTag(SearchFilters, Enums.FilterType.Search, searchterm) { Content = "Search: " + SearchTerm, BackgroundColor = Colors.Salmon };
+                SearchFilters.Add(SearchTag);
+            }
+            else SearchFilteredFiles.Clear();
+
+            UpdateActiveFiles();
+        }
+
         public void UpdateActiveFiles()
         {
             var tempActiveFiles = new List<Codex>(cc.AllFiles);
