@@ -51,7 +51,7 @@ namespace COMPASS.ViewModels
                 CurrentFolder = Properties.Settings.Default.StartupCollection;
             }
 
-            MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            //MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
             //CheckForUpdates();
 
