@@ -75,6 +75,7 @@ artifacts/
 # Others
 ClientBin/
 Images/
+MigrationBackup/
 ~$*
 *~
 *.dbmdl
