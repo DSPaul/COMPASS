@@ -7,80 +7,120 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid x:Name="TileViewGrid">
-        <Grid.Resources>
+    <UserControl.Resources>
             <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
-            <Converters:BooltoVisibilityConverter x:Key="BooltoVisibilityConverter"/>
+        <Converters:BooltoVisibilityConverter x:Key="BooltoVisibilityConverter"/>
+        <!--ContextMenu needs to be in every view where it is used instead of in a resource dict because 
+            in resource dict it "sticks" to first view and the binding target for SelectedItems doesn't update when the view changes-->
+        <ContextMenu x:Key="MultiFileContextMenu" DataContext="{Binding PlacementTarget.DataContext, 
+        RelativeSource={RelativeSource Self}}">
+            <ContextMenu.Resources>
+                <Converters:MulitParamConverter x:Key="MultiParamConverter"/>
+            </ContextMenu.Resources>
+            <MenuItem Header="Open All Files" 
+                  CommandParameter="{Binding SelectedItems,
+                    RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
+                  Command="{Binding Path=DataContext.OpenSelectedFilesCommand,
+                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+            <MenuItem Header="Bulk Edit" CommandParameter="{Binding SelectedItems,
+                    RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
+                  Command="{Binding Path=DataContext.EditFilesCommand,
+                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+            <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
+                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+                <MenuItem.ItemContainerStyle>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                        <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.MoveToFolderCommand,
+                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+                        <Setter Property="MenuItem.CommandParameter">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource MultiParamConverter}">
+                                    <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
+                                    <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}" FallbackValue="{x:Null}" TargetNullValue="{x:Null}"/>
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </MenuItem.ItemContainerStyle>
+            </MenuItem>
+            <MenuItem Header="Delete All" CommandParameter="{Binding SelectedItems,
+                  RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
+                  Command="{Binding Path=DataContext.DeleteFileCommand,
+                  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+        </ContextMenu>
+    </UserControl.Resources>
 
-        </Grid.Resources>
-
-        <ListBox x:Name="FileView" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
-                       ItemsSource="{Binding MVM.FilterHandler.ActiveFiles}" Background="{x:Null}" BorderBrush="{x:Null}"
-                      ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top" SelectionChanged="FileView_SelectionChanged">
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="{x:Type ListBoxItem}">
-                    <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
-                    <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>
-                    <Setter Property="Background" Value="Transparent"/>
-                    <Setter Property="BorderBrush" Value="{StaticResource AccentColor}"/>
-                    <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" 
-                                        Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true" CornerRadius="5">
-                                    <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="RenderTransform">
-                                <Setter.Value>
-                                    <TransformGroup>
-                                        <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
-                                    </TransformGroup>
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="BorderThickness" Value="2"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileView}" HorizontalAlignment="Center"/>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid VerticalAlignment="Top" Margin="0,10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <Border CornerRadius="5" Margin="10,5" SnapsToDevicePixels="True" Grid.Row="0"
-                                Width="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=2}}" 
-                                Height="{Binding DataContext.TileHeight, RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=2}}">
-                            <Border.Background>
-                                <ImageBrush ImageSource="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Icons\\CoverPlaceholder.png}"/>
-                            </Border.Background>
-                            <Border.Effect>
-                                <DropShadowEffect BlurRadius="15" Direction="300"/>
-                            </Border.Effect>
-                        </Border>
-                        <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" 
-                                   MaxWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=2}}"
-                                   Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"
-                                   Visibility="{Binding DataContext.ShowTitle, RelativeSource={RelativeSource AncestorType=Grid, AncestorLevel=2}, Converter={StaticResource BooltoVisibilityConverter}}"/>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-    </Grid>
+    <ListBox x:Name="FileView" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
+            ItemsSource="{Binding MVM.FilterHandler.ActiveFiles}" Background="{x:Null}" BorderBrush="{x:Null}"
+            ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top" 
+            SelectionChanged="FileView_SelectionChanged" SelectionMode="Extended">
+        <ListBox.ItemContainerStyle>
+            <Style TargetType="{x:Type ListBoxItem}">
+                <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+                <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
+                <Setter Property="ContextMenu" Value="{DynamicResource MultiFileContextMenu}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                                    Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true" CornerRadius="5">
+                                <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="true">
+                        <Setter Property="RenderTransform">
+                            <Setter.Value>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
+                                </TransformGroup>
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+                    </Trigger>
+                    <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Value="1">
+                        <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ListBox.ItemContainerStyle>
+        <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+                <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileView}" HorizontalAlignment="Center"/>
+            </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <Grid VerticalAlignment="Top" Margin="0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Border CornerRadius="5" Margin="10,5" SnapsToDevicePixels="True" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
+                            BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                                Width="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                Height="{Binding DataContext.TileHeight, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <Border.Background>
+                            <ImageBrush ImageSource="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Icons\\CoverPlaceholder.png}"/>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="15" Direction="300"/>
+                        </Border.Effect>
+                    </Border>
+                    <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" 
+                            MaxWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"
+                            Visibility="{Binding DataContext.ShowTitle, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooltoVisibilityConverter}}"/>
+                </Grid>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
 </UserControl>
