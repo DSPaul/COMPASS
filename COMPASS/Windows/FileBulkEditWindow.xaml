@@ -199,6 +199,7 @@
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="IsExpanded" Value="{Binding Expanded}"/>
                     <Setter Property="Focusable" Value="False"/>
+                    <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                 </Style>
             </TreeView.Resources>
         </TreeView>
