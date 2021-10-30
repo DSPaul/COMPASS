@@ -63,7 +63,7 @@ namespace COMPASS.ViewModels
             else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
             try
             {
-                Process.Start(ToOpen.Path);
+                Process.Start(new ProcessStartInfo(ToOpen.Path) {UseShellExecute = true });
             }
             catch
             {
@@ -90,7 +90,7 @@ namespace COMPASS.ViewModels
             else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
             try
             {
-                Process.Start(ToOpen.SourceURL);
+                Process.Start(new ProcessStartInfo(ToOpen.SourceURL) { UseShellExecute = true });
             }
             catch
             {
@@ -131,8 +131,8 @@ namespace COMPASS.ViewModels
                 {
                     try
                     {
-                        if(f.Path != null) Process.Start(f.Path);
-                        else Process.Start(f.SourceURL);
+                        if(f.Path != null) Process.Start(new ProcessStartInfo(f.Path) { UseShellExecute = true });
+                        else Process.Start(new ProcessStartInfo(f.SourceURL) { UseShellExecute = true });
                     }
                     catch
                     {
