@@ -85,3 +85,4 @@ MigrationBackup/
 *.publishsettings
 *.pdn
 .editorconfig
+*.diagsession
