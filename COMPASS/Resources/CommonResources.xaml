@@ -310,41 +310,7 @@
                   CommandParameter="{x:Null}"/>
     </ContextMenu>
 
-    <ContextMenu x:Key="MultiFileContextMenu">
-        <ContextMenu.Resources>
-            <Converters:MulitParamConverter x:Key="MultiParamConverter"/>
-        </ContextMenu.Resources>
-        <MenuItem Header="Open All Files" 
-                  CommandParameter="{Binding SelectedItems,
-                    RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
-                  Command="{Binding Path=DataContext.OpenSelectedFilesCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Bulk Edit" CommandParameter="{Binding SelectedItems,
-                    RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
-                  Command="{Binding Path=DataContext.EditFilesCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
-            <MenuItem.ItemContainerStyle>
-                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                    <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.MoveToFolderCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-                    <Setter Property="MenuItem.CommandParameter">
-                        <Setter.Value>
-                            <MultiBinding Converter="{StaticResource MultiParamConverter}">
-                                <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
-                                <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}" FallbackValue="{x:Null}" TargetNullValue="{x:Null}"/>
-                            </MultiBinding>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </MenuItem.ItemContainerStyle>
-        </MenuItem>
-        <MenuItem Header="Delete All" CommandParameter="{Binding SelectedItems,
-                  RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
-                  Command="{Binding Path=DataContext.DeleteFileCommand,
-                  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-    </ContextMenu>
+   
     <!--#endregion-->
 
     <!--#region Dropdownbox Style-->
