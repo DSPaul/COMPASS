@@ -15,8 +15,8 @@ namespace COMPASS.Tools.Converters
         {
             //Parameter is true if inverted
             bool Invert = System.Convert.ToBoolean(parameter);
-            bool temp = Invert ? !(bool)value : (bool)value;
-            if (temp) return Visibility.Visible;
+            bool visible = Invert ^ (bool)value; //visible if true and no invert or false and invert -> XOR
+            if (visible) return Visibility.Visible;
             else return Visibility.Collapsed;
         }
 
