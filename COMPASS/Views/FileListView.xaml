@@ -218,7 +218,7 @@
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTags, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <ItemsControl ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
+                        <ItemsControl ItemsSource="{Binding Tags}" Background="Transparent" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
                                                         Foreground="Black" FontSize="14" VerticalAlignment="Center">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
