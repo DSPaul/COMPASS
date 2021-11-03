@@ -21,7 +21,7 @@ namespace COMPASS.Tools
         {
             cc = CurrentCollection;
 
-            ActiveFiles = new List<Codex>(cc.AllFiles);
+            ActiveFiles = new ObservableCollection<Codex>(cc.AllFiles);
 
             TagFilteredFiles = new List<Codex>();
             SearchFilteredFiles = new List<Codex>();
@@ -44,8 +44,8 @@ namespace COMPASS.Tools
         public List<Codex> SearchFilteredFiles { get; set; }
         public List<Codex> FieldFilteredFiles { get; set; }
 
-        private List<Codex> _activeFiles;
-        public List<Codex> ActiveFiles 
+        private ObservableCollection<Codex> _activeFiles;
+        public ObservableCollection<Codex> ActiveFiles 
         {
             get { return _activeFiles; }
             set { SetProperty(ref _activeFiles, value); }
@@ -70,7 +70,7 @@ namespace COMPASS.Tools
             TagFilteredFiles.Clear();
             ActiveTags.Clear();
             ActiveFilters.Clear();
-            ActiveFiles = new List<Codex>(cc.AllFiles);
+            ActiveFiles = new ObservableCollection<Codex>(cc.AllFiles);
         }
 
         //-------------For Tags---------------//
@@ -202,14 +202,15 @@ namespace COMPASS.Tools
             var temp1 = tempActiveFiles.Except(SearchFilteredFiles);
             var temp2 = temp1.Except(TagFilteredFiles);
             var temp3 = temp2.Except(FieldFilteredFiles);
-            ActiveFiles = new List<Codex>(temp3);
+            ActiveFiles = new ObservableCollection<Codex>(temp3);
         }
 
         public void RemoveFile(Codex f)
         {
             TagFilteredFiles.Remove(f);
             SearchFilteredFiles.Remove(f);
-            UpdateActiveFiles();
+            FieldFilteredFiles.Remove(f);
+            ActiveFiles.Remove(f);
         }
 
         #endregion
