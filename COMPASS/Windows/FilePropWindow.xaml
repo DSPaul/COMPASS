@@ -140,11 +140,11 @@
                     
                     <TextBlock Text="Author:" Grid.Column="1" Grid.Row="3"/>
                     <ComboBox Text="{Binding TempCodex.Author, Mode=TwoWay}" Grid.Column="1" Grid.Row="4" Name="FileAuthorTB"
-                  IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentCollection.AuthorList}"/>
+                  IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" ItemsSource="{Binding CurrentCollection.AuthorList}"/>
                     
                     <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
                     <ComboBox Text="{Binding TempCodex.Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"
-                  IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentCollection.PublisherList}"/>
+                  IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" ItemsSource="{Binding CurrentCollection.PublisherList}"/>
 
                     <Grid Grid.Column="1" Grid.Row="7" Margin="0,5">
                         <Grid.RowDefinitions>

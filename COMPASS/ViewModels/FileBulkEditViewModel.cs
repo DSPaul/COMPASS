@@ -15,7 +15,7 @@ namespace COMPASS.ViewModels
         public FileBulkEditViewModel(MainViewModel vm, List<Codex> ToEdit) : base(vm)
         {
             EditedFiles = ToEdit;
-            TempFile = new Codex(MVM.CurrentCollection);
+            TempFile = new Codex(CurrentCollection);
 
             //set common metadata
             if (EditedFiles.All(f => f.Author == EditedFiles[0].Author)) TempFile.Author = EditedFiles[0].Author;
@@ -163,8 +163,8 @@ namespace COMPASS.ViewModels
             }
 
             //Add new Author and Publishers to lists
-            if (TempFile.Author != "" && !MVM.CurrentCollection.AuthorList.Contains(TempFile.Author)) MVM.CurrentCollection.AuthorList.Add(TempFile.Author);
-            if(TempFile.Publisher != "" && !MVM.CurrentCollection.PublisherList.Contains(TempFile.Publisher)) MVM.CurrentCollection.PublisherList.Add(TempFile.Publisher);
+            if (TempFile.Author != "" && !CurrentCollection.AuthorList.Contains(TempFile.Author)) CurrentCollection.AuthorList.Add(TempFile.Author);
+            if(TempFile.Publisher != "" && !CurrentCollection.PublisherList.Contains(TempFile.Publisher)) CurrentCollection.PublisherList.Add(TempFile.Publisher);
 
             //Add and remove Tags
             foreach(Codex f in EditedFiles)
