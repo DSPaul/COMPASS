@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using System;
 using System.Collections.Generic;
@@ -11,16 +12,27 @@ using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
 {
-    public class TagsFiltersViewModel : BaseEditViewModel
+    public class TagsFiltersViewModel : DealsWithTreeviews
     {
-        public TagsFiltersViewModel(MainViewModel vm): base(vm)
+        public TagsFiltersViewModel(MainViewModel vm): base(vm.CurrentCollection)
         {
             EditTagCommand = new BasicCommand(EditTag);
             DeleteTagCommand = new BasicCommand(DeleteTag);
             ClearFiltersCommand = new BasicCommand(ClearFilters);
+            mainViewModel = vm;
         }
 
+
+
         #region Properties
+        //MainViewModel
+        private MainViewModel mainViewModel;
+        public MainViewModel MVM
+        {
+            get { return mainViewModel; }
+            set { SetProperty(ref mainViewModel, value); }
+        }
+
         //selected Tag in Treeview
         public Tag SelectedTag
         {

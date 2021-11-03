@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:self="clr-namespace:COMPASS"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:Models ="clr-namespace:COMPASS.Models"
         xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
@@ -102,11 +101,11 @@
 
             <TextBlock Text="Author:" Grid.Column="1" Grid.Row="3"/>
             <ComboBox Text="{Binding TempFile.Author, Mode=TwoWay}" Grid.Column="1" Grid.Row="4" Name="FileAuthorTB"
-                  IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentData.AuthorList}"/>
+                  IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" ItemsSource="{Binding CurrentCollection.AuthorList}"/>
 
             <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
             <ComboBox Text="{Binding TempFile.Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"
-                  IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentData.PublisherList}"/>
+                  IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" ItemsSource="{Binding CurrentCollection.PublisherList}"/>
 
             <Grid Grid.Column="1" Grid.Row="7" Margin="0,5">
                 <Grid.RowDefinitions>
