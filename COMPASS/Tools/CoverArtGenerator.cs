@@ -4,6 +4,8 @@ using HtmlAgilityPack;
 using ImageMagick;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Firefox;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -58,12 +60,37 @@ namespace COMPASS
             }
 
             //Use Selenium for screenshotting pages
-            var driverService = ChromeDriverService.CreateDefaultService();
-            driverService.HideCommandPromptWindow = true;
-            ChromeOptions CO = new ChromeOptions();
-            CO.AddArgument("--window-size=2500,2000");
-            CO.AddArgument("--headless");
-            ChromeDriver driver = new ChromeDriver(driverService, CO);
+            DriverService driverService;
+            WebDriver driver;
+            switch (Properties.Settings.Default.SeleniumBrowser)
+            {
+                case (int)Enums.Browser.Chrome:
+                    driverService = ChromeDriverService.CreateDefaultService();
+                    driverService.HideCommandPromptWindow = true;
+                    ChromeOptions CO = new ChromeOptions();
+                    CO.AddArgument("--window-size=2500,2000");
+                    CO.AddArgument("--headless");
+                    driver = new ChromeDriver((ChromeDriverService)driverService, CO);
+                    break;
+
+                case (int)Enums.Browser.Firefox:
+                    driverService = FirefoxDriverService.CreateDefaultService();
+                    driverService.HideCommandPromptWindow = true;
+                    FirefoxOptions FO = new FirefoxOptions();
+                    FO.AddArgument("--window-size=2500,2000");
+                    FO.AddArgument("--headless");
+                    driver = new FirefoxDriver((FirefoxDriverService)driverService, FO);
+                    break;
+
+                default:
+                    driverService = EdgeDriverService.CreateDefaultService();
+                    driverService.HideCommandPromptWindow = true;
+                    EdgeOptions EO = new EdgeOptions();
+                    EO.AddArgument("--window-size=2500,2000");
+                    EO.AddArgument("--headless");
+                    driver = new EdgeDriver((EdgeDriverService)driverService, EO);
+                    break;
+            }
 
             IWebElement Coverpage;
             MagickImage image = null;
@@ -97,7 +124,10 @@ namespace COMPASS
                         break;
                 }
             }
-            catch { }
+            catch 
+            {
+                driver.Quit();
+            }
 
             driver.Quit();
 

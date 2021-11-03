@@ -4,11 +4,14 @@ using COMPASS.ViewModels.Commands;
 using ImageMagick;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using WebDriverManager;
+using WebDriverManager.DriverConfigs.Impl;
 using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
@@ -50,6 +53,9 @@ namespace COMPASS.ViewModels
             {
                 CurrentFolder = Properties.Settings.Default.StartupCollection;
             }
+
+            //Get webdriver for Selenium
+            InitWebdriver();
 
             //MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
@@ -303,15 +309,41 @@ namespace COMPASS.ViewModels
         {
             IsOnline = pingURL();
         }
-        #endregion
 
-
-        private async Task CheckForUpdates()
+        private void InitWebdriver()
         {
-            //TODO
+            if (IsInstalled("chrome.exe"))
+            {
+                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Chrome;
+                new DriverManager().SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
+            }
+            else if (IsInstalled("firefox.exe"))
+            {
+                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Firefox;
+                new DriverManager().SetUpDriver(new FirefoxConfig());
+            }
+
+            else
+            {
+                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Edge;
+                new DriverManager().SetUpDriver(new EdgeConfig());
+            }
         }
 
+        private bool IsInstalled(string name)
+        {
+            string currentUserRegistryPathPattern = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\";
+            string localMachineRegistryPathPattern = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\";
 
+            var currentUserPath = Microsoft.Win32.Registry.GetValue(currentUserRegistryPathPattern + name, "", null);
+            var localMachinePath = Microsoft.Win32.Registry.GetValue(localMachineRegistryPathPattern + name, "", null);
 
+            if (currentUserPath != null | localMachinePath != null)
+            {
+                return true;
+            }
+            return false;
+        }
+        #endregion
     }
 }
