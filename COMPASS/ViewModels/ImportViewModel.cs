@@ -361,7 +361,7 @@ namespace COMPASS.ViewModels
 
             //add file to cc
             _codexCollection.AllFiles.Add(newFile);
-            RaisePropertyChanged("_codexCollection.ActiveFiles");
+            RaisePropertyChanged("ActiveFiles");
 
             //import done
             _importcounter++;
