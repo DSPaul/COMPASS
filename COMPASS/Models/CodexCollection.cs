@@ -23,7 +23,7 @@ namespace COMPASS.Models
             Properties.Settings.Default.StartupCollection = FolderLocation;
         }
 
-        public static string CollectionsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\";
+        public readonly static string CollectionsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\";
         
         #region Properties
         private String _Folder;

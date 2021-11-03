@@ -1,23 +1,17 @@
 ﻿using COMPASS.Models;
+using COMPASS.ViewModels.Commands;
 using COMPASS.Windows;
+using HtmlAgilityPack;
+using iText.Kernel.Pdf;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
-using static COMPASS.Tools.Enums;
-using iText;
-using iText.Kernel.Pdf;
-using HtmlAgilityPack;
-using System.Globalization;
 using System.Collections.ObjectModel;
-using COMPASS.ViewModels.Commands;
-using OpenQA.Selenium.Chrome;
+using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
+using System.Windows;
+using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
 {
