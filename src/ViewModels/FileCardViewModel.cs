@@ -12,22 +12,22 @@ namespace COMPASS.ViewModels
     {
         public FileCardViewModel(MainViewModel vm = null) : base(vm)
         {
-            MyMenuItem Datavisibility = new MyMenuItem("Show Metadata")
-            {
-                Submenus = new ObservableCollection<MyMenuItem>()
-            };
+            //MyMenuItem Datavisibility = new MyMenuItem("Show Metadata")
+            //{
+            //    Submenus = new ObservableCollection<MyMenuItem>()
+            //};
 
             //Datavisibility.Submenus.Add(new MyMenuItem("Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
-            Datavisibility.Submenus.Add(new MyMenuItem("Author", value => ShowAuthor = (bool)value) { Prop = ShowAuthor });
-            Datavisibility.Submenus.Add(new MyMenuItem("Publisher", value => ShowPublisher = (bool)value) { Prop = ShowPublisher });
-            Datavisibility.Submenus.Add(new MyMenuItem("Release Date", value => ShowReleaseDate = (bool)value) { Prop = ShowReleaseDate });
-            Datavisibility.Submenus.Add(new MyMenuItem("Version", value => ShowVersion = (bool)value) { Prop = ShowVersion });
-            Datavisibility.Submenus.Add(new MyMenuItem("Rating", value => ShowRating = (bool)value) { Prop = ShowRating });
-            Datavisibility.Submenus.Add(new MyMenuItem("Tags", value => ShowTags = (bool)value) { Prop = ShowTags });
-            Datavisibility.Submenus.Add(new MyMenuItem("File Icons", value => ShowFileIcons = (bool)value) { Prop = ShowFileIcons });
+            ViewOptions.Add(new MyMenuItem("Publisher", value => ShowPublisher = (bool)value) { Prop = ShowPublisher });
+            ViewOptions.Add(new MyMenuItem("Release Date", value => ShowReleaseDate = (bool)value) { Prop = ShowReleaseDate });
+            ViewOptions.Add(new MyMenuItem("Version", value => ShowVersion = (bool)value) { Prop = ShowVersion });
+            ViewOptions.Add(new MyMenuItem("Rating", value => ShowRating = (bool)value) { Prop = ShowRating });
+            ViewOptions.Add(new MyMenuItem("Author", value => ShowAuthor = (bool)value) { Prop = ShowAuthor });
+            ViewOptions.Add(new MyMenuItem("Tags", value => ShowTags = (bool)value) { Prop = ShowTags });
+            ViewOptions.Add(new MyMenuItem("File Icons", value => ShowFileIcons = (bool)value) { Prop = ShowFileIcons });
             //Datavisibility.Submenus.Add(new MyMenuItem("Edit Icon", value => ShowEditIcon = (bool)value) { Prop = ShowEditIcon });
 
-            ViewOptions.Add(Datavisibility);
+            //ViewOptions.Add(Datavisibility);
         }
 
         #region ViewOptions

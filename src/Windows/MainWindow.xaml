@@ -576,7 +576,7 @@
                     </Button>
                     <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.TileView}" Tools:AP.IconKind="ViewModule" Height="43"/>
                     <Rectangle Width="2" Fill="Gray" Margin="3,8"/>
-                    <Button Click="ViewConfig_Click" Tools:AP.IconKind="TuneVariant" Height="30">
+                    <Button Click="ViewConfig_Click" Tools:AP.IconKind="EyeSettings" Height="30" VerticalAlignment="Center" Margin="0,0,2,5">
                         <Button.ContextMenu>
                             <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding CurrentFileViewModel.ViewOptions}"
                             Style="{StaticResource DropdownMenu}" ItemContainerStyle="{StaticResource DropdownMenuItem}"/>
