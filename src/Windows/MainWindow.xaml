@@ -84,7 +84,7 @@
                             <Border x:Name="Border" Grid.ColumnSpan="3" CornerRadius="4,0,0,4" BorderThickness="0"
                                     Background="{StaticResource UIElementBackground}" ClipToBounds="True" />
                             <Path x:Name="Arrow" Grid.Column="1" Fill="{StaticResource CollectionIconFill}" HorizontalAlignment="Center"
-                                 VerticalAlignment="Center" Data="M0,0 L6,8 L12,0 "/>
+                                 VerticalAlignment="Center" Data="M0,0 L6,8 L12,0 " Margin="0,0,5,0"/>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="ToggleButton.IsMouseOver" Value="true">
