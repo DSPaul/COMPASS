@@ -15,13 +15,15 @@ namespace COMPASS.Tools
             TileView
         }
 
+        [Flags]
         public enum ImportMode
         {
-            Pdf,
-            Manual,
-            GmBinder,
-            Homebrewery,
-            DnDBeyond
+            None = 0,
+            Manual = 1,
+            Pdf = 2,
+            GmBinder = 4,
+            Homebrewery = 8,
+            DnDBeyond = 16
         }
 
         public enum FilterType
