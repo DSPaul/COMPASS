@@ -198,11 +198,11 @@ namespace COMPASS.Tools
 
         public void UpdateActiveFiles()
         {
-            var tempActiveFiles = new List<Codex>(cc.AllFiles);
-            var temp1 = tempActiveFiles.Except(SearchFilteredFiles);
-            var temp2 = temp1.Except(TagFilteredFiles);
-            var temp3 = temp2.Except(FieldFilteredFiles);
-            ActiveFiles = new ObservableCollection<Codex>(temp3);
+            ActiveFiles = new ObservableCollection<Codex>(cc.AllFiles
+                .Except(SearchFilteredFiles)
+                .Except(TagFilteredFiles)
+                .Except(FieldFilteredFiles)
+                .ToList());
         }
 
         public void RemoveFile(Codex f)
