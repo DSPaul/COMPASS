@@ -58,9 +58,7 @@ namespace COMPASS.ViewModels
         public RelayCommand<object> OpenSelectedFileCommand { get; private set; }
         public void OpenSelectedFile(object o = null)
         {
-            Codex ToOpen;
-            if (o != null) ToOpen = (Codex)o;
-            else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
+            Codex ToOpen = o != null ? (Codex)o : MVM.CurrentFileViewModel.SelectedFile;
             try
             {
                 Process.Start(new ProcessStartInfo(ToOpen.Path) {UseShellExecute = true });
@@ -72,22 +70,20 @@ namespace COMPASS.ViewModels
         }
         public bool CanOpenSelectedFile(object o = null)
         {
-            Codex ToOpen;
-            if (o != null) ToOpen = (Codex)o;
-            else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
+            Codex ToOpen = o != null ? (Codex)o : MVM.CurrentFileViewModel.SelectedFile;
 
+            //if SelectedFile is also null
             if (ToOpen == null) return false;
-            if (File.Exists(ToOpen.Path)) return true;
-            return false;
+
+            return ToOpen.HasOfflineSource();
         }
 
         //Open File online
         public RelayCommand<object> OpenFileOnlineCommand { get; private set; }
         public void OpenFileOnline(object o = null)
         {
-            Codex ToOpen;
-            if (o != null) ToOpen = (Codex)o;
-            else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
+            Codex ToOpen = o != null ? (Codex)o : MVM.CurrentFileViewModel.SelectedFile;
+
             try
             {
                 Process.Start(new ProcessStartInfo(ToOpen.SourceURL) { UseShellExecute = true });
@@ -100,13 +96,12 @@ namespace COMPASS.ViewModels
         }
         public bool CanOpenFileOnline(object o = null)
         {
-            Codex ToOpen;
-            if (o != null) ToOpen = (Codex)o;
-            else ToOpen = MVM.CurrentFileViewModel.SelectedFile;
+            Codex ToOpen = o != null ? (Codex)o : MVM.CurrentFileViewModel.SelectedFile;
 
+            //if SelectedFile is also null
             if (ToOpen == null) return false;
-            if (ToOpen.SourceURL == null || ToOpen.SourceURL == "") return false;
-            return true;
+
+            return ToOpen.HasOnlineSource();
         }
 
         //Open Multiple Files
