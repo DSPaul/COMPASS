@@ -8,7 +8,7 @@
              xmlns:local="clr-namespace:COMPASS"
              xmlns:Views="clr-namespace:COMPASS.Views"
              xmlns:Models="clr-namespace:COMPASS.Models"
-             mc:Ignorable="d"
+             mc:Ignorable="d" FontSize="18"
              d:DesignHeight="250" d:DesignWidth="200">
     <Grid>
         <Grid.Resources>
@@ -61,8 +61,7 @@
             <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
         </Grid.Resources>
 
-        <TabControl Background="{x:Null}"
-                         BorderThickness="0">
+        <TabControl Background="{x:Null}" BorderThickness="0">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
                     <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
@@ -151,25 +150,25 @@
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <StackPanel Margin="10">
-                            <StackPanel Margin="10">
+                            <StackPanel Margin="10,5">
                                 <TextBlock Text="Author:"/>
                                 <ComboBox ItemsSource="{Binding MVM.CurrentCollection.AuthorList}" FontSize="15"
                                       SelectedValue="{Binding SelectedAuthor}"/>
                             </StackPanel>
-                            <StackPanel Margin="10">
+                            <StackPanel Margin="10,5">
                                 <TextBlock Text="Publisher:"/>
                                 <ComboBox ItemsSource="{Binding MVM.CurrentCollection.PublisherList}" FontSize="15"
                                       SelectedValue="{Binding SelectedPublisher}"/>
                             </StackPanel>
-                            <StackPanel Margin="10">
+                            <StackPanel Margin="10,5">
                                 <TextBlock Text="Released Between:"/>
                                 <DatePicker SelectedDate="{Binding StartReleaseDate}" HorizontalAlignment="Left" Margin="-5 0"/>
                                 <TextBlock Text="And"/>
                                 <DatePicker SelectedDate="{Binding StopReleaseDate}"  HorizontalAlignment="Left" Margin="-5 0"/>
                             </StackPanel>
-                            <StackPanel Margin="10">
+                            <StackPanel Margin="10,5">
                                 <TextBlock Text="Minimum Rating:"/>
-                                <materialDesign:RatingBar Value="{Binding MinRating, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Margin="-2 0"/>
+                                <materialDesign:RatingBar Value="{Binding MinRating, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Margin="-2 3"/>
                             </StackPanel>
                         </StackPanel>
                         <Button Content="Clear All" Grid.Row="2" Margin="30" Command="{Binding ClearFiltersCommand}"
