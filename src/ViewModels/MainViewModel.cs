@@ -20,39 +20,8 @@ namespace COMPASS.ViewModels
     {
         public MainViewModel()
         {
-            //Get all RPG systems by folder name
-            Folders = new ObservableCollection<string>();
-            string [] FullPathFolders = Directory.GetDirectories(CodexCollection.CollectionsPath);
-            foreach(string p in FullPathFolders){
-                Folders.Add(Path.GetFileName(p));
-            }
 
-            //in case of first boot, create default folder
-            if (Folders.Count == 0) 
-            {
-                CreateFolder("Default");
-            }
-
-            //in case startup collection no longer exists
-            else if(!Directory.Exists(CodexCollection.CollectionsPath + Properties.Settings.Default.StartupCollection))
-            {
-                MessageBox.Show("The collection " + Properties.Settings.Default.StartupCollection + " could not be found. "); 
-                //pick first one that does exists
-                foreach (string f in Folders)
-                {
-                    if (Directory.Exists(CodexCollection.CollectionsPath + f))
-                    {
-                        CurrentFolder = f;
-                        break;
-                    }
-                }
-            }
-
-            //otherwise, open startup collection
-            else
-            {
-                CurrentFolder = Properties.Settings.Default.StartupCollection;
-            }
+            InitCollection();
 
             //Get webdriver for Selenium
             InitWebdriver();
@@ -171,7 +140,86 @@ namespace COMPASS.ViewModels
 
         #endregion
 
-        #region Functions and Commands
+        #region Init Functions
+
+        //Get a collection at startup
+        private void InitCollection()
+        {
+            //Get all RPG systems by folder name
+            Folders = new ObservableCollection<string>();
+            string[] FullPathFolders = Directory.GetDirectories(CodexCollection.CollectionsPath);
+            foreach (string p in FullPathFolders)
+            {
+                Folders.Add(Path.GetFileName(p));
+            }
+
+            //in case of first boot, create default folder
+            if (Folders.Count == 0)
+            {
+                CreateFolder("Default");
+            }
+
+            //in case startup collection no longer exists
+            else if (!Directory.Exists(CodexCollection.CollectionsPath + Properties.Settings.Default.StartupCollection))
+            {
+                MessageBox.Show("The collection " + Properties.Settings.Default.StartupCollection + " could not be found. ");
+                //pick first one that does exists
+                foreach (string f in Folders)
+                {
+                    if (Directory.Exists(CodexCollection.CollectionsPath + f))
+                    {
+                        CurrentFolder = f;
+                        break;
+                    }
+                }
+            }
+
+            //otherwise, open startup collection
+            else
+            {
+                CurrentFolder = Properties.Settings.Default.StartupCollection;
+            }
+        }
+
+        //Get latest version of relevant Webdriver for selenium
+        private void InitWebdriver()
+        {
+            if (IsInstalled("chrome.exe"))
+            {
+                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Chrome;
+                new DriverManager().SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
+            }
+            else if (IsInstalled("firefox.exe"))
+            {
+                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Firefox;
+                new DriverManager().SetUpDriver(new FirefoxConfig());
+            }
+
+            else
+            {
+                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Edge;
+                new DriverManager().SetUpDriver(new EdgeConfig());
+            }
+        }
+
+        //helper function for InitWebdriver to check if certain browsers are installed
+        private bool IsInstalled(string name)
+        {
+            string currentUserRegistryPathPattern = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\";
+            string localMachineRegistryPathPattern = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\";
+
+            var currentUserPath = Microsoft.Win32.Registry.GetValue(currentUserRegistryPathPattern + name, "", null);
+            var localMachinePath = Microsoft.Win32.Registry.GetValue(localMachineRegistryPathPattern + name, "", null);
+
+            if (currentUserPath != null | localMachinePath != null)
+            {
+                return true;
+            }
+            return false;
+        }
+        #endregion
+
+        #region Commands and functions for MainWindow
 
         //Change Fileview
         public SimpleCommand ChangeFileViewCommand { get; private set; }
@@ -304,46 +352,12 @@ namespace COMPASS.ViewModels
             return false;
         }
 
-        //used to Update IsOnline
+        //called every few seconds to update IsOnline
         private void CheckConnection(object sender, EventArgs e)
         {
             IsOnline = pingURL();
         }
 
-        private void InitWebdriver()
-        {
-            if (IsInstalled("chrome.exe"))
-            {
-                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Chrome;
-                new DriverManager().SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
-            }
-            else if (IsInstalled("firefox.exe"))
-            {
-                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Firefox;
-                new DriverManager().SetUpDriver(new FirefoxConfig());
-            }
-
-            else
-            {
-                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Edge;
-                new DriverManager().SetUpDriver(new EdgeConfig());
-            }
-        }
-
-        private bool IsInstalled(string name)
-        {
-            string currentUserRegistryPathPattern = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\";
-            string localMachineRegistryPathPattern = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\";
-
-            var currentUserPath = Microsoft.Win32.Registry.GetValue(currentUserRegistryPathPattern + name, "", null);
-            var localMachinePath = Microsoft.Win32.Registry.GetValue(localMachineRegistryPathPattern + name, "", null);
-
-            if (currentUserPath != null | localMachinePath != null)
-            {
-                return true;
-            }
-            return false;
-        }
         #endregion
     }
 }
