@@ -16,6 +16,9 @@ namespace COMPASS.ViewModels
     {
         public TagsFiltersViewModel(MainViewModel vm): base(vm.CurrentCollection)
         {
+            ChangeOnlineFilterCommand = new SimpleCommand(ChangeOnlineFilter);
+            ChangeOfflineFilterCommand = new SimpleCommand(ChangeOfflineFilter);
+            ChangePhysicalFilterCommand = new SimpleCommand(ChangePhysicalFilter);
             EditTagCommand = new BasicCommand(EditTag);
             DeleteTagCommand = new BasicCommand(DeleteTag);
             ClearFiltersCommand = new BasicCommand(ClearFilters);
@@ -92,7 +95,8 @@ namespace COMPASS.ViewModels
                 SetProperty(ref startReleaseDate, value);
                 if(value != null)
                 {
-                    FilterTag startDateTag = new FilterTag(MVM.FilterHandler.ActiveFilters, FilterType.StartReleaseDate, value) { Content = "After: " + value.Value.Date.ToShortDateString(), BackgroundColor = Colors.DeepSkyBlue };
+                    FilterTag startDateTag = new FilterTag(MVM.FilterHandler.ActiveFilters, FilterType.StartReleaseDate, value) 
+                    { Content = "After: " + value.Value.Date.ToShortDateString(), BackgroundColor = Colors.DeepSkyBlue };
                     //Remove existing start date, replacing it
                     MVM.FilterHandler.ActiveFilters.Remove(MVM.FilterHandler.ActiveFilters.Where(filter => (FilterType)filter.GetGroup() == FilterType.StartReleaseDate).FirstOrDefault());
                     MVM.FilterHandler.ActiveFilters.Add(startDateTag);
@@ -108,7 +112,8 @@ namespace COMPASS.ViewModels
                 SetProperty(ref stopReleaseDate, value);
                 if(value!= null)
                 {
-                    FilterTag stopDateTag = new FilterTag(MVM.FilterHandler.ActiveFilters, FilterType.StopReleaseDate,value) { Content = "Before: " + value.Value.Date.ToShortDateString(), BackgroundColor = Colors.DeepSkyBlue };
+                    FilterTag stopDateTag = new FilterTag(MVM.FilterHandler.ActiveFilters, FilterType.StopReleaseDate,value) 
+                    { Content = "Before: " + value.Value.Date.ToShortDateString(), BackgroundColor = Colors.DeepSkyBlue };
                     //Remove existing end date, replacing it
                     MVM.FilterHandler.ActiveFilters.Remove(MVM.FilterHandler.ActiveFilters.Where(filter => (FilterType)filter.GetGroup() == FilterType.StopReleaseDate).FirstOrDefault());
                     MVM.FilterHandler.ActiveFilters.Add(stopDateTag);
@@ -126,7 +131,8 @@ namespace COMPASS.ViewModels
                 SetProperty(ref minRating, value);
                 if(value>0 && value< 6)
                 {
-                    FilterTag minRatTag = new FilterTag(MVM.FilterHandler.ActiveFilters, FilterType.MinimumRating, value) { Content = "At least " + value + " stars", BackgroundColor = Colors.Goldenrod };
+                    FilterTag minRatTag = new FilterTag(MVM.FilterHandler.ActiveFilters, FilterType.MinimumRating, value) 
+                    { Content = "At least " + value + " stars", BackgroundColor = Colors.Goldenrod };
                     //Remove existing minimum rating, replacing it
                     MVM.FilterHandler.ActiveFilters.Remove(MVM.FilterHandler.ActiveFilters.Where(filter => (FilterType)filter.GetGroup() == FilterType.MinimumRating).FirstOrDefault());
                     MVM.FilterHandler.ActiveFilters.Add(minRatTag);
@@ -140,6 +146,46 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Functions and Commands
+        public SimpleCommand ChangeOnlineFilterCommand { get; private set; }
+        public void ChangeOnlineFilter(object o)
+        {
+            var parameters = (Tuple<bool, bool>)o;
+            ChangeSourceFilter(FilterType.OnlineSource,"Available Online",parameters);
+        }
+
+        public SimpleCommand ChangeOfflineFilterCommand { get; private set; }
+        public void ChangeOfflineFilter(object o)
+        {
+            var parameters = (Tuple<bool, bool>)o;
+            ChangeSourceFilter(FilterType.OfflineSource,"Available Offline",parameters);
+        }
+        
+        public SimpleCommand ChangePhysicalFilterCommand { get; private set; }
+        public void ChangePhysicalFilter(object o)
+        {
+            var parameters = (Tuple<bool, bool>)o;
+            ChangeSourceFilter(FilterType.PhysicalSource,"Physicaly Owned",parameters);
+        }
+
+        public void ChangeSourceFilter(FilterType ft, string text, Tuple<bool,bool> parameters)
+        {
+            bool addFilter = parameters.Item1;
+            bool invert = parameters.Item2;
+
+            //remove old filter, either to remove or replace
+            MVM.FilterHandler.ActiveFilters.Remove(MVM.FilterHandler.ActiveFilters.Where(filter => (FilterType)filter.GetGroup() == ft).FirstOrDefault());
+
+            if (invert) text = "NOT: " + text;
+
+            if (addFilter)
+            {
+                FilterTag t = new FilterTag(MVM.FilterHandler.ActiveFilters, ft, invert)
+                { Content = text, BackgroundColor = Colors.Violet };
+                //Remove existing end date, replacing it
+                MVM.FilterHandler.ActiveFilters.Add(t);
+            }
+        }
+
         //-------------------For Tags Tab ---------------------//
         public BasicCommand EditTagCommand { get; private set; }
         public void EditTag()
@@ -193,7 +239,7 @@ namespace COMPASS.ViewModels
             SelectedPublisher = null;
             StartReleaseDate = null;
             StopReleaseDate = null;
-            minRating = 0;
+            MinRating = 0;
             MVM.FilterHandler.ActiveFilters.Clear();
         }
         //-----------------------------------------------------//
