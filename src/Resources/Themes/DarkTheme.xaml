@@ -25,7 +25,7 @@
     <SolidColorBrush x:Key="CardBackground" Color="{StaticResource DarkererGray}"/>
 
     <SolidColorBrush x:Key="TitlebarBackground" Color="{StaticResource DarkGray}"/>
-    <SolidColorBrush x:Key="UIElementBackground" Color="Gray"/>
+    <SolidColorBrush x:Key="UIElementBackground" Color="{StaticResource LightGray}"/>
     <SolidColorBrush x:Key="DarkUIElementBackground" Color="{StaticResource DarkGray}"/>
     <SolidColorBrush x:Key="TitlebarElementHoverBackground" Color="DimGray"/>
     <SolidColorBrush x:Key="Separator" Color="{StaticResource KindaDarkGray}"/>
