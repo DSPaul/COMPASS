@@ -33,7 +33,10 @@ namespace COMPASS.Tools
             Publisher,
             StartReleaseDate,
             StopReleaseDate,
-            MinimumRating
+            MinimumRating,
+            OnlineSource,
+            OfflineSource,
+            PhysicalSource
         }
 
         public enum Browser

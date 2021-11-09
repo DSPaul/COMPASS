@@ -5,11 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
-             xmlns:local="clr-namespace:COMPASS"
-             xmlns:Views="clr-namespace:COMPASS.Views"
-             xmlns:Models="clr-namespace:COMPASS.Models"
-             mc:Ignorable="d" FontSize="18"
-             d:DesignHeight="250" d:DesignWidth="200">
+             xmlns:Models="clr-namespace:COMPASS.Models" xmlns:controls="clr-namespace:COMPASS.Resources.Controls"
+             mc:Ignorable="d" FontSize="20"
+             d:DesignHeight="650" d:DesignWidth="200">
     <Grid>
         <Grid.Resources>
             <Style TargetType="{x:Type Button}" x:Key="SquareBtn">
@@ -154,21 +152,41 @@
                                 <TextBlock Text="Author:"/>
                                 <ComboBox ItemsSource="{Binding MVM.CurrentCollection.AuthorList}" FontSize="15"
                                       SelectedValue="{Binding SelectedAuthor}"/>
-                            </StackPanel>
-                            <StackPanel Margin="10,5">
-                                <TextBlock Text="Publisher:"/>
+
+                                <TextBlock Text="Publisher:" Margin="0,10,0,0"/>
                                 <ComboBox ItemsSource="{Binding MVM.CurrentCollection.PublisherList}" FontSize="15"
                                       SelectedValue="{Binding SelectedPublisher}"/>
-                            </StackPanel>
-                            <StackPanel Margin="10,5">
-                                <TextBlock Text="Released Between:"/>
-                                <DatePicker SelectedDate="{Binding StartReleaseDate}" HorizontalAlignment="Left" Margin="-5 0"/>
+
+                                <TextBlock Text="Released Between:" Margin="0,10,0,0"/>
+                                <DatePicker SelectedDate="{Binding StartReleaseDate}" HorizontalAlignment="Left" Margin="-5 0" FontSize="18"/>
                                 <TextBlock Text="And"/>
-                                <DatePicker SelectedDate="{Binding StopReleaseDate}"  HorizontalAlignment="Left" Margin="-5 0"/>
-                            </StackPanel>
-                            <StackPanel Margin="10,5">
-                                <TextBlock Text="Minimum Rating:"/>
+                                <DatePicker SelectedDate="{Binding StopReleaseDate}"  HorizontalAlignment="Left" Margin="-5 0" FontSize="18"/>
+
+                                <TextBlock Text="Minimum Rating:" Margin="0,10,0,0"/>
                                 <materialDesign:RatingBar Value="{Binding MinRating, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Margin="-2 3"/>
+
+                                <TextBlock Text="Sources:" Margin="0,0,10,0"/>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="Offline:" FontSize="18" Margin="0,10"/>
+                                    <controls:YesNoSelector x:Name="OfflineSelector" Grid.Column="1" Grid.Row="0" 
+                                                            Command="{Binding ChangeOfflineFilterCommand}"/>
+                                    <TextBlock Grid.Row="1" Text="Online:" FontSize="18" Margin="0,10"/>
+                                    <controls:YesNoSelector x:Name="OnlineSelector" Grid.Column="1" Grid.Row="1" 
+                                                            Command="{Binding ChangeOnlineFilterCommand}"/>
+                                    <TextBlock Grid.Row="2" Text="Physical:" FontSize="18" Margin="0,10,10,10"/>
+                                    <controls:YesNoSelector x:Name="PhysicalSelector" Grid.Column="1" Grid.Row="2" 
+                                                            Command="{Binding ChangePhysicalFilterCommand}"/>
+                                </Grid>
                             </StackPanel>
                         </StackPanel>
                         <Button Content="Clear All" Grid.Row="2" Margin="30" Command="{Binding ClearFiltersCommand}"
