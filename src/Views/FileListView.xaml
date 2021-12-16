@@ -59,7 +59,7 @@
                 </Setter>
                 <Setter Property="ContextMenu">
                     <Setter.Value>
-                        <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding Source = {StaticResource Proxy}, Path=Data.ViewOptions[0].Submenus}"
+                        <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding Source = {StaticResource Proxy}, Path=Data.ViewOptions}"
                                      ItemContainerStyle="{StaticResource DropdownMenuItem}"/>
                     </Setter.Value>
                 </Setter>
@@ -237,7 +237,7 @@
                         <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Command="{Binding Path=DataContext.OpenSelectedFileCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
-                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FilePdfOutline"/>
+                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FileOutline"/>
                             <Button Command="{Binding Path=DataContext.OpenFileOnlineCommand,
                                 RelativeSource={RelativeSource FindAncestor,  AncestorType={x:Type UserControl}}}"
                                     CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>

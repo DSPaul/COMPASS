@@ -114,7 +114,7 @@
                             <Image Source="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Icons\\CoverPlaceholder.png }" HorizontalAlignment="Center"/>
                             <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
                                          Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooltoVisibilityConverter}}">
-                                <Button Tools:AP.IconKind="FilePdfOutline" Style="{StaticResource IconBtn}"
+                                <Button Tools:AP.IconKind="FileOutline" Style="{StaticResource IconBtn}"
                                     Command="{Binding Path=DataContext.OpenSelectedFileCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"/>
                                 <Button Tools:AP.IconKind="Web" Style="{StaticResource IconBtn}"

@@ -71,6 +71,7 @@
                     <ColumnDefinition Width ="auto"/>
                     <ColumnDefinition Width ="auto"/>
                     <ColumnDefinition Width ="auto"/>
+                    <ColumnDefinition Width ="auto"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid.Resources>
@@ -258,40 +259,50 @@
                     </Border>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Grid.Column="4" Margin="15,5">
-                    <Ellipse Width="10" Height="10" Margin="10,5">
-                        <Ellipse.Style>
-                            <Style>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsOnline}" Value="True">
-                                        <Setter Property="Ellipse.Fill" Value="{StaticResource OnlineFill}"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsOnline}" Value="False">
-                                        <Setter Property="Ellipse.Fill" Value="{StaticResource OfflineFill}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Ellipse.Style>
-                    </Ellipse>
-                    <TextBlock Foreground="{StaticResource UIElementBackground}" VerticalAlignment="Center">
-                        <TextBlock.Style>
-                            <Style>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsOnline}" Value="True">
-                                        <Setter Property="TextBlock.Text" Value="Online"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsOnline}" Value="False">
-                                        <Setter Property="TextBlock.Text" Value="Offline"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                </StackPanel>
+                <Button Click="Toggle_ContextMenu" Grid.Column="4" Tools:AP.IconKind="Settings" Height="25" Margin="15,0"
+                         WindowChrome.IsHitTestVisibleInChrome="True" ContextMenu="{StaticResource CogContextMenu}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                            <Setter Property="BorderBrush" Value="{x:Null}"/>
+                            <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Foreground="{TemplateBinding Foreground}"
+                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"
+                                        Background="{TemplateBinding Background}"/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <materialDesign:PackIcon Grid.Column="5" Margin="0" Kind="WebOff" Width="25" Height="25" VerticalAlignment="Center"
+                                         Foreground="{StaticResource OfflineFill}">
+                    <materialDesign:PackIcon.Style>
+                        <Style TargetType="materialDesign:PackIcon">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsOnline}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsOnline}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </materialDesign:PackIcon.Style>
+                </materialDesign:PackIcon>
 
                 <StackPanel Orientation="Horizontal" WindowChrome.IsHitTestVisibleInChrome="True"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Stretch" Grid.Column="5">
+                HorizontalAlignment="Right" Margin="15,0,0,0"
+                VerticalAlignment="Stretch" Grid.Column="6">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type Button}" >
                             <Setter Property="Width" Value="40"/>
@@ -396,7 +407,7 @@
                                     <Border Background="{TemplateBinding Background}" BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="35,0">
                                             <materialDesign:PackIcon Height="30" Margin="0,0,10,0"
-                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
+                                                Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
                                             <ContentPresenter VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Border>
@@ -485,7 +496,7 @@
                     </CustomControls:ExpandingButton.Toggle>
                     <CustomControls:ExpandingButton.HiddenContent>
                         <StackPanel>
-                            <Button Tools:AP.IconKind="FilePdfOutline" Style="{StaticResource innerIconBtn}" Content="From PDF"
+                            <Button Tools:AP.IconKind="FileOutline" Style="{StaticResource innerIconBtn}" Content="From PDF"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Pdf}"/>
                             <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource innerIconBtn}" Content="Manual"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Manual}"/>
@@ -520,9 +531,7 @@
                         </StackPanel>
                     </CustomControls:ExpandingButton.HiddenContent>
                 </CustomControls:ExpandingButton>
-
-                <Button x:Name="SettingsBtn" Grid.Column="1" Grid.Row="4" Style="{StaticResource outerIconBtn}"
-                Tools:AP.IconKind="Settings" Content="Settings" Margin="10,4"/>
+                
             </Grid>
             <!--#endregion-->
 
@@ -556,7 +565,7 @@
                                 <Setter.Value>
                                     <ControlTemplate TargetType="Button">
                                         <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Foreground="{TemplateBinding Foreground}"
-                                Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"
+                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"
                                         Background="{TemplateBinding Background}"/>
                                     </ControlTemplate>
                                 </Setter.Value>
@@ -576,7 +585,7 @@
                     </Button>
                     <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.TileView}" Tools:AP.IconKind="ViewModule" Height="43"/>
                     <Rectangle Width="2" Fill="Gray" Margin="3,8"/>
-                    <Button Click="ViewConfig_Click" Tools:AP.IconKind="EyeSettings" Height="30" VerticalAlignment="Center" Margin="0,0,2,5">
+                    <Button Click="Toggle_ContextMenu" Tools:AP.IconKind="EyeSettings" Height="30" VerticalAlignment="Center" Margin="0,0,2,5">
                         <Button.ContextMenu>
                             <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding CurrentFileViewModel.ViewOptions}"
                             Style="{StaticResource DropdownMenu}" ItemContainerStyle="{StaticResource DropdownMenuItem}"/>
