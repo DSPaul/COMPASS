@@ -211,12 +211,11 @@
         <Setter Property="Template" >
             <Setter.Value>
                 <ControlTemplate TargetType="ContextMenu">
-                    <Border CornerRadius="10" Background="#FF181818">
+                    <Border CornerRadius="5" Background="#FF3C3C3C" BorderThickness="0">
                         <Border.OpacityMask>
                             <VisualBrush>
                                 <VisualBrush.Visual>
-                                    <Border Background="Black"
-                                                SnapsToDevicePixels="True"
+                                    <Border Background="Black" SnapsToDevicePixels="True"
                                                 CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=Border}, FallbackValue=10}"
                                                 Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}, FallbackValue=10}"
                                                 Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Border}, FallbackValue=10}"/>
@@ -261,8 +260,18 @@
                             <!--Submenu-->
                             <Popup Name="Popup" Placement="Right" HorizontalOffset="15" VerticalOffset="-15" AllowsTransparency="True"
                                    IsOpen="{TemplateBinding IsSubmenuOpen}" PopupAnimation="Fade">
-                                <Border Name="SubmenuBorder" SnapsToDevicePixels="True" Background="#FF181818"
-                                        CornerRadius="10">
+                                <Border Name="SubmenuBorder" SnapsToDevicePixels="True" Background="#FF3C3C3C"
+                                        CornerRadius="5">
+                                    <Border.OpacityMask>
+                                        <VisualBrush>
+                                            <VisualBrush.Visual>
+                                                <Border Background="Black" SnapsToDevicePixels="True"
+                                                CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=Border}, FallbackValue=10}"
+                                                Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}, FallbackValue=10}"
+                                                Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Border}, FallbackValue=10}"/>
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Border.OpacityMask>
                                     <ItemsPresenter/>
                                 </Border>
                             </Popup>
@@ -310,7 +319,16 @@
                   CommandParameter="{x:Null}"/>
     </ContextMenu>
 
-   
+    <ContextMenu x:Key="CogContextMenu" Placement="Bottom">
+        <ContextMenu.Resources>
+            <Converters:MulitParamConverter x:Key="MultiParamConverter"/>
+        </ContextMenu.Resources>
+        <MenuItem Header="Settings" />
+        <MenuItem Header="Check for Updates" />
+        <MenuItem Header="Changelog"/>
+        <MenuItem Header="About"/>
+    </ContextMenu>
+
     <!--#endregion-->
 
     <!--#region Dropdownbox Style-->
@@ -451,13 +469,13 @@
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="HasDropShadow" Value="True"/>
-        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontSize" Value="15"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Template" >
             <Setter.Value>
                 <ControlTemplate TargetType="ContextMenu">
                     <StackPanel>
-                        <Polygon Points="0,5 5,0, 10,5" Stroke="#FF3C3C3C" Fill="#FF3C3C3C" HorizontalAlignment="Right" Margin="20,0"/>
+                        <!--<Polygon Points="0,5 5,0, 10,5" Stroke="#FF3C3C3C" Fill="#FF3C3C3C" HorizontalAlignment="Right" Margin="20,0"/>-->
                         <Border CornerRadius="5" Background="#FF3C3C3C" BorderThickness="0">
                             <Border.OpacityMask>
                                 <VisualBrush>

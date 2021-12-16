@@ -177,10 +177,10 @@ namespace COMPASS
         }
         #endregion
 
-        private void ViewConfig_Click(object sender, RoutedEventArgs e)
+        private void Toggle_ContextMenu(object sender, RoutedEventArgs e)
         {
             (sender as Button).ContextMenu.PlacementTarget = (sender as Button);
-            (sender as Button).ContextMenu.IsOpen = true;
+            (sender as Button).ContextMenu.IsOpen = !(sender as Button).ContextMenu.IsOpen;
         }
 
         private void Searchbox_KeyDown(object sender, KeyEventArgs e)
