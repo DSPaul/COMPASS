@@ -22,12 +22,20 @@ namespace COMPASS
         //Convert PDFs to image previews
         public static void ConvertPDF(Codex pdf, string folder)
         {
+
+            var pdfReadDefines = new ImageMagick.Formats.PdfReadDefines()
+            {
+                HideAnnotations = true,
+            };
+
             MagickReadSettings settings = new MagickReadSettings()
             {
                 Density = new Density(100, 100),
                 FrameIndex = 0, // First page
                 FrameCount = 1, // Number of pages
+                Defines = pdfReadDefines,
             };
+
             using (MagickImage image = new MagickImage())
             {
                 image.Read(pdf.Path, settings);
