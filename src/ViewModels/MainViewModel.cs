@@ -4,11 +4,13 @@ using COMPASS.ViewModels.Commands;
 using ImageMagick;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Threading;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
@@ -187,18 +189,30 @@ namespace COMPASS.ViewModels
             if (IsInstalled("chrome.exe"))
             {
                 Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Chrome;
-                new DriverManager().SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
+                try
+                {
+                    new DriverManager().SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
+                }
+                catch { }
             }
             else if (IsInstalled("firefox.exe"))
             {
                 Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Firefox;
-                new DriverManager().SetUpDriver(new FirefoxConfig());
+                try
+                {
+                    new DriverManager().SetUpDriver(new FirefoxConfig());
+                }
+                catch { }
             }
 
             else
             {
                 Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Edge;
-                new DriverManager().SetUpDriver(new EdgeConfig());
+                try
+                {
+                    new DriverManager().SetUpDriver(new EdgeConfig());
+                }
+                catch { }
             }
         }
 
@@ -263,10 +277,10 @@ namespace COMPASS.ViewModels
             CurrentImportViewModel = new ImportViewModel(this, (ImportMode)mode);
         } 
 
-        //Change Folder
+        //Change Collection
         public void ChangeFolder(string folder)
         {
-            CurrentCollection = new CodexCollection(folder);
+            CurrentCollection = new CodexCollection(folder);            
             FilterHandler = new FilterHandler(currentCollection);
             ChangeFileView(Properties.Settings.Default.PreferedView);
             TFViewModel = new TagsFiltersViewModel(this);
