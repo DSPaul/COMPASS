@@ -235,7 +235,7 @@
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Command="{Binding Path=DataContext.OpenSelectedFileCommand,
+                            <Button Command="{Binding Path=DataContext.OpenFileLocallyCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                                     CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FileOutline"/>
                             <Button Command="{Binding Path=DataContext.OpenFileOnlineCommand,

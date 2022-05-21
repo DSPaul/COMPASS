@@ -9,7 +9,7 @@ namespace COMPASS.ViewModels.Commands
 {
     public class RelayCommand<T> : ICommand
     {
-        private Action<T> _execute;
+        private Func<T,bool> _execute;
         private Func<T, bool> _canExecute;
 
         public event EventHandler CanExecuteChanged
@@ -18,7 +18,7 @@ namespace COMPASS.ViewModels.Commands
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        public RelayCommand(Action<T> Execute, Func<T, bool> CanExecute = null)
+        public RelayCommand(Func<T,bool> Execute, Func<T, bool> CanExecute = null)
         {
             _execute = Execute;
             _canExecute = CanExecute;

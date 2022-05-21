@@ -21,7 +21,7 @@ namespace COMPASS.Views
 
         public void HandleDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ((FileBaseViewModel)DataContext).OpenSelectedFile();
+            ((FileBaseViewModel)DataContext).OpenFile();
         }
 
         //Make sure selected Item is always in view

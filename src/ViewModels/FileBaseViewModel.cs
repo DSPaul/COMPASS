@@ -18,13 +18,15 @@ namespace COMPASS.ViewModels
             mainViewModel = vm;
             EditFileCommand = new BasicCommand(EditFile);
             EditFilesCommand = new RelayCommand<object>(EditFiles);
-            OpenSelectedFileCommand = new RelayCommand<object>(OpenSelectedFile, CanOpenSelectedFile);
+            OpenFileLocallyCommand = new RelayCommand<object>(OpenFileLocally, CanOpenFileLocally);
             OpenFileOnlineCommand = new RelayCommand<object>(OpenFileOnline,CanOpenFileOnline);
             MoveToFolderCommand = new RelayCommand<object>(MoveToFolder);
             DeleteFileCommand = new RelayCommand<object>(DeleteFile);
             OpenSelectedFilesCommand = new RelayCommand<object>(OpenSelectedFiles);
 
             ViewOptions = new ObservableCollection<MyMenuItem>();
+
+            OpenFilePriority = new List<Func<object, bool>>() { OpenFileLocally, OpenFileOnline };
         }
 
         #region Properties
@@ -44,31 +46,67 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref selectedFile, value); }
         }
 
+        //list with options to costimize view
         private ObservableCollection<MyMenuItem> viewOptions;
         public ObservableCollection<MyMenuItem> ViewOptions
         {
             get { return viewOptions; }
             set { SetProperty(ref viewOptions, value); }
         }
+
+        //list with functions in prefered execution order to try and open a file
+        private List<Func<object, bool>> openFilePriority;
+        public List<Func<object,bool>> OpenFilePriority
+        {
+            get { return openFilePriority; }
+            set { SetProperty(ref openFilePriority, value); }
+        }
         #endregion
 
         #region Functions and Commands
 
+        //Open File whereever
+        public bool OpenFile(Codex codex = null)
+        {
+            Codex ToOpen = codex != null ? codex : MVM.CurrentFileViewModel.SelectedFile;
+
+            //attempt to open file
+            bool success = false;
+            int i = 0;
+            while (!success)
+            {
+                success = OpenFilePriority[i](codex);
+                i++;
+                //break if all options tried
+                if (i >= openFilePriority.Count)
+                {
+                    break;
+                }
+            }
+            if(success) { return true; }
+            else
+            {
+                MessageBox.Show("Could not open file, please check local path or URL");
+                return false;
+            }
+        }
+
         //Open File Offline
-        public RelayCommand<object> OpenSelectedFileCommand { get; private set; }
-        public void OpenSelectedFile(object o = null)
+        public RelayCommand<object> OpenFileLocallyCommand { get; private set; }
+        public bool OpenFileLocally(object o = null)
         {
             Codex ToOpen = o != null ? (Codex)o : MVM.CurrentFileViewModel.SelectedFile;
             try
             {
                 Process.Start(new ProcessStartInfo(ToOpen.Path) {UseShellExecute = true });
+                return true;
             }
             catch
             {
-                MessageBox.Show("File Path Invalid");
+                return false;
             }
         }
-        public bool CanOpenSelectedFile(object o = null)
+        public bool CanOpenFileLocally(object o = null)
         {
             Codex ToOpen = o != null ? (Codex)o : MVM.CurrentFileViewModel.SelectedFile;
 
@@ -78,19 +116,20 @@ namespace COMPASS.ViewModels
             return ToOpen.HasOfflineSource();
         }
 
-        //Open File online
+        //Open File Online
         public RelayCommand<object> OpenFileOnlineCommand { get; private set; }
-        public void OpenFileOnline(object o = null)
+        public bool OpenFileOnline(object o = null)
         {
             Codex ToOpen = o != null ? (Codex)o : MVM.CurrentFileViewModel.SelectedFile;
 
             try
             {
                 Process.Start(new ProcessStartInfo(ToOpen.SourceURL) { UseShellExecute = true });
+                return true;
             }
             catch
             {
-                MessageBox.Show("URL Invalid");
+                return false;
             }
             
         }
@@ -106,9 +145,9 @@ namespace COMPASS.ViewModels
 
         //Open Multiple Files
         public RelayCommand<object> OpenSelectedFilesCommand { get; private set; }
-        public void OpenSelectedFiles(object o = null)
+        public bool OpenSelectedFiles(object o = null)
         {
-            if (o == null) return;
+            if (o == null) return false;
             IList list = o as IList;
             List<Codex> ToOpen = list.Cast<Codex>().ToList();
             //MessageBox "Are you Sure?"
@@ -134,7 +173,9 @@ namespace COMPASS.ViewModels
                         MessageBox.Show("File Path Invalid");
                     }
                 }
+                return true;
             }
+            else { return false; }
         }
 
         //Edit File
@@ -149,20 +190,21 @@ namespace COMPASS.ViewModels
 
         //Edit Multiple files
         public RelayCommand<object> EditFilesCommand { get; private set; }
-        public void EditFiles(object o = null)
+        public bool EditFiles(object o = null)
         {
-            if (o == null) return;
+            if (o == null) return false;
             IList list = o as IList;
             List<Codex> ToEdit = list.Cast<Codex>().ToList();
             MVM.CurrentEditViewModel = new FileBulkEditViewModel(MVM, ToEdit);
             FileBulkEditWindow fpw = new FileBulkEditWindow((FileBulkEditViewModel)MVM.CurrentEditViewModel);
             fpw.ShowDialog();
             fpw.Topmost = true;
+            return true;
         }
 
         //Move Codex to other CodexCollection
         public RelayCommand<object> MoveToFolderCommand { get; private set; }
-        public void MoveToFolder(object o = null)
+        public bool MoveToFolder(object o = null)
         {
             //par contains 2 parameters
             var par = (object[])o;
@@ -171,8 +213,8 @@ namespace COMPASS.ViewModels
 
             //extract Collection parameter
             if (par[0] != null) targetCollectionName = (string)(par[0]);
-            else return;
-            if (targetCollectionName == MVM.CurrentFolder) return;
+            else return false;
+            if (targetCollectionName == MVM.CurrentFolder) return false;
 
             //extract Codex parameter
             if (par[1] != null)
@@ -224,11 +266,12 @@ namespace COMPASS.ViewModels
                 //Save changes to TargetCollection
                 TargetCollection.SaveFilesToFile();
             }
+            return true;
         }
 
         //Delete File
         public RelayCommand<object> DeleteFileCommand { get; private set; }
-        public void DeleteFile(object o = null)
+        public bool DeleteFile(object o = null)
         {
             List<Codex> ToDeleteList = new List<Codex>();
             if (o == null) ToDeleteList.Add(MVM.CurrentFileViewModel.SelectedFile);
@@ -242,7 +285,7 @@ namespace COMPASS.ViewModels
                 MVM.CurrentCollection.DeleteFile(ToDelete);
                 MVM.FilterHandler.RemoveFile(ToDelete);
             }
-            
+            return true;
         }
         #endregion
     }
