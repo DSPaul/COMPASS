@@ -4,13 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
+             xmlns:Controls="clr-namespace:COMPASS.Resources.Controls"
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
              xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
              mc:Ignorable="d"  x:Name="FileListControl"
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <DataGrid x:Name="FileView" MaxWidth="{Binding ActualWidth, ElementName=FileListControl}"
+    <Controls:EnhancedDataGrid x:Name="FileView" MaxWidth="{Binding ActualWidth, ElementName=FileListControl}"
                 Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
                 AutoGenerateColumns="False" ItemsSource="{Binding MVM.FilterHandler.ActiveFiles, IsAsync=True}"
                 CanUserAddRows="False" SelectionMode="Extended" CanUserSortColumns="True"
@@ -18,7 +18,7 @@
                 SelectedItem="{Binding SelectedFile, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848"
                 ClipToBounds="True" VirtualizingPanel.IsVirtualizing ="True"
                 VirtualizingStackPanel.VirtualizationMode = "Recycling" MaxHeight="4000"
-                SelectionChanged="FileView_SelectionChanged">
+                SelectionChanged="FileView_SelectionChanged" DataContextChanged="FileView_DataContextChanged" TargetUpdated="FileView_TargetUpdated" >
         <DataGrid.Resources>
             <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
             <Converters:BooltoVisibilityConverter x:Key="BoolToVisibilityConverter"/>
@@ -230,7 +230,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <!--<DataGridTextColumn Width="*"/>-->
-            <DataGridTemplateColumn MinWidth="70" Width="*" CanUserResize="False"
+            <DataGridTemplateColumn Header="" MinWidth="70" Width="*" CanUserResize="False"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowFileIcons, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
@@ -247,7 +247,7 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Width="25" MinWidth="25" CanUserResize="False"
+            <DataGridTemplateColumn Header="" Width="25" MinWidth="25" CanUserResize="False"
                                     Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowEditIcon, Converter={StaticResource BoolToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
@@ -260,6 +260,6 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
         </DataGrid.Columns>
-    </DataGrid>
+    </Controls:EnhancedDataGrid>
 
 </UserControl>

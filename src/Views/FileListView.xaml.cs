@@ -1,18 +1,10 @@
-﻿using COMPASS.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using COMPASS.Resources.Controls;
+using COMPASS.ViewModels;
+using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 
 namespace COMPASS.Views
 {
@@ -24,6 +16,7 @@ namespace COMPASS.Views
         public FileListView()
         {
             InitializeComponent();
+            LoadDataGridInfo();
         }
 
         public void HandleDoubleClick(object sender, MouseButtonEventArgs e)
@@ -39,6 +32,22 @@ namespace COMPASS.Views
             {
                 dataGrid.ScrollIntoView(e.AddedItems[0]);
             }
+        }
+
+        private void FileView_DataContextChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
+        {
+            LoadDataGridInfo();
+        }
+
+        private void LoadDataGridInfo()
+        {
+            FileView.ColumnInfo = JsonConvert.DeserializeObject<ObservableCollection<ColumnInfo>>(Properties.Settings.Default["DataGridCollumnInfo"].ToString());
+
+        }
+
+        private void FileView_TargetUpdated(object sender, System.Windows.Data.DataTransferEventArgs e)
+        {
+            LoadDataGridInfo();
         }
     }
 }
