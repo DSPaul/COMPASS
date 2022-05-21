@@ -291,7 +291,7 @@
         <ContextMenu.Resources>
             <Converters:MulitParamConverter x:Key="MultiParamConverter"/>
         </ContextMenu.Resources>
-        <MenuItem Header="Open File" Command="{Binding Path=DataContext.OpenSelectedFileCommand,
+        <MenuItem Header="Open Locally" Command="{Binding Path=DataContext.OpenFileLocallyCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
         <MenuItem Header="Open Online" Command="{Binding Path=DataContext.OpenFileOnlineCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>

@@ -70,7 +70,7 @@ namespace COMPASS.ViewModels
         #region Funtions and Commands
 
         public RelayCommand<object> SetTagModeCommand { get; private set; }
-        public void SetTagMode(object o)
+        public bool SetTagMode(object o)
         {
             TagMode = (bool)o;
 
@@ -94,6 +94,7 @@ namespace COMPASS.ViewModels
                     if (t.Children.Any(node => TagsToRemove.Contains(node.Tag))) t.Expanded = true;
                 }
             }
+            return true;
         }
 
         public BasicCommand TagCheckCommand { get; private set; }
