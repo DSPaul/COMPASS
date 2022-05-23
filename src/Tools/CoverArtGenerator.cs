@@ -49,7 +49,7 @@ namespace COMPASS
             }
         }
 
-        //Get coverart fom URL
+        //Get coverart from URL
         public static void GetCoverFromURL(string URL, Codex destfile, Enums.ImportMode import)
         {
             if (import == Enums.ImportMode.DnDBeyond)
