@@ -62,5 +62,11 @@
     <Setting Name="DataGridCollumnInfo" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="SortProperty" Type="System.String" Scope="User">
+      <Value Profile="(Default)">"Title"</Value>
+    </Setting>
+    <Setting Name="SortDirection" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
