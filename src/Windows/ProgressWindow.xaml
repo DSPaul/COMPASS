@@ -20,7 +20,8 @@
     <Window.Resources>
         <conv:MsgTypetoColorConverter x:Key="MsgTypetoColorConverter"/>
     </Window.Resources>
-    <Border Background="{StaticResource WindowBackground}" CornerRadius="5" BorderThickness="0">
+    <Border Background="{StaticResource WindowBackground}" CornerRadius="5" 
+            BorderThickness="2" BorderBrush="{StaticResource PopupOutline}">
         <Border.Effect>
             <DropShadowEffect BlurRadius="15" Direction="-90" RenderingBias="Quality" ShadowDepth="5"/>
         </Border.Effect>

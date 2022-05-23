@@ -47,5 +47,7 @@
     <SolidColorBrush x:Key="TabFocus" Color="{StaticResource DarkerGray}"/>
     <SolidColorBrush x:Key="ListHover" Color="{StaticResource DarkerGray}"/>
     <SolidColorBrush x:Key="ListSelected" Color="{StaticResource KindaDarkGray}"/>
+    <SolidColorBrush x:Key="PopupOutline" Color="{StaticResource DarkerGray}"/>
+    
 
 </ResourceDictionary>
