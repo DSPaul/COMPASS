@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
 using Newtonsoft.Json;
+using System.Collections;
 
 namespace COMPASS.Resources.Controls
 {
@@ -87,6 +88,19 @@ namespace COMPASS.Resources.Controls
                 if (realColumn == null) { continue; }
                 column.Apply(realColumn, Columns.Count, Items.SortDescriptions);
             }
+        }
+
+        //Fix Sorting not applying
+        //https://stackoverflow.com/questions/11177351/wpf-datagrid-ignores-sortdescription
+        protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+        {
+            ColumnInfoChanged();
+            base.OnItemsSourceChanged(oldValue, newValue);
+        }
+
+        protected void SetupSortDescriptions()
+        {
+
         }
     }
     public struct ColumnInfo

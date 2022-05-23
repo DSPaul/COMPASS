@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace COMPASS.Tools
@@ -17,6 +19,11 @@ namespace COMPASS.Tools
             cc = CurrentCollection;
 
             ActiveFiles = new ObservableCollection<Codex>(cc.AllFiles);
+
+            //load sorting from settings
+            var PropertyPath = (string)Properties.Settings.Default["SortProperty"];
+            var SortDirection = (ListSortDirection) Properties.Settings.Default["SortDirection"];
+            CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(new SortDescription(PropertyPath, SortDirection));
 
             ExcludedCodicesByTag = new List<Codex>();
             ExcludedCodicesBySearch = new List<Codex>();
@@ -225,11 +232,19 @@ namespace COMPASS.Tools
 
         public void UpdateActiveFiles()
         {
+            //get sorting info
+            SortDescription sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions[0];
+            Properties.Settings.Default["SortProperty"] = sortDescr.PropertyName;
+            Properties.Settings.Default["SortDirection"] = (int)sortDescr.Direction;
+            Properties.Settings.Default.Save();
+            //compile list of "active" files, which are files that match all the different filters
             ActiveFiles = new ObservableCollection<Codex>(cc.AllFiles
                 .Except(ExcludedCodicesBySearch)
                 .Except(ExcludedCodicesByTag)
                 .Except(ExcludedCodicesByFilter)
                 .ToList());
+            //reapply sorting
+            CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(sortDescr);
         }
 
         public void RemoveFile(Codex f)

@@ -262,5 +262,29 @@ namespace COMPASS.Properties {
                 this["DataGridCollumnInfo"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\"Title\"")]
+        public string SortProperty {
+            get {
+                return ((string)(this["SortProperty"]));
+            }
+            set {
+                this["SortProperty"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int SortDirection {
+            get {
+                return ((int)(this["SortDirection"]));
+            }
+            set {
+                this["SortDirection"] = value;
+            }
+        }
     }
 }
