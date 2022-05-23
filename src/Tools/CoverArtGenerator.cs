@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Windows;
 
 namespace COMPASS
 {
@@ -36,16 +37,26 @@ namespace COMPASS
                 Defines = pdfReadDefines,
             };
 
-            using (MagickImage image = new MagickImage())
+            try
             {
-                image.Read(pdf.Path, settings);
-                image.Format = MagickFormat.Png;
-                image.BackgroundColor = new MagickColor("#000000"); //set backgroun color as transparant
-                image.Border(20); //adds transparant border around image
-                image.Trim(); //cut off all transparancy
-                image.RePage(); //resize image to fit what was cropped
+                using (MagickImage image = new MagickImage())
+                {
+                    image.Read(pdf.Path, settings);
+                    image.Format = MagickFormat.Png;
+                    image.BackgroundColor = new MagickColor("#000000"); //set backgroun color as transparant
+                    image.Border(20); //adds transparant border around image
+                    image.Trim(); //cut off all transparancy
+                    image.RePage(); //resize image to fit what was cropped
 
-                image.Write(CodexCollection.CollectionsPath + folder +  @"\CoverArt\" + pdf.ID.ToString() + ".png");
+                    image.Write(CodexCollection.CollectionsPath + folder + @"\CoverArt\" + pdf.ID.ToString() + ".png");
+                }
+            }
+            catch
+            {
+                string messageBoxText = "COMPASS uses Ghostscript to extract cover art from pdf's. \n" +
+                    "Ghostscript needs to be installed seperatly and can be downloaded here: \n" +
+                    "https://www.ghostscript.com/releases/gsdnld.html";
+                MessageBox.Show(messageBoxText,"Could not extract cover art from pdf", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -128,9 +139,12 @@ namespace COMPASS
                         int newY = (int)Math.Round(Coverpage.Location.Y + navheight, 0);
 
                         //screenshot and download the image
-                        image = GetCroppedScreenShot(driver, new Point(Coverpage.Location.X, newY), Coverpage.Size);
+                        image = GetCroppedScreenShot(driver, new System.Drawing.Point(Coverpage.Location.X, newY), Coverpage.Size);
                         break;
                 }
+
+                if (image.Width > 850) image.Resize(850, 0);
+                image.Write(destfile.CoverArt);
             }
             catch 
             {
@@ -138,9 +152,6 @@ namespace COMPASS
             }
 
             driver.Quit();
-
-            if (image.Width > 850) image.Resize(850, 0);
-            image.Write(destfile.CoverArt);
         }
 
         //convert image to image preview
@@ -154,7 +165,7 @@ namespace COMPASS
         }
 
         //Take screenshot of specific html element 
-        public static MagickImage GetCroppedScreenShot(IWebDriver driver, Point location, Size size)
+        public static MagickImage GetCroppedScreenShot(IWebDriver driver, System.Drawing.Point location, System.Drawing.Size size)
         {
             //take the screenshot
             Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();
