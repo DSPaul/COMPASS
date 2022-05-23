@@ -52,6 +52,8 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _tempCodex, value); }
         }
 
+        private bool CoverArtChanged = false;
+
         #endregion
 
         #region Funtions and Commands
@@ -79,6 +81,7 @@ namespace COMPASS.ViewModels
                 Codex ToAdd = new Codex();
                 ToAdd.Copy(TempCodex);
                 CurrentCollection.AllFiles.Add(ToAdd);
+                MVM.Refresh();
             }
             //Add new Author and Publishers to lists
             if(TempCodex.Author != "" && !CurrentCollection.AuthorList.Contains(TempCodex.Author)) 
@@ -86,7 +89,8 @@ namespace COMPASS.ViewModels
             if(TempCodex.Publisher != "" && !CurrentCollection.PublisherList.Contains(TempCodex.Publisher)) 
                 CurrentCollection.PublisherList.Add(TempCodex.Publisher);
 
-            MVM.Reset();
+            //reset needed to show art update
+            if(CoverArtChanged) MVM.Refresh();
             CloseAction();
         }
 
@@ -130,10 +134,12 @@ namespace COMPASS.ViewModels
         private void RegenArt()
         {
             CoverArtGenerator.ConvertPDF(TempCodex, CurrentCollection.Folder);
-            //force refresh
+            //force refresh because it is cached
             string CovArt = TempCodex.CoverArt; 
             TempCodex.CoverArt = null;
             TempCodex.CoverArt = CovArt;
+
+            CoverArtChanged = true;
         }
 
         public BasicCommand SelectArtCommand { get; private set; }
@@ -148,11 +154,14 @@ namespace COMPASS.ViewModels
             if (openFileDialog.ShowDialog() == true)
             {
                 CoverArtGenerator.SaveImageAsCover(openFileDialog.FileName, TempCodex);
+
+                //force refresh because it is cached
+                string CovArt = TempCodex.CoverArt;
+                TempCodex.CoverArt = null;
+                TempCodex.CoverArt = CovArt;
+
+                CoverArtChanged=true;
             }
-            //force refresh because it is cached
-            string CovArt = TempCodex.CoverArt;
-            TempCodex.CoverArt = null;
-            TempCodex.CoverArt = CovArt;
         }
         #endregion
     }

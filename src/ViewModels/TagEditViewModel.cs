@@ -155,7 +155,7 @@ namespace COMPASS.ViewModels
             }
             //Apply changes 
             EditedTag.Copy(TempTag);
-            MVM.Reset();
+            MVM.TFViewModel.RefreshTreeView();
             if (!CreatingTag) CloseAction();
             else
             {
