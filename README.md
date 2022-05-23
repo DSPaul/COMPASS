@@ -1,33 +1,26 @@
-![COMPASS Banner](https://github.com/DSPAUL/COMPASS/blob/master/COMPASS/Icons/CompassFull.png)
+![COMPASS Banner](https://github.com/DSPAUL/COMPASS/blob/master/src/Icons/CompassFull.png)
 
 # COMPASS
 The Codex Organizer to make Pen-and-paper Adventuring Super Simple or COMPASS for short is a windows application to organize and manage all your TTRPG rulebooks. 
 
+## Story
 If you are an RPG fan like me, you probably have lots of pdf's both homebrew and official from sites such as [Drivethrough RPG](https://www.drivethrurpg.com/), [Humble Bundle Books](https://www.humblebundle.com/books),  [GM Binder](https://www.gmbinder.com/), [Homebrewery](https://homebrewery.naturalcrit.com/), [itch.io](https://itch.io/books/genre-rpg) or content from subreddits, patreon creators and kickstarters. Or perhaps you own them in digital form on sites such as [D&D Beyond](https://www.dndbeyond.com/sources#Sourcebooks) or [Roll20](https://roll20.net/compendium/dnd5e/BookIndex).  Keeping track of all these books is hard and nothing is more frustrating than franticly clicking trough folders in search of that one statblock you need in the heat of the moment. COMPASS solves this problem by bringing all of your books together in one place that is easily searchable, sortable and filterable. 
 
 ## Features
-
 - **Unify** your digital tabletop RPG sourcebook library so everything is in one place. 
 - **Import** any pdf or link a URL for online sources. You can also manually add books to include your physical collection. 
-- **Automatic metadata** such as Author, Publisher, Releasedate and Coverart from pdf's and supported sites that can be used to sort and filter your books. Supported sites at the moment are Homebrewery and GM Binder. 
-- **Categorize** all your books using Tags. You can add Tags for anything you like, some exaples:
+- **Automatic metadata** such as Author, Publisher, Release date from pdf's and supported sites that can be used to sort and filter your books. Supported sites at the moment are Homebrewery and GM Binder. 
+- **Categorize** all your books using Tags. You can add Tags for anything you like, some examples:
 	- The type of content like *Adventure*, *Monster Stats* or *Setting/Lore*.
 	- The edition or ruleset such as *DnD 5e* or *Pathfinder 2e*.
 	- The setting such as *Forgotten realms* or *Eberron*.
 	- The Genre such as *Horror*, *Fantasy* or *Sci-Fi*.
 	- Whatever works for you, you can create tags for everything.
-- **Organize** Tags in a folder like hierarchy to more easily find what you are looking for, example:
-	- RuleSet:
-		- DnD
-			- 3.5e
-			- 4e
-			- 5e
-		- Pathfinder
-			- 1e
-			- 2e
-- **Filter and Sort** all your books by *Title, Author, Publisher, Releasedate and Personal Rating*.
-- Have **Redundant** access to your books by having both an offline pdf and a link to an online version hosted on sites such as Google Drive, GM Binder for each book. COMPASS will check your internet connection and open the online file if internet is available to get the most up-to-date version and the offline pdf if you have no internet. 
+- **Organize** Tags in a folder like hierarchy to retain the advantage of folders, without the need for file duplication. 
+- **Filter and Sort** all your books by *Title, Author, Publisher, Release date and Personal Rating*.
+- Have **Redundant** access to your books by having both an offline pdf and a link to an online version hosted on sites such as Google Drive, GM Binder for each book. COMPASS will automatically fallback to another version if the preferred one is unavailable due to a lack of internet for example.
 - **Group** your books into collections. Each collection has their own list of tags and authors and helps you keep an overview by reducing the amount of books that are on your screen at once.
 
-
-
+## Requirements
+CCOMPASS uses Ghostscript to extract cover art from pdf's which needs to be installed seperately. 
+It can be downloaded here [Ghostscript releases](https://www.ghostscript.com/releases/gsdnld.html).
