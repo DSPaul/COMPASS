@@ -257,6 +257,13 @@ namespace COMPASS.ViewModels
 
         //Reset
         public BasicCommand ResetCommand { get; private set; }
+
+        public void Refresh()
+        {
+            FilterHandler.ReFilter();
+            TFViewModel.RefreshTreeView();
+        }
+
         public void Reset()
         {
             FilterHandler.ClearFilters();

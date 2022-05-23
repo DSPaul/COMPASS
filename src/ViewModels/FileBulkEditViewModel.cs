@@ -184,8 +184,6 @@ namespace COMPASS.ViewModels
                 }
                 
             }
-
-            MVM.Reset();
             CloseAction();
         }
 

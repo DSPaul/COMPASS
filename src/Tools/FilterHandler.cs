@@ -215,6 +215,14 @@ namespace COMPASS.Tools
             UpdateActiveFiles();
         }
 
+        public void ReFilter()
+        {
+            UpdateTagFilteredFiles();
+            UpdateFieldFilteredFiles();
+            UpdateSearchFilteredFiles(searchterm);
+            UpdateActiveFiles();
+        }
+
         public void UpdateActiveFiles()
         {
             ActiveFiles = new ObservableCollection<Codex>(cc.AllFiles

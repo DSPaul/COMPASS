@@ -185,7 +185,7 @@ namespace COMPASS.ViewModels
             }
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MVM.Reset();
+                MVM.Refresh();
             });
             if(SelectWhenDone!=null) MVM.CurrentFileViewModel.SelectedFile = SelectWhenDone;
         }

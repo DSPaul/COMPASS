@@ -202,30 +202,17 @@ namespace COMPASS.ViewModels
         public BasicCommand DeleteTagCommand { get; private set; }
         public void DeleteTag()
         {
+            //tag to delete is context, because DeleteTag is called from context menu
             if (Context == null) return;
             MVM.CurrentCollection.DeleteTag(Context);
-            //Go over all files and refresh tags list
+            MVM.FilterHandler.RemoveTagFilter(Context);
+
+            //Go over all files and remove the tag from tag list
             foreach (var f in MVM.CurrentCollection.AllFiles)
             {
-                int i = 0;
-                //iterate over all the tags in the file
-                while (i < f.Tags.Count)
-                {
-                    Tag currenttag = f.Tags[i];
-                    //try to find the tag in alltags, if found, increase i to go to next tag
-                    try
-                    {
-                        MVM.CurrentCollection.AllTags.First(tag => tag.ID == currenttag.ID);
-                        i++;
-                    }
-                    //if the tag in not found in alltags, delete it
-                    catch (System.InvalidOperationException)
-                    {
-                        f.Tags.Remove(currenttag);
-                    }
-                }
+                f.Tags.Remove(Context);
             }
-            MVM.Reset();
+            MVM.Refresh();
 
             //SelectedTag = null;
         }
