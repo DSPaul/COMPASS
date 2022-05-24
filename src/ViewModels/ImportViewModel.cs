@@ -139,6 +139,7 @@ namespace COMPASS.ViewModels
                 Application.Current.Dispatcher.Invoke(() =>
                     {
                         pgw = new ProgressWindow(this);
+                        pgw.Owner = Application.Current.MainWindow;
                         pgw.Show();
                     });
                 
