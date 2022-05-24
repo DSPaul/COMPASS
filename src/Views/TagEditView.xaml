@@ -60,7 +60,6 @@
                 <RowDefinition Height =" auto"/>
                 <RowDefinition Height =" auto"/>
                 <RowDefinition Height =" auto"/>
-                <RowDefinition Height =" auto"/>
                 <RowDefinition Height =" 10"/>
             </Grid.RowDefinitions>
 
@@ -87,59 +86,7 @@
                     </ToggleButton.Template>
                 </ToggleButton>
             </StackPanel>
-            <StackPanel Grid.Row="5" Orientation="Horizontal">
-                <Label Content="Parent:"/>
-                <Border CornerRadius="5" Margin="0,5" x:Name="ShowParentSelectionBorder">
-                    <Border.Style>
-                        <Style TargetType="Border">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ParentTempTag.IsGroup}" Value="True">
-                                    <Setter Property="Background" Value="{x:Null}"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ParentTempTag.IsGroup}" Value="False">
-                                    <Setter Property="Background">
-                                        <Setter.Value>
-                                            <SolidColorBrush Color="{Binding ParentTempTag.BackgroundColor}"/>
-                                        </Setter.Value>
-                                    </Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                    <ToggleButton x:Name="ShowParentSelectionBtn" IsChecked="{Binding ShowParentSelection, Mode=TwoWay}"
-                                        FontSize="13" VerticalContentAlignment="Bottom" Margin="5,0" Foreground="White"
-                                  Content="{Binding ParentTempTag.Content, TargetNullValue='None', FallbackValue='None'}">
-                        <ToggleButton.Style>
-                            <Style TargetType="ToggleButton">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ParentTempTag.IsGroup}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
-                                        <Setter Property="FontWeight" Value="Bold"/>
-                                        <Setter Property="Typography.Capitals" Value="AllSmallCaps"/>
-                                        <Setter Property="FontSize" Value="15"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding ParentTempTag.IsGroup}" Value="False">
-                                        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ToggleButton.Style>
-                        <ToggleButton.Template>
-                            <ControlTemplate>
-                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}"
-                                           FontWeight="{Binding FontWeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}"
-                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}"
-                                           />
-                            </ControlTemplate>
-                        </ToggleButton.Template>
-                    </ToggleButton>
-                </Border>
-                <Button x:Name="ClearParent" Command="{Binding ClearParentCommand}"
-                         BorderBrush="{x:Null}" Width="40" VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}">
-                    <materialDesign:PackIcon Kind="WindowClose"/>
-                </Button>
-            </StackPanel>
-            <Grid Grid.Row="6">
+            <Grid Grid.Row="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
@@ -158,31 +105,6 @@
                 </Button>
             </Grid>
         </Grid>
-        <ScrollViewer x:Name="ParentSelection" PreviewMouseWheel="ParentSelection_PreviewMouseWheel" Grid.Column="1" MaxHeight="500"
-                      Visibility="{Binding ShowParentSelection, Converter={StaticResource BooltoVisibilityConverter}, FallbackValue=Collapsed}">
-            <StackPanel HorizontalAlignment="Center">
-                <TreeView x:Name="ParentSelectionTree" BorderBrush="{x:Null}" ItemsSource="{Binding TreeViewSource}" ItemTemplateSelector="{StaticResource TagDataTemplateSelector}"
-                                    Background="{x:Null}" HorizontalAlignment="Left" SelectedItemChanged="TagTree_SelectedItemChanged">
-                    <TreeView.Resources>
-                        <Style TargetType="{x:Type TreeViewItem}">
-                            <Setter Property="IsExpanded" Value="True"/>
-                            <Setter Property="IsSelected" Value="{Binding Selected, Mode=TwoWay}"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="true">
-                                    <Setter Property="BorderBrush" Value="Black"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TreeView.Resources>
-                </TreeView>
-                <Button Margin="5" Background="{StaticResource CancelFill}" Command="{Binding CancelParentSelectionCommand}" HorizontalAlignment="Center">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="WindowClose"/>
-                        <TextBlock Text="Cancel" FontSize="15"/>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-        </ScrollViewer>
         <StackPanel x:Name="ColorSelection" Grid.Column="2" Visibility="{Binding ShowColorSelection, Converter= {StaticResource BooltoVisibilityConverter}}">
             <CustomControls:ColorPicker Height="135" Width="166" 
                                         SelectedColor="{Binding TempTag.BackgroundColor, Mode=TwoWay, TargetNullValue=Black}"/>
