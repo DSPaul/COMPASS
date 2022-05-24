@@ -3,9 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
-             xmlns:Models="clr-namespace:COMPASS.Models" xmlns:controls="clr-namespace:COMPASS.Resources.Controls"
+             xmlns:Models="clr-namespace:COMPASS.Models" 
+             xmlns:controls="clr-namespace:COMPASS.Resources.Controls"
              mc:Ignorable="d" FontSize="20"
              d:DesignHeight="650" d:DesignWidth="200">
     <Grid>
@@ -121,9 +123,11 @@
             <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple">
                 <Border>
                     <TreeView x:Name="TagTree" Grid.Column="1" Grid.Row="1" BorderBrush="{x:Null}"
-                                    ItemsSource="{Binding TreeViewSource}" Grid.ColumnSpan="2" Background="{x:Null}"
-                                    SelectedItemChanged="TagTree_SelectedItemChanged" ItemTemplateSelector="{StaticResource TagTemplateSelector}"
-                                    MouseRightButtonDown="TagTree_MouseRightButtonDown">
+                        ItemsSource="{Binding Path=TreeViewSource,Mode=TwoWay}" Grid.ColumnSpan="2" Background="{x:Null}"
+                        dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True"  dd:DragDrop.DropHandler="{Binding}"
+                        SelectedItemChanged="TagTree_SelectedItemChanged" 
+                        ItemTemplateSelector="{StaticResource TagTemplateSelector}"
+                        MouseRightButtonDown="TagTree_MouseRightButtonDown">
                         <TreeView.Resources>
                             <Style TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>

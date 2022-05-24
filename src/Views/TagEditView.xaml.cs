@@ -27,28 +27,10 @@ namespace COMPASS.Views
             InitializeComponent();
         }
 
-        public void TagTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (e.NewValue == null) return;
-            Tag selectedtag = ((TreeViewNode)e.NewValue).Tag;
-            if (selectedtag == null) return;
-            //if selection switches when tree is not visible: unwanted selection change, ignore
-            if (ShowParentSelectionBtn.IsChecked == false) return;
-            ((TagEditViewModel)DataContext).SelectedTag = selectedtag;
-        }
-
         //makes objects lose focus when clicked away
         private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             MainGrid.Focus();
-        }
-
-        //make scroll with mousewheel work
-        private void ParentSelection_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            ScrollViewer scv = (ScrollViewer)sender;
-            scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
-            e.Handled = true;
         }
     }
 }

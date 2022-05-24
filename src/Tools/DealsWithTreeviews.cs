@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using GongSolutions.Wpf.DragDrop;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.Tools
 {
-    public abstract class DealsWithTreeviews:ObservableObject
+    public abstract class DealsWithTreeviews:ObservableObject,IDropTarget
     {
         public DealsWithTreeviews(CodexCollection CC)
         {
@@ -39,14 +40,28 @@ namespace COMPASS.Tools
         /***All Edit View Models deal with Treeviews so putting treeview related functions here***/
         public ObservableCollection<TreeViewNode> CreateTreeViewSourceFromCollection(ObservableCollection<Tag> RootTags)
         {
-            ObservableCollection<TreeViewNode> newRootTags = new ObservableCollection<TreeViewNode>();
+            ObservableCollection<TreeViewNode> newRootNodes = new ObservableCollection<TreeViewNode>();
             foreach (Tag t in RootTags)
             {
-                newRootTags.Add(ConvertTagToTreeViewNode(t));
+                newRootNodes.Add(ConvertTagToTreeViewNode(t));
+            }
+
+            return newRootNodes;
+        }
+
+        public ObservableCollection<Tag> CreateCollectionFromTreeViewSource(ObservableCollection<TreeViewNode> treeViewSource)
+        {
+            var newRootTags = new ObservableCollection<Tag>();
+            foreach (TreeViewNode n in treeViewSource)
+            {
+                newRootTags.Add(ConvertTreeViewNodeToTag(n));
+            }
+            foreach(Tag t in newRootTags)
+            {
+                t.ParentID = -1;
             }
             return newRootTags;
         }
-
         private TreeViewNode ConvertTagToTreeViewNode(Tag t)
         {
             TreeViewNode Result = new TreeViewNode(t);
@@ -54,26 +69,58 @@ namespace COMPASS.Tools
             return Result;
         }
 
-        public ObservableCollection<TreeViewNode> CreateAllTreeViewNodes(ObservableCollection<TreeViewNode> RootTags)
+        private Tag ConvertTreeViewNodeToTag(TreeViewNode node)
         {
-            ObservableCollection<TreeViewNode> AllTags = new ObservableCollection<TreeViewNode>();
-            List<TreeViewNode> Currentlist = RootTags.ToList();
+            Tag Result = node.Tag;
+            //clear childeren the tag thinks it has
+            Result.Items.Clear();
+
+            //add childeren accodring to treeview
+            foreach (TreeViewNode childnode in node.Children)
+            {
+                Result.Items.Add(ConvertTreeViewNodeToTag(childnode));
+            }
+            //set partentID for all the childeren
+            foreach(Tag childtag in Result.Items)
+            {
+                childtag.ParentID = Result.ID;
+            }
+
+            return Result;
+        }
+
+        public ObservableCollection<TreeViewNode> CreateAllTreeViewNodes(ObservableCollection<TreeViewNode> RootNodes)
+        {
+            ObservableCollection<TreeViewNode> AllNodes = new ObservableCollection<TreeViewNode>();
+            List<TreeViewNode> Currentlist = RootNodes.ToList();
             for (int i = 0; i < Currentlist.Count(); i++)
             {
                 TreeViewNode t = Currentlist[i];
-                AllTags.Add(t);
+                AllNodes.Add(t);
                 if (t.Children.Count > 0)
                 {
                     foreach (TreeViewNode t2 in t.Children) Currentlist.Add(t2);
                 }
             }
-            return AllTags;
+            return AllNodes;
         }
 
         public void RefreshTreeView()
         {
             TreeViewSource = CreateTreeViewSourceFromCollection(cc.RootTags);
             AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
+        }
+
+
+        //Drop on Treeview Behaviour
+        void IDropTarget.DragOver(IDropInfo dropInfo)
+        {
+            DragDrop.DefaultDropHandler.DragOver(dropInfo);
+        }
+        void IDropTarget.Drop(IDropInfo dropInfo)
+        {
+            DragDrop.DefaultDropHandler.Drop(dropInfo);
+            cc.RootTags = CreateCollectionFromTreeViewSource(TreeViewSource);
         }
         /*** End of Treeview section ***/
     }
