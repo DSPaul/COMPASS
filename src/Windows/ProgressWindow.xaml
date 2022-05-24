@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:conv="clr-namespace:COMPASS.Tools.Converters"
         xmlns:local="clr-namespace:COMPASS.Windows" WindowStyle="None"
-        mc:Ignorable="d" Foreground="{StaticResource TextColor}" AllowsTransparency="True" Background="Transparent"
-        Title="ProgressWindow" Height="150" Width="450" WindowStartupLocation="CenterScreen">
+        mc:Ignorable="d" Foreground="{StaticResource TextColor}" 
+        AllowsTransparency="True" Background="Transparent"
+        Title="ProgressWindow" Height="150" Width="450" WindowStartupLocation="CenterOwner">
     <Window.Style>
         <Style>
             <Setter Property="WindowChrome.WindowChrome">
@@ -28,10 +29,12 @@
         <Grid >
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock Text="{Binding ProgressText, Mode=OneWay, FallbackValue=Import in Progress}" FontSize="20" FontFamily="Segoe UI Light"/>
-                <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" Value="{Binding ProgressPercentage, FallbackValue=30}" Height="12" Width="400"
-                    ValueChanged="ProgressBar_ValueChanged" Foreground="{StaticResource AccentColor}" Background="{StaticResource UIElementBackground}" Margin="0,5"
-                    Style="{DynamicResource RoundedProgressBar}"/>
-                <Border Height="75" Width="400" Background="{StaticResource LogBackground}" CornerRadius="5" BorderBrush="{StaticResource LogBorder}" BorderThickness="1" Margin="0,5">
+                <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" Value="{Binding ProgressPercentage, FallbackValue=30}" 
+                    Height="12" Width="400" ValueChanged="ProgressBar_ValueChanged" 
+                    Foreground="{StaticResource AccentColor}" Background="{StaticResource UIElementBackground}" 
+                    Margin="0,5" Style="{DynamicResource RoundedProgressBar}"/>
+                <Border Height="75" Width="400" Background="{StaticResource LogBackground}" 
+                        CornerRadius="5" BorderBrush="{StaticResource LogBorder}" BorderThickness="1" Margin="0,5">
                     <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto">
                         <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{Binding Log, Mode=OneWay}" Margin="10,5">
                             <ItemsControl.ItemsPanel>
