@@ -86,3 +86,4 @@ MigrationBackup/
 *.pdn
 .editorconfig
 *.diagsession
+src/GlobalSuppressions.cs
