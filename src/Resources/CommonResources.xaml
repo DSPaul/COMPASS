@@ -331,7 +331,7 @@
 
     <!--#endregion-->
 
-    <!--#region Dropdownbox Style-->
+    <!--#region Combobox Style-->
     <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -498,6 +498,7 @@
     <Style TargetType="MenuItem" x:Key="DropdownMenuItem">
         <Setter Property="Header" Value="{Binding Header}"/>
         <Setter Property="Command" Value="{Binding Command}"/>
+        <Setter Property="CommandParameter" Value="{Binding CommandParam}"/>
         <Setter Property="ItemsSource" Value="{Binding Submenus}"/>
         <Setter Property="Template">
             <Setter.Value>
