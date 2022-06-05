@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using System;
 using System.Collections;
@@ -303,7 +304,7 @@ namespace COMPASS.ViewModels
                 {
                     ToMove.Tags.Clear();
                     // Give file new ID and move it to other folder
-                    ToMove.ID = TargetCollection.GetAvailableID();
+                    ToMove.ID = Utils.GetAvailableID(TargetCollection.AllFiles.ToList<IHasID>());
 
                     //Add Codex to target CodexCollection
                     TargetCollection.AllFiles.Add(ToMove);

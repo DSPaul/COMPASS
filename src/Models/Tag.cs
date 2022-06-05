@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
 using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Windows.Media;
 
 namespace COMPASS.Models
 {
-    public class Tag : ObservableObject
+    public class Tag : ObservableObject, IHasID
     {
         //Emtpy Contructor needed for serialization
         public Tag()
@@ -20,18 +21,14 @@ namespace COMPASS.Models
         public Tag(ObservableCollection<Tag> alltags)
         {
             _allTags = alltags;
-            int tempID = 0;
-            while (_allTags.Any(t => t.ID == tempID))
-            {
-                tempID++;
-            }
-            ID = tempID;
+            ID = Utils.GetAvailableID(alltags.ToList<IHasID>());
             this.Items = new ObservableCollection<Tag>();
 
             //set a default color for add tag
             BackgroundColor = Colors.Black;
         }
 
+        //needed to get parent tag from parent ID
         private ObservableCollection<Tag> _allTags;
 
         private ObservableCollection<Tag> _Items;
@@ -78,6 +75,7 @@ namespace COMPASS.Models
         }
         #endregion
 
+        //can't save parent itself, would cause infinite loop when serializing
         public Tag GetParent()
         {
             if (ParentID == -1) return null;
