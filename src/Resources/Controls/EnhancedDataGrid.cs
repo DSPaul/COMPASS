@@ -97,11 +97,6 @@ namespace COMPASS.Resources.Controls
             ColumnInfoChanged();
             base.OnItemsSourceChanged(oldValue, newValue);
         }
-
-        protected void SetupSortDescriptions()
-        {
-
-        }
     }
     public struct ColumnInfo
     {

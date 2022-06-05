@@ -48,6 +48,13 @@ namespace COMPASS.Models
             set { SetProperty(ref _command, value); }
         }
 
+        private object _commandParam;
+        public object CommandParam
+        {
+            get { return _commandParam; }
+            set { SetProperty(ref _commandParam, value); }
+        }
+
         private ObservableCollection<MyMenuItem> _submenus;
         public ObservableCollection<MyMenuItem> Submenus
         {

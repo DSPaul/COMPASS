@@ -23,10 +23,8 @@ namespace COMPASS.Tools
             //load sorting from settings
             var PropertyPath = (string)Properties.Settings.Default["SortProperty"];
             var SortDirection = (ListSortDirection) Properties.Settings.Default["SortDirection"];
-            if (PropertyPath != null && PropertyPath.Length>0)
-            {
-                CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(new SortDescription(PropertyPath, SortDirection));
-            }
+            SortBy(PropertyPath,SortDirection);
+
             ExcludedCodicesByTag = new List<Codex>();
             ExcludedCodicesBySearch = new List<Codex>();
             ExcludedCodicesByFilter = new List<Codex>();
@@ -223,6 +221,42 @@ namespace COMPASS.Tools
 
             UpdateActiveFiles();
         }
+        //------------------------------------//
+
+
+        public void SortBy(string PropertyPath, ListSortDirection? SortDirection = null)
+        {
+            if (PropertyPath != null && PropertyPath.Length > 0)
+            {
+                var sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions;
+                //determine sorting direction, ascending by default
+                ListSortDirection lsd = ListSortDirection.Ascending; ;
+
+                if(SortDirection != null) //if direction is given, use that instead
+                {
+                    lsd = (ListSortDirection)SortDirection;
+                }
+                else if (sortDescr.Count > 0)
+                {
+                    if (sortDescr[0].PropertyName == PropertyPath) //if already sorting, change direction
+                    {
+                        if (sortDescr[0].Direction == ListSortDirection.Ascending) lsd = ListSortDirection.Descending;
+                        else lsd = ListSortDirection.Ascending;
+                    }
+                }
+
+                sortDescr.Clear();
+                sortDescr.Add(new SortDescription(PropertyPath,lsd));
+                SaveSortDescriptions(PropertyPath,lsd);
+            }
+        }
+
+        public void SaveSortDescriptions(string property, ListSortDirection dir)
+        {
+            Properties.Settings.Default["SortProperty"] = property;
+            Properties.Settings.Default["SortDirection"] = (int)dir;
+            Properties.Settings.Default.Save();
+        }
 
         public void ReFilter()
         {
@@ -240,15 +274,15 @@ namespace COMPASS.Tools
             {
                 sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions[0];
             }
-            Properties.Settings.Default["SortProperty"] = sortDescr.PropertyName;
-            Properties.Settings.Default["SortDirection"] = (int)sortDescr.Direction;
-            Properties.Settings.Default.Save();
+            SaveSortDescriptions(sortDescr.PropertyName, sortDescr.Direction);
+
             //compile list of "active" files, which are files that match all the different filters
             ActiveFiles = new ObservableCollection<Codex>(cc.AllFiles
                 .Except(ExcludedCodicesBySearch)
                 .Except(ExcludedCodicesByTag)
                 .Except(ExcludedCodicesByFilter)
                 .ToList());
+
             //reapply sorting
             try
             {

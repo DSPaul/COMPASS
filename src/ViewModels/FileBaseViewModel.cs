@@ -16,6 +16,8 @@ namespace COMPASS.ViewModels
         public FileBaseViewModel(MainViewModel vm)
         {
             mainViewModel = vm;
+            
+            //commands
             EditFileCommand = new BasicCommand(EditFile);
             EditFilesCommand = new RelayCommand<object>(EditFiles);
             OpenFileLocallyCommand = new RelayCommand<object>(OpenFileLocally, CanOpenFileLocally);
@@ -25,6 +27,11 @@ namespace COMPASS.ViewModels
             OpenSelectedFilesCommand = new RelayCommand<object>(OpenSelectedFiles);
 
             ViewOptions = new ObservableCollection<MyMenuItem>();
+            getSortOptions();
+            SortOptionsMenuItem = new MyMenuItem("Sorty By")
+            {
+                Submenus = SortOptions
+            };
 
             OpenFilePriority = new List<Func<object, bool>>() { OpenFileLocally, OpenFileOnline };
         }
@@ -54,6 +61,22 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref viewOptions, value); }
         }
 
+        //list with options to sort the files
+        private MyMenuItem sortOptionsMenuItem;
+        public MyMenuItem SortOptionsMenuItem
+        {
+            get { return sortOptionsMenuItem; }
+            set { SetProperty(ref sortOptionsMenuItem, value); }
+        }
+
+        //list with options to sort the files
+        private ObservableCollection<MyMenuItem> sortOptions;
+        public ObservableCollection<MyMenuItem> SortOptions
+        {
+            get { return sortOptions; }
+            set { SetProperty(ref sortOptions, value); }
+        }
+
         //list with functions in prefered execution order to try and open a file
         private List<Func<object, bool>> openFilePriority;
         public List<Func<object,bool>> OpenFilePriority
@@ -64,6 +87,43 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Functions and Commands
+
+        private void getSortOptions()
+        {
+            SortOptions = new ObservableCollection<MyMenuItem>();
+            
+            var SortPropertyNames = new List<string>()
+            {
+                "Title",
+                "Author",
+                "Publisher",
+                "ReleaseDate",
+                "Rating",
+                "PageCount"
+            };
+
+            //double check on typos by checking if all property names exist in codex class
+            var PossibleSortProptertyNames = typeof(Codex).GetProperties().Select(p => p.Name).ToList();
+            if (SortPropertyNames.Except(PossibleSortProptertyNames).Any())
+            {
+                MessageBox.Show("One of the sort property paths does not exist");
+            }
+
+            foreach(var sortOption in SortPropertyNames)
+            {
+                sortOptions.Add(new MyMenuItem(sortOption) 
+                { 
+                    Command = new RelayCommand<object>(sortByCommandHelper),
+                    CommandParam = sortOption
+                });
+            }
+        }
+
+        private bool sortByCommandHelper(object o)
+        {
+            MVM.FilterHandler.SortBy((string)o);
+            return true;
+        }
 
         //Open File whereever
         public bool OpenFile(Codex codex = null)
