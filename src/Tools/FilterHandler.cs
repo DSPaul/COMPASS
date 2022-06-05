@@ -23,8 +23,10 @@ namespace COMPASS.Tools
             //load sorting from settings
             var PropertyPath = (string)Properties.Settings.Default["SortProperty"];
             var SortDirection = (ListSortDirection) Properties.Settings.Default["SortDirection"];
-            CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(new SortDescription(PropertyPath, SortDirection));
-
+            if (PropertyPath != null && PropertyPath.Length>0)
+            {
+                CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(new SortDescription(PropertyPath, SortDirection));
+            }
             ExcludedCodicesByTag = new List<Codex>();
             ExcludedCodicesBySearch = new List<Codex>();
             ExcludedCodicesByFilter = new List<Codex>();
@@ -233,7 +235,11 @@ namespace COMPASS.Tools
         public void UpdateActiveFiles()
         {
             //get sorting info
-            SortDescription sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions[0];
+            SortDescription sortDescr;
+            if  (CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Count > 0)
+            {
+                sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions[0];
+            }
             Properties.Settings.Default["SortProperty"] = sortDescr.PropertyName;
             Properties.Settings.Default["SortDirection"] = (int)sortDescr.Direction;
             Properties.Settings.Default.Save();
@@ -244,7 +250,11 @@ namespace COMPASS.Tools
                 .Except(ExcludedCodicesByFilter)
                 .ToList());
             //reapply sorting
-            CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(sortDescr);
+            try
+            {
+                CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(sortDescr);
+            }
+            catch { }
         }
 
         public void RemoveFile(Codex f)
