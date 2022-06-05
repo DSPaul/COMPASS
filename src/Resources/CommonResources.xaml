@@ -335,7 +335,7 @@
     <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="25" />
             </Grid.ColumnDefinitions>
             <Border Grid.Column="0" Background="Transparent" BorderThickness="2,2,0,2" BorderBrush="{StaticResource UIElementBackground}" />
@@ -382,7 +382,7 @@
                         <ContentPresenter Name="ContentSite" IsHitTestVisible="False"  Content="{TemplateBinding SelectionBoxItem}"
                             ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                             ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                            Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                            Margin="5,5,30,5" VerticalAlignment="Center" HorizontalAlignment="Left" />
                         <TextBox x:Name="PART_EditableTextBox" Style="{x:Null}" Template="{StaticResource ComboBoxTextBox}" 
                             HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" Focusable="True" 
                             Background="{StaticResource SelectableTransparent}" Foreground="{StaticResource TextColor}"
