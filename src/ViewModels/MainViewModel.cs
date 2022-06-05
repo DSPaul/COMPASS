@@ -22,7 +22,9 @@ namespace COMPASS.ViewModels
     {
         public MainViewModel()
         {
+            SettingsViewModel = new SettingsViewModel(this);
 
+            //Load data
             InitCollection();
 
             //Get webdriver for Selenium
@@ -48,99 +50,6 @@ namespace COMPASS.ViewModels
             DeleteFolderCommand = new BasicCommand(RaiseDeleteFolderWarning);
             SearchCommand = new SimpleCommand(Search);
         }
-
-        #region Properties
-        private ObservableCollection<string> _Folders;
-        public ObservableCollection<string> Folders
-        {
-            get { return _Folders; }
-            set { SetProperty(ref _Folders, value); }
-        }
-
-        private string currentFolder;
-        public string CurrentFolder
-        {
-            get { return currentFolder; }
-            set
-            {
-                if (CurrentCollection != null)
-                {
-                    CurrentCollection.SaveFilesToFile();
-                    CurrentCollection.SaveTagsToFile();
-                }
-                if(value != null) ChangeFolder(value);
-                SetProperty(ref currentFolder, value);
-            }
-        }
-
-        //CodexCollection 
-        private CodexCollection currentCollection;
-        public CodexCollection CurrentCollection
-        {
-            get { return currentCollection; }
-            private set { SetProperty(ref currentCollection, value); }
-        }
-
-        private bool isOnline;
-        public bool IsOnline
-        {
-            get { return pingURL(); }
-            private set { SetProperty(ref isOnline, value); }
-        }
-
-        #endregion
-
-        #region Handlers and ViewModels
-
-        //Filter Handler
-        private FilterHandler filterHandler;
-        public FilterHandler FilterHandler
-        {
-            get { return filterHandler; }
-            private set { SetProperty(ref filterHandler, value); }
-        }
-
-        //File ViewModel
-        private FileBaseViewModel currentFileViewModel;
-        public FileBaseViewModel CurrentFileViewModel
-        {
-            get { return currentFileViewModel; }
-            set { SetProperty(ref currentFileViewModel, value); }
-        }
-
-        //Edit ViewModel
-        private BaseEditViewModel currentEditViewModel;
-        public BaseEditViewModel CurrentEditViewModel
-        {
-            get { return currentEditViewModel; }
-            set { SetProperty(ref currentEditViewModel, value); }
-        }
-
-        //Tag Creation ViewModel
-        private BaseEditViewModel addTagViewModel;
-        public BaseEditViewModel AddTagViewModel
-        {
-            get { return addTagViewModel; }
-            set { SetProperty(ref addTagViewModel, value); }
-        }
-
-        //Tags and Filters Tabs ViewModel (Left Dock)
-        private TagsFiltersViewModel tfViewModel;
-        public TagsFiltersViewModel TFViewModel
-        {
-            get { return tfViewModel; }
-            set { SetProperty(ref tfViewModel, value); }
-        }
-
-        //Import ViewModel
-        private ImportViewModel currentimportViewModel;
-        public ImportViewModel CurrentImportViewModel
-        {
-            get { return currentimportViewModel; }
-            set { SetProperty(ref currentimportViewModel, value); }
-        }
-
-        #endregion
 
         #region Init Functions
 
@@ -233,6 +142,107 @@ namespace COMPASS.ViewModels
         }
         #endregion
 
+        #region Properties
+        private ObservableCollection<string> _Folders;
+        public ObservableCollection<string> Folders
+        {
+            get { return _Folders; }
+            set { SetProperty(ref _Folders, value); }
+        }
+
+        private string currentFolder;
+        public string CurrentFolder
+        {
+            get { return currentFolder; }
+            set
+            {
+                if (CurrentCollection != null)
+                {
+                    CurrentCollection.SaveFilesToFile();
+                    CurrentCollection.SaveTagsToFile();
+                }
+                if(value != null) ChangeFolder(value);
+                SetProperty(ref currentFolder, value);
+            }
+        }
+
+        //CodexCollection 
+        private CodexCollection currentCollection;
+        public CodexCollection CurrentCollection
+        {
+            get { return currentCollection; }
+            private set { SetProperty(ref currentCollection, value); }
+        }
+
+        private bool isOnline;
+        public bool IsOnline
+        {
+            get { return pingURL(); }
+            private set { SetProperty(ref isOnline, value); }
+        }
+
+        #endregion
+
+        #region Handlers and ViewModels
+
+        //Settings ViewModel
+        private SettingsViewModel _SettingsViewModel;
+        public SettingsViewModel SettingsViewModel
+        {
+            get { return _SettingsViewModel; }
+            set { SetProperty(ref _SettingsViewModel, value); }
+        }
+
+        //Filter Handler
+        private FilterHandler filterHandler;
+        public FilterHandler FilterHandler
+        {
+            get { return filterHandler; }
+            private set { SetProperty(ref filterHandler, value); }
+        }
+
+        //File ViewModel
+        private FileBaseViewModel currentFileViewModel;
+        public FileBaseViewModel CurrentFileViewModel
+        {
+            get { return currentFileViewModel; }
+            set { SetProperty(ref currentFileViewModel, value); }
+        }
+
+        //Edit ViewModel
+        private BaseEditViewModel currentEditViewModel;
+        public BaseEditViewModel CurrentEditViewModel
+        {
+            get { return currentEditViewModel; }
+            set { SetProperty(ref currentEditViewModel, value); }
+        }
+
+        //Tag Creation ViewModel
+        private BaseEditViewModel addTagViewModel;
+        public BaseEditViewModel AddTagViewModel
+        {
+            get { return addTagViewModel; }
+            set { SetProperty(ref addTagViewModel, value); }
+        }
+
+        //Tags and Filters Tabs ViewModel (Left Dock)
+        private TagsFiltersViewModel tfViewModel;
+        public TagsFiltersViewModel TFViewModel
+        {
+            get { return tfViewModel; }
+            set { SetProperty(ref tfViewModel, value); }
+        }
+
+        //Import ViewModel
+        private ImportViewModel currentimportViewModel;
+        public ImportViewModel CurrentImportViewModel
+        {
+            get { return currentimportViewModel; }
+            set { SetProperty(ref currentimportViewModel, value); }
+        }
+
+        #endregion
+
         #region Commands and functions for MainWindow
 
         //Change Fileview
@@ -300,6 +310,7 @@ namespace COMPASS.ViewModels
         {
             string f = (string)folder;
             Directory.CreateDirectory((CodexCollection.CollectionsPath + f + @"\CoverArt"));
+            Directory.CreateDirectory((CodexCollection.CollectionsPath + f + @"\Thumbnails"));
             Folders.Add(f);
             CurrentFolder = f;
         }

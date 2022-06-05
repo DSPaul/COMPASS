@@ -15,20 +15,18 @@ namespace COMPASS.Tools.Converters
             if (File.Exists((string)value))
             {
                 //Parameter is true if instant refresh is needed for Edit View, false for mass view
-                bool Editview = (parameter == null)? false: (bool)parameter;
+                bool Fullres = (parameter == null)? false: (bool)parameter;
                 BitmapImage bi = new BitmapImage();
                 bi.BeginInit();
 
-                if (Editview)
+                if (Fullres)
                 {
                     bi.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
                 }
                 else
                 {
                     bi.CreateOptions = BitmapCreateOptions.DelayCreation;
-                    bi.DecodePixelWidth = 200;
                 }
-
                 bi.CacheOption = BitmapCacheOption.OnLoad;
                 bi.UriSource = new Uri(value.ToString());
                 bi.EndInit();

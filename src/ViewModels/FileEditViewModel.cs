@@ -133,13 +133,9 @@ namespace COMPASS.ViewModels
         public BasicCommand RegenArtCommand { get; private set; }
         private void RegenArt()
         {
-            CoverArtGenerator.ConvertPDF(TempCodex, CurrentCollection.Folder);
-            //force refresh because it is cached
-            string CovArt = TempCodex.CoverArt; 
-            TempCodex.CoverArt = null;
-            TempCodex.CoverArt = CovArt;
-
-            CoverArtChanged = true;
+            //needs to become more flexible, now only works for pdfs
+            CoverArtGenerator.GetCoverFromPDF(TempCodex);
+            refreshCover();
         }
 
         public BasicCommand SelectArtCommand { get; private set; }
@@ -153,15 +149,22 @@ namespace COMPASS.ViewModels
         };
             if (openFileDialog.ShowDialog() == true)
             {
-                CoverArtGenerator.SaveImageAsCover(openFileDialog.FileName, TempCodex);
-
-                //force refresh because it is cached
-                string CovArt = TempCodex.CoverArt;
-                TempCodex.CoverArt = null;
-                TempCodex.CoverArt = CovArt;
-
-                CoverArtChanged=true;
+                CoverArtGenerator.GetCoverFromImage(openFileDialog.FileName, TempCodex);
+                refreshCover();
             }
+        }
+
+        private void refreshCover()
+        {
+            //force refresh because image is cached
+            string CovArt = TempCodex.CoverArt;
+            string Thumbn = TempCodex.Thumbnail;
+            TempCodex.CoverArt = null;
+            TempCodex.Thumbnail = null;
+            TempCodex.CoverArt = CovArt;
+            TempCodex.Thumbnail = Thumbn;
+
+            CoverArtChanged = true;
         }
         #endregion
     }

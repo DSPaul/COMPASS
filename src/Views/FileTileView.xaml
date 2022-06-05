@@ -109,8 +109,9 @@
                                 Width="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                 Height="{Binding DataContext.TileHeight, RelativeSource={RelativeSource AncestorType=UserControl}}">
                         <Border.Background>
-                            <ImageBrush ImageSource="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Icons\\CoverPlaceholder.png}"/>
+                            <ImageBrush ImageSource="{Binding Thumbnail, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Icons\\CoverPlaceholder.png}"/>
                         </Border.Background>
+                       
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="15" Direction="300"/>
                         </Border.Effect>
