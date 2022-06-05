@@ -18,7 +18,7 @@ namespace COMPASS.Models
 
         }
 
-        public Tag(ObservableCollection<Tag> alltags)
+        public Tag(List<Tag> alltags)
         {
             _allTags = alltags;
             ID = Utils.GetAvailableID(alltags.ToList<IHasID>());
@@ -29,7 +29,7 @@ namespace COMPASS.Models
         }
 
         //needed to get parent tag from parent ID
-        private ObservableCollection<Tag> _allTags;
+        private List<Tag> _allTags;
 
         private ObservableCollection<Tag> _Items;
 
@@ -96,7 +96,7 @@ namespace COMPASS.Models
             return temp;
         }
 
-        public void SetAllTags(ObservableCollection<Tag> at)
+        public void SetAllTags(List<Tag> at)
         {
             _allTags = at;
         }
