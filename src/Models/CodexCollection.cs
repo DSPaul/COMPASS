@@ -45,16 +45,11 @@ namespace COMPASS.Models
         }
 
         //Tag Lists
-        public ObservableCollection<Tag> AllTags = new ObservableCollection<Tag>();
-        private ObservableCollection<Tag> rootTags;
-        public ObservableCollection<Tag> RootTags
-        {
-            get { return rootTags; }
-            set { SetProperty(ref rootTags, value); }
-        }
+        public List<Tag> AllTags = new List<Tag>();
+        public List<Tag> RootTags;
 
         //File Lists
-        public ObservableCollection<Codex> AllFiles = new ObservableCollection<Codex>();
+        public List<Codex> AllFiles = new List<Codex>();
 
         //Metadata Lists
         private ObservableCollection<String> authorList;
@@ -81,13 +76,13 @@ namespace COMPASS.Models
                 //loading root tags          
                 using (var Reader = new StreamReader(TagsFilepath))
                 {
-                    System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Tag>));
-                    this.RootTags = serializer.Deserialize(Reader) as ObservableCollection<Tag>;
+                    System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<Tag>));
+                    this.RootTags = serializer.Deserialize(Reader) as List<Tag>;
                     Reader.Close();
                 }
 
                 //Constructing All Tags
-                List<Tag> Currentlist = RootTags.ToList();
+                List<Tag> Currentlist = RootTags;
                 for (int i = 0; i < Currentlist.Count(); i++)
                 {
                     Tag t = Currentlist[i];
@@ -101,7 +96,7 @@ namespace COMPASS.Models
             }
             else
             {
-                RootTags = new ObservableCollection<Tag>();
+                RootTags = new List<Tag>();
             }
         }
 
@@ -112,8 +107,8 @@ namespace COMPASS.Models
             {
                 using (var Reader = new StreamReader(BooksFilepath))
                 {
-                    System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Codex>));
-                    AllFiles = serializer.Deserialize(Reader) as ObservableCollection<Codex>;
+                    System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<Codex>));
+                    AllFiles = serializer.Deserialize(Reader) as List<Codex>;
                     Reader.Close();
                 }
 
@@ -135,7 +130,7 @@ namespace COMPASS.Models
             }
             else
             {
-                AllFiles = new ObservableCollection<Codex>();
+                AllFiles = new List<Codex>();
             }
         }
         #endregion
@@ -148,7 +143,7 @@ namespace COMPASS.Models
         {
             using (var writer = XmlWriter.Create(TagsFilepath,xmlWriterSettings))
             {
-                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Tag>));
+                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<Tag>));
                 serializer.Serialize(writer, RootTags);
             }
         }
@@ -163,7 +158,7 @@ namespace COMPASS.Models
 
             using (var writer = XmlWriter.Create(BooksFilepath,xmlWriterSettings))
             {
-                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Codex>));
+                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<Codex>));
                 serializer.Serialize(writer, AllFiles);
             }
         }

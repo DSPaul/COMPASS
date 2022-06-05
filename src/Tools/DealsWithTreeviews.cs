@@ -13,7 +13,7 @@ namespace COMPASS.Tools
     {
         public DealsWithTreeviews(CodexCollection CC)
         {
-            TreeViewSource = CreateTreeViewSourceFromCollection(CC.RootTags);
+            TreeViewSource = CreateTreeViewSource(CC.RootTags);
             AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
 
             cc = CC;
@@ -38,7 +38,7 @@ namespace COMPASS.Tools
         }
 
         /***All Edit View Models deal with Treeviews so putting treeview related functions here***/
-        public ObservableCollection<TreeViewNode> CreateTreeViewSourceFromCollection(ObservableCollection<Tag> RootTags)
+        public ObservableCollection<TreeViewNode> CreateTreeViewSource(List<Tag> RootTags)
         {
             ObservableCollection<TreeViewNode> newRootNodes = new ObservableCollection<TreeViewNode>();
             foreach (Tag t in RootTags)
@@ -49,9 +49,9 @@ namespace COMPASS.Tools
             return newRootNodes;
         }
 
-        public ObservableCollection<Tag> CreateCollectionFromTreeViewSource(ObservableCollection<TreeViewNode> treeViewSource)
+        public List<Tag> ExtractTagsFromTreeViewSource(ObservableCollection<TreeViewNode> treeViewSource)
         {
-            var newRootTags = new ObservableCollection<Tag>();
+            var newRootTags = new List<Tag>();
             foreach (TreeViewNode n in treeViewSource)
             {
                 newRootTags.Add(ConvertTreeViewNodeToTag(n));
@@ -107,7 +107,7 @@ namespace COMPASS.Tools
 
         public void RefreshTreeView()
         {
-            TreeViewSource = CreateTreeViewSourceFromCollection(cc.RootTags);
+            TreeViewSource = CreateTreeViewSource(cc.RootTags);
             AllTreeViewNodes = CreateAllTreeViewNodes(TreeViewSource);
         }
 
@@ -120,7 +120,7 @@ namespace COMPASS.Tools
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
             DragDrop.DefaultDropHandler.Drop(dropInfo);
-            cc.RootTags = CreateCollectionFromTreeViewSource(TreeViewSource);
+            cc.RootTags = ExtractTagsFromTreeViewSource(TreeViewSource);
         }
         /*** End of Treeview section ***/
     }
