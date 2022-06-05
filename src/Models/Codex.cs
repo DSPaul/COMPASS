@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
 using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Xml.Serialization;
 
 namespace COMPASS.Models
 {
-    public class Codex : ObservableObject
+    public class Codex : ObservableObject, IHasID
     {
         public Codex()
         {
@@ -20,7 +21,7 @@ namespace COMPASS.Models
         public Codex(CodexCollection cc)
         {
             Tags = new ObservableCollection<Tag>();
-            ID = cc.GetAvailableID();
+            ID = Utils.GetAvailableID(cc.AllFiles.ToList<IHasID>());
             CoverArt = CodexCollection.CollectionsPath + cc.Folder + @"\CoverArt\" + ID.ToString() + ".png";
             Thumbnail = CodexCollection.CollectionsPath + cc.Folder + @"\Thumbnails\" + ID.ToString() + ".png";
         }

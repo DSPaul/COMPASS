@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMPASS.Tools;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -14,12 +15,7 @@ namespace COMPASS.Models
         { }
         public FilterTag(ObservableCollection<FilterTag> alltags,FilterType filtertype, object filterValue = null)
         {
-            int tempID = 0;
-            while (alltags.Any(t => t.ID == tempID))
-            {
-                tempID++;
-            }
-            ID = tempID;
+            ID = Utils.GetAvailableID(alltags.ToList<IHasID>());
             FT = filtertype;
             FilterValue = filterValue;
         }

@@ -168,17 +168,7 @@ namespace COMPASS.Models
             }
         }
 
-        #endregion 
-
-        public int GetAvailableID()
-        {
-            int tempID = 0;
-            while (AllFiles.Any(f => f.ID == tempID))
-            {
-                tempID++;
-            }
-            return tempID;
-        }
+        #endregion    
 
         public void DeleteFile(Codex Todelete)
         {
