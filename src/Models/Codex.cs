@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
+
 namespace COMPASS.Models
 {
     public class Codex : ObservableObject
@@ -131,11 +133,14 @@ namespace COMPASS.Models
         }
 
         private ObservableCollection<Tag> _Tags;
+        //Don't save all the tags, only save ID's instead
+        [XmlIgnoreAttribute]
         public ObservableCollection<Tag> Tags
         {
             get { return _Tags; }
             set { SetProperty(ref _Tags, value); }
         }
+        public List<int> TagIDs;
 
         private string _Description;
         public string Description
