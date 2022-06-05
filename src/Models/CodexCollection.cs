@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Xml;
 
 namespace COMPASS.Models
 {
@@ -122,13 +123,10 @@ namespace COMPASS.Models
                     if (f.Author != "" && !AuthorList.Contains(f.Author)) AuthorList.Add(f.Author);
                     if (f.Publisher != "" && !PublisherList.Contains(f.Publisher)) PublisherList.Add(f.Publisher);
 
-                    //Replace Serialized Tags with Tags From Taglist
-                    int TagCount = f.Tags.Count;
-                    for (int i = 0; i < TagCount; i++)
+                    //reconstruct tags from ID's
+                    foreach (int id in f.TagIDs)
                     {
-                        Tag temp = f.Tags[0];
-                        f.Tags.Add(AllTags.First(t => t.ID == temp.ID));
-                        f.Tags.Remove(temp);
+                        f.Tags.Add(AllTags.First(t => t.ID == id));
                     }
                 }
                 //Sort them
@@ -144,9 +142,11 @@ namespace COMPASS.Models
 
         #region Save Data To File
 
+        private static XmlWriterSettings xmlWriterSettings = new XmlWriterSettings() { Indent = true };
+
         public void SaveTagsToFile()
         {
-            using (var writer = new StreamWriter(TagsFilepath))
+            using (var writer = XmlWriter.Create(TagsFilepath,xmlWriterSettings))
             {
                 System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Tag>));
                 serializer.Serialize(writer, RootTags);
@@ -155,7 +155,13 @@ namespace COMPASS.Models
 
         public void SaveFilesToFile()
         {
-            using (var writer = new StreamWriter(BooksFilepath))
+            //Copy id's of tags into list for serialisation
+            foreach (Codex codex in AllFiles)
+            {
+                codex.TagIDs = codex.Tags.Select(t => t.ID).ToList();
+            }
+
+            using (var writer = XmlWriter.Create(BooksFilepath,xmlWriterSettings))
             {
                 System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(ObservableCollection<Codex>));
                 serializer.Serialize(writer, AllFiles);
