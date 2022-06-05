@@ -88,6 +88,19 @@
                 </Binding>
             </Image.Source>
         </Image>
+        
+        <!--Invisible thumbnail here as well so it loads and changes if cover changes -->
+        <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="30" x:Name="ThumbnailIm" Margin="10,0" Width="0">
+            <Image.Source>
+                <Binding Path="TempCodex.Thumbnail" Converter="{StaticResource UriToBitmapConverter}" 
+                         TargetNullValue="Icons\CoverPlaceholder.png">
+                    <Binding.ConverterParameter>
+                        <sys:Boolean>true</sys:Boolean>
+                    </Binding.ConverterParameter>
+                </Binding>
+            </Image.Source>
+        </Image>
+        
         <TabControl Grid.Column="1" Grid.Row="1" Background="{x:Null}" BorderThickness="0,1,0,0"
                     Padding="0,5">
             <TabControl.Resources>

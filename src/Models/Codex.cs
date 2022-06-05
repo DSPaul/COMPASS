@@ -20,6 +20,7 @@ namespace COMPASS.Models
             Tags = new ObservableCollection<Tag>();
             ID = cc.GetAvailableID();
             CoverArt = CodexCollection.CollectionsPath + cc.Folder + @"\CoverArt\" + ID.ToString() + ".png";
+            Thumbnail = CodexCollection.CollectionsPath + cc.Folder + @"\Thumbnails\" + ID.ToString() + ".png";
         }
 
         public void Copy(Codex c)
@@ -32,6 +33,7 @@ namespace COMPASS.Models
             SourceURL = c.SourceURL;
             ID = c.ID;
             CoverArt = c.CoverArt;
+            Thumbnail = c.Thumbnail;
             Physically_Owned = c.Physically_Owned;
             Description = c.Description;
             ReleaseDate = c.ReleaseDate;
@@ -112,6 +114,13 @@ namespace COMPASS.Models
         {
             get { return _CoverArt; }
             set { SetProperty(ref _CoverArt, value); }
+        }
+
+        private string _Thumbnail;
+        public string Thumbnail
+        {
+            get { return _Thumbnail; }
+            set { SetProperty(ref _Thumbnail, value); }
         }
 
         private bool _Physically_Owned;

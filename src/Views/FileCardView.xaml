@@ -111,7 +111,7 @@
                                 <ColumnDefinition Width="auto" MaxWidth="200"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Image Source="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Icons\\CoverPlaceholder.png }" HorizontalAlignment="Center"/>
+                            <Image Source="{Binding Thumbnail, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Icons\\CoverPlaceholder.png }" HorizontalAlignment="Center"/>
                             <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
                                          Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooltoVisibilityConverter}}">
                                 <Button Tools:AP.IconKind="FileOutline" Style="{StaticResource IconBtn}"

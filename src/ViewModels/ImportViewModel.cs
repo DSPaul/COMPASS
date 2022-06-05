@@ -168,7 +168,7 @@ namespace COMPASS.ViewModels
                         };
                         pdfdoc.Close();
                         _codexCollection.AllFiles.Add(pdf);
-                        CoverArtGenerator.ConvertPDF(pdf, _codexCollection.Folder);
+                        CoverArtGenerator.GetCoverFromPDF(pdf);
                         SelectWhenDone = pdf;
                     }
 

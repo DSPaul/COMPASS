@@ -20,8 +20,8 @@ namespace COMPASS
 {
     public static class CoverArtGenerator
     { 
-        //Convert PDFs to image previews
-        public static void ConvertPDF(Codex pdf, string folder)
+        //Save First page of PDF as png
+        public static void GetCoverFromPDF(Codex pdf)
         {
 
             var pdfReadDefines = new ImageMagick.Formats.PdfReadDefines()
@@ -31,7 +31,7 @@ namespace COMPASS
 
             MagickReadSettings settings = new MagickReadSettings()
             {
-                Density = new Density(100, 100),
+                Density = new Density(100,100),
                 FrameIndex = 0, // First page
                 FrameCount = 1, // Number of pages
                 Defines = pdfReadDefines,
@@ -48,7 +48,8 @@ namespace COMPASS
                     image.Trim(); //cut off all transparancy
                     image.RePage(); //resize image to fit what was cropped
 
-                    image.Write(CodexCollection.CollectionsPath + folder + @"\CoverArt\" + pdf.ID.ToString() + ".png");
+                    image.Write(pdf.CoverArt);
+                    CreateThumbnail(pdf);
                 }
             }
             catch
@@ -60,7 +61,7 @@ namespace COMPASS
             }
         }
 
-        //Get coverart from URL
+        //Get cover from URL
         public static void GetCoverFromURL(string URL, Codex destfile, Enums.ImportMode import)
         {
             if (import == Enums.ImportMode.DnDBeyond)
@@ -152,15 +153,33 @@ namespace COMPASS
             }
 
             driver.Quit();
+            CreateThumbnail(destfile);
         }
 
-        //convert image to image preview
-        public static void SaveImageAsCover(string imagepath, Codex destfile)
+        //get cover from image
+        public static void GetCoverFromImage(string imagepath, Codex destfile)
         {
             using (MagickImage image = new MagickImage(imagepath))
             {
-                if (image.Width > 600) image.Resize(600, 0);
+                if (image.Width > 1000) image.Resize(1000, 0);
                 image.Write(destfile.CoverArt);
+                CreateThumbnail(destfile);
+            }
+        }
+
+        //create thumbnail from cover
+        public static void CreateThumbnail(Codex c)
+        {
+            int newwidth = 200; //sets resolution of thumbnail in pixels
+            using (MagickImage image = new MagickImage(c.CoverArt))
+            {
+                //preserve aspect ratio
+                int width = image.Width;
+                int height = image.Height;
+                int newheight = newwidth / width * height;
+                //create thumbnail
+                image.Thumbnail(newwidth, newheight);
+                image.Write(c.Thumbnail);
             }
         }
 

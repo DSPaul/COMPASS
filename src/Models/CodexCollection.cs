@@ -179,8 +179,9 @@ namespace COMPASS.Models
             //Delete file from all lists
             AllFiles.Remove(Todelete);
 
-            //Delete Coverart
+            //Delete Coverart & Thumbnail
             File.Delete(Todelete.CoverArt);
+            File.Delete(Todelete.Thumbnail);
         }
 
         public void DeleteTag(Tag todel)
@@ -203,7 +204,9 @@ namespace COMPASS.Models
             Folder = NewFoldername;
             foreach(Codex file in AllFiles)
             {
-                file.CoverArt = CollectionsPath + NewFoldername + @"\CoverArt\" + file.ID + ".png";
+                //Replace folder names in image paths, include leading and ending "\" to avoid replacing wrong things
+                file.CoverArt  = file.CoverArt.Replace(@"\" + Folder +@"\", @"\" + NewFoldername + @"\");
+                file.Thumbnail = file.Thumbnail.Replace(@"\" + Folder + @"\", @"\" + NewFoldername + @"\");
             }
         }
     }
