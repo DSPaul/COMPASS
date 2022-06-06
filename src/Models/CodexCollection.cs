@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMPASS.Tools;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -77,22 +78,13 @@ namespace COMPASS.Models
                 using (var Reader = new StreamReader(TagsFilepath))
                 {
                     System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<Tag>));
-                    this.RootTags = serializer.Deserialize(Reader) as List<Tag>;
+                    RootTags = serializer.Deserialize(Reader) as List<Tag>;
                     Reader.Close();
                 }
 
-                //Constructing All Tags
-                List<Tag> Currentlist = RootTags;
-                for (int i = 0; i < Currentlist.Count(); i++)
-                {
-                    Tag t = Currentlist[i];
-                    AllTags.Add(t);
-                    t.SetAllTags(AllTags);
-                    if (t.Items.Count > 0)
-                    {
-                        foreach (Tag t2 in t.Items) Currentlist.Add(t2);
-                    }
-                }
+                //Constructing AllTags and pass it to all the tags
+                AllTags = Utils.FlattenTree(RootTags).ToList();
+                foreach (Tag t in AllTags) t.AllTags = AllTags;
             }
             else
             {
@@ -178,15 +170,15 @@ namespace COMPASS.Models
         public void DeleteTag(Tag todel)
         {
             //Recursive loop to delete all childeren
-            if (todel.Items.Count > 0)
+            if (todel.Children.Count > 0)
             {
-                DeleteTag(todel.Items[0]);
+                DeleteTag(todel.Children[0]);
                 DeleteTag(todel);
             }
             AllTags.Remove(todel);
             //remove from parent items list
             if (todel.ParentID == -1) RootTags.Remove(todel);
-            else todel.GetParent().Items.Remove(todel);
+            else todel.GetParent().Children.Remove(todel);
         }
 
         public void RenameFolder(string NewFoldername)
