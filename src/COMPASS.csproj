@@ -43,6 +43,8 @@
     <PackageReference Include="Magick.NET.SystemDrawing">
       <Version>5.0.2</Version>
     </PackageReference>
+    <PackageReference Include="Markdig" Version="0.30.2" />
+    <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
     <PackageReference Include="MaterialDesignThemes">
       <Version>4.5.0</Version>
     </PackageReference>
