@@ -1,0 +1,105 @@
+﻿<Window x:Class="COMPASS.Windows.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Tools ="clr-namespace:COMPASS.Tools"
+        xmlns:dd="urn:gong-wpf-dragdrop"
+        xmlns:local="clr-namespace:COMPASS.Windows" 
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
+        mc:Ignorable="d" Closing="Window_Closing"
+        Title="Settings" Height="500" Width="800"  FontSize="16" 
+        WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
+        Foreground="{StaticResource TextColor}" 
+        Background="{StaticResource WindowBackground}" 
+        MouseDown="MainGrid_MouseDown">
+    <Grid Name="MainGrid" Focusable="True">
+        <Grid.Resources>
+            <Style TargetType="TabItem">
+                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="MaxWidth" Value="300"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Border x:Name="TabBorder" BorderThickness="0" CornerRadius="5,0,0,5" Margin="0,0,-1,0" Padding="0,10">
+                                <StackPanel Orientation="Horizontal" Margin="10,5">
+                                    <materialDesign:PackIcon Height="20" Width="20"
+                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
+                                    <ContentPresenter VerticalAlignment="Center" ContentSource="Header" Margin="10,0,5,0"/>
+                                </StackPanel>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="TabBorder" Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=TabControl}, Path=Background}"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="False">
+                                    <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="TextBlock">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="10,5"/>
+            </Style>
+        </Grid.Resources>
+        <TabControl x:Name="SettingsTabControl" TabStripPlacement="Left"
+                    Background="{StaticResource LeftDockBackground}" BorderThickness="0">
+            <TabItem Header="General"  Tools:AP.IconKind="TuneVariant">
+                <StackPanel Orientation="Vertical" Margin="30">
+                    <TextBlock Text="File Source Preference:"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Try First -->" Grid.Row="0"/>
+                        <TextBlock Text="" Grid.Row="1"/>
+                        <TextBlock Text="Try Last -->" Grid.Row="2"/>
+
+                        <Border CornerRadius="5" Background="{StaticResource DarkUIElementBackground}" 
+                                Grid.Row="0" Grid.RowSpan="3" Grid.Column="1">
+                            <ListBox BorderBrush="{x:Null}" Background="{x:Null}" Width="150" 
+                                     HorizontalContentAlignment="Center" VerticalContentAlignment="Stretch"
+                                     ItemsSource="{Binding OpenFilePriority}" ItemTemplate="{StaticResource TagTemplate}"
+                                     dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True">
+                            </ListBox>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+                
+            </TabItem>
+            <TabItem Header="Changelog"  Tools:AP.IconKind="Update">
+                <markdig:MarkdownViewer Margin="30" Markdown="{Binding Changelog}">
+                    <markdig:MarkdownViewer.Resources>
+                        <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static markdig:Styles.Heading1StyleKey}">
+                            <Setter Property="FontSize" Value="40"/>
+                            <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+                            <Setter Property="Margin" Value="0"/>
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                        <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static markdig:Styles.Heading2StyleKey}">
+                            <Setter Property="FontSize" Value="30"/>
+                            <Setter Property="Foreground" Value="{StaticResource AccentColorMuted}"/>
+                            <Setter Property="Margin" Value="0"/>
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                        <Style TargetType="{x:Type Hyperlink}" x:Key="{x:Static markdig:Styles.HyperlinkStyleKey}">
+                            <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+                        </Style>
+                    </markdig:MarkdownViewer.Resources>
+                </markdig:MarkdownViewer>
+            </TabItem>
+            <!--<TabItem Header="About"  Tools:AP.IconKind="InformationCircleOutline"></TabItem>-->
+        </TabControl>
+    </Grid>
+</Window>

@@ -1,6 +1,7 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
+using COMPASS.Windows;
 using ImageMagick;
 using System;
 using System.Collections.ObjectModel;
@@ -22,8 +23,9 @@ namespace COMPASS.ViewModels
     {
         public MainViewModel()
         {
-            SettingsViewModel = new SettingsViewModel(this);
-
+            BaseViewModel.MVM = this;
+            SettingsVM = new SettingsViewModel();
+            
             //Load data
             InitCollection();
 
@@ -49,6 +51,7 @@ namespace COMPASS.ViewModels
             EditFolderCommand = new SimpleCommand(EditFolder);
             DeleteFolderCommand = new BasicCommand(RaiseDeleteFolderWarning);
             SearchCommand = new SimpleCommand(Search);
+            OpenSettingsCommand = new RelayCommand<string>(OpenSettings);
         }
 
         #region Init Functions
@@ -186,11 +189,11 @@ namespace COMPASS.ViewModels
         #region Handlers and ViewModels
 
         //Settings ViewModel
-        private SettingsViewModel _SettingsViewModel;
-        public SettingsViewModel SettingsViewModel
+        private SettingsViewModel _SettingsVM;
+        public SettingsViewModel SettingsVM
         {
-            get { return _SettingsViewModel; }
-            set { SetProperty(ref _SettingsViewModel, value); }
+            get { return _SettingsVM; }
+            set { SetProperty(ref _SettingsVM, value); }
         }
 
         //Filter Handler
@@ -245,6 +248,15 @@ namespace COMPASS.ViewModels
 
         #region Commands and functions for MainWindow
 
+        public RelayCommand<string> OpenSettingsCommand { get; private set; }
+
+        public bool OpenSettings(string tab = null)
+        {
+            var settingswindow = new SettingsWindow(SettingsVM,tab);
+            settingswindow.Show();
+            return true;
+        }
+
         //Change Fileview
         public SimpleCommand ChangeFileViewCommand { get; private set; }
         public void ChangeFileView(Object v)
@@ -254,13 +266,13 @@ namespace COMPASS.ViewModels
             switch (v)
             {
                 case FileView.ListView:
-                    CurrentFileViewModel = new FileListViewModel(this);
+                    CurrentFileViewModel = new FileListViewModel();
                     break;
                 case FileView.CardView:
-                    CurrentFileViewModel = new FileCardViewModel(this);
+                    CurrentFileViewModel = new FileCardViewModel();
                     break;
                 case FileView.TileView:
-                    CurrentFileViewModel = new FileTileViewModel(this);
+                    CurrentFileViewModel = new FileTileViewModel();
                     break;
             }
         }
@@ -284,14 +296,14 @@ namespace COMPASS.ViewModels
         public BasicCommand AddTagCommand { get; private set; }
         public void AddTag()
         {
-            AddTagViewModel = new TagEditViewModel(this, null);
+            AddTagViewModel = new TagEditViewModel(null);
         }
 
         //Import Btn
         public SimpleCommand ImportFilesCommand { get; private set; }
         public void ImportFiles(object mode)
         {
-            CurrentImportViewModel = new ImportViewModel(this, (ImportMode)mode);
+            CurrentImportViewModel = new ImportViewModel((ImportMode)mode);
         } 
 
         //Change Collection
@@ -300,8 +312,8 @@ namespace COMPASS.ViewModels
             CurrentCollection = new CodexCollection(folder);            
             FilterHandler = new FilterHandler(currentCollection);
             ChangeFileView(Properties.Settings.Default.PreferedView);
-            TFViewModel = new TagsFiltersViewModel(this);
-            AddTagViewModel = new TagEditViewModel(this, null);
+            TFViewModel = new TagsFiltersViewModel();
+            AddTagViewModel = new TagEditViewModel(null);
         }
 
         //Add new Folder / CodexCollection

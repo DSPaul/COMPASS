@@ -10,10 +10,10 @@ namespace COMPASS.ViewModels
 {
     public class TagEditViewModel : BaseEditViewModel
     {
-        public TagEditViewModel(MainViewModel vm, Tag ToEdit) : base(vm)
+        public TagEditViewModel(Tag ToEdit) : base()
         {
             EditedTag = ToEdit;
-            TempTag = new Tag(vm.CurrentCollection.AllTags);
+            TempTag = new Tag(MVM.CurrentCollection.AllTags);
             if (!CreateNewTag) TempTag.Copy(EditedTag);
 
             ShowColorSelection = false;

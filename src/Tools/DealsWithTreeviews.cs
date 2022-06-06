@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.ViewModels;
 using GongSolutions.Wpf.DragDrop;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace COMPASS.Tools
 {
-    public abstract class DealsWithTreeviews:ObservableObject,IDropTarget
+    public abstract class DealsWithTreeviews:BaseViewModel,IDropTarget
     {
-        public DealsWithTreeviews(CodexCollection CC)
+        public DealsWithTreeviews()
         {
-            cc = CC;
+            cc = MVM.CurrentCollection;
             RefreshTreeView();
         }
 

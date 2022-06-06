@@ -319,16 +319,6 @@
                   CommandParameter="{x:Null}"/>
     </ContextMenu>
 
-    <ContextMenu x:Key="CogContextMenu" Placement="Bottom">
-        <ContextMenu.Resources>
-            <Converters:MulitParamConverter x:Key="MultiParamConverter"/>
-        </ContextMenu.Resources>
-        <MenuItem Header="Settings" />
-        <MenuItem Header="Check for Updates" />
-        <MenuItem Header="Changelog"/>
-        <MenuItem Header="About"/>
-    </ContextMenu>
-
     <!--#endregion-->
 
     <!--#region Combobox Style-->
@@ -797,6 +787,39 @@
                         </Trigger>
                         <Trigger Property="IsIndeterminate" Value="true">
                             <Setter Property="Visibility" TargetName="Indicator" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--#endregion-->
+    
+    <!--#region TabControl-->
+    <Style TargetType="TabItem">
+        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="MaxWidth" Value="300"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Border x:Name="TabBorder">
+                        <StackPanel Orientation="Horizontal" Margin="5,2">
+                            <materialDesign:PackIcon Height="25" Width="25" HorizontalAlignment="Right"
+                                                Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
+                            <ContentPresenter 
+                                                VerticalAlignment="Center"
+                                                ContentSource="Header"
+                                                Margin="5,0,10,0"/>
+                        </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="TabBorder" Property="Background" Value="{x:Null}"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="False">
+                            <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource UIElementBackground}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

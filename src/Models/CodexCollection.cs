@@ -1,4 +1,5 @@
 ﻿using COMPASS.Tools;
+using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,7 +26,7 @@ namespace COMPASS.Models
             Properties.Settings.Default.StartupCollection = FolderLocation;
         }
 
-        public readonly static string CollectionsPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass\Collections\";
+        public readonly static string CollectionsPath = SettingsViewModel.CompassDataPath + @"\Collections\";
         
         #region Properties
         private String _Folder;
@@ -129,11 +130,9 @@ namespace COMPASS.Models
 
         #region Save Data To File
 
-        private static XmlWriterSettings xmlWriterSettings = new XmlWriterSettings() { Indent = true };
-
         public void SaveTagsToFile()
         {
-            using (var writer = XmlWriter.Create(TagsFilepath,xmlWriterSettings))
+            using (var writer = XmlWriter.Create(TagsFilepath, SettingsViewModel.xmlWriterSettings))
             {
                 System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<Tag>));
                 serializer.Serialize(writer, RootTags);
@@ -148,7 +147,7 @@ namespace COMPASS.Models
                 codex.TagIDs = codex.Tags.Select(t => t.ID).ToList();
             }
 
-            using (var writer = XmlWriter.Create(BooksFilepath,xmlWriterSettings))
+            using (var writer = XmlWriter.Create(BooksFilepath, SettingsViewModel.xmlWriterSettings))
             {
                 System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<Codex>));
                 serializer.Serialize(writer, AllFiles);
