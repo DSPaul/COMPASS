@@ -22,5 +22,5 @@ If you are an RPG fan like me, you probably have lots of pdf's both homebrew and
 - **Group** your books into collections. Each collection has their own list of tags and authors and helps you keep an overview by reducing the amount of books that are on your screen at once.
 
 ## Requirements
-CCOMPASS uses Ghostscript to extract cover art from pdf's which needs to be installed seperately. 
+COMPASS uses Ghostscript to extract cover art from pdf's which needs to be installed seperately. 
 It can be downloaded here [Ghostscript releases](https://www.ghostscript.com/releases/gsdnld.html).
