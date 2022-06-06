@@ -25,9 +25,9 @@ namespace COMPASS.Tools
             var SortDirection = (ListSortDirection) Properties.Settings.Default["SortDirection"];
             SortBy(PropertyPath,SortDirection);
 
-            ExcludedCodicesByTag = new List<Codex>();
-            ExcludedCodicesBySearch = new List<Codex>();
-            ExcludedCodicesByFilter = new List<Codex>();
+            ExcludedCodicesByTag = new HashSet<Codex>();
+            ExcludedCodicesBySearch = new HashSet<Codex>();
+            ExcludedCodicesByFilter = new HashSet<Codex>();
 
             SearchTerm = "";
             ActiveTags = new ObservableCollection<Tag>();
@@ -37,14 +37,15 @@ namespace COMPASS.Tools
             SearchFilters = new ObservableCollection<FilterTag>();
         }
 
+        #region Properties
         //Collections
         public ObservableCollection<Tag> ActiveTags { get; set; }
         public ObservableCollection<FilterTag> ActiveFilters { get; set; }
         public ObservableCollection<FilterTag> SearchFilters { get; set; }
 
-        public List<Codex> ExcludedCodicesByTag { get; set; }
-        public List<Codex> ExcludedCodicesBySearch { get; set; }
-        public List<Codex> ExcludedCodicesByFilter { get; set; }
+        public HashSet<Codex> ExcludedCodicesByTag { get; set; }
+        public HashSet<Codex> ExcludedCodicesBySearch { get; set; }
+        public HashSet<Codex> ExcludedCodicesByFilter { get; set; }
 
         private ObservableCollection<Codex> _activeFiles;
         public ObservableCollection<Codex> ActiveFiles 
@@ -53,7 +54,6 @@ namespace COMPASS.Tools
             set { SetProperty(ref _activeFiles, value); }
         }
 
-        #region Properties
         private string searchterm;
         public string SearchTerm
         {
@@ -79,41 +79,32 @@ namespace COMPASS.Tools
         public void UpdateTagFilteredFiles()
         {
             ExcludedCodicesByTag.Clear();
-            List<Tag> ActiveGroups = new List<Tag>();
+            HashSet<Tag> ActiveGroups = new HashSet<Tag>();
 
 
             //Find all the active groups to filter in
             foreach (Tag t in ActiveTags)
             {
                 Tag Group = (Tag)t.GetGroup();
-                if (!ActiveGroups.Contains(Group))
-                    ActiveGroups.Add(Group);
+                ActiveGroups.Add(Group);
             }
 
             //List of Files filtered out in that group
-            List<Codex> SingleGroupFilteredFiles = new List<Codex>();
+            HashSet<Codex> SingleGroupFilteredFiles = new HashSet<Codex>();
             //Go over every group and filter out files
             foreach (Tag Group in ActiveGroups)
             {
-                //Make list with all active tags in that group
-                List<Tag> SingleGroupTags = new List<Tag>(ActiveTags.Where(tag => tag.GetGroup() == Group));
-                //add childeren of those tags
-                for(int i = 0; i<SingleGroupTags.Count(); i++)
-                {
-                    Tag t = SingleGroupTags[i];
-                    foreach(Tag child in t.Items)
-                    {
-                        if (!SingleGroupTags.Contains(child)) SingleGroupTags.Add(child);
-                    } 
-                }
+                //Make list with all active tags in that group, including childeren
+                List<Tag> SingleGroupTags = Utils.FlattenTree(ActiveTags.Where(tag => tag.GetGroup() == Group)).ToList();
                 //add parents of those tags, must come AFTER chileren, otherwise childeren of parents are included which is wrong
                 for (int i = 0; i < SingleGroupTags.Count(); i++)
                 {
                     Tag P = SingleGroupTags[i].GetParent();
                     if (P != null && !P.IsGroup && !SingleGroupTags.Contains(P)) SingleGroupTags.Add(P);
                 }
-                SingleGroupFilteredFiles = new List<Codex>(cc.AllFiles.Where(f => (SingleGroupTags.Intersect(f.Tags)).Count()==0));
-                foreach (Codex f in SingleGroupFilteredFiles) if(!ExcludedCodicesByTag.Contains(f)) ExcludedCodicesByTag.Add(f);
+                SingleGroupFilteredFiles = new HashSet<Codex>(cc.AllFiles.Where(f => (SingleGroupTags.Intersect(f.Tags)).Count()==0));
+                
+                ExcludedCodicesByTag = ExcludedCodicesByTag.Union(SingleGroupFilteredFiles).ToHashSet();
             }
 
             UpdateActiveFiles();
@@ -191,7 +182,7 @@ namespace COMPASS.Tools
                         break;
                 }
                 if (invert) ExcludedCodices = cc.AllFiles.Except(ExcludedCodices);
-                ExcludedCodicesByFilter = new List<Codex>(ExcludedCodicesByFilter.Union(ExcludedCodices));
+                ExcludedCodicesByFilter = ExcludedCodicesByFilter.Union(ExcludedCodices).ToHashSet();
             }
             UpdateActiveFiles();
         }
@@ -213,7 +204,7 @@ namespace COMPASS.Tools
             SearchFilters.Clear();
             if (searchterm != "")
             {
-                ExcludedCodicesBySearch = new List<Codex>(cc.AllFiles.Where(f => f.Title.IndexOf(SearchTerm, StringComparison.InvariantCultureIgnoreCase) < 0));
+                ExcludedCodicesBySearch = new HashSet<Codex>(cc.AllFiles.Where(f => f.Title.IndexOf(SearchTerm, StringComparison.InvariantCultureIgnoreCase) < 0));
                 FilterTag SearchTag = new FilterTag(SearchFilters, Enums.FilterType.Search, searchterm) { Content = "Search: " + SearchTerm, BackgroundColor = Colors.Salmon };
                 SearchFilters.Add(SearchTag);
             }
@@ -283,7 +274,7 @@ namespace COMPASS.Tools
                 .Except(ExcludedCodicesByFilter)
                 .ToList());
 
-            //reapply sorting
+            //reapply sorting, will fail if there aren't any
             try
             {
                 CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(sortDescr);

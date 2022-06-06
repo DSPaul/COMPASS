@@ -21,7 +21,7 @@ namespace COMPASS.Models
         public Codex(CodexCollection cc)
         {
             Tags = new ObservableCollection<Tag>();
-            ID = Utils.GetAvailableID(cc.AllFiles.ToList<IHasID>());
+            ID = Utils.GetAvailableID(cc.AllFiles);
             CoverArt = CodexCollection.CollectionsPath + cc.Folder + @"\CoverArt\" + ID.ToString() + ".png";
             Thumbnail = CodexCollection.CollectionsPath + cc.Folder + @"\Thumbnails\" + ID.ToString() + ".png";
         }

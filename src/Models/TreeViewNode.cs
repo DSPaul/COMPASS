@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.Models
 {
-    public class TreeViewNode : ObservableObject
+    public class TreeViewNode : ObservableObject, IHasChilderen<TreeViewNode>
 {
         public TreeViewNode(Tag t)
         {

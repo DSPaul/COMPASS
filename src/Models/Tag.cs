@@ -7,55 +7,48 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
+using System.Xml.Serialization;
 
 namespace COMPASS.Models
 {
-    public class Tag : ObservableObject, IHasID
+    public class Tag : ObservableObject, IHasID, IHasChilderen<Tag>
     {
         //Emtpy Contructor needed for serialization
         public Tag()
         {
-
+            Children = new ObservableCollection<Tag>();
         }
 
         public Tag(List<Tag> alltags)
         {
-            _allTags = alltags;
+            AllTags = alltags;
             ID = Utils.GetAvailableID(alltags.ToList<IHasID>());
-            this.Items = new ObservableCollection<Tag>();
+            Children = new ObservableCollection<Tag>();
 
             //set a default color for add tag
             BackgroundColor = Colors.Black;
         }
 
         //needed to get parent tag from parent ID
-        private List<Tag> _allTags;
+        [XmlIgnoreAttribute]
+        public List<Tag> AllTags;
 
-        private ObservableCollection<Tag> _Items;
+        private ObservableCollection<Tag> _Childeren;
 
-        private int _ID;
         private string _Content = "";
         private int _ParentID = -1;
         private Color _BackgroundColor;
         private bool _isGroup;
 
         #region Getter and Setters
-        public ObservableCollection<Tag> Items
-        {
-            get { return _Items; }
-            set { SetProperty(ref _Items, value); }
-        }
-
-        public int ID
-        {
-            get { return _ID; }
-            set { SetProperty(ref _ID, value); }
-        }
         public string Content
         {
             get { return _Content; }
             set { SetProperty(ref _Content, value); }
         }
+
+        public int ID{ get; set; }
+
         public int ParentID
         {
             get { return _ParentID; }
@@ -73,13 +66,19 @@ namespace COMPASS.Models
             get { return _isGroup; }
             set { SetProperty(ref _isGroup, value); }
         }
+
+        public ObservableCollection<Tag> Children
+        {
+            get { return _Childeren; }
+            set { SetProperty(ref _Childeren, value); }
+        }
         #endregion
 
         //can't save parent itself, would cause infinite loop when serializing
         public Tag GetParent()
         {
             if (ParentID == -1) return null;
-            return _allTags.First(par => par.ID == ParentID);
+            return AllTags.First(tag => tag.ID == ParentID);
         }
 
         public virtual object GetGroup()
@@ -96,11 +95,6 @@ namespace COMPASS.Models
             return temp;
         }
 
-        public void SetAllTags(List<Tag> at)
-        {
-            _allTags = at;
-        }
-
         #region Equal and Copy Fucntions
         public void Copy(Tag t)
         {
@@ -109,8 +103,8 @@ namespace COMPASS.Models
             ParentID = t.ParentID;
             IsGroup = t.IsGroup;
             BackgroundColor = t.BackgroundColor;
-            Items = new ObservableCollection<Tag>(t.Items);
-            _allTags = t._allTags;
+            Children = new ObservableCollection<Tag>(t.Children);
+            AllTags = t.AllTags;
         }
 
         public override bool Equals(object obj)
