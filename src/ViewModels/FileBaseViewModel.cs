@@ -12,12 +12,10 @@ using System.Windows;
 
 namespace COMPASS.ViewModels
 {
-    public class FileBaseViewModel : ObservableObject
+    public class FileBaseViewModel : BaseViewModel
     {
-        public FileBaseViewModel(MainViewModel vm)
-        {
-            mainViewModel = vm;
-            
+        public FileBaseViewModel()
+        {            
             //commands
             EditFileCommand = new BasicCommand(EditFile);
             EditFilesCommand = new RelayCommand<object>(EditFiles);
@@ -33,19 +31,9 @@ namespace COMPASS.ViewModels
             {
                 Submenus = SortOptions
             };
-
-            OpenFilePriority = new List<Func<object, bool>>() { OpenFileLocally, OpenFileOnline };
         }
 
         #region Properties
-
-        //MainViewModel
-        private MainViewModel mainViewModel;
-        public MainViewModel MVM
-        {
-            get { return mainViewModel; }
-            set { SetProperty(ref mainViewModel, value); }
-        }
 
         //Selected File
         private Codex selectedFile;
@@ -76,14 +64,6 @@ namespace COMPASS.ViewModels
         {
             get { return sortOptions; }
             set { SetProperty(ref sortOptions, value); }
-        }
-
-        //list with functions in prefered execution order to try and open a file
-        private List<Func<object, bool>> openFilePriority;
-        public List<Func<object,bool>> OpenFilePriority
-        {
-            get { return openFilePriority; }
-            set { SetProperty(ref openFilePriority, value); }
         }
         #endregion
 
@@ -136,10 +116,10 @@ namespace COMPASS.ViewModels
             int i = 0;
             while (!success)
             {
-                success = OpenFilePriority[i](codex);
+                success = MVM.SettingsVM.OpenFilePriority[i].Function(codex);
                 i++;
                 //break if all options tried
-                if (i >= openFilePriority.Count)
+                if (i >= MVM.SettingsVM.OpenFilePriority.Count)
                 {
                     break;
                 }
@@ -154,7 +134,7 @@ namespace COMPASS.ViewModels
 
         //Open File Offline
         public RelayCommand<object> OpenFileLocallyCommand { get; private set; }
-        public bool OpenFileLocally(object o = null)
+        public static bool OpenFileLocally(object o = null)
         {
             Codex ToOpen = o != null ? (Codex)o : MVM.CurrentFileViewModel.SelectedFile;
             try
@@ -179,7 +159,7 @@ namespace COMPASS.ViewModels
 
         //Open File Online
         public RelayCommand<object> OpenFileOnlineCommand { get; private set; }
-        public bool OpenFileOnline(object o = null)
+        public static bool OpenFileOnline(object o = null)
         {
             Codex ToOpen = o != null ? (Codex)o : MVM.CurrentFileViewModel.SelectedFile;
 
@@ -243,7 +223,7 @@ namespace COMPASS.ViewModels
         public BasicCommand EditFileCommand { get; private set; }
         public void EditFile()
         {
-            MVM.CurrentEditViewModel = new FileEditViewModel(MVM, MVM.CurrentFileViewModel.SelectedFile);
+            MVM.CurrentEditViewModel = new FileEditViewModel(MVM.CurrentFileViewModel.SelectedFile);
             FilePropWindow fpw = new FilePropWindow((FileEditViewModel)MVM.CurrentEditViewModel);
             fpw.ShowDialog();
             fpw.Topmost = true;
@@ -256,7 +236,7 @@ namespace COMPASS.ViewModels
             if (o == null) return false;
             IList list = o as IList;
             List<Codex> ToEdit = list.Cast<Codex>().ToList();
-            MVM.CurrentEditViewModel = new FileBulkEditViewModel(MVM, ToEdit);
+            MVM.CurrentEditViewModel = new FileBulkEditViewModel(ToEdit);
             FileBulkEditWindow fpw = new FileBulkEditWindow((FileBulkEditViewModel)MVM.CurrentEditViewModel);
             fpw.ShowDialog();
             fpw.Topmost = true;

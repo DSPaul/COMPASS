@@ -12,7 +12,7 @@ namespace COMPASS.ViewModels
 {
     public class FileEditViewModel : BaseEditViewModel
     {
-        public FileEditViewModel(MainViewModel vm, Codex ToEdit) : base(vm)
+        public FileEditViewModel(Codex ToEdit) : base()
         {
             EditedCodex = ToEdit;
             //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked

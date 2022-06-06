@@ -15,18 +15,15 @@ using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
 {
-    public class ImportViewModel : ObservableObject
+    public class ImportViewModel : BaseViewModel
     {
-        public ImportViewModel(MainViewModel vm, ImportMode importmode)
+        public ImportViewModel(ImportMode importmode)
         {
             //set codexCollection so we know where to import to
-            _codexCollection = vm.CurrentCollection;
+            _codexCollection = MVM.CurrentCollection;
 
             mode = importmode;
             SubmitURLCommand = new BasicCommand(SubmitURL);
-
-            //Only needed for Reset method
-            MVM = vm;
 
             //Call Relevant function
             switch (mode)
@@ -193,7 +190,7 @@ namespace COMPASS.ViewModels
 
         private void ImportManual()
         {
-            MVM.CurrentEditViewModel = new FileEditViewModel(MVM,null);
+            MVM.CurrentEditViewModel = new FileEditViewModel(null);
             FilePropWindow fpw = new FilePropWindow((FileEditViewModel)MVM.CurrentEditViewModel);
             fpw.ShowDialog();
             fpw.Topmost = true;

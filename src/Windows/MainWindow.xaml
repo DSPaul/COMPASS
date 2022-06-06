@@ -260,7 +260,18 @@
                 </StackPanel>
 
                 <Button Click="Toggle_ContextMenu" Grid.Column="4" Tools:AP.IconKind="Settings" Height="25" Margin="15,0"
-                         WindowChrome.IsHitTestVisibleInChrome="True" ContextMenu="{StaticResource CogContextMenu}">
+                         WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Button.ContextMenu>
+                        <ContextMenu Placement="Bottom">
+                            <ContextMenu.Resources>
+                                <Converters:MulitParamConverter x:Key="MultiParamConverter"/>
+                            </ContextMenu.Resources>
+                            <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}"/>
+                            <MenuItem Header="Check for Updates" />
+                            <MenuItem Header="Changelog" Command="{Binding OpenSettingsCommand}" CommandParameter="Changelog"/>
+                            <!--<MenuItem Header="About" Command="{Binding OpenSettingsCommand}" CommandParameter="About"/>-->
+                        </ContextMenu>
+                    </Button.ContextMenu>
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>

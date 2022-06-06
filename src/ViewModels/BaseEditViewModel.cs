@@ -12,15 +12,12 @@ namespace COMPASS.ViewModels
 {
     public class BaseEditViewModel : DealsWithTreeviews
     {
-        public BaseEditViewModel(MainViewModel vm):base(vm.CurrentCollection)
+        public BaseEditViewModel() : base()
         {
-            MVM = vm;
-            CurrentCollection = vm.CurrentCollection;
+            CurrentCollection = MVM.CurrentCollection;
             CancelCommand = new BasicCommand(Cancel);
             OKCommand = new BasicCommand(OKBtn);
         }
-
-        public MainViewModel MVM;
 
         private CodexCollection cc;
         public CodexCollection CurrentCollection

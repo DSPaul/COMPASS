@@ -12,7 +12,7 @@ namespace COMPASS.ViewModels
 {
     public class FileListViewModel : FileBaseViewModel
     {
-        public FileListViewModel( MainViewModel vm) : base(vm)
+        public FileListViewModel() : base()
         {
             //MyMenuItem Columnvisibility = new MyMenuItem("Column Visibility")
             //{

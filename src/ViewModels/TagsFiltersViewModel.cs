@@ -14,7 +14,7 @@ namespace COMPASS.ViewModels
 {
     public class TagsFiltersViewModel : DealsWithTreeviews
     {
-        public TagsFiltersViewModel(MainViewModel vm): base(vm.CurrentCollection)
+        public TagsFiltersViewModel(): base()
         {
             ChangeOnlineFilterCommand = new SimpleCommand(ChangeOnlineFilter);
             ChangeOfflineFilterCommand = new SimpleCommand(ChangeOfflineFilter);
@@ -22,20 +22,11 @@ namespace COMPASS.ViewModels
             EditTagCommand = new BasicCommand(EditTag);
             DeleteTagCommand = new BasicCommand(DeleteTag);
             ClearFiltersCommand = new BasicCommand(ClearFilters);
-            mainViewModel = vm;
         }
 
 
 
         #region Properties
-        //MainViewModel
-        private MainViewModel mainViewModel;
-        public MainViewModel MVM
-        {
-            get { return mainViewModel; }
-            set { SetProperty(ref mainViewModel, value); }
-        }
-
         //selected Tag in Treeview
         public Tag SelectedTag
         {
@@ -192,7 +183,7 @@ namespace COMPASS.ViewModels
         {
             if (Context != null)
             {
-                MVM.CurrentEditViewModel = new TagEditViewModel(MVM, Context);
+                MVM.CurrentEditViewModel = new TagEditViewModel(Context);
                 TagPropWindow tpw = new TagPropWindow((TagEditViewModel)MVM.CurrentEditViewModel);
                 tpw.ShowDialog();
                 tpw.Topmost = true;

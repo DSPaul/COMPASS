@@ -12,7 +12,7 @@ namespace COMPASS.ViewModels
 {
     public class FileBulkEditViewModel : BaseEditViewModel
     {
-        public FileBulkEditViewModel(MainViewModel vm, List<Codex> ToEdit) : base(vm)
+        public FileBulkEditViewModel(List<Codex> ToEdit) : base()
         {
             EditedFiles = ToEdit;
             TempFile = new Codex(CurrentCollection);

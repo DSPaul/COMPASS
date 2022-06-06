@@ -10,7 +10,7 @@ namespace COMPASS.ViewModels
 {
     public class FileTileViewModel : FileBaseViewModel
     {
-        public FileTileViewModel(MainViewModel vm = null) : base(vm)
+        public FileTileViewModel() : base()
         {
             ViewOptions.Add(new MyMenuItem("Cover Size", value => TileWidth = (double)value) { Prop = TileWidth });
             ViewOptions.Add(new MyMenuItem("Show Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });

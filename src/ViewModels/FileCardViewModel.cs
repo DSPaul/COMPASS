@@ -10,7 +10,7 @@ namespace COMPASS.ViewModels
 {
     public class FileCardViewModel : FileBaseViewModel
     {
-        public FileCardViewModel(MainViewModel vm = null) : base(vm)
+        public FileCardViewModel() : base()
         {
             //MyMenuItem Datavisibility = new MyMenuItem("Show Metadata")
             //{
