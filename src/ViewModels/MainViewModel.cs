@@ -41,16 +41,18 @@ namespace COMPASS.ViewModels
             CheckConnectionTimer.Tick += new EventHandler(CheckConnection);
             CheckConnectionTimer.Interval = new TimeSpan(0, 0, 30);
             CheckConnectionTimer.Start();
+            //to check right away on startup
+            IsOnline = Utils.pingURL();
 
             //Commands
-            ChangeFileViewCommand = new SimpleCommand(ChangeFileView);
-            ResetCommand = new BasicCommand(Reset);
-            AddTagCommand = new BasicCommand(AddTag);
-            ImportFilesCommand = new SimpleCommand(ImportFiles);
-            CreateFolderCommand = new SimpleCommand(CreateFolder);
-            EditFolderCommand = new SimpleCommand(EditFolder);
-            DeleteFolderCommand = new BasicCommand(RaiseDeleteFolderWarning);
-            SearchCommand = new SimpleCommand(Search);
+            ChangeFileViewCommand = new RelayCommand<FileView>(ChangeFileView);
+            ResetCommand = new ActionCommand(Reset);
+            AddTagCommand = new ActionCommand(AddTag);
+            ImportFilesCommand = new RelayCommand<ImportMode>(ImportFiles);
+            CreateFolderCommand = new RelayCommand<string>(CreateFolder);
+            EditFolderCommand = new RelayCommand<string>(EditFolder);
+            DeleteFolderCommand = new ActionCommand(RaiseDeleteFolderWarning);
+            SearchCommand = new RelayCommand<string>(Search);
             OpenSettingsCommand = new RelayCommand<string>(OpenSettings);
         }
 
@@ -180,7 +182,7 @@ namespace COMPASS.ViewModels
         private bool isOnline;
         public bool IsOnline
         {
-            get { return pingURL(); }
+            get { return isOnline; }
             private set { SetProperty(ref isOnline, value); }
         }
 
@@ -250,18 +252,16 @@ namespace COMPASS.ViewModels
 
         public RelayCommand<string> OpenSettingsCommand { get; private set; }
 
-        public bool OpenSettings(string tab = null)
+        public void OpenSettings(string tab = null)
         {
             var settingswindow = new SettingsWindow(SettingsVM,tab);
             settingswindow.Show();
-            return true;
         }
 
         //Change Fileview
-        public SimpleCommand ChangeFileViewCommand { get; private set; }
-        public void ChangeFileView(Object v)
+        public RelayCommand<FileView> ChangeFileViewCommand { get; private set; }
+        public void ChangeFileView(FileView v)
         {
-            v = (FileView)v;
             Properties.Settings.Default.PreferedView = (int)v;
             switch (v)
             {
@@ -278,7 +278,7 @@ namespace COMPASS.ViewModels
         }
 
         //Reset
-        public BasicCommand ResetCommand { get; private set; }
+        public ActionCommand ResetCommand { get; private set; }
 
         public void Refresh()
         {
@@ -293,17 +293,17 @@ namespace COMPASS.ViewModels
         }
 
         //Add Tag Btn
-        public BasicCommand AddTagCommand { get; private set; }
+        public ActionCommand AddTagCommand { get; private set; }
         public void AddTag()
         {
             AddTagViewModel = new TagEditViewModel(null);
         }
 
         //Import Btn
-        public SimpleCommand ImportFilesCommand { get; private set; }
-        public void ImportFiles(object mode)
+        public RelayCommand<ImportMode> ImportFilesCommand { get; private set; }
+        public void ImportFiles(ImportMode mode)
         {
-            CurrentImportViewModel = new ImportViewModel((ImportMode)mode);
+            CurrentImportViewModel = new ImportViewModel(mode);
         } 
 
         //Change Collection
@@ -311,35 +311,33 @@ namespace COMPASS.ViewModels
         {
             CurrentCollection = new CodexCollection(folder);            
             FilterHandler = new FilterHandler(currentCollection);
-            ChangeFileView(Properties.Settings.Default.PreferedView);
+            ChangeFileView((FileView)Properties.Settings.Default.PreferedView);
             TFViewModel = new TagsFiltersViewModel();
             AddTagViewModel = new TagEditViewModel(null);
         }
 
         //Add new Folder / CodexCollection
-        public SimpleCommand CreateFolderCommand { get; private set; }
-        public void CreateFolder(object folder)
+        public RelayCommand<string> CreateFolderCommand { get; private set; }
+        public void CreateFolder(string folder)
         {
-            string f = (string)folder;
-            Directory.CreateDirectory((CodexCollection.CollectionsPath + f + @"\CoverArt"));
-            Directory.CreateDirectory((CodexCollection.CollectionsPath + f + @"\Thumbnails"));
-            Folders.Add(f);
-            CurrentFolder = f;
+            Directory.CreateDirectory((CodexCollection.CollectionsPath + folder + @"\CoverArt"));
+            Directory.CreateDirectory((CodexCollection.CollectionsPath + folder + @"\Thumbnails"));
+            Folders.Add(folder);
+            CurrentFolder = folder;
         }
 
         //Rename Folder/Collection/RPG System
-        public SimpleCommand EditFolderCommand { get; private set; }
-        public void EditFolder(object folder)
+        public RelayCommand<string> EditFolderCommand { get; private set; }
+        public void EditFolder(string folder)
         {
-            string f = (string)folder;
             var index = Folders.IndexOf(CurrentFolder);
-            CurrentCollection.RenameFolder(f);
-            Folders[index] = f;
-            CurrentFolder = f;
+            CurrentCollection.RenameFolder(folder);
+            Folders[index] = folder;
+            CurrentFolder = folder;
         }
 
         //Delete Folder/Collection/RPG System
-        public BasicCommand DeleteFolderCommand { get; private set; }
+        public ActionCommand DeleteFolderCommand { get; private set; }
         public void RaiseDeleteFolderWarning()
         {
             if (CurrentCollection.AllFiles.Count > 0)
@@ -375,31 +373,16 @@ namespace COMPASS.ViewModels
         }
 
         //Search
-        public SimpleCommand SearchCommand { get; private set; }
-        public void Search(object o)
+        public RelayCommand<string> SearchCommand { get; private set; }
+        public void Search(string searchterm)
         {
-            string searchterm = (string)o;
             FilterHandler.UpdateSearchFilteredFiles(searchterm);
-        }
-
-        //check internet connection
-        public bool pingURL(string URL = "8.8.8.8")
-        { 
-            Ping p = new Ping();
-            try
-            {
-                PingReply reply = p.Send(URL, 3000);
-                if (reply.Status == IPStatus.Success)
-                    return true;
-            }
-            catch { }
-            return false;
         }
 
         //called every few seconds to update IsOnline
         private void CheckConnection(object sender, EventArgs e)
         {
-            IsOnline = pingURL();
+            IsOnline = Utils.pingURL();
         }
 
         #endregion

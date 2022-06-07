@@ -16,12 +16,12 @@ namespace COMPASS.ViewModels
     {
         public TagsFiltersViewModel(): base()
         {
-            ChangeOnlineFilterCommand = new SimpleCommand(ChangeOnlineFilter);
-            ChangeOfflineFilterCommand = new SimpleCommand(ChangeOfflineFilter);
-            ChangePhysicalFilterCommand = new SimpleCommand(ChangePhysicalFilter);
-            EditTagCommand = new BasicCommand(EditTag);
-            DeleteTagCommand = new BasicCommand(DeleteTag);
-            ClearFiltersCommand = new BasicCommand(ClearFilters);
+            ChangeOnlineFilterCommand = new RelayCommand<Tuple<bool, bool>>(ChangeOnlineFilter);
+            ChangeOfflineFilterCommand = new RelayCommand<Tuple<bool, bool>>(ChangeOfflineFilter);
+            ChangePhysicalFilterCommand = new RelayCommand<Tuple<bool, bool>>(ChangePhysicalFilter);
+            EditTagCommand = new ActionCommand(EditTag);
+            DeleteTagCommand = new ActionCommand(DeleteTag);
+            ClearFiltersCommand = new ActionCommand(ClearFilters);
         }
 
 
@@ -137,32 +137,26 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Functions and Commands
-        public SimpleCommand ChangeOnlineFilterCommand { get; private set; }
-        public void ChangeOnlineFilter(object o)
+        public RelayCommand<Tuple<bool, bool>> ChangeOnlineFilterCommand { get; private set; }
+        public void ChangeOnlineFilter(Tuple<bool, bool> parameters)
         {
-            var parameters = (Tuple<bool, bool>)o;
-            ChangeSourceFilter(FilterType.OnlineSource,"Available Online",parameters);
+            ChangeSourceFilter(FilterType.OnlineSource,"Available Online",parameters.Item1,parameters.Item2);
         }
 
-        public SimpleCommand ChangeOfflineFilterCommand { get; private set; }
-        public void ChangeOfflineFilter(object o)
+        public RelayCommand<Tuple<bool, bool>> ChangeOfflineFilterCommand { get; private set; }
+        public void ChangeOfflineFilter(Tuple<bool, bool> parameters)
         {
-            var parameters = (Tuple<bool, bool>)o;
-            ChangeSourceFilter(FilterType.OfflineSource,"Available Offline",parameters);
+            ChangeSourceFilter(FilterType.OfflineSource,"Available Offline", parameters.Item1, parameters.Item2);
         }
         
-        public SimpleCommand ChangePhysicalFilterCommand { get; private set; }
-        public void ChangePhysicalFilter(object o)
+        public RelayCommand<Tuple<bool, bool>> ChangePhysicalFilterCommand { get; private set; }
+        public void ChangePhysicalFilter(Tuple<bool, bool> parameters)
         {
-            var parameters = (Tuple<bool, bool>)o;
-            ChangeSourceFilter(FilterType.PhysicalSource,"Physicaly Owned",parameters);
+            ChangeSourceFilter(FilterType.PhysicalSource,"Physicaly Owned", parameters.Item1, parameters.Item2);
         }
 
-        public void ChangeSourceFilter(FilterType ft, string text, Tuple<bool,bool> parameters)
+        public void ChangeSourceFilter(FilterType ft, string text, bool addFilter, bool invert)
         {
-            bool addFilter = parameters.Item1;
-            bool invert = parameters.Item2;
-
             //remove old filter, either to remove or replace
             MVM.FilterHandler.ActiveFilters.Remove(MVM.FilterHandler.ActiveFilters.Where(filter => (FilterType)filter.GetGroup() == ft).FirstOrDefault());
 
@@ -178,7 +172,7 @@ namespace COMPASS.ViewModels
         }
 
         //-------------------For Tags Tab ---------------------//
-        public BasicCommand EditTagCommand { get; private set; }
+        public ActionCommand EditTagCommand { get; private set; }
         public void EditTag()
         {
             if (Context != null)
@@ -190,7 +184,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public BasicCommand DeleteTagCommand { get; private set; }
+        public ActionCommand DeleteTagCommand { get; private set; }
         public void DeleteTag()
         {
             //tag to delete is context, because DeleteTag is called from context menu
@@ -210,7 +204,7 @@ namespace COMPASS.ViewModels
         //-----------------------------------------------------//
 
         //----------------For Filters Tab---------------------//
-        public BasicCommand ClearFiltersCommand { get; private set; }
+        public ActionCommand ClearFiltersCommand { get; private set; }
         public void ClearFilters()
         {
             SelectedAuthor = null;

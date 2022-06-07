@@ -8,13 +8,13 @@ using System.Windows.Input;
 namespace COMPASS.ViewModels.Commands
 {
     //Command without parameters
-    public class BasicCommand : ICommand
+    public class ActionCommand : ICommand
     {
-        public event EventHandler CanExecuteChanged;
-
         readonly Action _execute;
 
-        public BasicCommand(Action Execute)
+        public event EventHandler CanExecuteChanged;
+
+        public ActionCommand(Action Execute)
         {
             _execute = Execute;
         }

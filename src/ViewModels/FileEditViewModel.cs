@@ -28,12 +28,12 @@ namespace COMPASS.ViewModels
             }
 
             //Commands
-            BrowsePathCommand = new BasicCommand(BrowsePath);
-            TagCheckCommand = new BasicCommand(Update_Taglist);
-            DeleteFileCommand = new BasicCommand(DeleteFile);
-            BrowseURLCommand = new BasicCommand(BrowseURL);
-            RegenArtCommand = new BasicCommand(RegenArt);
-            SelectArtCommand = new BasicCommand(SelectArt);
+            BrowsePathCommand = new ActionCommand(BrowsePath);
+            TagCheckCommand = new ActionCommand(Update_Taglist);
+            DeleteFileCommand = new ActionCommand(DeleteFile);
+            BrowseURLCommand = new ActionCommand(BrowseURL);
+            RegenArtCommand = new ActionCommand(RegenArt);
+            SelectArtCommand = new ActionCommand(SelectArt);
         }
 
         #region Properties
@@ -58,7 +58,7 @@ namespace COMPASS.ViewModels
 
         #region Funtions and Commands
 
-        public BasicCommand BrowsePathCommand { get; private set; }
+        public ActionCommand BrowsePathCommand { get; private set; }
         private void BrowsePath()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -99,7 +99,7 @@ namespace COMPASS.ViewModels
             CloseAction();
         }
 
-        public BasicCommand TagCheckCommand { get; private set; }
+        public ActionCommand TagCheckCommand { get; private set; }
         public void Update_Taglist()
         {
             TempCodex.Tags.Clear();
@@ -112,7 +112,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public BasicCommand DeleteFileCommand { get; private set; }
+        public ActionCommand DeleteFileCommand { get; private set; }
         private void DeleteFile()
         {
             if (!CreateNewCodex)
@@ -123,14 +123,14 @@ namespace COMPASS.ViewModels
             CloseAction();
         }
 
-        public BasicCommand BrowseURLCommand { get; private set; }
+        public ActionCommand BrowseURLCommand { get; private set; }
         private void BrowseURL()
         {
             if (TempCodex.SourceURL == "") return;
             System.Diagnostics.Process.Start(TempCodex.SourceURL);
         }
 
-        public BasicCommand RegenArtCommand { get; private set; }
+        public ActionCommand RegenArtCommand { get; private set; }
         private void RegenArt()
         {
             //needs to become more flexible, now only works for pdfs
@@ -138,7 +138,7 @@ namespace COMPASS.ViewModels
             refreshCover();
         }
 
-        public BasicCommand SelectArtCommand { get; private set; }
+        public ActionCommand SelectArtCommand { get; private set; }
         private void SelectArt()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog

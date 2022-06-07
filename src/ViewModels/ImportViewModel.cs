@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using COMPASS.Windows;
 using HtmlAgilityPack;
@@ -23,7 +24,7 @@ namespace COMPASS.ViewModels
             _codexCollection = MVM.CurrentCollection;
 
             mode = importmode;
-            SubmitURLCommand = new BasicCommand(SubmitURL);
+            SubmitURLCommand = new ActionCommand(SubmitURL);
 
             //Call Relevant function
             switch (mode)
@@ -218,7 +219,7 @@ namespace COMPASS.ViewModels
             iURLw.Show();
         }
 
-        public BasicCommand SubmitURLCommand { get; private set; }
+        public ActionCommand SubmitURLCommand { get; private set; }
         public void SubmitURL()
         {
             if (!InputURL.Contains(PreviewURL))
@@ -226,7 +227,7 @@ namespace COMPASS.ViewModels
                 ImportError = String.Format("{0} is not a valid URL for {1}", InputURL, ImportTitle);
                 return;
             }
-            if (!MVM.pingURL())
+            if (!Utils.pingURL())
             {
                 ImportError = String.Format("You need to be connected to the internet to import on online source.");
                 return;
