@@ -19,7 +19,7 @@ namespace COMPASS.ViewModels
             ShowColorSelection = false;
 
             //Commands
-            CloseColorSelectionCommand = new BasicCommand(CloseColorSelection);
+            CloseColorSelectionCommand = new ActionCommand(CloseColorSelection);
         }
 
         #region Properties
@@ -93,7 +93,7 @@ namespace COMPASS.ViewModels
             EditedTag = null;
         }
 
-        public BasicCommand CloseColorSelectionCommand { get; private set; }
+        public ActionCommand CloseColorSelectionCommand { get; private set; }
         private void CloseColorSelection()
         {
             ShowColorSelection = false;

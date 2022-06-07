@@ -15,8 +15,8 @@ namespace COMPASS.ViewModels
         public BaseEditViewModel() : base()
         {
             CurrentCollection = MVM.CurrentCollection;
-            CancelCommand = new BasicCommand(Cancel);
-            OKCommand = new BasicCommand(OKBtn);
+            CancelCommand = new ActionCommand(Cancel);
+            OKCommand = new ActionCommand(OKBtn);
         }
 
         private CodexCollection cc;
@@ -28,10 +28,10 @@ namespace COMPASS.ViewModels
 
         public Action CloseAction { get; set; }
 
-        public BasicCommand CancelCommand { get; private set; }
+        public ActionCommand CancelCommand { get; private set; }
         public virtual void Cancel(){}
 
-        public BasicCommand OKCommand { get; private set; }
+        public ActionCommand OKCommand { get; private set; }
         public virtual void OKBtn() { }
 
     }

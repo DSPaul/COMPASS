@@ -215,7 +215,7 @@ namespace COMPASS.Tools
         //------------------------------------//
 
 
-        public void SortBy(string PropertyPath, ListSortDirection? SortDirection = null)
+        public void SortBy(string PropertyPath, ListSortDirection? SortDirection)
         {
             if (PropertyPath != null && PropertyPath.Length > 0)
             {
@@ -223,7 +223,7 @@ namespace COMPASS.Tools
                 //determine sorting direction, ascending by default
                 ListSortDirection lsd = ListSortDirection.Ascending; ;
 
-                if(SortDirection != null) //if direction is given, use that instead
+                if (SortDirection != null) //if direction is given, use that instead
                 {
                     lsd = (ListSortDirection)SortDirection;
                 }
@@ -237,11 +237,15 @@ namespace COMPASS.Tools
                 }
 
                 sortDescr.Clear();
-                sortDescr.Add(new SortDescription(PropertyPath,lsd));
-                SaveSortDescriptions(PropertyPath,lsd);
+                sortDescr.Add(new SortDescription(PropertyPath, lsd));
+                SaveSortDescriptions(PropertyPath, lsd);
             }
         }
-
+        //Single parameter version needed for relaycommand
+        public void SortBy(string PropertyPath)
+        {
+            SortBy(PropertyPath, null);
+        }
         public void SaveSortDescriptions(string property, ListSortDirection dir)
         {
             Properties.Settings.Default["SortProperty"] = property;

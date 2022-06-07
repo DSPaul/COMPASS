@@ -68,8 +68,7 @@
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
                                 <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
                                         Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true" VerticalAlignment="Top">
-                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                    <ContentPresenter  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                                 </Border>
                             </ControlTemplate>
                         </Setter.Value>
@@ -115,7 +114,7 @@
                             <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
                                          Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooltoVisibilityConverter}}">
                                 <Button Tools:AP.IconKind="FileOutline" Style="{StaticResource IconBtn}"
-                                    Command="{Binding Path=DataContext.OpenSelectedFileCommand,
+                                    Command="{Binding Path=DataContext.OpenFileLocallyCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"/>
                                 <Button Tools:AP.IconKind="Web" Style="{StaticResource IconBtn}"
                                     Command="{Binding Path=DataContext.OpenFileOnlineCommand,

@@ -26,8 +26,8 @@ namespace COMPASS.ViewModels
 
 
             //commands
-            SetTagModeCommand = new RelayCommand<object>(SetTagMode);
-            TagCheckCommand = new BasicCommand(Update_Taglist);
+            SetTagModeCommand = new RelayCommand<bool>(SetTagMode);
+            TagCheckCommand = new ActionCommand(Update_Taglist);
         }
 
         #region Properties
@@ -69,10 +69,10 @@ namespace COMPASS.ViewModels
 
         #region Funtions and Commands
 
-        public RelayCommand<object> SetTagModeCommand { get; private set; }
-        public bool SetTagMode(object o)
+        public RelayCommand<bool> SetTagModeCommand { get; private set; }
+        public void SetTagMode(bool tagMode)
         {
-            TagMode = (bool)o;
+            TagMode = tagMode;
 
             // Apply right checkboxes in Alltags
             if (TagMode)
@@ -94,10 +94,9 @@ namespace COMPASS.ViewModels
                     if (t.Children.Any(node => TagsToRemove.Contains(node.Tag))) t.Expanded = true;
                 }
             }
-            return true;
         }
 
-        public BasicCommand TagCheckCommand { get; private set; }
+        public ActionCommand TagCheckCommand { get; private set; }
         public void Update_Taglist()
         {
             if (TagMode) TagsToAdd.Clear();

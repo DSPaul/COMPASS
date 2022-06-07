@@ -1,6 +1,7 @@
 ﻿using COMPASS.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace COMPASS.Tools
 {
@@ -25,6 +26,20 @@ namespace COMPASS.Tools
                 foreach (T child in parent.Children) result.Add(child);
             }
             return result;
+        }
+
+        //check internet connection
+        public static bool pingURL(string URL = "8.8.8.8")
+        {
+            Ping p = new Ping();
+            try
+            {
+                PingReply reply = p.Send(URL, 3000);
+                if (reply.Status == IPStatus.Success)
+                    return true;
+            }
+            catch { }
+            return false;
         }
 
     }

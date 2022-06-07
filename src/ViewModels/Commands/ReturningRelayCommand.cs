@@ -7,10 +7,11 @@ using System.Windows.Input;
 
 namespace COMPASS.ViewModels.Commands
 {
-    //Command with parameter but doesn't return
-    public class RelayCommand<T> : ICommand
+    //Relaycommand that works with functions that return bool
+    //to for example indicate succes of excecution
+    public class ReturningRelayCommand<T> : ICommand
     {
-        private Action<T> _execute;
+        private Func<T,bool> _execute;
         private Func<T, bool> _canExecute;
 
         public event EventHandler CanExecuteChanged
@@ -19,7 +20,7 @@ namespace COMPASS.ViewModels.Commands
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        public RelayCommand(Action<T> Execute, Func<T, bool> CanExecute = null)
+        public ReturningRelayCommand(Func<T,bool> Execute, Func<T, bool> CanExecute = null)
         {
             _execute = Execute;
             _canExecute = CanExecute;
@@ -32,7 +33,7 @@ namespace COMPASS.ViewModels.Commands
 
         public void Execute(object parameter)
         {
-            _execute.Invoke((T)parameter);
+            _execute((T)parameter);
         }
     }
 }

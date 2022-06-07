@@ -51,20 +51,20 @@ namespace COMPASS.ViewModels
                 Reader.Close();
             }
             //put openFilePriority in right order
-            OpenFilePriority = new ObservableCollection<PreferableFunction>(OpenFileFunctions.OrderBy(pf => AllPreferences.OpenFilePriorityIDs.IndexOf(pf.ID)));
+            OpenFilePriority = new ObservableCollection<PreferableFunction<Codex>>(OpenFileFunctions.OrderBy(pf => AllPreferences.OpenFilePriorityIDs.IndexOf(pf.ID)));
         }
         #endregion
 
         #region General
         //list with possible functions to open a file
-        private List<PreferableFunction> OpenFileFunctions = new List<PreferableFunction>()
+        private List<PreferableFunction<Codex>> OpenFileFunctions = new List<PreferableFunction<Codex>>()
             {
-                new PreferableFunction("Local File", FileBaseViewModel.OpenFileLocally,0),
-                new PreferableFunction("Web Version", FileBaseViewModel.OpenFileOnline,1)
+                new PreferableFunction<Codex>("Local File", FileBaseViewModel.OpenFileLocally,0),
+                new PreferableFunction<Codex>("Web Version", FileBaseViewModel.OpenFileOnline,1)
             };
         //same ordered version of the list
-        private ObservableCollection<PreferableFunction> _OpenFilePriority;
-        public ObservableCollection<PreferableFunction> OpenFilePriority
+        private ObservableCollection<PreferableFunction<Codex>> _OpenFilePriority;
+        public ObservableCollection<PreferableFunction<Codex>> OpenFilePriority
         {
             get { return _OpenFilePriority; }
             set { SetProperty(ref _OpenFilePriority, value); }
