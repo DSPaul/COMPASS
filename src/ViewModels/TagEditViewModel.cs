@@ -13,6 +13,7 @@ namespace COMPASS.ViewModels
         public TagEditViewModel(Tag ToEdit) : base()
         {
             EditedTag = ToEdit;
+            if (ToEdit == null) CreateNewTag = true;
             TempTag = new Tag(MVM.CurrentCollection.AllTags);
             if (!CreateNewTag) TempTag.Copy(EditedTag);
 
@@ -25,10 +26,7 @@ namespace COMPASS.ViewModels
         #region Properties
 
         private Tag EditedTag;
-        private bool CreateNewTag
-        {
-            get { return EditedTag == null; }
-        }
+        private bool CreateNewTag;
 
         //TempTag to work with
         private Tag tempTag;
