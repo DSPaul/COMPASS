@@ -32,7 +32,7 @@ namespace COMPASS.ViewModels
             //Get webdriver for Selenium
             InitWebdriver();
 
-            //MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory);
+            MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory + @"\gs");
 
             //CheckForUpdates();
 
