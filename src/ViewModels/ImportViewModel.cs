@@ -164,7 +164,7 @@ namespace COMPASS.ViewModels
                         };
                         pdfdoc.Close();
                         _codexCollection.AllFiles.Add(pdf);
-                        CoverArtGenerator.GetCoverFromPDF(pdf);
+                        CoverFetcher.GetCoverFromPDF(pdf);
                         SelectWhenDone = pdf;
                     }
 
@@ -354,7 +354,7 @@ namespace COMPASS.ViewModels
             worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, "Metadata loaded. Fetching cover art."));
 
             //Get Cover Art
-            CoverArtGenerator.GetCoverFromURL(newFile, Source);
+            CoverFetcher.GetCoverFromURL(newFile, Source);
 
             //add file to cc
             _codexCollection.AllFiles.Add(newFile);
