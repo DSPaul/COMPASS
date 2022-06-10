@@ -32,8 +32,8 @@ namespace COMPASS.ViewModels
             TagCheckCommand = new ActionCommand(Update_Taglist);
             DeleteFileCommand = new ActionCommand(DeleteFile);
             BrowseURLCommand = new ActionCommand(BrowseURL);
-            RegenArtCommand = new ActionCommand(RegenArt);
-            SelectArtCommand = new ActionCommand(SelectArt);
+            FetchCoverCommand = new ActionCommand(FetchCover);
+            ChooseCoverCommand = new ActionCommand(ChooseCover);
         }
 
         #region Properties
@@ -130,16 +130,15 @@ namespace COMPASS.ViewModels
             System.Diagnostics.Process.Start(TempCodex.SourceURL);
         }
 
-        public ActionCommand RegenArtCommand { get; private set; }
-        private void RegenArt()
+        public ActionCommand FetchCoverCommand { get; private set; }
+        private void FetchCover()
         {
-            //needs to become more flexible, now only works for pdfs
-            CoverArtGenerator.GetCoverFromPDF(TempCodex);
+            CoverArtGenerator.GetCover(TempCodex);
             refreshCover();
         }
 
-        public ActionCommand SelectArtCommand { get; private set; }
-        private void SelectArt()
+        public ActionCommand ChooseCoverCommand { get; private set; }
+        private void ChooseCover()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
