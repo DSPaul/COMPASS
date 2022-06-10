@@ -103,27 +103,9 @@ namespace COMPASS.ViewModels
         //Open File whereever
         public bool OpenFile(Codex codex = null)
         {
-            Codex ToOpen = codex != null ? codex : MVM.CurrentFileViewModel.SelectedFile;
-
-            //attempt to open file
-            bool success = false;
-            int i = 0;
-            while (!success)
-            {
-                success = MVM.SettingsVM.OpenFilePriority[i].Function(codex);
-                i++;
-                //break if all options tried
-                if (i >= MVM.SettingsVM.OpenFilePriority.Count)
-                {
-                    break;
-                }
-            }
-            if(success) { return true; }
-            else
-            {
-                MessageBox.Show("Could not open file, please check local path or URL");
-                return false;
-            }
+            bool success = Utils.tryFunctions(MVM.SettingsVM.OpenFilePriority, codex);
+            if (!success) MessageBox.Show("Could not open file, please check local path or URL");
+            return success;
         }
 
         //Open File Offline
@@ -310,6 +292,7 @@ namespace COMPASS.ViewModels
                 MVM.CurrentCollection.DeleteFile(ToDelete);
                 MVM.FilterHandler.RemoveFile(ToDelete);
             }
+            MVM.Refresh();
         }
         #endregion
     }

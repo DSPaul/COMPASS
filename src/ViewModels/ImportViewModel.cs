@@ -18,45 +18,43 @@ namespace COMPASS.ViewModels
 {
     public class ImportViewModel : BaseViewModel
     {
-        public ImportViewModel(ImportMode importmode)
+        public ImportViewModel(Sources source)
         {
             //set codexCollection so we know where to import to
             _codexCollection = MVM.CurrentCollection;
 
-            mode = importmode;
+            Source = source;
             SubmitURLCommand = new ActionCommand(SubmitURL);
 
             //Call Relevant function
-            switch (mode)
+            switch (source)
             {
-                case ImportMode.Pdf:
+                case Sources.Pdf:
                     //Start new threat (so program doesn't freeze while importing)
                     worker = new BackgroundWorker { WorkerReportsProgress = true };
                     worker.DoWork += ImportFromPdf;
                     worker.ProgressChanged += ProgressChanged;
                     worker.RunWorkerAsync();
                     break;
-                case ImportMode.Manual:
+                case Sources.Manual:
                     ImportManual();
                     break;
-                case ImportMode.GmBinder:
+                case Sources.GmBinder:
                     OpenImportURLDialog();
                     break;
-                case ImportMode.Homebrewery:
+                case Sources.Homebrewery:
                     OpenImportURLDialog();
                     break;
-                case ImportMode.DnDBeyond:
+                case Sources.DnDBeyond:
                     OpenImportURLDialog();
                     break;
             }  
         }
 
         #region Properties
-        readonly MainViewModel MVM;
-
         private CodexCollection _codexCollection;
 
-        private ImportMode mode;
+        private Sources Source;
         private BackgroundWorker worker;
         private ImportURLWindow iURLw;
 
@@ -199,17 +197,17 @@ namespace COMPASS.ViewModels
 
         public void OpenImportURLDialog()
         {
-            switch (mode)
+            switch (Source)
             {
-                case ImportMode.GmBinder:
+                case Sources.GmBinder:
                     ImportTitle = "GM Binder:";
                     PreviewURL = "https://www.gmbinder.com/share/";
                     break;
-                case ImportMode.Homebrewery:
+                case Sources.Homebrewery:
                     ImportTitle = "Homebrewery";
                     PreviewURL = "https://homebrewery.naturalcrit.com/share/";
                     break;
-                case ImportMode.DnDBeyond:
+                case Sources.DnDBeyond:
                     ImportTitle = "D&D Beyond";
                     PreviewURL = "https://www.dndbeyond.com/sources/";
                     break;
@@ -259,9 +257,9 @@ namespace COMPASS.ViewModels
             //Webscraper for metadata using HtmlAgilityPack
             HtmlWeb web = new HtmlWeb();
             HtmlDocument doc;
-            switch (mode)
+            switch (Source)
             {
-                case ImportMode.DnDBeyond:
+                case Sources.DnDBeyond:
                     doc = web.Load(string.Concat(InputURL, "/credits"));
                     break;
                 default:
@@ -286,9 +284,9 @@ namespace COMPASS.ViewModels
             worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, "File loaded, scraping metadata"));
 
             //Start scraping metadata, website specific
-            switch (mode)
+            switch (Source)
             {
-                case ImportMode.GmBinder:
+                case Sources.GmBinder:
                     //Set known metadata
                     newFile.Publisher = "GM Binder";
 
@@ -302,7 +300,7 @@ namespace COMPASS.ViewModels
                     newFile.PageCount = pages.Count();
                     break;
 
-                case ImportMode.Homebrewery:
+                case Sources.Homebrewery:
                     //Set known metadata
                     newFile.Publisher = "Homebrewery";
 
@@ -339,7 +337,7 @@ namespace COMPASS.ViewModels
                     newFile.PageCount = int.Parse(pageInfo.InnerText.Split('/')[1]);
                     break;
 
-                case ImportMode.DnDBeyond:
+                case Sources.DnDBeyond:
                     //Set known metadata
                     newFile.Publisher = "D&D Beyond";
                     newFile.Author = "Wizards of the Coast";
@@ -353,10 +351,10 @@ namespace COMPASS.ViewModels
 
             //Scraping complete
             _importcounter++;
-            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, "Metadata loaded. Generating cover art."));
+            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, "Metadata loaded. Fetching cover art."));
 
             //Get Cover Art
-            CoverArtGenerator.GetCoverFromURL(InputURL, newFile, mode);
+            CoverArtGenerator.GetCoverFromURL(newFile, Source);
 
             //add file to cc
             _codexCollection.AllFiles.Add(newFile);
@@ -365,6 +363,11 @@ namespace COMPASS.ViewModels
             //import done
             _importcounter++;
             worker.ReportProgress(_importcounter);
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MVM.Refresh();
+            });
         }
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)

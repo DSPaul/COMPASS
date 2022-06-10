@@ -1,5 +1,6 @@
 ﻿using COMPASS.Models;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.NetworkInformation;
 
@@ -17,6 +18,7 @@ namespace COMPASS.Tools
             return tempID;
         }
 
+        //put all nodes of a tree in a flat enumerable
         public static IEnumerable<T> FlattenTree<T>(IEnumerable<T> l) where T: IHasChilderen<T>
         {
             var result = new List<T>(l);
@@ -42,5 +44,21 @@ namespace COMPASS.Tools
             return false;
         }
 
+        //Try functions in order determined by list of preferablefunctions untill one succeeds
+        public static bool tryFunctions<T>(List<PreferableFunction<T>> toTry, T arg)
+        {
+            bool success = false;
+            int i = 0;
+            while (!success && i<toTry.Count)
+            {
+                success = toTry[i].Function(arg);
+                i++;
+            }
+            return success;
+        }
+        public static bool tryFunctions<T>(ObservableCollection<PreferableFunction<T>> toTry, T arg)
+        {
+            return tryFunctions<T>(toTry.ToList(), arg);
+        }
     }
 }

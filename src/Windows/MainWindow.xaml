@@ -508,11 +508,11 @@
                     <CustomControls:ExpandingButton.HiddenContent>
                         <StackPanel>
                             <Button Tools:AP.IconKind="FileOutline" Style="{StaticResource innerIconBtn}" Content="From PDF"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Pdf}"/>
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Pdf}"/>
                             <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource innerIconBtn}" Content="Manual"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Manual}"/>
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Manual}"/>
                             <Button Style="{StaticResource GrayBtn}"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.Homebrewery}">
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Homebrewery}">
                                 <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                 BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
                                     <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
@@ -523,7 +523,7 @@
                             </Button>
                             <!--DND Beyond doesn't work yet-->
                             <Button Style="{StaticResource GrayBtn}" Visibility="Collapsed"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.DnDBeyond}">
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.DnDBeyond}">
                                 <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                 BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
                                     <StackPanel Orientation="Horizontal">
@@ -533,7 +533,7 @@
                                 </Border>
                             </Button>
                             <Button Style="{StaticResource GrayBtn}"
-                        Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+ImportMode.GmBinder}">
+                        Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.GmBinder}">
                                 <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                 BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
                                     <ContentControl Content="{StaticResource GMBinderLogo}"/>
