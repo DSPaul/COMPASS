@@ -16,7 +16,7 @@ namespace COMPASS.Tools
         }
 
         [Flags]
-        public enum ImportMode
+        public enum Sources
         {
             None = 0,
             Manual = 1,

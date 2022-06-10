@@ -20,9 +20,24 @@ namespace COMPASS
 {
     public static class CoverArtGenerator
     { 
-        //Save First page of PDF as png
-        public static void GetCoverFromPDF(Codex pdf)
+        public static bool GetCover(Codex c)
         {
+            bool success = Utils.tryFunctions(GetCoverFunctions,c);
+            if (!success) MessageBox.Show("Could not get Cover, please check local path or URL");
+            return success;
+        }
+
+        //list with possible functions to get Cover
+        private static List<PreferableFunction<Codex>> GetCoverFunctions = new List<PreferableFunction<Codex>>()
+            {
+                new PreferableFunction<Codex>("Local File", GetCoverFromPDF,0),
+                new PreferableFunction<Codex>("Web Version", GetCoverFromURL,1)
+            };
+
+        //Save First page of PDF as png
+        public static bool GetCoverFromPDF(Codex pdf)
+        {
+            if (String.IsNullOrEmpty(pdf.Path) || !File.Exists(pdf.Path)) return false;
 
             var pdfReadDefines = new ImageMagick.Formats.PdfReadDefines()
             {
@@ -43,7 +58,7 @@ namespace COMPASS
                 {
                     image.Read(pdf.Path, settings);
                     image.Format = MagickFormat.Png;
-                    image.BackgroundColor = new MagickColor("#000000"); //set backgroun color as transparant
+                    image.BackgroundColor = new MagickColor("#000000"); //set background color as transparant
                     image.Border(20); //adds transparant border around image
                     image.Trim(); //cut off all transparancy
                     image.RePage(); //resize image to fit what was cropped
@@ -51,6 +66,7 @@ namespace COMPASS
                     image.Write(pdf.CoverArt);
                     CreateThumbnail(pdf);
                 }
+                return true;
             }
             catch
             {
@@ -58,24 +74,55 @@ namespace COMPASS
                     "Ghostscript needs to be installed seperatly and can be downloaded here: \n" +
                     "https://www.ghostscript.com/releases/gsdnld.html";
                 MessageBox.Show(messageBoxText,"Could not extract cover art from pdf", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
             }
         }
 
         //Get cover from URL
-        public static void GetCoverFromURL(string URL, Codex destfile, Enums.ImportMode import)
+        public static bool GetCoverFromURL(Codex c)
         {
-            if (import == Enums.ImportMode.DnDBeyond)
+            string URL = c.SourceURL;
+            Enums.Sources source;
+
+            if (URL.Contains("dndbeyond.com")) source = Enums.Sources.DnDBeyond;
+            else if (URL.Contains("gmbinder.com")) source = Enums.Sources.GmBinder;
+            else if (URL.Contains("homebrewery.naturalcrit.com")) source = Enums.Sources.Homebrewery;
+            //if none of above, unsupported site
+            else
             {
-                HtmlWeb web = new HtmlWeb();
-                //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument doc = web.Load(string.Concat(URL, "/credits"));
-                HtmlNode src = doc.DocumentNode;
+                Uri tempUri = new Uri(URL);
+                string message = tempUri.Host + " is not a supported source at the moment.";
+                MessageBox.Show(message, "Cover could not be found.", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
 
-                string imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);
+            return GetCoverFromURL(c, source);
+        }
+        public static bool GetCoverFromURL(Codex destfile, Enums.Sources? source)
+        {
+            string URL = destfile.SourceURL;
 
-                using (WebClient client = new WebClient())
+            if (String.IsNullOrEmpty(URL)) return false;
+
+            if (source == Enums.Sources.DnDBeyond)
+            {
+                try
                 {
-                    client.DownloadFile(new Uri(imgURL), destfile.CoverArt);
+                    HtmlWeb web = new HtmlWeb();
+                    //cover art is on store page, redirect there by going to /credits which every book has
+                    HtmlDocument doc = web.Load(string.Concat(URL, "/credits"));
+                    HtmlNode src = doc.DocumentNode;
+
+                    string imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);
+
+                    using (WebClient client = new WebClient())
+                    {
+                        client.DownloadFile(new Uri(imgURL), destfile.CoverArt);
+                    }
+                }
+                catch
+                {
+                    return false;
                 }
             }
 
@@ -118,15 +165,15 @@ namespace COMPASS
             {
                 driver.Navigate().GoToUrl(URL);
 
-                switch (import)
+                switch (source)
                 {
-                    case Enums.ImportMode.GmBinder:
+                    case Enums.Sources.GmBinder:
                         Coverpage = driver.FindElement(By.Id("p1"));
                         //screenshot and download the image
                         image = GetCroppedScreenShot(driver, Coverpage.Location, Coverpage.Size);
                         break;
 
-                    case Enums.ImportMode.Homebrewery:
+                    case Enums.Sources.Homebrewery:
                         //get nav height because scraper doesn't see nav anymore after it switched to frame
                         var nav = driver.FindElement(By.XPath("//nav"));
                         string navhstr = nav.GetCssValue("height");
@@ -150,10 +197,12 @@ namespace COMPASS
             catch 
             {
                 driver.Quit();
+                return false;
             }
 
             driver.Quit();
             CreateThumbnail(destfile);
+            return true;
         }
 
         //get cover from image

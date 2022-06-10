@@ -48,7 +48,7 @@ namespace COMPASS.ViewModels
             ChangeFileViewCommand = new RelayCommand<FileView>(ChangeFileView);
             ResetCommand = new ActionCommand(Reset);
             AddTagCommand = new ActionCommand(AddTag);
-            ImportFilesCommand = new RelayCommand<ImportMode>(ImportFiles);
+            ImportFilesCommand = new RelayCommand<Sources>(ImportFiles);
             CreateFolderCommand = new RelayCommand<string>(CreateFolder);
             EditFolderCommand = new RelayCommand<string>(EditFolder);
             DeleteFolderCommand = new ActionCommand(RaiseDeleteFolderWarning);
@@ -300,10 +300,10 @@ namespace COMPASS.ViewModels
         }
 
         //Import Btn
-        public RelayCommand<ImportMode> ImportFilesCommand { get; private set; }
-        public void ImportFiles(ImportMode mode)
+        public RelayCommand<Sources> ImportFilesCommand { get; private set; }
+        public void ImportFiles(Sources source)
         {
-            CurrentImportViewModel = new ImportViewModel(mode);
+            CurrentImportViewModel = new ImportViewModel(source);
         } 
 
         //Change Collection
