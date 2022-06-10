@@ -20,11 +20,11 @@
 
     <Content Include="COMPASS.ico" />
 
-    <Content Include="Icons\CoverPlaceholder.png">
+    <Content Include="Media\CoverPlaceholder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <SplashScreen Include="Icons\CompassFull.png" />
+    <SplashScreen Include="Media\CompassFull.png" />
 
   </ItemGroup>
 
