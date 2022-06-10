@@ -220,16 +220,16 @@
 
                     <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.Column="1">
                         <TextBlock Text="Cover Art:"/>
-                        <Button Background="{StaticResource ButtonBackground}" Command="{Binding RegenArtCommand}" Margin="10,0">
+                        <Button Background="{StaticResource ButtonBackground}" Command="{Binding FetchCoverCommand}" Margin="10,0">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Refresh"/>
-                                <TextBlock Text="Regenerate"/>
+                                <TextBlock Text="Reset"/>
                             </StackPanel>
                         </Button>
-                        <Button Background="{StaticResource ButtonBackground}" Command="{Binding SelectArtCommand}"  Margin="10,0">
+                        <Button Background="{StaticResource ButtonBackground}" Command="{Binding ChooseCoverCommand}"  Margin="10,0">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="FolderMultipleImage"/>
-                                <TextBlock Text="Set Manually"/>
+                                <TextBlock Text="Choose Image"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
