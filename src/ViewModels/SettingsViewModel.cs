@@ -74,7 +74,7 @@ namespace COMPASS.ViewModels
             foreach(Codex codex in MVM.CurrentCollection.AllFiles)
             {
                 //codex.Thumbnail = codex.CoverArt.Replace("CoverArt", "Thumbnails");
-                CoverArtGenerator.CreateThumbnail(codex);
+                CoverFetcher.CreateThumbnail(codex);
             }
         }
         #endregion

@@ -18,7 +18,7 @@ using System.Windows;
 
 namespace COMPASS
 {
-    public static class CoverArtGenerator
+    public static class CoverFetcher
     { 
         public static bool GetCover(Codex c)
         {

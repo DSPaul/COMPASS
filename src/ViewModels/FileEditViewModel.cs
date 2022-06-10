@@ -133,7 +133,7 @@ namespace COMPASS.ViewModels
         public ActionCommand FetchCoverCommand { get; private set; }
         private void FetchCover()
         {
-            CoverArtGenerator.GetCover(TempCodex);
+            CoverFetcher.GetCover(TempCodex);
             refreshCover();
         }
 
@@ -148,7 +148,7 @@ namespace COMPASS.ViewModels
         };
             if (openFileDialog.ShowDialog() == true)
             {
-                CoverArtGenerator.GetCoverFromImage(openFileDialog.FileName, TempCodex);
+                CoverFetcher.GetCoverFromImage(openFileDialog.FileName, TempCodex);
                 refreshCover();
             }
         }
