@@ -87,3 +87,5 @@ MigrationBackup/
 .editorconfig
 *.diagsession
 src/GlobalSuppressions.cs
+COMPASS_Setup.exe
+src/Properties/PublishProfiles/FolderProfile.pubxml
