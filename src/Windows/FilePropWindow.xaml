@@ -81,7 +81,7 @@
         <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="30" x:Name="CoverIm" Margin="10,0" Width="300">
             <Image.Source>
                 <Binding Path="TempCodex.CoverArt" Converter="{StaticResource UriToBitmapConverter}" 
-                         TargetNullValue="Icons\CoverPlaceholder.png">
+                         TargetNullValue="Media\CoverPlaceholder.png">
                     <Binding.ConverterParameter>
                         <sys:Boolean>true</sys:Boolean>
                     </Binding.ConverterParameter>
@@ -93,7 +93,7 @@
         <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="30" x:Name="ThumbnailIm" Margin="10,0" Width="0">
             <Image.Source>
                 <Binding Path="TempCodex.Thumbnail" Converter="{StaticResource UriToBitmapConverter}" 
-                         TargetNullValue="Icons\CoverPlaceholder.png">
+                         TargetNullValue="Media\CoverPlaceholder.png">
                     <Binding.ConverterParameter>
                         <sys:Boolean>true</sys:Boolean>
                     </Binding.ConverterParameter>
