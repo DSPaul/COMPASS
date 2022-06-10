@@ -83,6 +83,7 @@ namespace COMPASS
         {
             string URL = c.SourceURL;
             Enums.Sources source;
+            if (String.IsNullOrEmpty(URL)) return false;
 
             if (URL.Contains("dndbeyond.com")) source = Enums.Sources.DnDBeyond;
             else if (URL.Contains("gmbinder.com")) source = Enums.Sources.GmBinder;
