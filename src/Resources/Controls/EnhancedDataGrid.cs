@@ -82,11 +82,14 @@ namespace COMPASS.Resources.Controls
         private void ColumnInfoChanged()
         {
             Items.SortDescriptions.Clear();
-            foreach (var column in ColumnInfo)
+            if (ColumnInfo != null)
             {
-                var realColumn = Columns.Where((x) => column.Header.Equals(x.Header)).FirstOrDefault();
-                if (realColumn == null) { continue; }
-                column.Apply(realColumn, Columns.Count, Items.SortDescriptions);
+            foreach (var column in ColumnInfo)
+                {
+                    var realColumn = Columns.Where((x) => column.Header.Equals(x.Header)).FirstOrDefault();
+                    if (realColumn == null) { continue; }
+                    column.Apply(realColumn, Columns.Count, Items.SortDescriptions);
+                }
             }
         }
 
