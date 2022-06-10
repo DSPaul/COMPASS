@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("COMPASS")]
 [assembly: AssemblyDescription("A library manager for TTRPG's")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Paul De Smul")]
 [assembly: AssemblyProduct("COMPASS")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
@@ -52,4 +52,4 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0")]
-[assembly: AssemblyFileVersion("1.0.0")]
+//[assembly: AssemblyFileVersion("1.0.0")]
