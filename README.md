@@ -1,4 +1,4 @@
-![COMPASS Banner](https://github.com/DSPAUL/COMPASS/blob/master/src/Icons/CompassFull.png)
+![COMPASS Banner](https://github.com/DSPAUL/COMPASS/blob/master/src/Media/CompassFull.png)
 
 # COMPASS
 The Codex Organizer to make Pen-and-paper Adventuring Super Simple or COMPASS for short is a windows application to organize and manage all your TTRPG rulebooks, inspired by [Playnite](https://github.com/JosefNemec/Playnite). 
