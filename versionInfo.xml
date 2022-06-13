@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
-  <version>0.1.0.0</version>
+  <version>0.1.0</version>
   <url>https://github.com/DSPAUL/COMPASS/releases/download/v0.1.0-alpha/COMPASS_Setup_0.1.0.exe</url>
   <changelog>https://github.com/DSPAUL/COMPASS/releases</changelog>
   <mandatory>false</mandatory>
