@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
 <channel>
 <title>COMPASS Update</title>
-<link>https://github.com/DSPAUL/COMPASS/appcast.xml</link>
+<link>https://github.com/DSPAUL/COMPASS/blob/master/appcast.xml</link>
 <language>en</language>
 <item>
 <title>COMPASS Update 0.1.0</title>
