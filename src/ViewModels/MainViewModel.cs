@@ -16,6 +16,7 @@ using System.Windows.Threading;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
 using static COMPASS.Tools.Enums;
+using AutoUpdaterDotNET;
 
 namespace COMPASS.ViewModels
 {
@@ -32,6 +33,8 @@ namespace COMPASS.ViewModels
             //Get webdriver for Selenium
             InitWebdriver();
 
+            //check for updates
+            InitAutoUpdates();
 
             MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory + @"\gs");
 
@@ -128,6 +131,25 @@ namespace COMPASS.ViewModels
                 }
                 catch { }
             }
+        }
+        
+        private void InitAutoUpdates()
+        {
+            //Disable skip
+            AutoUpdater.ShowSkipButton = false;
+            //set remind later time so users can go back to the app in one click
+            AutoUpdater.LetUserSelectRemindLater = false;
+            AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
+            AutoUpdater.RemindLaterAt = 1;
+
+            AutoUpdater.DownloadPath = Path.Combine(SettingsViewModel.CompassDataPath, "Installers");
+            DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromHours(4) };
+            timer.Tick += delegate
+            {
+                CheckForUpdates();
+            };
+            timer.Start();
+            CheckForUpdates();
         }
         #endregion
 
@@ -372,9 +394,8 @@ namespace COMPASS.ViewModels
         public ActionCommand CheckForUpdatesCommand { get; init; }
         private void CheckForUpdates()
         {
-            
+            AutoUpdater.Start("https://raw.githubusercontent.com/DSPAUL/COMPASS/master/versionInfo.xml");
         }
-        
         #endregion
     }
 }
