@@ -141,14 +141,16 @@ namespace COMPASS.ViewModels
             AutoUpdater.LetUserSelectRemindLater = false;
             AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
             AutoUpdater.RemindLaterAt = 1;
-
+            //Set download directory
             AutoUpdater.DownloadPath = Path.Combine(SettingsViewModel.CompassDataPath, "Installers");
+            //check updates every 4 hours
             DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromHours(4) };
             timer.Tick += delegate
             {
                 CheckForUpdates();
             };
             timer.Start();
+            //check at startup
             CheckForUpdates();
         }
         #endregion
