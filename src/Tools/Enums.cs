@@ -23,7 +23,8 @@ namespace COMPASS.Tools
             Pdf = 2,
             GmBinder = 4,
             Homebrewery = 8,
-            DnDBeyond = 16
+            DnDBeyond = 16,
+            GoogleDrive = 32
         }
 
         public enum FilterType

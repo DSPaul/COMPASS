@@ -3,6 +3,9 @@ using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using COMPASS.Windows;
 using ImageMagick;
+using NetSparkleUpdater;
+using NetSparkleUpdater.Enums;
+using NetSparkleUpdater.SignatureVerifiers;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -32,9 +35,10 @@ namespace COMPASS.ViewModels
             //Get webdriver for Selenium
             InitWebdriver();
 
-            MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory + @"\gs");
+            //Start the sparkle Updater
+            InitSparkle();
 
-            //CheckForUpdates();
+            MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory + @"\gs");
 
             //Start internet checkup timer
             DispatcherTimer CheckConnectionTimer = new DispatcherTimer();
@@ -54,6 +58,7 @@ namespace COMPASS.ViewModels
             DeleteFolderCommand = new ActionCommand(RaiseDeleteFolderWarning);
             SearchCommand = new RelayCommand<string>(Search);
             OpenSettingsCommand = new RelayCommand<string>(OpenSettings);
+            CheckForUpdatesCommand = new ActionCommand(CheckForUpdates);
         }
 
         #region Init Functions
@@ -100,7 +105,7 @@ namespace COMPASS.ViewModels
         //Get latest version of relevant Webdriver for selenium
         private void InitWebdriver()
         {
-            if (IsInstalled("chrome.exe"))
+            if (Utils.IsInstalled("chrome.exe"))
             {
                 Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Chrome;
                 try
@@ -109,7 +114,7 @@ namespace COMPASS.ViewModels
                 }
                 catch { }
             }
-            else if (IsInstalled("firefox.exe"))
+            else if (Utils.IsInstalled("firefox.exe"))
             {
                 Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Firefox;
                 try
@@ -130,20 +135,20 @@ namespace COMPASS.ViewModels
             }
         }
 
-        //helper function for InitWebdriver to check if certain browsers are installed
-        private bool IsInstalled(string name)
+        private static SparkleUpdater _sparkle;
+        private void InitSparkle()
         {
-            string currentUserRegistryPathPattern = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\";
-            string localMachineRegistryPathPattern = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\";
-
-            var currentUserPath = Microsoft.Win32.Registry.GetValue(currentUserRegistryPathPattern + name, "", null);
-            var localMachinePath = Microsoft.Win32.Registry.GetValue(localMachineRegistryPathPattern + name, "", null);
-
-            if (currentUserPath != null | localMachinePath != null)
+            _sparkle = new SparkleUpdater(
+                "https://github.com/DSPAUL/COMPASS/releases/lastest/appcast.xml", // link to your app cast file
+                new Ed25519Checker(SecurityMode.Strict, // security mode -- use .Unsafe to ignore all signature checking (NOT recommended!!)
+                "base_64_public_key") // your base 64 public key -- generate this with the NetSparkleUpdater.Tools.AppCastGenerator .NET CLI tool on any OS
+)
             {
-                return true;
-            }
-            return false;
+                UIFactory = new NetSparkleUpdater.UI.WPF.UIFactory(), // or null or choose some other UI factory or build your own!
+                RelaunchAfterUpdate = false, // default is false; set to true if you want your app to restart after updating (keep as false if your installer will start your app for you)
+                CustomInstallerArguments = "", // set if you want your installer to get some command-line args
+            };
+            _sparkle.StartLoop(true); // `true` to run an initial check online -- only call StartLoop once for a given SparkleUpdater instance!
         }
         #endregion
 
@@ -385,6 +390,12 @@ namespace COMPASS.ViewModels
             IsOnline = Utils.pingURL();
         }
 
+        public ActionCommand CheckForUpdatesCommand { get; init; }
+        private void CheckForUpdates()
+        {
+            _sparkle.CheckForUpdatesAtUserRequest();
+        }
+        
         #endregion
     }
 }
