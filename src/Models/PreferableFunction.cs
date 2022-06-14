@@ -21,8 +21,6 @@ namespace COMPASS.Models
         }
 
         public Func<T,bool> Function { get; private set; }
-
-        public int ID { get; set; }
     }
 
     //Default generic is of type object, to match relayfunctions

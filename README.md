@@ -9,7 +9,7 @@ If you are an RPG fan like me, you probably have lots of pdf's both homebrew and
 ## Features
 - **Unify** your digital tabletop RPG sourcebook library so everything is in one place. 
 - **Import** any pdf or link a URL for online sources. You can also manually add books to include your physical collection. 
-- **Automatic metadata** such as Author, Publisher, Release date from pdf's and supported sites that can be used to sort and filter your books. Supported sites at the moment are Homebrewery and GM Binder. 
+- **Automatic metadata** such as Author, Publisher, Release date from pdf's and supported sites that can be used to sort and filter your books. Supported sites at the moment are Homebrewery, GM Binder and Google Drive. 
 - **Categorize** all your books using Tags. You can add Tags for anything you like, some examples:
 	- The type of content like *Adventure*, *Monster Stats* or *Setting/Lore*.
 	- The edition or ruleset such as *DnD 5e* or *Pathfinder 2e*.

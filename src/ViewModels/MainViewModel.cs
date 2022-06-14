@@ -16,6 +16,7 @@ using System.Windows.Threading;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
 using static COMPASS.Tools.Enums;
+using AutoUpdaterDotNET;
 
 namespace COMPASS.ViewModels
 {
@@ -32,9 +33,10 @@ namespace COMPASS.ViewModels
             //Get webdriver for Selenium
             InitWebdriver();
 
-            MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory + @"\gs");
+            //check for updates
+            InitAutoUpdates();
 
-            //CheckForUpdates();
+            MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory + @"\gs");
 
             //Start internet checkup timer
             DispatcherTimer CheckConnectionTimer = new DispatcherTimer();
@@ -54,6 +56,7 @@ namespace COMPASS.ViewModels
             DeleteFolderCommand = new ActionCommand(RaiseDeleteFolderWarning);
             SearchCommand = new RelayCommand<string>(Search);
             OpenSettingsCommand = new RelayCommand<string>(OpenSettings);
+            CheckForUpdatesCommand = new ActionCommand(CheckForUpdates);
         }
 
         #region Init Functions
@@ -100,7 +103,7 @@ namespace COMPASS.ViewModels
         //Get latest version of relevant Webdriver for selenium
         private void InitWebdriver()
         {
-            if (IsInstalled("chrome.exe"))
+            if (Utils.IsInstalled("chrome.exe"))
             {
                 Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Chrome;
                 try
@@ -109,7 +112,7 @@ namespace COMPASS.ViewModels
                 }
                 catch { }
             }
-            else if (IsInstalled("firefox.exe"))
+            else if (Utils.IsInstalled("firefox.exe"))
             {
                 Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Firefox;
                 try
@@ -129,21 +132,26 @@ namespace COMPASS.ViewModels
                 catch { }
             }
         }
-
-        //helper function for InitWebdriver to check if certain browsers are installed
-        private bool IsInstalled(string name)
+        
+        private void InitAutoUpdates()
         {
-            string currentUserRegistryPathPattern = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\";
-            string localMachineRegistryPathPattern = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\";
-
-            var currentUserPath = Microsoft.Win32.Registry.GetValue(currentUserRegistryPathPattern + name, "", null);
-            var localMachinePath = Microsoft.Win32.Registry.GetValue(localMachineRegistryPathPattern + name, "", null);
-
-            if (currentUserPath != null | localMachinePath != null)
+            //Disable skip
+            AutoUpdater.ShowSkipButton = false;
+            //set remind later time so users can go back to the app in one click
+            AutoUpdater.LetUserSelectRemindLater = false;
+            AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
+            AutoUpdater.RemindLaterAt = 1;
+            //Set download directory
+            AutoUpdater.DownloadPath = Path.Combine(SettingsViewModel.CompassDataPath, "Installers");
+            //check updates every 4 hours
+            DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromHours(4) };
+            timer.Tick += delegate
             {
-                return true;
-            }
-            return false;
+                CheckForUpdates();
+            };
+            timer.Start();
+            //check at startup
+            CheckForUpdates();
         }
         #endregion
 
@@ -385,6 +393,11 @@ namespace COMPASS.ViewModels
             IsOnline = Utils.pingURL();
         }
 
+        public ActionCommand CheckForUpdatesCommand { get; init; }
+        private void CheckForUpdates()
+        {
+            AutoUpdater.Start("https://raw.githubusercontent.com/DSPAUL/COMPASS/master/versionInfo.xml");
+        }
         #endregion
     }
 }

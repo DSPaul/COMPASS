@@ -1,8 +1,12 @@
 ﻿using COMPASS.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Threading.Tasks;
 
 namespace COMPASS.Tools
 {
@@ -59,6 +63,35 @@ namespace COMPASS.Tools
         public static bool tryFunctions<T>(ObservableCollection<PreferableFunction<T>> toTry, T arg)
         {
             return tryFunctions<T>(toTry.ToList(), arg);
+        }
+
+        //Download data and put it in a byte[]
+        public static async Task<byte[]> DownloadFileAsync(string uri)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                Uri uriResult;
+
+                if (!Uri.TryCreate(uri, UriKind.Absolute, out uriResult)) throw new InvalidOperationException("URI is invalid.");
+
+                return await client.GetByteArrayAsync(uri);
+            } 
+        }
+
+        //helper function for InitWebdriver to check if certain browsers are installed
+        public static bool IsInstalled(string name)
+        {
+            string currentUserRegistryPathPattern = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\";
+            string localMachineRegistryPathPattern = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\";
+
+            var currentUserPath = Microsoft.Win32.Registry.GetValue(currentUserRegistryPathPattern + name, "", null);
+            var localMachinePath = Microsoft.Win32.Registry.GetValue(localMachineRegistryPathPattern + name, "", null);
+
+            if (currentUserPath != null | localMachinePath != null)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

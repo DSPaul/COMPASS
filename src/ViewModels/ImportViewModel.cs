@@ -5,6 +5,7 @@ using COMPASS.Windows;
 using HtmlAgilityPack;
 using iText.Kernel.Pdf;
 using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -46,6 +47,9 @@ namespace COMPASS.ViewModels
                     OpenImportURLDialog();
                     break;
                 case Sources.DnDBeyond:
+                    OpenImportURLDialog();
+                    break;
+                case Sources.GoogleDrive:
                     OpenImportURLDialog();
                     break;
             }  
@@ -211,6 +215,10 @@ namespace COMPASS.ViewModels
                     ImportTitle = "D&D Beyond";
                     PreviewURL = "https://www.dndbeyond.com/sources/";
                     break;
+                case Sources.GoogleDrive:
+                    ImportTitle = "Google Drive";
+                    PreviewURL = "https://drive.google.com/file/";
+                    break;
             }
 
             iURLw = new ImportURLWindow(this);
@@ -305,36 +313,27 @@ namespace COMPASS.ViewModels
                     newFile.Publisher = "Homebrewery";
 
                     //Scrape metadata
-                    //Select script tag with all metadata
-                    HtmlNode script = src.SelectSingleNode("/html/body/script[2]");
-                    List<string> BrewInfo = script.InnerText.Split(',').Skip(2).ToList();
+                    //Select script tag with all metadata in JSON format
+                    string script = src.SelectSingleNode("/html/body/script[2]").InnerText;
+                    //json is encapsulated by "start_app() function, so cut that out
+                    string rawData = script.Substring(10,script.Length-11);
+                    JObject metadata = JObject.Parse(rawData);
 
-                    //Cut of end starting from text(bin)
-                    int lastIndex = BrewInfo.FindIndex(text => text.Contains("\"text"));
-                    BrewInfo = BrewInfo.GetRange(0, lastIndex);
-                    //cut of "brew":{ from start
-                    BrewInfo[0] = BrewInfo[0].Substring(8);
+                    newFile.Title = (string)metadata.SelectToken("brew.title");
+                    newFile.Author = (string)metadata.SelectToken("brew.authors[0]");
+                    newFile.Version = (string)metadata.SelectToken("brew.version");
+                    newFile.PageCount = (int)metadata.SelectToken("brew.pageCount");
+                    newFile.Description = (string)metadata.SelectToken("brew.description");
+                    newFile.ReleaseDate = DateTime.Parse(((string)metadata.SelectToken("brew.createdAt")).Split('T')[0], CultureInfo.InvariantCulture);
+                    break;
 
-                    //make temp dictionary out of list, chars like " [ ]  still need to be removed
-                    Dictionary<string, string> tempBrewInfoDict = BrewInfo.Select(item => item.Split(':')).ToDictionary(s => s[0], s => s[1]);
-                    //make clean dict to use
-                    Dictionary<string, string> BrewInfoDict = new Dictionary<string, string>();
-                    foreach(KeyValuePair<string,string> info in tempBrewInfoDict)
-                    {
-                        var newkey = info.Key.Trim('"');
-                        var newval = info.Value.Trim(new Char[] { '"', '[', ']' });
-                        BrewInfoDict.Add(newkey, newval);
-                    }
-                    if (BrewInfoDict.ContainsKey("title"))      newFile.Title = BrewInfoDict["title"];
-                    if (BrewInfoDict.ContainsKey("authors"))    newFile.Author = BrewInfoDict["authors"];
-                    if (BrewInfoDict.ContainsKey("description")) newFile.Description = BrewInfoDict["description"];
-                    if (BrewInfoDict.ContainsKey("version"))    newFile.Version = BrewInfoDict["version"];
+                case Sources.GoogleDrive:
+                    //Set known metadata
+                    newFile.Publisher = "Google Drive";
 
-                    if (BrewInfoDict.ContainsKey("createdAt"))  newFile.ReleaseDate = DateTime.Parse(BrewInfoDict["createdAt"].Split('T')[0], CultureInfo.InvariantCulture);                            
+                    //Scrape metadata
+                    newFile.Title = src.SelectSingleNode("//meta[@property='og:title']").GetAttributeValue("content", string.Empty);
 
-                    //get pagecount
-                    HtmlNode pageInfo = src.SelectSingleNode("//div[@class='pageInfo']");
-                    newFile.PageCount = int.Parse(pageInfo.InnerText.Split('/')[1]);
                     break;
 
                 case Sources.DnDBeyond:
@@ -344,8 +343,8 @@ namespace COMPASS.ViewModels
 
                     //Scrape metadata by going to storepage, get to storepage by using that /credits redirects there
                     //Doesn't work because DnD Beyond detects bots/scrapers
-                    newFile.Title = src.SelectSingleNode("//meta[@property='og:title']").GetAttributeValue("content", String.Empty);
-                    newFile.Description = src.SelectSingleNode("//meta[@property='og:description']").GetAttributeValue("content", String.Empty);
+                    newFile.Title = src.SelectSingleNode("//meta[@property='og:title']").GetAttributeValue("content", string.Empty);
+                    newFile.Description = src.SelectSingleNode("//meta[@property='og:description']").GetAttributeValue("content", string.Empty);
                     break;
             }
 

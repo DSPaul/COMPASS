@@ -12,8 +12,8 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace COMPASS
@@ -88,6 +88,7 @@ namespace COMPASS
             if (URL.Contains("dndbeyond.com")) source = Enums.Sources.DnDBeyond;
             else if (URL.Contains("gmbinder.com")) source = Enums.Sources.GmBinder;
             else if (URL.Contains("homebrewery.naturalcrit.com")) source = Enums.Sources.Homebrewery;
+            else if (URL.Contains("drive.google.com")) source = Enums.Sources.GoogleDrive;
             //if none of above, unsupported site
             else
             {
@@ -99,109 +100,129 @@ namespace COMPASS
 
             return GetCoverFromURL(c, source);
         }
-        public static bool GetCoverFromURL(Codex destfile, Enums.Sources? source)
+        public static bool GetCoverFromURL(Codex destfile, Enums.Sources source)
         {
             string URL = destfile.SourceURL;
 
             if (String.IsNullOrEmpty(URL)) return false;
 
-            if (source == Enums.Sources.DnDBeyond)
+            //sites that store cover as image that can be downloaded
+            if(source.HasFlag(Enums.Sources.DnDBeyond) || source.HasFlag(Enums.Sources.GoogleDrive))
             {
                 try
                 {
                     HtmlWeb web = new HtmlWeb();
-                    //cover art is on store page, redirect there by going to /credits which every book has
-                    HtmlDocument doc = web.Load(string.Concat(URL, "/credits"));
-                    HtmlNode src = doc.DocumentNode;
+                    HtmlDocument doc;
+                    HtmlNode src;
+                    string imgURL = "";
 
-                    string imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);
-
-                    using (WebClient client = new WebClient())
+                    switch (source)
                     {
-                        client.DownloadFile(new Uri(imgURL), destfile.CoverArt);
+                        case Enums.Sources.DnDBeyond:
+                            //cover art is on store page, redirect there by going to /credits which every book has
+                            doc = web.Load(string.Concat(URL, "/credits"));
+                            src = doc.DocumentNode;
+
+                            imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);
+                            break;
+
+                        case Enums.Sources.GoogleDrive:
+                            doc = web.Load(URL);
+                            src = doc.DocumentNode;
+
+                            imgURL = src.SelectSingleNode("//meta[@property='og:image']").GetAttributeValue("content", String.Empty);
+                            //cut of "=W***-h***-p" from URL that crops the image if it is present
+                            if (imgURL.Contains("=")) imgURL = imgURL.Split('=')[0];
+                            break;
                     }
+                    //download the file
+                    var imgBytes = Task.Run(async () => await Utils.DownloadFileAsync(imgURL)).Result;
+                    File.WriteAllBytes(destfile.CoverArt, imgBytes);
                 }
                 catch
                 {
                     return false;
                 }
             }
-
-            //Use Selenium for screenshotting pages
-            DriverService driverService;
-            WebDriver driver;
-            switch (Properties.Settings.Default.SeleniumBrowser)
+            
+            //sites do not store cover as img, Use Selenium for screenshotting pages
+            else if (source.HasFlag(Enums.Sources.GmBinder) || source.HasFlag(Enums.Sources.Homebrewery))
             {
-                case (int)Enums.Browser.Chrome:
-                    driverService = ChromeDriverService.CreateDefaultService();
-                    driverService.HideCommandPromptWindow = true;
-                    ChromeOptions CO = new ChromeOptions();
-                    CO.AddArgument("--window-size=2500,2000");
-                    CO.AddArgument("--headless");
-                    driver = new ChromeDriver((ChromeDriverService)driverService, CO);
-                    break;
-
-                case (int)Enums.Browser.Firefox:
-                    driverService = FirefoxDriverService.CreateDefaultService();
-                    driverService.HideCommandPromptWindow = true;
-                    FirefoxOptions FO = new FirefoxOptions();
-                    FO.AddArgument("--window-size=2500,2000");
-                    FO.AddArgument("--headless");
-                    driver = new FirefoxDriver((FirefoxDriverService)driverService, FO);
-                    break;
-
-                default:
-                    driverService = EdgeDriverService.CreateDefaultService();
-                    driverService.HideCommandPromptWindow = true;
-                    EdgeOptions EO = new EdgeOptions();
-                    EO.AddArgument("--window-size=2500,2000");
-                    EO.AddArgument("--headless");
-                    driver = new EdgeDriver((EdgeDriverService)driverService, EO);
-                    break;
-            }
-
-            IWebElement Coverpage;
-            MagickImage image = null;
-            try
-            {
-                driver.Navigate().GoToUrl(URL);
-
-                switch (source)
+                DriverService driverService;
+                WebDriver driver;
+                switch (Properties.Settings.Default.SeleniumBrowser)
                 {
-                    case Enums.Sources.GmBinder:
-                        Coverpage = driver.FindElement(By.Id("p1"));
-                        //screenshot and download the image
-                        image = GetCroppedScreenShot(driver, Coverpage.Location, Coverpage.Size);
+                    case (int)Enums.Browser.Chrome:
+                        driverService = ChromeDriverService.CreateDefaultService();
+                        driverService.HideCommandPromptWindow = true;
+                        ChromeOptions CO = new ChromeOptions();
+                        CO.AddArgument("--window-size=2500,2000");
+                        CO.AddArgument("--headless");
+                        driver = new ChromeDriver((ChromeDriverService)driverService, CO);
                         break;
 
-                    case Enums.Sources.Homebrewery:
-                        //get nav height because scraper doesn't see nav anymore after it switched to frame
-                        var nav = driver.FindElement(By.XPath("//nav"));
-                        string navhstr = nav.GetCssValue("height");
-                        float navheight = float.Parse(navhstr.Substring(0, navhstr.Length - 2), CultureInfo.InvariantCulture);
+                    case (int)Enums.Browser.Firefox:
+                        driverService = FirefoxDriverService.CreateDefaultService();
+                        driverService.HideCommandPromptWindow = true;
+                        FirefoxOptions FO = new FirefoxOptions();
+                        FO.AddArgument("--window-size=2500,2000");
+                        FO.AddArgument("--headless");
+                        driver = new FirefoxDriver((FirefoxDriverService)driverService, FO);
+                        break;
 
-                        //switch to iframe
-                        var iframe = driver.FindElement(By.XPath("//iframe"));
-                        driver.SwitchTo().Frame(iframe);
-                        Coverpage = driver.FindElement(By.Id("p1"));
-                        //shift page down by nav height because element location is relative to frame, but coords on screenshot is reletaive to page 
-                        int newY = (int)Math.Round(Coverpage.Location.Y + navheight, 0);
-
-                        //screenshot and download the image
-                        image = GetCroppedScreenShot(driver, new System.Drawing.Point(Coverpage.Location.X, newY), Coverpage.Size);
+                    default:
+                        driverService = EdgeDriverService.CreateDefaultService();
+                        driverService.HideCommandPromptWindow = true;
+                        EdgeOptions EO = new EdgeOptions();
+                        EO.AddArgument("--window-size=2500,2000");
+                        EO.AddArgument("--headless");
+                        driver = new EdgeDriver((EdgeDriverService)driverService, EO);
                         break;
                 }
 
-                if (image.Width > 850) image.Resize(850, 0);
-                image.Write(destfile.CoverArt);
-            }
-            catch 
-            {
-                driver.Quit();
-                return false;
-            }
+                IWebElement Coverpage;
+                MagickImage image = null;
+                try
+                {
+                    driver.Navigate().GoToUrl(URL);
 
-            driver.Quit();
+                    switch (source)
+                    {
+                        case Enums.Sources.GmBinder:
+                            Coverpage = driver.FindElement(By.Id("p1"));
+                            //screenshot and download the image
+                            image = GetCroppedScreenShot(driver, Coverpage.Location, Coverpage.Size);
+                            break;
+
+                        case Enums.Sources.Homebrewery:
+                            //get nav height because scraper doesn't see nav anymore after it switched to frame
+                            var nav = driver.FindElement(By.XPath("//nav"));
+                            string navhstr = nav.GetCssValue("height");
+                            float navheight = float.Parse(navhstr.Substring(0, navhstr.Length - 2), CultureInfo.InvariantCulture);
+
+                            //switch to iframe
+                            var iframe = driver.FindElement(By.XPath("//iframe"));
+                            driver.SwitchTo().Frame(iframe);
+                            Coverpage = driver.FindElement(By.Id("p1"));
+                            //shift page down by nav height because element location is relative to frame, but coords on screenshot is reletaive to page 
+                            int newY = (int)Math.Round(Coverpage.Location.Y + navheight, 0);
+
+                            //screenshot and download the image
+                            image = GetCroppedScreenShot(driver, new System.Drawing.Point(Coverpage.Location.X, newY), Coverpage.Size);
+                            break;
+                    }
+
+                    if (image.Width > 850) image.Resize(850, 0);
+                    image.Write(destfile.CoverArt);
+                }
+                catch
+                {
+                    driver.Quit();
+                    return false;
+                }
+                driver.Quit();
+            }
+            
             CreateThumbnail(destfile);
             return true;
         }

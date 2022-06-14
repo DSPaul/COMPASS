@@ -9,12 +9,8 @@
     <ApplicationIcon>COMPASS.ico</ApplicationIcon>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <StartupObject>COMPASS.App</StartupObject>
+    <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="faviconv4.ico" />
-    <None Remove="JadeCompass.ico" />
-  </ItemGroup>
 
   <ItemGroup>
 
@@ -29,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.3" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.1.1" />
     <PackageReference Include="HtmlAgilityPack">
       <Version>1.11.43</Version>
@@ -48,7 +45,8 @@
     <PackageReference Include="MaterialDesignThemes">
       <Version>4.5.0</Version>
     </PackageReference>
-    <PackageReference Include="NetSparkleUpdater.SparkleUpdater" Version="2.1.1" />
+    <PackageReference Include="NetSparkleUpdater.UI.WPF" Version="2.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="ScrapySharp">
       <Version>3.0.0</Version>
     </PackageReference>
