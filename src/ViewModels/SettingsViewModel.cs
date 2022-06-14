@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -15,10 +16,14 @@ namespace COMPASS.ViewModels
     public class SettingsViewModel:BaseViewModel
     {
         public SettingsViewModel()
-        { 
-            //will need to download this when updating because it is one folder too high in the file hierarchy
-            Changelog = File.ReadAllText(@"C:\Users\pauld\Documents\COMPASS\Changelog.md");
-
+        {
+            //find name of current release-notes
+            var version = Assembly.GetEntryAssembly().GetName().Version.ToString().Substring(0,5);
+            if (File.Exists($"release-notes-{version}.md"))
+            {
+                ReleaseNotes = File.ReadAllText($"release-notes-{version}.md");
+            }
+            
             LoadPreferences();
         }
 
@@ -81,7 +86,7 @@ namespace COMPASS.ViewModels
 
         #region Changelog
         private string _Changelog;
-        public string Changelog
+        public string ReleaseNotes
         {
             get { return _Changelog; }
             set { SetProperty(ref _Changelog, value); }

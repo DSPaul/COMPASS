@@ -78,8 +78,8 @@
                 </StackPanel>
                 
             </TabItem>
-            <TabItem Header="Changelog"  Tools:AP.IconKind="Update">
-                <markdig:MarkdownViewer Margin="30" Markdown="{Binding Changelog}">
+            <TabItem Header="What's New"  Tools:AP.IconKind="Update">
+                <markdig:MarkdownViewer Margin="30" Markdown="{Binding ReleaseNotes}">
                     <markdig:MarkdownViewer.Resources>
                         <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static markdig:Styles.Heading1StyleKey}">
                             <Setter Property="FontSize" Value="40"/>

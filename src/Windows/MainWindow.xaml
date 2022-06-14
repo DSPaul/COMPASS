@@ -268,7 +268,7 @@
                             </ContextMenu.Resources>
                             <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}"/>
                             <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}"/>
-                            <MenuItem Header="Changelog" Command="{Binding OpenSettingsCommand}" CommandParameter="Changelog"/>
+                            <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New"/>
                             <!--<MenuItem Header="About" Command="{Binding OpenSettingsCommand}" CommandParameter="About"/>-->
                         </ContextMenu>
                     </Button.ContextMenu>
