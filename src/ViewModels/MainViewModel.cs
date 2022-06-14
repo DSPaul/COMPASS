@@ -36,6 +36,13 @@ namespace COMPASS.ViewModels
             //check for updates
             InitAutoUpdates();
 
+            //do stuff if first launch after update
+            if (Properties.Settings.Default.justUpdated)
+            {
+                FirstLaunch()
+                Properties.Settings.Default.justUpdated = false;
+            }
+
             MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory + @"\gs");
 
             //Start internet checkup timer
@@ -157,6 +164,11 @@ namespace COMPASS.ViewModels
             timer.Start();
             //check at startup
             CheckForUpdates();
+        }
+       
+        private void FirstLaunch()
+        {
+            Properties.Settings.Default.Upgrade();
         }
         #endregion
 

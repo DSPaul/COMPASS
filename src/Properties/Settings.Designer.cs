@@ -286,5 +286,17 @@ namespace COMPASS.Properties {
                 this["SortDirection"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool justUpdated {
+            get {
+                return ((bool)(this["justUpdated"]));
+            }
+            set {
+                this["justUpdated"] = value;
+            }
+        }
     }
 }
