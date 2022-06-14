@@ -2,6 +2,7 @@
 <item>
   <version>0.2.0</version>
   <url>https://github.com/DSPAUL/COMPASS/releases/download/v0.2.0-alpha/COMPASS_Setup_0.2.0.exe</url>
-  <changelog>https://github.com/DSPAUL/COMPASS/releases</changelog>
+  <changelog>https://github.com/DSPAUL/COMPASS/blob/dev/Changelog.md#compass-v020-14-jun-2022</changelog>
   <mandatory>false</mandatory>
 </item>
+
