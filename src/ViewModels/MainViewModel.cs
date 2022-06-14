@@ -39,7 +39,7 @@ namespace COMPASS.ViewModels
             //do stuff if first launch after update
             if (Properties.Settings.Default.justUpdated)
             {
-                FirstLaunch()
+                FirstLaunch();
                 Properties.Settings.Default.justUpdated = false;
             }
 
