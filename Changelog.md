@@ -9,10 +9,10 @@
 
 ### New Features
 
-- Google drive import has been added, supported metadate is:
+- Google drive import has been added, supported metadata is:
   - Cover
   - Title
 - Automatic update checking and installing
 
-## COMPASS 0.1.0 (10 Jun 2022)
+## COMPASS v0.1.0 (10 Jun 2022)
 - Release of 0.1.0
