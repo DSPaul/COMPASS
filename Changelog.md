@@ -1,4 +1,4 @@
-# Changelog
+# CHANGELOG
 
 ## COMPASS v0.2.0 (14 Jun 2022)
 
