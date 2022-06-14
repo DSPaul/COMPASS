@@ -1,5 +1,6 @@
 # Changelog
-## COMPASS v0.2.0 (14 Jun 2022)
+
+## COMPASS v0.2.0 (14 Jun 2022)
 
 ### Fixes
 
@@ -13,5 +14,5 @@
   - Title
 - Automatic update checking and installing
 
-## 0.1.0 (10/06/22)
- Release of 0.1.0
+## COMPASS 0.1.0 (10 Jun 2022)
+- Release of 0.1.0
