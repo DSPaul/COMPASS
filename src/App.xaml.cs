@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using COMPASS.ViewModels;
+using System.IO;
+using System.Windows;
 
 namespace COMPASS
 {
@@ -9,7 +11,10 @@ namespace COMPASS
     {
         public App()
         {
-
+            if (!Directory.Exists(SettingsViewModel.CompassDataPath))
+            {
+                Directory.CreateDirectory(SettingsViewModel.CompassDataPath);
+            }
         }
     }
 

@@ -64,6 +64,11 @@ namespace COMPASS.ViewModels
         //Get a collection at startup
         private void InitCollection()
         {
+            if (!Directory.Exists(CodexCollection.CollectionsPath))
+            {
+                Directory.CreateDirectory(CodexCollection.CollectionsPath);
+            }
+
             //Get all RPG systems by folder name
             Folders = new ObservableCollection<string>();
             string[] FullPathFolders = Directory.GetDirectories(CodexCollection.CollectionsPath);

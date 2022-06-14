@@ -24,12 +24,12 @@ namespace COMPASS.ViewModels
                 ReleaseNotes = File.ReadAllText($"release-notes-{version}.md");
             }
             
-            LoadPreferences();
+            if (File.Exists(PreferencesFilePath)) LoadPreferences();
         }
 
         #region static fields
         public static XmlWriterSettings xmlWriterSettings = new XmlWriterSettings() { Indent = true };
-        public static string CompassDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Compass";
+        public static string CompassDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\COMPASS";
         private static string PreferencesFilePath = CompassDataPath + @"\Preferences.xml";
         private static SerializablePreferences AllPreferences = new SerializablePreferences();
         #endregion
