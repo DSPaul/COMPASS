@@ -8,6 +8,6 @@ namespace COMPASS.Tools
 {
     public static  class Constants
     {
-        public static string RepoURL = "https://github.com/DSPAUL/COMPASS";
+        public static readonly string RepoURL = "https://github.com/DSPAUL/COMPASS";
     }
 }
