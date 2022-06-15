@@ -16,15 +16,13 @@ namespace COMPASS.ViewModels
     {
         public TagsFiltersViewModel(): base()
         {
-            ChangeOnlineFilterCommand = new RelayCommand<Tuple<bool, bool>>(ChangeOnlineFilter);
-            ChangeOfflineFilterCommand = new RelayCommand<Tuple<bool, bool>>(ChangeOfflineFilter);
-            ChangePhysicalFilterCommand = new RelayCommand<Tuple<bool, bool>>(ChangePhysicalFilter);
-            EditTagCommand = new ActionCommand(EditTag);
-            DeleteTagCommand = new ActionCommand(DeleteTag);
-            ClearFiltersCommand = new ActionCommand(ClearFilters);
+            ChangeOnlineFilterCommand = new(ChangeOnlineFilter);
+            ChangeOfflineFilterCommand = new(ChangeOfflineFilter);
+            ChangePhysicalFilterCommand = new(ChangePhysicalFilter);
+            EditTagCommand = new(EditTag);
+            DeleteTagCommand = new(DeleteTag);
+            ClearFiltersCommand = new(ClearFilters);
         }
-
-
 
         #region Properties
         //selected Tag in Treeview
@@ -137,19 +135,52 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Functions and Commands
-        public RelayCommand<Tuple<bool, bool>> ChangeOnlineFilterCommand { get; private set; }
+        //-------------------For Tags Tab ---------------------//
+        public ActionCommand EditTagCommand { get; init; }
+        public void EditTag()
+        {
+            if (Context != null)
+            {
+                MVM.CurrentEditViewModel = new TagEditViewModel(Context);
+                TagPropWindow tpw = new TagPropWindow((TagEditViewModel)MVM.CurrentEditViewModel);
+                tpw.ShowDialog();
+                tpw.Topmost = true;
+            }
+        }
+
+        public ActionCommand DeleteTagCommand { get; init; }
+        public void DeleteTag()
+        {
+            //tag to delete is context, because DeleteTag is called from context menu
+            if (Context == null) return;
+            MVM.CurrentCollection.DeleteTag(Context);
+            MVM.FilterHandler.RemoveTagFilter(Context);
+
+            //Go over all files and remove the tag from tag list
+            foreach (var f in MVM.CurrentCollection.AllFiles)
+            {
+                f.Tags.Remove(Context);
+            }
+            MVM.Refresh();
+
+            //SelectedTag = null;
+        }
+        //-----------------------------------------------------//
+
+        //----------------For Filters Tab---------------------//
+        public RelayCommand<Tuple<bool, bool>> ChangeOnlineFilterCommand { get; init; }
         public void ChangeOnlineFilter(Tuple<bool, bool> parameters)
         {
             ChangeSourceFilter(FilterType.OnlineSource,"Available Online",parameters.Item1,parameters.Item2);
         }
 
-        public RelayCommand<Tuple<bool, bool>> ChangeOfflineFilterCommand { get; private set; }
+        public RelayCommand<Tuple<bool, bool>> ChangeOfflineFilterCommand { get; init; }
         public void ChangeOfflineFilter(Tuple<bool, bool> parameters)
         {
             ChangeSourceFilter(FilterType.OfflineSource,"Available Offline", parameters.Item1, parameters.Item2);
         }
         
-        public RelayCommand<Tuple<bool, bool>> ChangePhysicalFilterCommand { get; private set; }
+        public RelayCommand<Tuple<bool, bool>> ChangePhysicalFilterCommand { get; init; }
         public void ChangePhysicalFilter(Tuple<bool, bool> parameters)
         {
             ChangeSourceFilter(FilterType.PhysicalSource,"Physicaly Owned", parameters.Item1, parameters.Item2);
@@ -171,40 +202,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        //-------------------For Tags Tab ---------------------//
-        public ActionCommand EditTagCommand { get; private set; }
-        public void EditTag()
-        {
-            if (Context != null)
-            {
-                MVM.CurrentEditViewModel = new TagEditViewModel(Context);
-                TagPropWindow tpw = new TagPropWindow((TagEditViewModel)MVM.CurrentEditViewModel);
-                tpw.ShowDialog();
-                tpw.Topmost = true;
-            }
-        }
-
-        public ActionCommand DeleteTagCommand { get; private set; }
-        public void DeleteTag()
-        {
-            //tag to delete is context, because DeleteTag is called from context menu
-            if (Context == null) return;
-            MVM.CurrentCollection.DeleteTag(Context);
-            MVM.FilterHandler.RemoveTagFilter(Context);
-
-            //Go over all files and remove the tag from tag list
-            foreach (var f in MVM.CurrentCollection.AllFiles)
-            {
-                f.Tags.Remove(Context);
-            }
-            MVM.Refresh();
-
-            //SelectedTag = null;
-        }
-        //-----------------------------------------------------//
-
-        //----------------For Filters Tab---------------------//
-        public ActionCommand ClearFiltersCommand { get; private set; }
+        public ActionCommand ClearFiltersCommand { get; init; }
         public void ClearFilters()
         {
             SelectedAuthor = null;

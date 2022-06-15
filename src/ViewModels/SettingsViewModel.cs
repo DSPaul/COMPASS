@@ -19,18 +19,19 @@ namespace COMPASS.ViewModels
         public SettingsViewModel()
         {
             //find name of current release-notes
-            var version = Assembly.GetEntryAssembly().GetName().Version.ToString().Substring(0,5);
+            var version = Assembly.GetEntryAssembly().GetName().Version.ToString()[..5];
             if (File.Exists($"release-notes-{version}.md"))
             {
                 ReleaseNotes = File.ReadAllText($"release-notes-{version}.md");
             }
-            
+
             if (File.Exists(Constants.PreferencesFilePath)) LoadPreferences();
+            else Logger.log.Warn($"{Constants.PreferencesFilePath} does not exist.");
         }
 
         #region static fields
-        public static XmlWriterSettings xmlWriterSettings = new XmlWriterSettings() { Indent = true };
-        private static SerializablePreferences AllPreferences = new SerializablePreferences();
+        public static XmlWriterSettings xmlWriterSettings = new() { Indent = true };
+        private static SerializablePreferences AllPreferences = new();
         #endregion
 
         #region Save and Load
@@ -39,18 +40,16 @@ namespace COMPASS.ViewModels
             //Save OpenFilePriority
             AllPreferences.OpenFilePriorityIDs = OpenFilePriority.Select(pf => pf.ID).ToList();
 
-            using (var writer = XmlWriter.Create(Constants.PreferencesFilePath, xmlWriterSettings))
-            {
-                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(SerializablePreferences));
-                serializer.Serialize(writer, AllPreferences);
-            }
+            using var writer = XmlWriter.Create(Constants.PreferencesFilePath, xmlWriterSettings);
+            System.Xml.Serialization.XmlSerializer serializer = new(typeof(SerializablePreferences));
+            serializer.Serialize(writer, AllPreferences);
         }
 
         public void LoadPreferences()
         {
             using (var Reader = new StreamReader(Constants.PreferencesFilePath))
             {
-                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(SerializablePreferences));
+                System.Xml.Serialization.XmlSerializer serializer = new(typeof(SerializablePreferences));
                 AllPreferences = serializer.Deserialize(Reader) as SerializablePreferences;
                 Reader.Close();
             }
@@ -61,7 +60,7 @@ namespace COMPASS.ViewModels
 
         #region General
         //list with possible functions to open a file
-        private List<PreferableFunction<Codex>> OpenFileFunctions = new List<PreferableFunction<Codex>>()
+        private List<PreferableFunction<Codex>> OpenFileFunctions = new()
             {
                 new PreferableFunction<Codex>("Local File", FileBaseViewModel.OpenFileLocally,0),
                 new PreferableFunction<Codex>("Web Version", FileBaseViewModel.OpenFileOnline,1)

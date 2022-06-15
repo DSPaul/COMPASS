@@ -24,7 +24,7 @@ namespace COMPASS.ViewModels
             foreach (TreeViewNode t in AllTreeViewNodes)
             {
                 t.Expanded = false;
-                t.Selected = TempCodex.Tags.Contains(t.Tag) ? true : false;
+                t.Selected = TempCodex.Tags.Contains(t.Tag);
                 if (t.Children.Any(node => TempCodex.Tags.Contains(node.Tag))) t.Expanded = true;
             }
 
@@ -62,7 +62,7 @@ namespace COMPASS.ViewModels
         public ActionCommand BrowsePathCommand { get; private set; }
         private void BrowsePath()
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            OpenFileDialog openFileDialog = new()
             {
                 AddExtension = false,
                 Filter = "PDF (*.pdf) | *.pdf",
@@ -80,7 +80,7 @@ namespace COMPASS.ViewModels
             if(!CreateNewCodex) EditedCodex.Copy(TempCodex);
             else
             {
-                Codex ToAdd = new Codex();
+                Codex ToAdd = new ();
                 ToAdd.Copy(TempCodex);
                 CurrentCollection.AllFiles.Add(ToAdd);
                 MVM.Refresh();
@@ -136,13 +136,13 @@ namespace COMPASS.ViewModels
         private void FetchCover()
         {
             CoverFetcher.GetCover(TempCodex);
-            refreshCover();
+            RefreshCover();
         }
 
         public ActionCommand ChooseCoverCommand { get; private set; }
         private void ChooseCover()
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            OpenFileDialog openFileDialog = new()
             {
                 AddExtension = false,
                 Multiselect = false,
@@ -151,11 +151,11 @@ namespace COMPASS.ViewModels
             if (openFileDialog.ShowDialog() == true)
             {
                 CoverFetcher.GetCoverFromImage(openFileDialog.FileName, TempCodex);
-                refreshCover();
+                RefreshCover();
             }
         }
 
-        private void refreshCover()
+        private void RefreshCover()
         {
             //force refresh because image is cached
             string CovArt = TempCodex.CoverArt;
