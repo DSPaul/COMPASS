@@ -16,7 +16,7 @@ namespace COMPASS.Tools
             log.Fatal(errorMessage);
             //prompt user to submit logs and open an issue
             string message = "Its seems COMPASS has run into an error and crashed.\n" +
-                $"You can help improve COMPASS by opening an issue on {constants.RepoURL}. \n" +
+                $"You can help improve COMPASS by opening an issue on {Constants.RepoURL}. \n" +
                 @"Please include the log file located at %appdata%\COMPASS\logs.";
             if (Task.Run(() => MessageBox.Show(message, "COMPASS has crashed.", MessageBoxButton.OK, MessageBoxImage.Error)).Result == MessageBoxResult.OK)
             {
