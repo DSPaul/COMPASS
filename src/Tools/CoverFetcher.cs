@@ -68,12 +68,11 @@ namespace COMPASS
                 }
                 return true;
             }
-            catch
+            catch(Exception e)
             {
-                string messageBoxText = "COMPASS uses Ghostscript to extract cover art from pdf's. \n" +
-                    "Ghostscript needs to be installed seperatly and can be downloaded here: \n" +
-                    "https://www.ghostscript.com/releases/gsdnld.html";
-                MessageBox.Show(messageBoxText,"Could not extract cover art from pdf", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Logger.log.Error(e.InnerException);
+                string messageBoxText = "Failed to extract Cover from pdf.";
+                MessageBox.Show(messageBoxText, "Failed to extract Cover from pdf", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
         }
@@ -139,8 +138,9 @@ namespace COMPASS
                     var imgBytes = Task.Run(async () => await Utils.DownloadFileAsync(imgURL)).Result;
                     File.WriteAllBytes(destfile.CoverArt, imgBytes);
                 }
-                catch
+                catch(Exception e)
                 {
+                    Logger.log.Error(e.InnerException);
                     return false;
                 }
             }
@@ -215,9 +215,10 @@ namespace COMPASS
                     if (image.Width > 850) image.Resize(850, 0);
                     image.Write(destfile.CoverArt);
                 }
-                catch
+                catch(Exception e)
                 {
                     driver.Quit();
+                    Logger.log.Error(e.InnerException);
                     return false;
                 }
                 driver.Quit();

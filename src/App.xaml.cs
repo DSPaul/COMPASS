@@ -1,4 +1,5 @@
-﻿using COMPASS.ViewModels;
+﻿using COMPASS.Tools;
+using COMPASS.ViewModels;
 using System.IO;
 using System.Windows;
 

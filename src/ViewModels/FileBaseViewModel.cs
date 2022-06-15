@@ -118,8 +118,9 @@ namespace COMPASS.ViewModels
                 Process.Start(new ProcessStartInfo(toOpen.Path) {UseShellExecute = true });
                 return true;
             }
-            catch
+            catch(Exception e)
             {
+                Logger.log.Error(e.InnerException);
                 return false;
             }
         }
@@ -147,11 +148,12 @@ namespace COMPASS.ViewModels
                 Process.Start(new ProcessStartInfo(toOpen.SourceURL) { UseShellExecute = true });
                 return true;
             }
-            catch
+            catch (Exception e)
             {
+                Logger.log.Error(e.InnerException);
                 return false;
             }
-            
+
         }
         public bool CanOpenFileOnline(Codex toOpen = null)
         {

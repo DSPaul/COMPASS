@@ -283,7 +283,10 @@ namespace COMPASS.Tools
             {
                 CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(sortDescr);
             }
-            catch { }
+            catch (Exception e)
+            {
+                Logger.log.Warn(e.InnerException);
+            }
         }
 
         public void RemoveFile(Codex f)

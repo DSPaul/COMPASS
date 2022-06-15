@@ -17,6 +17,7 @@ using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
 using static COMPASS.Tools.Enums;
 using AutoUpdaterDotNET;
+using System.Reflection;
 
 namespace COMPASS.ViewModels
 {
@@ -35,6 +36,9 @@ namespace COMPASS.ViewModels
 
             //check for updates
             InitAutoUpdates();
+
+            //init Logger
+            InitLogger();
 
             //do stuff if first launch after update
             if (Properties.Settings.Default.justUpdated)
@@ -117,31 +121,40 @@ namespace COMPASS.ViewModels
         {
             if (Utils.IsInstalled("chrome.exe"))
             {
-                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Chrome;
+                Properties.Settings.Default.SeleniumBrowser = (int)Browser.Chrome;
                 try
                 {
                     new DriverManager().SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Logger.log.Error(e.InnerException);
+                }
             }
             else if (Utils.IsInstalled("firefox.exe"))
             {
-                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Firefox;
+                Properties.Settings.Default.SeleniumBrowser = (int)Browser.Firefox;
                 try
                 {
                     new DriverManager().SetUpDriver(new FirefoxConfig());
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Logger.log.Error(e.InnerException);
+                }
             }
 
             else
             {
-                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Edge;
+                Properties.Settings.Default.SeleniumBrowser = (int)Browser.Edge;
                 try
                 {
                     new DriverManager().SetUpDriver(new EdgeConfig());
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Logger.log.Error(e.InnerException);
+                }
             }
         }
         
@@ -166,6 +179,12 @@ namespace COMPASS.ViewModels
             CheckForUpdates();
         }
        
+        public void InitLogger()
+        {
+            Application.Current.DispatcherUnhandledException += Logger.LogUnhandledException;
+            Logger.log.Info($"Launching Compass v{Assembly.GetExecutingAssembly().GetName().Version}");
+        }
+
         private void FirstLaunch()
         {
             Properties.Settings.Default.Upgrade();

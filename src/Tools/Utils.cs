@@ -44,7 +44,10 @@ namespace COMPASS.Tools
                 if (reply.Status == IPStatus.Success)
                     return true;
             }
-            catch { }
+            catch (Exception e)
+            {
+                Logger.log.Warn(e.InnerException);
+            }
             return false;
         }
 
