@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
 using GongSolutions.Wpf.DragDrop;
 using System;
 using System.Collections.Generic;
@@ -24,13 +25,11 @@ namespace COMPASS.ViewModels
                 ReleaseNotes = File.ReadAllText($"release-notes-{version}.md");
             }
             
-            if (File.Exists(PreferencesFilePath)) LoadPreferences();
+            if (File.Exists(Constants.PreferencesFilePath)) LoadPreferences();
         }
 
         #region static fields
         public static XmlWriterSettings xmlWriterSettings = new XmlWriterSettings() { Indent = true };
-        public static string CompassDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\COMPASS";
-        private static string PreferencesFilePath = CompassDataPath + @"\Preferences.xml";
         private static SerializablePreferences AllPreferences = new SerializablePreferences();
         #endregion
 
@@ -40,7 +39,7 @@ namespace COMPASS.ViewModels
             //Save OpenFilePriority
             AllPreferences.OpenFilePriorityIDs = OpenFilePriority.Select(pf => pf.ID).ToList();
 
-            using (var writer = XmlWriter.Create(PreferencesFilePath, xmlWriterSettings))
+            using (var writer = XmlWriter.Create(Constants.PreferencesFilePath, xmlWriterSettings))
             {
                 System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(SerializablePreferences));
                 serializer.Serialize(writer, AllPreferences);
@@ -49,7 +48,7 @@ namespace COMPASS.ViewModels
 
         public void LoadPreferences()
         {
-            using (var Reader = new StreamReader(PreferencesFilePath))
+            using (var Reader = new StreamReader(Constants.PreferencesFilePath))
             {
                 System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(SerializablePreferences));
                 AllPreferences = serializer.Deserialize(Reader) as SerializablePreferences;

@@ -12,10 +12,7 @@ namespace COMPASS
     {
         public App()
         {
-            if (!Directory.Exists(SettingsViewModel.CompassDataPath))
-            {
-                Directory.CreateDirectory(SettingsViewModel.CompassDataPath);
-            }
+            Directory.CreateDirectory(Constants.CompassDataPath);
         }
     }
 
