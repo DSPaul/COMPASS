@@ -168,6 +168,7 @@
 
                 <ContentControl Content="{StaticResource CompassLogo}" Margin="10,0" HorizontalAlignment="Left"/>
 
+                <!--Search Bar-->
                 <Border Grid.Column="1" CornerRadius="4" MinWidth="300" WindowChrome.IsHitTestVisibleInChrome="True"
                     Background="{StaticResource UIElementBackground}" OpacityMask="#FF222222" Margin="30,5">
                     <Grid>
@@ -186,6 +187,7 @@
                     </Grid>
                 </Border>
 
+                <!--Collection Selection-->
                 <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="0,5" WindowChrome.IsHitTestVisibleInChrome="True">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type ToggleButton}">
@@ -258,7 +260,8 @@
                         <ToggleButton Tools:AP.IconKind="Delete" Foreground="{StaticResource CollectionIconFill}" Command="{Binding DeleteFolderCommand}"/>
                     </Border>
                 </StackPanel>
-
+                
+                <!--Settings button-->
                 <Button Click="Toggle_ContextMenu" Grid.Column="4" Tools:AP.IconKind="Settings" Height="25" Margin="15,0"
                          WindowChrome.IsHitTestVisibleInChrome="True">
                     <Button.ContextMenu>
@@ -295,6 +298,7 @@
                     </Button.Style>
                 </Button>
 
+                <!--Internet status indicator-->
                 <materialDesign:PackIcon Grid.Column="5" Margin="0" Kind="WebOff" Width="25" Height="25" VerticalAlignment="Center"
                                          Foreground="{StaticResource OfflineFill}">
                     <materialDesign:PackIcon.Style>
@@ -311,6 +315,7 @@
                     </materialDesign:PackIcon.Style>
                 </materialDesign:PackIcon>
 
+                <!--Window management (minimize, maximize, close)-->
                 <StackPanel Orientation="Horizontal" WindowChrome.IsHitTestVisibleInChrome="True"
                 HorizontalAlignment="Right" Margin="15,0,0,0"
                 VerticalAlignment="Stretch" Grid.Column="6">
@@ -587,6 +592,19 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
                                 </Trigger>
+                                <DataTrigger Value="True">
+                                    <DataTrigger.Binding>
+                                        <MultiBinding>
+                                            <MultiBinding.Converter>
+                                                <Converters:EqualityConverter/>
+                                            </MultiBinding.Converter>
+                                            <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                                            <Binding Path="CurrentFileViewModel.FileViewLayout" />
+                                        </MultiBinding>
+                                    </DataTrigger.Binding>
+                                    <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+                                </DataTrigger>
+
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Resources>
@@ -598,7 +616,7 @@
                     </Button>
                     <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.TileView}" Tools:AP.IconKind="ViewModule" Height="43"/>
                     <Rectangle Width="2" Fill="Gray" Margin="3,8"/>
-                    <Button Click="Toggle_ContextMenu" Tools:AP.IconKind="EyeSettings" Height="30" VerticalAlignment="Center" Margin="0,0,2,5">
+                    <Button Click="Toggle_ContextMenu" Tools:AP.IconKind="EyeSettings" Height="30" VerticalAlignment="Center" Margin="0,0,2,5" CommandParameter="{x:Null}">
                         <Button.ContextMenu>
                             <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding CurrentFileViewModel.ViewOptions}"
                             Style="{StaticResource DropdownMenu}" ItemContainerStyle="{StaticResource DropdownMenuItem}"/>
