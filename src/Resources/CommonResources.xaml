@@ -297,6 +297,8 @@
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
         <MenuItem Header="Edit" Command="{Binding Path=DataContext.EditFileCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Show in Explorer" Command="{Binding Path=DataContext.ShowInExplorerCommand, 
+                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
         <MenuItem Header="Move to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
             <MenuItem.ItemContainerStyle>

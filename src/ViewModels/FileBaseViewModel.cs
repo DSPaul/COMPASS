@@ -17,13 +17,14 @@ namespace COMPASS.ViewModels
         public FileBaseViewModel()
         {            
             //commands
-            EditFileCommand = new ActionCommand(EditFile);
-            EditFilesCommand = new RelayCommand<IEnumerable>(EditFiles);
-            OpenFileLocallyCommand = new ReturningRelayCommand<Codex>(OpenFileLocally, CanOpenFileLocally);
-            OpenFileOnlineCommand = new ReturningRelayCommand<Codex>(OpenFileOnline,CanOpenFileOnline);
-            MoveToFolderCommand = new RelayCommand<object[]>(MoveToFolder);
-            DeleteFileCommand = new RelayCommand<object>(DeleteFile);
-            OpenSelectedFilesCommand = new ReturningRelayCommand<IEnumerable>(OpenSelectedFiles);
+            EditFileCommand = new(EditFile);
+            EditFilesCommand = new(EditFiles);
+            OpenFileLocallyCommand = new(OpenFileLocally, CanOpenFileLocally);
+            OpenFileOnlineCommand = new(OpenFileOnline,CanOpenFileOnline);
+            MoveToFolderCommand = new(MoveToFolder);
+            DeleteFileCommand = new(DeleteFile);
+            OpenSelectedFilesCommand = new(OpenSelectedFiles);
+            ShowInExplorerCommand = new(ShowInExplorer, CanOpenFileLocally);
 
             ViewOptions = new ObservableCollection<MyMenuItem>();
             getSortOptions();
@@ -41,6 +42,9 @@ namespace COMPASS.ViewModels
             get { return selectedFile; } 
             set { SetProperty(ref selectedFile, value); }
         }
+
+        //Set Type of view
+        public Enums.FileView FileViewLayout { get; init; }
 
         //list with options to costimize view
         private ObservableCollection<MyMenuItem> viewOptions;
@@ -109,7 +113,7 @@ namespace COMPASS.ViewModels
         }
 
         //Open File Offline
-        public ReturningRelayCommand<Codex> OpenFileLocallyCommand { get; private set; }
+        public ReturningRelayCommand<Codex> OpenFileLocallyCommand { get; init; }
         public static bool OpenFileLocally(Codex toOpen = null)
         {
             if(toOpen == null) toOpen = MVM.CurrentFileViewModel.SelectedFile;
@@ -135,7 +139,7 @@ namespace COMPASS.ViewModels
         }
 
         //Open File Online
-        public ReturningRelayCommand<Codex> OpenFileOnlineCommand { get; private set; }
+        public ReturningRelayCommand<Codex> OpenFileOnlineCommand { get; init; }
         public static bool OpenFileOnline(Codex toOpen = null)
         {
             if(toOpen == null) toOpen = MVM.CurrentFileViewModel.SelectedFile;
@@ -166,7 +170,7 @@ namespace COMPASS.ViewModels
         }
 
         //Open Multiple Files
-        public ReturningRelayCommand<IEnumerable> OpenSelectedFilesCommand { get; private set; }
+        public ReturningRelayCommand<IEnumerable> OpenSelectedFilesCommand { get; init; }
         public bool OpenSelectedFiles(IEnumerable toOpen)
         {
             if (toOpen == null) return false;
@@ -199,7 +203,7 @@ namespace COMPASS.ViewModels
         }
 
         //Edit Multiple files
-        public RelayCommand<IEnumerable> EditFilesCommand { get; private set; }
+        public RelayCommand<IEnumerable> EditFilesCommand { get; init; }
         public void EditFiles(IEnumerable toEdit)
         {
             if(toEdit == null) return;
@@ -210,8 +214,24 @@ namespace COMPASS.ViewModels
             fpw.Topmost = true;
         }
 
+        //Show in Explorer
+        public RelayCommand<Codex> ShowInExplorerCommand { get; init; }
+        public void ShowInExplorer(Codex toShow = null)
+        {
+            if (toShow == null) toShow = MVM.CurrentFileViewModel.SelectedFile;
+
+            string folderPath = Path.GetDirectoryName(toShow.Path);
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                Arguments = folderPath,
+                FileName = "explorer.exe"
+            };
+            Process.Start(startInfo);
+        }
+
+
         //Move Codex to other CodexCollection
-        public RelayCommand<object[]> MoveToFolderCommand { get; private set; }
+        public RelayCommand<object[]> MoveToFolderCommand { get; init; }
         public void MoveToFolder(object[] par = null)
         {
             //par contains 2 parameters
@@ -279,7 +299,7 @@ namespace COMPASS.ViewModels
         }
 
         //Delete File
-        public RelayCommand<object> DeleteFileCommand { get; private set; }
+        public RelayCommand<object> DeleteFileCommand { get; init; }
         public void DeleteFile(object o = null)
         {
             List<Codex> ToDeleteList = new List<Codex>();
