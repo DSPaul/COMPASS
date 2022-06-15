@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace COMPASS.Tools
 {
@@ -14,8 +15,14 @@ namespace COMPASS.Tools
             string errorMessage = e.Exception.InnerException.ToString();
             log.Fatal(errorMessage);
             //prompt user to submit logs and open an issue
-            //TODO
-            e.Handled = true;
+            string message = "Its seems COMPASS has run into an error and crashed.\n" +
+                $"You can help improve COMPASS by opening an issue on {constants.RepoURL}. \n" +
+                @"Please include the log file located at %appdata%\COMPASS\logs.";
+            if (Task.Run(() => MessageBox.Show(message, "COMPASS has crashed.", MessageBoxButton.OK, MessageBoxImage.Error)).Result == MessageBoxResult.OK)
+            {
+                e.Handled = true;
+                Environment.Exit(1);
+            }
         }
     }
 }
