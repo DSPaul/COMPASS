@@ -118,9 +118,9 @@ namespace COMPASS.ViewModels
                 Process.Start(new ProcessStartInfo(toOpen.Path) {UseShellExecute = true });
                 return true;
             }
-            catch(Exception e)
+            catch(Exception ex)
             {
-                Logger.log.Error(e.InnerException);
+                Logger.log.Error(ex.InnerException);
                 return false;
             }
         }
@@ -148,9 +148,9 @@ namespace COMPASS.ViewModels
                 Process.Start(new ProcessStartInfo(toOpen.SourceURL) { UseShellExecute = true });
                 return true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Logger.log.Error(e.InnerException);
+                Logger.log.Error(ex.InnerException);
                 return false;
             }
 

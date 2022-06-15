@@ -283,9 +283,9 @@ namespace COMPASS.Tools
             {
                 CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(sortDescr);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Logger.log.Warn(e.InnerException);
+                Logger.log.Warn(ex.InnerException);
             }
         }
 

@@ -68,9 +68,9 @@ namespace COMPASS
                 }
                 return true;
             }
-            catch(Exception e)
+            catch(Exception ex)
             {
-                Logger.log.Error(e.InnerException);
+                Logger.log.Error(ex.InnerException);
                 string messageBoxText = "Failed to extract Cover from pdf.";
                 MessageBox.Show(messageBoxText, "Failed to extract Cover from pdf", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
@@ -138,9 +138,9 @@ namespace COMPASS
                     var imgBytes = Task.Run(async () => await Utils.DownloadFileAsync(imgURL)).Result;
                     File.WriteAllBytes(destfile.CoverArt, imgBytes);
                 }
-                catch(Exception e)
+                catch(Exception ex)
                 {
-                    Logger.log.Error(e.InnerException);
+                    Logger.log.Error(ex.InnerException);
                     return false;
                 }
             }
@@ -215,10 +215,10 @@ namespace COMPASS
                     if (image.Width > 850) image.Resize(850, 0);
                     image.Write(destfile.CoverArt);
                 }
-                catch(Exception e)
+                catch(Exception ex)
                 {
                     driver.Quit();
-                    Logger.log.Error(e.InnerException);
+                    Logger.log.Error(ex.InnerException);
                     return false;
                 }
                 driver.Quit();

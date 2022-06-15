@@ -126,9 +126,9 @@ namespace COMPASS.ViewModels
                 {
                     new DriverManager().SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Logger.log.Error(e.InnerException);
+                    Logger.log.Error(ex.InnerException);
                 }
             }
             else if (Utils.IsInstalled("firefox.exe"))
@@ -138,9 +138,9 @@ namespace COMPASS.ViewModels
                 {
                     new DriverManager().SetUpDriver(new FirefoxConfig());
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Logger.log.Error(e.InnerException);
+                    Logger.log.Error(ex.InnerException);
                 }
             }
 
@@ -151,9 +151,9 @@ namespace COMPASS.ViewModels
                 {
                     new DriverManager().SetUpDriver(new EdgeConfig());
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Logger.log.Error(e.InnerException);
+                    Logger.log.Error(ex.InnerException);
                 }
             }
         }
