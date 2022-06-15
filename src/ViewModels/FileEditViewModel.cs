@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -64,7 +65,8 @@ namespace COMPASS.ViewModels
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 AddExtension = false,
-                Filter = "PDF (*.pdf) | *.pdf"
+                Filter = "PDF (*.pdf) | *.pdf",
+                InitialDirectory = Path.GetDirectoryName(TempCodex.Path)
             };
             if (openFileDialog.ShowDialog() == true)
             {
