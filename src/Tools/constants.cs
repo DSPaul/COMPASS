@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.Tools
 {
-    public static  class constants
+    public static  class Constants
     {
         public static string RepoURL = "https://github.com/DSPAUL/COMPASS";
     }
