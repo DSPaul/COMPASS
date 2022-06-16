@@ -28,7 +28,7 @@ namespace COMPASS
         }
 
         //list with possible functions to get Cover
-        private static List<PreferableFunction<Codex>> GetCoverFunctions = new List<PreferableFunction<Codex>>()
+        private static List<PreferableFunction<Codex>> GetCoverFunctions = new()
             {
                 new PreferableFunction<Codex>("Local File", GetCoverFromPDF,0),
                 new PreferableFunction<Codex>("Web Version", GetCoverFromURL,1)
@@ -44,7 +44,7 @@ namespace COMPASS
                 HideAnnotations = true,
             };
 
-            MagickReadSettings settings = new MagickReadSettings()
+            MagickReadSettings settings = new()
             {
                 Density = new Density(100,100),
                 FrameIndex = 0, // First page
@@ -54,7 +54,7 @@ namespace COMPASS
 
             try
             {
-                using (MagickImage image = new MagickImage())
+                using (MagickImage image = new())
                 {
                     image.Read(pdf.Path, settings);
                     image.Format = MagickFormat.Png;
@@ -68,12 +68,11 @@ namespace COMPASS
                 }
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
-                string messageBoxText = "COMPASS uses Ghostscript to extract cover art from pdf's. \n" +
-                    "Ghostscript needs to be installed seperatly and can be downloaded here: \n" +
-                    "https://www.ghostscript.com/releases/gsdnld.html";
-                MessageBox.Show(messageBoxText,"Could not extract cover art from pdf", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Logger.log.Error(ex.InnerException);
+                string messageBoxText = "Failed to extract Cover from pdf.";
+                MessageBox.Show(messageBoxText, "Failed to extract Cover from pdf", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
         }
@@ -92,7 +91,7 @@ namespace COMPASS
             //if none of above, unsupported site
             else
             {
-                Uri tempUri = new Uri(URL);
+                Uri tempUri = new(URL);
                 string message = tempUri.Host + " is not a supported source at the moment.";
                 MessageBox.Show(message, "Cover could not be found.", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
@@ -111,7 +110,7 @@ namespace COMPASS
             {
                 try
                 {
-                    HtmlWeb web = new HtmlWeb();
+                    HtmlWeb web = new();
                     HtmlDocument doc;
                     HtmlNode src;
                     string imgURL = "";
@@ -132,15 +131,16 @@ namespace COMPASS
 
                             imgURL = src.SelectSingleNode("//meta[@property='og:image']").GetAttributeValue("content", String.Empty);
                             //cut of "=W***-h***-p" from URL that crops the image if it is present
-                            if (imgURL.Contains("=")) imgURL = imgURL.Split('=')[0];
+                            if (imgURL.Contains('=')) imgURL = imgURL.Split('=')[0];
                             break;
                     }
                     //download the file
                     var imgBytes = Task.Run(async () => await Utils.DownloadFileAsync(imgURL)).Result;
                     File.WriteAllBytes(destfile.CoverArt, imgBytes);
                 }
-                catch
+                catch(Exception ex)
                 {
+                    Logger.log.Error(ex.InnerException);
                     return false;
                 }
             }
@@ -155,7 +155,7 @@ namespace COMPASS
                     case (int)Enums.Browser.Chrome:
                         driverService = ChromeDriverService.CreateDefaultService();
                         driverService.HideCommandPromptWindow = true;
-                        ChromeOptions CO = new ChromeOptions();
+                        ChromeOptions CO = new();
                         CO.AddArgument("--window-size=2500,2000");
                         CO.AddArgument("--headless");
                         driver = new ChromeDriver((ChromeDriverService)driverService, CO);
@@ -164,7 +164,7 @@ namespace COMPASS
                     case (int)Enums.Browser.Firefox:
                         driverService = FirefoxDriverService.CreateDefaultService();
                         driverService.HideCommandPromptWindow = true;
-                        FirefoxOptions FO = new FirefoxOptions();
+                        FirefoxOptions FO = new();
                         FO.AddArgument("--window-size=2500,2000");
                         FO.AddArgument("--headless");
                         driver = new FirefoxDriver((FirefoxDriverService)driverService, FO);
@@ -173,7 +173,7 @@ namespace COMPASS
                     default:
                         driverService = EdgeDriverService.CreateDefaultService();
                         driverService.HideCommandPromptWindow = true;
-                        EdgeOptions EO = new EdgeOptions();
+                        EdgeOptions EO = new();
                         EO.AddArgument("--window-size=2500,2000");
                         EO.AddArgument("--headless");
                         driver = new EdgeDriver((EdgeDriverService)driverService, EO);
@@ -198,7 +198,7 @@ namespace COMPASS
                             //get nav height because scraper doesn't see nav anymore after it switched to frame
                             var nav = driver.FindElement(By.XPath("//nav"));
                             string navhstr = nav.GetCssValue("height");
-                            float navheight = float.Parse(navhstr.Substring(0, navhstr.Length - 2), CultureInfo.InvariantCulture);
+                            float navheight = float.Parse(navhstr[..(navhstr.Length - 2)], CultureInfo.InvariantCulture);
 
                             //switch to iframe
                             var iframe = driver.FindElement(By.XPath("//iframe"));
@@ -215,12 +215,15 @@ namespace COMPASS
                     if (image.Width > 850) image.Resize(850, 0);
                     image.Write(destfile.CoverArt);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    driver.Quit();
+                    Logger.log.Error(ex.InnerException);
                     return false;
                 }
-                driver.Quit();
+                finally
+                {
+                    driver.Quit();
+                }
             }
             
             CreateThumbnail(destfile);
@@ -230,28 +233,24 @@ namespace COMPASS
         //get cover from image
         public static void GetCoverFromImage(string imagepath, Codex destfile)
         {
-            using (MagickImage image = new MagickImage(imagepath))
-            {
-                if (image.Width > 1000) image.Resize(1000, 0);
-                image.Write(destfile.CoverArt);
-                CreateThumbnail(destfile);
-            }
+            using MagickImage image = new(imagepath);
+            if (image.Width > 1000) image.Resize(1000, 0);
+            image.Write(destfile.CoverArt);
+            CreateThumbnail(destfile);
         }
 
         //create thumbnail from cover
         public static void CreateThumbnail(Codex c)
         {
             int newwidth = 200; //sets resolution of thumbnail in pixels
-            using (MagickImage image = new MagickImage(c.CoverArt))
-            {
-                //preserve aspect ratio
-                int width = image.Width;
-                int height = image.Height;
-                int newheight = newwidth / width * height;
-                //create thumbnail
-                image.Thumbnail(newwidth, newheight);
-                image.Write(c.Thumbnail);
-            }
+            using MagickImage image = new(c.CoverArt);
+            //preserve aspect ratio
+            int width = image.Width;
+            int height = image.Height;
+            int newheight = newwidth / width * height;
+            //create thumbnail
+            image.Thumbnail(newwidth, newheight);
+            image.Write(c.Thumbnail);
         }
 
         //Take screenshot of specific html element 

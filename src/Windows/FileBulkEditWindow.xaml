@@ -14,7 +14,6 @@
         Foreground="{StaticResource TextColor}" Background="{StaticResource WindowBackground}" MouseDown="MainGrid_MouseDown">
     <Window.Resources>
         <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
-        <Converters:BooltoVisibilityConverter x:Key="BooltoVisibilityConverter"/>
         <sys:Boolean x:Key="True">True</sys:Boolean>
         <sys:Boolean x:Key="False">False</sys:Boolean>
     </Window.Resources>
@@ -188,9 +187,9 @@
         <Rectangle Grid.Column="2" Grid.Row="1" Grid.RowSpan="3" Fill="DarkGray" Width="3" Margin="10,0"/>
 
         <TextBlock Grid.Column="3" Grid.Row="0" Text="Select Tags To Add" 
-                Visibility="{Binding TagMode, Converter={StaticResource BooltoVisibilityConverter}}"/>
+                Visibility="{Binding TagMode, Converter={StaticResource ToVisibilityConverter}}"/>
         <TextBlock Grid.Column="3" Grid.Row="0" Text="Select Tags To Remove" 
-                Visibility="{Binding TagMode, Converter={StaticResource BooltoVisibilityConverter}, ConverterParameter=true}"/>
+                Visibility="{Binding TagMode, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"/>
         
         <TreeView x:Name="TagSelection" BorderBrush="{x:Null}" Margin="-15,0,10,0" Grid.Row="1" Grid.Column="3" Grid.RowSpan="3"
                     ItemsSource="{Binding TreeViewSource}" Background="{x:Null}" ItemTemplateSelector="{StaticResource TagTemplateSelector}">

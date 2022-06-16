@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using COMPASS.Tools;
+using COMPASS.ViewModels;
+using System.IO;
+using System.Windows;
 
 namespace COMPASS
 {
@@ -9,7 +12,7 @@ namespace COMPASS
     {
         public App()
         {
-
+            Directory.CreateDirectory(Constants.CompassDataPath);
         }
     }
 

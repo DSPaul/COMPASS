@@ -17,6 +17,7 @@ using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
 using static COMPASS.Tools.Enums;
 using AutoUpdaterDotNET;
+using System.Reflection;
 
 namespace COMPASS.ViewModels
 {
@@ -36,10 +37,20 @@ namespace COMPASS.ViewModels
             //check for updates
             InitAutoUpdates();
 
+            //init Logger
+            InitLogger();
+
+            //do stuff if first launch after update
+            if (Properties.Settings.Default.justUpdated)
+            {
+                FirstLaunch();
+                Properties.Settings.Default.justUpdated = false;
+            }
+
             MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory + @"\gs");
 
             //Start internet checkup timer
-            DispatcherTimer CheckConnectionTimer = new DispatcherTimer();
+            DispatcherTimer CheckConnectionTimer = new();
             CheckConnectionTimer.Tick += new EventHandler(CheckConnection);
             CheckConnectionTimer.Interval = new TimeSpan(0, 0, 30);
             CheckConnectionTimer.Start();
@@ -64,6 +75,8 @@ namespace COMPASS.ViewModels
         //Get a collection at startup
         private void InitCollection()
         {
+            Directory.CreateDirectory(CodexCollection.CollectionsPath);
+
             //Get all RPG systems by folder name
             Folders = new ObservableCollection<string>();
             string[] FullPathFolders = Directory.GetDirectories(CodexCollection.CollectionsPath);
@@ -105,31 +118,40 @@ namespace COMPASS.ViewModels
         {
             if (Utils.IsInstalled("chrome.exe"))
             {
-                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Chrome;
+                Properties.Settings.Default.SeleniumBrowser = (int)Browser.Chrome;
                 try
                 {
                     new DriverManager().SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Logger.log.Error(ex.InnerException);
+                }
             }
             else if (Utils.IsInstalled("firefox.exe"))
             {
-                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Firefox;
+                Properties.Settings.Default.SeleniumBrowser = (int)Browser.Firefox;
                 try
                 {
                     new DriverManager().SetUpDriver(new FirefoxConfig());
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Logger.log.Error(ex.InnerException);
+                }
             }
 
             else
             {
-                Properties.Settings.Default.SeleniumBrowser = (int)Enums.Browser.Edge;
+                Properties.Settings.Default.SeleniumBrowser = (int)Browser.Edge;
                 try
                 {
                     new DriverManager().SetUpDriver(new EdgeConfig());
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Logger.log.Error(ex.InnerException);
+                }
             }
         }
         
@@ -142,9 +164,9 @@ namespace COMPASS.ViewModels
             AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
             AutoUpdater.RemindLaterAt = 1;
             //Set download directory
-            AutoUpdater.DownloadPath = Path.Combine(SettingsViewModel.CompassDataPath, "Installers");
+            AutoUpdater.DownloadPath = Path.Combine(Constants.CompassDataPath, "Installers");
             //check updates every 4 hours
-            DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromHours(4) };
+            DispatcherTimer timer = new(){ Interval = TimeSpan.FromHours(4) };
             timer.Tick += delegate
             {
                 CheckForUpdates();
@@ -152,6 +174,17 @@ namespace COMPASS.ViewModels
             timer.Start();
             //check at startup
             CheckForUpdates();
+        }
+       
+        public void InitLogger()
+        {
+            Application.Current.DispatcherUnhandledException += Logger.LogUnhandledException;
+            Logger.log.Info($"Launching Compass v{Assembly.GetExecutingAssembly().GetName().Version}");
+        }
+
+        private void FirstLaunch()
+        {
+            Properties.Settings.Default.Upgrade();
         }
         #endregion
 
@@ -291,13 +324,13 @@ namespace COMPASS.ViewModels
         public void Refresh()
         {
             FilterHandler.ReFilter();
-            TFViewModel.RefreshTreeView();
+            TFViewModel.TagsTabVM.RefreshTreeView();
         }
 
         public void Reset()
         {
             FilterHandler.ClearFilters();
-            TFViewModel.RefreshTreeView();
+            TFViewModel.TagsTabVM.RefreshTreeView();
         }
 
         //Add Tag Btn

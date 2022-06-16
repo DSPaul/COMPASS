@@ -1,10 +1,5 @@
 ﻿using COMPASS.Models;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using COMPASS.Tools;
 
 namespace COMPASS.ViewModels
 {
@@ -12,6 +7,8 @@ namespace COMPASS.ViewModels
     {
         public FileCardViewModel() : base()
         {
+            FileViewLayout = Enums.FileView.CardView;
+
             //MyMenuItem Datavisibility = new MyMenuItem("Show Metadata")
             //{
             //    Submenus = new ObservableCollection<MyMenuItem>()

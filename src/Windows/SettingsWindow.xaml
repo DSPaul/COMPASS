@@ -4,12 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Tools ="clr-namespace:COMPASS.Tools"
+        xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:local="clr-namespace:COMPASS.Windows" 
+        xmlns:Views="clr-namespace:COMPASS.Views" 
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
-        xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
+        xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf" xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
         mc:Ignorable="d" Closing="Window_Closing"
-        Title="Settings" Height="500" Width="800"  FontSize="16" 
+        Title="Settings" Height="500" Width="1000"  FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
         Foreground="{StaticResource TextColor}" 
         Background="{StaticResource WindowBackground}" 
@@ -46,11 +48,18 @@
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="10,5"/>
             </Style>
+            <Style TargetType="Rectangle" x:Key="Separator">
+                <Setter Property="Fill" Value="{StaticResource DarkUIElementBackground}"/>
+                <Setter Property="Width" Value="10000"/>
+                <Setter Property="Height" Value="3"/>
+                <Setter Property="Margin" Value="0,10"/>
+            </Style>
         </Grid.Resources>
         <TabControl x:Name="SettingsTabControl" TabStripPlacement="Left"
                     Background="{StaticResource LeftDockBackground}" BorderThickness="0">
             <TabItem Header="General"  Tools:AP.IconKind="TuneVariant">
                 <StackPanel Orientation="Vertical" Margin="30">
+                    <!--#region File Source Preference -->
                     <TextBlock Text="File Source Preference:"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -75,11 +84,41 @@
                             </ListBox>
                         </Border>
                     </Grid>
+                    <!--#endregion-->
+                    <Rectangle Style="{StaticResource Separator}"/>
+                    <!--#region Fix Renamed Folder-->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Fix Renamed Folder:" Grid.Row="0" Margin="10,5"/>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1">
+                            <TextBox x:Name="OldPathTextBox" Tools:AP.PlaceHolderText="old\folder\path\" MinWidth="200"/>
+                            <TextBlock Text="To"/>
+                            <TextBox x:Name="NewPathTextBox" Tools:AP.PlaceHolderText = "new\folder\path\" MinWidth="200"/>
+                            <Button Content="Rename" Style="{StaticResource IconTextButton}" Tools:AP.IconKind="RenameBox"
+                                    Command="{Binding RenameFolderRefCommand}">
+                                <Button.CommandParameter>
+                                    <MultiBinding>
+                                        <MultiBinding.Converter>
+                                            <Converters:MulitParamConverter/>
+                                        </MultiBinding.Converter>
+                                        <Binding Path="Text" ElementName="OldPathTextBox"/>
+                                        <Binding Path="Text" ElementName="NewPathTextBox"/>
+                                    </MultiBinding>
+                                </Button.CommandParameter>
+                            </Button>
+                        </StackPanel>
+                        <TextBlock Grid.Row="2" Text="{Binding RenameCompleteMessage}" FontSize="14" Foreground="{StaticResource TextMutedColor}"
+                                   Visibility="{Binding Path=AmountRenamed, Converter={StaticResource ToVisibilityConverter}}"/>
+                    </Grid>
+                    <!--#endregion-->
                 </StackPanel>
-                
             </TabItem>
-            <TabItem Header="Changelog"  Tools:AP.IconKind="Update">
-                <markdig:MarkdownViewer Margin="30" Markdown="{Binding Changelog}">
+            <TabItem Header="What's New"  Tools:AP.IconKind="Update">
+                <markdig:MarkdownViewer Margin="30" Markdown="{Binding ReleaseNotes}">
                     <markdig:MarkdownViewer.Resources>
                         <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static markdig:Styles.Heading1StyleKey}">
                             <Setter Property="FontSize" Value="40"/>

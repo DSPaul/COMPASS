@@ -26,7 +26,7 @@ namespace COMPASS.Models
             Properties.Settings.Default.StartupCollection = FolderLocation;
         }
 
-        public readonly static string CollectionsPath = SettingsViewModel.CompassDataPath + @"\Collections\";
+        public readonly static string CollectionsPath = Constants.CompassDataPath + @"\Collections\";
         
         #region Properties
         private String _Folder;

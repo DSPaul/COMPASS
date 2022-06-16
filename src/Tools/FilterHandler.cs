@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Media;
+using FuzzySharp;
 
 namespace COMPASS.Tools
 {
@@ -79,7 +80,7 @@ namespace COMPASS.Tools
         public void UpdateTagFilteredFiles()
         {
             ExcludedCodicesByTag.Clear();
-            HashSet<Tag> ActiveGroups = new HashSet<Tag>();
+            HashSet<Tag> ActiveGroups = new();
 
 
             //Find all the active groups to filter in
@@ -90,19 +91,19 @@ namespace COMPASS.Tools
             }
 
             //List of Files filtered out in that group
-            HashSet<Codex> SingleGroupFilteredFiles = new HashSet<Codex>();
+            HashSet<Codex> SingleGroupFilteredFiles = new();
             //Go over every group and filter out files
             foreach (Tag Group in ActiveGroups)
             {
                 //Make list with all active tags in that group, including childeren
                 List<Tag> SingleGroupTags = Utils.FlattenTree(ActiveTags.Where(tag => tag.GetGroup() == Group)).ToList();
                 //add parents of those tags, must come AFTER chileren, otherwise childeren of parents are included which is wrong
-                for (int i = 0; i < SingleGroupTags.Count(); i++)
+                for (int i = 0; i < SingleGroupTags.Count; i++)
                 {
                     Tag P = SingleGroupTags[i].GetParent();
                     if (P != null && !P.IsGroup && !SingleGroupTags.Contains(P)) SingleGroupTags.Add(P);
                 }
-                SingleGroupFilteredFiles = new HashSet<Codex>(cc.AllFiles.Where(f => (SingleGroupTags.Intersect(f.Tags)).Count()==0));
+                SingleGroupFilteredFiles = new HashSet<Codex>(cc.AllFiles.Where(f => !SingleGroupTags.Intersect(f.Tags).Any()));
                 
                 ExcludedCodicesByTag = ExcludedCodicesByTag.Union(SingleGroupFilteredFiles).ToHashSet();
             }
@@ -137,7 +138,7 @@ namespace COMPASS.Tools
                 //FieldFilters.Add(new List<FilterTag>(ActiveFilters.Where(filter => (Enums.FilterType)filter.GetGroup()==FT)));
 
                 //List filter values for current filter type
-                List<object> FilterValues = new List<object>(
+                List<object> FilterValues = new(
                     ActiveFilters
                     .Where(filter => (Enums.FilterType)filter.GetGroup() == FT)
                     .Select(t => t.FilterValue)
@@ -202,10 +203,25 @@ namespace COMPASS.Tools
         public void UpdateSearchFilteredFiles(string searchterm)
         {
             SearchFilters.Clear();
-            if (searchterm != "")
+            if (!string.IsNullOrEmpty(searchterm))
             {
-                ExcludedCodicesBySearch = new HashSet<Codex>(cc.AllFiles.Where(f => f.Title.IndexOf(SearchTerm, StringComparison.InvariantCultureIgnoreCase) < 0));
-                FilterTag SearchTag = new FilterTag(SearchFilters, Enums.FilterType.Search, searchterm) { Content = "Search: " + SearchTerm, BackgroundColor = Colors.Salmon };
+                HashSet<Codex> IncludedCodicesBySearch = new();
+                //include acronyms
+                IncludedCodicesBySearch.UnionWith(cc.AllFiles
+                    .Where(f => Fuzz.TokenInitialismRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
+                //include string fragments
+                IncludedCodicesBySearch.UnionWith(cc.AllFiles
+                    .Where(f => f.Title.Contains(SearchTerm, StringComparison.InvariantCultureIgnoreCase)));
+                //include spelling errors
+                //include acronyms
+                IncludedCodicesBySearch.UnionWith(cc.AllFiles
+                    .Where(f => Fuzz.PartialRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
+
+                ExcludedCodicesBySearch = new(cc.AllFiles.Except(IncludedCodicesBySearch));
+
+                //create the tag
+                FilterTag SearchTag = new(SearchFilters, Enums.FilterType.Search, searchterm) 
+                    { Content = "Search: " + SearchTerm, BackgroundColor = Colors.Salmon };
                 SearchFilters.Add(SearchTag);
             }
             else ExcludedCodicesBySearch.Clear();
@@ -283,7 +299,10 @@ namespace COMPASS.Tools
             {
                 CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(sortDescr);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.log.Warn(ex.InnerException);
+            }
         }
 
         public void RemoveFile(Codex f)

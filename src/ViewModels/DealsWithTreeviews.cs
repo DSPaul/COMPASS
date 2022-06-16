@@ -1,5 +1,5 @@
 ﻿using COMPASS.Models;
-using COMPASS.ViewModels;
+using COMPASS.Tools;
 using GongSolutions.Wpf.DragDrop;
 using System;
 using System.Collections.Generic;
@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace COMPASS.Tools
+namespace COMPASS.ViewModels
 {
-    public abstract class DealsWithTreeviews:BaseViewModel,IDropTarget
+    public abstract class DealsWithTreeviews : BaseViewModel, IDropTarget
     {
         public DealsWithTreeviews()
         {
@@ -55,7 +55,7 @@ namespace COMPASS.Tools
             {
                 newRootTags.Add(ConvertTreeViewNodeToTag(n));
             }
-            foreach(Tag t in newRootTags)
+            foreach (Tag t in newRootTags)
             {
                 t.ParentID = -1;
             }
@@ -80,7 +80,7 @@ namespace COMPASS.Tools
                 Result.Children.Add(ConvertTreeViewNodeToTag(childnode));
             }
             //set partentID for all the childeren
-            foreach(Tag childtag in Result.Children)
+            foreach (Tag childtag in Result.Children)
             {
                 childtag.ParentID = Result.ID;
             }

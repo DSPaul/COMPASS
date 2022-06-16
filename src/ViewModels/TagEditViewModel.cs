@@ -26,7 +26,7 @@ namespace COMPASS.ViewModels
         #region Properties
 
         private Tag EditedTag;
-        private bool CreateNewTag;
+        private readonly bool CreateNewTag;
 
         //TempTag to work with
         private Tag tempTag;
@@ -44,7 +44,7 @@ namespace COMPASS.ViewModels
             set 
             { 
                 SetProperty(ref showcolorselection, value);
-                RaisePropertyChanged("ShowInfoGrid");
+                RaisePropertyChanged(nameof(ShowInfoGrid));
             }
         }
 
@@ -69,7 +69,7 @@ namespace COMPASS.ViewModels
 
             //Apply changes 
             EditedTag.Copy(TempTag);
-            MVM.TFViewModel.RefreshTreeView();
+            MVM.TFViewModel.TagsTabVM.RefreshTreeView();
 
             if (!CreateNewTag) CloseAction();
             else

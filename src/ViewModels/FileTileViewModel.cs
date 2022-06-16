@@ -1,10 +1,5 @@
 ﻿using COMPASS.Models;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using COMPASS.Tools;
 
 namespace COMPASS.ViewModels
 {
@@ -12,6 +7,8 @@ namespace COMPASS.ViewModels
     {
         public FileTileViewModel() : base()
         {
+            FileViewLayout = Enums.FileView.TileView;
+
             ViewOptions.Add(new MyMenuItem("Cover Size", value => TileWidth = (double)value) { Prop = TileWidth });
             ViewOptions.Add(new MyMenuItem("Show Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
             ViewOptions.Add(SortOptionsMenuItem);

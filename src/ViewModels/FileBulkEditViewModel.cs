@@ -26,8 +26,8 @@ namespace COMPASS.ViewModels
 
 
             //commands
-            SetTagModeCommand = new RelayCommand<bool>(SetTagMode);
-            TagCheckCommand = new ActionCommand(Update_Taglist);
+            SetTagModeCommand = new(SetTagMode);
+            TagCheckCommand = new(Update_Taglist);
         }
 
         #region Properties
@@ -80,7 +80,7 @@ namespace COMPASS.ViewModels
                 foreach (TreeViewNode t in AllTreeViewNodes)
                 {
                     t.Expanded = false;
-                    t.Selected = TagsToAdd.Contains(t.Tag) ? true : false;
+                    t.Selected = TagsToAdd.Contains(t.Tag);
                     if (t.Children.Any(node => TagsToAdd.Contains(node.Tag))) t.Expanded = true;
                 }
             }
@@ -90,7 +90,7 @@ namespace COMPASS.ViewModels
                 foreach (TreeViewNode t in AllTreeViewNodes)
                 {
                     t.Expanded = false;
-                    t.Selected = TagsToRemove.Contains(t.Tag) ? true : false;
+                    t.Selected = TagsToRemove.Contains(t.Tag);
                     if (t.Children.Any(node => TagsToRemove.Contains(node.Tag))) t.Expanded = true;
                 }
             }

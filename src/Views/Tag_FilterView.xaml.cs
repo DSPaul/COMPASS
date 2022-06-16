@@ -41,14 +41,14 @@ namespace COMPASS.Views
 
             if (treeViewItem != null)
             {
-                ((TagsFiltersViewModel)DataContext).Context = ((TreeViewNode)treeViewItem.Header).Tag as Tag;
+                ((TagsFiltersViewModel)DataContext).TagsTabVM.Context = ((TreeViewNode)treeViewItem.Header).Tag as Tag;
                 e.Handled = true;
             }
         }
 
         static TreeViewItem VisualUpwardSearch(DependencyObject source)
         {
-            while (source != null && !(source is TreeViewItem))
+            while (source != null && source is not TreeViewItem)
                 source = VisualTreeHelper.GetParent(source);
 
             return source as TreeViewItem;

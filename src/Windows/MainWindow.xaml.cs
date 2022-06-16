@@ -28,7 +28,7 @@ namespace COMPASS
             DataContext = MainViewModel;
         }
 
-        private MainViewModel MainViewModel;
+        private readonly MainViewModel MainViewModel;
 
         //Deselects when you click away
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -75,8 +75,10 @@ namespace COMPASS
 
                 if (monitor != IntPtr.Zero)
                 {
-                    MONITORINFO monitorInfo = new MONITORINFO();
-                    monitorInfo.cbSize = Marshal.SizeOf(typeof(MONITORINFO));
+                    MONITORINFO monitorInfo = new()
+                    {
+                        cbSize = Marshal.SizeOf(typeof(MONITORINFO))
+                    };
                     GetMonitorInfo(monitor, ref monitorInfo);
                     RECT rcWorkArea = monitorInfo.rcWork;
                     RECT rcMonitorArea = monitorInfo.rcMonitor;

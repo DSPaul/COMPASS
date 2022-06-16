@@ -10,15 +10,13 @@
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
         xmlns:Tools ="clr-namespace:COMPASS.Tools"
         xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
-        xmlns:CustomControls ="clr-namespace:COMPASS.Resources.Controls"
-        mc:Ignorable="d"
+        xmlns:CustomControls ="clr-namespace:COMPASS.Resources.Controls" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+    mc:Ignorable="d"
         Title="COMPASS" Height="540" Width="1156.8" FontSize="20"
         Foreground="White"  Background="{StaticResource WindowBackground}"
         Closing="Window_Closing" WindowState="Maximized" WindowStyle="None" 
         WindowStartupLocation="CenterScreen" MouseDown="Window_MouseDown">
     <Window.Resources>
-        <Converters:StringtoVisibiltyConverter x:Key="StringtoVisibilityConverter"/>
-        <Converters:BooltoVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <Converters:WindowStatetoBoolConverter x:Key="IsMaximizedConverter"/>
         <Converters:UriToBitmapConverter x:Key="UriToBitmapConverterr"/>
         <DataTemplate DataType="{x:Type viewmodels:FileListViewModel}">
@@ -32,9 +30,6 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewmodels:TagsFiltersViewModel}">
             <views:Tag_FilterView DataContext="{Binding}"/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type viewmodels:TagEditViewModel}">
-            <views:TagEditView DataContext="{Binding}"/>
         </DataTemplate>
     </Window.Resources>
     <Window.Style>
@@ -168,6 +163,7 @@
 
                 <ContentControl Content="{StaticResource CompassLogo}" Margin="10,0" HorizontalAlignment="Left"/>
 
+                <!--Search Bar-->
                 <Border Grid.Column="1" CornerRadius="4" MinWidth="300" WindowChrome.IsHitTestVisibleInChrome="True"
                     Background="{StaticResource UIElementBackground}" OpacityMask="#FF222222" Margin="30,5">
                     <Grid>
@@ -175,10 +171,7 @@
                             <ColumnDefinition Width ="*"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-
-                        <TextBlock Text="Search"  Margin="10,0,0,0" VerticalAlignment="Center"
-                               Visibility="{Binding FilterHandler.SearchTerm, Converter={StaticResource StringtoVisibilityConverter}}"/>
-                        <TextBox Grid.Column="0" x:Name="Searchbox" Margin="10,0,0,0"
+                        <TextBox Grid.Column="0" x:Name="Searchbox" Tools:AP.PlaceHolderText="Search" Margin="0"
                              Text="{Binding FilterHandler.SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
                              Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" PreviewKeyDown="Searchbox_KeyDown"/>
                         <Button  Grid.Column="1" Style="{StaticResource IconBtn}" Margin="10,0"
@@ -186,6 +179,7 @@
                     </Grid>
                 </Border>
 
+                <!--Collection Selection-->
                 <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="0,5" WindowChrome.IsHitTestVisibleInChrome="True">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type ToggleButton}">
@@ -218,10 +212,10 @@
                     <Border Background="{StaticResource UIElementBackground}">
                         <Grid>
                             <ToggleButton x:Name="ShowFolderCreation" Tools:AP.IconKind="FolderPlus" Foreground="{StaticResource CollectionIconFill}"
-                                        Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=True}"/>
+                                        Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"/>
                             <StackPanel Orientation="Horizontal" x:Name="FolderCreation"
                                     Visibility="{Binding ElementName=ShowFolderCreation, Path=IsChecked, 
-                                    Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                                    Converter={StaticResource ToVisibilityConverter}, FallbackValue=Collapsed}">
                                 <TextBox x:Name="NewFolderName" Text="New Collection" FontSize="16" VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}"
                                         Foreground="White" Margin="5,0" BorderThickness="0" MinWidth="80"/>
                                 <ToggleButton Tools:AP.IconKind="Check" Foreground="{StaticResource AcceptFill}"
@@ -238,9 +232,9 @@
                     <Border Background="{StaticResource UIElementBackground}">
                         <Grid>
                             <ToggleButton Tools:AP.IconKind="Edit" Foreground="{StaticResource CollectionIconFill}" x:Name="ShowFolderEditing"
-                                        Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource BoolToVisibilityConverter},ConverterParameter=True}"/>
+                                        Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"/>
                             <StackPanel Orientation="Horizontal" x:Name="FolderEditing"
-                                    Visibility="{Binding ElementName=ShowFolderEditing, Path=IsChecked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                                    Visibility="{Binding ElementName=ShowFolderEditing, Path=IsChecked, Converter={StaticResource ToVisibilityConverter}, FallbackValue=Collapsed}">
                                 <TextBox x:Name="EditFolderName" Text="{Binding CurrentFolder, Mode=OneWay}" FontSize="16" VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}"
                                         Foreground="{StaticResource TextColor}" Margin="5,0" BorderThickness="0" MinWidth="50"/>
                                 <ToggleButton  Tools:AP.IconKind="Check" Foreground="{StaticResource AcceptFill}"
@@ -258,7 +252,8 @@
                         <ToggleButton Tools:AP.IconKind="Delete" Foreground="{StaticResource CollectionIconFill}" Command="{Binding DeleteFolderCommand}"/>
                     </Border>
                 </StackPanel>
-
+                
+                <!--Settings button-->
                 <Button Click="Toggle_ContextMenu" Grid.Column="4" Tools:AP.IconKind="Settings" Height="25" Margin="15,0"
                          WindowChrome.IsHitTestVisibleInChrome="True">
                     <Button.ContextMenu>
@@ -268,7 +263,7 @@
                             </ContextMenu.Resources>
                             <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}"/>
                             <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}"/>
-                            <MenuItem Header="Changelog" Command="{Binding OpenSettingsCommand}" CommandParameter="Changelog"/>
+                            <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New"/>
                             <!--<MenuItem Header="About" Command="{Binding OpenSettingsCommand}" CommandParameter="About"/>-->
                         </ContextMenu>
                     </Button.ContextMenu>
@@ -295,6 +290,7 @@
                     </Button.Style>
                 </Button>
 
+                <!--Internet status indicator-->
                 <materialDesign:PackIcon Grid.Column="5" Margin="0" Kind="WebOff" Width="25" Height="25" VerticalAlignment="Center"
                                          Foreground="{StaticResource OfflineFill}">
                     <materialDesign:PackIcon.Style>
@@ -311,6 +307,7 @@
                     </materialDesign:PackIcon.Style>
                 </materialDesign:PackIcon>
 
+                <!--Window management (minimize, maximize, close)-->
                 <StackPanel Orientation="Horizontal" WindowChrome.IsHitTestVisibleInChrome="True"
                 HorizontalAlignment="Right" Margin="15,0,0,0"
                 VerticalAlignment="Stretch" Grid.Column="6">
@@ -366,10 +363,10 @@
                         <Grid>
                             <materialDesign:PackIcon Kind="WindowMaximize"  x:Name="Maximizeimage" Width="15"
                 Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
-                AncestorType={x:Type ToggleButton}}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}"/>
+                AncestorType={x:Type ToggleButton}}, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"/>
                             <materialDesign:PackIcon Kind="WindowRestore"  x:Name="NotMaximizeimage" Width="15"
                 Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
-                AncestorType={x:Type ToggleButton}}, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=false}"/>
+                AncestorType={x:Type ToggleButton}}, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=false}"/>
                         </Grid>
                     </ToggleButton>
 
@@ -493,7 +490,10 @@
 
                 <Rectangle Grid.ColumnSpan="10" Grid.Row="1" Fill="{StaticResource Separator}" Height="3" Margin="0,10"/>
 
-                <CustomControls:ExpandingButton Grid.Column="1" Grid.Row="2" HiddenContent="{Binding AddTagViewModel}">
+                <CustomControls:ExpandingButton Grid.Column="1" Grid.Row="2">
+                    <CustomControls:ExpandingButton.HiddenContent>
+                        <views:TagEditView DataContext="{Binding CurrentEditViewModel}"/>
+                    </CustomControls:ExpandingButton.HiddenContent>
                     <CustomControls:ExpandingButton.Toggle>
                         <Button Tools:AP.IconKind="TagPlusOutline" Style="{StaticResource outerIconBtn}" 
                             Content="Add Tag" Command="{Binding AddTagCommand}" />
@@ -587,6 +587,19 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
                                 </Trigger>
+                                <DataTrigger Value="True">
+                                    <DataTrigger.Binding>
+                                        <MultiBinding>
+                                            <MultiBinding.Converter>
+                                                <Converters:EqualityConverter/>
+                                            </MultiBinding.Converter>
+                                            <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                                            <Binding Path="CurrentFileViewModel.FileViewLayout" />
+                                        </MultiBinding>
+                                    </DataTrigger.Binding>
+                                    <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+                                </DataTrigger>
+
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Resources>
@@ -598,7 +611,7 @@
                     </Button>
                     <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+FileView.TileView}" Tools:AP.IconKind="ViewModule" Height="43"/>
                     <Rectangle Width="2" Fill="Gray" Margin="3,8"/>
-                    <Button Click="Toggle_ContextMenu" Tools:AP.IconKind="EyeSettings" Height="30" VerticalAlignment="Center" Margin="0,0,2,5">
+                    <Button Click="Toggle_ContextMenu" Tools:AP.IconKind="EyeSettings" Height="30" VerticalAlignment="Center" Margin="0,0,2,5" CommandParameter="{x:Null}">
                         <Button.ContextMenu>
                             <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding CurrentFileViewModel.ViewOptions}"
                             Style="{StaticResource DropdownMenu}" ItemContainerStyle="{StaticResource DropdownMenuItem}"/>

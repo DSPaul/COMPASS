@@ -9,7 +9,7 @@
              x:Name="ExpandingBtnControl"
              d:DesignHeight="200" d:DesignWidth="200">
     <UserControl.Resources>
-        <Converters:BooltoVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <Converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
     </UserControl.Resources>
     <Border CornerRadius="7" Background="Gray">
         <StackPanel Orientation="Vertical"  x:Name="OutsidePanel">
@@ -37,7 +37,7 @@
                 </ToggleButton.Template>
             </ToggleButton>
             <Grid x:Name="HiddenContentGrid"
-                  Visibility="{Binding IsChecked, ElementName=ToggleBtn, Converter={StaticResource BoolToVisibilityConverter}}">
+                  Visibility="{Binding IsChecked, ElementName=ToggleBtn, Converter={StaticResource ToVisibilityConverter}}">
                 <Border CornerRadius="0,0,7,7" Background="Gray">
                     <ContentControl Margin="10" x:Name="HiddenContentControl" Content="{Binding HiddenContent, ElementName=ExpandingBtnControl}"
                                     />
