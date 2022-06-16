@@ -50,7 +50,7 @@ namespace COMPASS.ViewModels
             MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory + @"\gs");
 
             //Start internet checkup timer
-            DispatcherTimer CheckConnectionTimer = new DispatcherTimer();
+            DispatcherTimer CheckConnectionTimer = new();
             CheckConnectionTimer.Tick += new EventHandler(CheckConnection);
             CheckConnectionTimer.Interval = new TimeSpan(0, 0, 30);
             CheckConnectionTimer.Start();
@@ -166,7 +166,7 @@ namespace COMPASS.ViewModels
             //Set download directory
             AutoUpdater.DownloadPath = Path.Combine(Constants.CompassDataPath, "Installers");
             //check updates every 4 hours
-            DispatcherTimer timer = new DispatcherTimer { Interval = TimeSpan.FromHours(4) };
+            DispatcherTimer timer = new(){ Interval = TimeSpan.FromHours(4) };
             timer.Tick += delegate
             {
                 CheckForUpdates();
