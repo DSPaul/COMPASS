@@ -12,7 +12,7 @@ using System.Windows;
 
 namespace COMPASS.ViewModels
 {
-    public class FileBaseViewModel : BaseViewModel
+    public abstract class FileBaseViewModel : BaseViewModel
     {
         public FileBaseViewModel()
         {            
