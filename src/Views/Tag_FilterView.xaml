@@ -7,30 +7,11 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
              xmlns:Models="clr-namespace:COMPASS.Models" 
-             xmlns:controls="clr-namespace:COMPASS.Resources.Controls"
+             xmlns:controls="clr-namespace:COMPASS.Resources.Controls" xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:TagsFiltersViewModel}"
              mc:Ignorable="d" FontSize="20"
              d:DesignHeight="650" d:DesignWidth="200">
     <Grid>
         <Grid.Resources>
-            <Style TargetType="{x:Type Button}" x:Key="SquareBtn">
-                <Setter Property="Background" Value="{StaticResource ButtonBackground}"/>
-                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-                <Setter Property="BorderBrush" Value="{x:Null}"/>
-                <Setter Property="Margin" Value="10,3"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type Button}">
-                            <Border Background="{TemplateBinding Background}" BorderThickness="1" CornerRadius="7" HorizontalAlignment="Stretch">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <materialDesign:PackIcon Height="30" Margin="0,0,10,0"
-                                            Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
-                                    <ContentPresenter VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
             <Style TargetType="{x:Type TabControl}">
                 <Setter Property="SnapsToDevicePixels" Value="True" />
                 <Setter Property="Template">
@@ -58,7 +39,6 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
         </Grid.Resources>
 
         <TabControl Background="{x:Null}" BorderThickness="0">
@@ -74,10 +54,8 @@
                                 <Border x:Name="TabBorder">
                                     <StackPanel Orientation="Horizontal" Margin="5,2">
                                         <materialDesign:PackIcon Height="25" Width="25" HorizontalAlignment="Right"
-                                                Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
-                                        <ContentPresenter 
-                                                VerticalAlignment="Center"
-                                                ContentSource="Header"
+                                                Kind="{TemplateBinding Tools:AP.IconKind}"/>
+                                        <ContentPresenter VerticalAlignment="Center" ContentSource="Header"
                                                 Margin="5,0,10,0"/>
                                     </StackPanel>
                                 </Border>
@@ -93,37 +71,41 @@
                         </Setter.Value>
                     </Setter>
                 </Style>
-                <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                    <Border CornerRadius="5" Margin="0,3">
-                        <Border.Background>
-                            <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
-                        </Border.Background>
-                        <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="14"/>
-                        <Border.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
-                                <MenuItem Header="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
-                            </ContextMenu>
-                        </Border.ContextMenu>
-                    </Border>
-                </HierarchicalDataTemplate>
-                <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                    <Border CornerRadius="5" Margin="0,3" Background="{x:Null}">
-                        <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="LightGray" FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
-                        <Border.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
-                                <MenuItem Header="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
-                            </ContextMenu>
-                        </Border.ContextMenu>
-                    </Border>
-                </HierarchicalDataTemplate>
-                <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
             </TabControl.Resources>
-            <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple">
+            <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple" DataContext="{Binding TagsTabVM}">
+                <TabItem.Resources>
+                    <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
+                    <ContextMenu x:Key="TagContextMenu">
+                        <MenuItem Header="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
+                        <MenuItem Header="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
+                    </ContextMenu>
+                    <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+                        <Border CornerRadius="5" Margin="0,3" ContextMenu="{StaticResource TagContextMenu}">
+                            <Border.Background>
+                                <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
+                            </Border.Background>
+                            <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="14"/>
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+                    </HierarchicalDataTemplate>
+                    <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+                        <Border CornerRadius="5" Margin="0,3" Background="{x:Null}" ContextMenu="{StaticResource TagContextMenu}">
+                            <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="LightGray" FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
+                        </Border>
+                    </HierarchicalDataTemplate>
+                    <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
+                </TabItem.Resources>
                 <Border>
-                    <TreeView x:Name="TagTree" Grid.Column="1" Grid.Row="1" BorderBrush="{x:Null}"
-                        ItemsSource="{Binding Path=TreeViewSource,Mode=TwoWay}" Grid.ColumnSpan="2" Background="{x:Null}"
+                    <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"
+                        ItemsSource="{Binding Path=TreeViewSource,Mode=TwoWay}" 
                         dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True"  dd:DragDrop.DropHandler="{Binding}"
                         SelectedItemChanged="TagTree_SelectedItemChanged" 
                         ItemTemplateSelector="{StaticResource TagTemplateSelector}"
@@ -132,18 +114,12 @@
                             <Style TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
                                 <Setter Property="IsSelected" Value="{Binding Selected, Mode=TwoWay}"/>
-                                <Setter Property="Opacity" Value="1"/>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="true">
-                                        <Setter Property="Opacity" Value="1"/>
-                                    </Trigger>
-                                </Style.Triggers>
                             </Style>
                         </TreeView.Resources>
                     </TreeView>
                 </Border>
             </TabItem>
-            <TabItem Header="Filter" Tools:AP.IconKind="Filter">
+            <TabItem Header="Filter" Tools:AP.IconKind="Filter" DataContext="{Binding FiltersTabVM}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled">
                     <Grid Margin="0 0 -10 0">
                         <Grid.RowDefinitions>
@@ -194,7 +170,7 @@
                             </StackPanel>
                         </StackPanel>
                         <Button Content="Clear All" Grid.Row="2" Margin="30" Command="{Binding ClearFiltersCommand}"
-                            Style="{StaticResource SquareBtn}" Tools:AP.IconKind="FilterRemove" Background="Red"/>
+                            Style="{StaticResource IconTextButton}" Tools:AP.IconKind="FilterRemove" Background="Red"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>

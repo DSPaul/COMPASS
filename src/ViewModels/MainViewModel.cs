@@ -324,13 +324,13 @@ namespace COMPASS.ViewModels
         public void Refresh()
         {
             FilterHandler.ReFilter();
-            TFViewModel.RefreshTreeView();
+            TFViewModel.TagsTabVM.RefreshTreeView();
         }
 
         public void Reset()
         {
             FilterHandler.ClearFilters();
-            TFViewModel.RefreshTreeView();
+            TFViewModel.TagsTabVM.RefreshTreeView();
         }
 
         //Add Tag Btn
