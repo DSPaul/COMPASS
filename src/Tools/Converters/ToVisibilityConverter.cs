@@ -9,14 +9,16 @@ using System.Windows.Data;
 
 namespace COMPASS.Tools.Converters
 {
-    public class BooltoVisibilityConverter : IValueConverter
+    public class ToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             //Parameter is true if inverted
             bool Invert = System.Convert.ToBoolean(parameter);
-            bool visible = Invert ^ (bool)value; //visible if true and no invert or false and invert -> XOR
-            if (visible) return Visibility.Visible;
+            bool visible;
+            if (value.GetType() == typeof(string)) visible = !string.IsNullOrEmpty((string)value);
+            else visible = System.Convert.ToBoolean(value); //visible if true and no invert or false and invert -> XOR
+            if (visible ^ Invert) return Visibility.Visible;
             else return Visibility.Collapsed;
         }
 

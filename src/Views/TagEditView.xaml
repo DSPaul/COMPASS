@@ -50,9 +50,8 @@
                 </Border>
             </HierarchicalDataTemplate>
             <Tools:TagTemplateSelector x:Key="TagDataTemplateSelector"/>
-            <Converters:BooltoVisibilityConverter x:Key ="BooltoVisibilityConverter"/>
         </Grid.Resources>
-        <Grid  x:Name="InfoGrid" Visibility="{Binding ShowInfoGrid, Converter={StaticResource BooltoVisibilityConverter}}" Grid.Column ="0" Margin="10,0">
+        <Grid  x:Name="InfoGrid" Visibility="{Binding ShowInfoGrid, Converter={StaticResource ToVisibilityConverter}}" Grid.Column ="0" Margin="10,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height ="5"/>
                 <RowDefinition Height =" auto"/>
@@ -72,7 +71,7 @@
                 <Label Content="Group Tag:"/>
                 <CheckBox x:Name="IsGroupCheckBox" HorizontalAlignment="Right" IsChecked="{Binding TempTag.IsGroup}"/>
             </StackPanel>
-            <StackPanel Grid.Row="4" Orientation="Horizontal" Visibility="{Binding ElementName=IsGroupCheckBox, Path=IsChecked, Converter= {StaticResource BooltoVisibilityConverter}, ConverterParameter=True}">
+            <StackPanel Grid.Row="4" Orientation="Horizontal" Visibility="{Binding ElementName=IsGroupCheckBox, Path=IsChecked, Converter= {StaticResource ToVisibilityConverter}, ConverterParameter=True}">
                 <Label Content="Color:"/>
                 <ToggleButton x:Name="ShowColorSelection" IsChecked="{Binding ShowColorSelection, Mode=TwoWay}">
                     <ToggleButton.Background>
@@ -105,7 +104,7 @@
                 </Button>
             </Grid>
         </Grid>
-        <StackPanel x:Name="ColorSelection" Grid.Column="2" Visibility="{Binding ShowColorSelection, Converter= {StaticResource BooltoVisibilityConverter}}">
+        <StackPanel x:Name="ColorSelection" Grid.Column="2" Visibility="{Binding ShowColorSelection, Converter= {StaticResource ToVisibilityConverter}}">
             <CustomControls:ColorPicker Height="135" Width="166" 
                                         SelectedColor="{Binding TempTag.BackgroundColor, Mode=TwoWay, TargetNullValue=Black}"/>
             <Button Margin="5" Background="{StaticResource AcceptFill}" Command="{Binding CloseColorSelectionCommand}">

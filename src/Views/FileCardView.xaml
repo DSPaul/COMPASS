@@ -10,7 +10,6 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
-        <Converters:BooltoVisibilityConverter x:Key="BooltoVisibilityConverter"/>
         <!--ContextMenu needs to be in every view where it is used instead of in a resource dict because 
             in resource dict it "sticks" to first view and the binding target for SelectedItems doesn't update when the view changes-->
         <ContextMenu x:Key="MultiFileContextMenu" DataContext="{Binding PlacementTarget.DataContext, 
@@ -112,7 +111,7 @@
                             </Grid.ColumnDefinitions>
                             <Image Source="{Binding Thumbnail, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png }" HorizontalAlignment="Center"/>
                             <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
-                                         Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooltoVisibilityConverter}}">
+                                         Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource ToVisibilityConverter}}">
                                 <Button Tools:AP.IconKind="FileOutline" Style="{StaticResource IconBtn}"
                                     Command="{Binding Path=DataContext.OpenFileLocallyCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"/>
@@ -120,7 +119,7 @@
                                     Command="{Binding Path=DataContext.OpenFileOnlineCommand,
                                 RelativeSource={RelativeSource FindAncestor,  AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"/>
                                 <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
-                                Converter={StaticResource BooltoVisibilityConverter}}"/>
+                                Converter={StaticResource ToVisibilityConverter}}"/>
                             </StackPanel>
                             <Grid Margin="5 10" Grid.Column="1">
                                 <Grid.RowDefinitions>
@@ -154,43 +153,43 @@
                                 <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Type}" Text="Title:"/>
                                 <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Type}" Text="Author:" 
                                            Visibility="{Binding DataContext.ShowAuthor, RelativeSource={RelativeSource AncestorType=ListBox},
-                                           Converter={StaticResource BooltoVisibilityConverter}}"/>
+                                           Converter={StaticResource ToVisibilityConverter}}"/>
                                 <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource Type}" Text="Publisher:" 
                                            Visibility="{Binding DataContext.ShowPublisher, RelativeSource={RelativeSource AncestorType=ListBox},
-                                           Converter={StaticResource BooltoVisibilityConverter}}"/>
+                                           Converter={StaticResource ToVisibilityConverter}}"/>
                                 <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource Type}" Text="Version:" 
                                            Visibility="{Binding DataContext.ShowVersion, RelativeSource={RelativeSource AncestorType=ListBox},
-                                           Converter={StaticResource BooltoVisibilityConverter}}"/>
+                                           Converter={StaticResource ToVisibilityConverter}}"/>
                                 <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource Type}" Text="Releasedate:" 
                                            Visibility="{Binding DataContext.ShowReleaseDate, RelativeSource={RelativeSource AncestorType=ListBox},
-                                           Converter={StaticResource BooltoVisibilityConverter}}"/>
+                                           Converter={StaticResource ToVisibilityConverter}}"/>
                                 <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource Type}" Text="Rating:" 
                                            Visibility="{Binding DataContext.ShowRating, RelativeSource={RelativeSource AncestorType=ListBox},
-                                           Converter={StaticResource BooltoVisibilityConverter}}"/>
+                                           Converter={StaticResource ToVisibilityConverter}}"/>
 
                                 <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Title}" />
                                 <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Author}" 
                                            Visibility="{Binding DataContext.ShowAuthor, RelativeSource={RelativeSource AncestorType=ListBox},
-                                           Converter={StaticResource BooltoVisibilityConverter}}"/>
+                                           Converter={StaticResource ToVisibilityConverter}}"/>
                                 <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Publisher}" 
                                            Visibility="{Binding DataContext.ShowPublisher, RelativeSource={RelativeSource AncestorType=ListBox},
-                                           Converter={StaticResource BooltoVisibilityConverter}}"/>
+                                           Converter={StaticResource ToVisibilityConverter}}"/>
                                 <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Version}" 
                                            Visibility="{Binding DataContext.ShowVersion, RelativeSource={RelativeSource AncestorType=ListBox},
-                                           Converter={StaticResource BooltoVisibilityConverter}}"/>
+                                           Converter={StaticResource ToVisibilityConverter}}"/>
                                 <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource Data}" Text ="{Binding ReleaseDate, StringFormat=dd/MM/yyyy}"
                                            Visibility="{Binding DataContext.ShowReleaseDate, RelativeSource={RelativeSource AncestorType=ListBox},
-                                           Converter={StaticResource BooltoVisibilityConverter}}"/>
+                                           Converter={StaticResource ToVisibilityConverter}}"/>
                                 <materialDesign:RatingBar Grid.Row="5" Grid.Column="1" Value ="{Binding Rating}" Foreground="White"
                                            Visibility="{Binding DataContext.ShowRating, RelativeSource={RelativeSource AncestorType=ListBox},
-                                           Converter={StaticResource BooltoVisibilityConverter}}"/>
+                                           Converter={StaticResource ToVisibilityConverter}}"/>
                             </Grid>
                         </Grid>
                             <Rectangle Grid.Row="1" Fill="{StaticResource AccentColor}" Height="3"/>
                             <ItemsControl Grid.Row="2" Grid.Column="0" Foreground="Black" VerticalAlignment="Center" Margin="10,3" HorizontalAlignment="Left"
                                       ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
                                       Visibility="{Binding DataContext.ShowTags, RelativeSource={RelativeSource AncestorType=ListBox},
-                                           Converter={StaticResource BooltoVisibilityConverter}}">
+                                           Converter={StaticResource ToVisibilityConverter}}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <WrapPanel/>

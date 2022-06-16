@@ -8,8 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-            <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
-        <Converters:BooltoVisibilityConverter x:Key="BooltoVisibilityConverter"/>
+        <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
         <!--ContextMenu needs to be in every view where it is used instead of in a resource dict because 
             in resource dict it "sticks" to first view and the binding target for SelectedItems doesn't update when the view changes-->
         <ContextMenu x:Key="MultiFileContextMenu" DataContext="{Binding PlacementTarget.DataContext, 
@@ -119,7 +118,7 @@
                     <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" 
                             MaxWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
                             Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"
-                            Visibility="{Binding DataContext.ShowTitle, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BooltoVisibilityConverter}}"/>
+                            Visibility="{Binding DataContext.ShowTitle, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource ToVisibilityConverter}}"/>
                 </Grid>
             </DataTemplate>
         </ListBox.ItemTemplate>

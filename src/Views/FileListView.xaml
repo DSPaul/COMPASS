@@ -21,7 +21,6 @@
                 SelectionChanged="FileView_SelectionChanged" DataContextChanged="FileView_DataContextChanged" TargetUpdated="FileView_TargetUpdated" >
         <DataGrid.Resources>
             <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
-            <Converters:BooltoVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <Style TargetType="{x:Type DataGridColumnHeader}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -161,7 +160,7 @@
         </DataGrid.RowStyle>
         <DataGrid.Columns>
             <DataGridTemplateColumn Header="TITLE" Width="3*" MinWidth="100" CanUserSort="True" SortMemberPath="Title"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTitle, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTitle, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Title}" Style="{StaticResource default}" Margin="5,0"/>
@@ -169,7 +168,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="AUTHOR" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="Author"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowAuthor, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowAuthor, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Author}" Style="{StaticResource default}"/>
@@ -177,7 +176,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="PUBLISHER" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="Publisher"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowPublisher, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowPublisher, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Publisher}" Style="{StaticResource default}"/>
@@ -185,7 +184,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="RELEASE DATE" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="ReleaseDate"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowReleaseDate, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowReleaseDate, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding ReleaseDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource default}"/>
@@ -193,7 +192,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="VERSION" Width="*" MinWidth="20"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowVersion, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowVersion, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Version}" Style="{StaticResource default}"/>
@@ -201,7 +200,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="RATING" Width="*" CanUserSort="True" SortMemberPath="Rating" MinWidth="120"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowRating, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowRating, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <materialDesign:RatingBar Value ="{Binding Rating,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RenderTransformOrigin="0.5,0.5">
@@ -215,7 +214,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="TAGS" Width="5*"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTags, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTags, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <ItemsControl ItemsSource="{Binding Tags}" Background="Transparent" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
@@ -231,7 +230,7 @@
             </DataGridTemplateColumn>
             <!--<DataGridTextColumn Width="*"/>-->
             <DataGridTemplateColumn Header="" MinWidth="70" Width="*" CanUserResize="False"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowFileIcons, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowFileIcons, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -242,13 +241,13 @@
                                 RelativeSource={RelativeSource FindAncestor,  AncestorType={x:Type UserControl}}}"
                                     CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>
                             <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
-                                Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                Converter={StaticResource ToVisibilityConverter}}"/>
                         </StackPanel>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="" Width="25" MinWidth="25" CanUserResize="False"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowEditIcon, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowEditIcon, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <Button Command="{Binding Path=DataContext.EditFileCommand,
