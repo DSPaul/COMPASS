@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
-  <version>0.2.0</version>
-  <url>https://github.com/DSPAUL/COMPASS/releases/download/v0.2.0-alpha/COMPASS_Setup_0.2.0.exe</url>
-  <changelog>https://github.com/DSPAUL/COMPASS/blob/master/Changelog.md#compass-v020-14-jun-2022</changelog>
+  <version>0.3.0</version>
+  <url>https://github.com/DSPAUL/COMPASS/releases/download/v0.3.0-beta/COMPASS_Setup_0.3.0.exe</url>
+  <changelog>https://github.com/DSPAUL/COMPASS/blob/master/Changelog.md#compass-v030-16-june-2022</changelog>
   <mandatory>false</mandatory>
 </item>
 
