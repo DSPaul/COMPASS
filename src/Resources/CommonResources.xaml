@@ -14,6 +14,7 @@
         <Setter Property="FontSize" Value="16"/>
     </Style>
 
+    <!--TextBox Style with placeholder Text-->
     <Style TargetType="{x:Type TextBox}">
         <Setter Property="Template">
             <Setter.Value>
