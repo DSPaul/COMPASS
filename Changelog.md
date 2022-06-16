@@ -1,4 +1,9 @@
 # CHANGELOG
+## COMPASS v0.3.1 (16 June 2022)
+
+### Fixes
+
+- Fixed crash on startup when update is found
 
 ## COMPASS v0.3.0 (16 June 2022)
 
@@ -14,7 +19,7 @@
 - Added option to delete user data on uninstall
 - The icon of the used view (list, cards, tiles) is now highlighted
 - Clicking "browse" in the sources section of files now opens in the location of the file
-- Search now tollerates typos and accepts abreviations
+- Search now tolerates typos and accepts abbreviations
 
 ### New Features
 
