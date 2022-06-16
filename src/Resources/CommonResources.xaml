@@ -2,10 +2,55 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
-                    xmlns:Models ="clr-namespace:COMPASS.Models" xmlns:Tools="clr-namespace:COMPASS.Tools">
+                    xmlns:Tools="clr-namespace:COMPASS.Tools">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Themes/DarkTheme.xaml" />
     </ResourceDictionary.MergedDictionaries>
+
+    <!--TextBlock Style-->
+    <Style TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="16"/>
+    </Style>
+
+    <Style TargetType="{x:Type TextBox}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="4" 
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}"
+                            MinWidth="{TemplateBinding MinWidth}">
+                        <Grid>
+                            <TextBlock Text="{TemplateBinding Tools:AP.PlaceHolderText}" 
+                                       VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                       Foreground="{StaticResource TextMutedColor}" 
+                                       Margin="{Binding Path=Margin, ElementName=PART_ContentHost}"
+                                       Padding="{Binding Path=Padding, ElementName=PART_ContentHost}">
+                                <TextBlock.Visibility>
+                                    <TemplateBinding Property="Text">
+                                        <TemplateBinding.Converter>
+                                            <Converters:StringtoVisibiltyConverter/>
+                                        </TemplateBinding.Converter>
+                                    </TemplateBinding>
+                                </TextBlock.Visibility>
+                            </TextBlock>
+                            <ScrollViewer Name="PART_ContentHost"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="CaretBrush" Value="{StaticResource TextColor}"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="Padding" Value="5,2"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+        <Setter Property="Background" Value="{StaticResource DarkUIElementBackground}"/>
+    </Style>
     
     <!--#region ScrollBar Style-->
     <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
