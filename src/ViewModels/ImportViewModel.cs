@@ -25,7 +25,6 @@ namespace COMPASS.ViewModels
             _codexCollection = MVM.CurrentCollection;
 
             Source = source;
-            SubmitURLCommand = new ActionCommand(SubmitURL);
 
             //Call Relevant function
             switch (source)
@@ -225,7 +224,8 @@ namespace COMPASS.ViewModels
             iURLw.Show();
         }
 
-        public ActionCommand SubmitURLCommand { get; private set; }
+        private ActionCommand _submitUrlCommand;
+        public ActionCommand SubmitURLCommand => _submitUrlCommand ??= new(SubmitURL);
         public void SubmitURL()
         {
             if (!InputURL.Contains(PreviewURL))

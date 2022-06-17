@@ -12,10 +12,8 @@ namespace COMPASS.Models
         public TreeViewNode(Tag t)
         {
             Tag = t;
-            Children = new ObservableCollection<TreeViewNode>();
             Expanded = t.IsGroup;
         }
-
 
         private Tag _tag;
         public Tag Tag
@@ -24,7 +22,7 @@ namespace COMPASS.Models
             set { SetProperty(ref _tag, value); }
         }
 
-        private ObservableCollection<TreeViewNode> _children;
+        private ObservableCollection<TreeViewNode> _children = new();
         public ObservableCollection<TreeViewNode> Children
         {
             get { return _children; }
@@ -44,6 +42,5 @@ namespace COMPASS.Models
             get { return _expanded; }
             set { SetProperty(ref _expanded, value); }
         }
-
     }
 }

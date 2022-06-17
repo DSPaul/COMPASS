@@ -18,7 +18,7 @@ namespace COMPASS.Models
 
         #region Properties
 
-        private Action<object> _updateProp;
+        private readonly Action<object> _updateProp;
 
         //Name of Item
         private string _header;

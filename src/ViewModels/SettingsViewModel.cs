@@ -32,14 +32,14 @@ namespace COMPASS.ViewModels
         }
 
         #region Load and Save Settings
-        public static XmlWriterSettings xmlWriterSettings = new() { Indent = true };
+        public static XmlWriterSettings XmlWriteSettings { get; private set; } = new() { Indent = true };
         private static SerializablePreferences AllPreferences = new();
         public void SavePreferences()
         {
             //Save OpenFilePriority
             AllPreferences.OpenFilePriorityIDs = OpenFilePriority.Select(pf => pf.ID).ToList();
 
-            using var writer = XmlWriter.Create(Constants.PreferencesFilePath, xmlWriterSettings);
+            using var writer = XmlWriter.Create(Constants.PreferencesFilePath, XmlWriteSettings);
             System.Xml.Serialization.XmlSerializer serializer = new(typeof(SerializablePreferences));
             serializer.Serialize(writer, AllPreferences);
         }
@@ -61,7 +61,7 @@ namespace COMPASS.ViewModels
 
         #region File Source Preference
         //list with possible functions to open a file
-        private List<PreferableFunction<Codex>> OpenFileFunctions = new()
+        private readonly List<PreferableFunction<Codex>> OpenFileFunctions = new()
             {
                 new PreferableFunction<Codex>("Local File", FileBaseViewModel.OpenFileLocally,0),
                 new PreferableFunction<Codex>("Web Version", FileBaseViewModel.OpenFileOnline,1)

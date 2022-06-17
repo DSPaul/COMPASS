@@ -7,8 +7,7 @@ namespace COMPASS.Models
 {
     public class FilterTag:Tag
     {
-        public FilterTag():base() 
-        { }
+        public FilterTag():base() { }
         public FilterTag(ObservableCollection<FilterTag> alltags,FilterType filtertype, object filterValue = null)
         {
             ID = Utils.GetAvailableID(alltags.ToList<IHasID>());
@@ -17,7 +16,7 @@ namespace COMPASS.Models
         }
 
         readonly FilterType FT;
-        public object FilterValue;
+        public object FilterValue { get; init; }
 
         public override object GetGroup()
         {

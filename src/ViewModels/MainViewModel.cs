@@ -357,7 +357,7 @@ namespace COMPASS.ViewModels
             AddTagViewModel = new TagEditViewModel(null);
         }
 
-        //Add new Folder / CodexCollection
+        //Add new CodexCollection
         public RelayCommand<string> CreateFolderCommand { get; private set; }
         public void CreateFolder(string folder)
         {
@@ -367,17 +367,17 @@ namespace COMPASS.ViewModels
             CurrentFolder = folder;
         }
 
-        //Rename Folder/Collection/RPG System
+        //Rename Collection
         public RelayCommand<string> EditFolderCommand { get; private set; }
         public void EditFolder(string folder)
         {
             var index = Folders.IndexOf(CurrentFolder);
-            CurrentCollection.RenameFolder(folder);
+            CurrentCollection.RenameCollection(folder);
             Folders[index] = folder;
             CurrentFolder = folder;
         }
 
-        //Delete Folder/Collection/RPG System
+        //Delete Collection
         public ActionCommand DeleteFolderCommand { get; private set; }
         public void RaiseDeleteFolderWarning()
         {

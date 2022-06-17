@@ -18,7 +18,7 @@ namespace COMPASS.Models
             if (EqualityComparer<T>.Default.Equals(storage, value))
                 return false;
             storage = value;
-            this.RaisePropertyChanged(propertyName);
+            RaisePropertyChanged(propertyName);
             return true;
         }
 

@@ -14,65 +14,54 @@ namespace COMPASS.Models
     public class Tag : ObservableObject, IHasID, IHasChilderen<Tag>
     {
         //Emtpy Contructor needed for serialization
-        public Tag()
-        {
-            Children = new ObservableCollection<Tag>();
-        }
+        public Tag() {}
 
         public Tag(List<Tag> alltags)
         {
             AllTags = alltags;
             ID = Utils.GetAvailableID(alltags.ToList<IHasID>());
-            Children = new ObservableCollection<Tag>();
-
-            //set a default color for add tag
-            BackgroundColor = Colors.Black;
         }
 
         //needed to get parent tag from parent ID
         [XmlIgnoreAttribute]
         public List<Tag> AllTags;
 
-        private ObservableCollection<Tag> _Childeren;
+        private ObservableCollection<Tag> _childeren = new();
+        public ObservableCollection<Tag> Children
+        {
+            get { return _childeren; }
+            set { SetProperty(ref _childeren, value); }
+        }
 
-        private string _Content = "";
-        private int _ParentID = -1;
-        private Color _BackgroundColor;
-        private bool _isGroup;
-
-        #region Getter and Setters
+        private string _content = "";
         public string Content
         {
-            get { return _Content; }
-            set { SetProperty(ref _Content, value); }
+            get { return _content; }
+            set { SetProperty(ref _content, value); }
         }
 
-        public int ID{ get; set; }
-
+        private int _parentID = -1;
         public int ParentID
         {
-            get { return _ParentID; }
-            set { SetProperty(ref _ParentID, value); }
+            get { return _parentID; }
+            set { SetProperty(ref _parentID, value); }
         }
 
+        private Color _backgroundColor = Colors.Black;
         public Color BackgroundColor
         {
-            get { return _BackgroundColor; }
-            set { SetProperty(ref _BackgroundColor, value); }
+            get { return _backgroundColor; }
+            set { SetProperty(ref _backgroundColor, value); }
         }
-
+        
+        private bool _isGroup;
         public bool IsGroup
         {
             get { return _isGroup; }
             set { SetProperty(ref _isGroup, value); }
         }
 
-        public ObservableCollection<Tag> Children
-        {
-            get { return _Childeren; }
-            set { SetProperty(ref _Childeren, value); }
-        }
-        #endregion
+        public int ID { get; set; }
 
         //can't save parent itself, would cause infinite loop when serializing
         public Tag GetParent()
@@ -81,8 +70,8 @@ namespace COMPASS.Models
             return AllTags.First(tag => tag.ID == ParentID);
         }
 
-        public virtual object GetGroup()
         //returns the first parent that is a group or null if no parents are group
+        public virtual object GetGroup()
         {
             if (IsGroup) return this;
             if (ParentID == -1) return null;
