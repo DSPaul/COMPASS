@@ -3,45 +3,24 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:COMPASS.Windows"
-        mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" Background="{StaticResource WindowBackground}"
+        xmlns:Tools ="clr-namespace:COMPASS.Tools"
+        xmlns:local="clr-namespace:COMPASS.Windows" 
+        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:ImportViewModel}"
+        mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
+        Background="{StaticResource WindowBackground}" SizeToContent="Height"
         Title="Import URL" Height="170" Width="600" WindowStartupLocation="CenterScreen">
     <Grid>
         <StackPanel Margin="15">
-            <TextBlock Text="{Binding ImportTitle, FallbackValue= URL:}" FontSize="16" Margin="5"/>
+            <TextBlock Text="{Binding ImportTitle, FallbackValue= URL:}" Margin="5"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <Border Background="{StaticResource UIElementBackground}" CornerRadius="5" Margin="5">
-                    <Grid>
-                        <TextBox Margin="3,5" Background="{StaticResource SelectableTransparent}" BorderThickness="0" FontSize="15" Foreground="{StaticResource TextColor}" Panel.ZIndex="1"
-                                 Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock  Margin="5"  FontSize="15" Foreground="{StaticResource TextMutedColor}"
-                                            Text="{Binding PreviewURL, Mode=TwoWay, FallbackValue=https://www.gmbinder.com/share}">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding InputURL}" Value="">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </Grid>
-                </Border>
-                <Button Grid.Column="1" Background="{x:Null}" BorderThickness="0" Command="{Binding SubmitURLCommand}">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="5" Background="{StaticResource AccentColorMuted}" Margin="5">
-                                <TextBlock Text="Import" Foreground="White" Margin="15,5" FontSize="15"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
+                <TextBox Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Tools:AP.PlaceHolderText="{Binding PreviewURL, Mode=TwoWay}"/>
+                <Button Grid.Column="1" Content="Import" Command="{Binding SubmitURLCommand}"
+                        Style="{StaticResource TextButton}" Background="{StaticResource AccentColorMuted}"/>
             </Grid>
             <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" Margin="5"/>
         </StackPanel>
