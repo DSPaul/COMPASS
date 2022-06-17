@@ -492,7 +492,7 @@
 
                 <CustomControls:ExpandingButton Grid.Column="1" Grid.Row="2">
                     <CustomControls:ExpandingButton.HiddenContent>
-                        <views:TagEditView DataContext="{Binding CurrentEditViewModel}"/>
+                        <views:TagEditView DataContext="{Binding AddTagViewModel}"/>
                     </CustomControls:ExpandingButton.HiddenContent>
                     <CustomControls:ExpandingButton.Toggle>
                         <Button Tools:AP.IconKind="TagPlusOutline" Style="{StaticResource outerIconBtn}" 
