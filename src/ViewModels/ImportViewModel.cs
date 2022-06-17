@@ -233,7 +233,7 @@ namespace COMPASS.ViewModels
                 ImportError = String.Format("{0} is not a valid URL for {1}", InputURL, ImportTitle);
                 return;
             }
-            if (!Utils.pingURL())
+            if (!Utils.PingURL())
             {
                 ImportError = String.Format("You need to be connected to the internet to import on online source.");
                 return;

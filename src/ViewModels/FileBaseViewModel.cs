@@ -107,7 +107,7 @@ namespace COMPASS.ViewModels
         //Open File whereever
         public bool OpenFile(Codex codex = null)
         {
-            bool success = Utils.tryFunctions(MVM.SettingsVM.OpenFilePriority, codex);
+            bool success = Utils.TryFunctions(MVM.SettingsVM.OpenFilePriority, codex);
             if (!success) MessageBox.Show("Could not open file, please check local path or URL");
             return success;
         }
@@ -156,7 +156,7 @@ namespace COMPASS.ViewModels
             if(toOpen == null) toOpen = MVM.CurrentFileViewModel.SelectedFile;
 
             //fails if no internet, pinging 8.8.8.8 DNS instead of server because some sites like gmbinder block ping
-            if (!Utils.pingURL()) return false;
+            if (!Utils.PingURL()) return false;
 
             try
             {
@@ -298,7 +298,7 @@ namespace COMPASS.ViewModels
 
                     //Delete file in original folder
                     MVM.CurrentCollection.DeleteFile(ToMove);
-                    MVM.FilterHandler.RemoveFile(ToMove);
+                    MVM.FilterHandler.RemoveCodex(ToMove);
 
                     //Update the cover art metadata to new path, has to happen after delete so old one gets deleted
                     ToMove.CoverArt = newCoverArt;
@@ -323,7 +323,7 @@ namespace COMPASS.ViewModels
             foreach(Codex ToDelete in ToDeleteList)
             {
                 MVM.CurrentCollection.DeleteFile(ToDelete);
-                MVM.FilterHandler.RemoveFile(ToDelete);
+                MVM.FilterHandler.RemoveCodex(ToDelete);
             }
             MVM.Refresh();
         }

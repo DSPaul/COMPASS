@@ -55,7 +55,7 @@ namespace COMPASS.ViewModels
             CheckConnectionTimer.Interval = new TimeSpan(0, 0, 30);
             CheckConnectionTimer.Start();
             //to check right away on startup
-            IsOnline = Utils.pingURL();
+            IsOnline = Utils.PingURL();
 
             //Commands
             ChangeFileViewCommand = new RelayCommand<FileView>(ChangeFileView);
@@ -423,7 +423,7 @@ namespace COMPASS.ViewModels
         //called every few seconds to update IsOnline
         private void CheckConnection(object sender, EventArgs e)
         {
-            IsOnline = Utils.pingURL();
+            IsOnline = Utils.PingURL();
         }
 
         public ActionCommand CheckForUpdatesCommand { get; init; }

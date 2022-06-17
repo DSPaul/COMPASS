@@ -19,23 +19,23 @@ namespace COMPASS.Tools
         {
             cc = CurrentCollection;
 
-            ActiveFiles = new ObservableCollection<Codex>(cc.AllFiles);
+            ActiveFiles = new(cc.AllFiles);
 
             //load sorting from settings
             var PropertyPath = (string)Properties.Settings.Default["SortProperty"];
             var SortDirection = (ListSortDirection) Properties.Settings.Default["SortDirection"];
             SortBy(PropertyPath,SortDirection);
 
-            ExcludedCodicesByTag = new HashSet<Codex>();
-            ExcludedCodicesBySearch = new HashSet<Codex>();
-            ExcludedCodicesByFilter = new HashSet<Codex>();
+            ExcludedCodicesByTag = new();
+            ExcludedCodicesBySearch = new();
+            ExcludedCodicesByFilter = new();
 
             SearchTerm = "";
-            ActiveTags = new ObservableCollection<Tag>();
+            ActiveTags = new();
             ActiveTags.CollectionChanged += (e, v) => UpdateTagFilteredFiles();
-            ActiveFilters = new ObservableCollection<FilterTag>();
+            ActiveFilters = new ();
             ActiveFilters.CollectionChanged += (e, v) => UpdateFieldFilteredFiles();
-            SearchFilters = new ObservableCollection<FilterTag>();
+            SearchFilters = new();
         }
 
         #region Properties
@@ -55,11 +55,11 @@ namespace COMPASS.Tools
             set { SetProperty(ref _activeFiles, value); }
         }
 
-        private string searchterm;
+        private string _searchTerm;
         public string SearchTerm
         {
-            get { return searchterm; }
-            set { SetProperty(ref searchterm, value); }
+            get { return _searchTerm; }
+            set { SetProperty(ref _searchTerm, value); }
         }
 
         #endregion
@@ -73,7 +73,7 @@ namespace COMPASS.Tools
             ExcludedCodicesByTag.Clear();
             ActiveTags.Clear();
             ActiveFilters.Clear();
-            ActiveFiles = new ObservableCollection<Codex>(cc.AllFiles);
+            ActiveFiles = new(cc.AllFiles);
         }
 
         //-------------For Tags---------------//
@@ -91,7 +91,7 @@ namespace COMPASS.Tools
             }
 
             //List of Files filtered out in that group
-            HashSet<Codex> SingleGroupFilteredFiles = new();
+            HashSet<Codex> SingleGroupFilteredFiles;
             //Go over every group and filter out files
             foreach (Tag Group in ActiveGroups)
             {
@@ -103,7 +103,7 @@ namespace COMPASS.Tools
                     Tag P = SingleGroupTags[i].GetParent();
                     if (P != null && !P.IsGroup && !SingleGroupTags.Contains(P)) SingleGroupTags.Add(P);
                 }
-                SingleGroupFilteredFiles = new HashSet<Codex>(cc.AllFiles.Where(f => !SingleGroupTags.Intersect(f.Tags).Any()));
+                SingleGroupFilteredFiles = new(cc.AllFiles.Where(f => !SingleGroupTags.Intersect(f.Tags).Any()));
                 
                 ExcludedCodicesByTag = ExcludedCodicesByTag.Union(SingleGroupFilteredFiles).ToHashSet();
             }
@@ -262,7 +262,7 @@ namespace COMPASS.Tools
         {
             SortBy(PropertyPath, null);
         }
-        public void SaveSortDescriptions(string property, ListSortDirection dir)
+        private void SaveSortDescriptions(string property, ListSortDirection dir)
         {
             Properties.Settings.Default["SortProperty"] = property;
             Properties.Settings.Default["SortDirection"] = (int)dir;
@@ -273,7 +273,7 @@ namespace COMPASS.Tools
         {
             UpdateTagFilteredFiles();
             UpdateFieldFilteredFiles();
-            UpdateSearchFilteredFiles(searchterm);
+            UpdateSearchFilteredFiles(SearchTerm);
             UpdateActiveFiles();
         }
 
@@ -305,12 +305,12 @@ namespace COMPASS.Tools
             }
         }
 
-        public void RemoveFile(Codex f)
+        public void RemoveCodex(Codex c)
         {
-            ExcludedCodicesByTag.Remove(f);
-            ExcludedCodicesBySearch.Remove(f);
-            ExcludedCodicesByFilter.Remove(f);
-            ActiveFiles.Remove(f);
+            ExcludedCodicesByTag.Remove(c);
+            ExcludedCodicesBySearch.Remove(c);
+            ExcludedCodicesByFilter.Remove(c);
+            ActiveFiles.Remove(c);
         }
 
         #endregion

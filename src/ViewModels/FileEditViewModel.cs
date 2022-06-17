@@ -120,7 +120,7 @@ namespace COMPASS.ViewModels
             if (!CreateNewCodex)
             {
                 CurrentCollection.DeleteFile(EditedCodex);
-                MVM.FilterHandler.RemoveFile(EditedCodex);
+                MVM.FilterHandler.RemoveCodex(EditedCodex);
             }
             CloseAction();
         }
