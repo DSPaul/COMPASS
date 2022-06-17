@@ -33,6 +33,7 @@
                                        Foreground="{StaticResource TextMutedColor}" 
                                        Margin="{Binding Path=Margin, ElementName=PART_ContentHost}"
                                        Padding="{Binding Path=Padding, ElementName=PART_ContentHost}"
+                                       FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}"
                                        Visibility="{TemplateBinding Text, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
                             <ScrollViewer Name="PART_ContentHost"/>
                         </Grid>
