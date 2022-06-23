@@ -3,11 +3,11 @@ using COMPASS.Tools;
 
 namespace COMPASS.ViewModels
 {
-    public class FileCardViewModel : FileBaseViewModel
+    public class CardLayoutViewModel : LayoutViewModel
     {
-        public FileCardViewModel() : base()
+        public CardLayoutViewModel() : base()
         {
-            FileViewLayout = Enums.FileView.CardView;
+            LayoutType = Enums.CodexLayout.CardLayout;
 
             //MyMenuItem Datavisibility = new MyMenuItem("Show Metadata")
             //{

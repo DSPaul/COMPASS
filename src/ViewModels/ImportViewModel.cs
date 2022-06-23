@@ -17,12 +17,12 @@ using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
 {
-    public class ImportViewModel : BaseViewModel
+    public class ImportViewModel : ViewModelBase
     {
-        public ImportViewModel(Sources source)
+        public ImportViewModel(Sources source, CodexCollection collection)
         {
             //set codexCollection so we know where to import to
-            _codexCollection = MVM.CurrentCollection;
+            _codexCollection = collection;
 
             Source = source;
 
@@ -106,7 +106,7 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _importError, value); }
         }
 
-        private ObservableCollection<LogEntry> _log = new ObservableCollection<LogEntry>();
+        private ObservableCollection<LogEntry> _log = new();
         public ObservableCollection<LogEntry> Log
         {
             get { return _log; }
@@ -121,7 +121,7 @@ namespace COMPASS.ViewModels
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            OpenFileDialog openFileDialog = new()
             {
                 AddExtension = false,
                 Multiselect = true
@@ -137,8 +137,10 @@ namespace COMPASS.ViewModels
                 //needed to avoid error "The calling Thread must be STA" when creating progress window
                 Application.Current.Dispatcher.Invoke(() =>
                     {
-                        pgw = new ProgressWindow(this);
-                        pgw.Owner = Application.Current.MainWindow;
+                        pgw = new ProgressWindow(this)
+                        {
+                            Owner = Application.Current.MainWindow
+                        };
                         pgw.Show();
                     });
                 
@@ -151,22 +153,23 @@ namespace COMPASS.ViewModels
                 foreach (string path in openFileDialog.FileNames)
                 { 
                     //Import File
-                    if (_codexCollection.AllFiles.All(p => p.Path != path))
+                    if (_codexCollection.AllCodices.All(p => p.Path != path))
                     {
                         logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Importing {0}", System.IO.Path.GetFileName(path)));
                         worker.ReportProgress(_importcounter, logEntry);
 
-                        PdfDocument pdfdoc = new PdfDocument(new PdfReader(path));
+                        PdfDocument pdfdoc = new(new PdfReader(path));
                         var info = pdfdoc.GetDocumentInfo();
-                        Codex pdf = new Codex(_codexCollection)
+                        Codex codex = new(_codexCollection)
                         {
                             Path = path,
                             Title = info.GetTitle() ?? System.IO.Path.GetFileNameWithoutExtension(path),
                             Author = info.GetAuthor(),
                             PageCount = pdfdoc.GetNumberOfPages()
                         };
+                        Codex pdf = codex;
                         pdfdoc.Close();
-                        _codexCollection.AllFiles.Add(pdf);
+                        _codexCollection.AllCodices.Add(pdf);
                         CoverFetcher.GetCoverFromPDF(pdf);
                         SelectWhenDone = pdf;
                     }
@@ -187,13 +190,12 @@ namespace COMPASS.ViewModels
             {
                 MVM.Refresh();
             });
-            if(SelectWhenDone!=null) MVM.CurrentFileViewModel.SelectedFile = SelectWhenDone;
+            if(SelectWhenDone!=null) MVM.CurrentLayout.SelectedFile = SelectWhenDone;
         }
 
         private void ImportManual()
         {
-            MVM.CurrentEditViewModel = new FileEditViewModel(null);
-            FilePropWindow fpw = new FilePropWindow((FileEditViewModel)MVM.CurrentEditViewModel);
+            FilePropWindow fpw = new( new CodexEditViewModel(null));
             fpw.ShowDialog();
             fpw.Topmost = true;
         }
@@ -263,18 +265,12 @@ namespace COMPASS.ViewModels
             worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info,String.Format("Connecting to {0}", ImportTitle)));
 
             //Webscraper for metadata using HtmlAgilityPack
-            HtmlWeb web = new HtmlWeb();
-            HtmlDocument doc;
-            switch (Source)
+            HtmlWeb web = new();
+            HtmlDocument doc = Source switch
             {
-                case Sources.DnDBeyond:
-                    doc = web.Load(string.Concat(InputURL, "/credits"));
-                    break;
-                default:
-                    doc = web.Load(InputURL);
-                    break;
-            }
-
+                Sources.DnDBeyond => web.Load(string.Concat(InputURL, "/credits")),
+                _ => web.Load(InputURL),
+            };
             if (doc.ParsedText == null)
             {
                 worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Error, String.Format("{0} could not be reached", ImportTitle)));
@@ -282,7 +278,7 @@ namespace COMPASS.ViewModels
             }
             HtmlNode src = doc.DocumentNode;
 
-            Codex newFile = new Codex(_codexCollection)
+            Codex newFile = new(_codexCollection)
             {
                 SourceURL = InputURL
             };
@@ -304,7 +300,7 @@ namespace COMPASS.ViewModels
 
                     //get pagecount
                     HtmlNode previewDiv = doc.GetElementbyId("preview");
-                    IEnumerable<HtmlNode> pages = previewDiv.ChildNodes.Where(node => node.Id.Contains("p"));
+                    IEnumerable<HtmlNode> pages = previewDiv.ChildNodes.Where(node => node.Id.Contains('p'));
                     newFile.PageCount = pages.Count();
                     break;
 
@@ -316,7 +312,7 @@ namespace COMPASS.ViewModels
                     //Select script tag with all metadata in JSON format
                     string script = src.SelectSingleNode("/html/body/script[2]").InnerText;
                     //json is encapsulated by "start_app() function, so cut that out
-                    string rawData = script.Substring(10,script.Length-11);
+                    string rawData = script[10..^1];
                     JObject metadata = JObject.Parse(rawData);
 
                     newFile.Title = (string)metadata.SelectToken("brew.title");
@@ -356,7 +352,7 @@ namespace COMPASS.ViewModels
             CoverFetcher.GetCoverFromURL(newFile, Source);
 
             //add file to cc
-            _codexCollection.AllFiles.Add(newFile);
+            _codexCollection.AllCodices.Add(newFile);
             RaisePropertyChanged("ActiveFiles");
 
             //import done
@@ -374,10 +370,9 @@ namespace COMPASS.ViewModels
             //calculate current percentage for progressbar
             ProgressPercentage = (int)((float)_importcounter /_importamount * 100);
             //update text
-            RaisePropertyChanged("ProgressText");
+            RaisePropertyChanged(nameof(ProgressText));
             //write log entry if any
-            LogEntry logEntry = e.UserState as LogEntry;
-            if (logEntry != null) Log.Add(logEntry);
+            if (e.UserState is LogEntry logEntry) Log.Add(logEntry);
         }
         #endregion
     }

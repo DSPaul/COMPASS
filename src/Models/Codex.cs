@@ -15,7 +15,7 @@ namespace COMPASS.Models
         public Codex(CodexCollection cc)
         {
             Tags = new();
-            ID = Utils.GetAvailableID(cc.AllFiles);
+            ID = Utils.GetAvailableID(cc.AllCodices);
             CoverArt = CodexCollection.CollectionsPath + cc.DirectoryName + @"\CoverArt\" + ID.ToString() + ".png";
             Thumbnail = CodexCollection.CollectionsPath + cc.DirectoryName + @"\Thumbnails\" + ID.ToString() + ".png";
         }

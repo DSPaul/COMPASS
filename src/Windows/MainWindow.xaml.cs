@@ -42,15 +42,15 @@ namespace COMPASS
             if ((Tag)CurrentTagList.SelectedItem != null)
             {
                 Tag t = (Tag)CurrentTagList.SelectedItem;
-                if (!t.GetType().IsSubclassOf(typeof(Tag))) MainViewModel.FilterHandler.RemoveTagFilter(t);
-                else MainViewModel.FilterHandler.RemoveFieldFilter((FilterTag)t);
+                if (!t.GetType().IsSubclassOf(typeof(Tag))) MainViewModel.FilterVM.RemoveTagFilter(t);
+                else MainViewModel.FilterVM.RemoveFieldFilter((FilterTag)t);
             }
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            MainViewModel.CurrentCollection.SaveFilesToFile();
-            MainViewModel.CurrentCollection.SaveTagsToFile();
+            MainViewModel.CurrentCollection.SaveCodices();
+            MainViewModel.CurrentCollection.SaveTags();
             Properties.Settings.Default.Save();
         }
 
@@ -190,7 +190,7 @@ namespace COMPASS
             if(Key.Enter == e.Key)
             {
                 e.Handled = true;
-                MainViewModel.FilterHandler.UpdateSearchFilteredFiles(Searchbox.Text);
+                MainViewModel.FilterVM.UpdateSearchFilteredFiles(Searchbox.Text);
             }
         }
     }

@@ -16,7 +16,7 @@ using System.Xml;
 
 namespace COMPASS.ViewModels
 {
-    public class SettingsViewModel : BaseViewModel
+    public class SettingsViewModel : ViewModelBase
     {
         public SettingsViewModel()
         {
@@ -36,8 +36,8 @@ namespace COMPASS.ViewModels
         private static SerializablePreferences AllPreferences = new();
         public void SavePreferences()
         {
-            //Save OpenFilePriority
-            AllPreferences.OpenFilePriorityIDs = OpenFilePriority.Select(pf => pf.ID).ToList();
+            //Save OpenCodexPriority
+            AllPreferences.OpenFilePriorityIDs = OpenCodexPriority.Select(pf => pf.ID).ToList();
 
             using var writer = XmlWriter.Create(Constants.PreferencesFilePath, XmlWriteSettings);
             System.Xml.Serialization.XmlSerializer serializer = new(typeof(SerializablePreferences));
@@ -53,7 +53,7 @@ namespace COMPASS.ViewModels
                 Reader.Close();
             }
             //put openFilePriority in right order
-            OpenFilePriority = new ObservableCollection<PreferableFunction<Codex>>(OpenFileFunctions.OrderBy(pf => AllPreferences.OpenFilePriorityIDs.IndexOf(pf.ID)));
+            OpenCodexPriority = new ObservableCollection<PreferableFunction<Codex>>(OpenFileFunctions.OrderBy(pf => AllPreferences.OpenFilePriorityIDs.IndexOf(pf.ID)));
         }
         #endregion
 
@@ -63,15 +63,15 @@ namespace COMPASS.ViewModels
         //list with possible functions to open a file
         private readonly List<PreferableFunction<Codex>> OpenFileFunctions = new()
             {
-                new PreferableFunction<Codex>("Local File", FileBaseViewModel.OpenFileLocally,0),
-                new PreferableFunction<Codex>("Web Version", FileBaseViewModel.OpenFileOnline,1)
+                new PreferableFunction<Codex>("Local File", CodexViewModel.OpenCodexLocally,0),
+                new PreferableFunction<Codex>("Web Version", CodexViewModel.OpenCodexOnline,1)
             };
         //same ordered version of the list
-        private ObservableCollection<PreferableFunction<Codex>> _openFilePriority;
-        public ObservableCollection<PreferableFunction<Codex>> OpenFilePriority
+        private ObservableCollection<PreferableFunction<Codex>> _openCodexPriority;
+        public ObservableCollection<PreferableFunction<Codex>> OpenCodexPriority
         {
-            get { return _openFilePriority; }
-            set { SetProperty(ref _openFilePriority, value); }
+            get { return _openCodexPriority; }
+            set { SetProperty(ref _openCodexPriority, value); }
         }
         #endregion
 
@@ -102,7 +102,7 @@ namespace COMPASS.ViewModels
         private void RenameFolderReferences(string oldpath, string newpath)
         {
             AmountRenamed = 0;
-            foreach(Codex c in MVM.CurrentCollection.AllFiles)
+            foreach(Codex c in MVM.CurrentCollection.AllCodices)
             {
                 if (c.Path != null)
                 {
@@ -117,7 +117,7 @@ namespace COMPASS.ViewModels
         #endregion
 
         public void RegenAllThumbnails() { 
-            foreach(Codex codex in MVM.CurrentCollection.AllFiles)
+            foreach(Codex codex in MVM.CurrentCollection.AllCodices)
             {
                 //codex.Thumbnail = codex.CoverArt.Replace("CoverArt", "Thumbnails");
                 CoverFetcher.CreateThumbnail(codex);

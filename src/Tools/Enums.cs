@@ -4,11 +4,11 @@ namespace COMPASS.Tools
 {
     public static class Enums
     {
-        public enum FileView
+        public enum CodexLayout
         {
-            ListView,
-            CardView,
-            TileView
+            ListLayout,
+            CardLayout,
+            TileLayout
         }
 
         [Flags]

@@ -8,7 +8,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:Models ="clr-namespace:COMPASS.Models"
         xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
-        xmlns:Tools ="clr-namespace:COMPASS.Tools"
+        xmlns:Tools ="clr-namespace:COMPASS.Tools" xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:FileEditViewModel}"
         mc:Ignorable="d"
         Title="File Properties" Height="450" Width="1100" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
@@ -293,7 +293,7 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Background="{StaticResource CancelFill}" Name="DeleteFileBtn" Command="{Binding DeleteFileCommand}">
+            <Button Grid.Column="0" Background="{StaticResource CancelFill}" Name="DeleteFileBtn" Command="{Binding DeleteCodexCommand}">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Delete" />
                     <TextBlock Text="Delete"/>

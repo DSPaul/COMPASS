@@ -1,4 +1,5 @@
-﻿using COMPASS.Resources.Controls;
+﻿using COMPASS.Models;
+using COMPASS.Resources.Controls;
 using COMPASS.ViewModels;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
@@ -21,14 +22,14 @@ namespace COMPASS.Views
 
         public void HandleDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ((FileBaseViewModel)DataContext).OpenFile();
+            Codex toOpen = ((DataGridRow)sender).DataContext as Codex;
+            CodexViewModel.OpenCodex(toOpen);
         }
 
         //Make sure selected Item is always in view
         private void FileView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            DataGrid dataGrid = sender as DataGrid;
-            if (dataGrid != null && e.AddedItems != null && e.AddedItems.Count > 0)
+            if (sender is DataGrid dataGrid && e.AddedItems != null && e.AddedItems.Count > 0)
             {
                 dataGrid.ScrollIntoView(e.AddedItems[0]);
             }
@@ -41,7 +42,7 @@ namespace COMPASS.Views
 
         private void LoadDataGridInfo()
         {
-            FileView.ColumnInfo = JsonConvert.DeserializeObject<ObservableCollection<ColumnInfo>>(Properties.Settings.Default["DataGridCollumnInfo"].ToString());
+            ListLayoutGrid.ColumnInfo = JsonConvert.DeserializeObject<ObservableCollection<ColumnInfo>>(Properties.Settings.Default["DataGridCollumnInfo"].ToString());
 
         }
 

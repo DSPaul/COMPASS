@@ -103,7 +103,7 @@
                                 <Button.CommandParameter>
                                     <MultiBinding>
                                         <MultiBinding.Converter>
-                                            <Converters:MulitParamConverter/>
+                                            <Converters:MultiParamConverter/>
                                         </MultiBinding.Converter>
                                         <Binding Path="Text" ElementName="OldPathTextBox"/>
                                         <Binding Path="Text" ElementName="NewPathTextBox"/>

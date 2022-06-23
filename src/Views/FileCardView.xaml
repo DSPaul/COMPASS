@@ -5,63 +5,57 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
+             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters" 
+             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:CardLayoutViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+        <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
+        <Tools:BindingProxy x:Key="LayoutProxy" Data="{Binding}" />
+        <Tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
         <!--ContextMenu needs to be in every view where it is used instead of in a resource dict because 
             in resource dict it "sticks" to first view and the binding target for SelectedItems doesn't update when the view changes-->
-        <ContextMenu x:Key="MultiFileContextMenu" DataContext="{Binding PlacementTarget.DataContext, 
-        RelativeSource={RelativeSource Self}}">
-            <ContextMenu.Resources>
-                <Converters:MulitParamConverter x:Key="MultiParamConverter"/>
-            </ContextMenu.Resources>
-            <MenuItem Header="Open All Files" 
-                  CommandParameter="{Binding SelectedItems,
-                    RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
-                  Command="{Binding Path=DataContext.OpenSelectedFilesCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-            <MenuItem Header="Bulk Edit" CommandParameter="{Binding SelectedItems,
-                    RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
-                  Command="{Binding Path=DataContext.EditFilesCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-            <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
+        <ContextMenu x:Key="MultiCodexContextMenu" 
+                     DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
+            <MenuItem Header="Open Selected" CommandParameter="{Binding}"
+                  Command="{Binding Path=Data.OpenSelectedCodicesCommand, Source={StaticResource CodexProxy}}"/>
+                <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
+                  Command="{Binding Path=Data.EditCodexsCommand, Source={StaticResource CodexProxy}}"/>
+                <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
-                <MenuItem.ItemContainerStyle>
-                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                        <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.MoveToFolderCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-                        <Setter Property="MenuItem.CommandParameter">
-                            <Setter.Value>
-                                <MultiBinding Converter="{StaticResource MultiParamConverter}">
-                                    <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
-                                    <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}" FallbackValue="{x:Null}" TargetNullValue="{x:Null}"/>
-                                </MultiBinding>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </MenuItem.ItemContainerStyle>
-            </MenuItem>
-            <MenuItem Header="Delete All" CommandParameter="{Binding SelectedItems,
-                  RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
-                  Command="{Binding Path=DataContext.DeleteFileCommand,
-                  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        </ContextMenu>
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                            <Setter Property="MenuItem.Command" Value="{Binding Path=Data.MoveToCollectionCommand, Source={StaticResource CodexProxy}}"/>
+                            <Setter Property="MenuItem.CommandParameter">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource MultiParamConverter}">
+                                        <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
+                                        <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}"/>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                </MenuItem>
+                <MenuItem Header="Delete All" CommandParameter="{Binding}"
+                  Command="{Binding Path=Data.DeleteCodexCommand, Source={StaticResource CodexProxy}}"/>
+            </ContextMenu>
     </UserControl.Resources>
         <!--#region CardView-->
-    <ListBox x:Name="FileView" ItemsSource="{Binding MVM.FilterHandler.ActiveFiles}" Background="{x:Null}"
+    <ListBox x:Name="CardLayout" ItemsSource="{Binding MVM.FilterVM.ActiveFiles}" Background="{x:Null}"
              BorderBrush="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}" SelectionMode="Extended"
              ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" SelectionChanged="FileView_SelectionChanged">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
-                    <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>
+                    <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/>
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
                     <Setter Property="BorderBrush" Value="Transparent"/>
                     <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="ContextMenu" Value="{DynamicResource MultiFileContextMenu}"/>
+                    <Setter Property="ContextMenu" Value="{DynamicResource MultiCodexContextMenu}"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -86,14 +80,14 @@
                             <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
                         </Trigger>
                         <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Value="1">
-                            <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>
+                            <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=FileView}" HorizontalAlignment="Center"/>
+                    <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=CardLayout}" HorizontalAlignment="Center"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
@@ -112,12 +106,10 @@
                             <Image Source="{Binding Thumbnail, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png }" HorizontalAlignment="Center"/>
                             <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
                                          Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource ToVisibilityConverter}}">
-                                <Button Tools:AP.IconKind="FileOutline" Style="{StaticResource IconBtn}"
-                                    Command="{Binding Path=DataContext.OpenFileLocallyCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"/>
-                                <Button Tools:AP.IconKind="Web" Style="{StaticResource IconBtn}"
-                                    Command="{Binding Path=DataContext.OpenFileOnlineCommand,
-                                RelativeSource={RelativeSource FindAncestor,  AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}"/>
+                                <Button Command="{Binding Path=Data.OpenCodexLocallyCommand, Source={StaticResource CodexProxy}}"
+                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FileOutline"/>
+                                <Button Command="{Binding Path=Data.OpenCodexOnlineCommand, Source={StaticResource CodexProxy}}"
+                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>
                                 <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
                                 Converter={StaticResource ToVisibilityConverter}}"/>
                             </StackPanel>

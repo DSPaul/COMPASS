@@ -6,13 +6,15 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:Controls="clr-namespace:COMPASS.Resources.Controls"
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
-             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
-             mc:Ignorable="d"  x:Name="FileListControl"
+             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters" 
+             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:ListLayoutViewModel}"
+             mc:Ignorable="d"  x:Name="LastLayoutControl"
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <Controls:EnhancedDataGrid x:Name="FileView" MaxWidth="{Binding ActualWidth, ElementName=FileListControl}"
+    <Controls:EnhancedDataGrid x:Name="ListLayoutGrid" MaxWidth="{Binding ActualWidth, ElementName=LastLayoutControl}"
                 Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
-                AutoGenerateColumns="False" ItemsSource="{Binding MVM.FilterHandler.ActiveFiles, IsAsync=True}"
+                AutoGenerateColumns="False" ItemsSource="{Binding MVM.FilterVM.ActiveFiles, IsAsync=True}"
                 CanUserAddRows="False" SelectionMode="Extended" CanUserSortColumns="True"
                 RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
                 SelectedItem="{Binding SelectedFile, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848"
@@ -20,7 +22,9 @@
                 VirtualizingStackPanel.VirtualizationMode = "Recycling" MaxHeight="4000"
                 SelectionChanged="FileView_SelectionChanged" DataContextChanged="FileView_DataContextChanged" TargetUpdated="FileView_TargetUpdated" >
         <DataGrid.Resources>
-            <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
+            <Tools:BindingProxy x:Key="LayoutProxy" Data="{Binding}" />
+            <Tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
+            <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
             <Style TargetType="{x:Type DataGridColumnHeader}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -58,7 +62,7 @@
                 </Setter>
                 <Setter Property="ContextMenu">
                     <Setter.Value>
-                        <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding Source = {StaticResource Proxy}, Path=Data.ViewOptions}"
+                        <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding Source = {StaticResource LayoutProxy}, Path=Data.ViewOptions}"
                                      ItemContainerStyle="{StaticResource DropdownMenuItem}"/>
                     </Setter.Value>
                 </Setter>
@@ -74,41 +78,30 @@
             </Style>
             <!--ContextMenu needs to be in every view where it is used instead of in a resource dict because 
             in resource dict it "sticks" to first view and the binding target for SelectedItems doesn't update when the view changes-->
-            <ContextMenu x:Key="MultiFileContextMenu" DataContext="{Binding PlacementTarget.DataContext, 
-                RelativeSource={RelativeSource Self}}">
-                <ContextMenu.Resources>
-                    <Converters:MulitParamConverter x:Key="MultiParamConverter"/>
-                </ContextMenu.Resources>
-                <MenuItem Header="Open All Files" 
-                  CommandParameter="{Binding SelectedItems,
-                    RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
-                  Command="{Binding Path=DataContext.OpenSelectedFilesCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-                <MenuItem Header="Bulk Edit" CommandParameter="{Binding SelectedItems,
-                    RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
-                  Command="{Binding Path=DataContext.EditFilesCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+            <ContextMenu x:Key="MultiCodexContextMenu" 
+                     DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
+                <MenuItem Header="Open Selected" CommandParameter="{Binding}"
+                  Command="{Binding Path=Data.OpenSelectedCodicesCommand, Source={StaticResource CodexProxy}}"/>
+                <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
+                  Command="{Binding Path=Data.EditCodicesCommand, Source={StaticResource CodexProxy}}"/>
                 <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
                     <MenuItem.ItemContainerStyle>
                         <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                            <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.MoveToFolderCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+                            <Setter Property="MenuItem.Command" Value="{Binding Path=Data.MoveToCollectionCommand, Source={StaticResource CodexProxy}}"/>
                             <Setter Property="MenuItem.CommandParameter">
                                 <Setter.Value>
                                     <MultiBinding Converter="{StaticResource MultiParamConverter}">
                                         <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
-                                        <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}" FallbackValue="{x:Null}" TargetNullValue="{x:Null}"/>
+                                        <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}"/>
                                     </MultiBinding>
                                 </Setter.Value>
                             </Setter>
                         </Style>
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
-                <MenuItem Header="Delete All" CommandParameter="{Binding SelectedItems,
-                  RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}"
-                  Command="{Binding Path=DataContext.DeleteFileCommand,
-                  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+                <MenuItem Header="Delete All" CommandParameter="{Binding}"
+                  Command="{Binding Path=Data.DeleteCodexCommand, Source={StaticResource CodexProxy}}"/>
             </ContextMenu>
         </DataGrid.Resources>
         <DataGrid.ItemContainerStyle>
@@ -120,7 +113,7 @@
             <Style TargetType="{x:Type DataGridRow}">
                 <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
                 <Setter Property="Background" Value="{x:Null}"/>
-                <Setter Property="ContextMenu" Value="{StaticResource MultiFileContextMenu}"/>
+                <Setter Property="ContextMenu" Value="{StaticResource MultiCodexContextMenu}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type DataGridRow}">
@@ -153,14 +146,14 @@
                         <Setter Property="Background" Value="{StaticResource ListHover}"/>
                     </Trigger>
                     <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Value="1">
-                        <Setter Property="ContextMenu" Value="{StaticResource FileContextMenu}"/>
+                        <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
         </DataGrid.RowStyle>
         <DataGrid.Columns>
             <DataGridTemplateColumn Header="TITLE" Width="3*" MinWidth="100" CanUserSort="True" SortMemberPath="Title"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTitle, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowTitle, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Title}" Style="{StaticResource default}" Margin="5,0"/>
@@ -168,7 +161,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="AUTHOR" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="Author"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowAuthor, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowAuthor, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Author}" Style="{StaticResource default}"/>
@@ -176,7 +169,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="PUBLISHER" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="Publisher"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowPublisher, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowPublisher, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Publisher}" Style="{StaticResource default}"/>
@@ -184,7 +177,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="RELEASE DATE" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="ReleaseDate"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowReleaseDate, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowReleaseDate, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding ReleaseDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource default}"/>
@@ -192,7 +185,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="VERSION" Width="*" MinWidth="20"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowVersion, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowVersion, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Version}" Style="{StaticResource default}"/>
@@ -200,7 +193,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="RATING" Width="*" CanUserSort="True" SortMemberPath="Rating" MinWidth="120"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowRating, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowRating, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <materialDesign:RatingBar Value ="{Binding Rating,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RenderTransformOrigin="0.5,0.5">
@@ -214,7 +207,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="TAGS" Width="5*"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowTags, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowTags, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <ItemsControl ItemsSource="{Binding Tags}" Background="Transparent" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
@@ -230,15 +223,13 @@
             </DataGridTemplateColumn>
             <!--<DataGridTextColumn Width="*"/>-->
             <DataGridTemplateColumn Header="" MinWidth="70" Width="*" CanUserResize="False"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowFileIcons, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowFileIcons, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Command="{Binding Path=DataContext.OpenFileLocallyCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                            <Button Command="{Binding Path=Data.OpenCodexLocallyCommand, Source={StaticResource CodexProxy}}"
                                     CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FileOutline"/>
-                            <Button Command="{Binding Path=DataContext.OpenFileOnlineCommand,
-                                RelativeSource={RelativeSource FindAncestor,  AncestorType={x:Type UserControl}}}"
+                            <Button Command="{Binding Path=Data.OpenCodexOnlineCommand, Source={StaticResource CodexProxy}}"
                                     CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>
                             <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
                                 Converter={StaticResource ToVisibilityConverter}}"/>
@@ -247,12 +238,10 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="" Width="25" MinWidth="25" CanUserResize="False"
-                                    Visibility="{Binding Source={StaticResource Proxy}, Path=Data.ShowEditIcon, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowEditIcon, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <Button Command="{Binding Path=DataContext.EditFileCommand,
-                                RelativeSource={RelativeSource FindAncestor,
-                                AncestorType={x:Type UserControl}}}">
+                        <Button Command="{Binding Path=Data.EditCodexCommand,Source={StaticResource CodexProxy}}">
                             <materialDesign:PackIcon Kind="Pencil"/>
                         </Button>
                     </DataTemplate>

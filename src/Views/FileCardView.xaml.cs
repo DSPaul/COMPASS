@@ -1,4 +1,5 @@
-﻿using COMPASS.ViewModels;
+﻿using COMPASS.Models;
+using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,8 @@ namespace COMPASS.Views
 
         public void HandleDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ((FileBaseViewModel)DataContext).OpenFile();
+            Codex toOpen = ((ListBoxItem)sender).DataContext as Codex;
+            CodexViewModel.OpenCodex(toOpen);
         }
 
         //Make sure selected Item is always in view

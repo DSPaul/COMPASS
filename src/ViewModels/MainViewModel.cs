@@ -25,7 +25,7 @@ namespace COMPASS.ViewModels
     {
         public MainViewModel()
         {
-            BaseViewModel.MVM = this;
+            ViewModelBase.MVM = this;
             SettingsVM = new SettingsViewModel();
             
             //Load data
@@ -58,13 +58,13 @@ namespace COMPASS.ViewModels
             IsOnline = Utils.PingURL();
 
             //Commands
-            ChangeFileViewCommand = new RelayCommand<FileView>(ChangeFileView);
+            ChangeFileViewCommand = new RelayCommand<CodexLayout>(ChangeFileView);
             ResetCommand = new ActionCommand(Reset);
             AddTagCommand = new ActionCommand(AddTag);
             ImportFilesCommand = new RelayCommand<Sources>(ImportFiles);
-            CreateFolderCommand = new RelayCommand<string>(CreateFolder);
-            EditFolderCommand = new RelayCommand<string>(EditFolder);
-            DeleteFolderCommand = new ActionCommand(RaiseDeleteFolderWarning);
+            CreateCollectionCommand = new RelayCommand<string>(CreateCollection);
+            EditCollectionNameCommand = new RelayCommand<string>(EditCollectionName);
+            DeleteCollectionCommand = new ActionCommand(RaiseDeleteCollectionWarning);
             SearchCommand = new RelayCommand<string>(Search);
             OpenSettingsCommand = new RelayCommand<string>(OpenSettings);
             CheckForUpdatesCommand = new ActionCommand(CheckForUpdates);
@@ -78,17 +78,17 @@ namespace COMPASS.ViewModels
             Directory.CreateDirectory(CodexCollection.CollectionsPath);
 
             //Get all RPG systems by folder name
-            Folders = new ObservableCollection<string>();
+            CollectionDirectories = new ObservableCollection<string>();
             string[] FullPathFolders = Directory.GetDirectories(CodexCollection.CollectionsPath);
             foreach (string p in FullPathFolders)
             {
-                Folders.Add(Path.GetFileName(p));
+                CollectionDirectories.Add(Path.GetFileName(p));
             }
 
             //in case of first boot, create default folder
-            if (Folders.Count == 0)
+            if (CollectionDirectories.Count == 0)
             {
-                CreateFolder("Default");
+                CreateCollection("Default");
             }
 
             //in case startup collection no longer exists
@@ -96,11 +96,11 @@ namespace COMPASS.ViewModels
             {
                 MessageBox.Show("The collection " + Properties.Settings.Default.StartupCollection + " could not be found. ");
                 //pick first one that does exists
-                foreach (string f in Folders)
+                foreach (string dir in CollectionDirectories)
                 {
-                    if (Directory.Exists(CodexCollection.CollectionsPath + f))
+                    if (Directory.Exists(CodexCollection.CollectionsPath + dir))
                     {
-                        CurrentFolder = f;
+                        CurrentCollectionName = dir;
                         break;
                     }
                 }
@@ -109,7 +109,7 @@ namespace COMPASS.ViewModels
             //otherwise, open startup collection
             else
             {
-                CurrentFolder = Properties.Settings.Default.StartupCollection;
+                CurrentCollectionName = Properties.Settings.Default.StartupCollection;
             }
         }
 
@@ -189,35 +189,35 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Properties
-        private ObservableCollection<string> _Folders;
-        public ObservableCollection<string> Folders
+        private ObservableCollection<string> _collectionDirectories;
+        public ObservableCollection<string> CollectionDirectories
         {
-            get { return _Folders; }
-            set { SetProperty(ref _Folders, value); }
+            get { return _collectionDirectories; }
+            set { SetProperty(ref _collectionDirectories, value); }
         }
 
-        private string currentFolder;
-        public string CurrentFolder
+        private string _currentCollectionName;
+        public string CurrentCollectionName
         {
-            get { return currentFolder; }
+            get { return _currentCollectionName; }
             set
             {
                 if (CurrentCollection != null)
                 {
-                    CurrentCollection.SaveFilesToFile();
-                    CurrentCollection.SaveTagsToFile();
+                    CurrentCollection.SaveCodices();
+                    CurrentCollection.SaveTags();
                 }
-                if(value != null) ChangeFolder(value);
-                SetProperty(ref currentFolder, value);
+                if(value != null) ChangeCollection(value);
+                SetProperty(ref _currentCollectionName, value);
             }
         }
 
         //CodexCollection 
-        private CodexCollection currentCollection;
+        private CodexCollection _currentCollection;
         public CodexCollection CurrentCollection
         {
-            get { return currentCollection; }
-            private set { SetProperty(ref currentCollection, value); }
+            get { return _currentCollection; }
+            private set { SetProperty(ref _currentCollection, value); }
         }
 
         private bool isOnline;
@@ -232,59 +232,49 @@ namespace COMPASS.ViewModels
         #region Handlers and ViewModels
 
         //Settings ViewModel
-        private SettingsViewModel _SettingsVM;
+        private SettingsViewModel _settingsVM;
         public SettingsViewModel SettingsVM
         {
-            get { return _SettingsVM; }
-            set { SetProperty(ref _SettingsVM, value); }
+            get { return _settingsVM; }
+            set { SetProperty(ref _settingsVM, value); }
         }
 
-        //Filter Handler
-        private FilterHandler filterHandler;
-        public FilterHandler FilterHandler
+        private FilterViewModel _filterVM;
+        public FilterViewModel FilterVM
         {
-            get { return filterHandler; }
-            private set { SetProperty(ref filterHandler, value); }
+            get { return _filterVM; }
+            private set { SetProperty(ref _filterVM, value); }
         }
 
-        //File ViewModel
-        private FileBaseViewModel currentFileViewModel;
-        public FileBaseViewModel CurrentFileViewModel
+        private LayoutViewModel _currentLayout;
+        public LayoutViewModel CurrentLayout
         {
-            get { return currentFileViewModel; }
-            set { SetProperty(ref currentFileViewModel, value); }
-        }
-
-        //Edit ViewModel
-        private BaseEditViewModel currentEditViewModel;
-        public BaseEditViewModel CurrentEditViewModel
-        {
-            get { return currentEditViewModel; }
-            set { SetProperty(ref currentEditViewModel, value); }
+            get { return _currentLayout; }
+            set { SetProperty(ref _currentLayout, value); }
         }
 
         //Tag Creation ViewModel
-        private BaseEditViewModel addTagViewModel;
-        public BaseEditViewModel AddTagViewModel
+        private IEditViewModel _addTagViewModel;
+        public IEditViewModel AddTagViewModel
         {
-            get { return addTagViewModel; }
-            set { SetProperty(ref addTagViewModel, value); }
+            get { return _addTagViewModel; }
+            set { SetProperty(ref _addTagViewModel, value); }
         }
 
         //Tags and Filters Tabs ViewModel (Left Dock)
-        private TagsFiltersViewModel tfViewModel;
+        private TagsFiltersViewModel _tfViewModel;
         public TagsFiltersViewModel TFViewModel
         {
-            get { return tfViewModel; }
-            set { SetProperty(ref tfViewModel, value); }
+            get { return _tfViewModel; }
+            set { SetProperty(ref _tfViewModel, value); }
         }
 
         //Import ViewModel
-        private ImportViewModel currentimportViewModel;
+        private ImportViewModel _currentImportVM;
         public ImportViewModel CurrentImportViewModel
         {
-            get { return currentimportViewModel; }
-            set { SetProperty(ref currentimportViewModel, value); }
+            get { return _currentImportVM; }
+            set { SetProperty(ref _currentImportVM, value); }
         }
 
         #endregion
@@ -300,20 +290,20 @@ namespace COMPASS.ViewModels
         }
 
         //Change Fileview
-        public RelayCommand<FileView> ChangeFileViewCommand { get; private set; }
-        public void ChangeFileView(FileView v)
+        public RelayCommand<CodexLayout> ChangeFileViewCommand { get; private set; }
+        public void ChangeFileView(CodexLayout v)
         {
             Properties.Settings.Default.PreferedView = (int)v;
             switch (v)
             {
-                case FileView.ListView:
-                    CurrentFileViewModel = new FileListViewModel();
+                case CodexLayout.ListLayout:
+                    CurrentLayout = new ListLayoutViewModel();
                     break;
-                case FileView.CardView:
-                    CurrentFileViewModel = new FileCardViewModel();
+                case CodexLayout.CardLayout:
+                    CurrentLayout = new CardLayoutViewModel();
                     break;
-                case FileView.TileView:
-                    CurrentFileViewModel = new FileTileViewModel();
+                case CodexLayout.TileLayout:
+                    CurrentLayout = new TileLayoutViewModel();
                     break;
             }
         }
@@ -323,13 +313,13 @@ namespace COMPASS.ViewModels
 
         public void Refresh()
         {
-            FilterHandler.ReFilter();
+            FilterVM.ReFilter();
             TFViewModel.TagsTabVM.RefreshTreeView();
         }
 
         public void Reset()
         {
-            FilterHandler.ClearFilters();
+            FilterVM.ClearFilters();
             TFViewModel.TagsTabVM.RefreshTreeView();
         }
 
@@ -344,52 +334,52 @@ namespace COMPASS.ViewModels
         public RelayCommand<Sources> ImportFilesCommand { get; private set; }
         public void ImportFiles(Sources source)
         {
-            CurrentImportViewModel = new ImportViewModel(source);
+            CurrentImportViewModel = new ImportViewModel(source, CurrentCollection);
         } 
 
         //Change Collection
-        public void ChangeFolder(string folder)
+        public void ChangeCollection(string collectionDir)
         {
-            CurrentCollection = new CodexCollection(folder);            
-            FilterHandler = new FilterHandler(currentCollection);
-            ChangeFileView((FileView)Properties.Settings.Default.PreferedView);
+            CurrentCollection = new CodexCollection(collectionDir);            
+            FilterVM = new FilterViewModel(_currentCollection);
+            ChangeFileView((CodexLayout)Properties.Settings.Default.PreferedView);
             TFViewModel = new TagsFiltersViewModel();
             AddTagViewModel = new TagEditViewModel(null);
         }
 
         //Add new CodexCollection
-        public RelayCommand<string> CreateFolderCommand { get; private set; }
-        public void CreateFolder(string folder)
+        public RelayCommand<string> CreateCollectionCommand { get; private set; }
+        public void CreateCollection(string dirName)
         {
-            Directory.CreateDirectory((CodexCollection.CollectionsPath + folder + @"\CoverArt"));
-            Directory.CreateDirectory((CodexCollection.CollectionsPath + folder + @"\Thumbnails"));
-            Folders.Add(folder);
-            CurrentFolder = folder;
+            Directory.CreateDirectory((CodexCollection.CollectionsPath + dirName + @"\CoverArt"));
+            Directory.CreateDirectory((CodexCollection.CollectionsPath + dirName + @"\Thumbnails"));
+            CollectionDirectories.Add(dirName);
+            CurrentCollectionName = dirName;
         }
 
         //Rename Collection
-        public RelayCommand<string> EditFolderCommand { get; private set; }
-        public void EditFolder(string folder)
+        public RelayCommand<string> EditCollectionNameCommand { get; private set; }
+        public void EditCollectionName(string newName)
         {
-            var index = Folders.IndexOf(CurrentFolder);
-            CurrentCollection.RenameCollection(folder);
-            Folders[index] = folder;
-            CurrentFolder = folder;
+            var index = CollectionDirectories.IndexOf(CurrentCollectionName);
+            CurrentCollection.RenameCollection(newName);
+            CollectionDirectories[index] = newName;
+            CurrentCollectionName = newName;
         }
 
         //Delete Collection
-        public ActionCommand DeleteFolderCommand { get; private set; }
-        public void RaiseDeleteFolderWarning()
+        public ActionCommand DeleteCollectionCommand { get; private set; }
+        public void RaiseDeleteCollectionWarning()
         {
-            if (CurrentCollection.AllFiles.Count > 0)
+            if (CurrentCollection.AllCodices.Count > 0)
             {
                 //MessageBox "Are you Sure?"
                 string sCaption = "Are you Sure?";
 
                 string MessageSingle = "There is still one file in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
-                string MessageMultiple = "There are still" + currentCollection.AllFiles.Count + " files in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
+                string MessageMultiple = "There are still" + _currentCollection.AllCodices.Count + " files in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
 
-                string sMessageBoxText = CurrentCollection.AllFiles.Count == 1 ? MessageSingle : MessageMultiple;
+                string sMessageBoxText = CurrentCollection.AllCodices.Count == 1 ? MessageSingle : MessageMultiple;
 
                 MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
                 MessageBoxImage imgMessageBox = MessageBoxImage.Warning;
@@ -398,18 +388,18 @@ namespace COMPASS.ViewModels
 
                 if (rsltMessageBox == MessageBoxResult.Yes)
                 {
-                    DeleteFolder(CurrentFolder);
+                    DeleteCollection(CurrentCollectionName);
                 }
             }
             else
             {
-                DeleteFolder(CurrentFolder);
+                DeleteCollection(CurrentCollectionName);
             }
         }
-        public void DeleteFolder(string todelete)
+        public void DeleteCollection(string todelete)
         {
-            Folders.Remove(todelete);
-            CurrentFolder = Folders[0];
+            CollectionDirectories.Remove(todelete);
+            CurrentCollectionName = CollectionDirectories[0];
             Directory.Delete(CodexCollection.CollectionsPath + todelete,true);
         }
 
@@ -417,7 +407,7 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> SearchCommand { get; private set; }
         public void Search(string searchterm)
         {
-            FilterHandler.UpdateSearchFilteredFiles(searchterm);
+            FilterVM.UpdateSearchFilteredFiles(searchterm);
         }
 
         //called every few seconds to update IsOnline

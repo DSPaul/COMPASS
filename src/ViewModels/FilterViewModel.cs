@@ -7,24 +7,24 @@ using System.Linq;
 using System.Windows.Data;
 using System.Windows.Media;
 using FuzzySharp;
+using COMPASS.Tools;
 
-namespace COMPASS.Tools
+namespace COMPASS.ViewModels
 {
-    public class FilterHandler : ObservableObject
+    public class FilterViewModel : ViewModelBase
     {
-        readonly CodexCollection cc;
 
         //Constuctor
-        public FilterHandler(CodexCollection CurrentCollection)
+        public FilterViewModel(CodexCollection CurrentCollection)
         {
-            cc = CurrentCollection;
+            _cc = CurrentCollection;
 
-            ActiveFiles = new(cc.AllFiles);
+            ActiveFiles = new(_cc.AllCodices);
 
             //load sorting from settings
             var PropertyPath = (string)Properties.Settings.Default["SortProperty"];
-            var SortDirection = (ListSortDirection) Properties.Settings.Default["SortDirection"];
-            SortBy(PropertyPath,SortDirection);
+            var SortDirection = (ListSortDirection)Properties.Settings.Default["SortDirection"];
+            SortBy(PropertyPath, SortDirection);
 
             ExcludedCodicesByTag = new();
             ExcludedCodicesBySearch = new();
@@ -33,13 +33,15 @@ namespace COMPASS.Tools
             SearchTerm = "";
             ActiveTags = new();
             ActiveTags.CollectionChanged += (e, v) => UpdateTagFilteredFiles();
-            ActiveFilters = new ();
+            ActiveFilters = new();
             ActiveFilters.CollectionChanged += (e, v) => UpdateFieldFilteredFiles();
             SearchFilters = new();
         }
 
         #region Properties
-        //Collections
+        readonly CodexCollection _cc;
+
+        //CollectionDirectories
         public ObservableCollection<Tag> ActiveTags { get; set; }
         public ObservableCollection<FilterTag> ActiveFilters { get; set; }
         public ObservableCollection<FilterTag> SearchFilters { get; set; }
@@ -73,7 +75,7 @@ namespace COMPASS.Tools
             ExcludedCodicesByTag.Clear();
             ActiveTags.Clear();
             ActiveFilters.Clear();
-            ActiveFiles = new(cc.AllFiles);
+            ActiveFiles = new(_cc.AllCodices);
         }
 
         //-------------For Tags---------------//
@@ -103,7 +105,7 @@ namespace COMPASS.Tools
                     Tag P = SingleGroupTags[i].GetParent();
                     if (P != null && !P.IsGroup && !SingleGroupTags.Contains(P)) SingleGroupTags.Add(P);
                 }
-                SingleGroupFilteredFiles = new(cc.AllFiles.Where(f => !SingleGroupTags.Intersect(f.Tags).Any()));
+                SingleGroupFilteredFiles = new(_cc.AllCodices.Where(f => !SingleGroupTags.Intersect(f.Tags).Any()));
                 
                 ExcludedCodicesByTag = ExcludedCodicesByTag.Union(SingleGroupFilteredFiles).ToHashSet();
             }
@@ -124,7 +126,6 @@ namespace COMPASS.Tools
         {
             ActiveTags.Remove(t);
         }
-        //------------------------------------//
 
         //-------------For Filters------------//
         public void UpdateFieldFilteredFiles()
@@ -155,34 +156,34 @@ namespace COMPASS.Tools
                         //handled by UpdateSearchFilteredFiles
                         break;
                     case Enums.FilterType.Author:
-                        ExcludedCodices = cc.AllFiles.Where(f => !FilterValues.Contains(f.Author));
+                        ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Contains(f.Author));
                         break;
                     case Enums.FilterType.Publisher:
-                        ExcludedCodices = cc.AllFiles.Where(f => !FilterValues.Contains(f.Publisher));
+                        ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Contains(f.Publisher));
                         break;
                     case Enums.FilterType.StartReleaseDate:
-                        ExcludedCodices = cc.AllFiles.Where(f => f.ReleaseDate < (DateTime?)FilterValues.First());
+                        ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate < (DateTime?)FilterValues.First());
                         break;
                     case Enums.FilterType.StopReleaseDate:
-                        ExcludedCodices = cc.AllFiles.Where(f => f.ReleaseDate > (DateTime?)FilterValues.First());
+                        ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate > (DateTime?)FilterValues.First());
                         break;
                     case Enums.FilterType.MinimumRating:
-                        ExcludedCodices = cc.AllFiles.Where(f => f.Rating < (int)FilterValues.First());
+                        ExcludedCodices = _cc.AllCodices.Where(f => f.Rating < (int)FilterValues.First());
                         break;
                     case Enums.FilterType.OfflineSource:
                         invert = (bool)FilterValues.First();
-                        ExcludedCodices = cc.AllFiles.Where(f => !f.HasOfflineSource());
+                        ExcludedCodices = _cc.AllCodices.Where(f => !f.HasOfflineSource());
                         break;
                     case Enums.FilterType.OnlineSource:
                         invert = (bool)FilterValues.First();
-                        ExcludedCodices = cc.AllFiles.Where(f => !f.HasOnlineSource());
+                        ExcludedCodices = _cc.AllCodices.Where(f => !f.HasOnlineSource());
                         break;
                     case Enums.FilterType.PhysicalSource:
                         invert = (bool)FilterValues.First();
-                        ExcludedCodices = cc.AllFiles.Where(f => !f.Physically_Owned);
+                        ExcludedCodices = _cc.AllCodices.Where(f => !f.Physically_Owned);
                         break;
                 }
-                if (invert) ExcludedCodices = cc.AllFiles.Except(ExcludedCodices);
+                if (invert) ExcludedCodices = _cc.AllCodices.Except(ExcludedCodices);
                 ExcludedCodicesByFilter = ExcludedCodicesByFilter.Union(ExcludedCodices).ToHashSet();
             }
             UpdateActiveFiles();
@@ -207,17 +208,17 @@ namespace COMPASS.Tools
             {
                 HashSet<Codex> IncludedCodicesBySearch = new();
                 //include acronyms
-                IncludedCodicesBySearch.UnionWith(cc.AllFiles
+                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
                     .Where(f => Fuzz.TokenInitialismRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
                 //include string fragments
-                IncludedCodicesBySearch.UnionWith(cc.AllFiles
+                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
                     .Where(f => f.Title.Contains(SearchTerm, StringComparison.InvariantCultureIgnoreCase)));
                 //include spelling errors
                 //include acronyms
-                IncludedCodicesBySearch.UnionWith(cc.AllFiles
+                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
                     .Where(f => Fuzz.PartialRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
 
-                ExcludedCodicesBySearch = new(cc.AllFiles.Except(IncludedCodicesBySearch));
+                ExcludedCodicesBySearch = new(_cc.AllCodices.Except(IncludedCodicesBySearch));
 
                 //create the tag
                 FilterTag SearchTag = new(SearchFilters, Enums.FilterType.Search, searchterm) 
@@ -288,7 +289,7 @@ namespace COMPASS.Tools
             SaveSortDescriptions(sortDescr.PropertyName, sortDescr.Direction);
 
             //compile list of "active" files, which are files that match all the different filters
-            ActiveFiles = new ObservableCollection<Codex>(cc.AllFiles
+            ActiveFiles = new ObservableCollection<Codex>(_cc.AllCodices
                 .Except(ExcludedCodicesBySearch)
                 .Except(ExcludedCodicesByTag)
                 .Except(ExcludedCodicesByFilter)

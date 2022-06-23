@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class FileEditViewModel : BaseEditViewModel
+    public class CodexEditViewModel : DealsWithTreeviews ,IEditViewModel
     {
-        public FileEditViewModel(Codex ToEdit) : base()
+        public CodexEditViewModel(Codex toEdit) : base(MVM.CurrentCollection.RootTags)
         {
-            EditedCodex = ToEdit;
+            EditedCodex = toEdit;
             //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked
-            TempCodex = new Codex(CurrentCollection);
+            TempCodex = new(MVM.CurrentCollection);
             if(!CreateNewCodex) TempCodex.Copy(EditedCodex);
 
             //Apply right checkboxes in Alltags
@@ -27,14 +27,6 @@ namespace COMPASS.ViewModels
                 t.Selected = TempCodex.Tags.Contains(t.Tag);
                 if (t.Children.Any(node => TempCodex.Tags.Contains(node.Tag))) t.Expanded = true;
             }
-
-            //Commands
-            BrowsePathCommand = new ActionCommand(BrowsePath);
-            TagCheckCommand = new ActionCommand(Update_Taglist);
-            DeleteFileCommand = new ActionCommand(DeleteFile);
-            BrowseURLCommand = new ActionCommand(BrowseURL);
-            FetchCoverCommand = new ActionCommand(FetchCover);
-            ChooseCoverCommand = new ActionCommand(ChooseCover);
         }
 
         #region Properties
@@ -59,7 +51,8 @@ namespace COMPASS.ViewModels
 
         #region Funtions and Commands
 
-        public ActionCommand BrowsePathCommand { get; private set; }
+        private ActionCommand _browsePathCommand;
+        public ActionCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
         private void BrowsePath()
         {
             OpenFileDialog openFileDialog = new()
@@ -74,34 +67,16 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public override void OKBtn()
+        private ActionCommand _browseURLCommand;
+        public ActionCommand BrowseURLCommand => _browseURLCommand ??= new(BrowseURL);
+        private void BrowseURL()
         {
-            //Copy changes into Codex
-            if(!CreateNewCodex) EditedCodex.Copy(TempCodex);
-            else
-            {
-                Codex ToAdd = new ();
-                ToAdd.Copy(TempCodex);
-                CurrentCollection.AllFiles.Add(ToAdd);
-                MVM.Refresh();
-            }
-            //Add new Author and Publishers to lists
-            if(TempCodex.Author != "" && !CurrentCollection.AuthorList.Contains(TempCodex.Author)) 
-                CurrentCollection.AuthorList.Add(TempCodex.Author);
-            if(TempCodex.Publisher != "" && !CurrentCollection.PublisherList.Contains(TempCodex.Publisher)) 
-                CurrentCollection.PublisherList.Add(TempCodex.Publisher);
-
-            //reset needed to show art update
-            if(CoverArtChanged) MVM.Refresh();
-            CloseAction();
+            if (CodexViewModel.CanOpenCodexOnline(TempCodex))
+                CodexViewModel.OpenCodexOnline(TempCodex);
         }
 
-        public override void Cancel()
-        {
-            CloseAction();
-        }
-
-        public ActionCommand TagCheckCommand { get; private set; }
+        private ActionCommand _tagCheckCommand;
+        public ActionCommand TagCheckCommand => _tagCheckCommand ??= new(Update_Taglist);
         public void Update_Taglist()
         {
             TempCodex.Tags.Clear();
@@ -114,32 +89,28 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public ActionCommand DeleteFileCommand { get; private set; }
-        private void DeleteFile()
+        private ActionCommand _deleteCodexCommand;
+        public ActionCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
+        private void DeleteCodex()
         {
             if (!CreateNewCodex)
             {
-                CurrentCollection.DeleteFile(EditedCodex);
-                MVM.FilterHandler.RemoveCodex(EditedCodex);
+                MVM.CurrentCollection.DeleteCodex(EditedCodex);
+                MVM.FilterVM.RemoveCodex(EditedCodex);
             }
             CloseAction();
         }
 
-        public ActionCommand BrowseURLCommand { get; private set; }
-        private void BrowseURL()
-        {
-            if (TempCodex.SourceURL == "") return;
-            System.Diagnostics.Process.Start(TempCodex.SourceURL);
-        }
-
-        public ActionCommand FetchCoverCommand { get; private set; }
+        private ActionCommand _fetchCoverCommand;
+        public ActionCommand FetchCoverCommand => _fetchCoverCommand ??= new(FetchCover);
         private void FetchCover()
         {
             CoverFetcher.GetCover(TempCodex);
             RefreshCover();
         }
 
-        public ActionCommand ChooseCoverCommand { get; private set; }
+        private ActionCommand _chooseCoverCommand;
+        public ActionCommand ChooseCoverCommand => _chooseCoverCommand ??= new(ChooseCover);
         private void ChooseCover()
         {
             OpenFileDialog openFileDialog = new()
@@ -167,6 +138,40 @@ namespace COMPASS.ViewModels
 
             CoverArtChanged = true;
         }
+
+        public Action CloseAction { get; set; }
+
+        private ActionCommand _oKCommand;
+        public ActionCommand OKCommand => _oKCommand ??= new(OKBtn);
+        public void OKBtn()
+        {
+            //Copy changes into Codex
+            if (!CreateNewCodex) EditedCodex.Copy(TempCodex);
+            else
+            {
+                Codex ToAdd = new();
+                ToAdd.Copy(TempCodex);
+                MVM.CurrentCollection.AllCodices.Add(ToAdd);
+                MVM.Refresh();
+            }
+            //Add new Author and Publishers to lists
+            if (TempCodex.Author != "" && !MVM.CurrentCollection.AuthorList.Contains(TempCodex.Author))
+                MVM.CurrentCollection.AuthorList.Add(TempCodex.Author);
+            if (TempCodex.Publisher != "" && !MVM.CurrentCollection.PublisherList.Contains(TempCodex.Publisher))
+                MVM.CurrentCollection.PublisherList.Add(TempCodex.Publisher);
+
+            //reset needed to show art update
+            if (CoverArtChanged) MVM.Refresh();
+            CloseAction();
+        }
+
+        private ActionCommand _cancelCommand;
+        public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
+        public void Cancel()
+        {
+            CloseAction();
+        }
+
         #endregion
     }
 }

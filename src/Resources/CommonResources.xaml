@@ -380,38 +380,48 @@
         </Setter>
     </Style>
 
-    <ContextMenu x:Key="FileContextMenu">
+    <ContextMenu x:Key="CodexContextMenu">
         <ContextMenu.Resources>
-            <Converters:MulitParamConverter x:Key="MultiParamConverter"/>
+            <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
         </ContextMenu.Resources>
-        <MenuItem Header="Open Locally" Command="{Binding Path=DataContext.OpenFileLocallyCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Open Online" Command="{Binding Path=DataContext.OpenFileOnlineCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Edit" Command="{Binding Path=DataContext.EditFileCommand,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Show in Explorer" Command="{Binding Path=DataContext.ShowInExplorerCommand, 
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Open Locally" 
+                  Command="{Binding Path=DataContext.CodexVM.OpenCodexLocallyCommand,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
+        <MenuItem Header="Open Online" 
+                  Command="{Binding Path=DataContext.CodexVM.OpenCodexOnlineCommand,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
+        <MenuItem Header="Edit" 
+                  Command="{Binding Path=DataContext.CodexVM.EditCodexCommand,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
+        <MenuItem Header="Show in Explorer" 
+                  Command="{Binding Path=DataContext.CodexVM.ShowInExplorerCommand, 
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
         <MenuItem Header="Move to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
             <MenuItem.ItemContainerStyle>
                 <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                    <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.MoveToFolderCommand,
+                    <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.CodexVM.MoveToCollectionCommand,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+                    <Setter Property="DataContext" Value="{Binding Parent.DataContext}"/>
                     <Setter Property="MenuItem.CommandParameter">
                         <Setter.Value>
                             <MultiBinding Converter="{StaticResource MultiParamConverter}">
                                 <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
-                                <Binding Path="doesnotexist" FallbackValue="{x:Null}" TargetNullValue="{x:Null}"/>
+                                <Binding Path="Parent.DataContext" RelativeSource="{RelativeSource AncestorType=MenuItem, AncestorLevel=1}"/>
                             </MultiBinding>
                         </Setter.Value>
                     </Setter>
                 </Style>
             </MenuItem.ItemContainerStyle>
         </MenuItem>
-        <MenuItem Header="Delete" Command="{Binding Path=DataContext.DeleteFileCommand,
-                  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
-                  CommandParameter="{x:Null}"/>
+        <MenuItem Header="Delete" 
+                  Command="{Binding Path=DataContext.CodexVM.DeleteCodexCommand,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
     </ContextMenu>
 
     <!--#endregion-->
