@@ -32,6 +32,8 @@ namespace COMPASS.ViewModels
             try
             {
                 Process.Start(new ProcessStartInfo(toOpen.Path) {UseShellExecute = true });
+                toOpen.LastOpened = DateTime.Now;
+                toOpen.OpenedCount++;
                 return true;
             }
             catch(Exception ex)
@@ -70,6 +72,8 @@ namespace COMPASS.ViewModels
             try
             {
                 Process.Start(new ProcessStartInfo(toOpen.SourceURL) { UseShellExecute = true });
+                toOpen.LastOpened = DateTime.Now;
+                toOpen.OpenedCount++;
                 return true;
             }
             catch (Exception ex)
@@ -201,7 +205,7 @@ namespace COMPASS.ViewModels
 
                     //Delete file in original folder
                     MVM.CurrentCollection.DeleteCodex(ToMove);
-                    MVM.FilterVM.RemoveCodex(ToMove);
+                    MVM.CollectionVM.RemoveCodex(ToMove);
 
                     //Update the cover art metadata to new path, has to happen after delete so old one gets deleted
                     ToMove.CoverArt = newCoverArt;
@@ -231,7 +235,7 @@ namespace COMPASS.ViewModels
             foreach(Codex ToDelete in ToDeleteList)
             {
                 MVM.CurrentCollection.DeleteCodex(ToDelete);
-                MVM.FilterVM.RemoveCodex(ToDelete);
+                MVM.CollectionVM.RemoveCodex(ToDelete);
             }
             MVM.Refresh();
         }

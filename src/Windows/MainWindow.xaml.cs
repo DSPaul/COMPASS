@@ -42,8 +42,8 @@ namespace COMPASS
             if ((Tag)CurrentTagList.SelectedItem != null)
             {
                 Tag t = (Tag)CurrentTagList.SelectedItem;
-                if (!t.GetType().IsSubclassOf(typeof(Tag))) MainViewModel.FilterVM.RemoveTagFilter(t);
-                else MainViewModel.FilterVM.RemoveFieldFilter((FilterTag)t);
+                if (!t.GetType().IsSubclassOf(typeof(Tag))) MainViewModel.CollectionVM.RemoveTagFilter(t);
+                else MainViewModel.CollectionVM.RemoveFieldFilter((FilterTag)t);
             }
         }
 
@@ -190,7 +190,7 @@ namespace COMPASS
             if(Key.Enter == e.Key)
             {
                 e.Handled = true;
-                MainViewModel.FilterVM.UpdateSearchFilteredFiles(Searchbox.Text);
+                MainViewModel.CollectionVM.UpdateSearchFilteredFiles(Searchbox.Text);
             }
         }
     }

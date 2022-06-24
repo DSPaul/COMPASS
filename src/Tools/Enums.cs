@@ -8,7 +8,8 @@ namespace COMPASS.Tools
         {
             ListLayout,
             CardLayout,
-            TileLayout
+            TileLayout,
+            HomeLayout
         }
 
         [Flags]

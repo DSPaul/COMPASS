@@ -84,7 +84,7 @@ namespace COMPASS.ViewModels
             {
                 SortOptions.Add(new MyMenuItem(sortOption)
                 {
-                    Command = new RelayCommand<string>(MVM.FilterVM.SortBy),
+                    Command = new RelayCommand<string>(MVM.CollectionVM.SortBy),
                     CommandParam = sortOption
                 });
             }

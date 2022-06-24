@@ -229,7 +229,7 @@ namespace COMPASS.ViewModels
 
         #endregion
 
-        #region Handlers and ViewModels
+        #region ViewModels
 
         //Settings ViewModel
         private SettingsViewModel _settingsVM;
@@ -239,11 +239,11 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _settingsVM, value); }
         }
 
-        private FilterViewModel _filterVM;
-        public FilterViewModel FilterVM
+        private CollectionViewModel _collectionVM;
+        public CollectionViewModel CollectionVM
         {
-            get { return _filterVM; }
-            private set { SetProperty(ref _filterVM, value); }
+            get { return _collectionVM; }
+            private set { SetProperty(ref _collectionVM, value); }
         }
 
         private LayoutViewModel _currentLayout;
@@ -294,18 +294,14 @@ namespace COMPASS.ViewModels
         public void ChangeFileView(CodexLayout v)
         {
             Properties.Settings.Default.PreferedView = (int)v;
-            switch (v)
+            CurrentLayout = v switch
             {
-                case CodexLayout.ListLayout:
-                    CurrentLayout = new ListLayoutViewModel();
-                    break;
-                case CodexLayout.CardLayout:
-                    CurrentLayout = new CardLayoutViewModel();
-                    break;
-                case CodexLayout.TileLayout:
-                    CurrentLayout = new TileLayoutViewModel();
-                    break;
-            }
+                CodexLayout.HomeLayout => new HomeLayoutViewModel(),
+                CodexLayout.ListLayout => new ListLayoutViewModel(),
+                CodexLayout.CardLayout => new CardLayoutViewModel(),
+                CodexLayout.TileLayout => new TileLayoutViewModel(),
+                _ => null
+            };
         }
 
         //Reset
@@ -313,13 +309,13 @@ namespace COMPASS.ViewModels
 
         public void Refresh()
         {
-            FilterVM.ReFilter();
+            CollectionVM.ReFilter();
             TFViewModel.TagsTabVM.RefreshTreeView();
         }
 
         public void Reset()
         {
-            FilterVM.ClearFilters();
+            CollectionVM.ClearFilters();
             TFViewModel.TagsTabVM.RefreshTreeView();
         }
 
@@ -341,7 +337,7 @@ namespace COMPASS.ViewModels
         public void ChangeCollection(string collectionDir)
         {
             CurrentCollection = new CodexCollection(collectionDir);            
-            FilterVM = new FilterViewModel(_currentCollection);
+            CollectionVM = new CollectionViewModel(_currentCollection);
             ChangeFileView((CodexLayout)Properties.Settings.Default.PreferedView);
             TFViewModel = new TagsFiltersViewModel();
             AddTagViewModel = new TagEditViewModel(null);
@@ -407,7 +403,7 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> SearchCommand { get; private set; }
         public void Search(string searchterm)
         {
-            FilterVM.UpdateSearchFilteredFiles(searchterm);
+            CollectionVM.UpdateSearchFilteredFiles(searchterm);
         }
 
         //called every few seconds to update IsOnline

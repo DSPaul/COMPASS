@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="COMPASS.Views.FileCardView"
+﻿<UserControl x:Class="COMPASS.Views.CardLayout"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -44,7 +44,7 @@
             </ContextMenu>
     </UserControl.Resources>
         <!--#region CardView-->
-    <ListBox x:Name="CardLayout" ItemsSource="{Binding MVM.FilterVM.ActiveFiles}" Background="{x:Null}"
+    <ListBox x:Name="CardLayoutListBox" ItemsSource="{Binding MVM.CollectionVM.ActiveFiles}" Background="{x:Null}"
              BorderBrush="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}" SelectionMode="Extended"
              ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" SelectionChanged="FileView_SelectionChanged">
             <ListBox.ItemContainerStyle>
@@ -87,7 +87,7 @@
             </ListBox.ItemContainerStyle>
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=CardLayout}" HorizontalAlignment="Center"/>
+                    <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=CardLayoutListBox}" HorizontalAlignment="Center"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>

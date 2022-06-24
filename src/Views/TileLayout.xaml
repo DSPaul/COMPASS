@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="COMPASS.Views.FileTileView"
+﻿<UserControl x:Class="COMPASS.Views.TileLayout"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:Tools="clr-namespace:COMPASS.Tools"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:Tools="clr-namespace:COMPASS.Tools" xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:TileLayoutViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -40,8 +40,8 @@
         </ContextMenu>
     </UserControl.Resources>
 
-    <ListBox x:Name="TileLayout" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
-            ItemsSource="{Binding MVM.FilterVM.ActiveFiles}" Background="{x:Null}" BorderBrush="{x:Null}"
+    <ListBox x:Name="TileLayoutListBox" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
+            ItemsSource="{Binding MVM.CollectionVM.ActiveFiles}" Background="{x:Null}" BorderBrush="{x:Null}"
             ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top" 
             SelectionChanged="FileView_SelectionChanged" SelectionMode="Extended">
         <ListBox.ItemContainerStyle>
@@ -84,7 +84,7 @@
         </ListBox.ItemContainerStyle>
         <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
-                <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=TileLayout}" HorizontalAlignment="Center"/>
+                <WrapPanel IsItemsHost="True" MaxWidth="{Binding ActualWidth, ElementName=TileLayoutListBox}" HorizontalAlignment="Center"/>
             </ItemsPanelTemplate>
         </ListBox.ItemsPanel>
         <ListBox.ItemTemplate>

@@ -21,13 +21,16 @@
         <Converters:WindowStatetoBoolConverter x:Key="IsMaximizedConverter"/>
         <Converters:UriToBitmapConverter x:Key="UriToBitmapConverterr"/>
         <DataTemplate DataType="{x:Type viewmodels:ListLayoutViewModel}">
-            <views:FileListView DataContext="{Binding}"/>
+            <views:ListLayout DataContext="{Binding}"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewmodels:CardLayoutViewModel}">
-            <views:FileCardView DataContext="{Binding}"/>
+            <views:CardLayout DataContext="{Binding}"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewmodels:TileLayoutViewModel}">
-            <views:FileTileView DataContext="{Binding}"/>
+            <views:TileLayout DataContext="{Binding}"/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:HomeLayoutViewModel}">
+            <views:HomeLayout DataContext="{Binding}"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewmodels:TagsFiltersViewModel}">
             <views:Tag_FilterView DataContext="{Binding}"/>
@@ -173,7 +176,7 @@
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBox Grid.Column="0" x:Name="Searchbox" Tools:AP.PlaceHolderText="Search" Margin="0"
-                             Text="{Binding FilterVM.SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
+                             Text="{Binding CollectionVM.SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
                              Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" PreviewKeyDown="Searchbox_KeyDown"/>
                         <Button  Grid.Column="1" Style="{StaticResource IconBtn}" Margin="10,0"
                         Command="{Binding SearchCommand}" CommandParameter="{Binding Text, ElementName=Searchbox}" Tools:AP.IconKind="Search"/>
@@ -569,7 +572,7 @@
                 </Grid.RowDefinitions>
 
                 <!--#region View Selection-->
-                <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal">
+                <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal" Margin="10,0">
                     <StackPanel.Resources>
                         <Style TargetType="Button">
                             <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
@@ -604,6 +607,7 @@
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Resources>
+                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.HomeLayout}" Tools:AP.IconKind="Home" Height="30"/>
                     <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.ListLayout}" Tools:AP.IconKind="ViewHeadline" Height="40"/>
                     <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.CardLayout}" Tools:AP.IconKind="ViewCompact" Height="40" RenderTransformOrigin="0.5 0.5">
                         <Button.RenderTransform>
@@ -623,13 +627,13 @@
 
                 <!--#region Current Filters-->
                 <TextBlock Grid.Column="0" Grid.Row="1" x:Name="CurrentTagTextBlock" Text="Filters:" Margin="10,0" VerticalAlignment="Center"/>
-                <Border CornerRadius="5" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row ="1"
+                <Border CornerRadius="5" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row ="1" MinHeight="40"
                     Margin="0,10" Background="{StaticResource FiltersBackground}">
                     <Grid>
                         <Grid.Resources>
-                            <CollectionViewSource x:Key="Tags" Source="{Binding FilterVM.ActiveTags}"/>
-                            <CollectionViewSource x:Key="Filters" Source="{Binding FilterVM.ActiveFilters}"/>
-                            <CollectionViewSource x:Key="Searches" Source="{Binding FilterVM.SearchFilters}"/>
+                            <CollectionViewSource x:Key="Tags" Source="{Binding CollectionVM.ActiveTags}"/>
+                            <CollectionViewSource x:Key="Filters" Source="{Binding CollectionVM.ActiveFilters}"/>
+                            <CollectionViewSource x:Key="Searches" Source="{Binding CollectionVM.SearchFilters}"/>
                         </Grid.Resources>
                         <ListBox x:Name="CurrentTagList" BorderBrush="{x:Null}" 
                      SelectionChanged="ActiveTag_Click" Background="{x:Null}" ItemTemplate="{StaticResource TagDeletableTemplate}">

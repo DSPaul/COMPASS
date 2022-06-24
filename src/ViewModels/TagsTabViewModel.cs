@@ -36,7 +36,7 @@ namespace COMPASS.ViewModels
             //tag to delete is context, because DeleteTag is called from context menu
             if (Context == null) return;
             MVM.CurrentCollection.DeleteTag(Context);
-            MVM.FilterVM.RemoveTagFilter(Context);
+            MVM.CollectionVM.RemoveTagFilter(Context);
 
             //Go over all files and remove the tag from tag list
             foreach (var f in MVM.CurrentCollection.AllCodices)

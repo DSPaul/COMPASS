@@ -37,6 +37,10 @@ namespace COMPASS.Models
             Rating = c.Rating;
             PageCount = c.PageCount;
             Tags = new(c.Tags);
+            LastOpened = c.LastOpened;
+            DateAdded = c.DateAdded;
+            Favorite = c.Favorite;
+            OpenedCount = c.OpenedCount;
         }
 
         public bool HasOfflineSource()
@@ -152,6 +156,34 @@ namespace COMPASS.Models
         {
             get { return _pageCount; }
             set { SetProperty(ref _pageCount, value); }
+        }
+
+        private DateTime _dateAdded = DateTime.Now;
+        public DateTime DateAdded
+        {
+            get { return _dateAdded; }
+            set { SetProperty(ref _dateAdded, value); }
+        }
+
+        private DateTime _lastOpened;
+        public DateTime LastOpened
+        {
+            get { return _lastOpened; }
+            set { SetProperty(ref _lastOpened,value); }
+        }
+
+        private int _openedCount = 0;
+        public int OpenedCount
+        {
+            get { return _openedCount; }
+            set { SetProperty(ref _openedCount, value); }
+        }
+
+        private bool _favorite;
+        public bool Favorite
+        {
+            get { return _favorite; }
+            set { SetProperty(ref _favorite, value); }
         }
         #endregion 
     }

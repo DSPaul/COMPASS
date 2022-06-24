@@ -11,11 +11,11 @@ using COMPASS.Tools;
 
 namespace COMPASS.ViewModels
 {
-    public class FilterViewModel : ViewModelBase
+    public class CollectionViewModel : ViewModelBase
     {
 
         //Constuctor
-        public FilterViewModel(CodexCollection CurrentCollection)
+        public CollectionViewModel(CodexCollection CurrentCollection)
         {
             _cc = CurrentCollection;
 
@@ -36,10 +36,20 @@ namespace COMPASS.ViewModels
             ActiveFilters = new();
             ActiveFilters.CollectionChanged += (e, v) => UpdateFieldFilteredFiles();
             SearchFilters = new();
+
+            //cause derived lists to update when codex gets updated
+            foreach(Codex c in _cc.AllCodices)
+            {
+                c.PropertyChanged += (e,v) => RaisePropertyChanged(nameof(Favorites));
+                c.PropertyChanged += (e,v) => RaisePropertyChanged(nameof(RecentCodices));
+                c.PropertyChanged += (e,v) => RaisePropertyChanged(nameof(MostOpenedCodices));
+            }
         }
 
         #region Properties
         readonly CodexCollection _cc;
+        private int _itemsShown = 15;
+        public int ItemsShown => Math.Min(_itemsShown, ActiveFiles.Count);
 
         //CollectionDirectories
         public ObservableCollection<Tag> ActiveTags { get; set; }
@@ -56,6 +66,11 @@ namespace COMPASS.ViewModels
             get { return _activeFiles; }
             set { SetProperty(ref _activeFiles, value); }
         }
+
+        public ObservableCollection<Codex> Favorites => new (ActiveFiles.Where(c => c.Favorite));
+        public List<Codex> RecentCodices => ActiveFiles.OrderByDescending(c => c.LastOpened).ToList().GetRange(0, ItemsShown);
+        public List<Codex> MostOpenedCodices => ActiveFiles.OrderByDescending(c => c.OpenedCount).ToList().GetRange(0, ItemsShown);
+        public List<Codex> RecentlyAddedCodices => ActiveFiles.OrderByDescending(c => c.DateAdded).ToList().GetRange(0, ItemsShown);
 
         private string _searchTerm;
         public string SearchTerm
@@ -289,11 +304,17 @@ namespace COMPASS.ViewModels
             SaveSortDescriptions(sortDescr.PropertyName, sortDescr.Direction);
 
             //compile list of "active" files, which are files that match all the different filters
-            ActiveFiles = new ObservableCollection<Codex>(_cc.AllCodices
+            ActiveFiles = new (_cc.AllCodices
                 .Except(ExcludedCodicesBySearch)
                 .Except(ExcludedCodicesByTag)
                 .Except(ExcludedCodicesByFilter)
                 .ToList());
+
+            //Also apply filtering to these lists
+            RaisePropertyChanged(nameof(Favorites));
+            RaisePropertyChanged(nameof(RecentCodices));
+            RaisePropertyChanged(nameof(MostOpenedCodices));
+            RaisePropertyChanged(nameof(RecentlyAddedCodices));
 
             //reapply sorting, will fail if there aren't any
             try

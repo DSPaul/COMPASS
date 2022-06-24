@@ -18,11 +18,11 @@ using System.Windows.Shapes;
 namespace COMPASS.Views
 {
     /// <summary>
-    /// Interaction logic for FileCardView.xaml
+    /// Interaction logic for HomeLayout.xaml
     /// </summary>
-    public partial class FileCardView : UserControl
+    public partial class HomeLayout : UserControl
     {
-        public FileCardView()
+        public HomeLayout()
         {
             InitializeComponent();
         }
@@ -31,16 +31,6 @@ namespace COMPASS.Views
         {
             Codex toOpen = ((ListBoxItem)sender).DataContext as Codex;
             CodexViewModel.OpenCodex(toOpen);
-        }
-
-        //Make sure selected Item is always in view
-        private void FileView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ListBox lb = sender as ListBox;
-            if (lb != null && e.AddedItems != null && e.AddedItems.Count > 0)
-            {
-                lb.ScrollIntoView(e.AddedItems[0]);
-            }
         }
     }
 }

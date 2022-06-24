@@ -96,7 +96,7 @@ namespace COMPASS.ViewModels
             if (!CreateNewCodex)
             {
                 MVM.CurrentCollection.DeleteCodex(EditedCodex);
-                MVM.FilterVM.RemoveCodex(EditedCodex);
+                MVM.CollectionVM.RemoveCodex(EditedCodex);
             }
             CloseAction();
         }

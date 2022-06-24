@@ -1,0 +1,196 @@
+﻿<UserControl x:Class="COMPASS.Views.HomeLayout"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:COMPASS.Views" 
+             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters" 
+             xmlns:Tools="clr-namespace:COMPASS.Tools" 
+             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             d:DataContext="{d:DesignInstance Type=viewmodels:HomeLayoutViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+        <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
+        <Tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
+        <Style TargetType="TextBlock" x:Key="HomeSectionTitle">
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+            <Setter Property="FontWeight" Value="Light"/>
+            <Setter Property="Typography.Capitals" Value="AllSmallCaps"/>
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <!--ContextMenu needs to be in every view where it is used instead of in a resource dict because 
+            in resource dict it "sticks" to first view and the binding target for SelectedItems doesn't update when the view changes-->
+        <ContextMenu x:Key="MultiCodexContextMenu" 
+                    DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
+            <MenuItem Header="Open Selected" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.OpenSelectedCodicesCommand, Source={StaticResource CodexProxy}}"/>
+            <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.EditCodicesCommand, Source={StaticResource CodexProxy}}"/>
+            <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+                <MenuItem.ItemContainerStyle>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                        <Setter Property="MenuItem.Command" Value="{Binding Path=Data.MoveToCollectionCommand, Source={StaticResource CodexProxy}}"/>
+                        <Setter Property="MenuItem.CommandParameter">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource MultiParamConverter}">
+                                    <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
+                                    <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}"/>
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </MenuItem.ItemContainerStyle>
+            </MenuItem>
+            <MenuItem Header="Delete All" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.DeleteCodexCommand, Source={StaticResource CodexProxy}}"/>
+        </ContextMenu>
+        <Style TargetType="{x:Type ListBoxItem}">
+            <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+            <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
+            <Setter Property="ContextMenu" Value="{DynamicResource MultiCodexContextMenu}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                                    Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true" CornerRadius="5">
+                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <TransformGroup>
+                                <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
+                            </TransformGroup>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+                </Trigger>
+                <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Value="1">
+                    <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <DataTemplate x:Key="ListBoxItemCoverTemplate">
+            <Grid VerticalAlignment="Top" Margin="0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Border CornerRadius="5" Margin="10,5" SnapsToDevicePixels="True" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
+                                BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                                    Width="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                    Height="{Binding DataContext.TileHeight, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                    <Border.Background>
+                        <ImageBrush ImageSource="{Binding Thumbnail, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png}"/>
+                    </Border.Background>
+
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="15" Direction="300"/>
+                    </Border.Effect>
+                </Border>
+                <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" 
+                                MaxWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"
+                                Visibility="{Binding DataContext.ShowTitle, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource ToVisibilityConverter}}"/>
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+    <ScrollViewer>
+        <StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="30,0">
+                <materialDesign:PackIcon Kind="Heart" Height="28" Width="20" Foreground="IndianRed" VerticalAlignment="Bottom"/>
+                <TextBlock Text="Favorites" Style="{StaticResource HomeSectionTitle}"/>
+            </StackPanel>
+            <ListBox x:Name="FavoritsListBox" FocusVisualStyle="{x:Null}" ScrollViewer.CanContentScroll="False"
+                    ItemsSource="{Binding MVM.CollectionVM.Favorites}" Background="{x:Null}" BorderBrush="{x:Null}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top" 
+                    SelectionMode="Extended" ItemTemplate="{StaticResource ListBoxItemCoverTemplate}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.Template>
+                    <ControlTemplate>
+                        <ItemsPresenter />
+                    </ControlTemplate>
+                </ListBox.Template>
+            </ListBox>
+
+            <StackPanel Orientation="Horizontal" Margin="30,0">
+                <materialDesign:PackIcon Kind="History" Height="28" Width="20" VerticalAlignment="Bottom"/>
+                <TextBlock Text="Recently Opened" Style="{StaticResource HomeSectionTitle}"/>
+            </StackPanel>
+            <ListBox x:Name="RecOpendListBox" FocusVisualStyle="{x:Null}" 
+                ItemsSource="{Binding MVM.CollectionVM.RecentCodices}" Background="{x:Null}" BorderBrush="{x:Null}"
+                ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top" 
+                SelectionMode="Extended" ItemTemplate="{StaticResource ListBoxItemCoverTemplate}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.Template>
+                    <ControlTemplate>
+                        <ItemsPresenter />
+                    </ControlTemplate>
+                </ListBox.Template>
+            </ListBox>
+
+            <StackPanel Orientation="Horizontal" Margin="30,0">
+                <materialDesign:PackIcon Kind="BookOpenBlankVariant" Height="28" Width="20" VerticalAlignment="Bottom"/>
+                <TextBlock Text="Most Opened" Style="{StaticResource HomeSectionTitle}"/>
+            </StackPanel>
+            <ListBox x:Name="MostOpentListBox" FocusVisualStyle="{x:Null}"
+                    ItemsSource="{Binding MVM.CollectionVM.MostOpenedCodices}" Background="{x:Null}" BorderBrush="{x:Null}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top" 
+                    SelectionMode="Extended" ItemTemplate="{StaticResource ListBoxItemCoverTemplate}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.Template>
+                    <ControlTemplate>
+                        <ItemsPresenter />
+                    </ControlTemplate>
+                </ListBox.Template>
+            </ListBox>
+
+            <StackPanel Orientation="Horizontal" Margin="30,0">
+                <materialDesign:PackIcon Kind="BookPlus" Height="28" Width="20" VerticalAlignment="Bottom"/>
+                <TextBlock Text="Recently Added" Style="{StaticResource HomeSectionTitle}"/>
+            </StackPanel>
+            <ListBox x:Name="RecAddedListBox" FocusVisualStyle="{x:Null}" 
+                ItemsSource="{Binding MVM.CollectionVM.RecentlyAddedCodices}" Background="{x:Null}" BorderBrush="{x:Null}"
+                ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top" 
+                SelectionMode="Extended" ItemTemplate="{StaticResource ListBoxItemCoverTemplate}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.Template>
+                    <ControlTemplate>
+                        <ItemsPresenter />
+                    </ControlTemplate>
+                </ListBox.Template>
+            </ListBox>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

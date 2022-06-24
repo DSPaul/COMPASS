@@ -10,11 +10,11 @@ using System.Windows.Input;
 namespace COMPASS.Views
 {
     /// <summary>
-    /// Interaction logic for FileListView.xaml
+    /// Interaction logic for ListLayout.xaml
     /// </summary>
-    public partial class FileListView : UserControl
+    public partial class ListLayout : UserControl
     {
-        public FileListView()
+        public ListLayout()
         {
             InitializeComponent();
             LoadDataGridInfo();

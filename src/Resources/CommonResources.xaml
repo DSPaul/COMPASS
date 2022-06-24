@@ -400,7 +400,7 @@
                   Command="{Binding Path=DataContext.CodexVM.ShowInExplorerCommand, 
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
-        <MenuItem Header="Move to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
+        <MenuItem Header="Move to Collection" ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
             <MenuItem.ItemContainerStyle>
                 <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">

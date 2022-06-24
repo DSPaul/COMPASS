@@ -3,22 +3,23 @@ using COMPASS.Tools;
 
 namespace COMPASS.ViewModels
 {
-    public class TileLayoutViewModel : LayoutViewModel
+    internal class HomeLayoutViewModel : LayoutViewModel
     {
-        public TileLayoutViewModel() : base()
+        public HomeLayoutViewModel():base()
         {
-            LayoutType = Enums.CodexLayout.TileLayout;
+            LayoutType = Enums.CodexLayout.HomeLayout;
 
             ViewOptions.Add(new MyMenuItem("Cover Size", value => TileWidth = (double)value) { Prop = TileWidth });
             ViewOptions.Add(new MyMenuItem("Show Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
+            ViewOptions.Add(SortOptionsMenuItem);
         }
-        #region Properties
+
         private double _width = 156;
         public double TileWidth
         {
             get { return _width; }
-            set 
-            { 
+            set
+            {
                 SetProperty(ref _width, value);
                 RaisePropertyChanged(nameof(TileHeight));
             }
@@ -26,20 +27,18 @@ namespace COMPASS.ViewModels
 
         public double TileHeight
         {
-            get { return (int)(_width * 4/3); }
+            get { return (int)(_width * 4 / 3); }
         }
 
         private bool _showtitle = Properties.Settings.Default.TileShowTitle;
         public bool ShowTitle
         {
             get { return _showtitle; }
-            set 
-            { 
+            set
+            {
                 SetProperty(ref _showtitle, value);
                 Properties.Settings.Default.TileShowTitle = value;
             }
         }
-
-        #endregion
     }
 }
