@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace COMPASS.Tools
 {
     public static class Enums
     {
-        public enum FileView
+        public enum CodexLayout
         {
-            ListView,
-            CardView,
-            TileView
+            ListLayout,
+            CardLayout,
+            TileLayout,
+            HomeLayout
         }
 
         [Flags]

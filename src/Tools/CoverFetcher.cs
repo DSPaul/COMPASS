@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -22,13 +20,13 @@ namespace COMPASS
     { 
         public static bool GetCover(Codex c)
         {
-            bool success = Utils.tryFunctions(GetCoverFunctions,c);
+            bool success = Utils.TryFunctions(GetCoverFunctions,c);
             if (!success) MessageBox.Show("Could not get Cover, please check local path or URL");
             return success;
         }
 
         //list with possible functions to get Cover
-        private static List<PreferableFunction<Codex>> GetCoverFunctions = new()
+        private static readonly List<PreferableFunction<Codex>> GetCoverFunctions = new()
             {
                 new PreferableFunction<Codex>("Local File", GetCoverFromPDF,0),
                 new PreferableFunction<Codex>("Web Version", GetCoverFromURL,1)
@@ -262,7 +260,7 @@ namespace COMPASS
 
             var imgcropped = img.Clone(new Rectangle(location, size), img.PixelFormat);
             var mf = new MagickFactory();
-            MagickImage Magickimg = new MagickImage(mf.Image.Create(imgcropped));
+            MagickImage Magickimg = new(mf.Image.Create(imgcropped));
             return Magickimg;
         }
     }

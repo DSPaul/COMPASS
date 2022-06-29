@@ -10,37 +10,36 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public abstract class DealsWithTreeviews : BaseViewModel, IDropTarget
+    public abstract class DealsWithTreeviews : ViewModelBase, IDropTarget
     {
-        public DealsWithTreeviews()
+        public DealsWithTreeviews(List<Tag> treeRoot)
         {
-            cc = MVM.CurrentCollection;
+            TreeRoot = treeRoot;
             RefreshTreeView();
         }
 
-        private CodexCollection cc;
+        private List<Tag> TreeRoot { get; set; }
 
         //TreeViewSource with hierarchy
-        private ObservableCollection<TreeViewNode> treeviewsource;
+        private ObservableCollection<TreeViewNode> _treeviewsource;
         public ObservableCollection<TreeViewNode> TreeViewSource
         {
-            get { return treeviewsource; }
-            set { SetProperty(ref treeviewsource, value); }
+            get { return _treeviewsource; }
+            set { SetProperty(ref _treeviewsource, value); }
         }
 
         //AllTreeViewNodes without hierarchy for iterating purposes
-        private HashSet<TreeViewNode> alltreeViewNodes;
+        private HashSet<TreeViewNode> _alltreeViewNodes;
         public HashSet<TreeViewNode> AllTreeViewNodes
         {
-            get { return alltreeViewNodes; }
-            set { SetProperty(ref alltreeViewNodes, value); }
+            get { return _alltreeViewNodes; }
+            set { SetProperty(ref _alltreeViewNodes, value); }
         }
 
-        /***All Edit View Models deal with Treeviews so putting treeview related functions here***/
-        public ObservableCollection<TreeViewNode> CreateTreeViewSource(List<Tag> RootTags)
+        public ObservableCollection<TreeViewNode> CreateTreeViewSource(List<Tag> rootTags)
         {
-            ObservableCollection<TreeViewNode> newRootNodes = new ObservableCollection<TreeViewNode>();
-            foreach (Tag t in RootTags)
+            ObservableCollection<TreeViewNode> newRootNodes = new();
+            foreach (Tag t in rootTags)
             {
                 newRootNodes.Add(ConvertTagToTreeViewNode(t));
             }
@@ -63,7 +62,7 @@ namespace COMPASS.ViewModels
         }
         private TreeViewNode ConvertTagToTreeViewNode(Tag t)
         {
-            TreeViewNode Result = new TreeViewNode(t);
+            TreeViewNode Result = new(t);
             foreach (Tag t2 in t.Children) Result.Children.Add(ConvertTagToTreeViewNode(t2));
             return Result;
         }
@@ -90,7 +89,7 @@ namespace COMPASS.ViewModels
 
         public void RefreshTreeView()
         {
-            TreeViewSource = CreateTreeViewSource(cc.RootTags);
+            TreeViewSource = CreateTreeViewSource(TreeRoot);
             AllTreeViewNodes = Utils.FlattenTree(TreeViewSource).ToHashSet();
         }
 
@@ -103,7 +102,7 @@ namespace COMPASS.ViewModels
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
             DragDrop.DefaultDropHandler.Drop(dropInfo);
-            cc.RootTags = ExtractTagsFromTreeViewSource(TreeViewSource);
+            TreeRoot = ExtractTagsFromTreeViewSource(TreeViewSource);
         }
         /*** End of Treeview section ***/
     }

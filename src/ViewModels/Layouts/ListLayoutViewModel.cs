@@ -3,11 +3,11 @@ using COMPASS.Tools;
 
 namespace COMPASS.ViewModels
 {
-    public class FileListViewModel : FileBaseViewModel
+    public class ListLayoutViewModel : LayoutViewModel
     {
-        public FileListViewModel() : base()
+        public ListLayoutViewModel() : base()
         {
-            FileViewLayout = Enums.FileView.ListView;
+            LayoutType = Enums.CodexLayout.ListLayout;
 
             //MyMenuItem Columnvisibility = new MyMenuItem("Column Visibility")
             //{
@@ -54,11 +54,11 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private bool _ShowReleaseDate = Properties.Settings.Default.ListShowRelease;
+        private bool _showReleaseDate = Properties.Settings.Default.ListShowRelease;
         public bool ShowReleaseDate
         {
-            get { return _ShowReleaseDate; }
-            set { SetProperty(ref _ShowReleaseDate, value);
+            get { return _showReleaseDate; }
+            set { SetProperty(ref _showReleaseDate, value);
                 Properties.Settings.Default.ListShowRelease = value;
             }
         }

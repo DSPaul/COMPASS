@@ -1,6 +1,6 @@
 ﻿namespace COMPASS.ViewModels
 {
-    public class TagsFiltersViewModel : BaseViewModel
+    public class TagsFiltersViewModel : ViewModelBase
     {
         public TagsFiltersViewModel(): base()
         {

@@ -10,7 +10,7 @@ namespace COMPASS.ViewModels
 {
     public class TagsTabViewModel : DealsWithTreeviews
     {
-        public TagsTabViewModel() : base()
+        public TagsTabViewModel() : base(MVM.CurrentCollection.RootTags)
         {
             EditTagCommand = new(EditTag);
             DeleteTagCommand = new(DeleteTag);
@@ -24,8 +24,7 @@ namespace COMPASS.ViewModels
         {
             if (Context != null)
             {
-                MVM.CurrentEditViewModel = new TagEditViewModel(Context);
-                TagPropWindow tpw = new((TagEditViewModel)MVM.CurrentEditViewModel);
+                TagPropWindow tpw = new(new TagEditViewModel(Context));
                 tpw.ShowDialog();
                 tpw.Topmost = true;
             }
@@ -37,10 +36,10 @@ namespace COMPASS.ViewModels
             //tag to delete is context, because DeleteTag is called from context menu
             if (Context == null) return;
             MVM.CurrentCollection.DeleteTag(Context);
-            MVM.FilterHandler.RemoveTagFilter(Context);
+            MVM.CollectionVM.RemoveTagFilter(Context);
 
             //Go over all files and remove the tag from tag list
-            foreach (var f in MVM.CurrentCollection.AllFiles)
+            foreach (var f in MVM.CurrentCollection.AllCodices)
             {
                 f.Tags.Remove(Context);
             }

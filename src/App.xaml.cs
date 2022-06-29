@@ -13,6 +13,7 @@ namespace COMPASS
         public App()
         {
             Directory.CreateDirectory(Constants.CompassDataPath);
+            Directory.CreateDirectory(Constants.WebDriverDirectoryPath);
         }
     }
 

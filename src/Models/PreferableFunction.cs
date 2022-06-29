@@ -20,14 +20,6 @@ namespace COMPASS.Models
             BackgroundColor = (Color)ColorConverter.ConvertFromString("#16D68A");
         }
 
-        public Func<T,bool> Function { get; private set; }
-    }
-
-    //Default generic is of type object, to match relayfunctions
-    public class PreferableFunction : PreferableFunction<object>
-    {
-        //parameterless ctor for serialisation
-        internal PreferableFunction(){}
-        public PreferableFunction(string name, Func<object, bool> func, int id = -1):base(name,func,id){}
+        public Func<T,bool> Function { get; init; }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class TagEditViewModel : BaseEditViewModel
+    public class TagEditViewModel : ViewModelBase, IEditViewModel
     {
         public TagEditViewModel(Tag ToEdit) : base()
         {
@@ -59,12 +59,14 @@ namespace COMPASS.ViewModels
 
         #region Functions and Commands
 
-        public override void OKBtn()
+        private ActionCommand _oKCommand;
+        public ActionCommand OKCommand => _oKCommand ??= new(OKBtn);
+        public void OKBtn()
         {
             if(CreateNewTag)
             {
-                EditedTag = new Tag(CurrentCollection.AllTags);
-                if (TempTag.ParentID == -1) CurrentCollection.RootTags.Add(EditedTag);
+                EditedTag = new Tag(MVM.CurrentCollection.AllTags);
+                if (TempTag.ParentID == -1) MVM.CurrentCollection.RootTags.Add(EditedTag);
             }
 
             //Apply changes 
@@ -74,24 +76,28 @@ namespace COMPASS.ViewModels
             if (!CreateNewTag) CloseAction();
             else
             {
-                CurrentCollection.AllTags.Add(EditedTag);
+                MVM.CurrentCollection.AllTags.Add(EditedTag);
                 //reset fields
-                TempTag = new Tag(CurrentCollection.AllTags);
+                TempTag = new Tag(MVM.CurrentCollection.AllTags);
                 EditedTag = null;
             }
         }
 
-        public override void Cancel()
+        private ActionCommand _cancelCommand;
+        public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
+        public void Cancel()
         {
             if (!CreateNewTag) CloseAction();
             else
             {
-                TempTag = new Tag(CurrentCollection.AllTags);
+                TempTag = new Tag(MVM.CurrentCollection.AllTags);
             }
             EditedTag = null;
         }
 
         public ActionCommand CloseColorSelectionCommand { get; private set; }
+        public Action CloseAction {get; set;}
+
         private void CloseColorSelection()
         {
             ShowColorSelection = false;

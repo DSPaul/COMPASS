@@ -31,7 +31,7 @@ namespace COMPASS.Views
             TreeViewNode selectednode = (TreeViewNode)e.NewValue;
             if (selectednode == null) return;
             if (selectednode.Tag.IsGroup) return;
-            BaseViewModel.MVM.FilterHandler.AddTagFilter(selectednode.Tag);
+            ViewModelBase.MVM.CollectionVM.AddTagFilter(selectednode.Tag);
             selectednode.Selected = false;
         }
 

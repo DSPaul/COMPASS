@@ -15,18 +15,13 @@ namespace COMPASS.Tools.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var msgtype = (LogEntry.MsgType)value;
-            switch (msgtype)
+            return msgtype switch
             {
-                case LogEntry.MsgType.Info:
-                    return new SolidColorBrush(Colors.LightGray);
-                case LogEntry.MsgType.Warning:
-                    return new SolidColorBrush(Colors.Yellow);
-                case LogEntry.MsgType.Error:
-                    return new SolidColorBrush(Colors.Red);
-                default:
-                    //should never happen, Bright pink to it's clear something went wrong
-                    return new SolidColorBrush(Colors.Pink);
-            }   
+                LogEntry.MsgType.Info => new SolidColorBrush(Colors.LightGray),
+                LogEntry.MsgType.Warning => new SolidColorBrush(Colors.Yellow),
+                LogEntry.MsgType.Error => new SolidColorBrush(Colors.Red),
+                _ => new SolidColorBrush(Colors.Pink),//should never happen, Bright pink to it's clear something went wrong
+            };
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

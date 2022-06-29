@@ -27,11 +27,11 @@ namespace COMPASS
     public partial class FilePropWindow : Window
     {
         //Constructor
-        public FilePropWindow(FileEditViewModel vm)
+        public FilePropWindow(CodexEditViewModel vm)
         {
             DataContext = vm;
             InitializeComponent();
-            ((FileEditViewModel)DataContext).CloseAction = new Action(this.Close);
+            ((CodexEditViewModel)DataContext).CloseAction = new Action(this.Close);
         }
 
         private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e)

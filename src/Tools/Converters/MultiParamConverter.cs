@@ -8,7 +8,7 @@ using System.Windows.Data;
 
 namespace COMPASS.Tools.Converters
 {
-    public class MulitParamConverter : IMultiValueConverter
+    public class MultiParamConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {

@@ -1,4 +1,5 @@
-﻿using COMPASS.ViewModels;
+﻿using COMPASS.Models;
+using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,28 +18,19 @@ using System.Windows.Shapes;
 namespace COMPASS.Views
 {
     /// <summary>
-    /// Interaction logic for FileTileView.xaml
+    /// Interaction logic for HomeLayout.xaml
     /// </summary>
-    public partial class FileTileView : UserControl
+    public partial class HomeLayout : UserControl
     {
-        public FileTileView()
+        public HomeLayout()
         {
             InitializeComponent();
         }
 
         public void HandleDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ((FileBaseViewModel)DataContext).OpenFile();
-        }
-
-        //Make sure selected Item is always in view
-        private void FileView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ListBox lb = sender as ListBox;
-            if (lb != null && e.AddedItems != null && e.AddedItems.Count > 0)
-            {
-                lb.ScrollIntoView(e.AddedItems[0]);
-            }
+            Codex toOpen = ((ListBoxItem)sender).DataContext as Codex;
+            CodexViewModel.OpenCodex(toOpen);
         }
     }
 }

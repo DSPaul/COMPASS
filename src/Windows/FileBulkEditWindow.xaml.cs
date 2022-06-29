@@ -27,11 +27,11 @@ namespace COMPASS
     public partial class FileBulkEditWindow : Window
     {
         //Constructor
-        public FileBulkEditWindow(FileBulkEditViewModel vm)
+        public FileBulkEditWindow(CodexBulkEditViewModel vm)
         {
             DataContext = vm;
             InitializeComponent();
-            ((FileBulkEditViewModel)DataContext).CloseAction = new Action(this.Close);
+            ((CodexBulkEditViewModel)DataContext).CloseAction = new Action(this.Close);
         }
 
         private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e)

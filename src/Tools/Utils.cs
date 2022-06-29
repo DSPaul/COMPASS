@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
@@ -26,7 +25,7 @@ namespace COMPASS.Tools
         public static IEnumerable<T> FlattenTree<T>(IEnumerable<T> l) where T: IHasChilderen<T>
         {
             var result = new List<T>(l);
-            for (int i = 0; i < result.Count(); i++)
+            for (int i = 0; i < result.Count; i++)
             {
                 T parent = result[i];
                 foreach (T child in parent.Children) result.Add(child);
@@ -35,9 +34,9 @@ namespace COMPASS.Tools
         }
 
         //check internet connection
-        public static bool pingURL(string URL = "8.8.8.8")
+        public static bool PingURL(string URL = "8.8.8.8")
         {
-            Ping p = new Ping();
+            Ping p = new();
             try
             {
                 PingReply reply = p.Send(URL, 3000);
@@ -52,7 +51,7 @@ namespace COMPASS.Tools
         }
 
         //Try functions in order determined by list of preferablefunctions untill one succeeds
-        public static bool tryFunctions<T>(List<PreferableFunction<T>> toTry, T arg)
+        public static bool TryFunctions<T>(List<PreferableFunction<T>> toTry, T arg)
         {
             bool success = false;
             int i = 0;
@@ -63,22 +62,19 @@ namespace COMPASS.Tools
             }
             return success;
         }
-        public static bool tryFunctions<T>(ObservableCollection<PreferableFunction<T>> toTry, T arg)
+        public static bool TryFunctions<T>(ObservableCollection<PreferableFunction<T>> toTry, T arg)
         {
-            return tryFunctions<T>(toTry.ToList(), arg);
+            return TryFunctions<T>(toTry.ToList(), arg);
         }
 
         //Download data and put it in a byte[]
         public static async Task<byte[]> DownloadFileAsync(string uri)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                Uri uriResult;
+            using HttpClient client = new();
 
-                if (!Uri.TryCreate(uri, UriKind.Absolute, out uriResult)) throw new InvalidOperationException("URI is invalid.");
+            if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri uriResult)) throw new InvalidOperationException("URI is invalid.");
 
-                return await client.GetByteArrayAsync(uri);
-            } 
+            return await client.GetByteArrayAsync(uri);
         }
 
         //helper function for InitWebdriver to check if certain browsers are installed

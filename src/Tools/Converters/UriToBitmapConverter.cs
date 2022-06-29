@@ -15,8 +15,8 @@ namespace COMPASS.Tools.Converters
             if (File.Exists((string)value))
             {
                 //Parameter is true if instant refresh is needed for Edit View, false for mass view
-                bool Fullres = (parameter == null)? false: (bool)parameter;
-                BitmapImage bi = new BitmapImage();
+                bool Fullres = System.Convert.ToBoolean(parameter);
+                BitmapImage bi = new();
                 bi.BeginInit();
 
                 if (Fullres)

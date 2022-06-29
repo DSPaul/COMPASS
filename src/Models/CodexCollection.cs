@@ -5,82 +5,69 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Xml;
 
 namespace COMPASS.Models
 {
     public class CodexCollection : ObservableObject
     {
-        public CodexCollection(string FolderLocation)
+        public CodexCollection(string collectionDirectory)
         {
-            Folder = FolderLocation;
-
-            AuthorList = new ObservableCollection<string>();
-            PublisherList = new ObservableCollection<string>();
+            DirectoryName = collectionDirectory;
 
             LoadTags();
-            LoadFiles();
+            LoadCodices();
 
-            Properties.Settings.Default.StartupCollection = FolderLocation;
+            Properties.Settings.Default.StartupCollection = collectionDirectory;
         }
 
         public readonly static string CollectionsPath = Constants.CompassDataPath + @"\Collections\";
         
         #region Properties
-        private String _Folder;
-        public String Folder
+        private string _directoryName;
+        public string DirectoryName
         {
-            get { return _Folder; }
-            set { SetProperty(ref _Folder, value);}
+            get { return _directoryName; }
+            set { SetProperty(ref _directoryName, value);}
         }
 
-        public String BooksFilepath
-        {
-            get { return CollectionsPath + Folder + @"\Files.xml"; ; }
-        }
-
-        public String TagsFilepath
-        {
-            get { return CollectionsPath + Folder + @"\Tags.xml"; ; }
-        }
+        public string CodicesDataFilePath => CollectionsPath + DirectoryName + @"\CodexInfo.xml";
+        public string TagsDataFilepath =>  CollectionsPath + DirectoryName + @"\Tags.xml";
 
         //Tag Lists
-        public List<Tag> AllTags = new List<Tag>();
-        public List<Tag> RootTags;
+        public List<Tag> AllTags { get; private set; } = new();
+        public List<Tag> RootTags { get; set; }
 
         //File Lists
-        public List<Codex> AllFiles = new List<Codex>();
+        public List<Codex> AllCodices { get; private set; } = new();
 
         //Metadata Lists
-        private ObservableCollection<String> authorList;
-        public ObservableCollection<String> AuthorList
+        private ObservableCollection<string> _authorList = new();
+        public ObservableCollection<string> AuthorList
         {
-            get { return authorList; }
-            set { SetProperty(ref authorList, value); }
+            get { return _authorList; }
+            set { SetProperty(ref _authorList, value); }
         }
 
-        private ObservableCollection<String> publisherList;
-        public ObservableCollection<String> PublisherList
+        private ObservableCollection<string> _publisherList = new();
+        public ObservableCollection<string> PublisherList
         {
-            get { return publisherList; }
-            set { SetProperty(ref publisherList, value); }
+            get { return _publisherList; }
+            set { SetProperty(ref _publisherList, value); }
         }
         #endregion
 
         #region Load Data From File
         //Loads the RootTags from a file and constructs the Alltags list from it
-        public void LoadTags()
+        private void LoadTags()
         {
-            if (File.Exists(TagsFilepath))
+            if (File.Exists(TagsDataFilepath))
             {
                 //loading root tags          
-                using (var Reader = new StreamReader(TagsFilepath))
+                using (var Reader = new StreamReader(TagsDataFilepath))
                 {
-                    System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<Tag>));
+                    System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Tag>));
                     RootTags = serializer.Deserialize(Reader) as List<Tag>;
-                    Reader.Close();
                 }
 
                 //Constructing AllTags and pass it to all the tags
@@ -89,27 +76,26 @@ namespace COMPASS.Models
             }
             else
             {
-                RootTags = new List<Tag>();
+                RootTags = new();
             }
         }
 
-        //Loads AllFiles list from Files
-        public void LoadFiles()
+        //Loads AllCodices list from Files
+        private void LoadCodices()
         {
-            if (File.Exists(BooksFilepath))
+            if (File.Exists(CodicesDataFilePath))
             {
-                using (var Reader = new StreamReader(BooksFilepath))
+                using (var Reader = new StreamReader(CodicesDataFilePath))
                 {
-                    System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<Codex>));
-                    AllFiles = serializer.Deserialize(Reader) as List<Codex>;
-                    Reader.Close();
+                    System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Codex>));
+                    AllCodices = serializer.Deserialize(Reader) as List<Codex>;
                 }
 
-                foreach (Codex f in AllFiles)
+                foreach (Codex f in AllCodices)
                 {
                     //Populate Author and Publisher List
-                    if (f.Author != "" && !AuthorList.Contains(f.Author)) AuthorList.Add(f.Author);
-                    if (f.Publisher != "" && !PublisherList.Contains(f.Publisher)) PublisherList.Add(f.Publisher);
+                    if (!String.IsNullOrEmpty(f.Author) && !AuthorList.Contains(f.Author)) AuthorList.Add(f.Author);
+                    if (!String.IsNullOrEmpty(f.Publisher) && !PublisherList.Contains(f.Publisher)) PublisherList.Add(f.Publisher);
 
                     //reconstruct tags from ID's
                     foreach (int id in f.TagIDs)
@@ -118,48 +104,44 @@ namespace COMPASS.Models
                     }
                 }
                 //Sort them
-                AuthorList = new ObservableCollection<string>(AuthorList.OrderBy(n => n));
-                PublisherList = new ObservableCollection<string>(PublisherList.OrderBy(n => n));
+                AuthorList = new(AuthorList.OrderBy(n => n));
+                PublisherList = new(PublisherList.OrderBy(n => n));
             }
             else
             {
-                AllFiles = new List<Codex>();
+                AllCodices = new();
             }
         }
         #endregion
 
-        #region Save Data To File
+        #region Save Data To XML File
 
-        public void SaveTagsToFile()
+        public void SaveTags()
         {
-            using (var writer = XmlWriter.Create(TagsFilepath, SettingsViewModel.xmlWriterSettings))
-            {
-                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<Tag>));
-                serializer.Serialize(writer, RootTags);
-            }
+            using var writer = XmlWriter.Create(TagsDataFilepath, SettingsViewModel.XmlWriteSettings);
+            System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Tag>));
+            serializer.Serialize(writer, RootTags);
         }
 
-        public void SaveFilesToFile()
+        public void SaveCodices()
         {
             //Copy id's of tags into list for serialisation
-            foreach (Codex codex in AllFiles)
+            foreach (Codex codex in AllCodices)
             {
                 codex.TagIDs = codex.Tags.Select(t => t.ID).ToList();
             }
 
-            using (var writer = XmlWriter.Create(BooksFilepath, SettingsViewModel.xmlWriterSettings))
-            {
-                System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(List<Codex>));
-                serializer.Serialize(writer, AllFiles);
-            }
+            using var writer = XmlWriter.Create(CodicesDataFilePath, SettingsViewModel.XmlWriteSettings);
+            System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Codex>));
+            serializer.Serialize(writer, AllCodices);
         }
 
         #endregion    
 
-        public void DeleteFile(Codex Todelete)
+        public void DeleteCodex(Codex Todelete)
         {
             //Delete file from all lists
-            AllFiles.Remove(Todelete);
+            AllCodices.Remove(Todelete);
 
             //Delete Coverart & Thumbnail
             File.Delete(Todelete.CoverArt);
@@ -180,16 +162,16 @@ namespace COMPASS.Models
             else todel.GetParent().Children.Remove(todel);
         }
 
-        public void RenameFolder(string NewFoldername)
+        public void RenameCollection(string NewCollectionName)
         {
-            Directory.Move(CollectionsPath + Folder, CollectionsPath + NewFoldername);
-            Folder = NewFoldername;
-            foreach(Codex file in AllFiles)
+            foreach (Codex codex in AllCodices)
             {
                 //Replace folder names in image paths, include leading and ending "\" to avoid replacing wrong things
-                file.CoverArt  = file.CoverArt.Replace(@"\" + Folder +@"\", @"\" + NewFoldername + @"\");
-                file.Thumbnail = file.Thumbnail.Replace(@"\" + Folder + @"\", @"\" + NewFoldername + @"\");
+                codex.CoverArt = codex.CoverArt.Replace(@"\" + DirectoryName + @"\", @"\" + NewCollectionName + @"\");
+                codex.Thumbnail = codex.Thumbnail.Replace(@"\" + DirectoryName + @"\", @"\" + NewCollectionName + @"\");
             }
+            Directory.Move(CollectionsPath + DirectoryName, CollectionsPath + NewCollectionName);
+            DirectoryName = NewCollectionName;
         }
     }
 }

@@ -1,29 +1,23 @@
-﻿using COMPASS.Models;
-using COMPASS.Tools;
-using COMPASS.ViewModels;
+﻿using COMPASS.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace COMPASS.Models
 {
     public class Codex : ObservableObject, IHasID
     {
-        public Codex()
-        {
-            Tags = new ObservableCollection<Tag>();
-        }
+        //empty constructor for serialization
+        public Codex() { }
 
         public Codex(CodexCollection cc)
         {
-            Tags = new ObservableCollection<Tag>();
-            ID = Utils.GetAvailableID(cc.AllFiles);
-            CoverArt = CodexCollection.CollectionsPath + cc.Folder + @"\CoverArt\" + ID.ToString() + ".png";
-            Thumbnail = CodexCollection.CollectionsPath + cc.Folder + @"\Thumbnails\" + ID.ToString() + ".png";
+            Tags = new();
+            ID = Utils.GetAvailableID(cc.AllCodices);
+            CoverArt = CodexCollection.CollectionsPath + cc.DirectoryName + @"\CoverArt\" + ID.ToString() + ".png";
+            Thumbnail = CodexCollection.CollectionsPath + cc.DirectoryName + @"\Thumbnails\" + ID.ToString() + ".png";
         }
 
         public void Copy(Codex c)
@@ -42,133 +36,154 @@ namespace COMPASS.Models
             ReleaseDate = c.ReleaseDate;
             Rating = c.Rating;
             PageCount = c.PageCount;
-            Tags.Clear();
-            foreach (Tag t in c.Tags)
-            {
-                Tags.Add(t);
-            }
+            Tags = new(c.Tags);
+            LastOpened = c.LastOpened;
+            DateAdded = c.DateAdded;
+            Favorite = c.Favorite;
+            OpenedCount = c.OpenedCount;
         }
 
         public bool HasOfflineSource()
         {
-            if (File.Exists(Path)) return true;
-            return false;
+            return File.Exists(Path);
         }
 
         public bool HasOnlineSource()
         {
-            if (SourceURL == null || SourceURL == "") return false;
-            return true;
+            return !string.IsNullOrEmpty(SourceURL);
         }
 
         #region Properties
 
-        private string _Path;
+        private string _path;
         public string Path
         {
-            get { return _Path; }
-            set { SetProperty(ref _Path, value); }
+            get { return _path; }
+            set { SetProperty(ref _path, value); }
         }
 
-        private string _Title;
+        private string _title;
         public string Title
         {
-            get { return _Title; }
-            set { SetProperty(ref _Title, value); }
+            get { return _title; }
+            set { SetProperty(ref _title, value); }
         }
 
-        private string _Author;
+        private string _author;
         public string Author
         {
-            get { return _Author; }
-            set { SetProperty(ref _Author, value); }
+            get { return _author; }
+            set { SetProperty(ref _author, value); }
         }
 
-        private string _Publisher;
+        private string _publisher;
         public string Publisher
         {
-            get { return _Publisher; }
-            set { SetProperty(ref _Publisher, value); }
+            get { return _publisher; }
+            set { SetProperty(ref _publisher, value); }
         }
 
-        private string _Version;
+        private string _version;
         public string Version
         {
-            get { return _Version; }
-            set { SetProperty(ref _Version, value); }
+            get { return _version; }
+            set { SetProperty(ref _version, value); }
         }
 
-        private string _SourceURL;
+        private string _sourceURL;
         public string SourceURL
         {
-            get { return _SourceURL; }
-            set { SetProperty(ref _SourceURL, value); }
+            get { return _sourceURL; }
+            set { SetProperty(ref _sourceURL, value); }
         }
 
-        private int _ID;
-        public int ID
-        {
-            get { return _ID; }
-            set { SetProperty(ref _ID, value); }
-        }
+        public int ID { get; set; }
 
-        private string _CoverArt;
+        private string _coverArt;
         public string CoverArt
         {
-            get { return _CoverArt; }
-            set { SetProperty(ref _CoverArt, value); }
+            get { return _coverArt; }
+            set { SetProperty(ref _coverArt, value); }
         }
 
-        private string _Thumbnail;
+        private string _thumbnail;
         public string Thumbnail
         {
-            get { return _Thumbnail; }
-            set { SetProperty(ref _Thumbnail, value); }
+            get { return _thumbnail; }
+            set { SetProperty(ref _thumbnail, value); }
         }
 
-        private bool _Physically_Owned;
+        private bool _physically_Owned;
         public bool Physically_Owned
         {
-            get { return _Physically_Owned; }
-            set { SetProperty(ref _Physically_Owned, value); }
+            get { return _physically_Owned; }
+            set { SetProperty(ref _physically_Owned, value); }
         }
 
-        private ObservableCollection<Tag> _Tags;
+        private ObservableCollection<Tag> _tags = new();
         //Don't save all the tags, only save ID's instead
         [XmlIgnoreAttribute]
         public ObservableCollection<Tag> Tags
         {
-            get { return _Tags; }
-            set { SetProperty(ref _Tags, value); }
+            get { return _tags; }
+            set { SetProperty(ref _tags, value); }
         }
-        public List<int> TagIDs;
+        public List<int> TagIDs { get; set; }
 
-        private string _Description;
+        private string _description;
         public string Description
         {
-            get { return _Description; }
-            set { SetProperty(ref _Description, value); }
+            get { return _description; }
+            set { SetProperty(ref _description, value); }
         }
 
-        private DateTime? _ReleaseDate = null;
+        private DateTime? _releaseDate = null;
         public DateTime? ReleaseDate
         {
-            get { return _ReleaseDate; }
-            set { SetProperty(ref _ReleaseDate, value); }
+            get { return _releaseDate; }
+            set { SetProperty(ref _releaseDate, value); }
         }
 
-        private int _Rating;
+        private int _rating;
         public int Rating
         {
-            get { return _Rating; }
-            set { SetProperty(ref _Rating, value); }
+            get { return _rating; }
+            set { SetProperty(ref _rating, value); }
         }
 
-        private int _PageCount;
+        private int _pageCount;
         public int PageCount
         {
-            get { return _PageCount; }
-            set { SetProperty(ref _PageCount, value); }
+            get { return _pageCount; }
+            set { SetProperty(ref _pageCount, value); }
+        }
+
+        private DateTime _dateAdded = DateTime.Now;
+        public DateTime DateAdded
+        {
+            get { return _dateAdded; }
+            set { SetProperty(ref _dateAdded, value); }
+        }
+
+        private DateTime _lastOpened;
+        public DateTime LastOpened
+        {
+            get { return _lastOpened; }
+            set { SetProperty(ref _lastOpened,value); }
+        }
+
+        private int _openedCount = 0;
+        public int OpenedCount
+        {
+            get { return _openedCount; }
+            set { SetProperty(ref _openedCount, value); }
+        }
+
+        private bool _favorite;
+        public bool Favorite
+        {
+            get { return _favorite; }
+            set { SetProperty(ref _favorite, value); }
         }
         #endregion 
     }

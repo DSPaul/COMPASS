@@ -3,15 +3,14 @@ using COMPASS.Tools;
 
 namespace COMPASS.ViewModels
 {
-    public class FileTileViewModel : FileBaseViewModel
+    public class TileLayoutViewModel : LayoutViewModel
     {
-        public FileTileViewModel() : base()
+        public TileLayoutViewModel() : base()
         {
-            FileViewLayout = Enums.FileView.TileView;
+            LayoutType = Enums.CodexLayout.TileLayout;
 
             ViewOptions.Add(new MyMenuItem("Cover Size", value => TileWidth = (double)value) { Prop = TileWidth });
             ViewOptions.Add(new MyMenuItem("Show Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
-            ViewOptions.Add(SortOptionsMenuItem);
         }
         #region Properties
         private double _width = 156;

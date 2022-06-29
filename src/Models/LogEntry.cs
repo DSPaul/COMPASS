@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace COMPASS.Models
+﻿namespace COMPASS.Models
 {
     public class LogEntry : ObservableObject
     {
@@ -14,11 +8,11 @@ namespace COMPASS.Models
             Msg = message;
         }
 
-        private MsgType _Type;
+        private MsgType _type;
         public MsgType Type
         {
-            get { return _Type; }
-            set { SetProperty(ref _Type, value); }
+            get { return _type; }
+            set { SetProperty(ref _type, value); }
         }
 
         private string _msg;
