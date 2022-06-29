@@ -1,5 +1,23 @@
 # CHANGELOG
-## COMPASS v0.3.1 (16 June 2022)
+
+## COMPASS v0.4.0 (29 June 2022)
+
+### Fixes
+
+- Fixed Adding tags not working
+- Fix some inconsistent UI elements
+
+### Enhancements
+
+- various UI improvements
+
+### New Features
+
+- Added new Home layout
+- Added option to favourite a book
+- Track when and how often books are opened
+
+## COMPASS v0.3.1 (16 June 2022)
 
 ### Fixes
 
