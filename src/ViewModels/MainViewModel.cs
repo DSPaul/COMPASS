@@ -116,12 +116,14 @@ namespace COMPASS.ViewModels
         //Get latest version of relevant Webdriver for selenium
         private void InitWebdriver()
         {
+            //DriverManager DM = new(Constants.WebDriverDirectoryPath);
+            DriverManager DM = new();
             if (Utils.IsInstalled("chrome.exe"))
             {
                 Properties.Settings.Default.SeleniumBrowser = (int)Browser.Chrome;
                 try
                 {
-                    new DriverManager().SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
+                    DM.SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
                 }
                 catch (Exception ex)
                 {
@@ -133,7 +135,7 @@ namespace COMPASS.ViewModels
                 Properties.Settings.Default.SeleniumBrowser = (int)Browser.Firefox;
                 try
                 {
-                    new DriverManager().SetUpDriver(new FirefoxConfig());
+                    DM.SetUpDriver(new FirefoxConfig());
                 }
                 catch (Exception ex)
                 {
@@ -146,7 +148,7 @@ namespace COMPASS.ViewModels
                 Properties.Settings.Default.SeleniumBrowser = (int)Browser.Edge;
                 try
                 {
-                    new DriverManager().SetUpDriver(new EdgeConfig());
+                    DM.SetUpDriver(new EdgeConfig());
                 }
                 catch (Exception ex)
                 {
