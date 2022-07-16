@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using Microsoft.Win32;
 using System;
@@ -15,10 +16,11 @@ namespace COMPASS.ViewModels
         public CodexBulkEditViewModel(List<Codex> ToEdit) : base(MVM.CurrentCollection.RootTags)
         {
             EditedCodices = ToEdit;
-            TempCodex = new Codex(MVM.CurrentCollection);
+            TempCodex = new(MVM.CurrentCollection);
 
             //set common metadata
-            if (EditedCodices.All(f => f.Author == EditedCodices[0].Author)) TempCodex.Author = EditedCodices[0].Author;
+            _commonAuthors = EditedCodices.Select(f => f.Authors.ToList()).Aggregate((xs, ys) => xs.Intersect(ys).ToList());
+            TempCodex.Authors = new(_commonAuthors);
             if (EditedCodices.All(f => f.Publisher == EditedCodices[0].Publisher)) TempCodex.Publisher = EditedCodices[0].Publisher;
             if (EditedCodices.All(f => f.Rating == EditedCodices[0].Rating)) TempCodex.Rating = EditedCodices[0].Rating;
             if (EditedCodices.All(f => f.Physically_Owned == EditedCodices[0].Physically_Owned)) TempCodex.Physically_Owned = EditedCodices[0].Physically_Owned;
@@ -59,6 +61,10 @@ namespace COMPASS.ViewModels
             get { return _tempCodex; }
             set { SetProperty(ref _tempCodex, value); }
         }
+
+        public CreatableLookUpContract Contract { get; set; } = new();
+
+        public List<string> _commonAuthors;
 
         #endregion
 
@@ -116,11 +122,21 @@ namespace COMPASS.ViewModels
         public void OKBtn()
         {
             //Copy changes into each Codex
-            if(TempCodex.Author != "" && TempCodex.Author!= null)
+            //delete authors that were deleted
+            var deletedAuthors = _commonAuthors.Except(TempCodex.Authors);
+            var addedAuthors = TempCodex.Authors.Except(_commonAuthors);
+            MVM.CurrentCollection.AddAuthors(TempCodex);
+            foreach(Codex f in EditedCodices)
             {
-                foreach(Codex f in EditedCodices)
+                //add new ones
+                foreach (string author in addedAuthors)
                 {
-                    f.Author = TempCodex.Author;
+                    if (!f.Authors.Contains(author)) f.Authors.Add(author);
+                }
+                //remove deleted ones
+                foreach (string author in deletedAuthors)
+                {
+                    f.Authors.Remove(author);
                 }
             }
 
@@ -164,8 +180,7 @@ namespace COMPASS.ViewModels
                     }
             }
 
-            //Add new Author and Publishers to lists
-            if (TempCodex.Author != "" && !MVM.CurrentCollection.AuthorList.Contains(TempCodex.Author)) MVM.CurrentCollection.AuthorList.Add(TempCodex.Author);
+            //Add new Publishers to lists
             if(TempCodex.Publisher != "" && !MVM.CurrentCollection.PublisherList.Contains(TempCodex.Publisher)) MVM.CurrentCollection.PublisherList.Add(TempCodex.Publisher);
 
             //Add and remove Tags

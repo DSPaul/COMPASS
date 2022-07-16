@@ -62,30 +62,31 @@ namespace COMPASS.ViewModels
         private void GetSortOptions()
         {
             SortOptions = new ObservableCollection<MyMenuItem>();
-
-            var SortPropertyNames = new List<string>()
+            var SortNames = new List<(string,string)>()
             {
-                "Title",
-                "Author",
-                "Publisher",
-                "ReleaseDate",
-                "Rating",
-                "PageCount"
+                //("Display name","Property Name")
+                ("Title", "Title"),
+                ("Author", "AuthorsAsString"),
+                ("Publisher", "Publisher"),
+                ("Release Date", "ReleaseDate"),
+                ("User Rating", "Rating"),
+                ("Page Count", "PageCount")
             };
 
             //double check on typos by checking if all property names exist in codex class
             var PossibleSortProptertyNames = typeof(Codex).GetProperties().Select(p => p.Name).ToList();
-            if (SortPropertyNames.Except(PossibleSortProptertyNames).Any())
+            if (SortNames.Select(pair => pair.Item2).Except(PossibleSortProptertyNames).Any())
             {
                 MessageBox.Show("One of the sort property paths does not exist");
+                Logger.log.Error("One of the sort property paths does not exist");
             }
 
-            foreach (var sortOption in SortPropertyNames)
+            foreach (var sortOption in SortNames)
             {
-                SortOptions.Add(new MyMenuItem(sortOption)
+                SortOptions.Add(new MyMenuItem(sortOption.Item1)
                 {
                     Command = new RelayCommand<string>(MVM.CollectionVM.SortBy),
-                    CommandParam = sortOption
+                    CommandParam = sortOption.Item2
                 });
             }
         }

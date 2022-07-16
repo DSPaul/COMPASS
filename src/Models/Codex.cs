@@ -4,27 +4,32 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Xml.Serialization;
+using System.Linq;
 
 namespace COMPASS.Models
 {
     public class Codex : ObservableObject, IHasID
     {
         //empty constructor for serialization
-        public Codex() { }
+        public Codex() 
+        {
+            Authors.CollectionChanged += (e, v) => RaisePropertyChanged(nameof(AuthorsAsString));
+        }
 
-        public Codex(CodexCollection cc)
+        public Codex(CodexCollection cc):this()
         {
             Tags = new();
             ID = Utils.GetAvailableID(cc.AllCodices);
             CoverArt = CodexCollection.CollectionsPath + cc.DirectoryName + @"\CoverArt\" + ID.ToString() + ".png";
             Thumbnail = CodexCollection.CollectionsPath + cc.DirectoryName + @"\Thumbnails\" + ID.ToString() + ".png";
+
         }
 
         public void Copy(Codex c)
         {
             Title = c.Title;
             Path = c.Path;
-            Author = c.Author;
+            Authors = new(c.Authors);
             Publisher = c.Publisher;
             Version = c.Version;
             SourceURL = c.SourceURL;
@@ -69,11 +74,28 @@ namespace COMPASS.Models
             set { SetProperty(ref _title, value); }
         }
 
-        private string _author;
-        public string Author
+        private ObservableCollection<string> _authors = new();
+        public ObservableCollection<string> Authors
         {
-            get { return _author; }
-            set { SetProperty(ref _author, value); }
+            get { return _authors; }
+            set 
+            { 
+                SetProperty(ref _authors, value);
+                RaisePropertyChanged(nameof(AuthorsAsString));
+            }
+        }
+
+        public string AuthorsAsString {
+            get
+            {
+                string str = Authors.Count switch
+                {
+                    1 => Authors[0],
+                    > 1 => String.Join(", ", Authors.OrderBy(a=>a)),
+                    _ => ""
+                };
+                return str;
+            }            
         }
 
         private string _publisher;

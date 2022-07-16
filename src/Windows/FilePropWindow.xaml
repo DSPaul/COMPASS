@@ -9,6 +9,7 @@
         xmlns:Models ="clr-namespace:COMPASS.Models"
         xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
         xmlns:Tools ="clr-namespace:COMPASS.Tools" xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+        xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary"
         d:DataContext="{d:DesignInstance Type=viewmodels:CodexEditViewModel}"
         mc:Ignorable="d"
         Title="File Properties" Height="450" Width="1100" FontSize="16" 
@@ -72,7 +73,8 @@
             <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
                 <Border CornerRadius="5" Margin="0,3" Background="{x:Null}">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="{StaticResource TextMutedColor}" Typography.Capitals="AllSmallCaps" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="{StaticResource TextMutedColor}" 
+                                   Typography.Capitals="AllSmallCaps" FontWeight="Bold"/>
                     </StackPanel>
                 </Border>
             </HierarchicalDataTemplate>
@@ -149,14 +151,17 @@
                         <RowDefinition Height ="auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Title:" Grid.Column="1" Grid.Row="1"/>
+                    <TextBlock Text="Title:" Grid.Column="1" Grid.Row="1" Margin="3,5,3,0"/>
                     <TextBox Text="{Binding TempCodex.Title, Mode=TwoWay}" Grid.Column="1" Grid.Row="2" Name="FilenameTB"/>
 
-                    <TextBlock Text="Author:" Grid.Column="1" Grid.Row="3"/>
-                    <ComboBox Text="{Binding TempCodex.Author, Mode=TwoWay}" Grid.Column="1" Grid.Row="4" Name="FileAuthorTB"
-                  IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentCollection.AuthorList}"/>
+                    <TextBlock Text="Authors: (seperate with ';')" Grid.Column="1" Grid.Row="3" Margin="3,5,3,0"/>
+                    <BlackPearl:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
+                                                    Grid.Column="1" Grid.Row="4" ItemSeparator=";" 
+                                                    LookUpContract="{Binding Contract}"
+                                                    ItemSource="{Binding MVM.CurrentCollection.AuthorList}" 
+                                                    SelectedItems="{Binding TempCodex.Authors, Mode=TwoWay}"/>
 
-                    <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
+                    <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5" Margin="3,5,3,0"/>
                     <ComboBox Text="{Binding TempCodex.Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"
                   IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" ItemsSource="{Binding MVM.CurrentCollection.PublisherList}"/>
 
@@ -228,13 +233,13 @@
                         <Button Background="{StaticResource ButtonBackground}" Command="{Binding FetchCoverCommand}" Margin="10,0">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Refresh"/>
-                                <TextBlock Text="Reset"/>
+                                <TextBlock Text="Fetch"/>
                             </StackPanel>
                         </Button>
                         <Button Background="{StaticResource ButtonBackground}" Command="{Binding ChooseCoverCommand}"  Margin="10,0">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="FolderMultipleImage"/>
-                                <TextBlock Text="Choose Image"/>
+                                <TextBlock Text="Browse" Margin="5,3,0,3"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>

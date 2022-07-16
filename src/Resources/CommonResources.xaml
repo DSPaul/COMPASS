@@ -2,7 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
-                    xmlns:Tools="clr-namespace:COMPASS.Tools">
+                    xmlns:Tools="clr-namespace:COMPASS.Tools"
+                    xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary"
+                    xmlns:docs="clr-namespace:System.Windows.Documents;assembly=PresentationFramework">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Themes/DarkTheme.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -511,6 +513,42 @@
         </Setter>
     </Style>
 
+
+    <ControlTemplate TargetType="BlackPearl:MultiSelectCombobox" x:Key="Default">
+        <Grid>
+            <ToggleButton Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}" Grid.Column="3" 
+                Focusable="false" IsChecked="{Binding Path=IsOpen,Mode=TwoWay,ElementName=popup}"
+                ClickMode="Press">
+            </ToggleButton>
+            <!--Rich TextBox bound to document-->
+            <RichTextBox x:Name="rtxt" IsDocumentEnabled="False" AcceptsReturn="False" VerticalContentAlignment="Center"
+                        FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,30,5" Focusable="True" 
+                        Background="{StaticResource SelectableTransparent}" Foreground="{StaticResource TextColor}"
+                            BorderThickness="0"/>
+            <!--Suggestion Drop-Down -->
+            <Popup Name="popup" Placement="Bottom"
+                    IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    StaysOpen="False" PopupAnimation="Slide" SnapsToDevicePixels="True"
+                    Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}">
+                <Border BorderBrush="Black" BorderThickness="1">
+                    <ScrollViewer MaxHeight="300" HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto">
+                        <ListBox Name="lstSuggestion" Background="{StaticResource DarkUIElementBackground}"
+                                SelectionMode="Multiple" HorizontalContentAlignment="Stretch"
+                                DisplayMemberPath="{Binding DisplayMemberPath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                            <ListBox.ItemsSource>
+                                <CompositeCollection>
+                                    <CollectionContainer Collection="{Binding SuggestionItemsSource, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </CompositeCollection>
+                            </ListBox.ItemsSource>
+                        </ListBox>
+                    </ScrollViewer>
+                </Border>
+            </Popup>
+        </Grid>
+    </ControlTemplate>
+
+    
     <!--SimpleStyles: ComboBoxItem-->
     <Style x:Key="{x:Type ComboBoxItem}" TargetType="{x:Type ComboBoxItem}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>

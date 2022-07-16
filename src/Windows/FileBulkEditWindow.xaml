@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:Models ="clr-namespace:COMPASS.Models"
         xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
-        xmlns:Tools ="clr-namespace:COMPASS.Tools"
+        xmlns:Tools ="clr-namespace:COMPASS.Tools" xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary"
         mc:Ignorable="d"
         Title="Bulk Edit" Height="450" Width="800" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
@@ -98,9 +98,15 @@
                 <RowDefinition Height ="auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Author:" Grid.Column="1" Grid.Row="3"/>
-            <ComboBox Text="{Binding TempCodex.Author, Mode=TwoWay}" Grid.Column="1" Grid.Row="4" Name="FileAuthorTB"
-                  IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" ItemsSource="{Binding CurrentCollection.AuthorList}"/>
+            <TextBlock Text="Authors:" Grid.Column="1" Grid.Row="3"/>
+            <!--<ComboBox Text="{Binding TempCodex.Author, Mode=TwoWay}" Grid.Column="1" Grid.Row="4" Name="FileAuthorTB"
+                  IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" ItemsSource="{Binding CurrentCollection.AuthorList}"/>-->
+
+            <BlackPearl:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
+                                                    Grid.Column="1" Grid.Row="4" ItemSeparator=";" 
+                                                    LookUpContract="{Binding Contract}"
+                                                    ItemSource="{Binding MVM.CurrentCollection.AuthorList}" 
+                                                    SelectedItems="{Binding TempCodex.Authors, Mode=TwoWay}"/>
 
             <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
             <ComboBox Text="{Binding TempCodex.Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"

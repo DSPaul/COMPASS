@@ -194,7 +194,7 @@ namespace COMPASS.ViewModels
                     TargetCollection.AllCodices.Add(ToMove);
 
                     //Update Author and Publisher List
-                    if (ToMove.Author != "" && !TargetCollection.AuthorList.Contains(ToMove.Author)) TargetCollection.AuthorList.Add(ToMove.Author);
+                    TargetCollection.AddAuthors(ToMove);
                     if (ToMove.Publisher != "" && !TargetCollection.PublisherList.Contains(ToMove.Publisher)) TargetCollection.PublisherList.Add(ToMove.Publisher);
 
                     //Move cover art to right folder with new ID
