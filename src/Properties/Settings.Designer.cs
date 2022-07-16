@@ -298,5 +298,41 @@ namespace COMPASS.Properties {
                 this["justUpdated"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HomeShowTitle {
+            get {
+                return ((bool)(this["HomeShowTitle"]));
+            }
+            set {
+                this["HomeShowTitle"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("156")]
+        public double HomeCoverSize {
+            get {
+                return ((double)(this["HomeCoverSize"]));
+            }
+            set {
+                this["HomeCoverSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("156")]
+        public double TileCoverSize {
+            get {
+                return ((double)(this["TileCoverSize"]));
+            }
+            set {
+                this["TileCoverSize"] = value;
+            }
+        }
     }
 }

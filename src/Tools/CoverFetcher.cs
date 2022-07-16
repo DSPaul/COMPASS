@@ -146,34 +146,50 @@ namespace COMPASS
             //sites do not store cover as img, Use Selenium for screenshotting pages
             else if (source.HasFlag(Enums.Sources.GmBinder) || source.HasFlag(Enums.Sources.Homebrewery))
             {
-                DriverService driverService;
-                WebDriver driver;
-                switch (Properties.Settings.Default.SeleniumBrowser)
+                var browser = (Enums.Browser)Properties.Settings.Default.SeleniumBrowser;
+
+                string driverPath = browser switch
                 {
-                    case (int)Enums.Browser.Chrome:
-                        driverService = ChromeDriverService.CreateDefaultService();
-                        driverService.HideCommandPromptWindow = true;
+                    Enums.Browser.Chrome => Utils.FindFileDirectory("chromedriver.exe", Constants.WebDriverDirectoryPath),
+                    Enums.Browser.Firefox => Utils.FindFileDirectory("geckodriver.exe", Constants.WebDriverDirectoryPath),
+                    _ => Utils.FindFileDirectory("msedgedriver.exe", Constants.WebDriverDirectoryPath)
+                };
+
+                DriverService driverService = browser switch
+                {
+                    Enums.Browser.Chrome => ChromeDriverService.CreateDefaultService(driverPath),
+                    Enums.Browser.Firefox => FirefoxDriverService.CreateDefaultService(driverPath),
+                    _ => EdgeDriverService.CreateDefaultService(driverPath)
+                };
+
+                driverService.HideCommandPromptWindow = true;
+
+                List<string> DriverArguments = new()
+                {
+                    "--headless",
+                    "--window-size=3000,3000",
+                    "--width=3000",
+                    "--height=3000"
+                };
+
+                WebDriver driver;
+                switch (browser)
+                {
+                    case Enums.Browser.Chrome:
                         ChromeOptions CO = new();
-                        CO.AddArgument("--window-size=2500,2000");
-                        CO.AddArgument("--headless");
+                        CO.AddArguments(DriverArguments);
                         driver = new ChromeDriver((ChromeDriverService)driverService, CO);
                         break;
 
-                    case (int)Enums.Browser.Firefox:
-                        driverService = FirefoxDriverService.CreateDefaultService();
-                        driverService.HideCommandPromptWindow = true;
+                    case Enums.Browser.Firefox:
                         FirefoxOptions FO = new();
-                        FO.AddArgument("--window-size=2500,2000");
-                        FO.AddArgument("--headless");
+                        FO.AddArguments(DriverArguments);
                         driver = new FirefoxDriver((FirefoxDriverService)driverService, FO);
                         break;
 
                     default:
-                        driverService = EdgeDriverService.CreateDefaultService();
-                        driverService.HideCommandPromptWindow = true;
                         EdgeOptions EO = new();
-                        EO.AddArgument("--window-size=2500,2000");
-                        EO.AddArgument("--headless");
+                        EO.AddArguments(DriverArguments);
                         driver = new EdgeDriver((EdgeDriverService)driverService, EO);
                         break;
                 }

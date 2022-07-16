@@ -71,5 +71,14 @@
     <Setting Name="justUpdated" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="HomeShowTitle" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="HomeCoverSize" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">156</Value>
+    </Setting>
+    <Setting Name="TileCoverSize" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">156</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

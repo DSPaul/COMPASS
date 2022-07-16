@@ -4,27 +4,33 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Xml.Serialization;
+using System.Linq;
 
 namespace COMPASS.Models
 {
     public class Codex : ObservableObject, IHasID
     {
         //empty constructor for serialization
-        public Codex() { }
+        public Codex() 
+        {
+            Authors.CollectionChanged += (e, v) => RaisePropertyChanged(nameof(AuthorsAsString));
+        }
 
-        public Codex(CodexCollection cc)
+        public Codex(CodexCollection cc):this()
         {
             Tags = new();
             ID = Utils.GetAvailableID(cc.AllCodices);
             CoverArt = CodexCollection.CollectionsPath + cc.DirectoryName + @"\CoverArt\" + ID.ToString() + ".png";
             Thumbnail = CodexCollection.CollectionsPath + cc.DirectoryName + @"\Thumbnails\" + ID.ToString() + ".png";
+
         }
 
         public void Copy(Codex c)
         {
             Title = c.Title;
+            _sortingTitle = c._sortingTitle; //copy field instead of property, or it will copy _title
             Path = c.Path;
-            Author = c.Author;
+            Authors = new(c.Authors);
             Publisher = c.Publisher;
             Version = c.Version;
             SourceURL = c.SourceURL;
@@ -66,14 +72,54 @@ namespace COMPASS.Models
         public string Title
         {
             get { return _title; }
-            set { SetProperty(ref _title, value); }
+            set 
+            { 
+                SetProperty(ref _title, value);
+                RaisePropertyChanged(nameof(SortingTitle));
+            }
         }
 
-        private string _author;
-        public string Author
+        private string _sortingTitle = "";
+        [XmlIgnoreAttribute]
+        public string SortingTitle
         {
-            get { return _author; }
-            set { SetProperty(ref _author, value); }
+            get 
+            {
+                if (String.IsNullOrEmpty(_sortingTitle)) return _title;
+                else return _sortingTitle;
+            }
+            set { SetProperty(ref _sortingTitle, value); }
+        }
+        //seperate property needed for serialization or it will get _title and save that
+        //instead of saving an empty and mirroring _title during runtime
+        public string SerializableSortingTitle
+        {
+            get { return _sortingTitle; }
+            set { SetProperty(ref _sortingTitle, value); }
+        }
+
+        private ObservableCollection<string> _authors = new();
+        public ObservableCollection<string> Authors
+        {
+            get { return _authors; }
+            set 
+            { 
+                SetProperty(ref _authors, value);
+                RaisePropertyChanged(nameof(AuthorsAsString));
+            }
+        }
+
+        public string AuthorsAsString {
+            get
+            {
+                string str = Authors.Count switch
+                {
+                    1 => Authors[0],
+                    > 1 => String.Join(", ", Authors.OrderBy(a=>a)),
+                    _ => ""
+                };
+                return str;
+            }            
         }
 
         private string _publisher;

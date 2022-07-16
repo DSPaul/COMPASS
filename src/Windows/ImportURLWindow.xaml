@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Tools ="clr-namespace:COMPASS.Tools"
         xmlns:local="clr-namespace:COMPASS.Windows" 
-        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:ImportViewModel}"
+        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:ImportViewModel}"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
-        Background="{StaticResource WindowBackground}" SizeToContent="Height"
-        Title="Import URL" Height="170" Width="600" WindowStartupLocation="CenterScreen">
+        Background="{StaticResource WindowBackground}"
+        Title="Import URL" Height="190" Width="600" WindowStartupLocation="CenterScreen">
     <Grid>
         <StackPanel Margin="15">
             <TextBlock Text="{Binding ImportTitle, FallbackValue= URL:}" Margin="5"/>

@@ -164,7 +164,7 @@ namespace COMPASS.ViewModels
                         {
                             Path = path,
                             Title = info.GetTitle() ?? System.IO.Path.GetFileNameWithoutExtension(path),
-                            Author = info.GetAuthor(),
+                            Authors = new() { info.GetAuthor() },
                             PageCount = pdfdoc.GetNumberOfPages()
                         };
                         Codex pdf = codex;
@@ -296,7 +296,7 @@ namespace COMPASS.ViewModels
 
                     //Scrape metadata
                     newFile.Title = src.SelectSingleNode("//html/head/title").InnerText.Split('|')[0];
-                    newFile.Author = src.SelectSingleNode("//meta[@property='og:author']").GetAttributeValue("content", String.Empty);
+                    newFile.Authors = new() { src.SelectSingleNode("//meta[@property='og:author']").GetAttributeValue("content", String.Empty) };
 
                     //get pagecount
                     HtmlNode previewDiv = doc.GetElementbyId("preview");
@@ -316,7 +316,7 @@ namespace COMPASS.ViewModels
                     JObject metadata = JObject.Parse(rawData);
 
                     newFile.Title = (string)metadata.SelectToken("brew.title");
-                    newFile.Author = (string)metadata.SelectToken("brew.authors[0]");
+                    newFile.Authors = new(metadata.SelectToken("brew.authors").Values<string>());
                     newFile.Version = (string)metadata.SelectToken("brew.version");
                     newFile.PageCount = (int)metadata.SelectToken("brew.pageCount");
                     newFile.Description = (string)metadata.SelectToken("brew.description");
@@ -335,7 +335,7 @@ namespace COMPASS.ViewModels
                 case Sources.DnDBeyond:
                     //Set known metadata
                     newFile.Publisher = "D&D Beyond";
-                    newFile.Author = "Wizards of the Coast";
+                    newFile.Authors = new() { "Wizards of the Coast" };
 
                     //Scrape metadata by going to storepage, get to storepage by using that /credits redirects there
                     //Doesn't work because DnD Beyond detects bots/scrapers

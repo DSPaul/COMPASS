@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using Microsoft.Win32;
 using System;
@@ -46,6 +47,8 @@ namespace COMPASS.ViewModels
         }
 
         private bool CoverArtChanged = false;
+
+        public CreatableLookUpContract Contract { get; set; } = new();
 
         #endregion
 
@@ -155,8 +158,7 @@ namespace COMPASS.ViewModels
                 MVM.Refresh();
             }
             //Add new Author and Publishers to lists
-            if (TempCodex.Author != "" && !MVM.CurrentCollection.AuthorList.Contains(TempCodex.Author))
-                MVM.CurrentCollection.AuthorList.Add(TempCodex.Author);
+            MVM.CurrentCollection.AddAuthors(TempCodex);
             if (TempCodex.Publisher != "" && !MVM.CurrentCollection.PublisherList.Contains(TempCodex.Publisher))
                 MVM.CurrentCollection.PublisherList.Add(TempCodex.Publisher);
 

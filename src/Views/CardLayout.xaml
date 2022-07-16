@@ -21,27 +21,27 @@
                      DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
             <MenuItem Header="Open Selected" CommandParameter="{Binding}"
                   Command="{Binding Path=Data.OpenSelectedCodicesCommand, Source={StaticResource CodexProxy}}"/>
-                <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
-                  Command="{Binding Path=Data.EditCodexsCommand, Source={StaticResource CodexProxy}}"/>
-                <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
+            <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
+                  Command="{Binding Path=Data.EditCodicesCommand, Source={StaticResource CodexProxy}}"/>
+            <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
-                    <MenuItem.ItemContainerStyle>
-                        <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                            <Setter Property="MenuItem.Command" Value="{Binding Path=Data.MoveToCollectionCommand, Source={StaticResource CodexProxy}}"/>
-                            <Setter Property="MenuItem.CommandParameter">
-                                <Setter.Value>
-                                    <MultiBinding Converter="{StaticResource MultiParamConverter}">
-                                        <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
-                                        <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}"/>
-                                    </MultiBinding>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </MenuItem.ItemContainerStyle>
-                </MenuItem>
-                <MenuItem Header="Delete All" CommandParameter="{Binding}"
+                <MenuItem.ItemContainerStyle>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                        <Setter Property="MenuItem.Command" Value="{Binding Path=Data.MoveToCollectionCommand, Source={StaticResource CodexProxy}}"/>
+                        <Setter Property="MenuItem.CommandParameter">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource MultiParamConverter}">
+                                    <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
+                                    <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}"/>
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </MenuItem.ItemContainerStyle>
+            </MenuItem>
+            <MenuItem Header="Delete All" CommandParameter="{Binding}"
                   Command="{Binding Path=Data.DeleteCodexCommand, Source={StaticResource CodexProxy}}"/>
-            </ContextMenu>
+        </ContextMenu>
     </UserControl.Resources>
         <!--#region CardView-->
     <ListBox x:Name="CardLayoutListBox" ItemsSource="{Binding MVM.CollectionVM.ActiveFiles}" Background="{x:Null}"
@@ -143,7 +143,7 @@
                                 </Grid.Resources>
                             
                                 <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Type}" Text="Title:"/>
-                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Type}" Text="Author:" 
+                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Type}" Text="Authors:" 
                                            Visibility="{Binding DataContext.ShowAuthor, RelativeSource={RelativeSource AncestorType=ListBox},
                                            Converter={StaticResource ToVisibilityConverter}}"/>
                                 <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource Type}" Text="Publisher:" 
@@ -160,7 +160,7 @@
                                            Converter={StaticResource ToVisibilityConverter}}"/>
 
                                 <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Title}" />
-                                <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Author}" 
+                                <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding AuthorsAsString}" 
                                            Visibility="{Binding DataContext.ShowAuthor, RelativeSource={RelativeSource AncestorType=ListBox},
                                            Converter={StaticResource ToVisibilityConverter}}"/>
                                 <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Publisher}" 

@@ -171,7 +171,8 @@ namespace COMPASS.ViewModels
                         //handled by UpdateSearchFilteredFiles
                         break;
                     case Enums.FilterType.Author:
-                        ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Contains(f.Author));
+                        //exclude codex if no overlap between authors the file has and filtered authors
+                        ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Intersect(f.Authors).Any());
                         break;
                     case Enums.FilterType.Publisher:
                         ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Contains(f.Publisher));

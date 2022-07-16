@@ -19,7 +19,7 @@
                 Command="{Binding Path=Data.OpenSelectedCodicesCommand, Source={StaticResource CodexProxy}}"/>
             <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
                 Command="{Binding Path=Data.EditCodicesCommand, Source={StaticResource CodexProxy}}"/>
-            <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
+            <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
                 <MenuItem.ItemContainerStyle>
                     <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">

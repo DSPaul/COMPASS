@@ -91,10 +91,11 @@ namespace COMPASS.Models
                     AllCodices = serializer.Deserialize(Reader) as List<Codex>;
                 }
 
+
                 foreach (Codex f in AllCodices)
                 {
                     //Populate Author and Publisher List
-                    if (!String.IsNullOrEmpty(f.Author) && !AuthorList.Contains(f.Author)) AuthorList.Add(f.Author);
+                    AddAuthors(f);
                     if (!String.IsNullOrEmpty(f.Publisher) && !PublisherList.Contains(f.Publisher)) PublisherList.Add(f.Publisher);
 
                     //reconstruct tags from ID's
@@ -102,6 +103,9 @@ namespace COMPASS.Models
                     {
                         f.Tags.Add(AllTags.First(t => t.ID == id));
                     }
+
+                    //apply sorting titles
+                    f.SortingTitle = f.SerializableSortingTitle;
                 }
                 //Sort them
                 AuthorList = new(AuthorList.OrderBy(n => n));
@@ -172,6 +176,15 @@ namespace COMPASS.Models
             }
             Directory.Move(CollectionsPath + DirectoryName, CollectionsPath + NewCollectionName);
             DirectoryName = NewCollectionName;
+        }
+
+        public void AddAuthors(Codex codex)
+        {
+            foreach (var author in codex.Authors)
+            {
+                if (!String.IsNullOrEmpty(author) && !AuthorList.Contains(author))
+                    AuthorList.Add(author);
+            }
         }
     }
 }

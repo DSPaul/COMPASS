@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
@@ -92,5 +93,17 @@ namespace COMPASS.Tools
             }
             return false;
         }
+
+        public static string FindFileDirectory(string fileName)
+        {
+            return FindFileDirectory(fileName, Directory.GetCurrentDirectory());
+        }
+        public static string FindFileDirectory(string fileName, string rootDirectory)
+        {
+            string filePath = Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories)[0];
+            string parentDirectory = Path.GetDirectoryName(filePath);
+            return parentDirectory;
+        }
+
     }
 }
