@@ -14,7 +14,7 @@
 ### New Features
 
 - Added new Home layout
-- Added option to favourite a book
+- Added option to favorite a book
 - Track when and how often books are opened
 
 ## COMPASS v0.3.1 (16 June 2022)
@@ -58,7 +58,7 @@
 
 ### New Features
 
-- Google drive import has been added, supported metadate is:
+- Google drive import has been added, supported metadata is:
   - Cover
   - Title
 - Automatic update checking and installing
