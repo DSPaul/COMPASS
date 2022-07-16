@@ -1,4 +1,28 @@
 # CHANGELOG
+## COMPASS v0.5.0 (16 July 2022)
+
+### Fixes
+
+- Fix Import button disappearing when importing from URL
+- Fix cover download failing sometimes
+- Fix COMPASS sometimes crashing when downloading cover
+- Restored sorting in Tile Layout
+- Fixed "Move to Collection" not working in certain layouts
+
+### Enhancements
+
+- Downloading covers from homebrewery and gmbinder no longer requires COMPASS to be run as administrator
+- All Layout options (cover size and title visibility) now persist in Home Layout
+- Cover size now persists in Tile Layout
+
+### New Features
+
+- Added support for multiple authors
+- Added separate sorting titles
+
+### Other Changes
+
+- Removed redundant sorting options in Home Layout
 
 ## COMPASS v0.4.0 (29 June 2022)
 
