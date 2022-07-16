@@ -28,6 +28,7 @@ namespace COMPASS.Models
         public void Copy(Codex c)
         {
             Title = c.Title;
+            _sortingTitle = c._sortingTitle; //copy field instead of property, or it will copy _title
             Path = c.Path;
             Authors = new(c.Authors);
             Publisher = c.Publisher;
@@ -71,7 +72,30 @@ namespace COMPASS.Models
         public string Title
         {
             get { return _title; }
-            set { SetProperty(ref _title, value); }
+            set 
+            { 
+                SetProperty(ref _title, value);
+                RaisePropertyChanged(nameof(SortingTitle));
+            }
+        }
+
+        private string _sortingTitle = "";
+        [XmlIgnoreAttribute]
+        public string SortingTitle
+        {
+            get 
+            {
+                if (String.IsNullOrEmpty(_sortingTitle)) return _title;
+                else return _sortingTitle;
+            }
+            set { SetProperty(ref _sortingTitle, value); }
+        }
+        //seperate property needed for serialization or it will get _title and save that
+        //instead of saving an empty and mirroring _title during runtime
+        public string SerializableSortingTitle
+        {
+            get { return _sortingTitle; }
+            set { SetProperty(ref _sortingTitle, value); }
         }
 
         private ObservableCollection<string> _authors = new();

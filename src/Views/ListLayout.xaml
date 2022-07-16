@@ -152,7 +152,7 @@
             </Style>
         </DataGrid.RowStyle>
         <DataGrid.Columns>
-            <DataGridTemplateColumn Header="TITLE" Width="3*" MinWidth="100" CanUserSort="True" SortMemberPath="Title"
+            <DataGridTemplateColumn Header="TITLE" Width="3*" MinWidth="100" CanUserSort="True" SortMemberPath="SortingTitle"
                                     Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowTitle, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>

@@ -65,7 +65,7 @@ namespace COMPASS.ViewModels
             var SortNames = new List<(string,string)>()
             {
                 //("Display name","Property Name")
-                ("Title", "Title"),
+                ("Title", "SortingTitle"),
                 ("Author", "AuthorsAsString"),
                 ("Publisher", "Publisher"),
                 ("Release Date", "ReleaseDate"),

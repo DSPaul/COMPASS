@@ -103,6 +103,9 @@ namespace COMPASS.Models
                     {
                         f.Tags.Add(AllTags.First(t => t.ID == id));
                     }
+
+                    //apply sorting titles
+                    f.SortingTitle = f.SerializableSortingTitle;
                 }
                 //Sort them
                 AuthorList = new(AuthorList.OrderBy(n => n));
