@@ -348,6 +348,8 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> CreateCollectionCommand { get; private set; }
         public void CreateCollection(string dirName)
         {
+            if (string.IsNullOrEmpty(dirName)) return;
+
             Directory.CreateDirectory((CodexCollection.CollectionsPath + dirName + @"\CoverArt"));
             Directory.CreateDirectory((CodexCollection.CollectionsPath + dirName + @"\Thumbnails"));
             CollectionDirectories.Add(dirName);
@@ -395,6 +397,9 @@ namespace COMPASS.ViewModels
         }
         public void DeleteCollection(string todelete)
         {
+            //if todelete is empty, it will delete the entire collections folder
+            if (String.IsNullOrEmpty(todelete)) return; 
+
             CollectionDirectories.Remove(todelete);
             CurrentCollectionName = CollectionDirectories[0];
             Directory.Delete(CodexCollection.CollectionsPath + todelete,true);
