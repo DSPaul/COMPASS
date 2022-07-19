@@ -77,7 +77,8 @@
                 <Setter Property="Margin" Value="0,0,10,0"/>
             </Style>
             <!--ContextMenu needs to be in every view where it is used instead of in a resource dict because 
-            in resource dict it "sticks" to first view and the binding target for SelectedItems doesn't update when the view changes-->
+            in resource dict it "sticks" to first view and the binding target for SelectedItems doesn't update when the view changes
+            https://github.com/dotnet/wpf/issues/4128-->
             <ContextMenu x:Key="MultiCodexContextMenu" 
                      DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
                 <MenuItem Header="Open Selected" CommandParameter="{Binding}"
