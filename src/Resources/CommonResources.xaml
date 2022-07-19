@@ -11,7 +11,7 @@
 
     <!--Converters-->
     <Converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
-    
+
     <!--TextBlock Style-->
     <Style TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
@@ -332,11 +332,14 @@
     </Style>
     
     <Style TargetType="MenuItem">
+        <Setter Property="Tools:AP.IconKind" Value="None"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type MenuItem}">
                     <Border Padding="15,5" Background="{TemplateBinding Background}">
                         <DockPanel Background="{x:Null}">
+                            <materialDesign:PackIcon Kind="{TemplateBinding Tools:AP.IconKind}" 
+                                                     DockPanel.Dock="Left" Margin="0,3,10,3"/>
                             <ContentPresenter Content="{TemplateBinding Header}" DockPanel.Dock="Left"/>
                             <!--Little submenu arrow-->
                             <Polygon Points="0,0 4,4, 0,8" Stroke="{x:Null}" Fill="White" 
@@ -386,23 +389,24 @@
         <ContextMenu.Resources>
             <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
         </ContextMenu.Resources>
-        <MenuItem Header="Open Locally" 
+        <MenuItem Header="Open Locally" Tools:AP.IconKind="FileOutline"
                   Command="{Binding Path=DataContext.CodexVM.OpenCodexLocallyCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
-        <MenuItem Header="Open Online" 
+        <MenuItem Header="Open Online" Tools:AP.IconKind="Web"
                   Command="{Binding Path=DataContext.CodexVM.OpenCodexOnlineCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
-        <MenuItem Header="Edit" 
+        <MenuItem Header="Edit" Tools:AP.IconKind="Edit"
                   Command="{Binding Path=DataContext.CodexVM.EditCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
-        <MenuItem Header="Show in Explorer" 
+        <MenuItem Header="Show in Explorer" Tools:AP.IconKind="FolderEyeOutline"
                   Command="{Binding Path=DataContext.CodexVM.ShowInExplorerCommand, 
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
-        <MenuItem Header="Move to Collection" ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
+        <MenuItem Header="Move to Collection" Tools:AP.IconKind="FolderMoveOutline"
+                  ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
             <MenuItem.ItemContainerStyle>
                 <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
@@ -420,7 +424,7 @@
                 </Style>
             </MenuItem.ItemContainerStyle>
         </MenuItem>
-        <MenuItem Header="Delete" 
+        <MenuItem Header="Delete" Tools:AP.IconKind="Delete"
                   Command="{Binding Path=DataContext.CodexVM.DeleteCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
