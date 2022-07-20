@@ -87,4 +87,4 @@ Images/
 .editorconfig
 *.diagsession
 src/GlobalSuppressions.cs
-
+*.xlsx
