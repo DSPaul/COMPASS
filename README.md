@@ -13,7 +13,7 @@ If you are an RPG fan like me, you probably have lots of pdf's both homebrew and
 - Have **Redundant Access** to your books by having both an offline pdf and a link to an online version hosted on sites such as Google Drive and GM Binder for each book. COMPASS will automatically fallback to another version if the preferred one is unavailable due to a lack of internet for example.
 - **Automatic metadata** from PDF's, supported sites and books with an ISBN number thanks to [Open Library](https://openlibrary.org/). 
   
-![](Docs/MetaData_support.png)
+- <img src="Docs/Metadata_support.png" alt="Supported sources table" width="600"/>
 
 - **Categorize** all your books using Tags. You can add Tags for anything you like, some examples:
   - The type of content like *Adventure*, *Monster Stats* or *Setting/Lore*.
