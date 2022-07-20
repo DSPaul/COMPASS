@@ -8,7 +8,8 @@
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
         d:DataContext="{d:DesignInstance Type=viewmodels:ImportViewModel}"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
-        Background="{StaticResource WindowBackground}"
+        Background="{StaticResource WindowBackground}" 
+        FocusManager.FocusedElement="{Binding ElementName=inputField}"
         Title="Import URL" Height="190" Width="600" WindowStartupLocation="CenterScreen">
     <Grid>
         <StackPanel Margin="15">
@@ -18,9 +19,9 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            Tools:AP.PlaceHolderText="{Binding PreviewURL, Mode=TwoWay}"/>
-                <Button Grid.Column="1" Content="Import" Command="{Binding SubmitURLCommand}"
+                <TextBox x:Name="inputField" Tools:AP.PlaceHolderText="{Binding PreviewURL, Mode=TwoWay}"
+                         Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Grid.Column="1" Content="Import" Command="{Binding SubmitURLCommand}" IsDefault="True"
                         Style="{StaticResource TextButton}" Background="{StaticResource AccentColorMuted}"/>
             </Grid>
             <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" Margin="5"/>
