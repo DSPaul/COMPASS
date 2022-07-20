@@ -12,6 +12,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows;
 using static COMPASS.Tools.Enums;
 
@@ -39,6 +41,9 @@ namespace COMPASS.ViewModels
                 case Sources.Manual:
                     ImportManual();
                     break;
+                case Sources.ISBN:
+                    OpenImportURLDialog();
+                    break;
                 case Sources.GmBinder:
                     OpenImportURLDialog();
                     break;
@@ -57,9 +62,12 @@ namespace COMPASS.ViewModels
         #region Properties
         private CodexCollection _codexCollection;
 
-        private Sources Source;
+        private readonly Sources Source;
         private BackgroundWorker worker;
         private ImportURLWindow iURLw;
+
+        private const Sources Webscrape = Sources.Homebrewery | Sources.GmBinder | Sources.GoogleDrive;
+        private const Sources APIAccess = Sources.ISBN;
 
         private float _progressPercentage;
         public float ProgressPercentage
@@ -204,6 +212,10 @@ namespace COMPASS.ViewModels
         {
             switch (Source)
             {
+                case Sources.ISBN:
+                    ImportTitle = "ISBN:";
+                    PreviewURL = "";
+                    break;
                 case Sources.GmBinder:
                     ImportTitle = "GM Binder:";
                     PreviewURL = "https://www.gmbinder.com/share/";
@@ -242,7 +254,8 @@ namespace COMPASS.ViewModels
             }
             iURLw.Close();
             worker = new BackgroundWorker { WorkerReportsProgress = true };
-            worker.DoWork += ImportURL;
+            if (Webscrape.HasFlag(Source)) worker.DoWork += ImportURL;
+            if (APIAccess.HasFlag(Source)) worker.DoWork += ImportFromAPI;
             worker.ProgressChanged += ProgressChanged;
             worker.RunWorkerAsync();
         }
@@ -266,17 +279,22 @@ namespace COMPASS.ViewModels
 
             //Webscraper for metadata using HtmlAgilityPack
             HtmlWeb web = new();
+
+            //Load site, set URL here
             HtmlDocument doc = Source switch
             {
                 Sources.DnDBeyond => web.Load(string.Concat(InputURL, "/credits")),
                 _ => web.Load(InputURL),
             };
+
             if (doc.ParsedText == null)
             {
                 worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Error, String.Format("{0} could not be reached", ImportTitle)));
                 return;
             }
+
             HtmlNode src = doc.DocumentNode;
+
 
             Codex newFile = new(_codexCollection)
             {
@@ -290,6 +308,10 @@ namespace COMPASS.ViewModels
             //Start scraping metadata, website specific
             switch (Source)
             {
+                case Sources.ISBN:
+                    newFile.Publisher = "";
+                    break;
+
                 case Sources.GmBinder:
                     //Set known metadata
                     newFile.Publisher = "GM Binder";
@@ -364,7 +386,80 @@ namespace COMPASS.ViewModels
                 MVM.Refresh();
             });
         }
+        
+        private void ImportFromAPI(object sender, DoWorkEventArgs e)
+        {
+            ProgressWindow pgw;
+            _importtype = "Step";
+            _importcounter = 0;
+            //3 steps: 1. connect to api, 2. get metadata, 3. get Cover
+            _importamount = 3;
 
+            //needed to avoid error "The calling Thread must be STA" when creating progress window
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                pgw = new ProgressWindow(this);
+                pgw.Show();
+            });
+
+            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, String.Format("Fetching Data")));
+            string uri = Source switch
+            {
+                Sources.ISBN => $"http://openlibrary.org/api/books?bibkeys=ISBN:{InputURL.Trim('-',' ')}&format=json&jscmd=details",
+            _ => null
+            };
+
+            JObject metadata = Task.Run(async () => await Utils.GetJsonAsync(uri)).Result;
+
+            if (metadata.HasValues == false)
+            {
+                worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Error, $"{uri} could not be reached"));
+                return;
+            }
+
+            Codex newFile = new(_codexCollection);
+
+            //loading complete
+            _importcounter++;
+            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, "File loaded, parsing metadata"));
+
+            //Start parsing json
+            switch (Source)
+            {
+                case Sources.ISBN:
+                    var details = metadata.First.First.SelectToken("details");
+                    newFile.Title = (string)details.SelectToken("title");
+                    newFile.Authors = new ObservableCollection<string>( details.SelectToken("authors").Select(item => item.SelectToken("name").ToString()));
+                    newFile.PageCount = (int?)details.SelectToken("pagination") ?? newFile.PageCount;
+                    newFile.PageCount = (int?)details.SelectToken("number_of_pages") ?? newFile.PageCount;
+                    newFile.Publisher = (string)details.SelectToken("publishers[0]");
+                    newFile.ReleaseDate = DateTime.Parse((string)details.SelectToken("publish_date"));
+                    newFile.ISBN = InputURL;
+                    newFile.Physically_Owned = true;
+                    break;
+            }
+
+            //Scraping complete
+            _importcounter++;
+            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, "Metadata loaded. Fetching cover art."));
+
+            //Get Cover Art
+            CoverFetcher.GetCoverFromISBN(newFile);
+
+            //add file to cc
+            _codexCollection.AllCodices.Add(newFile);
+            RaisePropertyChanged("ActiveFiles");
+
+            //import done
+            _importcounter++;
+            worker.ReportProgress(_importcounter);
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MVM.Refresh();
+            });
+        }
+        
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             //calculate current percentage for progressbar

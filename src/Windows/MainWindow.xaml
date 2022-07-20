@@ -537,6 +537,8 @@
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Pdf}"/>
                             <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource innerIconBtn}" Content="Manual"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Manual}"/>
+                            <Button Tools:AP.IconKind="Barcode" Style="{StaticResource innerIconBtn}" Content="From ISBN"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.ISBN}"/>
                             <Button Tools:AP.IconKind="GoogleDrive" Style="{StaticResource innerIconBtn}" Content="Google Drive"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.GoogleDrive}"/>
                             <Button Style="{StaticResource GrayBtn}"

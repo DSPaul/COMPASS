@@ -2,6 +2,7 @@
 using COMPASS.Tools;
 using HtmlAgilityPack;
 using ImageMagick;
+using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
@@ -29,7 +30,8 @@ namespace COMPASS
         private static readonly List<PreferableFunction<Codex>> GetCoverFunctions = new()
             {
                 new PreferableFunction<Codex>("Local File", GetCoverFromPDF,0),
-                new PreferableFunction<Codex>("Web Version", GetCoverFromURL,1)
+                new PreferableFunction<Codex>("Web Version", GetCoverFromURL,1),
+                new PreferableFunction<Codex>("ISBN", GetCoverFromISBN,2)
             };
 
         //Save First page of PDF as png
@@ -97,14 +99,13 @@ namespace COMPASS
 
             return GetCoverFromURL(c, source);
         }
+
         public static bool GetCoverFromURL(Codex destfile, Enums.Sources source)
         {
             string URL = destfile.SourceURL;
 
-            if (String.IsNullOrEmpty(URL)) return false;
-
             //sites that store cover as image that can be downloaded
-            if(source.HasFlag(Enums.Sources.DnDBeyond) || source.HasFlag(Enums.Sources.GoogleDrive))
+            if(source.HasFlag(Enums.Sources.DnDBeyond) || source.HasFlag(Enums.Sources.GoogleDrive) || source.HasFlag(Enums.Sources.ISBN))
             {
                 try
                 {
@@ -130,6 +131,12 @@ namespace COMPASS
                             imgURL = src.SelectSingleNode("//meta[@property='og:image']").GetAttributeValue("content", String.Empty);
                             //cut of "=W***-h***-p" from URL that crops the image if it is present
                             if (imgURL.Contains('=')) imgURL = imgURL.Split('=')[0];
+                            break;
+                        case Enums.Sources.ISBN:
+                            string uri = $"https://openlibrary.org/isbn/{destfile.ISBN}.json";
+                            JObject metadata = Task.Run(async () => await Utils.GetJsonAsync(uri)).Result;
+                            string imgID = (string)metadata.SelectToken("covers[0]");
+                            imgURL = $"https://covers.openlibrary.org/b/id/{imgID}.jpg";
                             break;
                     }
                     //download the file
@@ -242,6 +249,12 @@ namespace COMPASS
             
             CreateThumbnail(destfile);
             return true;
+        }
+        
+        public static bool GetCoverFromISBN(Codex c)
+        {
+            if (string.IsNullOrEmpty(c.ISBN)) return false;
+            return GetCoverFromURL(c,Enums.Sources.ISBN);
         }
 
         //get cover from image
