@@ -413,7 +413,10 @@ namespace COMPASS.ViewModels
 
             if (metadata.HasValues == false)
             {
-                worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Error, $"{uri} could not be reached"));
+                string message = $"ISBN {InputURL} was not found on openlibrary.org \n" +
+                    $"You can contribute by submitting this book at \n" +
+                    $"https://openlibrary.org/books/add";
+                worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Error, message));
                 return;
             }
 
@@ -429,11 +432,15 @@ namespace COMPASS.ViewModels
                 case Sources.ISBN:
                     var details = metadata.First.First.SelectToken("details");
                     newFile.Title = (string)details.SelectToken("title");
-                    newFile.Authors = new ObservableCollection<string>( details.SelectToken("authors").Select(item => item.SelectToken("name").ToString()));
+                    if (details.SelectToken("authors") != null)
+                        newFile.Authors = new ObservableCollection<string>( details.SelectToken("authors").Select(item => item.SelectToken("name").ToString()));
                     newFile.PageCount = (int?)details.SelectToken("pagination") ?? newFile.PageCount;
                     newFile.PageCount = (int?)details.SelectToken("number_of_pages") ?? newFile.PageCount;
-                    newFile.Publisher = (string)details.SelectToken("publishers[0]");
-                    newFile.ReleaseDate = DateTime.Parse((string)details.SelectToken("publish_date"));
+                    newFile.Publisher = (string)details.SelectToken("publishers[0]") ?? newFile.Publisher;
+                    newFile.Description = (string)details.SelectToken("description.value") ?? newFile.Description;
+                    DateTime tempDate;
+                    if (DateTime.TryParse((string)details.SelectToken("publish_date"), out tempDate))
+                        newFile.ReleaseDate = tempDate;
                     newFile.ISBN = InputURL;
                     newFile.Physically_Owned = true;
                     break;
