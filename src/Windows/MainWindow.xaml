@@ -177,9 +177,10 @@
                         </Grid.ColumnDefinitions>
                         <TextBox Grid.Column="0" x:Name="Searchbox" Tools:AP.PlaceHolderText="Search" Margin="0"
                              Text="{Binding CollectionVM.SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
-                             Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" PreviewKeyDown="Searchbox_KeyDown"/>
-                        <Button  Grid.Column="1" Style="{StaticResource IconBtn}" Margin="10,0"
-                        Command="{Binding SearchCommand}" CommandParameter="{Binding Text, ElementName=Searchbox}" Tools:AP.IconKind="Search"/>
+                             Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"/>
+                        <Button  Grid.Column="1" Style="{StaticResource IconBtn}" Margin="10,0" Tools:AP.IconKind="Search"
+                        Command="{Binding SearchCommand}" CommandParameter="{Binding Text, ElementName=Searchbox}" 
+                                 IsDefault="{Binding ElementName=Searchbox, Path=IsKeyboardFocused}"/>
                     </Grid>
                 </Border>
 
@@ -396,8 +397,7 @@
                         </Grid>
                     </ToggleButton>
 
-                    <Button x:Name="CloseButton"
-                Click="CloseButton_Click" BorderBrush="{x:Null}">
+                    <Button x:Name="CloseButton" Click="CloseButton_Click" BorderBrush="{x:Null}">
                         <materialDesign:PackIcon Kind="WindowClose"/>
                         <Button.Style>
                             <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
