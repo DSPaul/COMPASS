@@ -51,7 +51,19 @@
         <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
         <Setter Property="Background" Value="{StaticResource DarkUIElementBackground}"/>
     </Style>
-    
+
+    <Style TargetType="materialDesign:PackIcon" x:Key="ClickableIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
+        <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <!--#region Button Styles and Templates-->
     <!--Button base-->
     <Style TargetType="{x:Type Button}" x:Key="BaseButton">
@@ -99,6 +111,36 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Button}" x:Key="IconBtn" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="BorderBrush" Value="{x:Null}"/>
+        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="Margin" Value="3"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Style="{StaticResource ClickableIcon}"
+                            Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}" Background="{TemplateBinding Background}">
+                    </materialDesign:PackIcon>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="RenderTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="1.1" ScaleY="1.1"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <!--#endregion-->
 
@@ -844,44 +886,6 @@
         <Setter Property="Height" Value="20"/>
     </Style>
 
-    <Style TargetType="materialDesign:PackIcon" x:Key="ClickableIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
-        <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Visibility" Value="Collapsed"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <!--#region IconButton-->
-    <Style TargetType="{x:Type Button}" x:Key="IconBtn">
-        <Setter Property="BorderBrush" Value="{x:Null}"/>
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Style="{StaticResource ClickableIcon}"
-                            Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}">
-                    </materialDesign:PackIcon>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="RenderTransform">
-                    <Setter.Value>
-                        <ScaleTransform ScaleX="1.1" ScaleY="1.1"/>
-                    </Setter.Value>
-                </Setter>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-    <!--#endregion-->
-    
     <!--#region Progressbar-->
     <Style x:Key="RoundedProgressBar" TargetType="{x:Type ProgressBar}">
         <Setter Property="BorderThickness" Value="0"/>

@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:conv="clr-namespace:COMPASS.Tools.Converters"
+        xmlns:Tools="clr-namespace:COMPASS.Tools"
         xmlns:local="clr-namespace:COMPASS.Windows" WindowStyle="None"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" 
-        AllowsTransparency="True" Background="Transparent"
+        AllowsTransparency="False" Background="Transparent"
         Title="ProgressWindow" Height="150" Width="450" WindowStartupLocation="CenterOwner">
     <Window.Style>
         <Style>
@@ -28,7 +29,12 @@
         </Border.Effect>
         <Grid >
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock Text="{Binding ProgressText, Mode=OneWay, FallbackValue=Import in Progress}" FontSize="20" FontFamily="Segoe UI Light"/>
+                <DockPanel>
+                    <TextBlock Text="{Binding ProgressText, Mode=OneWay, FallbackValue=Import in Progress}" 
+                               FontSize="20" FontFamily="Segoe UI Light" DockPanel.Dock="Left"/>
+                    <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="Close" Foreground="Red" Background="{StaticResource CancelFill}"
+                            DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Right" Click="Close_Click" Width="20" Height="20"/>
+                </DockPanel>
                 <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" Value="{Binding ProgressPercentage, FallbackValue=30}" 
                     Height="12" Width="400" ValueChanged="ProgressBar_ValueChanged" 
                     Foreground="{StaticResource AccentColor}" Background="{StaticResource UIElementBackground}" 
