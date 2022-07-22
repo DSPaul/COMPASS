@@ -27,8 +27,15 @@ namespace COMPASS.ViewModels
                 ReleaseNotes = File.ReadAllText($"release-notes-{version}.md");
             }
 
-            if (File.Exists(Constants.PreferencesFilePath)) LoadPreferences();
-            else Logger.log.Warn($"{Constants.PreferencesFilePath} does not exist.");
+            if (File.Exists(Constants.PreferencesFilePath))
+            {
+                LoadPreferences();
+            }
+            else
+            {
+                Logger.log.Warn($"{Constants.PreferencesFilePath} does not exist.");
+                CreateDefaultPreferences();
+            }
         }
 
         #region Load and Save Settings
@@ -53,7 +60,12 @@ namespace COMPASS.ViewModels
                 Reader.Close();
             }
             //put openFilePriority in right order
-            OpenCodexPriority = new ObservableCollection<PreferableFunction<Codex>>(OpenFileFunctions.OrderBy(pf => AllPreferences.OpenFilePriorityIDs.IndexOf(pf.ID)));
+            OpenCodexPriority = new ObservableCollection<PreferableFunction<Codex>>(OpenCodexFunctions.OrderBy(pf => AllPreferences.OpenFilePriorityIDs.IndexOf(pf.ID)));
+        }
+
+        public void CreateDefaultPreferences()
+        {
+            OpenCodexPriority = new(OpenCodexFunctions);
         }
         #endregion
 
@@ -61,10 +73,10 @@ namespace COMPASS.ViewModels
 
         #region File Source Preference
         //list with possible functions to open a file
-        private readonly List<PreferableFunction<Codex>> OpenFileFunctions = new()
+        private readonly List<PreferableFunction<Codex>> OpenCodexFunctions = new()
             {
-                new PreferableFunction<Codex>("Local File", CodexViewModel.OpenCodexLocally,0),
-                new PreferableFunction<Codex>("Web Version", CodexViewModel.OpenCodexOnline,1)
+                new PreferableFunction<Codex>("Web Version", CodexViewModel.OpenCodexOnline,0),
+                new PreferableFunction<Codex>("Local File", CodexViewModel.OpenCodexLocally,1)
             };
         //same ordered version of the list
         private ObservableCollection<PreferableFunction<Codex>> _openCodexPriority;
