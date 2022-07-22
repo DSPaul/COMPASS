@@ -1,4 +1,4 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Models;
 using COMPASS.ViewModels;
 using System.IO;
 using System.Windows;
@@ -13,8 +13,6 @@ namespace COMPASS
         public App()
         {
             Directory.CreateDirectory(Constants.CompassDataPath);
-            Directory.CreateDirectory(Constants.WebDriverDirectoryPath);
         }
     }
-
 }
