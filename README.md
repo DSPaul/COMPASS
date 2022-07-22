@@ -23,11 +23,12 @@ If you are an RPG fan like me, you probably have lots of pdf's both homebrew and
   - Whatever works for you, you can create tags for everything.
 - **Organize** Tags in a folder like structure to retain the advantages of folders, without the need for file duplication.
 - **Filter and Sort** all your books by *Title, Author, Publisher, Release date, Personal Rating, ect.* with support for separate sorting titles.
-- **Visualise** your library with 4 different layouts to choose from: Home, List, Cards and Tiles (see screenshots).
+- **Visualize** your library with 4 different layouts to choose from: Home, List, Cards and Tiles (see screenshots).
 - Have **Quick Access** to your books thanks to the Home view which lists your favorites, recently opened, most opened and recently added books for your convenience.
 - **Group** your books into collections. Each collection has their own list of tags, authors, ect. and helps you keep an overview by reducing the amount of books that are on your screen at once.
 
 ## Screenshots
+
 ![Home Layout](Docs/Screenshots/Home_Layout.png)
 ![List Layout](Docs/Screenshots/List_Layout.png)
 ![Card Layout](Docs/Screenshots/Card_Layout.png)
