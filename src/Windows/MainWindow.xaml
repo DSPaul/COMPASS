@@ -180,7 +180,7 @@
                              Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"/>
                         <Button  Grid.Column="1" Style="{StaticResource IconBtn}" Margin="10,0" Tools:AP.IconKind="Search"
                         Command="{Binding SearchCommand}" CommandParameter="{Binding Text, ElementName=Searchbox}" 
-                                 IsDefault="{Binding ElementName=Searchbox, Path=IsKeyboardFocused}"/>
+                                 IsDefault="{Binding ElementName=Searchbox, Path=IsKeyboardFocused}" ToolTip="Search"/>
                     </Grid>
                 </Border>
 
@@ -216,7 +216,7 @@
                     <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
                     <Border Background="{StaticResource UIElementBackground}">
                         <Grid>
-                            <ToggleButton x:Name="ShowCollectionCreation" Tools:AP.IconKind="FolderPlus" Foreground="{StaticResource CollectionIconFill}"
+                            <ToggleButton x:Name="ShowCollectionCreation" Tools:AP.IconKind="FolderPlus" Foreground="{StaticResource CollectionIconFill}" ToolTip="Create New Collection"
                                         Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"/>
                             <StackPanel Orientation="Horizontal" x:Name="CollectionCreation"
                                     Visibility="{Binding ElementName=ShowCollectionCreation, Path=IsChecked, 
@@ -247,7 +247,7 @@
                     <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
                     <Border Background="{StaticResource UIElementBackground}">
                         <Grid>
-                            <ToggleButton Tools:AP.IconKind="FolderEdit" Foreground="{StaticResource CollectionIconFill}" x:Name="ShowCollectionEditing"
+                            <ToggleButton Tools:AP.IconKind="FolderEdit" Foreground="{StaticResource CollectionIconFill}" x:Name="ShowCollectionEditing" ToolTip="Rename Collection"
                                         Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"/>
                             <StackPanel Orientation="Horizontal" x:Name="CollectionEditing"
                                     Visibility="{Binding ElementName=ShowCollectionEditing, Path=IsChecked, Converter={StaticResource ToVisibilityConverter}, FallbackValue=Collapsed}">
@@ -276,19 +276,20 @@
                     </Border>
                     <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
                     <Border Background="{StaticResource UIElementBackground}" CornerRadius="0,4,4,0">
-                        <ToggleButton Tools:AP.IconKind="FolderRemove" Foreground="{StaticResource CollectionIconFill}" Command="{Binding DeleteCollectionCommand}"/>
+                        <ToggleButton Tools:AP.IconKind="FolderRemove" Foreground="{StaticResource CollectionIconFill}" 
+                                      Command="{Binding DeleteCollectionCommand}" ToolTip="Delete This Collection"/>
                     </Border>
                 </StackPanel>
                 
                 <!--Settings button-->
                 <Button Click="Toggle_ContextMenu" Grid.Column="4" Tools:AP.IconKind="Settings" Height="25" Margin="15,0"
-                         WindowChrome.IsHitTestVisibleInChrome="True">
+                         WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Settings">
                     <Button.ContextMenu>
                         <ContextMenu Placement="Bottom">
                             <ContextMenu.Resources>
                                 <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
                             </ContextMenu.Resources>
-                            <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}" Tools:AP.IconKind="Cog"/>
+                            <MenuItem Header="Preferences" Command="{Binding OpenSettingsCommand}" Tools:AP.IconKind="Cog"/>
                             <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}" Tools:AP.IconKind="Autorenew"/>
                             <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New" Tools:AP.IconKind="AlertDecagram"/>
                             <!--<MenuItem Header="About" Command="{Binding OpenSettingsCommand}" CommandParameter="About"/>-->
@@ -318,8 +319,8 @@
                 </Button>
 
                 <!--Internet status indicator-->
-                <materialDesign:PackIcon Grid.Column="5" Margin="0" Kind="WebOff" Width="25" Height="25" VerticalAlignment="Center"
-                                         Foreground="{StaticResource OfflineFill}">
+                <materialDesign:PackIcon Grid.Column="5" Margin="0" Kind="WebOff" MaxWidth="25" MaxHeight="25" VerticalAlignment="Center"
+                                         Foreground="{StaticResource OfflineFill}" ToolTip="No Internet Connection Found">
                     <materialDesign:PackIcon.Style>
                         <Style TargetType="materialDesign:PackIcon">
                             <Style.Triggers>
@@ -379,12 +380,11 @@
                         </Style>
                     </StackPanel.Resources>
 
-                    <Button x:Name="MinimizeButton"
-                Click="MinimizeWindow" BorderBrush="{x:Null}">
+                    <Button x:Name="MinimizeButton" ToolTip="Minimize" Click="MinimizeWindow" BorderBrush="{x:Null}">
                         <materialDesign:PackIcon Kind="WindowMinimize" VerticalAlignment="Bottom"/>
                     </Button>
 
-                    <ToggleButton x:Name="MaximizeButton" Click="MaximizeButton_Click" BorderBrush="{x:Null}" 
+                    <ToggleButton x:Name="MaximizeButton" Click="MaximizeButton_Click" BorderBrush="{x:Null}" ToolTip="Maximize"
                             IsChecked="{Binding WindowState, RelativeSource={RelativeSource FindAncestor,
             AncestorType=Window}, Converter={StaticResource IsMaximizedConverter}, Mode=OneWay}">
                         <Grid>
@@ -397,7 +397,7 @@
                         </Grid>
                     </ToggleButton>
 
-                    <Button x:Name="CloseButton" Click="CloseButton_Click" BorderBrush="{x:Null}">
+                    <Button x:Name="CloseButton" Click="CloseButton_Click" BorderBrush="{x:Null}" ToolTip="Close">
                         <materialDesign:PackIcon Kind="WindowClose"/>
                         <Button.Style>
                             <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
@@ -563,9 +563,9 @@
                                 </Border>
                             </Button>
                             <Button Style="{StaticResource GrayBtn}"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.GmBinder}">
+                                Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.GmBinder}">
                                 <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
-                                BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
+                                    BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
                                     <ContentControl Content="{StaticResource GMBinderLogo}"/>
                                 </Border>
                             </Button>
