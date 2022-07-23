@@ -631,16 +631,21 @@
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Resources>
-                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.HomeLayout}" Tools:AP.IconKind="Home" Height="30"/>
-                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.ListLayout}" Tools:AP.IconKind="ViewHeadline" Height="40"/>
-                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.CardLayout}" Tools:AP.IconKind="ViewCompact" Height="40" RenderTransformOrigin="0.5 0.5">
+                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.HomeLayout}" 
+                            Tools:AP.IconKind="Home" Height="30" ToolTip="Home Layout"/>
+                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.ListLayout}" 
+                            Tools:AP.IconKind="ViewHeadline" Height="40" ToolTip="List Layout"/>
+                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.CardLayout}" 
+                            Tools:AP.IconKind="ViewCompact" Height="40" RenderTransformOrigin="0.5 0.5" ToolTip="Card Layout">
                         <Button.RenderTransform>
                             <ScaleTransform ScaleY="-1"/>
                         </Button.RenderTransform>
                     </Button>
-                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.TileLayout}" Tools:AP.IconKind="ViewModule" Height="43"/>
+                    <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.TileLayout}" 
+                            Tools:AP.IconKind="ViewModule" Height="43" ToolTip="Tile Layout"/>
                     <Rectangle Width="2" Fill="Gray" Margin="3,8"/>
-                    <Button Click="Toggle_ContextMenu" Tools:AP.IconKind="EyeSettings" Height="30" VerticalAlignment="Center" Margin="0,0,2,5" CommandParameter="{x:Null}">
+                    <Button Click="Toggle_ContextMenu" Tools:AP.IconKind="EyeSettings" Height="30" 
+                            VerticalAlignment="Center" Margin="0,0,2,5" CommandParameter="{x:Null}">
                         <Button.ContextMenu>
                             <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding CurrentLayout.ViewOptions}"
                             Style="{StaticResource DropdownMenu}" ItemContainerStyle="{StaticResource DropdownMenuItem}"/>
@@ -684,7 +689,21 @@
 
                 <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4"
                             Content="{Binding CurrentLayout}"/>
-
+                <Border Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="30"
+                        Visibility="{Binding CurrentCollection.AllCodices.Count, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <StackPanel.Resources>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                <Setter Property="TextAlignment" Value="Center"/>
+                                <Setter Property="Margin" Value="5"/>
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        <TextBlock Text="Thank you for downloading COMPASS!"/>                        
+                        <TextBlock Text="The Codex Organizer to Make Pen&amp;paper Adventuring Super Simple."/>                        
+                        <TextBlock Text="You can start building your digital library by clicking 'Import' in the bottom left."/>                        
+                    </StackPanel>
+                </Border>
             </Grid>
             <!--#endregion-->
         </Grid>
