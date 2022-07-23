@@ -443,6 +443,43 @@
                   Command="{Binding Path=DataContext.CodexVM.EditCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
+        <MenuItem Header="Favorite" Tools:AP.IconKind="Favorite"
+                  Command="{Binding Path=DataContext.CodexVM.FavoriteCodexCommand,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}">
+            <MenuItem.Style>
+                <Style TargetType="MenuItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type MenuItem}">
+                                <Border Padding="15,5" Background="{TemplateBinding Background}">
+                                    <DockPanel Background="{x:Null}">
+                                        <materialDesign:PackIcon Kind="{TemplateBinding Tools:AP.IconKind}"
+                                                     DockPanel.Dock="Left" Margin="0,3,10,3">
+                                            <materialDesign:PackIcon.Style>
+                                                <Style TargetType="materialDesign:PackIcon">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext.Favorite}" Value="True">
+                                                            <Setter Property="Foreground" Value="IndianRed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </materialDesign:PackIcon.Style>
+                                        </materialDesign:PackIcon>
+                                        <ContentPresenter Content="{TemplateBinding Header}" DockPanel.Dock="Left"/>
+                                    </DockPanel>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsHighlighted" Value="True">
+                                        <Setter Property="Background"  Value="#FF6C6C6C"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </MenuItem.Style>
+        </MenuItem>
         <MenuItem Header="Show in Explorer" Tools:AP.IconKind="FolderEyeOutline"
                   Command="{Binding Path=DataContext.CodexVM.ShowInExplorerCommand, 
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
