@@ -1,17 +1,16 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
-using GongSolutions.Wpf.DragDrop;
-using System;
+using COMPASS.Windows;
+using Ionic.Zip;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Input;
+using System.Windows.Forms;
 using System.Xml;
 
 namespace COMPASS.ViewModels
@@ -87,6 +86,10 @@ namespace COMPASS.ViewModels
         }
         #endregion
 
+        #endregion
+
+        #region Data Tab
+
         #region Fix Renamed Folder
         private int _amountRenamed = 0;
         public int AmountRenamed
@@ -116,7 +119,7 @@ namespace COMPASS.ViewModels
             AmountRenamed = 0;
             foreach(Codex c in MVM.CurrentCollection.AllCodices)
             {
-                if (c.Path != null)
+                if (!string.IsNullOrEmpty(c.Path))
                 {
                     if (c.Path.Contains(oldpath)){
                         AmountRenamed++;
@@ -128,14 +131,110 @@ namespace COMPASS.ViewModels
         }
         #endregion
 
-        public void RegenAllThumbnails() { 
-            foreach(Codex codex in MVM.CurrentCollection.AllCodices)
+        private ActionCommand _browseLocalFilesCommand;
+        public ActionCommand BrowseLocalFilesCommand => _browseLocalFilesCommand ??= new(BrowseLocalFiles);
+        public void BrowseLocalFiles()
+        {
+            ProcessStartInfo startInfo = new()
+            {
+                Arguments = Constants.CompassDataPath,
+                FileName = "explorer.exe"
+            };
+            Process.Start(startInfo);
+        }
+
+        private readonly BackgroundWorker createZipWorker = new BackgroundWorker();
+        private readonly BackgroundWorker extractZipWorker = new BackgroundWorker();
+        private LoadingWindow lw;
+
+        private ActionCommand _backupLocalFilesCommand;
+        public ActionCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
+        public void BackupLocalFiles()
+        {
+            SaveFileDialog saveFileDialog = new ()
+            {
+                Filter = "Zip file (*.zip)|*.zip"
+            };
+
+            if(saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string targetPath = saveFileDialog.FileName;
+                lw = new("Compressing to Zip File");
+                lw.Show();
+
+                //save first
+                MVM.CurrentCollection.SaveCodices();
+                MVM.CurrentCollection.SaveTags();
+                SavePreferences();
+
+                createZipWorker.DoWork += CreateZip;
+                createZipWorker.RunWorkerCompleted += CreateZipDone;
+
+                createZipWorker.RunWorkerAsync(targetPath);
+            }
+        }
+
+        private ActionCommand _restoreBackupCommand;
+        public ActionCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
+        public void RestoreBackup()
+        {
+            OpenFileDialog openFileDialog = new ()
+            {
+                Filter = "Zip file (*.zip)|*.zip"
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string targetPath = openFileDialog.FileName;
+                lw = new("Restoring Backup");
+                lw.Show();
+
+                extractZipWorker.DoWork += ExtractZip;
+                extractZipWorker.RunWorkerCompleted += ExtractZipDone;
+
+                extractZipWorker.RunWorkerAsync(targetPath);
+            }
+        }
+
+        private void CreateZip(object sender, DoWorkEventArgs e)
+        {
+            string targetPath = e.Argument as string;
+            using ZipFile zip = new();
+            zip.AddDirectory(CodexCollection.CollectionsPath,"Collections");
+            zip.AddFile(Constants.PreferencesFilePath,"");
+            zip.Save(targetPath);
+        }
+
+        private void ExtractZip(object sender, DoWorkEventArgs e)
+        {
+            string sourcePath = e.Argument as string;
+            using ZipFile zip = ZipFile.Read(sourcePath);
+            zip.ExtractAll(Constants.CompassDataPath, ExtractExistingFileAction.OverwriteSilently);
+        }
+
+        private void CreateZipDone(object sender, RunWorkerCompletedEventArgs e)
+        {
+            lw.Close();
+        }
+
+        private void ExtractZipDone(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //restore collection that was open
+            MVM.ChangeCollection(Properties.Settings.Default.StartupCollection);
+            lw.Close();
+        }
+
+        #endregion
+
+        //for debugging only
+        public void RegenAllThumbnails()
+        {
+            foreach (Codex codex in MVM.CurrentCollection.AllCodices)
             {
                 //codex.Thumbnail = codex.CoverArt.Replace("CoverArt", "Thumbnails");
                 CoverFetcher.CreateThumbnail(codex);
             }
         }
-        #endregion
 
         #region What's New Tab
         private string _releaseNotes;

@@ -64,7 +64,7 @@
                     <Setter Property="Margin" Value="10"/>
                 </Style>
             </TabControl.Resources>
-            <TabItem Header="General"  Tools:AP.IconKind="TuneVariant">
+            <TabItem Header="Preferences"  Tools:AP.IconKind="TuneVariant">
                 <StackPanel Orientation="Vertical" Margin="20">
                     <Border x:Name="FileSourcePreferences" Style="{StaticResource SettingsContainer}">
                         <Grid>
@@ -93,11 +93,13 @@
                             </Border>
                         </Grid>
                     </Border>
-
-
-                    <Border  x:Name="FixRenamedFolder"  Style="{StaticResource SettingsContainer}">
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Manage Data" Tools:AP.IconKind="DatabaseCog">
+                <StackPanel Orientation="Vertical" Margin="20">
+                    <Border x:Name="FixRenamedFolder"  Style="{StaticResource SettingsContainer}">
                         <StackPanel>
-                            <TextBlock Text="Fix Renamed Folder:" Grid.Row="0" Margin="10,5"/>
+                            <TextBlock Text="Update references to renamed folder:" Grid.Row="0" Margin="10,5"/>
                             <StackPanel Orientation="Horizontal" Grid.Row="1">
                                 <TextBox x:Name="OldPathTextBox" Tools:AP.PlaceHolderText="old\folder\path\" MinWidth="200"/>
                                 <TextBlock Text="To"/>
@@ -119,7 +121,24 @@
                                        Visibility="{Binding Path=AmountRenamed, Converter={StaticResource ToVisibilityConverter}}"/>
                         </StackPanel>
                     </Border>
-                    <!--#endregion-->
+                    <Border x:Name="ManageLocalData" Style="{StaticResource SettingsContainer}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Manage Local Data:" Grid.Row="0"/>
+                            <Button Content="Browse Local Files" Grid.Row="1" Tools:AP.IconKind="FolderOpen"
+                                    Command="{Binding BrowseLocalFilesCommand}" Style="{StaticResource IconTextButton}"/>
+                            <Button Content="Backup User Data" Grid.Row="2" Tools:AP.IconKind="FolderZip"
+                                    Command="{Binding BackupLocalFilesCommand}" Style="{StaticResource IconTextButton}" 
+                                    ToolTip="Saves metadata, tags, thumbnails and preferences to zip"/>
+                            <Button Content="Restore Backup" Grid.Row="3" Tools:AP.IconKind="BackupRestore"
+                                    Command="{Binding RestoreBackupCommand}" Style="{StaticResource IconTextButton}"/>
+                        </Grid>
+                    </Border>
                 </StackPanel>
             </TabItem>
             <TabItem Header="What's New"  Tools:AP.IconKind="Update">
