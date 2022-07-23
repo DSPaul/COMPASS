@@ -7,7 +7,7 @@
         xmlns:Tools="clr-namespace:COMPASS.Tools"
         xmlns:local="clr-namespace:COMPASS.Windows" WindowStyle="None"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" 
-        AllowsTransparency="False" Background="Transparent"
+        AllowsTransparency="True" Background="Transparent"
         Title="ProgressWindow" Height="150" Width="450" WindowStartupLocation="CenterOwner">
     <Window.Style>
         <Style>
