@@ -203,6 +203,7 @@
             <RepeatButton Grid.Row="3" Style="{StaticResource ScrollBarLineButton}" Height="18" Command="ScrollBar.LineDownCommand" Content="M 0 0 L 4 4 L 8 0 Z"/>
         </Grid>
     </ControlTemplate>
+
     <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -267,7 +268,7 @@
         </Setter>
     </Style>
     <!--#endregion-->
-    
+
     <!--#region Slider-->
     <Style x:Key="SliderRepeatButtonL" TargetType="RepeatButton">
         <Setter Property="SnapsToDevicePixels" Value="true" />
@@ -813,7 +814,34 @@
     <!--#endregion-->
     
     <!--#region DatePicker-->
+    <Style x:Key="CalendarItemStyle" TargetType="{x:Type CalendarItem}">
+        <Setter Property="Margin" Value="0,3,0,3" />
+    </Style>
+
+    <Style x:Key="DarkCalenderStyle" TargetType="{x:Type Calendar}">
+        <Setter Property="CalendarItemStyle"
+          Value="{StaticResource CalendarItemStyle}" />
+        <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+        <Setter Property="Background" Value="{StaticResource ButtonBackground}"/>
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Calendar}">
+                    <StackPanel x:Name="PART_Root"
+                    HorizontalAlignment="Center">
+                        <CalendarItem x:Name="PART_CalendarItem"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}"
+                        Style="{TemplateBinding CalendarItemStyle}" />
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type DatePicker}">
+        <Setter Property="CalendarStyle" Value="{StaticResource DarkCalenderStyle}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DatePicker}">
@@ -846,7 +874,7 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Popup x:Name="PART_Popup" StaysOpen="False" AllowsTransparency="True" />
+                            <Popup x:Name="PART_Popup" StaysOpen="False"/>
                         </Grid>
                     </Border>
                 </ControlTemplate>
@@ -854,7 +882,7 @@
         </Setter>
         <Setter Property="FirstDayOfWeek" Value="Monday"/>
     </Style>
-    
+
     <Style TargetType="{x:Type DatePickerTextBox}">
         <Setter Property="Control.Template">
             <Setter.Value>
@@ -893,6 +921,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+
     <!--#endregion-->
  
     <!--#region Tags Style-->
