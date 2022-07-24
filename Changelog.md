@@ -1,5 +1,10 @@
 # CHANGELOG
-## COMPASS v0.6.0 (24 July 2022)
+## COMPASS v0.6.1 (24 July 2022)
+
+### Fixes
+
+- Fix Crash when update is found
+## COMPASS v0.6.0 (24 July 2022)
 
 ### Fixes
 

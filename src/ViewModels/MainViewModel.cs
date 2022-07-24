@@ -152,12 +152,13 @@ namespace COMPASS.ViewModels
         {
             //Disable skip
             AutoUpdater.ShowSkipButton = false;
+            //AutoUpdater.InstalledVersion = new("0.1.0"); //for testing only
             //set remind later time so users can go back to the app in one click
             AutoUpdater.LetUserSelectRemindLater = false;
             AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
             AutoUpdater.RemindLaterAt = 1;
             //Set download directory
-            AutoUpdater.DownloadPath = Path.Combine(Constants.InstallersPath);
+            AutoUpdater.DownloadPath = Constants.InstallersPath;
             //check updates every 4 hours
             DispatcherTimer timer = new(){ Interval = TimeSpan.FromHours(4) };
             timer.Tick += delegate
