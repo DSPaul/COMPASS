@@ -1,6 +1,7 @@
 ﻿using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,6 +49,12 @@ namespace COMPASS.Windows
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             VM.SavePreferences();
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
         }
     }
 }

@@ -244,5 +244,9 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _releaseNotes, value); }
         }
         #endregion
+
+        #region About Tab
+        public string Version => "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString()[0..5];
+        #endregion
     }
 }
