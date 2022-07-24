@@ -13,8 +13,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Media\CompassLogo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
 
     <Content Include="COMPASS.ico" />
+
+    <Content Include="Media\CompassLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
 
     <Content Include="Media\CoverPlaceholder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
