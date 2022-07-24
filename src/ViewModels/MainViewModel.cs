@@ -5,13 +5,8 @@ using COMPASS.Windows;
 using ImageMagick;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using System.Net.NetworkInformation;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Threading;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
@@ -27,18 +22,21 @@ namespace COMPASS.ViewModels
         {
             ViewModelBase.MVM = this;
             SettingsVM = new SettingsViewModel();
-            
+
+            //init Logger
+            InitLogger();
+
             //Load data
             InitCollection();
 
             //Get webdriver for Selenium
             InitWebdriver();
 
+            //Start timer that periodically checks if there is an internet connection
+            InitConnectionTimer();
+
             //check for updates
             InitAutoUpdates();
-
-            //init Logger
-            InitLogger();
 
             //do stuff if first launch after update
             if (Properties.Settings.Default.justUpdated)
@@ -47,15 +45,7 @@ namespace COMPASS.ViewModels
                 Properties.Settings.Default.justUpdated = false;
             }
 
-            MagickNET.SetGhostscriptDirectory(AppDomain.CurrentDomain.BaseDirectory + @"\gs");
-
-            //Start internet checkup timer
-            DispatcherTimer CheckConnectionTimer = new();
-            CheckConnectionTimer.Tick += new EventHandler(CheckConnection);
-            CheckConnectionTimer.Interval = new TimeSpan(0, 0, 30);
-            CheckConnectionTimer.Start();
-            //to check right away on startup
-            IsOnline = Utils.PingURL();
+            MagickNET.SetGhostscriptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"gs"));
 
             //Commands
             ChangeFileViewCommand = new RelayCommand<CodexLayout>(ChangeFileView);
@@ -65,7 +55,6 @@ namespace COMPASS.ViewModels
             CreateCollectionCommand = new RelayCommand<string>(CreateCollection);
             EditCollectionNameCommand = new RelayCommand<string>(EditCollectionName);
             DeleteCollectionCommand = new ActionCommand(RaiseDeleteCollectionWarning);
-            SearchCommand = new RelayCommand<string>(Search);
             OpenSettingsCommand = new RelayCommand<string>(OpenSettings);
             CheckForUpdatesCommand = new ActionCommand(CheckForUpdates);
         }
@@ -116,7 +105,9 @@ namespace COMPASS.ViewModels
         //Get latest version of relevant Webdriver for selenium
         private void InitWebdriver()
         {
+            Directory.CreateDirectory(Constants.WebDriverDirectoryPath);
             DriverManager DM = new(Constants.WebDriverDirectoryPath);
+
             if (Utils.IsInstalled("chrome.exe"))
             {
                 Properties.Settings.Default.SeleniumBrowser = (int)Browser.Chrome;
@@ -129,6 +120,7 @@ namespace COMPASS.ViewModels
                     Logger.log.Error(ex.Message);
                 }
             }
+
             else if (Utils.IsInstalled("firefox.exe"))
             {
                 Properties.Settings.Default.SeleniumBrowser = (int)Browser.Firefox;
@@ -165,7 +157,7 @@ namespace COMPASS.ViewModels
             AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
             AutoUpdater.RemindLaterAt = 1;
             //Set download directory
-            AutoUpdater.DownloadPath = Path.Combine(Constants.CompassDataPath, "Installers");
+            AutoUpdater.DownloadPath = Path.Combine(Constants.InstallersPath);
             //check updates every 4 hours
             DispatcherTimer timer = new(){ Interval = TimeSpan.FromHours(4) };
             timer.Tick += delegate
@@ -181,6 +173,17 @@ namespace COMPASS.ViewModels
         {
             Application.Current.DispatcherUnhandledException += Logger.LogUnhandledException;
             Logger.log.Info($"Launching Compass v{Assembly.GetExecutingAssembly().GetName().Version}");
+        }
+
+        private void InitConnectionTimer()
+        {
+            //Start internet checkup timer
+            DispatcherTimer CheckConnectionTimer = new();
+            CheckConnectionTimer.Tick += new EventHandler(CheckConnection);
+            CheckConnectionTimer.Interval = new TimeSpan(0, 0, 30);
+            CheckConnectionTimer.Start();
+            //to check right away on startup
+            IsOnline = Utils.PingURL();
         }
 
         private void FirstLaunch()
@@ -348,6 +351,8 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> CreateCollectionCommand { get; private set; }
         public void CreateCollection(string dirName)
         {
+            if (string.IsNullOrEmpty(dirName)) return;
+
             Directory.CreateDirectory((CodexCollection.CollectionsPath + dirName + @"\CoverArt"));
             Directory.CreateDirectory((CodexCollection.CollectionsPath + dirName + @"\Thumbnails"));
             CollectionDirectories.Add(dirName);
@@ -395,17 +400,17 @@ namespace COMPASS.ViewModels
         }
         public void DeleteCollection(string todelete)
         {
+            //if todelete is empty, it will delete the entire collections folder
+            if (String.IsNullOrEmpty(todelete)) return; 
+
             CollectionDirectories.Remove(todelete);
             CurrentCollectionName = CollectionDirectories[0];
             Directory.Delete(CodexCollection.CollectionsPath + todelete,true);
         }
 
         //Search
-        public RelayCommand<string> SearchCommand { get; private set; }
-        public void Search(string searchterm)
-        {
-            CollectionVM.UpdateSearchFilteredFiles(searchterm);
-        }
+        private RelayCommand<string> _searchCommand;
+        public RelayCommand<string> SearchCommand => _searchCommand ??= new(CollectionVM.UpdateSearchFilteredFiles);
 
         //called every few seconds to update IsOnline
         private void CheckConnection(object sender, EventArgs e)

@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -76,6 +77,23 @@ namespace COMPASS.Tools
             if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri uriResult)) throw new InvalidOperationException("URI is invalid.");
 
             return await client.GetByteArrayAsync(uri);
+        }
+
+        public static async Task<JObject> GetJsonAsync(string uri)
+        {
+            using HttpClient client = new();
+
+            JObject json = null;
+
+            if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri uriResult)) throw new InvalidOperationException("URI is invalid.");
+
+            HttpResponseMessage response = await client.GetAsync(uri);
+            if (response.IsSuccessStatusCode)
+            {
+                var data = response.Content.ReadAsStringAsync();
+                json = JObject.Parse(data.Result);
+            }
+            return json;
         }
 
         //helper function for InitWebdriver to check if certain browsers are installed

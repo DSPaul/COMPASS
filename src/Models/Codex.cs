@@ -47,6 +47,7 @@ namespace COMPASS.Models
             DateAdded = c.DateAdded;
             Favorite = c.Favorite;
             OpenedCount = c.OpenedCount;
+            ISBN = c.ISBN;
         }
 
         public bool HasOfflineSource()
@@ -230,6 +231,13 @@ namespace COMPASS.Models
         {
             get { return _favorite; }
             set { SetProperty(ref _favorite, value); }
+        }
+
+        public string _ISBN;
+        public string ISBN
+        {
+            get { return _ISBN; }
+            set { SetProperty(ref _ISBN, value); }
         }
         #endregion 
     }

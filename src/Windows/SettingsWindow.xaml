@@ -6,8 +6,6 @@
         xmlns:Tools ="clr-namespace:COMPASS.Tools"
         xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
         xmlns:dd="urn:gong-wpf-dragdrop"
-        xmlns:local="clr-namespace:COMPASS.Windows" 
-        xmlns:Views="clr-namespace:COMPASS.Views" 
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
         xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf" xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
         mc:Ignorable="d" Closing="Window_Closing"
@@ -57,64 +55,90 @@
         </Grid.Resources>
         <TabControl x:Name="SettingsTabControl" TabStripPlacement="Left"
                     Background="{StaticResource LeftDockBackground}" BorderThickness="0">
-            <TabItem Header="General"  Tools:AP.IconKind="TuneVariant">
-                <StackPanel Orientation="Vertical" Margin="30">
-                    <!--#region File Source Preference -->
-                    <TextBlock Text="File Source Preference:"/>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Try First -->" Grid.Row="0"/>
-                        <TextBlock Text="" Grid.Row="1"/>
-                        <TextBlock Text="Try Last -->" Grid.Row="2"/>
+            <TabControl.Resources>
+                <Style TargetType="Border" x:Key="SettingsContainer">
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="CornerRadius" Value="5"/>
+                    <Setter Property="Padding" Value="10"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource DarkUIElementBackground}"/>
+                    <Setter Property="Margin" Value="10"/>
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="Preferences"  Tools:AP.IconKind="TuneVariant">
+                <StackPanel Orientation="Vertical" Margin="20">
+                    <Border x:Name="FileSourcePreferences" Style="{StaticResource SettingsContainer}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="File Source Preference:" Grid.Row="0" Grid.ColumnSpan="2"/>
+                            <TextBlock Text="Try First -->" Grid.Row="1"/>
+                            <TextBlock Text="" Grid.Row="2"/>
+                            <TextBlock Text="Try Last -->" Grid.Row="3"/>
 
-                        <Border CornerRadius="5" Background="{StaticResource DarkUIElementBackground}" 
-                                Grid.Row="0" Grid.RowSpan="3" Grid.Column="1">
-                            <ListBox BorderBrush="{x:Null}" Background="{x:Null}" Width="150" 
+                            <Border CornerRadius="5" Background="{StaticResource DarkUIElementBackground}" 
+                                Grid.Row="1" Grid.RowSpan="3" Grid.Column="1">
+                                <ListBox BorderBrush="{x:Null}" Background="{x:Null}" Width="150" 
                                      HorizontalContentAlignment="Center" VerticalContentAlignment="Stretch"
-                                     ItemsSource="{Binding OpenFilePriority}" ItemTemplate="{StaticResource TagTemplate}"
+                                     ItemsSource="{Binding OpenCodexPriority}" ItemTemplate="{StaticResource TagTemplate}"
                                      dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True">
-                            </ListBox>
-                        </Border>
-                    </Grid>
-                    <!--#endregion-->
-                    <Rectangle Style="{StaticResource Separator}"/>
-                    <!--#region Fix Renamed Folder-->
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Fix Renamed Folder:" Grid.Row="0" Margin="10,5"/>
-                        <StackPanel Orientation="Horizontal" Grid.Row="1">
-                            <TextBox x:Name="OldPathTextBox" Tools:AP.PlaceHolderText="old\folder\path\" MinWidth="200"/>
-                            <TextBlock Text="To"/>
-                            <TextBox x:Name="NewPathTextBox" Tools:AP.PlaceHolderText = "new\folder\path\" MinWidth="200"/>
-                            <Button Content="Rename" Style="{StaticResource IconTextButton}" Tools:AP.IconKind="RenameBox"
-                                    Command="{Binding RenameFolderRefCommand}">
-                                <Button.CommandParameter>
-                                    <MultiBinding>
-                                        <MultiBinding.Converter>
-                                            <Converters:MultiParamConverter/>
-                                        </MultiBinding.Converter>
-                                        <Binding Path="Text" ElementName="OldPathTextBox"/>
-                                        <Binding Path="Text" ElementName="NewPathTextBox"/>
-                                    </MultiBinding>
-                                </Button.CommandParameter>
-                            </Button>
+                                </ListBox>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Manage Data" Tools:AP.IconKind="DatabaseCog">
+                <StackPanel Orientation="Vertical" Margin="20">
+                    <Border x:Name="FixRenamedFolder"  Style="{StaticResource SettingsContainer}">
+                        <StackPanel>
+                            <TextBlock Text="Update references to renamed folder:" Grid.Row="0" Margin="10,5"/>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                <TextBox x:Name="OldPathTextBox" Tools:AP.PlaceHolderText="old\folder\path\" MinWidth="200"/>
+                                <TextBlock Text="To"/>
+                                <TextBox x:Name="NewPathTextBox" Tools:AP.PlaceHolderText = "new\folder\path\" MinWidth="200"/>
+                                <Button Content="Rename" Style="{StaticResource IconTextButton}" Tools:AP.IconKind="RenameBox"
+                                        Command="{Binding RenameFolderRefCommand}">
+                                    <Button.CommandParameter>
+                                        <MultiBinding>
+                                            <MultiBinding.Converter>
+                                                <Converters:MultiParamConverter/>
+                                            </MultiBinding.Converter>
+                                            <Binding Path="Text" ElementName="OldPathTextBox"/>
+                                            <Binding Path="Text" ElementName="NewPathTextBox"/>
+                                        </MultiBinding>
+                                    </Button.CommandParameter>
+                                </Button>
+                            </StackPanel>
+                            <TextBlock Grid.Row="2" Text="{Binding RenameCompleteMessage}" FontSize="14" Foreground="{StaticResource TextMutedColor}"
+                                       Visibility="{Binding Path=AmountRenamed, Converter={StaticResource ToVisibilityConverter}}"/>
                         </StackPanel>
-                        <TextBlock Grid.Row="2" Text="{Binding RenameCompleteMessage}" FontSize="14" Foreground="{StaticResource TextMutedColor}"
-                                   Visibility="{Binding Path=AmountRenamed, Converter={StaticResource ToVisibilityConverter}}"/>
-                    </Grid>
-                    <!--#endregion-->
+                    </Border>
+                    <Border x:Name="ManageLocalData" Style="{StaticResource SettingsContainer}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Manage Local Data:" Grid.Row="0"/>
+                            <Button Content="Browse Local Files" Grid.Row="1" Tools:AP.IconKind="FolderOpen"
+                                    Command="{Binding BrowseLocalFilesCommand}" Style="{StaticResource IconTextButton}"/>
+                            <Button Content="Backup User Data" Grid.Row="2" Tools:AP.IconKind="FolderZip"
+                                    Command="{Binding BackupLocalFilesCommand}" Style="{StaticResource IconTextButton}" 
+                                    ToolTip="Saves metadata, tags, thumbnails and preferences to zip"/>
+                            <Button Content="Restore Backup" Grid.Row="3" Tools:AP.IconKind="BackupRestore"
+                                    Command="{Binding RestoreBackupCommand}" Style="{StaticResource IconTextButton}"/>
+                        </Grid>
+                    </Border>
                 </StackPanel>
             </TabItem>
             <TabItem Header="What's New"  Tools:AP.IconKind="Update">
@@ -138,7 +162,130 @@
                     </markdig:MarkdownViewer.Resources>
                 </markdig:MarkdownViewer>
             </TabItem>
-            <!--<TabItem Header="About"  Tools:AP.IconKind="InformationCircleOutline"></TabItem>-->
+            <TabItem Header="About"  Tools:AP.IconKind="InformationCircleOutline">
+                <StackPanel Orientation="Vertical">
+                    <Border Style="{StaticResource SettingsContainer}">
+                        <StackPanel Orientation="Horizontal">
+                            <ContentControl Content="{StaticResource CompassLogo}" Margin="10"/>
+                            <TextBlock Text="{Binding Version}"/>
+                            <Button Content="Check for Updates" Command="{Binding MVM.CheckForUpdatesCommand}" 
+                                    Tools:AP.IconKind="Autorenew" Style="{StaticResource IconTextButton}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource SettingsContainer}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="COMPASS depends on the following open source projects:"/>
+                            <UniformGrid Columns="4" >
+                                <TextBlock Text="Automatic Updates:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/ravibpatel/AutoUpdater.NET"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        AutoUpdater.NET
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Multiselect Combobox:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/nilayjoshi89/BlackPearl"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        BlackPearl
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Fuzzy Search:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/JakeBayer/FuzzySharp"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        FuzzySharp
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Drag &amp; Drop:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/punker76/gong-wpf-dragdrop"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        Gong WPF DragDrop
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Extract PDf cover as img:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://www.ghostscript.com/"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        Ghostscript
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="HTML Parsing:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/zzzprojects/html-agility-pack"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        HTML Agility Pack
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Getting PDF metadata:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/itext/itext7-dotnet"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        iText 7
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Logging:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/apache/logging-log4net"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        log4net
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Image Manipulation:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/dlemstra/Magick.NET"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        Magick.NET
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Display Markdown:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/xoofx/markdig"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        Markdig
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Icons and Controls:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        Material Design Toolkit
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Json Parsing: "/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/JamesNK/Newtonsoft.Json"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        Newsoft Json
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Web Scraping:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/rflechner/ScrapySharp"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        ScrapySharp
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Website Screenshotting:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/SeleniumHQ/selenium"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        Selenium
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Download Webdrivers:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/rosolko/WebDriverManager.Net"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        WebDriverManager.Net
+                                    </Hyperlink>
+                                </TextBlock>
+                            </UniformGrid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

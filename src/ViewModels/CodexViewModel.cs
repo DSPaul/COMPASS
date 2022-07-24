@@ -123,6 +123,16 @@ namespace COMPASS.ViewModels
             fpw.Topmost = true;
         }
 
+        public RelayCommand<Codex> FavoriteCodexCommand => new(FavoriteCodex);
+        public static void FavoriteCodex(Codex toFavorite)
+        {
+            toFavorite.Favorite = toFavorite.Favorite switch
+            {
+                true => false,
+                false => true
+            };
+        }
+
         //Edit Multiple files
         public RelayCommand<IEnumerable> EditCodicesCommand => new(EditCodices);
         public static void EditCodices(IEnumerable toEdit)

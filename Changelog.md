@@ -1,5 +1,34 @@
 # CHANGELOG
-## COMPASS v0.5.0 (16 July 2022)
+## COMPASS v0.6.0 (24 July 2022)
+
+### Fixes
+
+- Fix a bug that caused all user data to be deleted when trying to delete a collection with an empty name.
+- Added exit button when importing, it used to be impossible to close the window if import failed.
+- Fixed COMPASS crashing when preferences.xml didn't exist yet.
+- The minimum rating filter now resets when all filters are reset.
+- Calendar background is now dark so you can read the white text.
+
+### Enhancements
+
+- Most contextmenus have icons now.
+- Certain textboxes now have focus by default.
+- You can press enter to confirm instead of clicking in more places.
+- You can now favorite books from the contextmenu.
+- Added tooltips to lots of buttons.
+- There are now a welcome screen with simple instructions when opening an empty selection.
+- Add "About" Sections in settings.
+
+### New Features
+
+- Added ISBN as an import option, all metadata and the cover are fetched from <https://openlibrary.org>.
+- Added options to create and restore a backup of user data.
+
+### Other Changes
+
+- Changed icons to edit and delete collections.
+
+## COMPASS v0.5.0 (16 July 2022)
 
 ### Fixes
 

@@ -13,10 +13,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Media\CompassLogo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
 
     <Content Include="COMPASS.ico" />
 
+    <Content Include="Media\CompassLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <Content Include="Media\CoverPlaceholder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Media\LoadingAnimation.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
@@ -27,6 +39,7 @@
   <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.7.4" />
     <PackageReference Include="BlackPearl.Controls.Library" Version="2.0.2" />
+    <PackageReference Include="DotNetZip" Version="1.16.0" />
     <PackageReference Include="FuzzySharp" Version="2.0.2" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.1.1" />
     <PackageReference Include="HtmlAgilityPack">
@@ -58,6 +71,8 @@
       <Version>6.0.0</Version>
     </PackageReference>
     <PackageReference Include="WebDriverManager" Version="2.14.1" />
+    <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
+    <PackageReference Include="ZXing.Net" Version="0.16.8" />
   </ItemGroup>
 
   <ItemGroup>
