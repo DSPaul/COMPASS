@@ -52,6 +52,10 @@
         <Setter Property="Background" Value="{StaticResource DarkUIElementBackground}"/>
     </Style>
 
+    <Style TargetType="{x:Type Hyperlink}">
+        <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+    </Style>
+    
     <Style TargetType="materialDesign:PackIcon" x:Key="ClickableIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
         <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
         <Style.Triggers>
