@@ -102,7 +102,9 @@ namespace COMPASS.ViewModels
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
             DragDrop.DefaultDropHandler.Drop(dropInfo);
-            TreeRoot = ExtractTagsFromTreeViewSource(TreeViewSource);
+            //cannot do TreeRoot = ExtractTagsFromTreeViewSource(TreeViewSource); because that changes ref of TreeRoot
+            TreeRoot.Clear();
+            TreeRoot.AddRange(ExtractTagsFromTreeViewSource(TreeViewSource));
         }
         /*** End of Treeview section ***/
     }

@@ -13,7 +13,7 @@ namespace COMPASS.Tools
 {
     public static class Utils
     {
-        public static int GetAvailableID<T>(List<T> Collection) where T : IHasID
+        public static int GetAvailableID<T>(IEnumerable<T> Collection) where T : IHasID
         {
             int tempID = 0;
             while (Collection.Any(f => f.ID == tempID))

@@ -39,7 +39,7 @@ namespace COMPASS.Models
         public List<Tag> RootTags { get; set; }
 
         //File Lists
-        public List<Codex> AllCodices { get; private set; } = new();
+        public ObservableCollection<Codex> AllCodices { get; private set; } = new();
 
         //Metadata Lists
         private ObservableCollection<string> _authorList = new();
@@ -87,8 +87,8 @@ namespace COMPASS.Models
             {
                 using (var Reader = new StreamReader(CodicesDataFilePath))
                 {
-                    System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Codex>));
-                    AllCodices = serializer.Deserialize(Reader) as List<Codex>;
+                    System.Xml.Serialization.XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
+                    AllCodices = serializer.Deserialize(Reader) as ObservableCollection<Codex>;
                 }
 
 
@@ -136,7 +136,7 @@ namespace COMPASS.Models
             }
 
             using var writer = XmlWriter.Create(CodicesDataFilePath, SettingsViewModel.XmlWriteSettings);
-            System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Codex>));
+            System.Xml.Serialization.XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
             serializer.Serialize(writer, AllCodices);
         }
 

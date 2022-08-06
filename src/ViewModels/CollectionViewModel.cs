@@ -37,13 +37,8 @@ namespace COMPASS.ViewModels
             ActiveFilters.CollectionChanged += (e, v) => UpdateFieldFilteredFiles();
             SearchFilters = new();
 
-            //cause derived lists to update when codex gets updated
-            foreach(Codex c in _cc.AllCodices)
-            {
-                c.PropertyChanged += (e,v) => RaisePropertyChanged(nameof(Favorites));
-                c.PropertyChanged += (e,v) => RaisePropertyChanged(nameof(RecentCodices));
-                c.PropertyChanged += (e,v) => RaisePropertyChanged(nameof(MostOpenedCodices));
-            }
+            _cc.AllCodices.CollectionChanged += (e, v) => SubscribeToCodexProperties();
+            SubscribeToCodexProperties();
         }
 
         #region Properties
@@ -82,6 +77,17 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Functions
+        public void SubscribeToCodexProperties()
+        {
+            //cause derived lists to update when codex gets updated
+            foreach (Codex c in _cc.AllCodices)
+            {
+                c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(Favorites));
+                c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(RecentCodices));
+                c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(MostOpenedCodices));
+            }
+        }
+
 
         public void ClearFilters()
         {

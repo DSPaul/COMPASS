@@ -687,9 +687,9 @@
                 </Border>
                 <!--#endregion-->
 
-                <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4"
-                            Content="{Binding CurrentLayout}"/>
-                <Border Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="30"
+                <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" Content="{Binding CurrentLayout}"
+                                 Visibility="{Binding CurrentCollection.AllCodices.Count, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=False}"/>
+                <Border Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="20"
                         Visibility="{Binding CurrentCollection.AllCodices.Count, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <StackPanel.Resources>
