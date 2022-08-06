@@ -1,5 +1,14 @@
 # CHANGELOG
-## COMPASS v0.6.1 (24 July 2022)
+## COMPASS v0.6.2 (06 August 2022)
+
+### Fixes
+
+- Fixed Welcome screen not disappearing when a codex is added
+- Pasting authors now works as expected (thanks to BlackPearl library update)
+- Fixed reordering Tags causing duplicates
+- Fixed Lists on home screen not updating on newly added codices
+
+## COMPASS v0.6.1 (24 July 2022)
 
 ### Fixes
 
