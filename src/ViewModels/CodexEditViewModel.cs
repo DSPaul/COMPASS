@@ -61,7 +61,6 @@ namespace COMPASS.ViewModels
             OpenFileDialog openFileDialog = new()
             {
                 AddExtension = false,
-                Filter = "PDF (*.pdf) | *.pdf",
                 InitialDirectory = Path.GetDirectoryName(TempCodex.Path)
             };
             if (openFileDialog.ShowDialog() == true)

@@ -31,10 +31,10 @@ namespace COMPASS.ViewModels
             //Call Relevant function
             switch (source)
             {
-                case Sources.Pdf:
+                case Sources.File:
                     //Start new threat (so program doesn't freeze while importing)
                     worker = new BackgroundWorker { WorkerReportsProgress = true };
-                    worker.DoWork += ImportFromPdf;
+                    worker.DoWork += ImportFiles;
                     worker.ProgressChanged += ProgressChanged;
                     worker.RunWorkerAsync();
                     break;
@@ -125,7 +125,7 @@ namespace COMPASS.ViewModels
 
         #region Functions and Events
 
-        public void ImportFromPdf(object sender, DoWorkEventArgs e)
+        public void ImportFiles(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
@@ -166,20 +166,32 @@ namespace COMPASS.ViewModels
                         logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Importing {0}", System.IO.Path.GetFileName(path)));
                         worker.ReportProgress(_importcounter, logEntry);
 
-                        PdfDocument pdfdoc = new(new PdfReader(path));
-                        var info = pdfdoc.GetDocumentInfo();
-                        Codex codex = new(_codexCollection)
+                        Codex newCodex = new(_codexCollection)
                         {
-                            Path = path,
-                            Title = info.GetTitle() ?? System.IO.Path.GetFileNameWithoutExtension(path),
-                            Authors = new() { info.GetAuthor() },
-                            PageCount = pdfdoc.GetNumberOfPages()
+                            Path = path
                         };
-                        Codex pdf = codex;
-                        pdfdoc.Close();
-                        _codexCollection.AllCodices.Add(pdf);
-                        CoverFetcher.GetCoverFromPDF(pdf);
-                        SelectWhenDone = pdf;
+
+                        string FileType = System.IO.Path.GetExtension(path);
+
+                        switch (FileType)
+                        {
+                            case ".pdf":
+                                PdfDocument pdfdoc = new(new PdfReader(path));
+                                var info = pdfdoc.GetDocumentInfo();
+                                newCodex.Title = info.GetTitle() ?? System.IO.Path.GetFileNameWithoutExtension(path);
+                                newCodex.Authors = new() { info.GetAuthor() };
+                                newCodex.PageCount = pdfdoc.GetNumberOfPages();
+                                pdfdoc.Close();
+                                CoverFetcher.GetCoverFromPDF(newCodex);
+                                break;
+
+                            default:
+                                break;
+                        }
+
+                        _codexCollection.AllCodices.Add(newCodex);
+                        SelectWhenDone = newCodex;
+
                     }
 
                     else
