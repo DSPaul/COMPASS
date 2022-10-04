@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using static COMPASS.Tools.Enums;
@@ -62,7 +63,7 @@ namespace COMPASS.ViewModels
         #region Properties
         private CodexCollection _codexCollection;
 
-        private readonly Sources Source;
+        public Sources Source { get; init; }
         private BackgroundWorker worker;
         private ImportURLWindow iURLw;
 
@@ -272,6 +273,17 @@ namespace COMPASS.ViewModels
             worker.RunWorkerAsync();
         }
 
+        private ActionCommand _OpenBarcodeScannerCommand;
+        public ActionCommand OpenBarcodeScannerCommand => _OpenBarcodeScannerCommand ??= new(OpenBarcodeScanner);
+        public void OpenBarcodeScanner()
+        {
+            var bcScanWindow = new BarcodeScanWindow();
+            if( bcScanWindow.ShowDialog() == true)
+            {
+                InputURL = bcScanWindow.DecodedString;
+            };
+        }
+
         private void ImportURL(object sender, DoWorkEventArgs e)
         {
             ProgressWindow pgw;
@@ -446,7 +458,10 @@ namespace COMPASS.ViewModels
                     newFile.Title = (string)details.SelectToken("title");
                     if (details.SelectToken("authors") != null)
                         newFile.Authors = new ObservableCollection<string>( details.SelectToken("authors").Select(item => item.SelectToken("name").ToString()));
-                    newFile.PageCount = (int?)details.SelectToken("pagination") ?? newFile.PageCount;
+                    if (details.SelectToken("pagination") != null)
+                    {
+                        newFile.PageCount = Int32.Parse(Regex.Match(details.SelectToken("pagination").ToString(), @"\d+").Value);
+                    }
                     newFile.PageCount = (int?)details.SelectToken("number_of_pages") ?? newFile.PageCount;
                     newFile.Publisher = (string)details.SelectToken("publishers[0]") ?? newFile.Publisher;
                     newFile.Description = (string)details.SelectToken("description.value") ?? newFile.Description;
@@ -489,5 +504,6 @@ namespace COMPASS.ViewModels
             if (e.UserState is LogEntry logEntry) Log.Add(logEntry);
         }
         #endregion
+    
     }
 }
