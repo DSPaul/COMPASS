@@ -183,13 +183,14 @@ namespace COMPASS.ViewModels
                                 newCodex.Authors = new() { info.GetAuthor() };
                                 newCodex.PageCount = pdfdoc.GetNumberOfPages();
                                 pdfdoc.Close();
-                                CoverFetcher.GetCoverFromPDF(newCodex);
                                 break;
 
                             default:
+                                newCodex.Title = System.IO.Path.GetFileNameWithoutExtension(path);
                                 break;
                         }
 
+                        CoverFetcher.GetCoverFromFile(newCodex);
                         _codexCollection.AllCodices.Add(newCodex);
                         SelectWhenDone = newCodex;
 
