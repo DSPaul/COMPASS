@@ -3,12 +3,8 @@ using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
@@ -97,8 +93,7 @@ namespace COMPASS.ViewModels
         {
             if (!CreateNewCodex)
             {
-                MVM.CurrentCollection.DeleteCodex(EditedCodex);
-                MVM.CollectionVM.RemoveCodex(EditedCodex);
+                CodexViewModel.DeleteCodex(EditedCodex);
             }
             CloseAction();
         }
