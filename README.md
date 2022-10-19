@@ -3,13 +3,14 @@
 # COMPASS
 The Codex Organizer to make Pen-and-paper Adventuring Super Simple or COMPASS for short is a windows application to organize and manage all your TTRPG rulebooks, inspired by [Playnite](https://github.com/JosefNemec/Playnite). 
 
-## Story
+## :scroll: Story
+
 If you are an RPG fan like me, you probably have lots of pdf's both homebrew and official from sites such as [Drivethrough RPG](https://www.drivethrurpg.com/), [Humble Bundle Books](https://www.humblebundle.com/books),  [GM Binder](https://www.gmbinder.com/), [Homebrewery](https://homebrewery.naturalcrit.com/), [itch.io](https://itch.io/books/genre-rpg) or content from subreddits, patreon creators and kickstarters. Or perhaps you own them in digital form on sites such as [D&D Beyond](https://www.dndbeyond.com/sources#Sourcebooks) or [Roll20](https://roll20.net/compendium/dnd5e/BookIndex).  Keeping track of all these books is hard and nothing is more frustrating than franticly clicking trough folders in search of that one statblock you need in the heat of combat. COMPASS solves this problem by bringing all of your books together in one place that is easily searchable, sortable and filterable. 
 
 ## Features
 
 - **Unify** your digital tabletop RPG sourcebook library so everything is in one place.
-- **Import** any pdf or link a URL for online sources. You can also manually add books to include your physical collection.
+- **Import** any file or link to a URL for online sources. You can also manually add books to include your physical collection.
 - Have **Redundant Access** to your books by having both an offline pdf and a link to an online version hosted on sites such as Google Drive and GM Binder for each book. COMPASS will automatically fallback to another version if the preferred one is unavailable due to a lack of internet for example.
 - **Automatic metadata** from PDF's, supported sites and books with an ISBN number thanks to [Open Library](https://openlibrary.org/). 
   
@@ -26,6 +27,19 @@ If you are an RPG fan like me, you probably have lots of pdf's both homebrew and
 - **Visualize** your library with 4 different layouts to choose from: Home, List, Cards and Tiles (see screenshots).
 - Have **Quick Access** to your books thanks to the Home view which lists your favorites, recently opened, most opened and recently added books for your convenience.
 - **Group** your books into collections. Each collection has their own list of tags, authors, ect. and helps you keep an overview by reducing the amount of books that are on your screen at once.
+
+## Why am I getting a Windows Defender SmartScreen Warning when installing COMPASS?
+
+The COMPASS files are not digitally signed which results in these kinds of warnings. Signing code is expensive and not worth it with a small user base. If this project ever takes off and gains a large amount of users, I will look into this again.
+
+## Supporting and Contributing
+
+I created this project to solve a problem I had and as a learning opportunity. I eventually chose to release it publicly and open source because I believe others might find it useful as well. If you like this project and would like to support it, there are many ways you can contribute.
+
+- If you find a bug, please open a github issue and report it there so it can be fixed. Please include a clear explanation the nature of the bug and if possible steps to reproduce the it.
+- If you would like to contribute any code, please communicate what you plan to working on so we don't work on the same things at the same time. All pull requests should be made against the dev branch. Dev gets merged into master with every new release.
+- If you have ideas for new features or improvements, you can put those in a github issue as well.
+- If you would like to financially support me so I can justify spending more time on this, help with potential costs such as code signing or just show some love, you can buy me a coffee over on [ko-fi](https://ko-fi.com/pauldesmul), I would greatly appreciate it.
 
 ## Screenshots
 
