@@ -7,14 +7,14 @@
     xmlns:gif="http://wpfanimatedgif.codeplex.com"
     Background="{StaticResource WindowBackground}"
     Width="400" Height="350" Closing="Window_Closing" WindowStyle="ToolWindow"
-    mc:Ignorable="d">
+    WindowStartupLocation="CenterOwner" mc:Ignorable="d">
 
 
     <Grid>
         <StackPanel x:Name="cameraLoading" HorizontalAlignment="Center"
                 VerticalAlignment="Center" Orientation="Vertical">
-            <Image gif:ImageBehavior.AnimatedSource="../Media/LoadingAnimation.gif" 
-                   Width="100" Height="100"/>
+            <!--<Image gif:ImageBehavior.AnimatedSource="../Media/LoadingAnimation.gif" 
+                   Width="100" Height="100"/>-->
             <TextBlock Text="Webcam loading..." />
 
         </StackPanel>
