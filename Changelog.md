@@ -1,5 +1,21 @@
 # CHANGELOG
-## COMPASS v0.6.2 (06 August 2022)
+
+## COMPASS v0.7.0 (19 October 2022)
+
+### Fixes
+
+- Changelog popup after updates should not be blank anymore thanks to AutoUpdater.NET Update.
+- Fixed deleted files still being shown.
+
+### New Features
+  
+- You can now scan barcodes using a webcam to import books based on their ISBN number.
+
+### Enhancements
+
+- All file types can now be imported instead of only pdf's. Only pdf's and images will have thumbnails.
+
+## COMPASS v0.6.2 (06 August 2022)
 
 ### Fixes
 
