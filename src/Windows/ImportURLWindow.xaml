@@ -18,10 +18,23 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="inputField" Tools:AP.PlaceHolderText="{Binding PreviewURL, Mode=TwoWay}"
-                         Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <Button Grid.Column="1" Content="Import" Command="{Binding SubmitURLCommand}" IsDefault="True"
+                         Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5"/>
+                <Button  Grid.Column="1" Tools:AP.IconKind="BarcodeScan" Margin="5" Command="{Binding OpenBarcodeScannerCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource IconBtn}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Tools:Enums+Sources.ISBN}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Grid.Column="2" Content="Import" Command="{Binding SubmitURLCommand}" IsDefault="True" Margin="5"
                         Style="{StaticResource TextButton}" Background="{StaticResource AccentColorMuted}"/>
             </Grid>
             <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" Margin="5"/>

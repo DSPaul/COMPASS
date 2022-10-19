@@ -29,52 +29,68 @@ namespace COMPASS
         //list with possible functions to get Cover
         private static readonly List<PreferableFunction<Codex>> GetCoverFunctions = new()
             {
-                new PreferableFunction<Codex>("Local File", GetCoverFromPDF,0),
+                new PreferableFunction<Codex>("Local File", GetCoverFromFile,0),
                 new PreferableFunction<Codex>("Web Version", GetCoverFromURL,1),
                 new PreferableFunction<Codex>("ISBN", GetCoverFromISBN,2)
             };
 
         //Save First page of PDF as png
-        public static bool GetCoverFromPDF(Codex pdf)
+        public static bool GetCoverFromFile(Codex codex)
         {
-            if (String.IsNullOrEmpty(pdf.Path) || !File.Exists(pdf.Path)) return false;
+            //return false if file doesn't exist
+            if (String.IsNullOrEmpty(codex.Path) || !File.Exists(codex.Path)) return false;
 
-            var pdfReadDefines = new ImageMagick.Formats.PdfReadDefines()
+            string FileType = System.IO.Path.GetExtension(codex.Path);
+            switch (FileType)
             {
-                HideAnnotations = true,
-            };
+                case ".pdf":
+                    var pdfReadDefines = new ImageMagick.Formats.PdfReadDefines()
+                    {
+                        HideAnnotations = true,
+                    };
 
-            MagickReadSettings settings = new()
-            {
-                Density = new Density(100,100),
-                FrameIndex = 0, // First page
-                FrameCount = 1, // Number of pages
-                Defines = pdfReadDefines,
-            };
+                    MagickReadSettings settings = new()
+                    {
+                        Density = new Density(100, 100),
+                        FrameIndex = 0, // First page
+                        FrameCount = 1, // Number of pages
+                        Defines = pdfReadDefines,
+                    };
 
-            try
-            {
-                using (MagickImage image = new())
-                {
-                    image.Read(pdf.Path, settings);
-                    image.Format = MagickFormat.Png;
-                    image.BackgroundColor = new MagickColor("#000000"); //set background color as transparant
-                    image.Border(20); //adds transparant border around image
-                    image.Trim(); //cut off all transparancy
-                    image.RePage(); //resize image to fit what was cropped
+                    try
+                    {
+                        using (MagickImage image = new())
+                        {
+                            image.Read(codex.Path, settings);
+                            image.Format = MagickFormat.Png;
+                            image.BackgroundColor = new MagickColor("#000000"); //set background color as transparant
+                            image.Border(20); //adds transparant border around image
+                            image.Trim(); //cut off all transparancy
+                            image.RePage(); //resize image to fit what was cropped
 
-                    image.Write(pdf.CoverArt);
-                    CreateThumbnail(pdf);
-                }
-                return true;
+                            image.Write(codex.CoverArt);
+                            CreateThumbnail(codex);
+                        }
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.log.Error(ex.InnerException);
+                        string messageBoxText = "Failed to extract Cover from pdf.";
+                        MessageBox.Show(messageBoxText, "Failed to extract Cover from pdf", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return false;
+                    }
+                case ".jpg":
+                case ".jpeg":
+                case ".png":
+                case ".webp":
+                    GetCoverFromImage(codex.Path, codex);
+                    return true;
+                
+                default:
+                    return false;
             }
-            catch(Exception ex)
-            {
-                Logger.log.Error(ex.InnerException);
-                string messageBoxText = "Failed to extract Cover from pdf.";
-                MessageBox.Show(messageBoxText, "Failed to extract Cover from pdf", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
+            
         }
 
         //Get cover from URL

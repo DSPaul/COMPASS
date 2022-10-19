@@ -17,7 +17,7 @@ namespace COMPASS.Tools
         {
             None = 0,
             Manual = 1,
-            Pdf = 2,
+            File = 2,
             GmBinder = 4,
             Homebrewery = 8,
             DnDBeyond = 16,

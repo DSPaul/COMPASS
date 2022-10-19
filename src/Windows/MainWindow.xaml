@@ -533,9 +533,9 @@
                     </CustomControls:ExpandingButton.Toggle>
                     <CustomControls:ExpandingButton.HiddenContent>
                         <StackPanel>
-                            <Button Tools:AP.IconKind="FileOutline" Style="{StaticResource innerIconBtn}" Content="From PDF"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Pdf}"/>
-                            <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource innerIconBtn}" Content="Manual"
+                            <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource innerIconBtn}" Content="From File"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.File}"/>
+                            <Button Tools:AP.IconKind="BookPlusOutline" Style="{StaticResource innerIconBtn}" Content="Create New"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Manual}"/>
                             <Button Tools:AP.IconKind="Barcode" Style="{StaticResource innerIconBtn}" Content="From ISBN"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.ISBN}"/>

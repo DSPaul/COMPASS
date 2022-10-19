@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using static COMPASS.Tools.Enums;
@@ -31,10 +32,10 @@ namespace COMPASS.ViewModels
             //Call Relevant function
             switch (source)
             {
-                case Sources.Pdf:
+                case Sources.File:
                     //Start new threat (so program doesn't freeze while importing)
                     worker = new BackgroundWorker { WorkerReportsProgress = true };
-                    worker.DoWork += ImportFromPdf;
+                    worker.DoWork += ImportFiles;
                     worker.ProgressChanged += ProgressChanged;
                     worker.RunWorkerAsync();
                     break;
@@ -62,7 +63,7 @@ namespace COMPASS.ViewModels
         #region Properties
         private CodexCollection _codexCollection;
 
-        private readonly Sources Source;
+        public Sources Source { get; init; }
         private BackgroundWorker worker;
         private ImportURLWindow iURLw;
 
@@ -125,7 +126,7 @@ namespace COMPASS.ViewModels
 
         #region Functions and Events
 
-        public void ImportFromPdf(object sender, DoWorkEventArgs e)
+        public void ImportFiles(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
@@ -166,20 +167,33 @@ namespace COMPASS.ViewModels
                         logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Importing {0}", System.IO.Path.GetFileName(path)));
                         worker.ReportProgress(_importcounter, logEntry);
 
-                        PdfDocument pdfdoc = new(new PdfReader(path));
-                        var info = pdfdoc.GetDocumentInfo();
-                        Codex codex = new(_codexCollection)
+                        Codex newCodex = new(_codexCollection)
                         {
-                            Path = path,
-                            Title = info.GetTitle() ?? System.IO.Path.GetFileNameWithoutExtension(path),
-                            Authors = new() { info.GetAuthor() },
-                            PageCount = pdfdoc.GetNumberOfPages()
+                            Path = path
                         };
-                        Codex pdf = codex;
-                        pdfdoc.Close();
-                        _codexCollection.AllCodices.Add(pdf);
-                        CoverFetcher.GetCoverFromPDF(pdf);
-                        SelectWhenDone = pdf;
+
+                        string FileType = System.IO.Path.GetExtension(path);
+
+                        switch (FileType)
+                        {
+                            case ".pdf":
+                                PdfDocument pdfdoc = new(new PdfReader(path));
+                                var info = pdfdoc.GetDocumentInfo();
+                                newCodex.Title = info.GetTitle() ?? System.IO.Path.GetFileNameWithoutExtension(path);
+                                newCodex.Authors = new() { info.GetAuthor() };
+                                newCodex.PageCount = pdfdoc.GetNumberOfPages();
+                                pdfdoc.Close();
+                                break;
+
+                            default:
+                                newCodex.Title = System.IO.Path.GetFileNameWithoutExtension(path);
+                                break;
+                        }
+
+                        CoverFetcher.GetCoverFromFile(newCodex);
+                        _codexCollection.AllCodices.Add(newCodex);
+                        SelectWhenDone = newCodex;
+
                     }
 
                     else
@@ -258,6 +272,17 @@ namespace COMPASS.ViewModels
             if (APIAccess.HasFlag(Source)) worker.DoWork += ImportFromAPI;
             worker.ProgressChanged += ProgressChanged;
             worker.RunWorkerAsync();
+        }
+
+        private ActionCommand _OpenBarcodeScannerCommand;
+        public ActionCommand OpenBarcodeScannerCommand => _OpenBarcodeScannerCommand ??= new(OpenBarcodeScanner);
+        public void OpenBarcodeScanner()
+        {
+            var bcScanWindow = new BarcodeScanWindow();
+            if( bcScanWindow.ShowDialog() == true)
+            {
+                InputURL = bcScanWindow.DecodedString;
+            };
         }
 
         private void ImportURL(object sender, DoWorkEventArgs e)
@@ -434,7 +459,10 @@ namespace COMPASS.ViewModels
                     newFile.Title = (string)details.SelectToken("title");
                     if (details.SelectToken("authors") != null)
                         newFile.Authors = new ObservableCollection<string>( details.SelectToken("authors").Select(item => item.SelectToken("name").ToString()));
-                    newFile.PageCount = (int?)details.SelectToken("pagination") ?? newFile.PageCount;
+                    if (details.SelectToken("pagination") != null)
+                    {
+                        newFile.PageCount = Int32.Parse(Regex.Match(details.SelectToken("pagination").ToString(), @"\d+").Value);
+                    }
                     newFile.PageCount = (int?)details.SelectToken("number_of_pages") ?? newFile.PageCount;
                     newFile.Publisher = (string)details.SelectToken("publishers[0]") ?? newFile.Publisher;
                     newFile.Description = (string)details.SelectToken("description.value") ?? newFile.Description;
@@ -477,5 +505,6 @@ namespace COMPASS.ViewModels
             if (e.UserState is LogEntry logEntry) Log.Add(logEntry);
         }
         #endregion
+    
     }
 }
