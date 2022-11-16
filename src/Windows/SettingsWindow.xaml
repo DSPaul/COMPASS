@@ -281,6 +281,13 @@
                                         Newsoft Json
                                     </Hyperlink>
                                     </TextBlock>
+                                    <TextBlock Text="Folder Dialog:"/>
+                                    <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/ookii-dialogs/ookii-dialogs-wpf"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        Ookii Dialogs
+                                    </Hyperlink>
+                                    </TextBlock>
                                     <TextBlock Text="Detecting Barcodes:"/>
                                     <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/shimat/opencvsharp"
