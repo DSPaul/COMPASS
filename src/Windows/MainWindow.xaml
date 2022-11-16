@@ -319,7 +319,7 @@
                 </Button>
 
                 <!--Internet status indicator-->
-                <materialDesign:PackIcon Grid.Column="5" Margin="0" Kind="WebOff" MaxWidth="25" MaxHeight="25" VerticalAlignment="Center"
+                <materialDesign:PackIcon Grid.Column="5" Margin="0" Padding="0" Kind="WebOff" Width="25" Height="25" VerticalAlignment="Center"
                                          Foreground="{StaticResource OfflineFill}" ToolTip="No Internet Connection Found">
                     <materialDesign:PackIcon.Style>
                         <Style TargetType="materialDesign:PackIcon">
