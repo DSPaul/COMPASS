@@ -6,11 +6,13 @@ using HtmlAgilityPack;
 using iText.Kernel.Pdf;
 using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
+using Ookii.Dialogs.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -36,6 +38,13 @@ namespace COMPASS.ViewModels
                     //Start new threat (so program doesn't freeze while importing)
                     worker = new BackgroundWorker { WorkerReportsProgress = true };
                     worker.DoWork += ImportFiles;
+                    worker.ProgressChanged += ProgressChanged;
+                    worker.RunWorkerAsync();
+                    break;
+                case Sources.Folder:
+                    //Start new threat (so program doesn't freeze while importing)
+                    worker = new BackgroundWorker { WorkerReportsProgress = true };
+                    worker.DoWork += ImportFolder;
                     worker.ProgressChanged += ProgressChanged;
                     worker.RunWorkerAsync();
                     break;
@@ -156,52 +165,11 @@ namespace COMPASS.ViewModels
                 //init progress tracking variables
                 _importcounter = 0;
                 _importamount = openFileDialog.FileNames.Length;
-                LogEntry logEntry = null;
                 worker.ReportProgress(_importcounter);
 
                 foreach (string path in openFileDialog.FileNames)
-                { 
-                    //Import File
-                    if (_codexCollection.AllCodices.All(p => p.Path != path))
-                    {
-                        logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Importing {0}", System.IO.Path.GetFileName(path)));
-                        worker.ReportProgress(_importcounter, logEntry);
-
-                        Codex newCodex = new(_codexCollection)
-                        {
-                            Path = path
-                        };
-
-                        string FileType = System.IO.Path.GetExtension(path);
-
-                        switch (FileType)
-                        {
-                            case ".pdf":
-                                PdfDocument pdfdoc = new(new PdfReader(path));
-                                var info = pdfdoc.GetDocumentInfo();
-                                newCodex.Title = info.GetTitle() ?? System.IO.Path.GetFileNameWithoutExtension(path);
-                                newCodex.Authors = new() { info.GetAuthor() };
-                                newCodex.PageCount = pdfdoc.GetNumberOfPages();
-                                pdfdoc.Close();
-                                break;
-
-                            default:
-                                newCodex.Title = System.IO.Path.GetFileNameWithoutExtension(path);
-                                break;
-                        }
-
-                        CoverFetcher.GetCoverFromFile(newCodex);
-                        _codexCollection.AllCodices.Add(newCodex);
-                        SelectWhenDone = newCodex;
-
-                    }
-
-                    else
-                    {
-                        //if already in collection, skip
-                        logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Skipped {0}, already imported", System.IO.Path.GetFileName(path)));
-                        worker.ReportProgress(_importcounter,logEntry);
-                    }
+                {
+                    ImportFilePath(path);
 
                     //Update Progress Bar when done
                     _importcounter++;
@@ -213,6 +181,108 @@ namespace COMPASS.ViewModels
                 MVM.Refresh();
             });
             if(SelectWhenDone!=null) MVM.CurrentLayout.SelectedFile = SelectWhenDone;
+        }
+
+        public void ImportFolder(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            VistaFolderBrowserDialog openFolderDialog = new();
+
+            if (openFolderDialog.ShowDialog() == true)
+            {
+                ProgressWindow pgw;
+                _importtype = "File";
+
+                //needed to avoid error "The calling Thread must be STA" when creating progress window
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    pgw = new ProgressWindow(this)
+                    {
+                        Owner = Application.Current.MainWindow
+                    };
+                    pgw.Show();
+                });
+
+                //find files in folder, including subfolder
+                List<string> toSearch = new(openFolderDialog.SelectedPaths); //list with folders to search
+                List<string> toImport = new(); //list with files to import
+
+                while (toSearch.Count > 0)
+                {
+                    string currentFolder = toSearch[0];
+
+                    //find subfolder to include in search
+                    toSearch.AddRange(Directory.GetDirectories(currentFolder));
+                    //add files in folder to import list
+                    toImport.AddRange(Directory.GetFiles(currentFolder));
+                    //done with folder, remove it from list
+                    toSearch.Remove(currentFolder);
+                }
+
+                //init progress tracking variables
+                _importcounter = 0;
+                _importamount = toImport.Count;
+                worker.ReportProgress(_importcounter);
+
+                foreach (string path in toImport)
+                {
+                    ImportFilePath(path);
+
+                    //Update Progress Bar when done
+                    _importcounter++;
+                    worker.ReportProgress(_importcounter);
+                }
+            }
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MVM.Refresh();
+            });
+        }
+
+        public void ImportFilePath(string path)
+        {
+            LogEntry logEntry = null;
+            //Import File
+            if (_codexCollection.AllCodices.All(p => p.Path != path))
+            {
+                logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Importing {0}", System.IO.Path.GetFileName(path)));
+                worker.ReportProgress(_importcounter, logEntry);
+
+                Codex newCodex = new(_codexCollection)
+                {
+                    Path = path
+                };
+
+                string FileType = System.IO.Path.GetExtension(path);
+
+                switch (FileType)
+                {
+                    case ".pdf":
+                        PdfDocument pdfdoc = new(new PdfReader(path));
+                        var info = pdfdoc.GetDocumentInfo();
+                        newCodex.Title = info.GetTitle() ?? System.IO.Path.GetFileNameWithoutExtension(path);
+                        newCodex.Authors = new() { info.GetAuthor() };
+                        newCodex.PageCount = pdfdoc.GetNumberOfPages();
+                        pdfdoc.Close();
+                        break;
+
+                    default:
+                        newCodex.Title = System.IO.Path.GetFileNameWithoutExtension(path);
+                        break;
+                }
+
+                CoverFetcher.GetCoverFromFile(newCodex);
+                _codexCollection.AllCodices.Add(newCodex);
+                //SelectWhenDone = newCodex;
+
+            }
+
+            else
+            {
+                //if already in collection, skip
+                logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Skipped {0}, already imported", System.IO.Path.GetFileName(path)));
+                worker.ReportProgress(_importcounter, logEntry);
+            }
         }
 
         private void ImportManual()
