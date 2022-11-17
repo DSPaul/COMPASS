@@ -245,7 +245,7 @@ namespace COMPASS.ViewModels
             //Import File
             if (_codexCollection.AllCodices.All(p => p.Path != path))
             {
-                logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Importing {0}", System.IO.Path.GetFileName(path)));
+                logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Importing {0}", Path.GetFileName(path)));
                 worker.ReportProgress(_importcounter, logEntry);
 
                 Codex newCodex = new(_codexCollection)
@@ -253,25 +253,44 @@ namespace COMPASS.ViewModels
                     Path = path
                 };
 
-                string FileType = System.IO.Path.GetExtension(path);
+                string FileType = Path.GetExtension(path);
 
                 switch (FileType)
                 {
                     case ".pdf":
-                        PdfDocument pdfdoc = new(new PdfReader(path));
-                        var info = pdfdoc.GetDocumentInfo();
-                        newCodex.Title = info.GetTitle() ?? System.IO.Path.GetFileNameWithoutExtension(path);
-                        newCodex.Authors = new() { info.GetAuthor() };
-                        newCodex.PageCount = pdfdoc.GetNumberOfPages();
-                        pdfdoc.Close();
+                        try
+                        {
+                            PdfDocument pdfdoc = new(new PdfReader(path));
+                            var info = pdfdoc.GetDocumentInfo();
+                            newCodex.Title = info.GetTitle() ?? Path.GetFileNameWithoutExtension(path);
+                            newCodex.Authors = new() { info.GetAuthor() };
+                            newCodex.PageCount = pdfdoc.GetNumberOfPages();
+                            pdfdoc.Close();
+                        }
+
+                        catch(Exception ex)
+                        {
+                            Logger.log.Error(ex.InnerException);
+                            //in case pdf is corrupt: PdfReader will throw error
+                            //in those cases: import the pdf without opening it
+                            newCodex.Title = Path.GetFileNameWithoutExtension(path);
+                            logEntry = new LogEntry(LogEntry.MsgType.Warning, string.Format("Failed to read metadata from {0}", Path.GetFileName(path)));
+                            worker.ReportProgress(_importcounter, logEntry);
+                        }
+                        
                         break;
 
                     default:
-                        newCodex.Title = System.IO.Path.GetFileNameWithoutExtension(path);
+                        newCodex.Title = Path.GetFileNameWithoutExtension(path);
                         break;
                 }
 
-                CoverFetcher.GetCoverFromFile(newCodex);
+                bool succes = CoverFetcher.GetCoverFromFile(newCodex);
+                if (!succes)
+                {
+                    logEntry = new LogEntry(LogEntry.MsgType.Warning, string.Format("Failed to generate thumbnail from {0}", Path.GetFileName(path)));
+                    worker.ReportProgress(_importcounter, logEntry);
+                }
                 _codexCollection.AllCodices.Add(newCodex);
                 //SelectWhenDone = newCodex;
 
@@ -280,7 +299,7 @@ namespace COMPASS.ViewModels
             else
             {
                 //if already in collection, skip
-                logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Skipped {0}, already imported", System.IO.Path.GetFileName(path)));
+                logEntry = new LogEntry(LogEntry.MsgType.Warning, string.Format("Skipped {0}, already imported", Path.GetFileName(path)));
                 worker.ReportProgress(_importcounter, logEntry);
             }
         }
