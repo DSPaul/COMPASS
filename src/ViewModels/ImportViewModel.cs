@@ -14,7 +14,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -79,6 +78,8 @@ namespace COMPASS.ViewModels
         private const Sources Webscrape = Sources.Homebrewery | Sources.GmBinder | Sources.GoogleDrive;
         private const Sources APIAccess = Sources.ISBN;
 
+
+        //progress window props
         private float _progressPercentage;
         public float ProgressPercentage
         {
@@ -91,11 +92,17 @@ namespace COMPASS.ViewModels
         private int _importamount;
         private string _importtype = "";
 
+        public int ImportAmount
+        {
+            get { return _importamount; }
+        }
+
         public string ProgressText
         {
             get { return string.Format(_importText, _importtype,_importcounter + 1, _importamount); }
         }
 
+        //import url props
         private string _previewURL;
         public string PreviewURL
         {
@@ -131,7 +138,44 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _log, value); }
         }
 
+        //folder import props
+
+        private IEnumerable<FileTypeSelectionHelper> _toImportFiletypes;
+        public IEnumerable<FileTypeSelectionHelper> ToImportFiletypes
+        {
+            get { return _toImportFiletypes; }
+            set { SetProperty(ref _toImportFiletypes, value); }
+        }
+
         #endregion
+
+        public class FileTypeSelectionHelper: ObservableObject
+        {
+            public FileTypeSelectionHelper(string type, int count, bool should) 
+            {
+                _filetype = type;
+                _fileCount = count;
+                _shouldImport = should;
+            }
+            private string _filetype;
+            private int _fileCount;
+            private bool _shouldImport;
+
+            public string Key
+            {
+                get { return _filetype; }
+            }
+
+            public bool ShouldImport
+            {
+                get { return _shouldImport; }
+                set { SetProperty(ref _shouldImport, value); }
+            }
+            public string DisplayText
+            {
+                get { return String.Format("{0} ({1} file{2})",_filetype,_fileCount, _fileCount > 1 ? "s" : ""); }
+            }
+        }
 
         #region Functions and Events
 
@@ -190,19 +234,6 @@ namespace COMPASS.ViewModels
 
             if (openFolderDialog.ShowDialog() == true)
             {
-                ProgressWindow pgw;
-                _importtype = "File";
-
-                //needed to avoid error "The calling Thread must be STA" when creating progress window
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    pgw = new ProgressWindow(this)
-                    {
-                        Owner = Application.Current.MainWindow
-                    };
-                    pgw.Show();
-                });
-
                 //find files in folder, including subfolder
                 List<string> toSearch = new(openFolderDialog.SelectedPaths); //list with folders to search
                 List<string> toImport = new(); //list with files to import
@@ -219,9 +250,49 @@ namespace COMPASS.ViewModels
                     toSearch.Remove(currentFolder);
                 }
 
+                //find how many files of each filetype
+                _importamount = toImport.Count;
+                var toImport_grouped = toImport.GroupBy(p => Path.GetExtension(p));
+                ToImportFiletypes = toImport_grouped.Select(x => new FileTypeSelectionHelper (x.Key, x.Count(), true)).ToList();
+
+                //open window to let user choose which filetypes to import
+                ImportFolderWindow ipf;
+                var dialogresult = Application.Current.Dispatcher.Invoke(() =>
+                {
+                    ipf = new ImportFolderWindow(this)
+                    {
+                        Owner = Application.Current.MainWindow
+                    };
+                    return ipf.ShowDialog();
+                });
+
+                if (dialogresult != true) return;
+
+                //Make new toImport with only selected Filetypes
+                toImport = new List<string>();
+                foreach(var filetypeHelper in ToImportFiletypes)
+                {
+                    if(filetypeHelper.ShouldImport)
+                    {
+                        toImport.AddRange(toImport_grouped.First(g => g.Key == filetypeHelper.Key));
+                    }
+                }
+
                 //init progress tracking variables
+                ProgressWindow pgw;
                 _importcounter = 0;
                 _importamount = toImport.Count;
+                _importtype = "File";
+                //needed to avoid error "The calling Thread must be STA" when creating progress window
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    pgw = new ProgressWindow(this)
+                    {
+                        Owner = Application.Current.MainWindow
+                    };
+                    pgw.Show();
+                });
+
                 worker.ReportProgress(_importcounter);
 
                 foreach (string path in toImport)
