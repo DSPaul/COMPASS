@@ -514,6 +514,32 @@
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
     </ContextMenu>
 
+    <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
+    <ContextMenu x:Key="MultiCodexContextMenu" x:Shared="False"
+                    DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
+        <MenuItem Header="Open Selected" CommandParameter="{Binding}"
+                Command="{Binding Path=DataContext.CodexVM.OpenSelectedCodicesCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
+                Command="{Binding Path=DataContext.CodexVM.EditCodicesCommand,RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+            <MenuItem.ItemContainerStyle>
+                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.CodexVM.MoveToCollectionCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+                    <Setter Property="MenuItem.CommandParameter">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource MultiParamConverter}">
+                                <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
+                                <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </MenuItem.ItemContainerStyle>
+        </MenuItem>
+        <MenuItem Header="Delete All" CommandParameter="{Binding}"
+                Command="{Binding Path=DataContext.CodexVM.DeleteCodexCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+    </ContextMenu>
     <!--#endregion-->
 
     <Style x:Key="{x:Type ToolTip}" TargetType="ToolTip">
