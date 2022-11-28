@@ -45,7 +45,8 @@ namespace COMPASS.ViewModels
                 Properties.Settings.Default.justUpdated = false;
             }
 
-            MagickNET.SetGhostscriptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"gs"));
+            if (!Directory.Exists(@"C:\Program Files\gs"))
+                MagickNET.SetGhostscriptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"gs"));
 
             //Commands
             ChangeFileViewCommand = new RelayCommand<CodexLayout>(ChangeFileView);
