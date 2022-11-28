@@ -3,8 +3,7 @@
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
                     xmlns:Tools="clr-namespace:COMPASS.Tools"
-                    xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary"
-                    xmlns:docs="clr-namespace:System.Windows.Documents;assembly=PresentationFramework">
+                    xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Themes/DarkTheme.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -517,15 +516,19 @@
     <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
     <ContextMenu x:Key="MultiCodexContextMenu" x:Shared="False"
                     DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
-        <MenuItem Header="Open Selected" CommandParameter="{Binding}"
-                Command="{Binding Path=DataContext.CodexVM.OpenSelectedCodicesCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
-                Command="{Binding Path=DataContext.CodexVM.EditCodicesCommand,RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
+        <MenuItem Header="Open Selection" Tools:AP.IconKind="FileMultipleOutline" CommandParameter="{Binding}"
+                  Command="{Binding Path=DataContext.CodexVM.OpenSelectedCodicesCommand, 
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Bulk Edit Selection" CommandParameter="{Binding}" Tools:AP.IconKind="Edit"
+                  Command="{Binding Path=DataContext.CodexVM.EditCodicesCommand,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Move to Collection" Tools:AP.IconKind="FileMoveOutline"
+                  ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
             <MenuItem.ItemContainerStyle>
                 <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                    <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.CodexVM.MoveToCollectionCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+                    <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.CodexVM.MoveToCollectionCommand, 
+                        RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
                     <Setter Property="MenuItem.CommandParameter">
                         <Setter.Value>
                             <MultiBinding Converter="{StaticResource MultiParamConverter}">
@@ -537,8 +540,9 @@
                 </Style>
             </MenuItem.ItemContainerStyle>
         </MenuItem>
-        <MenuItem Header="Delete All" CommandParameter="{Binding}"
-                Command="{Binding Path=DataContext.CodexVM.DeleteCodexCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Delete Selection" Tools:AP.IconKind="Delete" CommandParameter="{Binding}"
+                  Command="{Binding Path=DataContext.CodexVM.DeleteCodexCommand, 
+                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
     </ContextMenu>
     <!--#endregion-->
 
