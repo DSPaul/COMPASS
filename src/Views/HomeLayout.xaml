@@ -22,36 +22,35 @@
             <Setter Property="FontSize" Value="25"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
-        <!--ContextMenu needs to be in every view where it is used instead of in a resource dict because 
-            in resource dict it "sticks" to first view and the binding target for SelectedItems doesn't update when the view changes-->
-        <ContextMenu x:Key="MultiCodexContextMenu" 
-                    DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
-            <MenuItem Header="Open Selected" CommandParameter="{Binding}"
-                Command="{Binding Path=Data.OpenSelectedCodicesCommand, Source={StaticResource CodexProxy}}"/>
-            <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
-                Command="{Binding Path=Data.EditCodicesCommand, Source={StaticResource CodexProxy}}"/>
-            <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.Folders,
-                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
-                <MenuItem.ItemContainerStyle>
-                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                        <Setter Property="MenuItem.Command" Value="{Binding Path=Data.MoveToCollectionCommand, Source={StaticResource CodexProxy}}"/>
-                        <Setter Property="MenuItem.CommandParameter">
-                            <Setter.Value>
-                                <MultiBinding Converter="{StaticResource MultiParamConverter}">
-                                    <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
-                                    <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}"/>
-                                </MultiBinding>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </MenuItem.ItemContainerStyle>
-            </MenuItem>
-            <MenuItem Header="Delete All" CommandParameter="{Binding}"
-                Command="{Binding Path=Data.DeleteCodexCommand, Source={StaticResource CodexProxy}}"/>
-        </ContextMenu>
+        <Style TargetType="{x:Type ListBox}">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Background" Value="{x:Null}"/>
+            <Setter Property="BorderBrush" Value="{x:Null}"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Top"/>
+            <Setter Property="SelectionMode" Value="Extended"/>
+            <Setter Property="ItemTemplate" Value="{DynamicResource ListBoxItemCoverTemplate}"/>
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            <!--<Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <ItemsPresenter />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>-->
+        </Style>
+        <!--ContextMenu needs to be in every listbox where it is used instead of as a resource because 
+            in resource it "sticks" to first listbox and the binding target for SelectedItems doesn't change when another listbox is right-clicked
+            relevant issue: https://github.com/dotnet/wpf/issues/4128-->
         <Style TargetType="{x:Type ListBoxItem}">
             <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
-            <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -112,85 +111,147 @@
     </UserControl.Resources>
     <ScrollViewer>
         <StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="30,0">
-                <materialDesign:PackIcon Kind="Heart" Height="28" Width="20" Foreground="IndianRed" VerticalAlignment="Bottom"/>
-                <TextBlock Text="Favorites" Style="{StaticResource HomeSectionTitle}"/>
+            <StackPanel>
+                <StackPanel.Resources>
+                    <ContextMenu x:Key="MultiCodexContextMenu" 
+                    DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
+                        <MenuItem Header="Open Selected" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.OpenSelectedCodicesCommand, Source={StaticResource CodexProxy}}"/>
+                        <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.EditCodicesCommand, Source={StaticResource CodexProxy}}"/>
+                        <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+                            <MenuItem.ItemContainerStyle>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="MenuItem.Command" Value="{Binding Path=Data.MoveToCollectionCommand, Source={StaticResource CodexProxy}}"/>
+                                    <Setter Property="MenuItem.CommandParameter">
+                                        <Setter.Value>
+                                            <MultiBinding Converter="{StaticResource MultiParamConverter}">
+                                                <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
+                                                <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}"/>
+                                            </MultiBinding>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </MenuItem.ItemContainerStyle>
+                        </MenuItem>
+                        <MenuItem Header="Delete All" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.DeleteCodexCommand, Source={StaticResource CodexProxy}}"/>
+                    </ContextMenu>
+                </StackPanel.Resources>
+                <StackPanel Orientation="Horizontal" Margin="30,0">
+                    <materialDesign:PackIcon Kind="Heart" Height="28" Width="20" Foreground="IndianRed" VerticalAlignment="Bottom"/>
+                    <TextBlock Text="Favorites" Style="{StaticResource HomeSectionTitle}"/>
+                </StackPanel>
+                <ListBox x:Name="FavoritsListBox" ItemsSource="{Binding MVM.CollectionVM.Favorites}"/>
             </StackPanel>
-            <ListBox x:Name="FavoritsListBox" FocusVisualStyle="{x:Null}" ScrollViewer.CanContentScroll="False"
-                    ItemsSource="{Binding MVM.CollectionVM.Favorites}" Background="{x:Null}" BorderBrush="{x:Null}"
-                    ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top" 
-                    SelectionMode="Extended" ItemTemplate="{StaticResource ListBoxItemCoverTemplate}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.Template>
-                    <ControlTemplate>
-                        <ItemsPresenter />
-                    </ControlTemplate>
-                </ListBox.Template>
-            </ListBox>
 
-            <StackPanel Orientation="Horizontal" Margin="30,0">
-                <materialDesign:PackIcon Kind="History" Height="28" Width="20" VerticalAlignment="Bottom"/>
-                <TextBlock Text="Recently Opened" Style="{StaticResource HomeSectionTitle}"/>
+            <StackPanel>
+                <StackPanel.Resources>
+                    <ContextMenu x:Key="MultiCodexContextMenu" 
+                    DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
+                        <MenuItem Header="Open Selected" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.OpenSelectedCodicesCommand, Source={StaticResource CodexProxy}}"/>
+                        <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.EditCodicesCommand, Source={StaticResource CodexProxy}}"/>
+                        <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+                            <MenuItem.ItemContainerStyle>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="MenuItem.Command" Value="{Binding Path=Data.MoveToCollectionCommand, Source={StaticResource CodexProxy}}"/>
+                                    <Setter Property="MenuItem.CommandParameter">
+                                        <Setter.Value>
+                                            <MultiBinding Converter="{StaticResource MultiParamConverter}">
+                                                <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
+                                                <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}"/>
+                                            </MultiBinding>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </MenuItem.ItemContainerStyle>
+                        </MenuItem>
+                        <MenuItem Header="Delete All" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.DeleteCodexCommand, Source={StaticResource CodexProxy}}"/>
+                    </ContextMenu>
+                </StackPanel.Resources>
+                <StackPanel Orientation="Horizontal" Margin="30,0">
+                    <materialDesign:PackIcon Kind="History" Height="28" Width="20" VerticalAlignment="Bottom"/>
+                    <TextBlock Text="Recently Opened" Style="{StaticResource HomeSectionTitle}"/>
+                </StackPanel>
+                <ListBox x:Name="RecOpendListBox" ItemsSource="{Binding MVM.CollectionVM.RecentCodices}"/>
             </StackPanel>
-            <ListBox x:Name="RecOpendListBox" FocusVisualStyle="{x:Null}" 
-                ItemsSource="{Binding MVM.CollectionVM.RecentCodices}" Background="{x:Null}" BorderBrush="{x:Null}"
-                ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top" 
-                SelectionMode="Extended" ItemTemplate="{StaticResource ListBoxItemCoverTemplate}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.Template>
-                    <ControlTemplate>
-                        <ItemsPresenter />
-                    </ControlTemplate>
-                </ListBox.Template>
-            </ListBox>
 
-            <StackPanel Orientation="Horizontal" Margin="30,0">
-                <materialDesign:PackIcon Kind="BookOpenBlankVariant" Height="28" Width="20" VerticalAlignment="Bottom"/>
-                <TextBlock Text="Most Opened" Style="{StaticResource HomeSectionTitle}"/>
-            </StackPanel>
-            <ListBox x:Name="MostOpentListBox" FocusVisualStyle="{x:Null}"
-                    ItemsSource="{Binding MVM.CollectionVM.MostOpenedCodices}" Background="{x:Null}" BorderBrush="{x:Null}"
-                    ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top" 
-                    SelectionMode="Extended" ItemTemplate="{StaticResource ListBoxItemCoverTemplate}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.Template>
-                    <ControlTemplate>
-                        <ItemsPresenter />
-                    </ControlTemplate>
-                </ListBox.Template>
-            </ListBox>
 
-            <StackPanel Orientation="Horizontal" Margin="30,0">
-                <materialDesign:PackIcon Kind="BookPlus" Height="28" Width="20" VerticalAlignment="Bottom"/>
-                <TextBlock Text="Recently Added" Style="{StaticResource HomeSectionTitle}"/>
+            <StackPanel>
+                <StackPanel.Resources>
+                    <ContextMenu x:Key="MultiCodexContextMenu" 
+                    DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
+                        <MenuItem Header="Open Selected" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.OpenSelectedCodicesCommand, Source={StaticResource CodexProxy}}"/>
+                        <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.EditCodicesCommand, Source={StaticResource CodexProxy}}"/>
+                        <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+                            <MenuItem.ItemContainerStyle>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="MenuItem.Command" Value="{Binding Path=Data.MoveToCollectionCommand, Source={StaticResource CodexProxy}}"/>
+                                    <Setter Property="MenuItem.CommandParameter">
+                                        <Setter.Value>
+                                            <MultiBinding Converter="{StaticResource MultiParamConverter}">
+                                                <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
+                                                <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}"/>
+                                            </MultiBinding>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </MenuItem.ItemContainerStyle>
+                        </MenuItem>
+                        <MenuItem Header="Delete All" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.DeleteCodexCommand, Source={StaticResource CodexProxy}}"/>
+                    </ContextMenu>
+                </StackPanel.Resources>
+                <StackPanel Orientation="Horizontal" Margin="30,0">
+                    <materialDesign:PackIcon Kind="BookOpenBlankVariant" Height="28" Width="20" VerticalAlignment="Bottom"/>
+                    <TextBlock Text="Most Opened" Style="{StaticResource HomeSectionTitle}"/>
+                </StackPanel>
+                <ListBox x:Name="MostOpentListBox" ItemsSource="{Binding MVM.CollectionVM.MostOpenedCodices}"/>
             </StackPanel>
-            <ListBox x:Name="RecAddedListBox" FocusVisualStyle="{x:Null}" 
-                ItemsSource="{Binding MVM.CollectionVM.RecentlyAddedCodices}" Background="{x:Null}" BorderBrush="{x:Null}"
-                ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top" 
-                SelectionMode="Extended" ItemTemplate="{StaticResource ListBoxItemCoverTemplate}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.Template>
-                    <ControlTemplate>
-                        <ItemsPresenter />
-                    </ControlTemplate>
-                </ListBox.Template>
-            </ListBox>
+
+            <StackPanel>
+                <StackPanel.Resources>
+                    <ContextMenu x:Key="MultiCodexContextMenu" 
+                    DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
+                        <MenuItem Header="Open Selected" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.OpenSelectedCodicesCommand, Source={StaticResource CodexProxy}}"/>
+                        <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.EditCodicesCommand, Source={StaticResource CodexProxy}}"/>
+                        <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+                            <MenuItem.ItemContainerStyle>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="MenuItem.Command" Value="{Binding Path=Data.MoveToCollectionCommand, Source={StaticResource CodexProxy}}"/>
+                                    <Setter Property="MenuItem.CommandParameter">
+                                        <Setter.Value>
+                                            <MultiBinding Converter="{StaticResource MultiParamConverter}">
+                                                <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
+                                                <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}"/>
+                                            </MultiBinding>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </MenuItem.ItemContainerStyle>
+                        </MenuItem>
+                        <MenuItem Header="Delete All" CommandParameter="{Binding}"
+                Command="{Binding Path=Data.DeleteCodexCommand, Source={StaticResource CodexProxy}}"/>
+                    </ContextMenu>
+                </StackPanel.Resources>
+                <StackPanel Orientation="Horizontal" Margin="30,0">
+                    <materialDesign:PackIcon Kind="BookPlus" Height="28" Width="20" VerticalAlignment="Bottom"/>
+                    <TextBlock Text="Recently Added" Style="{StaticResource HomeSectionTitle}"/>
+                </StackPanel>
+                <ListBox x:Name="RecAddedListBox" ItemsSource="{Binding MVM.CollectionVM.RecentlyAddedCodices}"/>
+            </StackPanel>   
         </StackPanel>
+            
     </ScrollViewer>
 </UserControl>
