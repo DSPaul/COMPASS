@@ -45,7 +45,9 @@ namespace COMPASS.ViewModels
                 Properties.Settings.Default.justUpdated = false;
             }
 
-            MagickNET.SetGhostscriptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"gs"));
+            //install ghostscript to make your life easy
+            if (!Directory.Exists(@"C:\Program Files\gs"))
+                MagickNET.SetGhostscriptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"gs"));
 
             //Commands
             ChangeFileViewCommand = new RelayCommand<CodexLayout>(ChangeFileView);
@@ -150,9 +152,11 @@ namespace COMPASS.ViewModels
         
         private void InitAutoUpdates()
         {
+            //Set URL of xml file
+            AutoUpdater.AppCastURL = Constants.AutoUpdateXMLPath;
             //Disable skip
             AutoUpdater.ShowSkipButton = false;
-            //AutoUpdater.InstalledVersion = new("0.1.0"); //for testing only
+            AutoUpdater.InstalledVersion = new("0.2.0"); //for testing only
             //set remind later time so users can go back to the app in one click
             AutoUpdater.LetUserSelectRemindLater = false;
             AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
@@ -163,11 +167,12 @@ namespace COMPASS.ViewModels
             DispatcherTimer timer = new(){ Interval = TimeSpan.FromHours(4) };
             timer.Tick += delegate
             {
-                CheckForUpdates();
+                AutoUpdater.Mandatory = false;
+                AutoUpdater.Start();
             };
             timer.Start();
             //check at startup
-            CheckForUpdates();
+            AutoUpdater.Start();
         }
        
         public void InitLogger()
@@ -422,7 +427,8 @@ namespace COMPASS.ViewModels
         public ActionCommand CheckForUpdatesCommand { get; init; }
         private void CheckForUpdates()
         {
-            AutoUpdater.Start("https://raw.githubusercontent.com/DSPAUL/COMPASS/master/versionInfo.xml");
+            AutoUpdater.Mandatory = true;
+            AutoUpdater.Start();
         }
         #endregion
     }

@@ -10,5 +10,6 @@ namespace COMPASS.Models
         public static readonly string PreferencesFilePath = Path.Combine(CompassDataPath,"Preferences.xml");
         public static readonly string WebDriverDirectoryPath = Path.Combine(CompassDataPath,"WebDrivers");
         public static readonly string InstallersPath = Path.Combine(CompassDataPath,"Installers");
+        public static readonly string AutoUpdateXMLPath = "https://raw.githubusercontent.com/DSPAUL/COMPASS/master/versionInfo.xml";
     }
 }

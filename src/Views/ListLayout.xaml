@@ -24,7 +24,6 @@
         <DataGrid.Resources>
             <Tools:BindingProxy x:Key="LayoutProxy" Data="{Binding}" />
             <Tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
-            <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
             <Style TargetType="{x:Type DataGridColumnHeader}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -76,34 +75,6 @@
                 <Setter Property="FontSize" Value="16"/>
                 <Setter Property="Margin" Value="0,0,10,0"/>
             </Style>
-            <!--ContextMenu needs to be in every view where it is used instead of in a resource dict because 
-            in resource dict it "sticks" to first view and the binding target for SelectedItems doesn't update when the view changes
-            https://github.com/dotnet/wpf/issues/4128-->
-            <ContextMenu x:Key="MultiCodexContextMenu" 
-                     DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
-                <MenuItem Header="Open Selected" CommandParameter="{Binding}"
-                  Command="{Binding Path=Data.OpenSelectedCodicesCommand, Source={StaticResource CodexProxy}}"/>
-                <MenuItem Header="Bulk Edit" CommandParameter="{Binding}"
-                  Command="{Binding Path=Data.EditCodicesCommand, Source={StaticResource CodexProxy}}"/>
-                <MenuItem Header="Move All to Collection" ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
-                    <MenuItem.ItemContainerStyle>
-                        <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                            <Setter Property="MenuItem.Command" Value="{Binding Path=Data.MoveToCollectionCommand, Source={StaticResource CodexProxy}}"/>
-                            <Setter Property="MenuItem.CommandParameter">
-                                <Setter.Value>
-                                    <MultiBinding Converter="{StaticResource MultiParamConverter}">
-                                        <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
-                                        <Binding Path="SelectedItems" RelativeSource="{RelativeSource FindAncestor,AncestorType={x:Type Selector}}"/>
-                                    </MultiBinding>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </MenuItem.ItemContainerStyle>
-                </MenuItem>
-                <MenuItem Header="Delete All" CommandParameter="{Binding}"
-                  Command="{Binding Path=Data.DeleteCodexCommand, Source={StaticResource CodexProxy}}"/>
-            </ContextMenu>
         </DataGrid.Resources>
         <DataGrid.ItemContainerStyle>
             <Style TargetType="{x:Type DataGridRow}">

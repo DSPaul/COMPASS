@@ -18,11 +18,12 @@ namespace COMPASS.Tools
             None = 0,
             Manual = 1,
             File = 2,
-            GmBinder = 4,
-            Homebrewery = 8,
-            DnDBeyond = 16,
-            GoogleDrive = 32,
-            ISBN = 64
+            Folder = 4,
+            GmBinder = 8,
+            Homebrewery = 16,
+            DnDBeyond = 32,
+            GoogleDrive = 64,
+            ISBN = 128
         }
 
         public enum FilterType

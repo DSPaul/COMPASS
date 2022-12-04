@@ -276,10 +276,19 @@ namespace COMPASS
         //get cover from image
         public static void GetCoverFromImage(string imagepath, Codex destfile)
         {
-            using MagickImage image = new(imagepath);
-            if (image.Width > 1000) image.Resize(1000, 0);
-            image.Write(destfile.CoverArt);
-            CreateThumbnail(destfile);
+            try 
+            {
+                using MagickImage image = new(imagepath);
+                if (image.Width > 1000) image.Resize(1000, 0);
+                image.Write(destfile.CoverArt);
+                CreateThumbnail(destfile);
+            }
+            catch (Exception ex)
+            {
+                //will fail if image is corrupt
+                Logger.log.Error(String.Format("Could not get cover from {0}", imagepath));
+                Logger.log.Error(ex.InnerException);
+            }
         }
 
         //create thumbnail from cover
