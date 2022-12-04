@@ -1,5 +1,20 @@
 # CHANGELOG
+## COMPASS v0.8.0 (04 December 2022)
 
+### Fixes
+
+- Fixed the no-internet indicator being too small.
+- Fixed crashes when importing corrupted files.
+- Fixed multiple bugs related to the contextmenu on the home layout.
+- Fixed "check for updates button" not doing anything if you chose to remind later.
+
+### New Features
+
+- Added importing entire directories at once, including subdirectories. You can choose which filetypes to include in the import.
+
+### Enhancements
+
+- Overhauled the contextmenu when multiple books are selected, including clearer text and icons.
 ## COMPASS v0.7.0 (19 October 2022)
 
 ### Fixes
