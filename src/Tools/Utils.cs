@@ -118,7 +118,7 @@ namespace COMPASS.Tools
         }
         public static string FindFileDirectory(string fileName, string rootDirectory)
         {
-            string filePath = Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories)[0];
+            string filePath = Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories).Last();
             string parentDirectory = Path.GetDirectoryName(filePath);
             return parentDirectory;
         }
