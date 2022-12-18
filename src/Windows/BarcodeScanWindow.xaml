@@ -13,8 +13,8 @@
     <Grid>
         <StackPanel x:Name="cameraLoading" HorizontalAlignment="Center"
                 VerticalAlignment="Center" Orientation="Vertical">
-            <!--<Image gif:ImageBehavior.AnimatedSource="../Media/LoadingAnimation.gif" 
-                   Width="100" Height="100"/>-->
+            <Image gif:ImageBehavior.AnimatedSource="../Media/LoadingAnimation.gif" 
+                   Width="100" Height="100"/>
             <TextBlock Text="Webcam loading..." />
 
         </StackPanel>

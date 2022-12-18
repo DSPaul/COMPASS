@@ -20,17 +20,17 @@
 
     <Content Include="COMPASS.ico" />
 
-    <Content Include="Media\CompassLogo.png">
+    <Resource Include="Media\CompassLogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
 
     <Content Include="Media\CoverPlaceholder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Media\LoadingAnimation.gif">
+    <Resource Include="Media\LoadingAnimation.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
 
     <SplashScreen Include="Media\CompassFull.png" />
 
