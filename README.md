@@ -7,7 +7,7 @@ The Codex Organizer to make Pen-and-paper Adventuring Super Simple or COMPASS fo
 
 If you are an RPG fan like me, you probably have lots of pdf's both homebrew and official from sites such as [Drivethrough RPG](https://www.drivethrurpg.com/), [Humble Bundle Books](https://www.humblebundle.com/books),  [GM Binder](https://www.gmbinder.com/), [Homebrewery](https://homebrewery.naturalcrit.com/), [itch.io](https://itch.io/books/genre-rpg) or content from subreddits, patreon creators and kickstarters. Or perhaps you own them in digital form on sites such as [D&D Beyond](https://www.dndbeyond.com/sources#Sourcebooks) or [Roll20](https://roll20.net/compendium/dnd5e/BookIndex).  Keeping track of all these books is hard and nothing is more frustrating than franticly clicking trough folders in search of that one statblock you need in the heat of combat. COMPASS solves this problem by bringing all of your books together in one place that is easily searchable, sortable and filterable. 
 
-## Features
+## :toolbox: Features
 
 - **Unify** your digital tabletop RPG sourcebook library so everything is in one place.
 - **Import** any file or link to a URL for online sources. You can also manually add books to include your physical collection.
@@ -28,20 +28,25 @@ If you are an RPG fan like me, you probably have lots of pdf's both homebrew and
 - Have **Quick Access** to your books thanks to the Home view which lists your favorites, recently opened, most opened and recently added books for your convenience.
 - **Group** your books into collections. Each collection has their own list of tags, authors, ect. and helps you keep an overview by reducing the amount of books that are on your screen at once.
 
-## Why am I getting a Windows Defender SmartScreen Warning when installing COMPASS?
+## :warning: Why am I getting a Windows Defender SmartScreen Warning when installing COMPASS?
 
-The COMPASS files are not digitally signed which results in these kinds of warnings. Signing code is expensive and not worth it with a small user base. If this project ever takes off and gains a large amount of users, I will look into this again.
+The COMPASS files are not digitally signed which results in these kinds of warnings. Signing code is expensive and not worth it with a small user base. If this project ever takes off and gains a large amount of users, I will look into this again. If you do not trust the executable, you can always build the code from source. You will need to install ghostscript seperatly if you want pdf thumbnails, as it is included in installer but not in the repo. 
 
-## Supporting and Contributing
+## :construction: Contributing
 
-I created this project to solve a problem I had and as a learning opportunity. I eventually chose to release it publicly and open source because I believe others might find it useful as well. If you like this project and would like to support it, there are many ways you can contribute.
+I created this project to solve a problem I had and as a learning opportunity. I eventually chose to release it publicly and open source because I believe others might find it useful as well. If you like this project and would like to contribute, there are many ways you can do so.
 
-- If you find a bug, please open a github issue and report it there so it can be fixed. Please include a clear explanation the nature of the bug and if possible steps to reproduce the it.
-- If you would like to contribute any code, please communicate what you plan to working on so we don't work on the same things at the same time. All pull requests should be made against the dev branch. Dev gets merged into master with every new release.
+- If you would like to contribute any code, please communicate what you plan to working on so we don't work on the same things at the same time. All pull requests should be made against the dev branch. Dev gets merged into master with every new release. You will also have to install ghostscript as it is not included in the repo due to licencing but it is required for compass to build. 
+- If you find a bug, please open a github issue and report it there so it can be fixed. Please include a clear explanation the nature of the bug and if possible steps to reproduce it.
 - If you have ideas for new features or improvements, you can put those in a github issue as well.
+
+## :heart: Support the project
+If you would to support the project, you can do so in multiple ways.
+- If you have any ideas of probems, you can contribute as outlined above, it helps a lot.
+- If you have friends or family of which you know they would enjoy it, feel free to share it with them. 
 - If you would like to financially support me so I can justify spending more time on this, help with potential costs such as code signing or just show some love, you can buy me a coffee over on [ko-fi](https://ko-fi.com/pauldesmul), I would greatly appreciate it.
 
-## Screenshots
+## :camera: Screenshots
 
 ![Home Layout](Docs/Screenshots/Home_Layout.png)
 ![List Layout](Docs/Screenshots/List_Layout.png)
