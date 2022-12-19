@@ -8,10 +8,13 @@ using System.Windows.Data;
 using System.Windows.Media;
 using FuzzySharp;
 using COMPASS.Tools;
+using COMPASS.ViewModels.Commands;
+using GongSolutions.Wpf.DragDrop;
+using System.Windows;
 
 namespace COMPASS.ViewModels
 {
-    public class CollectionViewModel : ViewModelBase
+    public class CollectionViewModel : ViewModelBase, IDropTarget
     {
 
         //Constuctor
@@ -88,7 +91,6 @@ namespace COMPASS.ViewModels
             }
         }
 
-
         public void ClearFilters()
         {
             SearchTerm = "";
@@ -132,8 +134,10 @@ namespace COMPASS.ViewModels
             }
 
             UpdateActiveFiles();
-        } 
+        }
 
+        private RelayCommand<Tag> _addTagFilterCommand;
+        public RelayCommand<Tag> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilter);
         public void AddTagFilter(Tag t)
         {
             //only add if not yet in activetags
@@ -342,6 +346,26 @@ namespace COMPASS.ViewModels
             ActiveFiles.Remove(c);
         }
 
+        #endregion
+
+        #region Drag Drop Handlers
+        //Drop on Treeview Behaviour
+        void IDropTarget.DragOver(IDropInfo dropInfo)
+        {
+            //GongSolutions.Wpf.DragDrop.DragDrop.DefaultDropHandler.DragOver(dropInfo);
+            TreeViewNode DraggedTVN = (TreeViewNode)dropInfo.Data;
+            if (!DraggedTVN.Tag.IsGroup)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+        }
+        void IDropTarget.Drop(IDropInfo dropInfo)
+        {
+            //DragDrop.DefaultDropHandler.Drop(dropInfo);
+            TreeViewNode DraggedTVN = (TreeViewNode)dropInfo.Data;
+            AddTagFilter(DraggedTVN.Tag);
+        }
         #endregion
     }
 }

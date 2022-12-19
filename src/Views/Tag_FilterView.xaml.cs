@@ -26,14 +26,6 @@ namespace COMPASS.Views
         {
             InitializeComponent();
         }
-        public void TagTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            TreeViewNode selectednode = (TreeViewNode)e.NewValue;
-            if (selectednode == null) return;
-            if (selectednode.Tag.IsGroup) return;
-            ViewModelBase.MVM.CollectionVM.AddTagFilter(selectednode.Tag);
-            selectednode.Selected = false;
-        }
 
         private void TagTree_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
