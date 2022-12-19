@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
@@ -43,6 +44,11 @@ namespace COMPASS.ViewModels
         }
 
         private bool CoverArtChanged = false;
+        private bool _showLoading = false;
+        public bool ShowLoading {
+            get { return _showLoading; }
+            set { SetProperty(ref _showLoading, value); } 
+        }
 
         public CreatableLookUpContract Contract { get; set; } = new();
 
@@ -100,9 +106,11 @@ namespace COMPASS.ViewModels
 
         private ActionCommand _fetchCoverCommand;
         public ActionCommand FetchCoverCommand => _fetchCoverCommand ??= new(FetchCover);
-        private void FetchCover()
+        private async void FetchCover()
         {
-            CoverFetcher.GetCover(TempCodex);
+            ShowLoading = true;
+            await Task.Factory.StartNew(() => CoverFetcher.GetCover(TempCodex));
+            ShowLoading = false;
             RefreshCover();
         }
 

@@ -9,6 +9,7 @@
         xmlns:Models ="clr-namespace:COMPASS.Models"
         xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
         xmlns:Tools ="clr-namespace:COMPASS.Tools" 
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
         xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary"
         d:DataContext="{d:DesignInstance Type=viewmodels:CodexEditViewModel}"
@@ -83,31 +84,28 @@
             <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
         </Grid.Resources>
 
-        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" x:Name="CoverIm" Margin="10" Width="300">
+        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" x:Name="CoverIm" Margin="10" Width="300"
+               Visibility="{Binding ShowLoading, UpdateSourceTrigger=PropertyChanged, 
+            Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
             <Image.Source>
                 <Binding Path="TempCodex.CoverArt" Converter="{StaticResource UriToBitmapConverter}" 
                          TargetNullValue="Media\CoverPlaceholder.png">
                     <Binding.ConverterParameter>
-                        <sys:Boolean>true</sys:Boolean>
+                        <sys:Boolean>true</sys:Boolean> <!-- parameter tells converter to return full res version -->
                     </Binding.ConverterParameter>
                 </Binding>
             </Image.Source>
         </Image>
+        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Margin="10" Width="150" Height="150"
+               gif:ImageBehavior.AnimatedSource="../Media/LoadingAnimation.gif" 
+               Visibility="{Binding ShowLoading, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ToVisibilityConverter}}"/>
 
         <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
             <TextBlock Text="Cover:"/>
-            <Button Background="{StaticResource ButtonBackground}" Command="{Binding FetchCoverCommand}" Margin="10,0">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Refresh"/>
-                    <TextBlock Text="Fetch"/>
-                </StackPanel>
-            </Button>
-            <Button Background="{StaticResource ButtonBackground}" Command="{Binding ChooseCoverCommand}"  Margin="10,0">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="FolderMultipleImage"/>
-                    <TextBlock Text="Browse" Margin="5,3,0,3"/>
-                </StackPanel>
-            </Button>
+            <Button Content="Fetch" Tools:AP.IconKind="ImageSyncOutline" Margin="5,0"
+                Command="{Binding FetchCoverCommand}" Style="{StaticResource IconTextButton}" />
+            <Button Content="Browse" Tools:AP.IconKind="BookImage" Margin="5,0"
+                Command="{Binding ChooseCoverCommand}" Style="{StaticResource IconTextButton}"/>
         </StackPanel>
 
         <!--Invisible thumbnail here as well so it loads and changes if cover changes -->
@@ -123,8 +121,7 @@
         </Image>
 
         <Rectangle Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" Fill="{StaticResource Separator}" Width="3" Margin="10,0"/>
-
-
+        
         <TabControl Grid.Column="2" Grid.Row="1" Background="{x:Null}" BorderThickness="0,1,0,0"
                     Padding="0,5">
             <TabControl.Resources>
@@ -313,24 +310,15 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Background="{StaticResource CancelFill}" Name="DeleteFileBtn" Command="{Binding DeleteCodexCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Delete" />
-                    <TextBlock Text="Delete"/>
-                </StackPanel>
-            </Button>
-            <Button Grid.Column="2" Name="OKBtn" Command ="{Binding OKCommand}"  Background="{StaticResource AcceptFill}">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Check"/>
-                    <TextBlock Text="OK"/>
-                </StackPanel>
-            </Button>
-            <Button Grid.Column="3" Name="CancelBtn" Command="{Binding CancelCommand}" Background="{StaticResource CancelFill}">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="WindowClose"/>
-                    <TextBlock Text="Cancel"/>
-                </StackPanel>
-            </Button>
+            <Button Grid.Column="0" Content="Delete" Tools:AP.IconKind="Delete"
+                    Name="DeleteFileBtn" Command="{Binding DeleteCodexCommand}" Margin="5"
+                    Background="{StaticResource CancelFill}" Style="{StaticResource IconTextButton}"/>
+            <Button Grid.Column="2" Content="OK" Tools:AP.IconKind="Check"
+                    Name="OKBtn" Command ="{Binding OKCommand}"  Margin="5"
+                    Background="{StaticResource AcceptFill}" Style="{StaticResource IconTextButton}"/>
+            <Button Grid.Column="3" Content="Cancel" Tools:AP.IconKind="WindowClose"
+                    Name="CancelBtn" Command="{Binding CancelCommand}" Margin="5"
+                    Background="{StaticResource CancelFill}" Style="{StaticResource IconTextButton}"/>
         </Grid>
         <!--#endregion-->
     </Grid>
