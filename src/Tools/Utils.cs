@@ -23,7 +23,7 @@ namespace COMPASS.Tools
             return tempID;
         }
 
-        //put all nodes of a tree in a flat enumerable
+        //put all childeren of object in a flat enumerable
         public static IEnumerable<T> FlattenTree<T>(IEnumerable<T> l) where T: IHasChilderen<T>
         {
             var result = new List<T>(l);
