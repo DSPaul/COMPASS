@@ -187,69 +187,56 @@ namespace COMPASS.ViewModels
             //enumerate over all filter types
             foreach (Enums.FilterType FT in Enum.GetValues(typeof(Enums.FilterType)))
             {
-                //List filter values for current filter type
-                List<object> FilterValues = new(
-                    ActiveFilters
-                    .Where(filter => (Enums.FilterType)filter.GetGroup() == FT)
-                    .Select(t => t.FilterValue)
-                    );
-                List<object> ExcludedFilterValues = new(
-                    DeActiveFilters
-                    .Where(filter => (Enums.FilterType)filter.GetGroup() == FT)
-                    .Select(t => t.FilterValue)
-                    );
-                //skip iteration if no filters of this type
-                if (FilterValues.Count + ExcludedFilterValues.Count == 0) continue;
-
-                bool exclude;
-                IEnumerable<Codex> ExcludedCodices = new List<Codex>(); // generic IEnumerable doesn't have constructor so list instead
-                switch (FT)
-                {
-                    case Enums.FilterType.Search:
-                        ExcludedCodices = GetSearchFilteredCodices((string)FilterValues.FirstOrDefault())
-                            .Concat(GetSearchFilteredCodices((string)ExcludedFilterValues.FirstOrDefault(),false));
-                        break;
-                    case Enums.FilterType.Author:
-                        //exclude codex if intersection between list of authors of codex and list of author filters is empty,
-                        //causes problem if list of author filters is empty because then intersection is also empty.
-                        //also exclude codex if overlap between authors of the file and excluded author filters, 
-                        // same problem with empty intersection if no such filters, so if statements needed
-                        if (FilterValues.Count > 0) ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Intersect(f.Authors).Any());
-                        if (ExcludedFilterValues.Count > 0) ExcludedCodices = ExcludedCodices.Concat(_cc.AllCodices.Where(f => ExcludedFilterValues.Intersect(f.Authors).Any()));
-                        break;
-                    case Enums.FilterType.Publisher:
-                        if (FilterValues.Count > 0) ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Contains(f.Publisher));
-                        if (ExcludedFilterValues.Count > 0) ExcludedCodices = ExcludedCodices.Concat(_cc.AllCodices.Where(f => ExcludedFilterValues.Contains(f.Publisher)));
-                        break;
-                    case Enums.FilterType.StartReleaseDate:
-                        ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate < (DateTime?)FilterValues.FirstOrDefault())
-                        .Concat(_cc.AllCodices.Where(f => f.ReleaseDate >= (DateTime?)ExcludedFilterValues.FirstOrDefault()));
-                        break;
-                    case Enums.FilterType.StopReleaseDate:
-                        ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate > (DateTime?)FilterValues.FirstOrDefault())
-                        .Concat(_cc.AllCodices.Where(f => f.ReleaseDate <= (DateTime?)ExcludedFilterValues.FirstOrDefault()));
-                        break;
-                    case Enums.FilterType.MinimumRating:
-                        ExcludedCodices = _cc.AllCodices.Where(f => f.Rating < (int?)FilterValues.FirstOrDefault())
-                        .Concat(_cc.AllCodices.Where(f => f.Rating >= (int?)ExcludedFilterValues.FirstOrDefault()));
-                        break;
-                    case Enums.FilterType.OfflineSource:
-                        exclude = (bool)FilterValues.FirstOrDefault();
-                        ExcludedCodices = exclude ? _cc.AllCodices.Where(f => f.HasOfflineSource()) : _cc.AllCodices.Where(f => !f.HasOfflineSource());
-                        break;
-                    case Enums.FilterType.OnlineSource:
-                        exclude = (bool)FilterValues.FirstOrDefault();
-                        ExcludedCodices = exclude ? _cc.AllCodices.Where(f => f.HasOnlineSource()) :  _cc.AllCodices.Where(f => !f.HasOnlineSource());
-                        break;
-                    case Enums.FilterType.PhysicalSource:
-                        exclude = (bool)FilterValues.FirstOrDefault();
-                        ExcludedCodices = exclude ? _cc.AllCodices.Where(f => f.Physically_Owned) : _cc.AllCodices.Where(f => !f.Physically_Owned);
-                        break;
-                }
-                ExcludedCodicesByFilter = ExcludedCodicesByFilter.Union(ExcludedCodices).ToHashSet();
+                ExcludedCodicesByFilter = ExcludedCodicesByFilter.Union(GetFieldFilteredCodices(FT, ActiveFilters)).ToHashSet();
+                ExcludedCodicesByFilter = ExcludedCodicesByFilter.Union(GetFieldFilteredCodices(FT, DeActiveFilters,true)).ToHashSet();
             }
             UpdateActiveFiles();
         }
+
+        public List<Codex> GetFieldFilteredCodices(Enums.FilterType filtertype, IEnumerable<FilterTag> FilterTags, bool invert = false)
+        {
+            List<object> FilterValues = new(
+                    FilterTags
+                    .Where(filter => (Enums.FilterType)filter.GetGroup() == filtertype)
+                    .Select(t => t.FilterValue)
+                    );
+
+            if (FilterValues.Count == 0) return new();
+
+            IEnumerable<Codex> ExcludedCodices = new List<Codex>(); // generic IEnumerable doesn't have constructor so list instead
+            switch (filtertype)
+            {
+                case Enums.FilterType.Search:
+                    ExcludedCodices = GetSearchFilteredCodices((string)FilterValues.FirstOrDefault());
+                    break;
+                case Enums.FilterType.Author:
+                    ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Intersect(f.Authors).Any());
+                    break;
+                case Enums.FilterType.Publisher:
+                    ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Contains(f.Publisher));
+                    break;
+                case Enums.FilterType.StartReleaseDate:
+                    ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate < (DateTime?)FilterValues.FirstOrDefault());
+                    break;
+                case Enums.FilterType.StopReleaseDate:
+                    ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate > (DateTime?)FilterValues.FirstOrDefault());
+                    break;
+                case Enums.FilterType.MinimumRating:
+                    ExcludedCodices = _cc.AllCodices.Where(f => f.Rating < (int?)FilterValues.FirstOrDefault());
+                    break;
+                case Enums.FilterType.OfflineSource:
+                    ExcludedCodices = _cc.AllCodices.Where(f => !f.HasOfflineSource());
+                    break;
+                case Enums.FilterType.OnlineSource:
+                    ExcludedCodices = _cc.AllCodices.Where(f => !f.HasOnlineSource());
+                    break;
+                case Enums.FilterType.PhysicalSource:
+                    ExcludedCodices = _cc.AllCodices.Where(f => !f.Physically_Owned);
+                    break;
+            }
+            return invert ? _cc.AllCodices.Except(ExcludedCodices).ToList() : ExcludedCodices.ToList();
+        }
+        
         public HashSet<Codex> GetSearchFilteredCodices(string searchterm, bool returnExcludedCodices = true)
         {
             HashSet<Codex> ExcludedCodicesBySearch = new();
