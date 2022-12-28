@@ -966,7 +966,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="TagDeletableTemplate">
-        <Button Style="{x:Null}" Command="{Binding DataContext.CollectionVM.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+        <Button Style="{x:Null}" Command="{Binding DataContext.CollectionVM.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                 CommandParameter="{Binding}" Cursor="Hand">
             <Button.Template>
                 <ControlTemplate>
@@ -995,11 +995,11 @@
     </DataTemplate>
 
     <DataTemplate x:Key="FilterTagTemplate">
-        <Button Style="{x:Null}" Command="{Binding DataContext.AddSourceFilterCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                CommandParameter="{Binding}" HorizontalAlignment="Center" Cursor="Hand">
+        <Button Style="{x:Null}" Command="{Binding DataContext.AddSourceFilterCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                CommandParameter="{Binding}" Cursor="Hand">
             <Button.Template>
                 <ControlTemplate>
-                    <Border CornerRadius="5" Margin="2,3">
+                    <Border CornerRadius="5" Margin="5">
                         <Border.Background>
                             <SolidColorBrush Color="{Binding BackgroundColor}"/>
                         </Border.Background>

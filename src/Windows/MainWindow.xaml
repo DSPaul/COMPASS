@@ -613,21 +613,22 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="INCLUDE:" VerticalAlignment="Center" Margin="5 2" Foreground="Gray" FontSize="20"/>
-                        <ListBox x:Name="CurrentTagList" BorderBrush="{x:Null}" Background="{x:Null}" ItemTemplate="{StaticResource TagDeletableTemplate}"
-                             Grid.Column="1" dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding CollectionVM}" >
-                            <ListBox.ItemsPanel>
+                        <ItemsControl x:Name="CurrentTagList" ItemTemplate="{StaticResource TagDeletableTemplate}"
+                             Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center"
+                             dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding CollectionVM}" >
+                            <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="Horizontal" MaxWidth="{Binding ActualWidth, ElementName=CurrentTagList}"/>
                                 </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <ListBox.ItemsSource>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemsSource>
                                 <CompositeCollection>
                                     <CollectionContainer Collection="{Binding Source={StaticResource Tags}}" />
                                     <CollectionContainer Collection="{Binding Source={StaticResource Filters}}" />
                                     <CollectionContainer Collection="{Binding Source={StaticResource Empty}}" />
                                 </CompositeCollection>
-                            </ListBox.ItemsSource>
-                        </ListBox>
+                            </ItemsControl.ItemsSource>
+                        </ItemsControl>
                     </Grid>
                     
                 </Border>
@@ -643,20 +644,21 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="EXCLUDE:" VerticalAlignment="Center" Margin="5 2" Foreground="Gray" FontSize="20"/>
-                        <ListBox x:Name="CurrentExcludedTagList" BorderBrush="{x:Null}" Background="{x:Null}" ItemTemplate="{StaticResource TagDeletableTemplate}"
-                             Grid.Column="1" dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding CollectionVM}" >
-                            <ListBox.ItemsPanel>
+                        <ItemsControl x:Name="CurrentExcludedTagList" ItemTemplate="{StaticResource TagDeletableTemplate}"
+                             Grid.Column="1" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                            dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding CollectionVM}" >
+                            <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="Horizontal" MaxWidth="{Binding ActualWidth, ElementName=CurrentExcludedTagList}"/>
                                 </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <ListBox.ItemsSource>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemsSource>
                                 <CompositeCollection>
                                     <CollectionContainer Collection="{Binding Source={StaticResource NegTags}}"/>
                                     <CollectionContainer Collection="{Binding Source={StaticResource NegFilters}}"/>
                                 </CompositeCollection>
-                            </ListBox.ItemsSource>
-                        </ListBox>
+                            </ItemsControl.ItemsSource>
+                        </ItemsControl>
                     </Grid>
                 </Border>
                 <Button Command="{Binding CollectionVM.ClearFiltersCommand}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FilterRemove" 
