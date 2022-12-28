@@ -605,7 +605,7 @@
                     <Border.Resources>
                         <CollectionViewSource x:Key="Tags" Source="{Binding CollectionVM.ActiveTags}"/>
                         <CollectionViewSource x:Key="Filters" Source="{Binding CollectionVM.ActiveFilters}"/>
-                        <CollectionViewSource x:Key="Searches" Source="{Binding CollectionVM.SearchFilters}"/>
+                        <CollectionViewSource x:Key="Empty" Source="{x:Null}"/>
                     </Border.Resources>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -624,7 +624,7 @@
                                 <CompositeCollection>
                                     <CollectionContainer Collection="{Binding Source={StaticResource Tags}}" />
                                     <CollectionContainer Collection="{Binding Source={StaticResource Filters}}" />
-                                    <CollectionContainer Collection="{Binding Source={StaticResource Searches}}" />
+                                    <CollectionContainer Collection="{Binding Source={StaticResource Empty}}" />
                                 </CompositeCollection>
                             </ListBox.ItemsSource>
                         </ListBox>

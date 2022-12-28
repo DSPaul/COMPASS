@@ -13,6 +13,7 @@ using WebDriverManager.DriverConfigs.Impl;
 using static COMPASS.Tools.Enums;
 using AutoUpdaterDotNET;
 using System.Reflection;
+using System.Windows.Media;
 
 namespace COMPASS.ViewModels
 {
@@ -406,7 +407,17 @@ namespace COMPASS.ViewModels
 
         //Search
         private RelayCommand<string> _searchCommand;
-        public RelayCommand<string> SearchCommand => _searchCommand ??= new(CollectionVM.UpdateSearchFilteredFiles);
+        public RelayCommand<string> SearchCommand => _searchCommand ??= new(SearchCommandHelper);
+        private void SearchCommandHelper(string Searchterm)
+        {
+            FilterTag SearchTag = new(Enums.FilterType.Search, Searchterm)
+            {
+                Label = "Search:",
+                BackgroundColor = Colors.Salmon,
+                Unique = true
+            };
+            CollectionVM.AddFieldFilter(SearchTag);
+        }
 
         //called every few seconds to update IsOnline
         private void CheckConnection(object sender, EventArgs e)

@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
-using System.Windows.Media;
 using FuzzySharp;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
@@ -31,7 +30,6 @@ namespace COMPASS.ViewModels
 
             ExcludedCodicesByTag = new();
             ExcludedCodicesByExcludedTags = new();
-            ExcludedCodicesBySearch = new();
             ExcludedCodicesByFilter = new();
 
             SearchTerm = "";
@@ -43,7 +41,6 @@ namespace COMPASS.ViewModels
             ActiveFilters.CollectionChanged += (e, v) => UpdateFieldFilteredFiles();
             DeActiveFilters = new();
             DeActiveFilters.CollectionChanged += (e, v) => UpdateFieldFilteredFiles();
-            SearchFilters = new();
 
             _cc.AllCodices.CollectionChanged += (e, v) => SubscribeToCodexProperties();
             SubscribeToCodexProperties();
@@ -59,11 +56,9 @@ namespace COMPASS.ViewModels
         public ObservableCollection<Tag> DeActiveTags { get; set; }
         public ObservableCollection<FilterTag> ActiveFilters { get; set; }
         public ObservableCollection<FilterTag> DeActiveFilters { get; set; }
-        public ObservableCollection<FilterTag> SearchFilters { get; set; }
 
         public HashSet<Codex> ExcludedCodicesByTag { get; set; }
         public HashSet<Codex> ExcludedCodicesByExcludedTags { get; set; }
-        public HashSet<Codex> ExcludedCodicesBySearch { get; set; }
         public HashSet<Codex> ExcludedCodicesByFilter { get; set; }
 
         private ObservableCollection<Codex> _activeFiles;
@@ -104,7 +99,6 @@ namespace COMPASS.ViewModels
         public void ClearFilters()
         {
             SearchTerm = "";
-            UpdateSearchFilteredFiles("");
             ActiveTags.Clear();
             DeActiveTags.Clear();
             ActiveFilters.Clear();
@@ -212,7 +206,8 @@ namespace COMPASS.ViewModels
                 switch (FT)
                 {
                     case Enums.FilterType.Search:
-                        //handled by UpdateSearchFilteredFiles
+                        ExcludedCodices = GetSearchFilteredCodices((string)FilterValues.FirstOrDefault())
+                            .Concat(GetSearchFilteredCodices((string)ExcludedFilterValues.FirstOrDefault(),false));
                         break;
                     case Enums.FilterType.Author:
                         //exclude codex if intersection between list of authors of codex and list of author filters is empty,
@@ -255,6 +250,28 @@ namespace COMPASS.ViewModels
             }
             UpdateActiveFiles();
         }
+        public HashSet<Codex> GetSearchFilteredCodices(string searchterm, bool returnExcludedCodices = true)
+        {
+            HashSet<Codex> ExcludedCodicesBySearch = new();
+            HashSet<Codex> IncludedCodicesBySearch = new();
+            if (!string.IsNullOrEmpty(searchterm))
+            {
+                //include acronyms
+                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
+                    .Where(f => Fuzz.TokenInitialismRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
+                //include string fragments
+                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
+                    .Where(f => f.Title.Contains(SearchTerm, StringComparison.InvariantCultureIgnoreCase)));
+                //include spelling errors
+                //include acronyms
+                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
+                    .Where(f => Fuzz.PartialRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
+
+                ExcludedCodicesBySearch = new(_cc.AllCodices.Except(IncludedCodicesBySearch));
+            }
+            return returnExcludedCodices?  ExcludedCodicesBySearch : IncludedCodicesBySearch;
+        }
+
         public void AddFieldFilter(FilterTag t, bool include = true)
         {
             ObservableCollection<FilterTag> Target = include ? ActiveFilters : DeActiveFilters;
@@ -275,51 +292,8 @@ namespace COMPASS.ViewModels
 
         public void RemoveFieldFilter(FilterTag t)
         {
-            if ((Enums.FilterType)t.GetGroup() == Enums.FilterType.Search)
-            {
-                SearchFilters.Remove(t);
-                UpdateSearchFilteredFiles("");
-            }
-
-            else
-            {
-                ActiveFilters.Remove(t);
-                DeActiveFilters.Remove(t);
-            }
-        }
-        //------------------------------------//
-
-        //------------ For Search-------------//
-        public void UpdateSearchFilteredFiles(string searchterm)
-        {
-            SearchFilters.Clear();
-            if (!string.IsNullOrEmpty(searchterm))
-            {
-                HashSet<Codex> IncludedCodicesBySearch = new();
-                //include acronyms
-                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
-                    .Where(f => Fuzz.TokenInitialismRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
-                //include string fragments
-                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
-                    .Where(f => f.Title.Contains(SearchTerm, StringComparison.InvariantCultureIgnoreCase)));
-                //include spelling errors
-                //include acronyms
-                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
-                    .Where(f => Fuzz.PartialRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
-
-                ExcludedCodicesBySearch = new(_cc.AllCodices.Except(IncludedCodicesBySearch));
-
-                //create the tag
-                FilterTag SearchTag = new(Enums.FilterType.Search, searchterm) 
-                { 
-                    Label = "Search:",
-                    BackgroundColor = Colors.Salmon 
-                };
-                SearchFilters.Add(SearchTag);
-            }
-            else ExcludedCodicesBySearch.Clear();
-
-            UpdateActiveFiles();
+            ActiveFilters.Remove(t);
+            DeActiveFilters.Remove(t);
         }
         //------------------------------------//
 
@@ -366,7 +340,6 @@ namespace COMPASS.ViewModels
         {
             UpdateTagFilteredFiles();
             UpdateFieldFilteredFiles();
-            UpdateSearchFilteredFiles(SearchTerm);
             UpdateActiveFiles();
         }
 
@@ -382,7 +355,6 @@ namespace COMPASS.ViewModels
 
             //compile list of "active" files, which are files that match all the different filters
             ActiveFiles = new (_cc.AllCodices
-                .Except(ExcludedCodicesBySearch)
                 .Except(ExcludedCodicesByTag)
                 .Except(ExcludedCodicesByExcludedTags)
                 .Except(ExcludedCodicesByFilter)
@@ -409,7 +381,6 @@ namespace COMPASS.ViewModels
         {
             ExcludedCodicesByTag.Remove(c);
             ExcludedCodicesByExcludedTags.Remove(c);
-            ExcludedCodicesBySearch.Remove(c);
             ExcludedCodicesByFilter.Remove(c);
             ActiveFiles.Remove(c);
         }
@@ -432,26 +403,18 @@ namespace COMPASS.ViewModels
                     break;
                 //Move Filter included/excluded
                 case FilterTag ft:
-                    if ((int)ft.GetGroup() != (int)Enums.FilterType.Search)
-                    {
-                        dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-                        dropInfo.Effects = DragDropEffects.Move;
-                    }
-                    break;
+                    //Do filtertag specific stuff here if needed
                 //Move Tag between included/excluded
                 case Tag t:
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                     dropInfo.Effects = DragDropEffects.Move;
                     break;
             }
-
-
-
-
         }
+
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            //If the excluded composite collection has one fewer colleciton, no negative search
+            //Included filter Listbox has extra empty collection to tell the difference
             bool ToExcludeTags = ((CompositeCollection)(dropInfo.TargetCollection)).Count < 3;
 
             //Tree to Filter Box
