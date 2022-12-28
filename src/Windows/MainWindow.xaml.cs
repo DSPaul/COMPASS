@@ -36,17 +36,6 @@ namespace COMPASS
             MainGrid.Focus();
         }
 
-        //removes tag from filter list when clicked
-        private void ActiveTag_Click(object sender, RoutedEventArgs e)
-        {
-            if ((Tag)CurrentTagList.SelectedItem != null)
-            {
-                Tag t = (Tag)CurrentTagList.SelectedItem;
-                if (!t.GetType().IsSubclassOf(typeof(Tag))) MainViewModel.CollectionVM.RemoveTagFilter(t);
-                else MainViewModel.CollectionVM.RemoveFieldFilter((FilterTag)t);
-            }
-        }
-
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             MainViewModel.CurrentCollection.SaveCodices();

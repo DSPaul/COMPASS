@@ -34,7 +34,7 @@ namespace COMPASS.Models
         }
 
         private string _content = "";
-        public string Content
+        public virtual string Content
         {
             get { return _content; }
             set { SetProperty(ref _content, value); }

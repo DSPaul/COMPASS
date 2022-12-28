@@ -51,7 +51,6 @@ namespace COMPASS.ViewModels
 
             //Commands
             ChangeFileViewCommand = new RelayCommand<CodexLayout>(ChangeFileView);
-            ResetCommand = new ActionCommand(Reset);
             AddTagCommand = new ActionCommand(AddTag);
             ImportFilesCommand = new RelayCommand<Sources>(ImportFiles);
             CreateCollectionCommand = new RelayCommand<string>(CreateCollection);
@@ -314,18 +313,9 @@ namespace COMPASS.ViewModels
             };
         }
 
-        //Reset
-        public ActionCommand ResetCommand { get; private set; }
-
         public void Refresh()
         {
             CollectionVM.ReFilter();
-            TFViewModel.TagsTabVM.RefreshTreeView();
-        }
-
-        public void Reset()
-        {
-            CollectionVM.ClearFilters();
             TFViewModel.TagsTabVM.RefreshTreeView();
         }
 

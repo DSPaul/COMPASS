@@ -30,14 +30,19 @@ namespace COMPASS.ViewModels
             SortBy(PropertyPath, SortDirection);
 
             ExcludedCodicesByTag = new();
+            ExcludedCodicesByExcludedTags = new();
             ExcludedCodicesBySearch = new();
             ExcludedCodicesByFilter = new();
 
             SearchTerm = "";
             ActiveTags = new();
             ActiveTags.CollectionChanged += (e, v) => UpdateTagFilteredFiles();
+            DeActiveTags = new();
+            DeActiveTags.CollectionChanged += (e, v) => UpdateTagFilteredFiles();
             ActiveFilters = new();
             ActiveFilters.CollectionChanged += (e, v) => UpdateFieldFilteredFiles();
+            DeActiveFilters = new();
+            DeActiveFilters.CollectionChanged += (e, v) => UpdateFieldFilteredFiles();
             SearchFilters = new();
 
             _cc.AllCodices.CollectionChanged += (e, v) => SubscribeToCodexProperties();
@@ -51,10 +56,13 @@ namespace COMPASS.ViewModels
 
         //CollectionDirectories
         public ObservableCollection<Tag> ActiveTags { get; set; }
+        public ObservableCollection<Tag> DeActiveTags { get; set; }
         public ObservableCollection<FilterTag> ActiveFilters { get; set; }
+        public ObservableCollection<FilterTag> DeActiveFilters { get; set; }
         public ObservableCollection<FilterTag> SearchFilters { get; set; }
 
         public HashSet<Codex> ExcludedCodicesByTag { get; set; }
+        public HashSet<Codex> ExcludedCodicesByExcludedTags { get; set; }
         public HashSet<Codex> ExcludedCodicesBySearch { get; set; }
         public HashSet<Codex> ExcludedCodicesByFilter { get; set; }
 
@@ -91,13 +99,16 @@ namespace COMPASS.ViewModels
             }
         }
 
+        private ActionCommand _clearFiltersCommand;
+        public ActionCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
         public void ClearFilters()
         {
             SearchTerm = "";
             UpdateSearchFilteredFiles("");
-            ExcludedCodicesByTag.Clear();
             ActiveTags.Clear();
+            DeActiveTags.Clear();
             ActiveFilters.Clear();
+            DeActiveFilters.Clear();
             ActiveFiles = new(_cc.AllCodices);
         }
 
@@ -106,7 +117,6 @@ namespace COMPASS.ViewModels
         {
             ExcludedCodicesByTag.Clear();
             HashSet<Tag> ActiveGroups = new();
-
 
             //Find all the active groups to filter in
             foreach (Tag t in ActiveTags)
@@ -133,6 +143,11 @@ namespace COMPASS.ViewModels
                 ExcludedCodicesByTag = ExcludedCodicesByTag.Union(SingleGroupFilteredFiles).ToHashSet();
             }
 
+            //Filter out Codices with excluded tags
+            //get childeren too, if parent is excluded, so should all the childeren
+            List<Tag> AllDeActiveTags = Utils.FlattenTree(DeActiveTags).ToList();
+            ExcludedCodicesByExcludedTags = new(_cc.AllCodices.Where(f => AllDeActiveTags.Intersect(f.Tags).Any()));
+
             UpdateActiveFiles();
         }
 
@@ -144,76 +159,120 @@ namespace COMPASS.ViewModels
             if (ActiveTags.All(p => p.ID != t.ID))
             {
                 ActiveTags.Add(t);
+                DeActiveTags.Remove(t);
+            }
+        }
+        public void AddNegTagFilter(Tag t)
+        {
+            //only add if not yet in deactivetags
+            if (DeActiveTags.All(p => p.ID != t.ID))
+            {
+                DeActiveTags.Add(t);
+                ActiveTags.Remove(t);
             }
         }
 
+        private RelayCommand<Tag> _removeFilterCommand;
+        public RelayCommand<Tag> RemoveFilterCommand => _removeFilterCommand ??= new(RemoveFilter);
+        public void RemoveFilter(Tag t)
+        {
+            if (!t.GetType().IsSubclassOf(typeof(Tag))) RemoveTagFilter(t);
+            else RemoveFieldFilter((FilterTag)t);
+        }
         public void RemoveTagFilter(Tag t)
         {
             ActiveTags.Remove(t);
+            DeActiveTags.Remove(t);
         }
 
         //-------------For Filters------------//
         public void UpdateFieldFilteredFiles()
         {
             ExcludedCodicesByFilter.Clear();
-            //List<List<FilterTag>> FieldFilters = new List<List<FilterTag>>(Enum.GetNames(typeof(Enums.FilterType)).Length);
 
             //enumerate over all filter types
-            foreach (Enums.FilterType FT in (Enums.FilterType[])Enum.GetValues(typeof(Enums.FilterType)))
+            foreach (Enums.FilterType FT in Enum.GetValues(typeof(Enums.FilterType)))
             {
-                //FieldFilters.Add(new List<FilterTag>(ActiveFilters.Where(filter => (Enums.FilterType)filter.GetGroup()==FT)));
-
                 //List filter values for current filter type
                 List<object> FilterValues = new(
                     ActiveFilters
                     .Where(filter => (Enums.FilterType)filter.GetGroup() == FT)
                     .Select(t => t.FilterValue)
                     );
+                List<object> ExcludedFilterValues = new(
+                    DeActiveFilters
+                    .Where(filter => (Enums.FilterType)filter.GetGroup() == FT)
+                    .Select(t => t.FilterValue)
+                    );
                 //skip iteration if no filters of this type
-                if (FilterValues.Count == 0) continue;
+                if (FilterValues.Count + ExcludedFilterValues.Count == 0) continue;
 
-                //true if filter is inverted => Codices that match filter should NOT be displayed
-                bool invert = false;
-                IEnumerable<Codex> ExcludedCodices = null;
+                bool exclude;
+                IEnumerable<Codex> ExcludedCodices = new List<Codex>(); // generic IEnumerable doesn't have constructor so list instead
                 switch (FT)
                 {
                     case Enums.FilterType.Search:
                         //handled by UpdateSearchFilteredFiles
                         break;
                     case Enums.FilterType.Author:
-                        //exclude codex if no overlap between authors the file has and filtered authors
-                        ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Intersect(f.Authors).Any());
+                        //exclude codex if intersection between list of authors of codex and list of author filters is empty,
+                        //causes problem if list of author filters is empty because then intersection is also empty.
+                        //also exclude codex if overlap between authors of the file and excluded author filters, 
+                        // same problem with empty intersection if no such filters, so if statements needed
+                        if (FilterValues.Count > 0) ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Intersect(f.Authors).Any());
+                        if (ExcludedFilterValues.Count > 0) ExcludedCodices = ExcludedCodices.Concat(_cc.AllCodices.Where(f => ExcludedFilterValues.Intersect(f.Authors).Any()));
                         break;
                     case Enums.FilterType.Publisher:
-                        ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Contains(f.Publisher));
+                        if (FilterValues.Count > 0) ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Contains(f.Publisher));
+                        if (ExcludedFilterValues.Count > 0) ExcludedCodices = ExcludedCodices.Concat(_cc.AllCodices.Where(f => ExcludedFilterValues.Contains(f.Publisher)));
                         break;
                     case Enums.FilterType.StartReleaseDate:
-                        ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate < (DateTime?)FilterValues.First());
+                        ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate < (DateTime?)FilterValues.FirstOrDefault())
+                        .Concat(_cc.AllCodices.Where(f => f.ReleaseDate >= (DateTime?)ExcludedFilterValues.FirstOrDefault()));
                         break;
                     case Enums.FilterType.StopReleaseDate:
-                        ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate > (DateTime?)FilterValues.First());
+                        ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate > (DateTime?)FilterValues.FirstOrDefault())
+                        .Concat(_cc.AllCodices.Where(f => f.ReleaseDate <= (DateTime?)ExcludedFilterValues.FirstOrDefault()));
                         break;
                     case Enums.FilterType.MinimumRating:
-                        ExcludedCodices = _cc.AllCodices.Where(f => f.Rating < (int)FilterValues.First());
+                        ExcludedCodices = _cc.AllCodices.Where(f => f.Rating < (int?)FilterValues.FirstOrDefault())
+                        .Concat(_cc.AllCodices.Where(f => f.Rating >= (int?)ExcludedFilterValues.FirstOrDefault()));
                         break;
                     case Enums.FilterType.OfflineSource:
-                        invert = (bool)FilterValues.First();
-                        ExcludedCodices = _cc.AllCodices.Where(f => !f.HasOfflineSource());
+                        exclude = (bool)FilterValues.FirstOrDefault();
+                        ExcludedCodices = exclude ? _cc.AllCodices.Where(f => f.HasOfflineSource()) : _cc.AllCodices.Where(f => !f.HasOfflineSource());
                         break;
                     case Enums.FilterType.OnlineSource:
-                        invert = (bool)FilterValues.First();
-                        ExcludedCodices = _cc.AllCodices.Where(f => !f.HasOnlineSource());
+                        exclude = (bool)FilterValues.FirstOrDefault();
+                        ExcludedCodices = exclude ? _cc.AllCodices.Where(f => f.HasOnlineSource()) :  _cc.AllCodices.Where(f => !f.HasOnlineSource());
                         break;
                     case Enums.FilterType.PhysicalSource:
-                        invert = (bool)FilterValues.First();
-                        ExcludedCodices = _cc.AllCodices.Where(f => !f.Physically_Owned);
+                        exclude = (bool)FilterValues.FirstOrDefault();
+                        ExcludedCodices = exclude ? _cc.AllCodices.Where(f => f.Physically_Owned) : _cc.AllCodices.Where(f => !f.Physically_Owned);
                         break;
                 }
-                if (invert) ExcludedCodices = _cc.AllCodices.Except(ExcludedCodices);
                 ExcludedCodicesByFilter = ExcludedCodicesByFilter.Union(ExcludedCodices).ToHashSet();
             }
             UpdateActiveFiles();
         }
+        public void AddFieldFilter(FilterTag t, bool include = true)
+        {
+            ObservableCollection<FilterTag> Target = include ? ActiveFilters : DeActiveFilters;
+            ObservableCollection<FilterTag> Other = !include ? ActiveFilters : DeActiveFilters;
+            //if Filter is unique, remove previous instance of that Filter before adding
+            if (t.Unique)
+            {
+                Target.Remove(
+                    Target.SingleOrDefault(tag => (int)tag.GetGroup() == (int)t.GetGroup()));
+            }
+            //only add if not yet in activetags
+            if (Target.All(p => p.ID != t.ID))
+            {
+                Target.Add(t);
+                Other.Remove(t);
+            }
+        }
+
         public void RemoveFieldFilter(FilterTag t)
         {
             if ((Enums.FilterType)t.GetGroup() == Enums.FilterType.Search)
@@ -222,7 +281,11 @@ namespace COMPASS.ViewModels
                 UpdateSearchFilteredFiles("");
             }
 
-            else ActiveFilters.Remove(t);
+            else
+            {
+                ActiveFilters.Remove(t);
+                DeActiveFilters.Remove(t);
+            }
         }
         //------------------------------------//
 
@@ -247,8 +310,11 @@ namespace COMPASS.ViewModels
                 ExcludedCodicesBySearch = new(_cc.AllCodices.Except(IncludedCodicesBySearch));
 
                 //create the tag
-                FilterTag SearchTag = new(SearchFilters, Enums.FilterType.Search, searchterm) 
-                    { Content = "Search: " + SearchTerm, BackgroundColor = Colors.Salmon };
+                FilterTag SearchTag = new(Enums.FilterType.Search, searchterm) 
+                { 
+                    Label = "Search:",
+                    BackgroundColor = Colors.Salmon 
+                };
                 SearchFilters.Add(SearchTag);
             }
             else ExcludedCodicesBySearch.Clear();
@@ -318,6 +384,7 @@ namespace COMPASS.ViewModels
             ActiveFiles = new (_cc.AllCodices
                 .Except(ExcludedCodicesBySearch)
                 .Except(ExcludedCodicesByTag)
+                .Except(ExcludedCodicesByExcludedTags)
                 .Except(ExcludedCodicesByFilter)
                 .ToList());
 
@@ -341,6 +408,7 @@ namespace COMPASS.ViewModels
         public void RemoveCodex(Codex c)
         {
             ExcludedCodicesByTag.Remove(c);
+            ExcludedCodicesByExcludedTags.Remove(c);
             ExcludedCodicesBySearch.Remove(c);
             ExcludedCodicesByFilter.Remove(c);
             ActiveFiles.Remove(c);
@@ -351,20 +419,65 @@ namespace COMPASS.ViewModels
         #region Drag Drop Handlers
         //Drop on Treeview Behaviour
         void IDropTarget.DragOver(IDropInfo dropInfo)
-        {
-            //GongSolutions.Wpf.DragDrop.DragDrop.DefaultDropHandler.DragOver(dropInfo);
-            TreeViewNode DraggedTVN = (TreeViewNode)dropInfo.Data;
-            if (!DraggedTVN.Tag.IsGroup)
-            {
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-                dropInfo.Effects = DragDropEffects.Copy;
+        { 
+            //Tree to Filter Box
+            switch (dropInfo.Data){
+                //Move From Treeview
+                case TreeViewNode DraggedTVN:
+                    if (!DraggedTVN.Tag.IsGroup)
+                    {
+                        dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                        dropInfo.Effects = DragDropEffects.Copy;
+                    }
+                    break;
+                //Move Filter included/excluded
+                case FilterTag ft:
+                    if ((int)ft.GetGroup() != (int)Enums.FilterType.Search)
+                    {
+                        dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                        dropInfo.Effects = DragDropEffects.Move;
+                    }
+                    break;
+                //Move Tag between included/excluded
+                case Tag t:
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                    dropInfo.Effects = DragDropEffects.Move;
+                    break;
             }
+
+
+
+
         }
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            //DragDrop.DefaultDropHandler.Drop(dropInfo);
-            TreeViewNode DraggedTVN = (TreeViewNode)dropInfo.Data;
-            AddTagFilter(DraggedTVN.Tag);
+            //If the excluded composite collection has one fewer colleciton, no negative search
+            bool ToExcludeTags = ((CompositeCollection)(dropInfo.TargetCollection)).Count < 3;
+
+            //Tree to Filter Box
+            if (dropInfo.Data is TreeViewNode)
+            {
+                TreeViewNode DraggedTVN = (TreeViewNode)dropInfo.Data;
+                if (ToExcludeTags) { AddNegTagFilter(DraggedTVN.Tag); }
+                else { AddTagFilter(DraggedTVN.Tag); }
+            }
+
+            //Move between included/excluded
+            if (dropInfo.Data is Tag)
+            {
+                if (dropInfo.Data is FilterTag)
+                {
+                    FilterTag DraggedTag = (FilterTag)dropInfo.Data;
+                    if (ToExcludeTags) { AddFieldFilter(DraggedTag, false); }
+                    else { AddFieldFilter(DraggedTag); }
+                }
+                else
+                {
+                    Tag DraggedTag = (Tag)dropInfo.Data;
+                    if (ToExcludeTags) { AddNegTagFilter(DraggedTag); }
+                    else { AddTagFilter(DraggedTag); }
+                } 
+            }
         }
         #endregion
     }
