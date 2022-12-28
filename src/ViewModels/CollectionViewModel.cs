@@ -10,6 +10,7 @@ using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using GongSolutions.Wpf.DragDrop;
 using System.Windows;
+using System.Windows.Media;
 
 namespace COMPASS.ViewModels
 {
@@ -33,6 +34,27 @@ namespace COMPASS.ViewModels
             ExcludedCodicesByFilter = new();
 
             SearchTerm = "";
+            SourceTags = new()
+            {
+                new(Enums.FilterType.OfflineSource)
+                {
+                    Label = "Available Offline",
+                    BackgroundColor = Colors.DarkSeaGreen
+                },
+
+                new(Enums.FilterType.OnlineSource)
+                {
+                    Label = "Available Online",
+                    BackgroundColor = Colors.DarkSeaGreen
+                },
+
+                new(Enums.FilterType.PhysicalSource)
+                {
+                    Label = "Physically Owned",
+                    BackgroundColor = Colors.DarkSeaGreen
+                },
+            };
+
             ActiveTags = new();
             ActiveTags.CollectionChanged += (e, v) => UpdateTagFilteredFiles();
             DeActiveTags = new();
@@ -78,6 +100,13 @@ namespace COMPASS.ViewModels
         {
             get { return _searchTerm; }
             set { SetProperty(ref _searchTerm, value); }
+        }
+
+        private List<FilterTag> _sourceTags;
+        public List<FilterTag> SourceTags
+        {
+            get { return _sourceTags; }
+            init { SetProperty(ref (_sourceTags), value); }
         }
 
         #endregion

@@ -1,10 +1,6 @@
 ﻿using COMPASS.Models;
 using COMPASS.ViewModels.Commands;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using static COMPASS.Tools.Enums;
 
@@ -116,41 +112,12 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Functions and Commands
-        private RelayCommand<Tuple<bool, bool>> _changeOnlineFileterCommand;
-        public RelayCommand<Tuple<bool, bool>> ChangeOnlineFilterCommand => _changeOnlineFileterCommand ??= new(ChangeOnlineFilter);
-        public void ChangeOnlineFilter(Tuple<bool, bool> parameters)
+        private RelayCommand<FilterTag> _addSourceFilterCommand;
+        public RelayCommand<FilterTag> AddSourceFilterCommand => _addSourceFilterCommand ??= new(AddSourceFilter);
+
+        public void AddSourceFilter(FilterTag ft)
         {
-            ChangeSourceFilter(FilterType.OnlineSource, "Available Online", parameters.Item1, parameters.Item2);
-        }
-
-        private RelayCommand<Tuple<bool, bool>> _changeOfflineFilterCommand;
-        public RelayCommand<Tuple<bool, bool>> ChangeOfflineFilterCommand => _changeOfflineFilterCommand ??= new(ChangeOfflineFilter);
-        public void ChangeOfflineFilter(Tuple<bool, bool> parameters)
-        {
-            ChangeSourceFilter(FilterType.OfflineSource, "Available Offline", parameters.Item1, parameters.Item2);
-        }
-
-        private RelayCommand<Tuple<bool, bool>> _changePhysicalFilterCommand;
-        public RelayCommand<Tuple<bool, bool>> ChangePhysicalFilterCommand => _changePhysicalFilterCommand ??= new(ChangePhysicalFilter);
-        public void ChangePhysicalFilter(Tuple<bool, bool> parameters)
-        {
-            ChangeSourceFilter(FilterType.PhysicalSource, "Physicaly Owned", parameters.Item1, parameters.Item2);
-        }
-
-        public void ChangeSourceFilter(FilterType ft, string text, bool addFilter, bool invert)
-        {
-            //remove old filter, either to remove or replace
-            MVM.CollectionVM.ActiveFilters.Remove(MVM.CollectionVM.ActiveFilters.Where(filter => (FilterType)filter.GetGroup() == ft).FirstOrDefault());
-
-            if (invert) text = "NOT: " + text;
-
-            if (addFilter)
-            {
-                FilterTag t = new(ft, invert)
-                { Content = text, BackgroundColor = Colors.Violet };
-                //Remove existing end date, replacing it
-                MVM.CollectionVM.ActiveFilters.Add(t);
-            }
+            MVM.CollectionVM.AddFieldFilter(ft);
         }
 
         private ActionCommand _clearFiltersCommand;
@@ -162,7 +129,7 @@ namespace COMPASS.ViewModels
             StartReleaseDate = null;
             StopReleaseDate = null;
             MinRating = 0;
-            MVM.CollectionVM.ActiveFilters.Clear();
+            MVM.CollectionVM.ClearFilters();
         }
         #endregion
     }

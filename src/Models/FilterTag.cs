@@ -24,6 +24,11 @@ namespace COMPASS.Models
         {
             get 
             {
+                if (FilterValue is null)
+                {
+                    return Label;
+                }
+
                 string formatedFilterValue = FilterValue switch
                 {
                     DateTime date => date.ToShortDateString(),
