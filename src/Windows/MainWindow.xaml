@@ -599,7 +599,8 @@
                 </Grid.RowDefinitions>
 
                 <!--#region Current Filters-->
-                <TextBlock Grid.Column="0" Grid.Row="1" x:Name="CurrentTagTextBlock" Text="Filters:" Margin="10,0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="0" Grid.Row="1" x:Name="CurrentTagTextBlock" Text="Filters:" 
+                           Margin="20,0,0,0" VerticalAlignment="Center" FontSize="20"/>
                 <Border CornerRadius="5" Grid.Column="1" Grid.Row ="1" BorderBrush="ForestGreen" BorderThickness="3" VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}" >
                     <Border.Resources>
@@ -666,8 +667,8 @@
                 <!--#endregion-->
 
                 <!--#region View Selection-->
-                <Border Grid.Column="4" Grid.Row="1" Margin="10,0" BorderThickness="3" BorderBrush="Gray" CornerRadius="5">
-                    <StackPanel  Orientation="Horizontal" Margin="5,0">
+                <Border Grid.Column="4" Grid.Row="1" Margin="10,0" BorderThickness="0" BorderBrush="Gray" CornerRadius="5">
+                    <StackPanel  Orientation="Horizontal" Margin="0,0,15,0">
                         <StackPanel.Resources>
                             <Style TargetType="Button">
                                 <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
@@ -702,6 +703,7 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Resources>
+                        <Rectangle Width="3" Fill="Gray" Margin="3,0"/>
                         <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.HomeLayout}" 
                             Tools:AP.IconKind="Home" Height="30" ToolTip="Home Layout"/>
                         <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.ListLayout}" 
