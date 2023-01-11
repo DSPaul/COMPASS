@@ -13,6 +13,7 @@ using WebDriverManager.DriverConfigs.Impl;
 using static COMPASS.Tools.Enums;
 using AutoUpdaterDotNET;
 using System.Reflection;
+using System.Windows.Media;
 
 namespace COMPASS.ViewModels
 {
@@ -45,13 +46,11 @@ namespace COMPASS.ViewModels
                 Properties.Settings.Default.justUpdated = false;
             }
 
-            //install ghostscript to make your life easy
-            if (!Directory.Exists(@"C:\Program Files\gs"))
-                MagickNET.SetGhostscriptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"gs"));
+            //Set ghostscript Directory
+            MagickNET.SetGhostscriptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"gs"));
 
             //Commands
             ChangeFileViewCommand = new RelayCommand<CodexLayout>(ChangeFileView);
-            ResetCommand = new ActionCommand(Reset);
             AddTagCommand = new ActionCommand(AddTag);
             ImportFilesCommand = new RelayCommand<Sources>(ImportFiles);
             CreateCollectionCommand = new RelayCommand<string>(CreateCollection);
@@ -314,18 +313,9 @@ namespace COMPASS.ViewModels
             };
         }
 
-        //Reset
-        public ActionCommand ResetCommand { get; private set; }
-
         public void Refresh()
         {
             CollectionVM.ReFilter();
-            TFViewModel.TagsTabVM.RefreshTreeView();
-        }
-
-        public void Reset()
-        {
-            CollectionVM.ClearFilters();
             TFViewModel.TagsTabVM.RefreshTreeView();
         }
 
@@ -416,7 +406,17 @@ namespace COMPASS.ViewModels
 
         //Search
         private RelayCommand<string> _searchCommand;
-        public RelayCommand<string> SearchCommand => _searchCommand ??= new(CollectionVM.UpdateSearchFilteredFiles);
+        public RelayCommand<string> SearchCommand => _searchCommand ??= new(SearchCommandHelper);
+        private void SearchCommandHelper(string Searchterm)
+        {
+            FilterTag SearchTag = new(Enums.FilterType.Search, Searchterm)
+            {
+                Label = "Search:",
+                BackgroundColor = Colors.Salmon,
+                Unique = true
+            };
+            CollectionVM.AddFieldFilter(SearchTag);
+        }
 
         //called every few seconds to update IsOnline
         private void CheckConnection(object sender, EventArgs e)

@@ -80,41 +80,41 @@
                         <MenuItem Header="Delete" Tools:AP.IconKind="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
                     </ContextMenu>
                     <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                        <Border CornerRadius="5" Margin="0,3" ContextMenu="{StaticResource TagContextMenu}">
-                            <Border.Background>
+                        <Button Cursor="Hand"  Command="{Binding Source={StaticResource Proxy}, Path=Data.MVM.CollectionVM.AddTagFilterCommand}" CommandParameter="{Binding Tag}">
+                            <Button.Background>
                                 <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
-                            </Border.Background>
-                            <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="14"/>
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="true">
-                                            <Setter Property="Cursor" Value="Hand"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                        </Border>
+                            </Button.Background>
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="5" Margin="0,3" ContextMenu="{StaticResource TagContextMenu}" Background="{TemplateBinding Background}">
+                                        <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="14"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
                     </HierarchicalDataTemplate>
                     <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
                         <Border CornerRadius="5" Margin="0,3" Background="{x:Null}" ContextMenu="{StaticResource TagContextMenu}">
-                            <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="LightGray" FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
+                            <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="LightGray" 
+                                       FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
                         </Border>
                     </HierarchicalDataTemplate>
                     <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
                 </TabItem.Resources>
                 <Border>
                     <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"
-                        ItemsSource="{Binding Path=TreeViewSource,Mode=TwoWay}" 
-                        dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True"  dd:DragDrop.DropHandler="{Binding}"
-                        SelectedItemChanged="TagTree_SelectedItemChanged" 
-                        ItemTemplateSelector="{StaticResource TagTemplateSelector}"
-                        MouseRightButtonDown="TagTree_MouseRightButtonDown">
+                        ItemsSource="{Binding Path=TreeViewSource,Mode=TwoWay}"  Margin="5"
+                        dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}"
+                        ItemTemplateSelector="{StaticResource TagTemplateSelector}" MouseRightButtonDown="TagTree_MouseRightButtonDown">
                         <TreeView.Resources>
                             <Style TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
                                 <Setter Property="IsSelected" Value="{Binding Selected, Mode=TwoWay}"/>
                             </Style>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
+                            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black" />
                         </TreeView.Resources>
                     </TreeView>
                 </Border>
@@ -127,47 +127,29 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Margin="10">
-                            <StackPanel Margin="10,5">
-                                <TextBlock Text="Author:"/>
-                                <ComboBox ItemsSource="{Binding MVM.CurrentCollection.AuthorList}" FontSize="15"
+                        <StackPanel Margin="20,15">
+                            <TextBlock Text="Author:"/>
+                            <ComboBox ItemsSource="{Binding MVM.CurrentCollection.AuthorList}" FontSize="15"
                                       SelectedValue="{Binding SelectedAuthor}"/>
 
-                                <TextBlock Text="Publisher:" Margin="0,10,0,0"/>
-                                <ComboBox ItemsSource="{Binding MVM.CurrentCollection.PublisherList}" FontSize="15"
+                            <TextBlock Text="Publisher:" Margin="0,10,0,0"/>
+                            <ComboBox ItemsSource="{Binding MVM.CurrentCollection.PublisherList}" FontSize="15"
                                       SelectedValue="{Binding SelectedPublisher}"/>
 
-                                <TextBlock Text="Released Between:" Margin="0,10,0,0"/>
-                                <DatePicker SelectedDate="{Binding StartReleaseDate}" HorizontalAlignment="Left" Margin="-5 0" FontSize="18"/>
-                                <TextBlock Text="And"/>
-                                <DatePicker SelectedDate="{Binding StopReleaseDate}"  HorizontalAlignment="Left" Margin="-5 0" FontSize="18"/>
+                            <TextBlock Text="Released Between:" Margin="0,10,0,0"/>
+                            <DatePicker SelectedDate="{Binding StartReleaseDate}" HorizontalAlignment="Left" Margin="-5 0" FontSize="18"/>
+                            <TextBlock Text="And"/>
+                            <DatePicker SelectedDate="{Binding StopReleaseDate}"  HorizontalAlignment="Left" Margin="-5 0" FontSize="18"/>
 
-                                <TextBlock Text="Minimum Rating:" Margin="0,10,0,0"/>
-                                <materialDesign:RatingBar Value="{Binding MinRating, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="-2 3"/>
+                            <TextBlock Text="Minimum Rating:" Margin="0,10,0,0"/>
+                            <materialDesign:RatingBar Value="{Binding MinRating, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                          IsPreviewValueEnabled="True" Margin="-2 3"/>
 
-                                <TextBlock Text="Sources:" Margin="0,0,10,0"/>
+                            <TextBlock Text="Sources:" Margin="0,0,10,0"/>
 
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
-                                    </Grid.RowDefinitions>
-                                    <TextBlock Grid.Row="0" Text="Offline:" FontSize="18" Margin="0,10"/>
-                                    <controls:YesNoSelector x:Name="OfflineSelector" Grid.Column="1" Grid.Row="0" 
-                                                            Command="{Binding ChangeOfflineFilterCommand}"/>
-                                    <TextBlock Grid.Row="1" Text="Online:" FontSize="18" Margin="0,10"/>
-                                    <controls:YesNoSelector x:Name="OnlineSelector" Grid.Column="1" Grid.Row="1" 
-                                                            Command="{Binding ChangeOnlineFilterCommand}"/>
-                                    <TextBlock Grid.Row="2" Text="Physical:" FontSize="18" Margin="0,10,10,10"/>
-                                    <controls:YesNoSelector x:Name="PhysicalSelector" Grid.Column="1" Grid.Row="2" 
-                                                            Command="{Binding ChangePhysicalFilterCommand}"/>
-                                </Grid>
-                            </StackPanel>
+                            <ItemsControl ItemTemplate="{StaticResource FilterTagTemplate}" ItemsSource="{Binding MVM.CollectionVM.SourceTags}" 
+                                          HorizontalContentAlignment="Left" HorizontalAlignment="Left" Margin="5" 
+                                    dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding MVM.CollectionVM}"/>
                         </StackPanel>
                         <Button Content="Clear All" Grid.Row="2" Margin="30" Command="{Binding ClearFiltersCommand}"
                             Style="{StaticResource IconTextButton}" Tools:AP.IconKind="FilterRemove" Background="Red"/>

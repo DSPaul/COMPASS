@@ -14,23 +14,43 @@
 
   <ItemGroup>
     <None Remove="Media\CompassLogo.png" />
+    <None Remove="gs\gsdll64.dll" />
+    <None Remove="gs\gsdll64.lib" />
+    <None Remove="gs\gswin64.exe" />
+    <None Remove="gs\gswin64c.exe" />
   </ItemGroup>
 
   <ItemGroup>
 
     <Content Include="COMPASS.ico" />
 
-    <Content Include="Media\CompassLogo.png">
+    <Content Include="gs\gsdll64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+
+    <Content Include="gs\gsdll64.lib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="gs\gswin64.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="gs\gswin64c.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Resource Include="Media\CompassLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
 
     <Content Include="Media\CoverPlaceholder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Media\LoadingAnimation.gif">
+    <Resource Include="Media\LoadingAnimation.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
 
     <SplashScreen Include="Media\CompassFull.png" />
 
@@ -70,12 +90,12 @@
       <Version>3.0.0</Version>
     </PackageReference>
     <PackageReference Include="Selenium.WebDriver">
-      <Version>4.6.0</Version>
+      <Version>4.7.0</Version>
     </PackageReference>
     <PackageReference Include="System.Runtime.Caching">
       <Version>7.0.0</Version>
     </PackageReference>
-    <PackageReference Include="WebDriverManager" Version="2.16.1" />
+    <PackageReference Include="WebDriverManager" Version="2.16.2" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
     <PackageReference Include="ZXing.Net" Version="0.16.8" />
     <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.10" />

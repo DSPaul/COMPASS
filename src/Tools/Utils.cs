@@ -23,7 +23,7 @@ namespace COMPASS.Tools
             return tempID;
         }
 
-        //put all nodes of a tree in a flat enumerable
+        //put all childeren of object in a flat enumerable
         public static IEnumerable<T> FlattenTree<T>(IEnumerable<T> l) where T: IHasChilderen<T>
         {
             var result = new List<T>(l);
@@ -118,7 +118,7 @@ namespace COMPASS.Tools
         }
         public static string FindFileDirectory(string fileName, string rootDirectory)
         {
-            string filePath = Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories)[0];
+            string filePath = Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories).Last();
             string parentDirectory = Path.GetDirectoryName(filePath);
             return parentDirectory;
         }

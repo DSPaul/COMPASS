@@ -1,5 +1,26 @@
 # CHANGELOG
-## COMPASS v0.8.0 (04 December 2022)
+## COMPASS v0.9.0 (11 January 2023)
+
+### Fixes
+
+- Fixed crash when trying to fetch a book cover from an online source.
+- Multiple small fixes related to selecting tags.
+- Fixed Rating bar being invisible.
+
+### New Features
+
+- Tags and metadata filters can now be both inclusive or exclusive, so you can choose whether books with a certain tag or metadata field should be included or excluded from the fitered list. To use the new exclusive filters, jus drag and drop them to the new clearly labeled filter area at the top.
+  
+### Enhancements
+
+- Added loading animation in some places.
+- Added the option to drag tags to the filters area at the top.
+
+### Other Changes
+
+- After reviewing the ghostscript license, I have decided to include it in the repo so it no longer needs to be installed to build from source.
+
+## COMPASS v0.8.0 (04 December 2022)
 
 ### Fixes
 
