@@ -47,7 +47,7 @@ namespace COMPASS.Models
             return obj is FilterTag objAsTag && Equals(objAsTag);
         }
 
-        public new bool Equals(FilterTag other)
+        public bool Equals(FilterTag other)
         {
             if (other == null) return false;
             return (Content.Equals(other.Content));
