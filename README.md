@@ -30,7 +30,7 @@ If you are an RPG fan like me, you probably have lots of pdf's both homebrew and
 
 ## :warning: Why am I getting a Windows Defender SmartScreen Warning when installing COMPASS?
 
-The COMPASS files are not digitally signed which results in these kinds of warnings. Signing code is expensive and not worth it with a small user base. If this project ever takes off and gains a large amount of users, I will look into this again. If you do not trust the executable, you can always build the code from source. You will need to install ghostscript seperatly if you want pdf thumbnails, as it is included in installer but not in the repo. 
+The COMPASS files are not digitally signed which results in these kinds of warnings. Signing code is expensive and not worth it with a small user base. If this project ever takes off and gains a large amount of users, I will look into this again. If you do not trust the executable, you can always build the code from source.
 
 ## :construction: Contributing
 
