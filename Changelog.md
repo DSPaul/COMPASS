@@ -1,5 +1,12 @@
 # CHANGELOG
-## COMPASS v0.9.0 (11 January 2023)
+
+## COMPASS v0.9.1 (14 January 2023)
+
+### HotFix
+
+- Fix Drag and drop on filters not working
+
+## COMPASS v0.9.0 (11 January 2023)
 
 ### Fixes
 
