@@ -614,12 +614,12 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="INCLUDE:" VerticalAlignment="Center" Margin="5 2" Foreground="Gray" FontSize="20"/>
-                        <ItemsControl x:Name="CurrentTagList" ItemTemplate="{StaticResource TagDeletableTemplate}"
-                             Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center"
+                        <ItemsControl x:Name="CurrentTagList" ItemTemplate="{StaticResource TagDeletableTemplate}" MinHeight="30"
+                             Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}"
                              dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding CollectionVM}" >
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal" MaxWidth="{Binding ActualWidth, ElementName=CurrentTagList}"/>
+                                    <WrapPanel Orientation="Horizontal" Width="{Binding ActualWidth, ElementName=CurrentTagList}"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemsSource>
@@ -645,12 +645,12 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="EXCLUDE:" VerticalAlignment="Center" Margin="5 2" Foreground="Gray" FontSize="20"/>
-                        <ItemsControl x:Name="CurrentExcludedTagList" ItemTemplate="{StaticResource TagDeletableTemplate}"
-                             Grid.Column="1" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                        <ItemsControl x:Name="CurrentExcludedTagList" ItemTemplate="{StaticResource TagDeletableTemplate}" MinHeight="30"
+                             Grid.Column="1" VerticalAlignment="Center" VerticalContentAlignment="Center" Background="{StaticResource SelectableTransparent}"
                             dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding CollectionVM}" >
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal" MaxWidth="{Binding ActualWidth, ElementName=CurrentExcludedTagList}"/>
+                                    <WrapPanel Orientation="Horizontal" Width="{Binding ActualWidth, ElementName=CurrentExcludedTagList}"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemsSource>
