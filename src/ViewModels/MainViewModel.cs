@@ -7,6 +7,7 @@ using ImageMagick;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
@@ -81,19 +82,11 @@ namespace COMPASS.ViewModels
                 CreateCollection("Default");
             }
 
-            //in case startup collection no longer exists
+            //in case startup collection no longer exists, pick first one that does exists
             else if (!Directory.Exists(CodexCollection.CollectionsPath + Properties.Settings.Default.StartupCollection))
             {
                 MessageBox.Show("The collection " + Properties.Settings.Default.StartupCollection + " could not be found. ");
-                //pick first one that does exists
-                foreach (string dir in CollectionDirectories)
-                {
-                    if (Directory.Exists(CodexCollection.CollectionsPath + dir))
-                    {
-                        CurrentCollectionName = dir;
-                        break;
-                    }
-                }
+                CurrentCollectionName = CollectionDirectories.First(dir => Directory.Exists(CodexCollection.CollectionsPath + dir));
             }
 
             //otherwise, open startup collection

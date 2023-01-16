@@ -45,11 +45,7 @@ namespace COMPASS.ViewModels
         }
 
         //visibility of General Info Selection
-        public bool ShowInfoGrid
-        {
-            get { return !ShowColorSelection; }
-            set { }
-        }
+        public bool ShowInfoGrid => !ShowColorSelection;
 
         #endregion
 

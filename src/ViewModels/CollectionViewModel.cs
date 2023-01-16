@@ -327,7 +327,7 @@ namespace COMPASS.ViewModels
                     lsd = (ListSortDirection)SortDirection;
                 }
                 //if already sorting, change direction
-                else if (sortDescr.Count > 0 && sortDescr[0].PropertyName == PropertyPath) 
+                else if (sortDescr.Count > 0 && sortDescr[0].PropertyName == PropertyPath)
                 {
                     if (sortDescr[0].Direction == ListSortDirection.Ascending) lsd = ListSortDirection.Descending;
                     else lsd = ListSortDirection.Ascending;

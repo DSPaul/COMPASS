@@ -33,7 +33,7 @@ namespace COMPASS.Models
                 };
                 return $"{Label} {formatedFilterValue} {Suffix}".Trim();
             }
-            set { }
+
         }
 
         public override object GetGroup() => _filterType;

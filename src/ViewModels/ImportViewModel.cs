@@ -423,7 +423,7 @@ namespace COMPASS.ViewModels
             }
             if (!Utils.PingURL())
             {
-                ImportError = String.Format("You need to be connected to the internet to import on online source.");
+                ImportError = "You need to be connected to the internet to import on online source.";
                 return;
             }
             iURLw.Close();
@@ -587,7 +587,7 @@ namespace COMPASS.ViewModels
                 pgw.Show();
             });
 
-            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, String.Format("Fetching Data")));
+            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, "Fetching Data"));
             string uri = Source switch
             {
                 Sources.ISBN => $"http://openlibrary.org/api/books?bibkeys=ISBN:{InputURL.Trim('-', ' ')}&format=json&jscmd=details",

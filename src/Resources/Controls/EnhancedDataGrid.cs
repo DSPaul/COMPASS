@@ -86,7 +86,7 @@ namespace COMPASS.Resources.Controls
             {
                 foreach (var column in ColumnInfo)
                 {
-                    var realColumn = Columns.Where((x) => column.Header.Equals(x.Header)).FirstOrDefault();
+                    var realColumn = Columns.FirstOrDefault(x => column.Header == x.Header);
                     if (realColumn == null) { continue; }
                     column.Apply(realColumn, Columns.Count, Items.SortDescriptions);
                 }

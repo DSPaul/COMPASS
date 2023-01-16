@@ -91,8 +91,7 @@ namespace BarcodeReaderTool
                                 }
 
                                 // Releases the lock on first not empty frame
-                                if (initializationSemaphore != null)
-                                    initializationSemaphore.Release();
+                                initializationSemaphore?.Release();
 
                                 _lastFrame = FlipHorizontally
                                     ? BitmapConverter.ToBitmap(frame.Flip(FlipMode.Y))

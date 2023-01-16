@@ -100,8 +100,8 @@ namespace COMPASS.Resources.Controls
             {
                 animating = true;
                 HiddenContentGrid.Measure(new Size(1920, 700));
-                DoubleAnimation animHeight = new ();
-                DoubleAnimation animWidth = new ();
+                DoubleAnimation animHeight = new();
+                DoubleAnimation animWidth = new();
                 animHeight.From = OutsidePanel.ActualHeight;
                 animWidth.From = OutsidePanel.ActualWidth;
                 animHeight.To = HiddenContentGrid.DesiredSize.Height + ToggleBtn.ActualHeight;
@@ -112,7 +112,7 @@ namespace COMPASS.Resources.Controls
                 Storyboard.SetTarget(animWidth, OutsidePanel);
                 Storyboard.SetTargetProperty(animHeight, new PropertyPath(HeightProperty));
                 Storyboard.SetTargetProperty(animWidth, new PropertyPath(WidthProperty));
-                Storyboard st = new ();
+                Storyboard st = new();
                 st.Children.Add(animHeight);
                 //st.Children.Add(animWidth);
                 st.Completed += (a, b) => { animating = false; };

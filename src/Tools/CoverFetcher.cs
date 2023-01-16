@@ -57,7 +57,7 @@ namespace COMPASS
                         Defines = pdfReadDefines,
                     };
 
-                    try
+                    try //image.Read can throw exception if file can not be opened/read
                     {
                         using (MagickImage image = new())
                         {
