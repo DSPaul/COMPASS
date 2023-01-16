@@ -119,13 +119,10 @@ namespace COMPASS.ViewModels
             AmountRenamed = 0;
             foreach (Codex c in MVM.CurrentCollection.AllCodices)
             {
-                if (!string.IsNullOrEmpty(c.Path))
+                if (!string.IsNullOrEmpty(c.Path) && c.Path.Contains(oldpath))
                 {
-                    if (c.Path.Contains(oldpath))
-                    {
-                        AmountRenamed++;
-                        c.Path = c.Path.Replace(oldpath, newpath);
-                    }
+                    AmountRenamed++;
+                    c.Path = c.Path.Replace(oldpath, newpath);
                 }
 
             }
@@ -144,8 +141,8 @@ namespace COMPASS.ViewModels
             Process.Start(startInfo);
         }
 
-        private readonly BackgroundWorker createZipWorker = new BackgroundWorker();
-        private readonly BackgroundWorker extractZipWorker = new BackgroundWorker();
+        private readonly BackgroundWorker createZipWorker = new();
+        private readonly BackgroundWorker extractZipWorker = new();
         private LoadingWindow lw;
 
         private ActionCommand _backupLocalFilesCommand;

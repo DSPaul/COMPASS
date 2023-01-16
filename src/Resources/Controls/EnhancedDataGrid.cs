@@ -110,19 +110,12 @@ namespace COMPASS.Resources.Controls
             WidthType = column.Width.UnitType;
             SortDirection = column.SortDirection;
             DisplayIndex = column.DisplayIndex;
-            switch (column)
+            PropertyPath = column switch
             {
-                case DataGridTemplateColumn templateColumn:
-                    PropertyPath = templateColumn.SortMemberPath;
-                    break;
-                case DataGridComboBoxColumn boxColumn:
-                    PropertyPath = ((Binding)boxColumn.SelectedItemBinding).Path.Path;
-                    break;
-                default:
-                    PropertyPath = ((Binding)((DataGridBoundColumn)column).Binding).Path.Path;
-                    break;
-            }
-
+                DataGridTemplateColumn templateColumn => templateColumn.SortMemberPath,
+                DataGridComboBoxColumn boxColumn => ((Binding)boxColumn.SelectedItemBinding).Path.Path,
+                _ => ((Binding)((DataGridBoundColumn)column).Binding).Path.Path,
+            };
         }
         public void Apply(DataGridColumn column, int gridColumnCount, SortDescriptionCollection sortDescriptions)
         {

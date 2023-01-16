@@ -13,11 +13,11 @@ namespace COMPASS.Tools.Converters
             switch (parameter)
             {
                 case "Boolean":
-                    if (value.GetType() == typeof(bool)) return Visibility.Visible;
+                    if (value is bool) return Visibility.Visible;
                     break;
 
                 case "Number":
-                    if (value.GetType() == typeof(float) || value.GetType() == typeof(int) || value.GetType() == typeof(double)) return Visibility.Visible;
+                    if ((value is float) || (value is int) || (value is double)) return Visibility.Visible;
                     break;
             }
             return Visibility.Collapsed;

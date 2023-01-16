@@ -442,7 +442,7 @@ namespace COMPASS.ViewModels
             if (bcScanWindow.ShowDialog() == true)
             {
                 InputURL = bcScanWindow.DecodedString;
-            };
+            }
         }
 
         private void ImportURL(object sender, DoWorkEventArgs e)
@@ -596,7 +596,7 @@ namespace COMPASS.ViewModels
 
             JObject metadata = Task.Run(async () => await Utils.GetJsonAsync(uri)).Result;
 
-            if (metadata.HasValues == false)
+            if (!metadata.HasValues)
             {
                 string message = $"ISBN {InputURL} was not found on openlibrary.org \n" +
                     $"You can contribute by submitting this book at \n" +

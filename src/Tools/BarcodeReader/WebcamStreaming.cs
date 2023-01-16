@@ -113,8 +113,7 @@ namespace BarcodeReaderTool
                 }
                 finally
                 {
-                    if (initializationSemaphore != null)
-                        initializationSemaphore.Release();
+                    initializationSemaphore?.Release();
                 }
 
             }, _cancellationTokenSource.Token);

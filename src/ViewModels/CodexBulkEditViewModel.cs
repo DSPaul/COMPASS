@@ -145,7 +145,7 @@ namespace COMPASS.ViewModels
                 }
             }
 
-            if (TempCodex.Physically_Owned == true)
+            if (TempCodex.Physically_Owned)
             {
                 foreach (Codex f in EditedCodices)
                 {

@@ -13,8 +13,8 @@ namespace COMPASS.Tools.Converters
             bool Invert = System.Convert.ToBoolean(parameter);
             bool visible;
 
-            if (value.GetType() == typeof(string))
-                visible = !string.IsNullOrEmpty((string)value);
+            if (value is string str_value)
+                visible = !string.IsNullOrEmpty(str_value);
             else
                 visible = System.Convert.ToBoolean(value);
 

@@ -166,12 +166,15 @@ namespace COMPASS.ViewModels
             string targetCollectionName;
 
             //extract Collection parameter
-            if (par[0] != null) targetCollectionName = (string)(par[0]);
+            if (par[0] != null) targetCollectionName = (string)par[0];
             else return;
             if (targetCollectionName == MVM.CurrentCollectionName) return;
 
             //extract Codex parameter
-            if (par[1] as Codex != null) ToMoveList.Add((Codex)par[1]);
+            if (par[1] is Codex codex)
+            {
+                ToMoveList.Add(codex);
+            }
             else
             {
                 IList list = par[1] as IList;
@@ -233,7 +236,10 @@ namespace COMPASS.ViewModels
             List<Codex> ToDeleteList = new();
 
             // if single codex, add to list
-            if (o as Codex != null) ToDeleteList.Add(o as Codex);
+            if (o is Codex)
+            {
+                ToDeleteList.Add(o as Codex);
+            }
             // if already list, cast is as such
             else
             {

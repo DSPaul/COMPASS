@@ -320,19 +320,17 @@ namespace COMPASS.ViewModels
             {
                 var sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions;
                 //determine sorting direction, ascending by default
-                ListSortDirection lsd = ListSortDirection.Ascending; ;
+                ListSortDirection lsd = ListSortDirection.Ascending;
 
                 if (SortDirection != null) //if direction is given, use that instead
                 {
                     lsd = (ListSortDirection)SortDirection;
                 }
-                else if (sortDescr.Count > 0)
+                //if already sorting, change direction
+                else if (sortDescr.Count > 0 && sortDescr[0].PropertyName == PropertyPath) 
                 {
-                    if (sortDescr[0].PropertyName == PropertyPath) //if already sorting, change direction
-                    {
-                        if (sortDescr[0].Direction == ListSortDirection.Ascending) lsd = ListSortDirection.Descending;
-                        else lsd = ListSortDirection.Ascending;
-                    }
+                    if (sortDescr[0].Direction == ListSortDirection.Ascending) lsd = ListSortDirection.Descending;
+                    else lsd = ListSortDirection.Ascending;
                 }
 
                 sortDescr.Clear();
@@ -419,10 +417,10 @@ namespace COMPASS.ViewModels
                     }
                     break;
                 //Move Filter included/excluded
-                case FilterTag ft:
+                case FilterTag:
                 //Do filtertag specific stuff here if needed
                 //Move Tag between included/excluded
-                case Tag t:
+                case Tag:
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                     dropInfo.Effects = DragDropEffects.Move;
                     break;
@@ -434,29 +432,22 @@ namespace COMPASS.ViewModels
             //Included filter Listbox has extra empty collection to tell the difference
             bool ToExcludeTags = ((CompositeCollection)(dropInfo.TargetCollection)).Count < 3;
 
-            //Tree to Filter Box
-            if (dropInfo.Data is TreeViewNode)
+            switch (dropInfo.Data)
             {
-                TreeViewNode DraggedTVN = (TreeViewNode)dropInfo.Data;
-                if (ToExcludeTags) { AddNegTagFilter(DraggedTVN.Tag); }
-                else { AddTagFilter(DraggedTVN.Tag); }
-            }
-
-            //Move between included/excluded
-            if (dropInfo.Data is Tag)
-            {
-                if (dropInfo.Data is FilterTag)
-                {
-                    FilterTag DraggedTag = (FilterTag)dropInfo.Data;
-                    if (ToExcludeTags) { AddFieldFilter(DraggedTag, false); }
-                    else { AddFieldFilter(DraggedTag); }
-                }
-                else
-                {
-                    Tag DraggedTag = (Tag)dropInfo.Data;
+                //Tree to Filter Box
+                case TreeViewNode DraggedTVN:
+                    if (ToExcludeTags) { AddNegTagFilter(DraggedTVN.Tag); }
+                    else { AddTagFilter(DraggedTVN.Tag); }
+                    break;
+                //Between include and exlude
+                case FilterTag DraggedFilterTag:
+                    if (ToExcludeTags) { AddFieldFilter(DraggedFilterTag, false); }
+                    else { AddFieldFilter(DraggedFilterTag); }
+                    break;
+                case Tag DraggedTag:
                     if (ToExcludeTags) { AddNegTagFilter(DraggedTag); }
                     else { AddTagFilter(DraggedTag); }
-                }
+                    break;
             }
         }
         #endregion

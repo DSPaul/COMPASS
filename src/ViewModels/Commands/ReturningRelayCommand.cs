@@ -24,7 +24,7 @@ namespace COMPASS.ViewModels.Commands
 
         public bool CanExecute(object parameter)
         {
-            return _canExecute == null ? true : _canExecute((T)parameter);
+            return _canExecute == null || _canExecute((T)parameter);
         }
 
         public void Execute(object parameter)

@@ -21,7 +21,10 @@ namespace COMPASS.Tools
 
         public bool IsItemMatchingSearchString(object sender, object item, string searchString)
         {
-            if (item as string is null) return false;
+            if (item is not string)
+            {
+                return false;
+            }
 
             if (string.IsNullOrEmpty(searchString))
             {

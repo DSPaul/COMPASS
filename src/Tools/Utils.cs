@@ -105,7 +105,7 @@ namespace COMPASS.Tools
             var currentUserPath = Microsoft.Win32.Registry.GetValue(currentUserRegistryPathPattern + name, "", null);
             var localMachinePath = Microsoft.Win32.Registry.GetValue(localMachineRegistryPathPattern + name, "", null);
 
-            if (currentUserPath != null | localMachinePath != null)
+            if (currentUserPath != null || localMachinePath != null)
             {
                 return true;
             }
