@@ -1,14 +1,11 @@
-﻿using COMPASS.Tools;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System;
 using static COMPASS.Tools.Enums;
 
 namespace COMPASS.Models
 {
-    public class FilterTag:Tag
+    public class FilterTag : Tag
     {
-        public FilterTag():base() { }
+        public FilterTag() : base() { }
         public FilterTag(FilterType filtertype, object filterValue = null)
         {
             _filterType = filtertype;
@@ -22,7 +19,7 @@ namespace COMPASS.Models
         public bool Unique = false;
         public override string Content
         {
-            get 
+            get
             {
                 if (FilterValue is null)
                 {
@@ -34,7 +31,7 @@ namespace COMPASS.Models
                     DateTime date => date.ToShortDateString(),
                     _ => FilterValue.ToString()
                 };
-                return $"{Label} {formatedFilterValue} {Suffix}".Trim(); 
+                return $"{Label} {formatedFilterValue} {Suffix}".Trim();
             }
             set { }
         }

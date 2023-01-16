@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace COMPASS.Models
@@ -33,8 +29,8 @@ namespace COMPASS.Models
         public object Prop
         {
             get { return _prop; }
-            set 
-            { 
+            set
+            {
                 SetProperty(ref _prop, value);
                 _updateProp?.Invoke(value);
             }

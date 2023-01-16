@@ -3,20 +3,20 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Xml.Serialization;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace COMPASS.Models
 {
     public class Codex : ObservableObject, IHasID
     {
         //empty constructor for serialization
-        public Codex() 
+        public Codex()
         {
             Authors.CollectionChanged += (e, v) => RaisePropertyChanged(nameof(AuthorsAsString));
         }
 
-        public Codex(CodexCollection cc):this()
+        public Codex(CodexCollection cc) : this()
         {
             Tags = new();
             ID = Utils.GetAvailableID(cc.AllCodices);
@@ -73,8 +73,8 @@ namespace COMPASS.Models
         public string Title
         {
             get { return _title; }
-            set 
-            { 
+            set
+            {
                 SetProperty(ref _title, value);
                 RaisePropertyChanged(nameof(SortingTitle));
             }
@@ -84,7 +84,7 @@ namespace COMPASS.Models
         [XmlIgnoreAttribute]
         public string SortingTitle
         {
-            get 
+            get
             {
                 if (String.IsNullOrEmpty(_sortingTitle)) return _title;
                 else return _sortingTitle;
@@ -103,24 +103,25 @@ namespace COMPASS.Models
         public ObservableCollection<string> Authors
         {
             get { return _authors; }
-            set 
-            { 
+            set
+            {
                 SetProperty(ref _authors, value);
                 RaisePropertyChanged(nameof(AuthorsAsString));
             }
         }
 
-        public string AuthorsAsString {
+        public string AuthorsAsString
+        {
             get
             {
                 string str = Authors.Count switch
                 {
                     1 => Authors[0],
-                    > 1 => String.Join(", ", Authors.OrderBy(a=>a)),
+                    > 1 => String.Join(", ", Authors.OrderBy(a => a)),
                     _ => ""
                 };
                 return str;
-            }            
+            }
         }
 
         private string _publisher;
@@ -216,7 +217,7 @@ namespace COMPASS.Models
         public DateTime LastOpened
         {
             get { return _lastOpened; }
-            set { SetProperty(ref _lastOpened,value); }
+            set { SetProperty(ref _lastOpened, value); }
         }
 
         private int _openedCount = 0;
@@ -233,7 +234,7 @@ namespace COMPASS.Models
             set { SetProperty(ref _favorite, value); }
         }
 
-        public string _ISBN;
+        private string _ISBN;
         public string ISBN
         {
             get { return _ISBN; }

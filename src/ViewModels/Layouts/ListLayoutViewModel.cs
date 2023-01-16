@@ -15,32 +15,34 @@ namespace COMPASS.ViewModels
             //};
 
             //ViewOptions.Add(new MyMenuItem("Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
-            ViewOptions.Add(new MyMenuItem("Author", value => ShowAuthor = (bool)value) { Prop = ShowAuthor});
-            ViewOptions.Add(new MyMenuItem("Publisher", value => ShowPublisher= (bool)value) { Prop = ShowPublisher });
+            ViewOptions.Add(new MyMenuItem("Author", value => ShowAuthor = (bool)value) { Prop = ShowAuthor });
+            ViewOptions.Add(new MyMenuItem("Publisher", value => ShowPublisher = (bool)value) { Prop = ShowPublisher });
             ViewOptions.Add(new MyMenuItem("Release Date", value => ShowReleaseDate = (bool)value) { Prop = ShowReleaseDate });
             ViewOptions.Add(new MyMenuItem("Version", value => ShowVersion = (bool)value) { Prop = ShowVersion });
             ViewOptions.Add(new MyMenuItem("Rating", value => ShowRating = (bool)value) { Prop = ShowRating });
             ViewOptions.Add(new MyMenuItem("Tags", value => ShowTags = (bool)value) { Prop = ShowTags });
             ViewOptions.Add(new MyMenuItem("File Icons", value => ShowFileIcons = (bool)value) { Prop = ShowFileIcons });
             //ViewOptions.Add(new MyMenuItem("Edit Icon", value => ShowEditIcon = (bool)value) { Prop = ShowEditIcon });
-            
+
             //ViewOptions.Add(Columnvisibility);
         }
 
         #region ViewOptions
 
         private bool _showTitle = true;
-        public bool ShowTitle 
+        public bool ShowTitle
         {
-            get {return _showTitle; }
-            set{ SetProperty(ref _showTitle, value); }
+            get { return _showTitle; }
+            set { SetProperty(ref _showTitle, value); }
         }
 
         private bool _showAuthor = Properties.Settings.Default.ListShowAuthor;
         public bool ShowAuthor
         {
             get { return _showAuthor; }
-            set { SetProperty(ref _showAuthor, value);
+            set
+            {
+                SetProperty(ref _showAuthor, value);
                 Properties.Settings.Default.ListShowAuthor = value;
             }
         }
@@ -49,7 +51,9 @@ namespace COMPASS.ViewModels
         public bool ShowPublisher
         {
             get { return _showPublisher; }
-            set { SetProperty(ref _showPublisher, value);
+            set
+            {
+                SetProperty(ref _showPublisher, value);
                 Properties.Settings.Default.ListShowPublisher = value;
             }
         }
@@ -58,7 +62,9 @@ namespace COMPASS.ViewModels
         public bool ShowReleaseDate
         {
             get { return _showReleaseDate; }
-            set { SetProperty(ref _showReleaseDate, value);
+            set
+            {
+                SetProperty(ref _showReleaseDate, value);
                 Properties.Settings.Default.ListShowRelease = value;
             }
         }
@@ -67,7 +73,9 @@ namespace COMPASS.ViewModels
         public bool ShowVersion
         {
             get { return _showVersion; }
-            set { SetProperty(ref _showVersion, value);
+            set
+            {
+                SetProperty(ref _showVersion, value);
                 Properties.Settings.Default.ListShowVersion = value;
             }
         }
@@ -76,7 +84,9 @@ namespace COMPASS.ViewModels
         public bool ShowRating
         {
             get { return _showRating; }
-            set { SetProperty(ref _showRating, value);
+            set
+            {
+                SetProperty(ref _showRating, value);
                 Properties.Settings.Default.ListShowRating = value;
             }
         }
@@ -85,7 +95,9 @@ namespace COMPASS.ViewModels
         public bool ShowTags
         {
             get { return _showTags; }
-            set { SetProperty(ref _showTags, value);
+            set
+            {
+                SetProperty(ref _showTags, value);
                 Properties.Settings.Default.ListShowTags = value;
             }
         }
@@ -94,7 +106,9 @@ namespace COMPASS.ViewModels
         public bool ShowFileIcons
         {
             get { return _showFileIcons; }
-            set { SetProperty(ref _showFileIcons, value);
+            set
+            {
+                SetProperty(ref _showFileIcons, value);
                 Properties.Settings.Default.ListShowFileIcons = value;
             }
         }
@@ -103,7 +117,9 @@ namespace COMPASS.ViewModels
         public bool ShowEditIcon
         {
             get { return _showEditIcon; }
-            set { SetProperty(ref _showEditIcon, value);
+            set
+            {
+                SetProperty(ref _showEditIcon, value);
                 Properties.Settings.Default.ListShowEditIcon = value;
             }
         }

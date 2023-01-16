@@ -1,11 +1,7 @@
-﻿using COMPASS.Models;
-using COMPASS.Tools;
-using COMPASS.ViewModels;
-using System;
+﻿using COMPASS.Tools;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Windows.Media;
 using System.Xml.Serialization;
 
@@ -14,7 +10,7 @@ namespace COMPASS.Models
     public class Tag : ObservableObject, IHasID, IHasChilderen<Tag>
     {
         //Emtpy Contructor needed for serialization
-        public Tag() {}
+        public Tag() { }
 
         public Tag(List<Tag> alltags)
         {
@@ -53,7 +49,7 @@ namespace COMPASS.Models
             get { return _backgroundColor; }
             set { SetProperty(ref _backgroundColor, value); }
         }
-        
+
         private bool _isGroup;
         public bool IsGroup
         {

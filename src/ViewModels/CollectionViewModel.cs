@@ -1,15 +1,15 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
+using COMPASS.ViewModels.Commands;
+using FuzzySharp;
+using GongSolutions.Wpf.DragDrop;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Data;
-using FuzzySharp;
-using COMPASS.Tools;
-using COMPASS.ViewModels.Commands;
-using GongSolutions.Wpf.DragDrop;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace COMPASS.ViewModels
@@ -84,13 +84,13 @@ namespace COMPASS.ViewModels
         public HashSet<Codex> ExcludedCodicesByFilter { get; set; }
 
         private ObservableCollection<Codex> _activeFiles;
-        public ObservableCollection<Codex> ActiveFiles 
+        public ObservableCollection<Codex> ActiveFiles
         {
             get { return _activeFiles; }
             set { SetProperty(ref _activeFiles, value); }
         }
 
-        public ObservableCollection<Codex> Favorites => new (ActiveFiles.Where(c => c.Favorite));
+        public ObservableCollection<Codex> Favorites => new(ActiveFiles.Where(c => c.Favorite));
         public List<Codex> RecentCodices => ActiveFiles.OrderByDescending(c => c.LastOpened).ToList().GetRange(0, ItemsShown);
         public List<Codex> MostOpenedCodices => ActiveFiles.OrderByDescending(c => c.OpenedCount).ToList().GetRange(0, ItemsShown);
         public List<Codex> RecentlyAddedCodices => ActiveFiles.OrderByDescending(c => c.DateAdded).ToList().GetRange(0, ItemsShown);
@@ -162,7 +162,7 @@ namespace COMPASS.ViewModels
                     if (P != null && !P.IsGroup && !SingleGroupTags.Contains(P)) SingleGroupTags.Add(P);
                 }
                 SingleGroupFilteredFiles = new(_cc.AllCodices.Where(f => !SingleGroupTags.Intersect(f.Tags).Any()));
-                
+
                 ExcludedCodicesByTag = ExcludedCodicesByTag.Union(SingleGroupFilteredFiles).ToHashSet();
             }
 
@@ -217,7 +217,7 @@ namespace COMPASS.ViewModels
             foreach (Enums.FilterType FT in Enum.GetValues(typeof(Enums.FilterType)))
             {
                 ExcludedCodicesByFilter = ExcludedCodicesByFilter.Union(GetFieldFilteredCodices(FT, ActiveFilters)).ToHashSet();
-                ExcludedCodicesByFilter = ExcludedCodicesByFilter.Union(GetFieldFilteredCodices(FT, DeActiveFilters,true)).ToHashSet();
+                ExcludedCodicesByFilter = ExcludedCodicesByFilter.Union(GetFieldFilteredCodices(FT, DeActiveFilters, true)).ToHashSet();
             }
             UpdateActiveFiles();
         }
@@ -265,7 +265,7 @@ namespace COMPASS.ViewModels
             }
             return invert ? _cc.AllCodices.Except(ExcludedCodices).ToList() : ExcludedCodices.ToList();
         }
-        
+
         public HashSet<Codex> GetSearchFilteredCodices(string searchterm, bool returnExcludedCodices = true)
         {
             HashSet<Codex> ExcludedCodicesBySearch = new();
@@ -285,7 +285,7 @@ namespace COMPASS.ViewModels
 
                 ExcludedCodicesBySearch = new(_cc.AllCodices.Except(IncludedCodicesBySearch));
             }
-            return returnExcludedCodices?  ExcludedCodicesBySearch : IncludedCodicesBySearch;
+            return returnExcludedCodices ? ExcludedCodicesBySearch : IncludedCodicesBySearch;
         }
 
         public void AddFieldFilter(FilterTag t, bool include = true)
@@ -363,14 +363,14 @@ namespace COMPASS.ViewModels
         {
             //get sorting info
             SortDescription sortDescr;
-            if  (CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Count > 0)
+            if (CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Count > 0)
             {
                 sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions[0];
             }
             SaveSortDescriptions(sortDescr.PropertyName, sortDescr.Direction);
 
             //compile list of "active" files, which are files that match all the different filters
-            ActiveFiles = new (_cc.AllCodices
+            ActiveFiles = new(_cc.AllCodices
                 .Except(ExcludedCodicesByTag)
                 .Except(ExcludedCodicesByExcludedTags)
                 .Except(ExcludedCodicesByFilter)
@@ -406,9 +406,10 @@ namespace COMPASS.ViewModels
         #region Drag Drop Handlers
         //Drop on Treeview Behaviour
         void IDropTarget.DragOver(IDropInfo dropInfo)
-        { 
+        {
             //Tree to Filter Box
-            switch (dropInfo.Data){
+            switch (dropInfo.Data)
+            {
                 //Move From Treeview
                 case TreeViewNode DraggedTVN:
                     if (!DraggedTVN.Tag.IsGroup)
@@ -419,7 +420,7 @@ namespace COMPASS.ViewModels
                     break;
                 //Move Filter included/excluded
                 case FilterTag ft:
-                    //Do filtertag specific stuff here if needed
+                //Do filtertag specific stuff here if needed
                 //Move Tag between included/excluded
                 case Tag t:
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
@@ -455,7 +456,7 @@ namespace COMPASS.ViewModels
                     Tag DraggedTag = (Tag)dropInfo.Data;
                     if (ToExcludeTags) { AddNegTagFilter(DraggedTag); }
                     else { AddTagFilter(DraggedTag); }
-                } 
+                }
             }
         }
         #endregion

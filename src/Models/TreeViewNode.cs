@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 
 namespace COMPASS.Models
 {
     public class TreeViewNode : ObservableObject, IHasChilderen<TreeViewNode>
-{
+    {
         public TreeViewNode(Tag t)
         {
             Tag = t;

@@ -10,7 +10,7 @@ namespace COMPASS.ViewModels
 {
     public abstract class LayoutViewModel : ViewModelBase
     {
-        public LayoutViewModel() :base()
+        public LayoutViewModel() : base()
         {
             GetSortOptions();
             SortOptionsMenuItem = new MyMenuItem("Sorty By")
@@ -62,7 +62,7 @@ namespace COMPASS.ViewModels
         private void GetSortOptions()
         {
             SortOptions = new ObservableCollection<MyMenuItem>();
-            var SortNames = new List<(string,string)>()
+            var SortNames = new List<(string, string)>()
             {
                 //("Display name","Property Name")
                 ("Title", "SortingTitle"),

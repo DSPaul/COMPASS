@@ -2,7 +2,7 @@
 {
     public class TagsFiltersViewModel : ViewModelBase
     {
-        public TagsFiltersViewModel(): base()
+        public TagsFiltersViewModel() : base()
         {
             TagsTabVM = new();
             FiltersTabVM = new();

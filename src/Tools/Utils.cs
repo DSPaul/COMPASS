@@ -24,7 +24,7 @@ namespace COMPASS.Tools
         }
 
         //put all childeren of object in a flat enumerable
-        public static IEnumerable<T> FlattenTree<T>(IEnumerable<T> l) where T: IHasChilderen<T>
+        public static IEnumerable<T> FlattenTree<T>(IEnumerable<T> l) where T : IHasChilderen<T>
         {
             var result = new List<T>(l);
             for (int i = 0; i < result.Count; i++)
@@ -57,7 +57,7 @@ namespace COMPASS.Tools
         {
             bool success = false;
             int i = 0;
-            while (!success && i<toTry.Count)
+            while (!success && i < toTry.Count)
             {
                 success = toTry[i].Function(arg);
                 i++;

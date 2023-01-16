@@ -1,7 +1,5 @@
 ﻿using COMPASS.ViewModels;
-using System.Threading;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace COMPASS.Windows
 {

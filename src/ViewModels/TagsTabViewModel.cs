@@ -1,10 +1,5 @@
 ﻿using COMPASS.Models;
 using COMPASS.ViewModels.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
@@ -14,7 +9,7 @@ namespace COMPASS.ViewModels
         {
             EditTagCommand = new(EditTag);
             DeleteTagCommand = new(DeleteTag);
-        }        
+        }
 
         //Tag for Context Menu
         public Tag Context;

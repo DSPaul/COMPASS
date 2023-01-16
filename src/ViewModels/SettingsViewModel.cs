@@ -95,8 +95,8 @@ namespace COMPASS.ViewModels
         public int AmountRenamed
         {
             get { return _amountRenamed; }
-            set 
-            { 
+            set
+            {
                 SetProperty(ref _amountRenamed, value);
                 RaisePropertyChanged(nameof(RenameCompleteMessage));
             }
@@ -112,21 +112,22 @@ namespace COMPASS.ViewModels
 
         private void RenameFolderReferences(object[] args)
         {
-            RenameFolderReferences((string)args[0],(string)args[1]);
+            RenameFolderReferences((string)args[0], (string)args[1]);
         }
         private void RenameFolderReferences(string oldpath, string newpath)
         {
             AmountRenamed = 0;
-            foreach(Codex c in MVM.CurrentCollection.AllCodices)
+            foreach (Codex c in MVM.CurrentCollection.AllCodices)
             {
                 if (!string.IsNullOrEmpty(c.Path))
                 {
-                    if (c.Path.Contains(oldpath)){
+                    if (c.Path.Contains(oldpath))
+                    {
                         AmountRenamed++;
                         c.Path = c.Path.Replace(oldpath, newpath);
                     }
                 }
-                
+
             }
         }
         #endregion
@@ -151,12 +152,12 @@ namespace COMPASS.ViewModels
         public ActionCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
         public void BackupLocalFiles()
         {
-            SaveFileDialog saveFileDialog = new ()
+            SaveFileDialog saveFileDialog = new()
             {
                 Filter = "Zip file (*.zip)|*.zip"
             };
 
-            if(saveFileDialog.ShowDialog() == DialogResult.OK)
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string targetPath = saveFileDialog.FileName;
                 lw = new("Compressing to Zip File");
@@ -178,7 +179,7 @@ namespace COMPASS.ViewModels
         public ActionCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
         public void RestoreBackup()
         {
-            OpenFileDialog openFileDialog = new ()
+            OpenFileDialog openFileDialog = new()
             {
                 Filter = "Zip file (*.zip)|*.zip"
             };
@@ -200,8 +201,8 @@ namespace COMPASS.ViewModels
         {
             string targetPath = e.Argument as string;
             using ZipFile zip = new();
-            zip.AddDirectory(CodexCollection.CollectionsPath,"Collections");
-            zip.AddFile(Constants.PreferencesFilePath,"");
+            zip.AddDirectory(CodexCollection.CollectionsPath, "Collections");
+            zip.AddFile(Constants.PreferencesFilePath, "");
             zip.Save(targetPath);
         }
 

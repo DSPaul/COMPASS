@@ -1,13 +1,10 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
@@ -41,14 +38,14 @@ namespace COMPASS.ViewModels
 
 
         private ObservableCollection<Tag> _tagsToAdd = new();
-        private ObservableCollection<Tag> _tagsToRemove= new();
+        private ObservableCollection<Tag> _tagsToRemove = new();
 
         public ObservableCollection<Tag> TagsToAdd
         {
             get { return _tagsToAdd; }
             set { SetProperty(ref _tagsToAdd, value); }
         }
-        
+
         public ObservableCollection<Tag> TagsToRemove
         {
             get { return _tagsToRemove; }
@@ -108,7 +105,7 @@ namespace COMPASS.ViewModels
             {
                 if (t.Selected)
                 {
-                    if(TagMode) TagsToAdd.Add(t.Tag);
+                    if (TagMode) TagsToAdd.Add(t.Tag);
                     else TagsToRemove.Add(t.Tag);
                 }
             }
@@ -126,7 +123,7 @@ namespace COMPASS.ViewModels
             var deletedAuthors = _commonAuthors.Except(TempCodex.Authors);
             var addedAuthors = TempCodex.Authors.Except(_commonAuthors);
             MVM.CurrentCollection.AddAuthors(TempCodex);
-            foreach(Codex f in EditedCodices)
+            foreach (Codex f in EditedCodices)
             {
                 //add new ones
                 foreach (string author in addedAuthors)
@@ -148,7 +145,7 @@ namespace COMPASS.ViewModels
                 }
             }
 
-            if(TempCodex.Physically_Owned == true)
+            if (TempCodex.Physically_Owned == true)
             {
                 foreach (Codex f in EditedCodices)
                 {
@@ -156,7 +153,7 @@ namespace COMPASS.ViewModels
                 }
             }
 
-            if(TempCodex.Rating > 0)
+            if (TempCodex.Rating > 0)
             {
                 foreach (Codex f in EditedCodices)
                 {
@@ -172,24 +169,24 @@ namespace COMPASS.ViewModels
                 }
             }
 
-            if(TempCodex.ReleaseDate != null)
+            if (TempCodex.ReleaseDate != null)
             {
-                    foreach (Codex f in EditedCodices)
-                    {
-                        f.ReleaseDate = TempCodex.ReleaseDate;
-                    }
+                foreach (Codex f in EditedCodices)
+                {
+                    f.ReleaseDate = TempCodex.ReleaseDate;
+                }
             }
 
             //Add new Publishers to lists
-            if(TempCodex.Publisher != "" && !MVM.CurrentCollection.PublisherList.Contains(TempCodex.Publisher)) MVM.CurrentCollection.PublisherList.Add(TempCodex.Publisher);
+            if (TempCodex.Publisher != "" && !MVM.CurrentCollection.PublisherList.Contains(TempCodex.Publisher)) MVM.CurrentCollection.PublisherList.Add(TempCodex.Publisher);
 
             //Add and remove Tags
-            foreach(Codex f in EditedCodices)
+            foreach (Codex f in EditedCodices)
             {
                 if (TagsToAdd.Count > 0)
                 {
                     //add all tags from TagsToAdd
-                    foreach(Tag t in TagsToAdd) f.Tags.Add(t);
+                    foreach (Tag t in TagsToAdd) f.Tags.Add(t);
                     //remove duplacates
                     f.Tags = new ObservableCollection<Tag>(f.Tags.Distinct());
                 }
@@ -198,7 +195,7 @@ namespace COMPASS.ViewModels
                     //remove Tags from TagsToRemove
                     foreach (Tag t in TagsToRemove) f.Tags.Remove(t);
                 }
-                
+
             }
             CloseAction();
         }

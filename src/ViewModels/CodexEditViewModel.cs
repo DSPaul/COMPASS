@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexEditViewModel : DealsWithTreeviews ,IEditViewModel
+    public class CodexEditViewModel : DealsWithTreeviews, IEditViewModel
     {
         public CodexEditViewModel(Codex toEdit) : base(MVM.CurrentCollection.RootTags)
         {
             EditedCodex = toEdit;
             //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked
             TempCodex = new(MVM.CurrentCollection);
-            if(!CreateNewCodex) TempCodex.Copy(EditedCodex);
+            if (!CreateNewCodex) TempCodex.Copy(EditedCodex);
 
             //Apply right checkboxes in Alltags
             foreach (TreeViewNode t in AllTreeViewNodes)
@@ -45,9 +45,10 @@ namespace COMPASS.ViewModels
 
         private bool CoverArtChanged = false;
         private bool _showLoading = false;
-        public bool ShowLoading {
+        public bool ShowLoading
+        {
             get { return _showLoading; }
-            set { SetProperty(ref _showLoading, value); } 
+            set { SetProperty(ref _showLoading, value); }
         }
 
         public CreatableLookUpContract Contract { get; set; } = new();
@@ -123,7 +124,7 @@ namespace COMPASS.ViewModels
                 AddExtension = false,
                 Multiselect = false,
                 Filter = "Image files (*.jpg, *.jpeg, *.png) | *.jpg; *.jpeg; *.png"
-        };
+            };
             if (openFileDialog.ShowDialog() == true)
             {
                 CoverFetcher.GetCoverFromImage(openFileDialog.FileName, TempCodex);

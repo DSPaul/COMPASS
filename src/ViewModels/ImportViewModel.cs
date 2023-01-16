@@ -65,7 +65,7 @@ namespace COMPASS.ViewModels
                 case Sources.GoogleDrive:
                     OpenImportURLDialog();
                     break;
-            }  
+            }
         }
 
         #region Properties
@@ -99,7 +99,7 @@ namespace COMPASS.ViewModels
 
         public string ProgressText
         {
-            get { return string.Format(_importText, _importtype,_importcounter + 1, _importamount); }
+            get { return string.Format(_importText, _importtype, _importcounter + 1, _importamount); }
         }
 
         //import url props
@@ -149,9 +149,9 @@ namespace COMPASS.ViewModels
 
         #endregion
 
-        public class FileTypeSelectionHelper: ObservableObject
+        public class FileTypeSelectionHelper : ObservableObject
         {
-            public FileTypeSelectionHelper(string type, int count, bool should) 
+            public FileTypeSelectionHelper(string type, int count, bool should)
             {
                 _filetype = type;
                 _fileCount = count;
@@ -173,7 +173,7 @@ namespace COMPASS.ViewModels
             }
             public string DisplayText
             {
-                get { return String.Format("{0} ({1} file{2})",_filetype,_fileCount, _fileCount > 1 ? "s" : ""); }
+                get { return String.Format("{0} ({1} file{2})", _filetype, _fileCount, _fileCount > 1 ? "s" : ""); }
             }
         }
 
@@ -205,7 +205,7 @@ namespace COMPASS.ViewModels
                         };
                         pgw.Show();
                     });
-                
+
                 //init progress tracking variables
                 _importcounter = 0;
                 _importamount = openFileDialog.FileNames.Length;
@@ -224,7 +224,7 @@ namespace COMPASS.ViewModels
             {
                 MVM.Refresh();
             });
-            if(SelectWhenDone!=null) MVM.CurrentLayout.SelectedFile = SelectWhenDone;
+            if (SelectWhenDone != null) MVM.CurrentLayout.SelectedFile = SelectWhenDone;
         }
 
         public void ImportFolder(object sender, DoWorkEventArgs e)
@@ -253,7 +253,7 @@ namespace COMPASS.ViewModels
                 //find how many files of each filetype
                 _importamount = toImport.Count;
                 var toImport_grouped = toImport.GroupBy(p => Path.GetExtension(p));
-                ToImportFiletypes = toImport_grouped.Select(x => new FileTypeSelectionHelper (x.Key, x.Count(), true)).ToList();
+                ToImportFiletypes = toImport_grouped.Select(x => new FileTypeSelectionHelper(x.Key, x.Count(), true)).ToList();
 
                 //open window to let user choose which filetypes to import
                 ImportFolderWindow ipf;
@@ -270,9 +270,9 @@ namespace COMPASS.ViewModels
 
                 //Make new toImport with only selected Filetypes
                 toImport = new List<string>();
-                foreach(var filetypeHelper in ToImportFiletypes)
+                foreach (var filetypeHelper in ToImportFiletypes)
                 {
-                    if(filetypeHelper.ShouldImport)
+                    if (filetypeHelper.ShouldImport)
                     {
                         toImport.AddRange(toImport_grouped.First(g => g.Key == filetypeHelper.Key));
                     }
@@ -339,7 +339,7 @@ namespace COMPASS.ViewModels
                             pdfdoc.Close();
                         }
 
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             Logger.log.Error(ex.InnerException);
                             //in case pdf is corrupt: PdfReader will throw error
@@ -348,7 +348,7 @@ namespace COMPASS.ViewModels
                             logEntry = new LogEntry(LogEntry.MsgType.Warning, string.Format("Failed to read metadata from {0}", Path.GetFileName(path)));
                             worker.ReportProgress(_importcounter, logEntry);
                         }
-                        
+
                         break;
 
                     default:
@@ -377,7 +377,7 @@ namespace COMPASS.ViewModels
 
         private void ImportManual()
         {
-            FilePropWindow fpw = new( new CodexEditViewModel(null));
+            FilePropWindow fpw = new(new CodexEditViewModel(null));
             fpw.ShowDialog();
             fpw.Topmost = true;
         }
@@ -439,7 +439,7 @@ namespace COMPASS.ViewModels
         public void OpenBarcodeScanner()
         {
             var bcScanWindow = new BarcodeScanWindow();
-            if( bcScanWindow.ShowDialog() == true)
+            if (bcScanWindow.ShowDialog() == true)
             {
                 InputURL = bcScanWindow.DecodedString;
             };
@@ -451,7 +451,7 @@ namespace COMPASS.ViewModels
             _importtype = "Step";
             _importcounter = 0;
             //3 steps: 1. connect to site, 2. get metadata, 3. get Cover
-            _importamount = 3; 
+            _importamount = 3;
 
             //needed to avoid error "The calling Thread must be STA" when creating progress window
             Application.Current.Dispatcher.Invoke(() =>
@@ -460,7 +460,7 @@ namespace COMPASS.ViewModels
                 pgw.Show();
             });
 
-            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info,String.Format("Connecting to {0}", ImportTitle)));
+            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, String.Format("Connecting to {0}", ImportTitle)));
 
             //Webscraper for metadata using HtmlAgilityPack
             HtmlWeb web = new();
@@ -571,7 +571,7 @@ namespace COMPASS.ViewModels
                 MVM.Refresh();
             });
         }
-        
+
         private void ImportFromAPI(object sender, DoWorkEventArgs e)
         {
             ProgressWindow pgw;
@@ -590,8 +590,8 @@ namespace COMPASS.ViewModels
             worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, String.Format("Fetching Data")));
             string uri = Source switch
             {
-                Sources.ISBN => $"http://openlibrary.org/api/books?bibkeys=ISBN:{InputURL.Trim('-',' ')}&format=json&jscmd=details",
-            _ => null
+                Sources.ISBN => $"http://openlibrary.org/api/books?bibkeys=ISBN:{InputURL.Trim('-', ' ')}&format=json&jscmd=details",
+                _ => null
             };
 
             JObject metadata = Task.Run(async () => await Utils.GetJsonAsync(uri)).Result;
@@ -618,7 +618,7 @@ namespace COMPASS.ViewModels
                     var details = metadata.First.First.SelectToken("details");
                     newFile.Title = (string)details.SelectToken("title");
                     if (details.SelectToken("authors") != null)
-                        newFile.Authors = new ObservableCollection<string>( details.SelectToken("authors").Select(item => item.SelectToken("name").ToString()));
+                        newFile.Authors = new ObservableCollection<string>(details.SelectToken("authors").Select(item => item.SelectToken("name").ToString()));
                     if (details.SelectToken("pagination") != null)
                     {
                         newFile.PageCount = Int32.Parse(Regex.Match(details.SelectToken("pagination").ToString(), @"\d+").Value);
@@ -654,17 +654,17 @@ namespace COMPASS.ViewModels
                 MVM.Refresh();
             });
         }
-        
+
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             //calculate current percentage for progressbar
-            ProgressPercentage = (int)((float)_importcounter /_importamount * 100);
+            ProgressPercentage = (int)((float)_importcounter / _importamount * 100);
             //update text
             RaisePropertyChanged(nameof(ProgressText));
             //write log entry if any
             if (e.UserState is LogEntry logEntry) Log.Add(logEntry);
         }
         #endregion
-    
+
     }
 }

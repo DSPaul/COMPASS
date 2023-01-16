@@ -4,7 +4,6 @@ using COMPASS.ViewModels.Commands;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -14,7 +13,7 @@ namespace COMPASS.ViewModels
 {
     public class CodexViewModel : ViewModelBase
     {
-        public CodexViewModel(){}
+        public CodexViewModel() { }
 
         //Open Codex whereever
         public static bool OpenCodex(Codex codex)
@@ -31,12 +30,12 @@ namespace COMPASS.ViewModels
             if (String.IsNullOrEmpty(toOpen.Path)) return false;
             try
             {
-                Process.Start(new ProcessStartInfo(toOpen.Path) {UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(toOpen.Path) { UseShellExecute = true });
                 toOpen.LastOpened = DateTime.Now;
                 toOpen.OpenedCount++;
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.log.Error(ex.InnerException);
 
@@ -107,14 +106,14 @@ namespace COMPASS.ViewModels
 
             if (rsltMessageBox == MessageBoxResult.Yes)
             {
-                foreach(Codex f in ToOpen) OpenCodex(f);
+                foreach (Codex f in ToOpen) OpenCodex(f);
                 return true;
             }
             else { return false; }
         }
 
         //Edit File
-        public RelayCommand<Codex> EditCodexCommand =>  new(EditCodex);
+        public RelayCommand<Codex> EditCodexCommand => new(EditCodex);
         public static void EditCodex(Codex toEdit)
         {
             //MVM.CurrentEditViewModel = new CodexEditViewModel(toEdit);
@@ -137,7 +136,7 @@ namespace COMPASS.ViewModels
         public RelayCommand<IEnumerable> EditCodicesCommand => new(EditCodices);
         public static void EditCodices(IEnumerable toEdit)
         {
-            if(toEdit == null) return;
+            if (toEdit == null) return;
             List<Codex> ToEdit = toEdit.Cast<Codex>().ToList();
             FileBulkEditWindow fpw = new(new CodexBulkEditViewModel(ToEdit));
             fpw.ShowDialog();
@@ -172,12 +171,12 @@ namespace COMPASS.ViewModels
             if (targetCollectionName == MVM.CurrentCollectionName) return;
 
             //extract Codex parameter
-            if(par[1] as Codex != null) ToMoveList.Add((Codex)par[1]);
+            if (par[1] as Codex != null) ToMoveList.Add((Codex)par[1]);
             else
             {
                 IList list = par[1] as IList;
                 ToMoveList = list.Cast<Codex>().ToList();
-            }  
+            }
 
             //MessageBox "Are you Sure?"
             string MessageSingle = "Moving " + ToMoveList[0].Title + " to " + targetCollectionName + " will remove all tags from the Codex, are you sure you wish to continue?";
@@ -191,7 +190,7 @@ namespace COMPASS.ViewModels
 
             MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, imgMessageBox);
 
-            if (rsltMessageBox == MessageBoxResult.Yes) 
+            if (rsltMessageBox == MessageBoxResult.Yes)
             {
                 CodexCollection TargetCollection = new(targetCollectionName);
                 foreach (Codex ToMove in ToMoveList)
@@ -242,7 +241,7 @@ namespace COMPASS.ViewModels
                 ToDeleteList = list.Cast<Codex>().ToList();
             }
             //Actually delete stuff
-            foreach(Codex ToDelete in ToDeleteList)
+            foreach (Codex ToDelete in ToDeleteList)
             {
                 MVM.CurrentCollection.DeleteCodex(ToDelete);
                 MVM.CollectionVM.RemoveCodex(ToDelete);

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
@@ -34,8 +31,8 @@ namespace COMPASS.Tools.Converters
             }
             return null;
         }
-  
-       public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new Exception("The method or operation is not implemented.");
         }

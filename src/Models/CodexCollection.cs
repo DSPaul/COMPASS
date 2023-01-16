@@ -22,17 +22,17 @@ namespace COMPASS.Models
         }
 
         public readonly static string CollectionsPath = Constants.CompassDataPath + @"\Collections\";
-        
+
         #region Properties
         private string _directoryName;
         public string DirectoryName
         {
             get { return _directoryName; }
-            set { SetProperty(ref _directoryName, value);}
+            set { SetProperty(ref _directoryName, value); }
         }
 
         public string CodicesDataFilePath => CollectionsPath + DirectoryName + @"\CodexInfo.xml";
-        public string TagsDataFilepath =>  CollectionsPath + DirectoryName + @"\Tags.xml";
+        public string TagsDataFilepath => CollectionsPath + DirectoryName + @"\Tags.xml";
 
         //Tag Lists
         public List<Tag> AllTags { get; private set; } = new();

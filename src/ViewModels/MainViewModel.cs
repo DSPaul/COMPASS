@@ -1,4 +1,5 @@
-﻿using COMPASS.Models;
+﻿using AutoUpdaterDotNET;
+using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using COMPASS.Windows;
@@ -6,14 +7,13 @@ using ImageMagick;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Reflection;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Threading;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
 using static COMPASS.Tools.Enums;
-using AutoUpdaterDotNET;
-using System.Reflection;
-using System.Windows.Media;
 
 namespace COMPASS.ViewModels
 {
@@ -47,7 +47,7 @@ namespace COMPASS.ViewModels
             }
 
             //Set ghostscript Directory
-            MagickNET.SetGhostscriptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"gs"));
+            MagickNET.SetGhostscriptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "gs"));
 
             //Commands
             ChangeFileViewCommand = new RelayCommand<CodexLayout>(ChangeFileView);
@@ -148,7 +148,7 @@ namespace COMPASS.ViewModels
                 }
             }
         }
-        
+
         private void InitAutoUpdates()
         {
             //Set URL of xml file
@@ -163,7 +163,7 @@ namespace COMPASS.ViewModels
             //Set download directory
             AutoUpdater.DownloadPath = Constants.InstallersPath;
             //check updates every 4 hours
-            DispatcherTimer timer = new(){ Interval = TimeSpan.FromHours(4) };
+            DispatcherTimer timer = new() { Interval = TimeSpan.FromHours(4) };
             timer.Tick += delegate
             {
                 AutoUpdater.Mandatory = false;
@@ -173,7 +173,7 @@ namespace COMPASS.ViewModels
             //check at startup
             AutoUpdater.Start();
         }
-       
+
         public void InitLogger()
         {
             Application.Current.DispatcherUnhandledException += Logger.LogUnhandledException;
@@ -216,7 +216,7 @@ namespace COMPASS.ViewModels
                     CurrentCollection.SaveCodices();
                     CurrentCollection.SaveTags();
                 }
-                if(value != null) ChangeCollection(value);
+                if (value != null) ChangeCollection(value);
                 SetProperty(ref _currentCollectionName, value);
             }
         }
@@ -294,7 +294,7 @@ namespace COMPASS.ViewModels
 
         public void OpenSettings(string tab = null)
         {
-            var settingswindow = new SettingsWindow(SettingsVM,tab);
+            var settingswindow = new SettingsWindow(SettingsVM, tab);
             settingswindow.Show();
         }
 
@@ -331,12 +331,12 @@ namespace COMPASS.ViewModels
         public void ImportFiles(Sources source)
         {
             CurrentImportViewModel = new ImportViewModel(source, CurrentCollection);
-        } 
+        }
 
         //Change Collection
         public void ChangeCollection(string collectionDir)
         {
-            CurrentCollection = new CodexCollection(collectionDir);            
+            CurrentCollection = new CodexCollection(collectionDir);
             CollectionVM = new CollectionViewModel(_currentCollection);
             ChangeFileView((CodexLayout)Properties.Settings.Default.PreferedView);
             TFViewModel = new TagsFiltersViewModel();
@@ -397,11 +397,11 @@ namespace COMPASS.ViewModels
         public void DeleteCollection(string todelete)
         {
             //if todelete is empty, it will delete the entire collections folder
-            if (String.IsNullOrEmpty(todelete)) return; 
+            if (String.IsNullOrEmpty(todelete)) return;
 
             CollectionDirectories.Remove(todelete);
             CurrentCollectionName = CollectionDirectories[0];
-            Directory.Delete(CodexCollection.CollectionsPath + todelete,true);
+            Directory.Delete(CodexCollection.CollectionsPath + todelete, true);
         }
 
         //Search

@@ -8,7 +8,7 @@ namespace COMPASS.ViewModels
 {
     public class FiltersTabViewModel : ViewModelBase
     {
-        public FiltersTabViewModel() :base(){}
+        public FiltersTabViewModel() : base() { }
 
         #region Properties
         //Selected Autor in FilterTab
@@ -19,9 +19,9 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref selectedAuthor, value);
-                FilterTag AuthorTag = new(FilterType.Author, value) 
-                { 
-                    Label = "Author:", 
+                FilterTag AuthorTag = new(FilterType.Author, value)
+                {
+                    Label = "Author:",
                     BackgroundColor = Colors.Orange
                 };
                 MVM.CollectionVM.AddFieldFilter(AuthorTag);
@@ -36,10 +36,10 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref selectedPublisher, value);
-                FilterTag PublTag = new(FilterType.Publisher, value) 
-                { 
-                    Label = "Publisher:", 
-                    BackgroundColor = Colors.MediumPurple 
+                FilterTag PublTag = new(FilterType.Publisher, value)
+                {
+                    Label = "Publisher:",
+                    BackgroundColor = Colors.MediumPurple
                 };
                 MVM.CollectionVM.AddFieldFilter(PublTag);
             }
@@ -58,8 +58,8 @@ namespace COMPASS.ViewModels
                 if (value != null)
                 {
                     FilterTag startDateTag = new(FilterType.StartReleaseDate, value)
-                    { 
-                        Label = "After:", 
+                    {
+                        Label = "After:",
                         BackgroundColor = Colors.DeepSkyBlue,
                         Unique = true
                     };
@@ -98,9 +98,9 @@ namespace COMPASS.ViewModels
                 if (value > 0 && value < 6)
                 {
                     FilterTag minRatTag = new(FilterType.MinimumRating, value)
-                    { 
-                        Label = "At least", 
-                        Suffix = "stars", 
+                    {
+                        Label = "At least",
+                        Suffix = "stars",
                         BackgroundColor = Colors.Goldenrod,
                         Unique = true
                     };

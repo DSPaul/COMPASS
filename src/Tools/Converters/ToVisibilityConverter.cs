@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
@@ -17,14 +13,14 @@ namespace COMPASS.Tools.Converters
             bool Invert = System.Convert.ToBoolean(parameter);
             bool visible;
 
-            if (value.GetType() == typeof(string)) 
+            if (value.GetType() == typeof(string))
                 visible = !string.IsNullOrEmpty((string)value);
-            else 
+            else
                 visible = System.Convert.ToBoolean(value);
 
-            if (visible ^ Invert) 
+            if (visible ^ Invert)
                 return Visibility.Visible;
-            else 
+            else
                 return Visibility.Collapsed;
         }
 

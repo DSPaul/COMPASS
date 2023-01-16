@@ -5,7 +5,7 @@ namespace COMPASS.ViewModels
 {
     internal class HomeLayoutViewModel : LayoutViewModel
     {
-        public HomeLayoutViewModel():base()
+        public HomeLayoutViewModel() : base()
         {
             LayoutType = Enums.CodexLayout.HomeLayout;
 

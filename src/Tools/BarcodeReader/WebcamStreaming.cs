@@ -94,7 +94,7 @@ namespace BarcodeReaderTool
                                 if (initializationSemaphore != null)
                                     initializationSemaphore.Release();
 
-                                _lastFrame = FlipHorizontally 
+                                _lastFrame = FlipHorizontally
                                     ? BitmapConverter.ToBitmap(frame.Flip(FlipMode.Y))
                                     : BitmapConverter.ToBitmap(frame);
 

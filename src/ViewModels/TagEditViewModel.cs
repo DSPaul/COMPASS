@@ -1,10 +1,6 @@
 ﻿using COMPASS.Models;
 using COMPASS.ViewModels.Commands;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
@@ -41,8 +37,8 @@ namespace COMPASS.ViewModels
         public bool ShowColorSelection
         {
             get { return showcolorselection; }
-            set 
-            { 
+            set
+            {
                 SetProperty(ref showcolorselection, value);
                 RaisePropertyChanged(nameof(ShowInfoGrid));
             }
@@ -63,7 +59,7 @@ namespace COMPASS.ViewModels
         public ActionCommand OKCommand => _oKCommand ??= new(OKBtn);
         public void OKBtn()
         {
-            if(CreateNewTag)
+            if (CreateNewTag)
             {
                 EditedTag = new Tag(MVM.CurrentCollection.AllTags);
                 if (TempTag.ParentID == -1) MVM.CurrentCollection.RootTags.Add(EditedTag);
@@ -96,7 +92,7 @@ namespace COMPASS.ViewModels
         }
 
         public ActionCommand CloseColorSelectionCommand { get; private set; }
-        public Action CloseAction {get; set;}
+        public Action CloseAction { get; set; }
 
         private void CloseColorSelection()
         {

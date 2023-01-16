@@ -18,10 +18,10 @@ using System.Windows;
 namespace COMPASS
 {
     public static class CoverFetcher
-    { 
+    {
         public static bool GetCover(Codex c)
         {
-            bool success = Utils.TryFunctions(GetCoverFunctions,c);
+            bool success = Utils.TryFunctions(GetCoverFunctions, c);
             if (!success) MessageBox.Show("Could not get Cover, please check local path or URL");
             return success;
         }
@@ -86,11 +86,11 @@ namespace COMPASS
                 case ".webp":
                     GetCoverFromImage(codex.Path, codex);
                     return true;
-                
+
                 default:
                     return false;
             }
-            
+
         }
 
         //Get cover from URL
@@ -121,7 +121,7 @@ namespace COMPASS
             string URL = destfile.SourceURL;
 
             //sites that store cover as image that can be downloaded
-            if(source.HasFlag(Enums.Sources.DnDBeyond) || source.HasFlag(Enums.Sources.GoogleDrive) || source.HasFlag(Enums.Sources.ISBN))
+            if (source.HasFlag(Enums.Sources.DnDBeyond) || source.HasFlag(Enums.Sources.GoogleDrive) || source.HasFlag(Enums.Sources.ISBN))
             {
                 try
                 {
@@ -159,13 +159,13 @@ namespace COMPASS
                     var imgBytes = Task.Run(async () => await Utils.DownloadFileAsync(imgURL)).Result;
                     File.WriteAllBytes(destfile.CoverArt, imgBytes);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Logger.log.Error(ex.InnerException);
                     return false;
                 }
             }
-            
+
             //sites do not store cover as img, Use Selenium for screenshotting pages
             else if (source.HasFlag(Enums.Sources.GmBinder) || source.HasFlag(Enums.Sources.Homebrewery))
             {
@@ -262,21 +262,21 @@ namespace COMPASS
                     driver.Quit();
                 }
             }
-            
+
             CreateThumbnail(destfile);
             return true;
         }
-        
+
         public static bool GetCoverFromISBN(Codex c)
         {
             if (string.IsNullOrEmpty(c.ISBN)) return false;
-            return GetCoverFromURL(c,Enums.Sources.ISBN);
+            return GetCoverFromURL(c, Enums.Sources.ISBN);
         }
 
         //get cover from image
         public static void GetCoverFromImage(string imagepath, Codex destfile)
         {
-            try 
+            try
             {
                 using MagickImage image = new(imagepath);
                 if (image.Width > 1000) image.Resize(1000, 0);

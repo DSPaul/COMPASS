@@ -18,8 +18,8 @@ namespace COMPASS.ViewModels
         public double TileWidth
         {
             get { return _width; }
-            set 
-            { 
+            set
+            {
                 SetProperty(ref _width, value);
                 RaisePropertyChanged(nameof(TileHeight));
                 Properties.Settings.Default.TileCoverSize = value;
@@ -28,15 +28,15 @@ namespace COMPASS.ViewModels
 
         public double TileHeight
         {
-            get { return (int)(_width * 4/3); }
+            get { return (int)(_width * 4 / 3); }
         }
 
         private bool _showtitle = Properties.Settings.Default.TileShowTitle;
         public bool ShowTitle
         {
             get { return _showtitle; }
-            set 
-            { 
+            set
+            {
                 SetProperty(ref _showtitle, value);
                 Properties.Settings.Default.TileShowTitle = value;
             }
