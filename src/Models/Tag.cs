@@ -1,4 +1,5 @@
 ﻿using COMPASS.Tools;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace COMPASS.Models
 {
-    public class Tag : ObservableObject, ITag, IHasID, IHasChilderen<Tag>
+    public sealed class Tag : ObservableObject, ITag, IHasID, IHasChilderen<Tag>, IEquatable<Tag>
     {
         //Emtpy Contructor needed for serialization
         public Tag() { }
@@ -18,10 +19,7 @@ namespace COMPASS.Models
             ID = Utils.GetAvailableID(alltags.ToList<IHasID>());
         }
 
-        //needed to get parent tag from parent ID
-        [XmlIgnoreAttribute]
-        public List<Tag> AllTags;
-
+        //Implement IHasChilderen
         private ObservableCollection<Tag> _childeren = new();
         public ObservableCollection<Tag> Children
         {
@@ -29,18 +27,12 @@ namespace COMPASS.Models
             set { SetProperty(ref _childeren, value); }
         }
 
+        //implement ITag
         private string _content = "";
-        public virtual string Content
+        public string Content
         {
             get { return _content; }
             set { SetProperty(ref _content, value); }
-        }
-
-        private int _parentID = -1;
-        public int ParentID
-        {
-            get { return _parentID; }
-            set { SetProperty(ref _parentID, value); }
         }
 
         private Color _backgroundColor = Colors.Black;
@@ -50,6 +42,37 @@ namespace COMPASS.Models
             set { SetProperty(ref _backgroundColor, value); }
         }
 
+        //Implement IHasID
+        public int ID { get; set; }
+
+        //Tag is in hierarchy, needs to be able to find parent
+        private int _parentID = -1;
+        public int ParentID { get; set; } // need property for serialisation
+
+        //can't save parent itself, would cause infinite loop when serializing
+        [XmlIgnoreAttribute]
+        public Tag Parent
+        {
+            get
+            {
+                if (_parentID == -1) return null;
+                return AllTags.First(tag => tag.ID == _parentID);
+            }
+
+            set
+            {
+                if (value is null) _parentID = -1;
+                else _parentID = value.ID;
+            }
+        }
+
+        [XmlIgnoreAttribute]
+        public List<Tag> AllTags { get; set; } //needed to get parent tag from parent ID
+
+
+        // Group tags are important for filtering
+        // when filtering, Tags in same group get OR relation
+        // Tags across groups get AND relation
         private bool _isGroup;
         public bool IsGroup
         {
@@ -57,57 +80,63 @@ namespace COMPASS.Models
             set { SetProperty(ref _isGroup, value); }
         }
 
-        public int ID { get; set; }
-
-        //can't save parent itself, would cause infinite loop when serializing
-        public Tag GetParent()
-        {
-            if (ParentID == -1) return null;
-            return AllTags.First(tag => tag.ID == ParentID);
-        }
-
-        //returns the first parent that is a group or null if no parents are group
+        //returns the first parent that is a group
+        //or Root parent if no parents are group
+        //or null if it is a root tag
         public Tag GetGroup()
         {
             if (IsGroup) return this;
-            if (ParentID == -1) return null;
-            Tag temp = GetParent();
+            if (Parent is null) return null;
+            Tag temp = Parent;
             while (!temp.IsGroup)
             {
-                if (temp.ParentID != -1) temp = temp.GetParent();
+                if (temp.Parent != null) temp = temp.Parent;
                 else break;
             }
             return temp;
         }
 
-        #region Equal and Copy Fucntions
+        #region Equal and Copy Functions
         public void Copy(Tag t)
         {
             ID = t.ID;
             Content = t.Content;
-            ParentID = t.ParentID;
+            Parent = t.Parent;
             IsGroup = t.IsGroup;
             BackgroundColor = t.BackgroundColor;
             Children = new ObservableCollection<Tag>(t.Children);
             AllTags = t.AllTags;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-            return obj is Tag objAsTag && Equals(objAsTag);
-        }
-
+        //Overwrite Equal operator
+        public override bool Equals(object obj) => this.Equals(obj as Tag);
         public bool Equals(Tag other)
         {
-            if (other == null) return false;
-            return (this.ID.Equals(other.ID));
+            if (other is null)
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            if (this.GetType() != other.GetType())
+                return false;
+            return (ID == other.ID);
         }
-
-        public override int GetHashCode()
+        public static bool operator ==(Tag lhs, Tag rhs)
         {
-            return ID;
+            if (lhs is null)
+            {
+                if (rhs is null)
+                {
+                    return true;
+                }
+
+                // Only the left side is null.
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return lhs.Equals(rhs);
         }
+        public static bool operator !=(Tag lhs, Tag rhs) => !(lhs == rhs);
+        public override int GetHashCode() => ID.GetHashCode();
         #endregion
     }
 }

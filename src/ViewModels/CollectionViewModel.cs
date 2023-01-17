@@ -157,7 +157,7 @@ namespace COMPASS.ViewModels
                 //add parents of those tags, must come AFTER chileren, otherwise childeren of parents are included which is wrong
                 for (int i = 0; i < SingleGroupTags.Count; i++)
                 {
-                    Tag P = SingleGroupTags[i].GetParent();
+                    Tag P = SingleGroupTags[i].Parent;
                     if (P != null && !P.IsGroup && !SingleGroupTags.Contains(P)) SingleGroupTags.Add(P);
                 }
                 SingleGroupFilteredFiles = new(_cc.AllCodices.Where(f => !SingleGroupTags.Intersect(f.Tags).Any()));

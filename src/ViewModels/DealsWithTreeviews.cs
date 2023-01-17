@@ -53,7 +53,7 @@ namespace COMPASS.ViewModels
             }
             foreach (Tag t in newRootTags)
             {
-                t.ParentID = -1;
+                t.Parent = null;
             }
             return newRootTags;
         }
@@ -78,7 +78,7 @@ namespace COMPASS.ViewModels
             //set partentID for all the childeren
             foreach (Tag childtag in Result.Children)
             {
-                childtag.ParentID = Result.ID;
+                childtag.Parent = Result;
             }
 
             return Result;
