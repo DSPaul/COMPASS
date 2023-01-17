@@ -61,12 +61,12 @@
     <PackageReference Include="BlackPearl.Controls.Library" Version="2.0.3" />
     <PackageReference Include="DotNetZip" Version="1.16.0" />
     <PackageReference Include="FuzzySharp" Version="2.0.2" />
-    <PackageReference Include="gong-wpf-dragdrop" Version="3.2.0" />
+    <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="HtmlAgilityPack">
       <Version>1.11.46</Version>
     </PackageReference>
     <PackageReference Include="itext7">
-      <Version>7.2.4</Version>
+      <Version>7.2.5</Version>
     </PackageReference>
     <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU">
@@ -78,9 +78,9 @@
     <PackageReference Include="Markdig" Version="0.30.4" />
     <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
     <PackageReference Include="MaterialDesignThemes">
-      <Version>4.6.1</Version>
+      <Version>4.7.1</Version>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="OpenCvSharp4" Version="4.6.0.20220608" />
     <PackageReference Include="OpenCvSharp4.Extensions" Version="4.6.0.20220608" />
