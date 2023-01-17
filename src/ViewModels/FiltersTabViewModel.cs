@@ -19,12 +19,12 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref selectedAuthor, value);
-                FilterTag AuthorTag = new(FilterType.Author, value)
+                Filter AuthorFilter = new(FilterType.Author, value)
                 {
                     Label = "Author:",
                     BackgroundColor = Colors.Orange
                 };
-                MVM.CollectionVM.AddFieldFilter(AuthorTag);
+                MVM.CollectionVM.AddFieldFilter(AuthorFilter);
             }
         }
 
@@ -36,12 +36,12 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref selectedPublisher, value);
-                FilterTag PublTag = new(FilterType.Publisher, value)
+                Filter PublisherFilter = new(FilterType.Publisher, value)
                 {
                     Label = "Publisher:",
                     BackgroundColor = Colors.MediumPurple
                 };
-                MVM.CollectionVM.AddFieldFilter(PublTag);
+                MVM.CollectionVM.AddFieldFilter(PublisherFilter);
             }
         }
 
@@ -57,13 +57,13 @@ namespace COMPASS.ViewModels
                 SetProperty(ref startReleaseDate, value);
                 if (value != null)
                 {
-                    FilterTag startDateTag = new(FilterType.StartReleaseDate, value)
+                    Filter startDateFilter = new(FilterType.StartReleaseDate, value)
                     {
                         Label = "After:",
                         BackgroundColor = Colors.DeepSkyBlue,
                         Unique = true
                     };
-                    MVM.CollectionVM.AddFieldFilter(startDateTag);
+                    MVM.CollectionVM.AddFieldFilter(startDateFilter);
                 }
             }
         }
@@ -76,13 +76,13 @@ namespace COMPASS.ViewModels
                 SetProperty(ref stopReleaseDate, value);
                 if (value != null)
                 {
-                    FilterTag stopDateTag = new(FilterType.StopReleaseDate, value)
+                    Filter stopDateFilter = new(FilterType.StopReleaseDate, value)
                     {
                         Label = "Before:",
                         BackgroundColor = Colors.DeepSkyBlue,
                         Unique = true
                     };
-                    MVM.CollectionVM.AddFieldFilter(stopDateTag);
+                    MVM.CollectionVM.AddFieldFilter(stopDateFilter);
                 }
             }
         }
@@ -97,14 +97,14 @@ namespace COMPASS.ViewModels
                 SetProperty(ref minRating, value);
                 if (value > 0 && value < 6)
                 {
-                    FilterTag minRatTag = new(FilterType.MinimumRating, value)
+                    Filter minRatFilter = new(FilterType.MinimumRating, value)
                     {
                         Label = "At least",
                         Suffix = "stars",
                         BackgroundColor = Colors.Goldenrod,
                         Unique = true
                     };
-                    MVM.CollectionVM.AddFieldFilter(minRatTag);
+                    MVM.CollectionVM.AddFieldFilter(minRatFilter);
                 }
             }
         }
@@ -112,13 +112,9 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Functions and Commands
-        private RelayCommand<FilterTag> _addSourceFilterCommand;
-        public RelayCommand<FilterTag> AddSourceFilterCommand => _addSourceFilterCommand ??= new(AddSourceFilter);
-
-        public void AddSourceFilter(FilterTag ft)
-        {
-            MVM.CollectionVM.AddFieldFilter(ft);
-        }
+        private RelayCommand<Filter> _addSourceFilterCommand;
+        public RelayCommand<Filter> AddSourceFilterCommand => _addSourceFilterCommand ??= new(AddSourceFilter);
+        public void AddSourceFilter(Filter filter) => MVM.CollectionVM.AddFieldFilter(filter);
 
         private ActionCommand _clearFiltersCommand;
         public ActionCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);

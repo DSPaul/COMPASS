@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 
 namespace COMPASS.Models
 {
-    public class Tag : ObservableObject, IHasID, IHasChilderen<Tag>
+    public class Tag : ObservableObject, ITag, IHasID, IHasChilderen<Tag>
     {
         //Emtpy Contructor needed for serialization
         public Tag() { }
@@ -67,11 +67,11 @@ namespace COMPASS.Models
         }
 
         //returns the first parent that is a group or null if no parents are group
-        public virtual object GetGroup()
+        public Tag GetGroup()
         {
             if (IsGroup) return this;
             if (ParentID == -1) return null;
-            Tag temp = this.GetParent();
+            Tag temp = GetParent();
             while (!temp.IsGroup)
             {
                 if (temp.ParentID != -1) temp = temp.GetParent();

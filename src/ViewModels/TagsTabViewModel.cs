@@ -12,7 +12,7 @@ namespace COMPASS.ViewModels
         }
 
         //Tag for Context Menu
-        public Tag Context;
+        public Tag Context { get; set; }
 
         public ActionCommand EditTagCommand { get; init; }
         public void EditTag()

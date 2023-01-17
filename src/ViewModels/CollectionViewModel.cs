@@ -34,7 +34,7 @@ namespace COMPASS.ViewModels
             ExcludedCodicesByFilter = new();
 
             SearchTerm = "";
-            SourceTags = new()
+            SourceFilters = new()
             {
                 new(Enums.FilterType.OfflineSource)
                 {
@@ -76,8 +76,8 @@ namespace COMPASS.ViewModels
         //CollectionDirectories
         public ObservableCollection<Tag> ActiveTags { get; set; }
         public ObservableCollection<Tag> DeActiveTags { get; set; }
-        public ObservableCollection<FilterTag> ActiveFilters { get; set; }
-        public ObservableCollection<FilterTag> DeActiveFilters { get; set; }
+        public ObservableCollection<Filter> ActiveFilters { get; set; }
+        public ObservableCollection<Filter> DeActiveFilters { get; set; }
 
         public HashSet<Codex> ExcludedCodicesByTag { get; set; }
         public HashSet<Codex> ExcludedCodicesByExcludedTags { get; set; }
@@ -102,11 +102,11 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _searchTerm, value); }
         }
 
-        private List<FilterTag> _sourceTags;
-        public List<FilterTag> SourceTags
+        private List<Filter> _sourceFilters;
+        public List<Filter> SourceFilters
         {
-            get { return _sourceTags; }
-            init { SetProperty(ref (_sourceTags), value); }
+            get { return _sourceFilters; }
+            init { SetProperty(ref (_sourceFilters), value); }
         }
 
         #endregion
@@ -142,10 +142,9 @@ namespace COMPASS.ViewModels
             HashSet<Tag> ActiveGroups = new();
 
             //Find all the active groups to filter in
-            foreach (Tag t in ActiveTags)
+            foreach (Tag tag in ActiveTags)
             {
-                Tag Group = (Tag)t.GetGroup();
-                ActiveGroups.Add(Group);
+                ActiveGroups.Add(tag.GetGroup());
             }
 
             //List of Files filtered out in that group
@@ -175,32 +174,38 @@ namespace COMPASS.ViewModels
         }
 
         private RelayCommand<Tag> _addTagFilterCommand;
-        public RelayCommand<Tag> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilter);
-        public void AddTagFilter(Tag t)
+        public RelayCommand<Tag> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
+        private void AddTagFilterHelper(Tag tag) => AddTagFilter(tag); //needed because relaycommand only takes functions with one arg
+        public void AddTagFilter(Tag t, bool include = true)
         {
-            //only add if not yet in activetags
-            if (ActiveTags.All(p => p.ID != t.ID))
+            //Move to active if include and not yet in active
+            if (include && !ActiveTags.Contains(t))
             {
                 ActiveTags.Add(t);
                 DeActiveTags.Remove(t);
             }
-        }
-        public void AddNegTagFilter(Tag t)
-        {
-            //only add if not yet in deactivetags
-            if (DeActiveTags.All(p => p.ID != t.ID))
+
+            //Move to deactive if include and not yet in deactive
+            if (!include && !DeActiveTags.Contains(t))
             {
                 DeActiveTags.Add(t);
                 ActiveTags.Remove(t);
             }
         }
 
-        private RelayCommand<Tag> _removeFilterCommand;
-        public RelayCommand<Tag> RemoveFilterCommand => _removeFilterCommand ??= new(RemoveFilter);
-        public void RemoveFilter(Tag t)
+        private RelayCommand<ITag> _removeFilterCommand;
+        public RelayCommand<ITag> RemoveFilterCommand => _removeFilterCommand ??= new(RemoveFilter);
+        public void RemoveFilter(ITag tag)
         {
-            if (!t.GetType().IsSubclassOf(typeof(Tag))) RemoveTagFilter(t);
-            else RemoveFieldFilter((FilterTag)t);
+            switch (tag)
+            {
+                case Tag t:
+                    RemoveTagFilter(t);
+                    break;
+                case Filter f:
+                    RemoveFieldFilter(f);
+                    break;
+            }
         }
         public void RemoveTagFilter(Tag t)
         {
@@ -222,17 +227,17 @@ namespace COMPASS.ViewModels
             UpdateActiveFiles();
         }
 
-        public List<Codex> GetFieldFilteredCodices(Enums.FilterType filtertype, IEnumerable<FilterTag> FilterTags, bool invert = false)
+        public List<Codex> GetFieldFilteredCodices(Enums.FilterType filtertype, IEnumerable<Filter> Filters, bool invert = false)
         {
             List<object> FilterValues = new(
-                    FilterTags
-                    .Where(filter => (Enums.FilterType)filter.GetGroup() == filtertype)
+                    Filters
+                    .Where(filter => filter.Type == filtertype)
                     .Select(t => t.FilterValue)
                     );
 
             if (FilterValues.Count == 0) return new();
 
-            IEnumerable<Codex> ExcludedCodices = new List<Codex>(); // generic IEnumerable doesn't have constructor so list instead
+            IEnumerable<Codex> ExcludedCodices = new List<Codex>(); // generic IEnumerable doesn'tag have constructor so list instead
             switch (filtertype)
             {
                 case Enums.FilterType.Search:
@@ -288,28 +293,28 @@ namespace COMPASS.ViewModels
             return returnExcludedCodices ? ExcludedCodicesBySearch : IncludedCodicesBySearch;
         }
 
-        public void AddFieldFilter(FilterTag t, bool include = true)
+        public void AddFieldFilter(Filter filter, bool include = true)
         {
-            ObservableCollection<FilterTag> Target = include ? ActiveFilters : DeActiveFilters;
-            ObservableCollection<FilterTag> Other = !include ? ActiveFilters : DeActiveFilters;
+            ObservableCollection<Filter> Target = include ? ActiveFilters : DeActiveFilters;
+            ObservableCollection<Filter> Other = !include ? ActiveFilters : DeActiveFilters;
             //if Filter is unique, remove previous instance of that Filter before adding
-            if (t.Unique)
+            if (filter.Unique)
             {
                 Target.Remove(
-                    Target.SingleOrDefault(tag => (int)tag.GetGroup() == (int)t.GetGroup()));
+                    Target.SingleOrDefault(f => f.Type == filter.Type));
             }
             //only add if not yet in activetags
-            if (Target.All(p => p.ID != t.ID))
+            if (!Target.Contains(filter))
             {
-                Target.Add(t);
-                Other.Remove(t);
+                Target.Add(filter);
+                Other.Remove(filter);
             }
         }
 
-        public void RemoveFieldFilter(FilterTag t)
+        public void RemoveFieldFilter(Filter filter)
         {
-            ActiveFilters.Remove(t);
-            DeActiveFilters.Remove(t);
+            ActiveFilters.Remove(filter);
+            DeActiveFilters.Remove(filter);
         }
         //------------------------------------//
 
@@ -380,7 +385,7 @@ namespace COMPASS.ViewModels
             RaisePropertyChanged(nameof(MostOpenedCodices));
             RaisePropertyChanged(nameof(RecentlyAddedCodices));
 
-            //reapply sorting, will fail if there aren't any
+            //reapply sorting, will fail if there aren'tag any
             try
             {
                 CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(sortDescr);
@@ -417,8 +422,8 @@ namespace COMPASS.ViewModels
                     }
                     break;
                 //Move Filter included/excluded
-                case FilterTag:
-                //Do filtertag specific stuff here if needed
+                case Filter:
+                //Do filter specific stuff here if needed
                 //Move Tag between included/excluded
                 case Tag:
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
@@ -430,23 +435,20 @@ namespace COMPASS.ViewModels
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
             //Included filter Listbox has extra empty collection to tell the difference
-            bool ToExcludeTags = ((CompositeCollection)(dropInfo.TargetCollection)).Count < 3;
+            bool ToIncluded = ((CompositeCollection)(dropInfo.TargetCollection)).Count > 2;
 
             switch (dropInfo.Data)
             {
                 //Tree to Filter Box
                 case TreeViewNode DraggedTVN:
-                    if (ToExcludeTags) { AddNegTagFilter(DraggedTVN.Tag); }
-                    else { AddTagFilter(DraggedTVN.Tag); }
+                    AddTagFilter(DraggedTVN.Tag, ToIncluded);
                     break;
                 //Between include and exlude
-                case FilterTag DraggedFilterTag:
-                    if (ToExcludeTags) { AddFieldFilter(DraggedFilterTag, false); }
-                    else { AddFieldFilter(DraggedFilterTag); }
+                case Filter DraggedFilter:
+                    AddFieldFilter(DraggedFilter, ToIncluded);
                     break;
                 case Tag DraggedTag:
-                    if (ToExcludeTags) { AddNegTagFilter(DraggedTag); }
-                    else { AddTagFilter(DraggedTag); }
+                    AddTagFilter(DraggedTag, ToIncluded);
                     break;
             }
         }

@@ -402,13 +402,13 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> SearchCommand => _searchCommand ??= new(SearchCommandHelper);
         private void SearchCommandHelper(string Searchterm)
         {
-            FilterTag SearchTag = new(Enums.FilterType.Search, Searchterm)
+            Filter SearchFilter = new(Enums.FilterType.Search, Searchterm)
             {
                 Label = "Search:",
                 BackgroundColor = Colors.Salmon,
                 Unique = true
             };
-            CollectionVM.AddFieldFilter(SearchTag);
+            CollectionVM.AddFieldFilter(SearchFilter);
         }
 
         //called every few seconds to update IsOnline
