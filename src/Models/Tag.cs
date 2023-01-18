@@ -45,24 +45,22 @@ namespace COMPASS.Models
         //Implement IHasID
         public int ID { get; set; }
 
-        //Tag is in hierarchy, needs to be able to find parent
-        private int _parentID = -1;
-        public int ParentID { get; set; } // need property for serialisation
-
-        //can't save parent itself, would cause infinite loop when serializing
+        // can't save parent itself, would cause infinite loop when serializing
+        // so save ID instead
+        public int ParentID { get; set; } = -1;
         [XmlIgnoreAttribute]
         public Tag Parent
         {
             get
             {
-                if (_parentID == -1) return null;
-                return AllTags.First(tag => tag.ID == _parentID);
+                if (ParentID == -1) return null;
+                return AllTags.First(tag => tag.ID == ParentID);
             }
 
             set
             {
-                if (value is null) _parentID = -1;
-                else _parentID = value.ID;
+                if (value is null) ParentID = -1;
+                else ParentID = value.ID;
             }
         }
 
