@@ -6,8 +6,8 @@ namespace COMPASS.ViewModels.Commands
     //Command with parameter but doesn't return
     public class RelayCommand<T> : ICommand
     {
-        private Action<T> _execute;
-        private Func<T, bool> _canExecute;
+        private readonly Action<T> _execute;
+        private readonly Func<T, bool> _canExecute;
 
         public event EventHandler CanExecuteChanged
         {

@@ -69,7 +69,7 @@ namespace COMPASS.ViewModels
         }
 
         #region Properties
-        private CodexCollection _codexCollection;
+        private readonly CodexCollection _codexCollection;
 
         public Sources Source { get; init; }
         private BackgroundWorker worker;
@@ -157,8 +157,8 @@ namespace COMPASS.ViewModels
                 _fileCount = count;
                 _shouldImport = should;
             }
-            private string _filetype;
-            private int _fileCount;
+            private readonly string _filetype;
+            private readonly int _fileCount;
             private bool _shouldImport;
 
             public string Key
@@ -181,7 +181,7 @@ namespace COMPASS.ViewModels
 
         public void ImportFiles(object sender, DoWorkEventArgs e)
         {
-            BackgroundWorker worker = sender as BackgroundWorker;
+            BackgroundWorker importWorker = sender as BackgroundWorker;
 
             OpenFileDialog openFileDialog = new()
             {
@@ -209,7 +209,7 @@ namespace COMPASS.ViewModels
                 //init progress tracking variables
                 _importcounter = 0;
                 _importamount = openFileDialog.FileNames.Length;
-                worker.ReportProgress(_importcounter);
+                importWorker.ReportProgress(_importcounter);
 
                 foreach (string path in openFileDialog.FileNames)
                 {
@@ -217,7 +217,7 @@ namespace COMPASS.ViewModels
 
                     //Update Progress Bar when done
                     _importcounter++;
-                    worker.ReportProgress(_importcounter);
+                    importWorker.ReportProgress(_importcounter);
                 }
             }
             Application.Current.Dispatcher.Invoke(() =>
@@ -229,7 +229,7 @@ namespace COMPASS.ViewModels
 
         public void ImportFolder(object sender, DoWorkEventArgs e)
         {
-            BackgroundWorker worker = sender as BackgroundWorker;
+            BackgroundWorker importWorker = sender as BackgroundWorker;
             VistaFolderBrowserDialog openFolderDialog = new();
 
             if (openFolderDialog.ShowDialog() == true)
@@ -293,7 +293,7 @@ namespace COMPASS.ViewModels
                     pgw.Show();
                 });
 
-                worker.ReportProgress(_importcounter);
+                importWorker.ReportProgress(_importcounter);
 
                 foreach (string path in toImport)
                 {
@@ -301,7 +301,7 @@ namespace COMPASS.ViewModels
 
                     //Update Progress Bar when done
                     _importcounter++;
-                    worker.ReportProgress(_importcounter);
+                    importWorker.ReportProgress(_importcounter);
                 }
             }
             Application.Current.Dispatcher.Invoke(() =>
@@ -363,7 +363,6 @@ namespace COMPASS.ViewModels
                     worker.ReportProgress(_importcounter, logEntry);
                 }
                 _codexCollection.AllCodices.Add(newCodex);
-                //SelectWhenDone = newCodex;
 
             }
 

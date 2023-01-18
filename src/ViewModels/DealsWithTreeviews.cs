@@ -9,7 +9,7 @@ namespace COMPASS.ViewModels
 {
     public abstract class DealsWithTreeviews : ViewModelBase, IDropTarget
     {
-        public DealsWithTreeviews(List<Tag> treeRoot)
+        protected DealsWithTreeviews(List<Tag> treeRoot)
         {
             TreeRoot = treeRoot;
             RefreshTreeView();

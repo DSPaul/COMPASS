@@ -7,8 +7,8 @@ namespace COMPASS.ViewModels.Commands
     //to for example indicate succes of excecution
     public class ReturningRelayCommand<T> : ICommand
     {
-        private Func<T, bool> _execute;
-        private Func<T, bool> _canExecute;
+        private readonly Func<T, bool> _execute;
+        private readonly Func<T, bool> _canExecute;
 
         public event EventHandler CanExecuteChanged
         {

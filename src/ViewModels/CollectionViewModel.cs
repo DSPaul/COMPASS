@@ -70,7 +70,7 @@ namespace COMPASS.ViewModels
 
         #region Properties
         readonly CodexCollection _cc;
-        private int _itemsShown = 15;
+        private readonly int _itemsShown = 15;
         public int ItemsShown => Math.Min(_itemsShown, ActiveFiles.Count);
 
         //CollectionDirectories

@@ -146,16 +146,8 @@ namespace BarcodeReaderTool
 
             if (_lastFrame != null)
             {
-                //using (var imageFactory = new ImageFactory())
                 using (var stream = new MemoryStream())
                 {
-                    //imageFactory
-                    //    .Load(_lastFrame)
-                    //    .Resize(new ResizeLayer(
-                    //        size: new System.Drawing.Size(_frameWidth, _frameHeight),
-                    //        resizeMode: ResizeMode.Crop,
-                    //        anchorPosition: AnchorPosition.Center))
-                    //    .Save(stream);
                     LastPngFrame = stream.ToArray();
                 }
             }

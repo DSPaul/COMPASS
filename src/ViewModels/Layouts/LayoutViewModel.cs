@@ -10,7 +10,7 @@ namespace COMPASS.ViewModels
 {
     public abstract class LayoutViewModel : ViewModelBase
     {
-        public LayoutViewModel() : base()
+        protected LayoutViewModel() : base()
         {
             GetSortOptions();
             SortOptionsMenuItem = new MyMenuItem("Sorty By")
