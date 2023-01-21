@@ -189,8 +189,6 @@ namespace COMPASS.ViewModels
                 Multiselect = true
             };
 
-            Codex SelectWhenDone = null;
-
             if (openFileDialog.ShowDialog() == true)
             {
                 ProgressWindow pgw;
@@ -224,7 +222,6 @@ namespace COMPASS.ViewModels
             {
                 MVM.Refresh();
             });
-            if (SelectWhenDone != null) MVM.CurrentLayout.SelectedFile = SelectWhenDone;
         }
 
         public void ImportFolder(object sender, DoWorkEventArgs e)
