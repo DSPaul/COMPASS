@@ -125,9 +125,11 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Style="{StaticResource ClickableIcon}"
-                            Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}" Background="{TemplateBinding Background}">
-                    </materialDesign:PackIcon>
+                    <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" CornerRadius="5">
+                        <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Style="{StaticResource ClickableIcon}"
+                            Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        </materialDesign:PackIcon>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

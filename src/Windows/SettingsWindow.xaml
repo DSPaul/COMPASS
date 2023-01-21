@@ -54,7 +54,7 @@
             </Style>
         </Grid.Resources>
         <TabControl x:Name="SettingsTabControl" TabStripPlacement="Left"
-                    Background="{StaticResource LeftDockBackground}" BorderThickness="0">
+                    Background="{StaticResource TabFocus}" BorderThickness="0">
             <TabControl.Resources>
                 <Style TargetType="Border" x:Key="SettingsContainer">
                     <Setter Property="BorderThickness" Value="2"/>

@@ -6,14 +6,20 @@ namespace COMPASS.ViewModels
 {
     public class TagEditViewModel : ViewModelBase, IEditViewModel
     {
-        public TagEditViewModel(Tag ToEdit) : base()
+        public TagEditViewModel(Tag ToEdit, bool isGroup = false) : base()
         {
             EditedTag = ToEdit;
-            if (ToEdit == null) CreateNewTag = true;
             TempTag = new Tag(MVM.CurrentCollection.AllTags);
-            if (!CreateNewTag) TempTag.Copy(EditedTag);
 
-            ShowColorSelection = false;
+            if (ToEdit is null)
+            {
+                CreateNewTag = true;
+                TempTag.IsGroup = isGroup;
+            }
+            else
+            {
+                TempTag.Copy(EditedTag);
+            }
 
             //Commands
             CloseColorSelectionCommand = new ActionCommand(CloseColorSelection);
@@ -22,7 +28,7 @@ namespace COMPASS.ViewModels
         #region Properties
 
         private Tag EditedTag;
-        private readonly bool CreateNewTag;
+        public bool CreateNewTag { get; init; }
 
         //TempTag to work with
         private Tag tempTag;
@@ -63,7 +69,7 @@ namespace COMPASS.ViewModels
 
             //Apply changes 
             EditedTag.Copy(TempTag);
-            MVM.TFViewModel.TagsTabVM.RefreshTreeView();
+            MVM.LeftDockVM.TagsTabVM.RefreshTreeView();
 
             if (!CreateNewTag) CloseAction();
             else

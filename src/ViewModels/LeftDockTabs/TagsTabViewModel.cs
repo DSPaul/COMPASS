@@ -7,12 +7,28 @@ namespace COMPASS.ViewModels
     {
         public TagsTabViewModel() : base(MVM.CurrentCollection.RootTags)
         {
+            AddTagCommand = new(AddTag);
+            AddGroupCommand = new(AddGroup);
             EditTagCommand = new(EditTag);
             DeleteTagCommand = new(DeleteTag);
         }
 
         //Tag for Context Menu
         public Tag Context { get; set; }
+
+        //Tag Creation ViewModel
+        private IEditViewModel _addTagViewModel;
+        public IEditViewModel AddTagViewModel
+        {
+            get { return _addTagViewModel; }
+            set { SetProperty(ref _addTagViewModel, value); }
+        }
+
+        //Add Tag Btn
+        public ActionCommand AddTagCommand { get; private set; }
+        public ActionCommand AddGroupCommand { get; private set; }
+        public void AddTag() => AddTagViewModel = new TagEditViewModel(null, false);
+        public void AddGroup() => AddTagViewModel = new TagEditViewModel(null, true);
 
         public ActionCommand EditTagCommand { get; init; }
         public void EditTag()

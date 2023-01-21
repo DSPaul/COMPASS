@@ -18,7 +18,7 @@
     <SolidColorBrush x:Key="SelectableTransparent" Color="Black" Opacity="0"/>
 
     <SolidColorBrush x:Key="WindowBackground" Color="{StaticResource DarkestGray}"/>
-    <SolidColorBrush x:Key="LeftDockBackground" Color="{StaticResource DarkerGray}"/>
+    <SolidColorBrush x:Key="LeftDockBackground" Color="{StaticResource DarkestGray}"/>
     <SolidColorBrush x:Key="FiltersBackground" Color="{StaticResource DarkerGray}"/>
     <SolidColorBrush x:Key="LogBackground" Color="{StaticResource ReallyDarkGray}"/>
     <SolidColorBrush x:Key="LogBorder" Color="{StaticResource DarkerGray}"/>

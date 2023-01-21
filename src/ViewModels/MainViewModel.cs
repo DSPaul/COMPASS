@@ -52,8 +52,6 @@ namespace COMPASS.ViewModels
 
             //Commands
             ChangeFileViewCommand = new RelayCommand<CodexLayout>(ChangeFileView);
-            AddTagCommand = new ActionCommand(AddTag);
-            ImportFilesCommand = new RelayCommand<Sources>(ImportFiles);
             CreateCollectionCommand = new RelayCommand<string>(CreateCollection);
             EditCollectionNameCommand = new RelayCommand<string>(EditCollectionName);
             DeleteCollectionCommand = new ActionCommand(RaiseDeleteCollectionWarning);
@@ -255,28 +253,12 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _currentLayout, value); }
         }
 
-        //Tag Creation ViewModel
-        private IEditViewModel _addTagViewModel;
-        public IEditViewModel AddTagViewModel
-        {
-            get { return _addTagViewModel; }
-            set { SetProperty(ref _addTagViewModel, value); }
-        }
-
         //Tags and Filters Tabs ViewModel (Left Dock)
-        private TagsFiltersViewModel _tfViewModel;
-        public TagsFiltersViewModel TFViewModel
+        private LeftDockViewModel _tfViewModel;
+        public LeftDockViewModel LeftDockVM
         {
             get { return _tfViewModel; }
             set { SetProperty(ref _tfViewModel, value); }
-        }
-
-        //Import ViewModel
-        private ImportViewModel _currentImportVM;
-        public ImportViewModel CurrentImportViewModel
-        {
-            get { return _currentImportVM; }
-            set { SetProperty(ref _currentImportVM, value); }
         }
 
         #endregion
@@ -309,21 +291,7 @@ namespace COMPASS.ViewModels
         public void Refresh()
         {
             CollectionVM.ReFilter();
-            TFViewModel.TagsTabVM.RefreshTreeView();
-        }
-
-        //Add Tag Btn
-        public ActionCommand AddTagCommand { get; private set; }
-        public void AddTag()
-        {
-            AddTagViewModel = new TagEditViewModel(null);
-        }
-
-        //Import Btn
-        public RelayCommand<Sources> ImportFilesCommand { get; private set; }
-        public void ImportFiles(Sources source)
-        {
-            CurrentImportViewModel = new ImportViewModel(source, CurrentCollection);
+            LeftDockVM.TagsTabVM.RefreshTreeView();
         }
 
         //Change Collection
@@ -332,8 +300,7 @@ namespace COMPASS.ViewModels
             CurrentCollection = new CodexCollection(collectionDir);
             CollectionVM = new CollectionViewModel(_currentCollection);
             ChangeFileView((CodexLayout)Properties.Settings.Default.PreferedView);
-            TFViewModel = new TagsFiltersViewModel();
-            AddTagViewModel = new TagEditViewModel(null);
+            LeftDockVM = new LeftDockViewModel();
         }
 
         //Add new CodexCollection

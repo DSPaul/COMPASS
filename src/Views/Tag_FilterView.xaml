@@ -7,11 +7,15 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
              xmlns:Models="clr-namespace:COMPASS.Models" 
-             xmlns:controls="clr-namespace:COMPASS.Resources.Controls" xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:TagsFiltersViewModel}"
+             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+             xmlns:CustomControls="clr-namespace:COMPASS.Resources.Controls" 
+             xmlns:views="clr-namespace:COMPASS.Views"
+             d:DataContext="{d:DesignInstance Type=viewmodels:LeftDockViewModel}"
+             Background="{StaticResource ButtonBackground}"
              mc:Ignorable="d" FontSize="20"
-             d:DesignHeight="650" d:DesignWidth="200">
-    <Grid>
-        <Grid.Resources>
+             d:DesignHeight="650" d:DesignWidth="300">
+    <Grid Width="300">
+        <!--<Grid.Resources>
             <Style TargetType="{x:Type TabControl}">
                 <Setter Property="SnapsToDevicePixels" Value="True" />
                 <Setter Property="Template">
@@ -39,34 +43,92 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-        </Grid.Resources>
+        </Grid.Resources>-->
 
-        <TabControl Background="{x:Null}" BorderThickness="0">
+        <Grid.Resources>
+            <Style TargetType="ContentControl" x:Key="TabContentWrapper">
+                <Setter Property="ItemsControl.Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Grid.Column="0" Grid.RowSpan="10" Fill="{StaticResource Separator}"/>
+                                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                    <materialDesign:PackIcon Height="25" Width="25" HorizontalAlignment="Center"
+                                             Margin="5"  Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
+                                    <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.Header)}" FontSize="20"/>
+                                </StackPanel>
+                                <Rectangle Grid.Row="1" Grid.Column="1" Height="3" Fill="{StaticResource Separator}"/>
+                                <ContentPresenter Grid.Row="2" Grid.Column="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"/>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Grid.Resources>
+        
+        <TabControl Background="{StaticResource TabFocus}" BorderThickness="0" TabStripPlacement="Left" Padding="0">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
-                    <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                     <Setter Property="BorderThickness" Value="0"/>
-                    <Setter Property="VerticalAlignment" Value="Bottom"/>
-                    <Setter Property="MaxWidth" Value="300"/>
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="Cursor" Value="Hand"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="TabItem">
-                                <Border x:Name="TabBorder">
-                                    <StackPanel Orientation="Horizontal" Margin="5,2">
-                                        <materialDesign:PackIcon Height="25" Width="25" HorizontalAlignment="Right"
-                                                Kind="{TemplateBinding Tools:AP.IconKind}"/>
-                                        <ContentPresenter VerticalAlignment="Center" ContentSource="Header"
-                                                Margin="5,0,10,0"/>
-                                    </StackPanel>
+                                <Border x:Name="TabBorder" CornerRadius="5,0,0,5">
+                                    <materialDesign:PackIcon Height="35" Width="35" HorizontalAlignment="Center"
+                                         Margin="10" Kind="{TemplateBinding Tools:AP.IconKind}"/>
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter TargetName="TabBorder" Property="Background" Value="{x:Null}"/>
+                                        <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource TabFocus}"/>
                                     </Trigger>
                                     <Trigger Property="IsSelected" Value="False">
-                                        <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource UIElementBackground}"/>
+                                        <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource SelectableTransparent}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+                <Style TargetType="{x:Type Button}" x:Key="GrayBtn">
+                    <Setter Property="Background" Value="{StaticResource ButtonBackground}"/>
+                    <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                    <Setter Property="BorderBrush" Value="{x:Null}"/>
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <ContentPresenter VerticalAlignment="Center"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" Value="{StaticResource ButtonFocus}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style TargetType="{x:Type Button}" x:Key="outerIconBtn" BasedOn="{StaticResource GrayBtn}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Background="{TemplateBinding Background}" BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="35,0">
+                                        <materialDesign:PackIcon Height="30" Margin="0,0,10,0"
+                                                Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
+                                        <ContentPresenter VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
@@ -101,60 +163,137 @@
                     </HierarchicalDataTemplate>
                     <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
                 </TabItem.Resources>
-                <Border>
-                    <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"
+                <ContentControl Tools:AP.Header="Tags" Tools:AP.IconKind="TagMultiple" Style="{StaticResource TabContentWrapper}">
+                    <Grid Grid.Row="2" Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <CustomControls:ExpandingButton Grid.Row="0" Margin="10,10,10,5">
+                            <CustomControls:ExpandingButton.Toggle>
+                                <Button Tools:AP.IconKind="TagPlusOutline" Style="{StaticResource outerIconBtn}" 
+                            Content="New Tag" Command="{Binding AddTagCommand}" HorizontalAlignment="Stretch" />
+                            </CustomControls:ExpandingButton.Toggle>
+                            <CustomControls:ExpandingButton.HiddenContent>
+                                <views:TagEditView DataContext="{Binding AddTagViewModel}"/>
+                            </CustomControls:ExpandingButton.HiddenContent>
+                        </CustomControls:ExpandingButton>
+                        <CustomControls:ExpandingButton Grid.Row="1" Margin="10,5">
+                            <CustomControls:ExpandingButton.Toggle>
+                                <Button Tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource outerIconBtn}" 
+                            Content="New Group" Command="{Binding AddGroupCommand}"  HorizontalAlignment="Stretch" />
+                            </CustomControls:ExpandingButton.Toggle>
+                            <CustomControls:ExpandingButton.HiddenContent>
+                                <views:TagEditView DataContext="{Binding AddTagViewModel}"/>
+                            </CustomControls:ExpandingButton.HiddenContent>
+                        </CustomControls:ExpandingButton>
+                        <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"  Grid.Row="2"
                         ItemsSource="{Binding Path=TreeViewSource,Mode=TwoWay}"  Margin="5"
                         dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}"
                         ItemTemplateSelector="{StaticResource TagTemplateSelector}" MouseRightButtonDown="TagTree_MouseRightButtonDown">
-                        <TreeView.Resources>
-                            <Style TargetType="{x:Type TreeViewItem}">
-                                <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
-                                <Setter Property="IsSelected" Value="{Binding Selected, Mode=TwoWay}"/>
-                            </Style>
-                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
-                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
-                            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
-                            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black" />
-                        </TreeView.Resources>
-                    </TreeView>
-                </Border>
+                            <TreeView.Resources>
+                                <Style TargetType="{x:Type TreeViewItem}">
+                                    <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
+                                    <Setter Property="IsSelected" Value="{Binding Selected, Mode=TwoWay}"/>
+                                </Style>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black" />
+                            </TreeView.Resources>
+                        </TreeView>
+                    </Grid>
+                </ContentControl>
             </TabItem>
             <TabItem Header="Filter" Tools:AP.IconKind="Filter" DataContext="{Binding FiltersTabVM}">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-                    <Grid Margin="0 0 -10 0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Margin="20,15">
-                            <TextBlock Text="Author:"/>
-                            <ComboBox ItemsSource="{Binding MVM.CurrentCollection.AuthorList}" FontSize="15"
+                <ContentControl Tools:AP.Header="Filters" Tools:AP.IconKind="Filter" Style="{StaticResource TabContentWrapper}">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" Grid.Row="2" Grid.Column="1">
+                        <Grid Margin="0 0 -10 0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Margin="20,15">
+                                <TextBlock Text="Author:"/>
+                                <ComboBox ItemsSource="{Binding MVM.CurrentCollection.AuthorList}" FontSize="15"
                                       SelectedValue="{Binding SelectedAuthor}"/>
 
-                            <TextBlock Text="Publisher:" Margin="0,10,0,0"/>
-                            <ComboBox ItemsSource="{Binding MVM.CurrentCollection.PublisherList}" FontSize="15"
+                                <TextBlock Text="Publisher:" Margin="0,10,0,0"/>
+                                <ComboBox ItemsSource="{Binding MVM.CurrentCollection.PublisherList}" FontSize="15"
                                       SelectedValue="{Binding SelectedPublisher}"/>
 
-                            <TextBlock Text="Released Between:" Margin="0,10,0,0"/>
-                            <DatePicker SelectedDate="{Binding StartReleaseDate}" HorizontalAlignment="Left" Margin="-5 0" FontSize="18"/>
-                            <TextBlock Text="And"/>
-                            <DatePicker SelectedDate="{Binding StopReleaseDate}"  HorizontalAlignment="Left" Margin="-5 0" FontSize="18"/>
+                                <TextBlock Text="Released Between:" Margin="0,10,0,0"/>
+                                <DatePicker SelectedDate="{Binding StartReleaseDate}" HorizontalAlignment="Left" Margin="-5 0" FontSize="18"/>
+                                <TextBlock Text="And"/>
+                                <DatePicker SelectedDate="{Binding StopReleaseDate}"  HorizontalAlignment="Left" Margin="-5 0" FontSize="18"/>
 
-                            <TextBlock Text="Minimum Rating:" Margin="0,10,0,0"/>
-                            <materialDesign:RatingBar Value="{Binding MinRating, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                <TextBlock Text="Minimum Rating:" Margin="0,10,0,0"/>
+                                <materialDesign:RatingBar Value="{Binding MinRating, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                                           IsPreviewValueEnabled="True" Margin="-2 3"/>
 
-                            <TextBlock Text="Sources:" Margin="0,0,10,0"/>
+                                <TextBlock Text="Sources:" Margin="0,0,10,0"/>
 
-                            <ItemsControl ItemTemplate="{StaticResource FilterTagTemplate}" ItemsSource="{Binding MVM.CollectionVM.SourceTags}" 
+                                <ItemsControl ItemTemplate="{StaticResource FilterTagTemplate}" ItemsSource="{Binding MVM.CollectionVM.SourceFilters}" 
                                           HorizontalContentAlignment="Left" HorizontalAlignment="Left" Margin="5" 
                                     dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding MVM.CollectionVM}"/>
-                        </StackPanel>
-                        <Button Content="Clear All" Grid.Row="2" Margin="30" Command="{Binding ClearFiltersCommand}"
+                            </StackPanel>
+                            <Button Content="Clear All" Grid.Row="2" Margin="10" Command="{Binding ClearFiltersCommand}"
                             Style="{StaticResource IconTextButton}" Tools:AP.IconKind="FilterRemove" Background="Red"/>
-                    </Grid>
-                </ScrollViewer>
+                        </Grid>
+                    </ScrollViewer>
+                </ContentControl>
+            </TabItem>
+            <TabItem Header="AddBook" Tools:AP.IconKind="BookAdd">
+                <TabItem.Resources>
+                    <Style TargetType="Button" BasedOn="{StaticResource IconTextButton}" x:Key="ImportButton">
+                        <Setter Property="Padding" Value="40,7"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </TabItem.Resources>
+                <ContentControl Tools:AP.Header="Add Books" Tools:AP.IconKind="BookAdd" Style="{StaticResource TabContentWrapper}">
+                    <StackPanel>
+                        <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource ImportButton}" Content="From File"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.File}"/>
+                        <Button Tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource ImportButton}" Content="From Folder"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Folder}"/>
+                        <Button Tools:AP.IconKind="BookPlusOutline" Style="{StaticResource ImportButton}" Content="Create New"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Manual}"/>
+                        <Button Tools:AP.IconKind="Barcode" Style="{StaticResource ImportButton}" Content="From ISBN"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.ISBN}"/>
+                        <Button Tools:AP.IconKind="GoogleDrive" Style="{StaticResource ImportButton}" Content="Google Drive"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.GoogleDrive}"/>
+                        <Button Style="{StaticResource GrayBtn}" Margin="20,5"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Homebrewery}">
+                            <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
+                                BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="17,2">
+                                <StackPanel Orientation="Horizontal">
+                                    <ContentControl Content="{StaticResource HomebreweryLogo}"/>
+                                    <TextBlock Text="Homebrewery"/>
+                                </StackPanel>
+                            </Border>
+                        </Button>
+                        <!--DND Beyond doesn't work yet-->
+                        <Button Style="{StaticResource GrayBtn}" Visibility="Collapsed"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.DnDBeyond}">
+                            <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
+                                BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal">
+                                    <ContentControl Content="{StaticResource DnDBeyondLogo}"/>
+                                    <TextBlock Text="DnD Beyond"/>
+                                </StackPanel>
+                            </Border>
+                        </Button>
+                        <Button Style="{StaticResource GrayBtn}" Margin="20,5"
+                                Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.GmBinder}">
+                            <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
+                                    BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="17,2">
+                                <ContentControl Content="{StaticResource GMBinderLogo}"/>
+                            </Border>
+                        </Button>
+                    </StackPanel>
+                </ContentControl>
             </TabItem>
         </TabControl>
     </Grid>

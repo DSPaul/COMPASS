@@ -37,5 +37,20 @@ namespace COMPASS.Tools
         public static readonly DependencyProperty PlaceHolderTextProperty =
             DependencyProperty.RegisterAttached("PlaceHolderText", typeof(string), typeof(AP));
         #endregion
+
+        #region Header
+        public static string GetHeader(DependencyObject obj)
+        {
+            return (string)obj.GetValue(HeaderProperty);
+        }
+
+        public static void SetHeader(DependencyObject obj, string value)
+        {
+            obj.SetValue(HeaderProperty, value);
+        }
+
+        public static readonly DependencyProperty HeaderProperty =
+            DependencyProperty.RegisterAttached("Header", typeof(string), typeof(AP));
+        #endregion
     }
 }
