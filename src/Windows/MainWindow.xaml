@@ -34,7 +34,7 @@
             <views:HomeLayout DataContext="{Binding}"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewmodels:LeftDockViewModel}">
-            <views:Tag_FilterView DataContext="{Binding}"/>
+            <views:LeftDockView DataContext="{Binding}"/>
         </DataTemplate>
     </Window.Resources>
     <Window.Style>
@@ -48,21 +48,9 @@
         </Style>
     </Window.Style>
     <Border BorderThickness="0">
-        <Grid Name="MainGrid" Focusable="True">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width ="0"/>
-                <ColumnDefinition Width ="auto"/>
-                <ColumnDefinition Width ="auto"/>
-                <ColumnDefinition Width ="*"/>
-                <ColumnDefinition Width ="auto"/>
-                <ColumnDefinition Width ="5"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+        <DockPanel Name="MainGrid" Focusable="True">
             <!--#region Title Bar-->
-            <Grid Grid.ColumnSpan="7" x:Name="WindowsBar" Background="{StaticResource TitlebarBackground}">
+            <Grid DockPanel.Dock="Top" x:Name="WindowsBar" MaxHeight="100" Background="{StaticResource TitlebarBackground}">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width ="*"/>
@@ -169,7 +157,7 @@
                 <ContentControl Content="{StaticResource CompassLogo}" Margin="10,0" HorizontalAlignment="Left"/>
 
                 <!--Search Bar-->
-                <Border Grid.Column="1" CornerRadius="4" Width="300" MinWidth="100" WindowChrome.IsHitTestVisibleInChrome="True"
+                <Border Grid.Column="1" CornerRadius="4" Width="300" MinWidth="100" Height="35" WindowChrome.IsHitTestVisibleInChrome="True"
                     Background="{StaticResource UIElementBackground}" OpacityMask="#FF222222" Margin="30,5">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -186,7 +174,7 @@
                 </Border>
 
                 <!--Collection Selection-->
-                <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="0,5" WindowChrome.IsHitTestVisibleInChrome="True">
+                <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="0,5" Height="35" WindowChrome.IsHitTestVisibleInChrome="True">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type ToggleButton}">
                             <Setter Property="Width" Value="30"/>
@@ -415,11 +403,11 @@
             <!--#endregion-->
 
             <!--#region Left Dock-->
-            <UserControl Grid.Column="2" Grid.Row="1" Content="{Binding LeftDockVM}"/>
+            <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}"/>
             <!--#endregion-->
 
             <!--#region Main Dock-->
-            <Grid x:Name="ViewsGrid" Grid.Column="3" Grid.Row="1">
+            <Grid x:Name="ViewsGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
@@ -543,19 +531,6 @@
                             </Style>
                         </StackPanel.Resources>
                         <Rectangle Width="3" Fill="Gray" Margin="3,0"/>
-                        <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.HomeLayout}" 
-                            Tools:AP.IconKind="Home" Height="30" ToolTip="Home Layout"/>
-                        <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.ListLayout}" 
-                            Tools:AP.IconKind="ViewHeadline" Height="40" ToolTip="List Layout"/>
-                        <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.CardLayout}" 
-                            Tools:AP.IconKind="ViewCompact" Height="40" RenderTransformOrigin="0.5 0.5" ToolTip="Card Layout">
-                            <Button.RenderTransform>
-                                <ScaleTransform ScaleY="-1"/>
-                            </Button.RenderTransform>
-                        </Button>
-                        <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.TileLayout}" 
-                            Tools:AP.IconKind="ViewModule" Height="43" ToolTip="Tile Layout"/>
-                        <Rectangle Width="3" Fill="Gray" Margin="3,0"/>
                         <Button Click="Toggle_ContextMenu" Tools:AP.IconKind="EyeSettings" Height="30" 
                             VerticalAlignment="Center" Margin="2,0,2,5" CommandParameter="{x:Null}">
                             <Button.ContextMenu>
@@ -586,7 +561,7 @@
                 </Border>
             </Grid>
             <!--#endregion-->
-        </Grid>
+        </DockPanel>
     </Border>
 
 </Window>

@@ -8,11 +8,11 @@ using System.Windows.Media;
 namespace COMPASS.Views
 {
     /// <summary>
-    /// Interaction logic for Tag_FilterView.xaml
+    /// Interaction logic for LeftDockView.xaml
     /// </summary>
-    public partial class Tag_FilterView : UserControl
+    public partial class LeftDockView : UserControl
     {
-        public Tag_FilterView()
+        public LeftDockView()
         {
             InitializeComponent();
         }
