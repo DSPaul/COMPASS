@@ -38,6 +38,14 @@
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>
+            <!--Simplify template to remove scroll https://stackoverflow.com/questions/1739216/how-to-disable-scrollviewer-in-listbox-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <ItemsPresenter />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style TargetType="{x:Type ListBoxItem}">
             <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
