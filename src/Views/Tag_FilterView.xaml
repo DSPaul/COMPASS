@@ -134,7 +134,7 @@
                     </Setter>
                 </Style>
             </TabControl.Resources>
-            <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple" DataContext="{Binding TagsTabVM}">
+            <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple" DataContext="{Binding TagsTabVM}" ToolTip="Tags">
                 <TabItem.Resources>
                     <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
                     <ContextMenu x:Key="TagContextMenu">
@@ -206,7 +206,7 @@
                     </Grid>
                 </ContentControl>
             </TabItem>
-            <TabItem Header="Filter" Tools:AP.IconKind="Filter" DataContext="{Binding FiltersTabVM}">
+            <TabItem Header="Filter" Tools:AP.IconKind="Filter" DataContext="{Binding FiltersTabVM}" ToolTip="Apply Filters">
                 <ContentControl Tools:AP.Header="Filters" Tools:AP.IconKind="Filter" Style="{StaticResource TabContentWrapper}">
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" Grid.Row="2" Grid.Column="1">
                         <Grid Margin="0 0 -10 0">
@@ -245,29 +245,42 @@
                     </ScrollViewer>
                 </ContentControl>
             </TabItem>
-            <TabItem Header="AddBook" Tools:AP.IconKind="BookAdd">
+            <TabItem Header="AddBook" Tools:AP.IconKind="BookAdd" ToolTip="Add Books">
                 <TabItem.Resources>
                     <Style TargetType="Button" BasedOn="{StaticResource IconTextButton}" x:Key="ImportButton">
-                        <Setter Property="Padding" Value="40,7"/>
+                        <Setter Property="Padding" Value="30,7"/>
                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                    <Style TargetType="TextBlock" x:Key="Categorizer">
+                        <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter Property="Typography.Capitals" Value="AllSmallCaps"/>
+                        <Setter Property="FontSize" Value="20"/>
                     </Style>
                 </TabItem.Resources>
                 <ContentControl Tools:AP.Header="Add Books" Tools:AP.IconKind="BookAdd" Style="{StaticResource TabContentWrapper}">
                     <StackPanel>
-                        <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource ImportButton}" Content="From File"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.File}"/>
-                        <Button Tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource ImportButton}" Content="From Folder"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Folder}"/>
-                        <Button Tools:AP.IconKind="BookPlusOutline" Style="{StaticResource ImportButton}" Content="Create New"
+
+                        <TextBlock Text="Physical Books" Style="{StaticResource Categorizer}"/>
+                        <Button Tools:AP.IconKind="BookPlusOutline" Style="{StaticResource ImportButton}" Content="Add Manually"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Manual}"/>
                         <Button Tools:AP.IconKind="Barcode" Style="{StaticResource ImportButton}" Content="From ISBN"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.ISBN}"/>
+                        
+                        <TextBlock Text="Add Local Files" Style="{StaticResource Categorizer}"/>
+                        <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource ImportButton}" Content="Import File(s)"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.File}"/>
+                        <Button Tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource ImportButton}" Content="Import Folder"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Folder}"/>
+
+
+                        <TextBlock Text="Add Online Files" Style="{StaticResource Categorizer}"/>
                         <Button Tools:AP.IconKind="GoogleDrive" Style="{StaticResource ImportButton}" Content="Google Drive"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.GoogleDrive}"/>
                         <Button Style="{StaticResource GrayBtn}" Margin="20,5"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Homebrewery}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
-                                BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="17,2">
+                                BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="7,2">
                                 <StackPanel Orientation="Horizontal">
                                     <ContentControl Content="{StaticResource HomebreweryLogo}"/>
                                     <TextBlock Text="Homebrewery"/>
@@ -288,7 +301,7 @@
                         <Button Style="{StaticResource GrayBtn}" Margin="20,5"
                                 Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.GmBinder}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
-                                    BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="17,2">
+                                    BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="8,2">
                                 <ContentControl Content="{StaticResource GMBinderLogo}"/>
                             </Border>
                         </Button>
