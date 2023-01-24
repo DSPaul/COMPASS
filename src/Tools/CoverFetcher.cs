@@ -10,7 +10,6 @@ using OpenQA.Selenium.Firefox;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -169,83 +168,27 @@ namespace COMPASS
             //sites do not store cover as img, Use Selenium for screenshotting pages
             else if (source.HasFlag(Enums.Sources.GmBinder) || source.HasFlag(Enums.Sources.Homebrewery))
             {
-                var browser = (Enums.Browser)Properties.Settings.Default.SeleniumBrowser;
-
-                string driverPath = browser switch
-                {
-                    Enums.Browser.Chrome => Utils.FindFileDirectory("chromedriver.exe", Constants.WebDriverDirectoryPath),
-                    Enums.Browser.Firefox => Utils.FindFileDirectory("geckodriver.exe", Constants.WebDriverDirectoryPath),
-                    _ => Utils.FindFileDirectory("msedgedriver.exe", Constants.WebDriverDirectoryPath)
-                };
-
-                DriverService driverService = browser switch
-                {
-                    Enums.Browser.Chrome => ChromeDriverService.CreateDefaultService(driverPath),
-                    Enums.Browser.Firefox => FirefoxDriverService.CreateDefaultService(driverPath),
-                    _ => EdgeDriverService.CreateDefaultService(driverPath)
-                };
-
-                driverService.HideCommandPromptWindow = true;
-
-                List<string> DriverArguments = new()
-                {
-                    "--headless",
-                    "--window-size=3000,3000",
-                    "--width=3000",
-                    "--height=3000"
-                };
-
-                WebDriver driver;
-                switch (browser)
-                {
-                    case Enums.Browser.Chrome:
-                        ChromeOptions CO = new();
-                        CO.AddArguments(DriverArguments);
-                        driver = new ChromeDriver((ChromeDriverService)driverService, CO);
-                        break;
-
-                    case Enums.Browser.Firefox:
-                        FirefoxOptions FO = new();
-                        FO.AddArguments(DriverArguments);
-                        driver = new FirefoxDriver((FirefoxDriverService)driverService, FO);
-                        break;
-
-                    default:
-                        EdgeOptions EO = new();
-                        EO.AddArguments(DriverArguments);
-                        driver = new EdgeDriver((EdgeDriverService)driverService, EO);
-                        break;
-                }
+                WebDriver driver = Utils.GetWebDriver();
 
                 IWebElement Coverpage;
                 MagickImage image = null;
                 try
                 {
-                    driver.Navigate().GoToUrl(URL);
-
                     switch (source)
                     {
                         case Enums.Sources.GmBinder:
+                            driver.Navigate().GoToUrl(URL);
                             Coverpage = driver.FindElement(By.Id("p1"));
                             //screenshot and download the image
-                            image = GetCroppedScreenShot(driver, Coverpage.Location, Coverpage.Size);
+                            image = GetCroppedScreenShot(driver, Coverpage);
                             break;
 
                         case Enums.Sources.Homebrewery:
-                            //get nav height because scraper doesn't see nav anymore after it switched to frame
-                            var nav = driver.FindElement(By.XPath("//nav"));
-                            string navhstr = nav.GetCssValue("height");
-                            float navheight = float.Parse(navhstr[..(navhstr.Length - 2)], CultureInfo.InvariantCulture);
-
-                            //switch to iframe
-                            var iframe = driver.FindElement(By.XPath("//iframe"));
-                            driver.SwitchTo().Frame(iframe);
+                            URL = URL.Replace("/share/", "/print/"); //use print API to only show doc itself
+                            driver.Navigate().GoToUrl(URL);
                             Coverpage = driver.FindElement(By.Id("p1"));
-                            //shift page down by nav height because element location is relative to frame, but coords on screenshot is reletaive to page 
-                            int newY = (int)Math.Round(Coverpage.Location.Y + navheight, 0);
-
                             //screenshot and download the image
-                            image = GetCroppedScreenShot(driver, new System.Drawing.Point(Coverpage.Location.X, newY), Coverpage.Size);
+                            image = GetCroppedScreenShot(driver, Coverpage);
                             break;
                     }
 
@@ -306,6 +249,7 @@ namespace COMPASS
         }
 
         //Take screenshot of specific html element 
+        public static MagickImage GetCroppedScreenShot(IWebDriver driver, IWebElement webElement) => GetCroppedScreenShot(driver, webElement.Location, webElement.Size);
         public static MagickImage GetCroppedScreenShot(IWebDriver driver, System.Drawing.Point location, System.Drawing.Size size)
         {
             //take the screenshot

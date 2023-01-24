@@ -1,5 +1,9 @@
 ﻿using COMPASS.Models;
 using Newtonsoft.Json.Linq;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Firefox;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -123,5 +127,58 @@ namespace COMPASS.Tools
             return parentDirectory;
         }
 
+        //Get an initialised webdriver with right browser
+        public static WebDriver GetWebDriver()
+        {
+            var browser = (Enums.Browser)Properties.Settings.Default.SeleniumBrowser;
+
+            string driverPath = browser switch
+            {
+                Enums.Browser.Chrome => FindFileDirectory("chromedriver.exe", Constants.WebDriverDirectoryPath),
+                Enums.Browser.Firefox => FindFileDirectory("geckodriver.exe", Constants.WebDriverDirectoryPath),
+                _ => FindFileDirectory("msedgedriver.exe", Constants.WebDriverDirectoryPath)
+            };
+
+            DriverService driverService = browser switch
+            {
+                Enums.Browser.Chrome => ChromeDriverService.CreateDefaultService(driverPath),
+                Enums.Browser.Firefox => FirefoxDriverService.CreateDefaultService(driverPath),
+                _ => EdgeDriverService.CreateDefaultService(driverPath)
+            };
+
+            driverService.HideCommandPromptWindow = true;
+
+            List<string> DriverArguments = new()
+                {
+                    "--headless",
+                    "--window-size=3000,3000",
+                    "--width=3000",
+                    "--height=3000"
+                };
+
+            WebDriver driver;
+            switch (browser)
+            {
+                case Enums.Browser.Chrome:
+                    ChromeOptions CO = new();
+                    CO.AddArguments(DriverArguments);
+                    driver = new ChromeDriver((ChromeDriverService)driverService, CO);
+                    break;
+
+                case Enums.Browser.Firefox:
+                    FirefoxOptions FO = new();
+                    FO.AddArguments(DriverArguments);
+                    driver = new FirefoxDriver((FirefoxDriverService)driverService, FO);
+                    break;
+
+                default:
+                    EdgeOptions EO = new();
+                    EO.AddArguments(DriverArguments);
+                    driver = new EdgeDriver((EdgeDriverService)driverService, EO);
+                    break;
+            }
+
+            return driver;
+        }
     }
 }
