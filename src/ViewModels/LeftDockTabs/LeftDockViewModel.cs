@@ -1,5 +1,4 @@
 ﻿using COMPASS.ViewModels.Commands;
-using OpenCvSharp;
 using static COMPASS.Tools.Enums;
 
 namespace COMPASS.ViewModels
