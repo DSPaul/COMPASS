@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Properties;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
 using FuzzySharp;
@@ -25,9 +26,8 @@ namespace COMPASS.ViewModels
             ActiveFiles = new(_cc.AllCodices);
 
             //load sorting from settings
-            var PropertyPath = (string)Properties.Settings.Default["SortProperty"];
-            var SortDirection = (ListSortDirection)Properties.Settings.Default["SortDirection"];
-            SortBy(PropertyPath, SortDirection);
+            InitSortingProperties();
+            ApplySorting();
 
             ExcludedCodicesByTag = new();
             ExcludedCodicesByExcludedTags = new();
@@ -109,6 +109,44 @@ namespace COMPASS.ViewModels
             init { SetProperty(ref (_sourceFilters), value); }
         }
 
+        public ListSortDirection SortDirection
+        {
+            get { return (ListSortDirection)Settings.Default[nameof(SortDirection)]; }
+            set
+            {
+                Settings.Default[nameof(SortDirection)] = (int)value;
+                Settings.Default.Save();
+                ApplySorting();
+                RaisePropertyChanged(nameof(SortDirection));
+            }
+        }
+
+        public string SortProperty
+        {
+            get { return (string)Settings.Default[nameof(SortProperty)]; }
+            set
+            {
+                Settings.Default[nameof(SortProperty)] = value;
+                Settings.Default.Save();
+                ApplySorting();
+                RaisePropertyChanged(nameof(SortProperty));
+            }
+        }
+
+        private readonly Dictionary<string, string> _sortOptions = new()
+        {
+            //("Display name","Property Name")
+            { "Title", "SortingTitle" },
+            { "Author", "AuthorsAsString" },
+            { "Publisher", "Publisher" },
+            { "User Rating", "Rating" },
+            { "Date - Released", "ReleaseDate" },
+            { "Date - Last Opened", "LastOpened"},
+            { "Date - Added", "DateAdded" },
+            { "Page Count", "PageCount" },
+            { "Times opened", "OpenedCount" }
+        };
+        public Dictionary<string, string> SortOptions => _sortOptions;
         #endregion
 
         #region Functions
@@ -318,41 +356,21 @@ namespace COMPASS.ViewModels
         }
         //------------------------------------//
 
-
-        public void SortBy(string PropertyPath, ListSortDirection? SortDirection)
+        private void InitSortingProperties()
         {
-            if (PropertyPath != null && PropertyPath.Length > 0)
+            //double check on typos by checking if all property names exist in codex class
+            var PossibleSortProptertyNames = typeof(Codex).GetProperties().Select(p => p.Name).ToList();
+            if (_sortOptions.Select(pair => pair.Value).Except(PossibleSortProptertyNames).Any())
             {
-                var sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions;
-                //determine sorting direction, ascending by default
-                ListSortDirection lsd = ListSortDirection.Ascending;
-
-                if (SortDirection != null) //if direction is given, use that instead
-                {
-                    lsd = (ListSortDirection)SortDirection;
-                }
-                //if already sorting, change direction
-                else if (sortDescr.Count > 0 && sortDescr[0].PropertyName == PropertyPath)
-                {
-                    if (sortDescr[0].Direction == ListSortDirection.Ascending) lsd = ListSortDirection.Descending;
-                    else lsd = ListSortDirection.Ascending;
-                }
-
-                sortDescr.Clear();
-                sortDescr.Add(new SortDescription(PropertyPath, lsd));
-                SaveSortDescriptions(PropertyPath, lsd);
+                MessageBox.Show("One of the sort property paths does not exist");
+                Logger.log.Error("One of the sort property paths does not exist");
             }
         }
-        //Single parameter version needed for relaycommand
-        public void SortBy(string PropertyPath)
+        public void ApplySorting()
         {
-            SortBy(PropertyPath, null);
-        }
-        private void SaveSortDescriptions(string property, ListSortDirection dir)
-        {
-            Properties.Settings.Default["SortProperty"] = property;
-            Properties.Settings.Default["SortDirection"] = (int)dir;
-            Properties.Settings.Default.Save();
+            var sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions;
+            sortDescr.Clear();
+            sortDescr.Add(new SortDescription(SortProperty, SortDirection));
         }
 
         public void ReFilter()
@@ -364,14 +382,6 @@ namespace COMPASS.ViewModels
 
         public void UpdateActiveFiles()
         {
-            //get sorting info
-            SortDescription sortDescr;
-            if (CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Count > 0)
-            {
-                sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions[0];
-            }
-            SaveSortDescriptions(sortDescr.PropertyName, sortDescr.Direction);
-
             //compile list of "active" files, which are files that match all the different filters
             ActiveFiles = new(_cc.AllCodices
                 .Except(ExcludedCodicesByTag)
@@ -384,16 +394,6 @@ namespace COMPASS.ViewModels
             RaisePropertyChanged(nameof(RecentCodices));
             RaisePropertyChanged(nameof(MostOpenedCodices));
             RaisePropertyChanged(nameof(RecentlyAddedCodices));
-
-            //reapply sorting, will fail if there aren'tag any
-            try
-            {
-                CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(sortDescr);
-            }
-            catch (Exception ex)
-            {
-                Logger.log.Warn(ex.InnerException);
-            }
         }
 
         public void RemoveCodex(Codex c)

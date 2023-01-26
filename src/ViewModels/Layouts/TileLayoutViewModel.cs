@@ -11,7 +11,6 @@ namespace COMPASS.ViewModels
 
             ViewOptions.Add(new MyMenuItem("Cover Size", value => TileWidth = (double)value) { Prop = TileWidth });
             ViewOptions.Add(new MyMenuItem("Show Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
-            ViewOptions.Add(SortOptionsMenuItem);
         }
         #region Properties
         private double _width = Properties.Settings.Default.TileCoverSize;

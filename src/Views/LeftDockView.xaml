@@ -280,6 +280,65 @@
                 </StackPanel>
             </ContentControl>
         </TabItem>
+        <TabItem Header="Sorting" Tools:AP.IconKind="Sort" ToolTip="Sorting">
+            <UserControl Style="{StaticResource TabContentWrapper}" Tools:AP.Header="Sorting" Tools:AP.IconKind="Sort" DataContext="{Binding MVM.CollectionVM}">
+                <UserControl.Resources>
+                    <Style TargetType="Border" x:Key="RadioBtnContainer">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource UIElementBackground}"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="Height" Value="40"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=IsChecked}" Value="true">
+                                <Setter Property="Background" Value="{StaticResource UIElementBackground}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="TextBlock" x:Key="RadioBtnTextbox">
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                        <Setter Property="Margin" Value="5,2"/>
+                        <Setter Property="FontSize" Value="18"/>
+                    </Style>
+                    <Style TargetType="RadioButton">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="RadioButton">
+                                    <ContentPresenter Content="{TemplateBinding Content}"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Converters:RadioBtnToIntConverter x:Key="RadioBtnToIntConverter"/>
+                </UserControl.Resources>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10">
+                        <RadioButton GroupName="SortDirection"
+                                     IsChecked="{Binding SortDirection, ConverterParameter=0, Converter={StaticResource RadioBtnToIntConverter}}">
+                            <Border CornerRadius="5,0,0,5" Style="{StaticResource RadioBtnContainer}">
+                                <TextBlock Text="Ascending" Style="{StaticResource RadioBtnTextbox}"/>
+                            </Border>
+                        </RadioButton>
+                        <RadioButton GroupName="SortDirection"
+                                     IsChecked="{Binding SortDirection, ConverterParameter=1, Converter={StaticResource RadioBtnToIntConverter}}">
+                            <Border CornerRadius="0,5,5,0" Margin="-1,0,0,0" Style="{StaticResource RadioBtnContainer}">
+                                <TextBlock Text="Descending" Style="{StaticResource RadioBtnTextbox}"/>
+                            </Border>
+                        </RadioButton>
+                    </StackPanel>
+                    <Rectangle Height="3" Fill="{StaticResource Separator}"/>
+                    <ListBox ItemsSource="{Binding SortOptions}" DisplayMemberPath="Key" SelectedValuePath="Value" SelectedValue="{Binding SortProperty}"
+                             Background="{x:Null}" BorderThickness="0" Margin="10">
+                        <!--<ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>-->
+                    </ListBox>
+                </StackPanel>
+            </UserControl>
+        </TabItem>
         <TabItem Header="AddBook" Tools:AP.IconKind="BookAdd" ToolTip="Add Books">
             <TabItem.Resources>
                 <Style TargetType="Button" BasedOn="{StaticResource IconTextButton}" x:Key="ImportButton">

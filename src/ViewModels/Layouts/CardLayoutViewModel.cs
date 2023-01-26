@@ -24,8 +24,6 @@ namespace COMPASS.ViewModels
             ViewOptions.Add(new MyMenuItem("File Icons", value => ShowFileIcons = (bool)value) { Prop = ShowFileIcons });
             //Datavisibility.Submenus.Add(new MyMenuItem("Edit Icon", value => ShowEditIcon = (bool)value) { Prop = ShowEditIcon });
 
-            ViewOptions.Add(SortOptionsMenuItem);
-
             //ViewOptions.Add(Datavisibility);
         }
 
