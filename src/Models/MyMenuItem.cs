@@ -6,15 +6,18 @@ namespace COMPASS.Models
 {
     public class MyMenuItem : ObservableObject
     {
-        public MyMenuItem(string header, Action<object> UpdateProp = null)
+        public MyMenuItem(string header, Func<object> getPropValue = null, Action<object> updateProp = null)
         {
             Header = header;
-            _updateProp = UpdateProp;
+            _updateProp = updateProp;
+            _getPropValue = getPropValue;
+
         }
 
         #region Properties
 
         private readonly Action<object> _updateProp;
+        private readonly Func<object> _getPropValue;
 
         //Name of Item
         private string _header;
@@ -24,15 +27,18 @@ namespace COMPASS.Models
             set { SetProperty(ref _header, value); }
         }
 
-        //Property it changes, such as bools for toggeling options, floats for sliders, ect.
-        private object _prop;
+        //Wrapper for Property because props cannot be passed by reference
         public object Prop
         {
-            get { return _prop; }
+            get
+            {
+                return _getPropValue?.Invoke();
+            }
+
             set
             {
-                SetProperty(ref _prop, value);
                 _updateProp?.Invoke(value);
+                RaisePropertyChanged(nameof(Prop));
             }
         }
 

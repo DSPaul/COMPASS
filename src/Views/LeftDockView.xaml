@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:props="clr-namespace:COMPASS.Properties"
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
              xmlns:Models="clr-namespace:COMPASS.Models" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
@@ -265,7 +266,7 @@
                     </Style>
                 </ContentControl.Resources>
                 <StackPanel>
-                    <UniformGrid Rows="2" Columns="2" Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}">
+                    <UniformGrid Rows="2" Columns="2" Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}" Margin="5">
                         <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.HomeLayout}" 
                             Tools:AP.IconKind="Home" ToolTip="Home Layout" Content="Home"/>
                         <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.ListLayout}" 
@@ -277,6 +278,48 @@
                     </UniformGrid>
                     <Rectangle Height="3" Fill="{StaticResource Separator}"/>
                     <TextBlock Style="{StaticResource Categorizer}" Text="Customize"/>
+                    <ContentControl DataContext="{Binding MVM.CurrentLayout}"  Content="{Binding}" Margin="10">
+                        <ContentControl.Resources>
+                            <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
+                                <Setter Property="Margin" Value="5"/>
+                            </Style>
+                            <DataTemplate DataType="{x:Type viewmodels:ListLayoutViewModel}">
+                                <StackPanel>
+                                    <CheckBox Content="Show Author" IsChecked="{Binding ShowAuthor}"/>
+                                    <CheckBox Content="Show Publisher" IsChecked="{Binding ShowPublisher}"/>
+                                    <CheckBox Content="Show Rating" IsChecked="{Binding ShowRating}"/>
+                                    <CheckBox Content="Show Release Date" IsChecked="{Binding ShowReleaseDate}"/>
+                                    <CheckBox Content="Show Tags" IsChecked="{Binding ShowTags}"/>
+                                    <CheckBox Content="Show Version" IsChecked="{Binding ShowVersion}"/>
+                                    <CheckBox Content="Show File Icons" IsChecked="{Binding ShowFileIcons}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type viewmodels:CardLayoutViewModel}">
+                                <StackPanel>
+                                    <CheckBox Content="Show Authors" IsChecked="{Binding ShowAuthor}"/>
+                                    <CheckBox Content="Show Publisher" IsChecked="{Binding ShowPublisher}"/>
+                                    <CheckBox Content="Show Rating" IsChecked="{Binding ShowRating}"/>
+                                    <CheckBox Content="Show Release Date" IsChecked="{Binding ShowReleaseDate}"/>
+                                    <CheckBox Content="Show Tags" IsChecked="{Binding ShowTags}"/>
+                                    <CheckBox Content="Show Version" IsChecked="{Binding ShowVersion}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type viewmodels:TileLayoutViewModel}">
+                                <StackPanel Margin="10">
+                                    <CheckBox Content="Show Title" IsChecked="{Binding ShowTitle}"/>
+                                    <TextBlock Text="Cover Size" Margin="5"/>
+                                    <Slider Value="{Binding TileWidth}" Minimum="50" Interval="5" Maximum="400" Margin="5"/>
+                                </StackPanel>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type viewmodels:HomeLayoutViewModel}">
+                                <StackPanel Margin="10">
+                                    <CheckBox Content="Show Title" IsChecked="{Binding ShowTitle}"/>
+                                    <TextBlock Text="Cover Size" Margin="5"/>
+                                    <Slider Value="{Binding TileWidth}" Minimum="50" Interval="5" Maximum="400" Margin="5"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ContentControl.Resources>
+                    </ContentControl>
                 </StackPanel>
             </ContentControl>
         </TabItem>

@@ -1,5 +1,4 @@
-﻿using COMPASS.Models;
-using COMPASS.Tools;
+﻿using COMPASS.Tools;
 
 namespace COMPASS.ViewModels
 {
@@ -8,36 +7,31 @@ namespace COMPASS.ViewModels
         public TileLayoutViewModel() : base()
         {
             LayoutType = Enums.CodexLayout.TileLayout;
-
-            ViewOptions.Add(new MyMenuItem("Cover Size", value => TileWidth = (double)value) { Prop = TileWidth });
-            ViewOptions.Add(new MyMenuItem("Show Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
         }
         #region Properties
-        private double _width = Properties.Settings.Default.TileCoverSize;
         public double TileWidth
         {
-            get { return _width; }
+            get { return Properties.Settings.Default.TileCoverSize; }
             set
             {
-                SetProperty(ref _width, value);
-                RaisePropertyChanged(nameof(TileHeight));
                 Properties.Settings.Default.TileCoverSize = value;
+                RaisePropertyChanged(nameof(TileWidth));
+                RaisePropertyChanged(nameof(TileHeight));
             }
         }
 
         public double TileHeight
         {
-            get { return (int)(_width * 4 / 3); }
+            get { return (int)(TileWidth * 4 / 3); }
         }
 
-        private bool _showtitle = Properties.Settings.Default.TileShowTitle;
         public bool ShowTitle
         {
-            get { return _showtitle; }
+            get { return Properties.Settings.Default.TileShowTitle; ; }
             set
             {
-                SetProperty(ref _showtitle, value);
                 Properties.Settings.Default.TileShowTitle = value;
+                RaisePropertyChanged(nameof(ShowTitle));
             }
         }
 

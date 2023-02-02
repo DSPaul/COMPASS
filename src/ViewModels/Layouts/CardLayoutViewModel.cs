@@ -1,5 +1,4 @@
-﻿using COMPASS.Models;
-using COMPASS.Tools;
+﻿using COMPASS.Tools;
 
 namespace COMPASS.ViewModels
 {
@@ -8,26 +7,9 @@ namespace COMPASS.ViewModels
         public CardLayoutViewModel() : base()
         {
             LayoutType = Enums.CodexLayout.CardLayout;
-
-            //MyMenuItem Datavisibility = new MyMenuItem("Show Metadata")
-            //{
-            //    Submenus = new ObservableCollection<MyMenuItem>()
-            //};
-
-            //Datavisibility.Submenus.Add(new MyMenuItem("Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
-            ViewOptions.Add(new MyMenuItem("Publisher", value => ShowPublisher = (bool)value) { Prop = ShowPublisher });
-            ViewOptions.Add(new MyMenuItem("Release Date", value => ShowReleaseDate = (bool)value) { Prop = ShowReleaseDate });
-            ViewOptions.Add(new MyMenuItem("Version", value => ShowVersion = (bool)value) { Prop = ShowVersion });
-            ViewOptions.Add(new MyMenuItem("Rating", value => ShowRating = (bool)value) { Prop = ShowRating });
-            ViewOptions.Add(new MyMenuItem("Author", value => ShowAuthor = (bool)value) { Prop = ShowAuthor });
-            ViewOptions.Add(new MyMenuItem("Tags", value => ShowTags = (bool)value) { Prop = ShowTags });
-            ViewOptions.Add(new MyMenuItem("File Icons", value => ShowFileIcons = (bool)value) { Prop = ShowFileIcons });
-            //Datavisibility.Submenus.Add(new MyMenuItem("Edit Icon", value => ShowEditIcon = (bool)value) { Prop = ShowEditIcon });
-
-            //ViewOptions.Add(Datavisibility);
         }
 
-        #region ViewOptions
+        #region VOptions
 
         private bool _showTitle = true;
         public bool ShowTitle
@@ -36,80 +18,73 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _showTitle, value); }
         }
 
-        private bool _showAuthor = Properties.Settings.Default.CardShowAuthor;
         public bool ShowAuthor
         {
-            get { return _showAuthor; }
+            get { return Properties.Settings.Default.CardShowAuthor; }
             set
             {
-                SetProperty(ref _showAuthor, value);
                 Properties.Settings.Default.CardShowAuthor = value;
+                RaisePropertyChanged(nameof(ShowAuthor));
             }
         }
 
-        private bool _showPublisher = Properties.Settings.Default.CardShowPublisher;
         public bool ShowPublisher
         {
-            get { return _showPublisher; }
+            get { return Properties.Settings.Default.CardShowPublisher; }
             set
             {
-                SetProperty(ref _showPublisher, value);
                 Properties.Settings.Default.CardShowPublisher = value;
+                RaisePropertyChanged(nameof(ShowPublisher));
             }
         }
 
-        private bool _ShowReleaseDate = Properties.Settings.Default.CardShowRelease;
         public bool ShowReleaseDate
         {
-            get { return _ShowReleaseDate; }
+            get { return Properties.Settings.Default.CardShowRelease; }
             set
             {
-                SetProperty(ref _ShowReleaseDate, value);
                 Properties.Settings.Default.CardShowRelease = value;
+                RaisePropertyChanged(nameof(ShowReleaseDate));
             }
         }
 
-        private bool _showVersion = Properties.Settings.Default.CardShowVersion;
         public bool ShowVersion
         {
-            get { return _showVersion; }
+            get { return Properties.Settings.Default.CardShowVersion; }
             set
             {
-                SetProperty(ref _showVersion, value);
                 Properties.Settings.Default.CardShowVersion = value;
+                RaisePropertyChanged(nameof(ShowVersion));
             }
         }
 
-        private bool _showRating = Properties.Settings.Default.CardShowRating;
         public bool ShowRating
         {
-            get { return _showRating; }
+            get { return Properties.Settings.Default.CardShowRating; }
             set
             {
-                SetProperty(ref _showRating, value);
                 Properties.Settings.Default.CardShowRating = value;
+                RaisePropertyChanged(nameof(ShowRating));
             }
         }
 
-        private bool _showTags = Properties.Settings.Default.CardShowTags;
         public bool ShowTags
         {
-            get { return _showTags; }
+            get { return Properties.Settings.Default.CardShowTags; }
             set
             {
-                SetProperty(ref _showTags, value);
                 Properties.Settings.Default.CardShowTags = value;
+                RaisePropertyChanged(nameof(ShowTags));
             }
         }
 
-        private bool _showFileIcons = Properties.Settings.Default.CardShowFileIcons;
         public bool ShowFileIcons
         {
-            get { return _showFileIcons; }
+            get { return Properties.Settings.Default.CardShowFileIcons; }
             set
             {
-                SetProperty(ref _showFileIcons, value);
                 Properties.Settings.Default.CardShowFileIcons = value;
+                RaisePropertyChanged(nameof(ShowFileIcons));
             }
         }
 

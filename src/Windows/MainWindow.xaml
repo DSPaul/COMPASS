@@ -490,56 +490,7 @@
                     </Grid>
                 </Border>
                 <Button Command="{Binding CollectionVM.ClearFiltersCommand}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FilterRemove" 
-                        Grid.Column="3" Grid.Row ="1" Width="30"/>
-                <!--#endregion-->
-
-                <!--#region View Selection-->
-                <Border Grid.Column="4" Grid.Row="1" Margin="10,0" BorderThickness="0" BorderBrush="Gray" CornerRadius="5">
-                    <StackPanel  Orientation="Horizontal" Margin="0,0,15,0">
-                        <StackPanel.Resources>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
-                                <Setter Property="BorderBrush" Value="{x:Null}"/>
-                                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Foreground="{TemplateBinding Foreground}"
-                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"
-                                        Background="{TemplateBinding Background}"/>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
-                                    </Trigger>
-                                    <DataTrigger Value="True">
-                                        <DataTrigger.Binding>
-                                            <MultiBinding>
-                                                <MultiBinding.Converter>
-                                                    <Converters:EqualityConverter/>
-                                                </MultiBinding.Converter>
-                                                <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
-                                                <Binding Path="CurrentLayout.LayoutType" />
-                                            </MultiBinding>
-                                        </DataTrigger.Binding>
-                                        <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
-                                    </DataTrigger>
-
-                                </Style.Triggers>
-                            </Style>
-                        </StackPanel.Resources>
-                        <Rectangle Width="3" Fill="Gray" Margin="3,0"/>
-                        <Button Click="Toggle_ContextMenu" Tools:AP.IconKind="EyeSettings" Height="30" 
-                            VerticalAlignment="Center" Margin="2,0,2,5" CommandParameter="{x:Null}">
-                            <Button.ContextMenu>
-                                <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding CurrentLayout.ViewOptions}"
-                            Style="{StaticResource DropdownMenu}" ItemContainerStyle="{StaticResource DropdownMenuItem}"/>
-                            </Button.ContextMenu>
-                        </Button>
-                    </StackPanel>
-                </Border>
+                        Grid.Column="3" Grid.Row ="1" Width="30" Margin="0,0,20,0"/>
                 <!--#endregion-->
 
                 <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="5" Content="{Binding CurrentLayout}"
