@@ -722,7 +722,7 @@
                         </Border.Background>
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon x:Name="checkboxIcon" Kind="CheckboxBlankOutline"/>
-                            <ContentPresenter/>
+                            <ContentPresenter Margin="5,0"/>
                         </StackPanel>
                     </Border>
                     <ControlTemplate.Triggers>
