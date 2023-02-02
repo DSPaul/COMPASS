@@ -1,5 +1,4 @@
-﻿using COMPASS.Models;
-using COMPASS.Tools;
+﻿using COMPASS.Tools;
 using System.ComponentModel;
 
 namespace COMPASS.ViewModels
@@ -9,15 +8,6 @@ namespace COMPASS.ViewModels
         public ListLayoutViewModel() : base()
         {
             LayoutType = Enums.CodexLayout.ListLayout;
-
-            ViewOptions.Add(new MyMenuItem("Author", () => ShowAuthor, value => ShowAuthor = (bool)value));
-            ViewOptions.Add(new MyMenuItem("Publisher", () => ShowPublisher, value => ShowPublisher = (bool)value));
-            ViewOptions.Add(new MyMenuItem("Release Date", () => ShowReleaseDate, value => ShowReleaseDate = (bool)value));
-            ViewOptions.Add(new MyMenuItem("Version", () => ShowVersion, value => ShowVersion = (bool)value));
-            ViewOptions.Add(new MyMenuItem("Rating", () => ShowRating, value => ShowRating = (bool)value));
-            ViewOptions.Add(new MyMenuItem("Tags", () => ShowTags, value => ShowTags = (bool)value));
-            ViewOptions.Add(new MyMenuItem("File Icons", () => ShowFileIcons, value => ShowFileIcons = (bool)value));
-
         }
 
         #region ViewOptions
