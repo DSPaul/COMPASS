@@ -307,7 +307,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Thumb">
-                    <Border CornerRadius="1" Height="15" Width="4" Background="White"/>
+                    <Border CornerRadius="50" Height="15" Width="15" Background="{StaticResource AccentColor}"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
