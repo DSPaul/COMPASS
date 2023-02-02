@@ -394,6 +394,8 @@ namespace COMPASS.ViewModels
             RaisePropertyChanged(nameof(RecentCodices));
             RaisePropertyChanged(nameof(MostOpenedCodices));
             RaisePropertyChanged(nameof(RecentlyAddedCodices));
+
+            ApplySorting();
         }
 
         public void RemoveCodex(Codex c)
