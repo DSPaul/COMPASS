@@ -64,13 +64,11 @@
                     <Border.Background>
                         <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
                     </Border.Background>
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox Margin="5,0,0,0" Command="{Binding Path=DataContext.TagCheckCommand,
+                    <CheckBox Margin="5,0,0,0" Command="{Binding Path=DataContext.TagCheckCommand,
                                        RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeView}}}"
                                       CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
-                                       IsChecked="{Binding Selected, Mode=TwoWay}"/>
-                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="{StaticResource TextColor}"/>
-                    </StackPanel>
+                                       IsChecked="{Binding Selected, Mode=TwoWay}" 
+                                  Content="{Binding Tag.Content}" Foreground="{StaticResource TextColor}"/>
                 </Border>
             </HierarchicalDataTemplate>
             <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
