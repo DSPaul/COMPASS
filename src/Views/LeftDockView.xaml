@@ -16,7 +16,7 @@
              mc:Ignorable="d" FontSize="20"
              d:DesignHeight="650" d:DesignWidth="300">
 
-    <TabControl Background="{StaticResource TabFocus}" BorderThickness="0" TabStripPlacement="Left" Padding="0">
+    <TabControl Background="{StaticResource TabFocus}" BorderThickness="0" TabStripPlacement="Left" Padding="0" SelectedIndex="{Binding selectedTab}">
         <TabControl.Resources>
             <Style TargetType="TabItem">
                 <Setter Property="BorderThickness" Value="0"/>

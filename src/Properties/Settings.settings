@@ -18,7 +18,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ListShowRating" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ListShowTags" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -79,6 +79,9 @@
     </Setting>
     <Setting Name="TileCoverSize" Type="System.Double" Scope="User">
       <Value Profile="(Default)">156</Value>
+    </Setting>
+    <Setting Name="SelectedTab" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

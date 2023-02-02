@@ -11,6 +11,11 @@ namespace COMPASS.ViewModels
             FiltersTabVM = new();
         }
 
+        public int selectedTab 
+        { 
+            get => Properties.Settings.Default.SelectedTab ; 
+            set => Properties.Settings.Default.SelectedTab = value; 
+        }
 
         #region Tags Tab
         private TagsTabViewModel _tagsTabVM;
