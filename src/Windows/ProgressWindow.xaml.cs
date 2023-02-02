@@ -1,7 +1,6 @@
 ﻿using COMPASS.ViewModels;
 using System.Collections.Specialized;
 using System.Windows;
-using static System.Net.WebRequestMethods;
 
 namespace COMPASS.Windows
 {
@@ -35,7 +34,7 @@ namespace COMPASS.Windows
             }
         }
 
-        private void OnClosing( object sender, System.ComponentModel.CancelEventArgs e )
+        private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // Call activate explicitly because of bug 
             // https://stackoverflow.com/questions/3144004/wpf-app-loses-focus-completely-on-window-close
