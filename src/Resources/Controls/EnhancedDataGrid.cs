@@ -106,6 +106,13 @@ namespace COMPASS.Resources.Controls
                     return;
                 }
             }
+
+            foreach (var column in ColumnInfo)
+            {
+                var realColumn = Columns.Where((x) => column.Header.Equals(x.Header)).FirstOrDefault();
+                if (realColumn == null) { continue; }
+                column.Apply(realColumn, Columns.Count);
+            }
         }
 
         //Fix Sorting not applying
