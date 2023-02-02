@@ -22,15 +22,6 @@ namespace COMPASS.ViewModels
 
         //Set Type of view
         public Enums.CodexLayout LayoutType { get; init; }
-
-        //list with options to costimize view
-        private ObservableCollection<MyMenuItem> _viewOptions = new();
-        public ObservableCollection<MyMenuItem> ViewOptions
-        {
-            get { return _viewOptions; }
-            set { SetProperty(ref _viewOptions, value); }
-        }
-
         #endregion
     }
 }

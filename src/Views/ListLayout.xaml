@@ -6,7 +6,6 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:Controls="clr-namespace:COMPASS.Resources.Controls"
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
-             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
              d:DataContext="{d:DesignInstance Type=viewmodels:ListLayoutViewModel}"
              mc:Ignorable="d"  x:Name="LastLayoutControl"
