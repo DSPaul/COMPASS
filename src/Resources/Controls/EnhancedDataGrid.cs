@@ -1,10 +1,12 @@
 ﻿//https://bengribaudo.com/blog/2012/03/14/1942/saving-restoring-wpf-datagrid-columns-size-sorting-and-order
 
+using COMPASS.ViewModels;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Common;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,7 +25,7 @@ namespace COMPASS.Resources.Controls
         private static void ColumnInfoChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             var grid = (EnhancedDataGrid)dependencyObject;
-            if (!grid.updatingColumnInfo) { grid.ColumnInfoChanged(); }
+            if (!grid.updatingColumnInfo) { grid.ApplySorting(); }
         }
         protected override void OnInitialized(EventArgs e)
         {
@@ -55,7 +57,16 @@ namespace COMPASS.Resources.Controls
             updatingColumnInfo = true;
             ColumnInfo = new ObservableCollection<ColumnInfo>(Columns.Select((x) => new ColumnInfo(x)));
             //persist data
-            string json = JsonConvert.SerializeObject(ColumnInfo); //deserializing
+            string json = JsonConvert.SerializeObject(ColumnInfo); //serializing
+
+            //Save Sorting
+            SortDescription sd = Items.SortDescriptions.FirstOrDefault();
+            if (!string.IsNullOrEmpty(sd.PropertyName))
+            {
+                Properties.Settings.Default["SortProperty"] = sd.PropertyName;
+                Properties.Settings.Default["SortDirection"] = (int)sd.Direction;
+            }
+                
             Properties.Settings.Default["DataGridCollumnInfo"] = json;
             Properties.Settings.Default.Save();
             updatingColumnInfo = false;
@@ -79,16 +90,20 @@ namespace COMPASS.Resources.Controls
             }
             base.OnPreviewMouseLeftButtonUp(e);
         }
-        private void ColumnInfoChanged()
+
+        public void ApplySorting()
         {
-            Items.SortDescriptions.Clear();
-            if (ColumnInfo != null)
+            int direction = (int)Properties.Settings.Default["SortDirection"];
+            string prop = (string)Properties.Settings.Default["SortProperty"];
+
+            if (ColumnInfo is null) return;
+            foreach (var column in Columns)
             {
-                foreach (var column in ColumnInfo)
+                //var realColumn = Columns.FirstOrDefault(x => column.Header == x.Header);
+                if(column.SortMemberPath == prop)
                 {
-                    var realColumn = Columns.FirstOrDefault(x => column.Header == x.Header);
-                    if (realColumn == null) { continue; }
-                    column.Apply(realColumn, Columns.Count, Items.SortDescriptions);
+                    column.SortDirection = (ListSortDirection?)direction;
+                    return;
                 }
             }
         }
@@ -97,7 +112,7 @@ namespace COMPASS.Resources.Controls
         //https://stackoverflow.com/questions/11177351/wpf-datagrid-ignores-sortdescription
         protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
-            ColumnInfoChanged();
+            ApplySorting();
             base.OnItemsSourceChanged(oldValue, newValue);
         }
     }
@@ -108,27 +123,15 @@ namespace COMPASS.Resources.Controls
             Header = column.Header;
             WidthValue = column.Width.DisplayValue;
             WidthType = column.Width.UnitType;
-            SortDirection = column.SortDirection;
             DisplayIndex = column.DisplayIndex;
-            PropertyPath = column switch
-            {
-                DataGridTemplateColumn templateColumn => templateColumn.SortMemberPath,
-                DataGridComboBoxColumn boxColumn => ((Binding)boxColumn.SelectedItemBinding).Path.Path,
-                _ => ((Binding)((DataGridBoundColumn)column).Binding).Path.Path,
-            };
         }
-        public void Apply(DataGridColumn column, int gridColumnCount, SortDescriptionCollection sortDescriptions)
+        public void Apply(DataGridColumn column, int gridColumnCount)
         {
             if (WidthValue is double.NaN)
             {
                 WidthValue = 0;
             }
             column.Width = new DataGridLength(WidthValue, WidthType);
-            column.SortDirection = SortDirection;
-            if (SortDirection != null)
-            {
-                sortDescriptions.Add(new SortDescription(PropertyPath, SortDirection.Value));
-            }
             if (column.DisplayIndex != DisplayIndex)
             {
                 var maxIndex = (gridColumnCount == 0) ? 0 : gridColumnCount - 1;
@@ -136,8 +139,6 @@ namespace COMPASS.Resources.Controls
             }
         }
         public object Header;
-        public string PropertyPath;
-        public ListSortDirection? SortDirection;
         public int DisplayIndex;
         public double WidthValue;
         public DataGridLengthUnitType WidthType;
