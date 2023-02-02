@@ -370,6 +370,7 @@ namespace COMPASS.ViewModels
         {
             var sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions;
             sortDescr.Clear();
+            if (string.IsNullOrEmpty(SortProperty)) return;
             sortDescr.Add(new SortDescription(SortProperty, SortDirection));
         }
 
