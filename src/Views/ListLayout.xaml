@@ -218,7 +218,7 @@
                             <Button Command="{Binding Path=Data.OpenCodexOnlineCommand, Source={StaticResource CodexProxy}}"
                                     CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>
                             <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
-                                Converter={StaticResource ToVisibilityConverter}}"/>
+                                Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
                         </StackPanel>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
