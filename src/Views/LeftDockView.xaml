@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:props="clr-namespace:COMPASS.Properties"
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
              xmlns:Models="clr-namespace:COMPASS.Models" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
@@ -15,8 +14,13 @@
              Background="{StaticResource ButtonBackground}"
              mc:Ignorable="d" FontSize="20"
              d:DesignHeight="650" d:DesignWidth="300">
+    <UserControl.Resources>
+        <Converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
+        <Tools:BindingProxy x:Key="CollapsedProxy" Data="{Binding}"/>
+    </UserControl.Resources>
 
-    <TabControl Background="{StaticResource TabFocus}" BorderThickness="0" TabStripPlacement="Left" Padding="0" SelectedIndex="{Binding selectedTab}">
+    <TabControl Background="{StaticResource TabFocus}" BorderThickness="0" TabStripPlacement="Left" Padding="0" 
+                SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
         <TabControl.Resources>
             <Style TargetType="TabItem">
                 <Setter Property="BorderThickness" Value="0"/>
@@ -43,6 +47,7 @@
             </Style>
             <Style TargetType="ContentControl" x:Key="TabContentWrapper">
                 <Setter Property="MinWidth" Value="250"/>
+                <Setter Property="Visibility" Value="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
                 <Setter Property="ItemsControl.Template">
                     <Setter.Value>
                         <ControlTemplate>
@@ -60,8 +65,14 @@
                                     </StackPanel>
                                     <Rectangle Grid.Row="1" Grid.Column="1" Height="3" Fill="{StaticResource Separator}"/>
                                     <ContentPresenter Grid.Row="2" Grid.Column="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"/>
-                                    <materialDesign:PackIcon Height="25" Width="25" HorizontalAlignment="Right"
-                                             Margin="5"  Kind="ArrowCollapseLeft"/>
+                                    <ToggleButton ToolTip="Collapse" IsChecked="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}}" 
+                                                  Height="35" Width="35" HorizontalAlignment="Right">
+                                        <ToggleButton.Template>
+                                            <ControlTemplate>
+                                                <materialDesign:PackIcon Height="25" Width="25" Margin="5"  Kind="ArrowCollapseLeft"/>
+                                            </ControlTemplate>
+                                        </ToggleButton.Template>
+                                    </ToggleButton>
                                 </Grid>
                             </Border>
                         </ControlTemplate>
@@ -108,6 +119,7 @@
                 </Setter>
             </Style>
         </TabControl.Resources>
+        <TabItem Visibility="Collapsed" />
         <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple" DataContext="{Binding TagsTabVM}" ToolTip="Tags">
             <TabItem.Resources>
                 <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />

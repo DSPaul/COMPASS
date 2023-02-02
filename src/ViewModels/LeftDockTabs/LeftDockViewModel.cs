@@ -11,10 +11,26 @@ namespace COMPASS.ViewModels
             FiltersTabVM = new();
         }
 
-        public int selectedTab 
-        { 
-            get => Properties.Settings.Default.SelectedTab ; 
-            set => Properties.Settings.Default.SelectedTab = value; 
+        public int SelectedTab
+        {
+            get => Properties.Settings.Default.SelectedTab;
+            set
+            {
+                Properties.Settings.Default.SelectedTab = value;
+                RaisePropertyChanged(nameof(SelectedTab));
+                if (value > 0) Collapsed = false;
+            }
+        }
+
+        private bool _collapsed = false;
+        public bool Collapsed
+        {
+            get => _collapsed;
+            set
+            {
+                SetProperty(ref _collapsed, value);
+                if (value == true) SelectedTab = 0;
+            }
         }
 
         #region Tags Tab
