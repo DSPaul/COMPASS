@@ -17,5 +17,5 @@
             <Views:TagEditView DataContext="{Binding}"/>
         </DataTemplate>
     </Window.Resources>
-    <ContentControl Content="{Binding}"/>
+    <ContentControl Content="{Binding}" Margin="10"/>
 </Window>
