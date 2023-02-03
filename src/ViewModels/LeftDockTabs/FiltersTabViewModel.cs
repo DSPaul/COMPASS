@@ -10,7 +10,14 @@ namespace COMPASS.ViewModels
     {
         public FiltersTabViewModel() : base() { }
 
-        #region Properties
+        private bool _include = true;
+        public bool Include 
+        { 
+            get => _include; 
+            set => SetProperty(ref _include, value); 
+        }
+
+        #region Filters
         //Selected Autor in FilterTab
         private string selectedAuthor;
         public string SelectedAuthor
@@ -24,7 +31,7 @@ namespace COMPASS.ViewModels
                     Label = "Author:",
                     BackgroundColor = Colors.Orange
                 };
-                MVM.CollectionVM.AddFieldFilter(AuthorFilter);
+                MVM.CollectionVM.AddFieldFilter(AuthorFilter, Include);
             }
         }
 
@@ -41,7 +48,7 @@ namespace COMPASS.ViewModels
                     Label = "Publisher:",
                     BackgroundColor = Colors.MediumPurple
                 };
-                MVM.CollectionVM.AddFieldFilter(PublisherFilter);
+                MVM.CollectionVM.AddFieldFilter(PublisherFilter, Include);
             }
         }
 
@@ -63,7 +70,7 @@ namespace COMPASS.ViewModels
                         BackgroundColor = Colors.DeepSkyBlue,
                         Unique = true
                     };
-                    MVM.CollectionVM.AddFieldFilter(startDateFilter);
+                    MVM.CollectionVM.AddFieldFilter(startDateFilter, Include);
                 }
             }
         }
@@ -82,7 +89,7 @@ namespace COMPASS.ViewModels
                         BackgroundColor = Colors.DeepSkyBlue,
                         Unique = true
                     };
-                    MVM.CollectionVM.AddFieldFilter(stopDateFilter);
+                    MVM.CollectionVM.AddFieldFilter(stopDateFilter, Include);
                 }
             }
         }
@@ -104,7 +111,7 @@ namespace COMPASS.ViewModels
                         BackgroundColor = Colors.Goldenrod,
                         Unique = true
                     };
-                    MVM.CollectionVM.AddFieldFilter(minRatFilter);
+                    MVM.CollectionVM.AddFieldFilter(minRatFilter, Include);
                 }
             }
         }
@@ -114,7 +121,7 @@ namespace COMPASS.ViewModels
         #region Functions and Commands
         private RelayCommand<Filter> _addSourceFilterCommand;
         public RelayCommand<Filter> AddSourceFilterCommand => _addSourceFilterCommand ??= new(AddSourceFilter);
-        public void AddSourceFilter(Filter filter) => MVM.CollectionVM.AddFieldFilter(filter);
+        public void AddSourceFilter(Filter filter) => MVM.CollectionVM.AddFieldFilter(filter, Include);
 
         private ActionCommand _clearFiltersCommand;
         public ActionCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);

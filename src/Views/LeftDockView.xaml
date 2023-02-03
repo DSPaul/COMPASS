@@ -17,6 +17,34 @@
     <UserControl.Resources>
         <Converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
         <Tools:BindingProxy x:Key="CollapsedProxy" Data="{Binding}"/>
+        <Style TargetType="Border" x:Key="RadioBtnContainer">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="{StaticResource UIElementBackground}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Height" Value="40"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=IsChecked}" Value="true">
+                    <Setter Property="Background" Value="{StaticResource UIElementBackground}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="RadioBtnTextbox">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+            <Setter Property="Margin" Value="5,2"/>
+            <Setter Property="FontSize" Value="18"/>
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <ContentPresenter Content="{TemplateBinding Content}"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Converters:RadioBtnToIntConverter x:Key="RadioBtnToIntConverter"/>
     </UserControl.Resources>
 
     <TabControl Background="{StaticResource TabFocus}" BorderThickness="0" TabStripPlacement="Left" Padding="0" 
@@ -128,7 +156,13 @@
                     <MenuItem Header="Delete" Tools:AP.IconKind="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
                 </ContextMenu>
                 <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                    <Button Cursor="Hand"  Command="{Binding Source={StaticResource Proxy}, Path=Data.MVM.CollectionVM.AddTagFilterCommand}" CommandParameter="{Binding Tag}">
+                    <Button Cursor="Hand"  Command="{Binding Source={StaticResource Proxy}, Path=Data.AddTagFilterCommand}">
+                        <Button.CommandParameter>
+                            <MultiBinding Converter="{StaticResource MultiParamConverter}">
+                                <Binding Path="Tag"/>
+                                <Binding ElementName="IncludeRadioButton" Path="IsChecked"/>
+                            </MultiBinding>
+                        </Button.CommandParameter>
                         <Button.Background>
                             <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
                         </Button.Background>
@@ -150,31 +184,58 @@
                 <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
             </TabItem.Resources>
             <ContentControl Tools:AP.Header="Tags" Tools:AP.IconKind="TagMultiple" Style="{StaticResource TabContentWrapper}">
-                <Grid Grid.Row="2" Grid.Column="1">
+                <Grid> <!-- Grid instead of stackpannel so height is capped and scrolling works -->
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <CustomControls:ExpandingButton Grid.Row="0" Margin="10,10,10,5">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,5">
+                        <StackPanel.Resources>
+                            <Style TargetType="Border" x:Key="RadioBtnContainer">
+                                <Setter Property="Opacity" Value="0.3"/>
+                                <Setter Property="Padding" Value="10,0"/>
+                                <Setter Property="Height" Value="30"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=IsChecked}" Value="true">
+                                        <Setter Property="Opacity" Value="1"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Resources>
+                        <RadioButton x:Name="IncludeRadioButton" GroupName="IncludeGroup" IsChecked="True">
+                            <Border CornerRadius="5,0,0,5" Style="{StaticResource RadioBtnContainer}" Background="{StaticResource AcceptFill}">
+                                <TextBlock Text="Include" Style="{StaticResource RadioBtnTextbox}"/>
+                            </Border>
+                        </RadioButton>
+                        <RadioButton GroupName="IncludeGroup">
+                            <Border CornerRadius="0,5,5,0" Style="{StaticResource RadioBtnContainer}" Background="IndianRed">
+                                <TextBlock Text="Exclude" Style="{StaticResource RadioBtnTextbox}"/>
+                            </Border>
+                        </RadioButton>
+                    </StackPanel>
+                    <CustomControls:ExpandingButton Grid.Row="1" Margin="10,5" HorizontalContentAlignment="Center">
                         <CustomControls:ExpandingButton.Toggle>
                             <Button Tools:AP.IconKind="TagPlusOutline" Style="{StaticResource outerIconBtn}" 
-                            Content="New Tag" Command="{Binding AddTagCommand}" HorizontalAlignment="Stretch" />
+                            Content="New Tag    " Command="{Binding AddTagCommand}"/>
                         </CustomControls:ExpandingButton.Toggle>
                         <CustomControls:ExpandingButton.HiddenContent>
                             <views:TagEditView DataContext="{Binding AddTagViewModel}"/>
                         </CustomControls:ExpandingButton.HiddenContent>
                     </CustomControls:ExpandingButton>
-                    <CustomControls:ExpandingButton Grid.Row="1" Margin="10,5">
+                    <CustomControls:ExpandingButton Grid.Row="2" Margin="10,5" HorizontalContentAlignment="Center">
                         <CustomControls:ExpandingButton.Toggle>
                             <Button Tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource outerIconBtn}" 
-                            Content="New Group" Command="{Binding AddGroupCommand}"  HorizontalAlignment="Stretch" />
+                            Content="New Group" Command="{Binding AddGroupCommand}"  HorizontalAlignment="Center" />
                         </CustomControls:ExpandingButton.Toggle>
                         <CustomControls:ExpandingButton.HiddenContent>
                             <views:TagEditView DataContext="{Binding AddTagViewModel}"/>
                         </CustomControls:ExpandingButton.HiddenContent>
                     </CustomControls:ExpandingButton>
-                    <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"  Grid.Row="2"
+                    <Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="3"/>
+                    <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"  Grid.Row="4"
                         ItemsSource="{Binding Path=TreeViewSource,Mode=TwoWay}"  Margin="5"
                         dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}"
                         ItemTemplateSelector="{StaticResource TagTemplateSelector}" MouseRightButtonDown="TagTree_MouseRightButtonDown">
@@ -198,10 +259,37 @@
                     <Grid Margin="0 0 -10 0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-                        <StackPanel Margin="20,15">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,5">
+                            <StackPanel.Resources>
+                                <Style TargetType="Border" x:Key="RadioBtnContainer">
+                                    <Setter Property="Opacity" Value="0.3"/>
+                                    <Setter Property="Padding" Value="10,0"/>
+                                    <Setter Property="Height" Value="30"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=IsChecked}" Value="true">
+                                            <Setter Property="Opacity" Value="1"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Resources>
+                            <RadioButton GroupName="IncludeFilterGroup" IsChecked="{Binding Include}">
+                                <Border CornerRadius="5,0,0,5" Style="{StaticResource RadioBtnContainer}" Background="{StaticResource AcceptFill}">
+                                    <TextBlock Text="Include" Style="{StaticResource RadioBtnTextbox}"/>
+                                </Border>
+                            </RadioButton>
+                            <RadioButton GroupName="IncludeFilterGroup">
+                                <Border CornerRadius="0,5,5,0" Style="{StaticResource RadioBtnContainer}" Background="IndianRed">
+                                    <TextBlock Text="Exclude" Style="{StaticResource RadioBtnTextbox}"/>
+                                </Border>
+                            </RadioButton>
+                        </StackPanel>
+                        <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource Separator}"/>
+                        <StackPanel Grid.Row="2" Margin="20,15">
                             <TextBlock Text="Author:"/>
                             <ComboBox ItemsSource="{Binding MVM.CurrentCollection.AuthorList}" FontSize="15"
                                       SelectedValue="{Binding SelectedAuthor}"/>
@@ -225,7 +313,7 @@
                                           HorizontalContentAlignment="Left" HorizontalAlignment="Left" Margin="5" 
                                     dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding MVM.CollectionVM}"/>
                         </StackPanel>
-                        <Button Content="Clear All" Grid.Row="2" Margin="10" Command="{Binding ClearFiltersCommand}"
+                        <Button Content="Clear All" Grid.Row="4" Margin="10" Command="{Binding ClearFiltersCommand}"
                             Style="{StaticResource IconTextButton}" Tools:AP.IconKind="FilterRemove" Background="Red"/>
                     </Grid>
                 </ScrollViewer>
@@ -337,36 +425,6 @@
         </TabItem>
         <TabItem Header="Sorting" Tools:AP.IconKind="Sort" ToolTip="Sorting">
             <UserControl Style="{StaticResource TabContentWrapper}" Tools:AP.Header="Sorting" Tools:AP.IconKind="Sort" DataContext="{Binding MVM.CollectionVM}">
-                <UserControl.Resources>
-                    <Style TargetType="Border" x:Key="RadioBtnContainer">
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="BorderBrush" Value="{StaticResource UIElementBackground}"/>
-                        <Setter Property="BorderThickness" Value="1"/>
-                        <Setter Property="Height" Value="40"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=IsChecked}" Value="true">
-                                <Setter Property="Background" Value="{StaticResource UIElementBackground}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                    <Style TargetType="TextBlock" x:Key="RadioBtnTextbox">
-                        <Setter Property="HorizontalAlignment" Value="Center"/>
-                        <Setter Property="VerticalAlignment" Value="Center"/>
-                        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-                        <Setter Property="Margin" Value="5,2"/>
-                        <Setter Property="FontSize" Value="18"/>
-                    </Style>
-                    <Style TargetType="RadioButton">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="RadioButton">
-                                    <ContentPresenter Content="{TemplateBinding Content}"/>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                    <Converters:RadioBtnToIntConverter x:Key="RadioBtnToIntConverter"/>
-                </UserControl.Resources>
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10">
                         <RadioButton GroupName="SortDirection"

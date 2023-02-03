@@ -23,11 +23,8 @@ namespace COMPASS.ViewModels
         {
             _cc = CurrentCollection;
 
-            ActiveFiles = new(_cc.AllCodices);
-
             //load sorting from settings
             InitSortingProperties();
-            ApplySorting();
 
             ExcludedCodicesByTag = new();
             ExcludedCodicesByExcludedTags = new();
@@ -66,6 +63,8 @@ namespace COMPASS.ViewModels
 
             _cc.AllCodices.CollectionChanged += (e, v) => SubscribeToCodexProperties();
             SubscribeToCodexProperties();
+
+            UpdateActiveFiles();
         }
 
         #region Properties
@@ -170,7 +169,6 @@ namespace COMPASS.ViewModels
             DeActiveTags.Clear();
             ActiveFilters.Clear();
             DeActiveFilters.Clear();
-            ActiveFiles = new(_cc.AllCodices);
         }
 
         //-------------For Tags---------------//
@@ -211,9 +209,6 @@ namespace COMPASS.ViewModels
             UpdateActiveFiles();
         }
 
-        private RelayCommand<Tag> _addTagFilterCommand;
-        public RelayCommand<Tag> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
-        private void AddTagFilterHelper(Tag tag) => AddTagFilter(tag); //needed because relaycommand only takes functions with one arg
         public void AddTagFilter(Tag t, bool include = true)
         {
             //Move to active if include and not yet in active
@@ -396,6 +391,7 @@ namespace COMPASS.ViewModels
             RaisePropertyChanged(nameof(MostOpenedCodices));
             RaisePropertyChanged(nameof(RecentlyAddedCodices));
 
+            ActiveFiles.CollectionChanged += (e, v) => ApplySorting();
             ApplySorting();
         }
 

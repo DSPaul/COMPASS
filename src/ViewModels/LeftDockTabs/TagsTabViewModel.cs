@@ -24,12 +24,22 @@ namespace COMPASS.ViewModels
             set { SetProperty(ref _addTagViewModel, value); }
         }
 
-        //Add Tag Btn
+        //Add Tag Btns
         public ActionCommand AddTagCommand { get; private set; }
         public ActionCommand AddGroupCommand { get; private set; }
         public void AddTag() => AddTagViewModel = new TagEditViewModel(null, false);
         public void AddGroup() => AddTagViewModel = new TagEditViewModel(null, true);
 
+        private RelayCommand<object[]> _addTagFilterCommand;
+        public RelayCommand<object[]> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
+        public void AddTagFilterHelper(object[] par)
+        {
+            Tag tag = (Tag)par[0];
+            bool include = (bool)par[1];
+            MVM.CollectionVM.AddTagFilter(tag,include); //needed because relaycommand only takes functions with one arg
+        }
+
+        #region Tag Context Menu
         public ActionCommand EditTagCommand { get; init; }
         public void EditTag()
         {
@@ -56,5 +66,6 @@ namespace COMPASS.ViewModels
             }
             MVM.Refresh();
         }
+        #endregion
     }
 }
