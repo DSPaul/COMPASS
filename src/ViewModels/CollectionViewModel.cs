@@ -85,8 +85,8 @@ namespace COMPASS.ViewModels
         private ObservableCollection<Codex> _activeFiles;
         public ObservableCollection<Codex> ActiveFiles
         {
-            get { return _activeFiles; }
-            set { SetProperty(ref _activeFiles, value); }
+            get => _activeFiles;
+            set => SetProperty(ref _activeFiles, value);
         }
 
         public ObservableCollection<Codex> Favorites => new(ActiveFiles.Where(c => c.Favorite));
@@ -97,20 +97,20 @@ namespace COMPASS.ViewModels
         private string _searchTerm;
         public string SearchTerm
         {
-            get { return _searchTerm; }
-            set { SetProperty(ref _searchTerm, value); }
+            get => _searchTerm;
+            set => SetProperty(ref _searchTerm, value);
         }
 
         private List<Filter> _sourceFilters;
         public List<Filter> SourceFilters
         {
-            get { return _sourceFilters; }
-            init { SetProperty(ref (_sourceFilters), value); }
+            get => _sourceFilters;
+            init => SetProperty(ref _sourceFilters, value);
         }
 
         public ListSortDirection SortDirection
         {
-            get { return (ListSortDirection)Settings.Default[nameof(SortDirection)]; }
+            get => (ListSortDirection)Settings.Default[nameof(SortDirection)];
             set
             {
                 Settings.Default[nameof(SortDirection)] = (int)value;
@@ -122,7 +122,7 @@ namespace COMPASS.ViewModels
 
         public string SortProperty
         {
-            get { return (string)Settings.Default[nameof(SortProperty)]; }
+            get => (string)Settings.Default[nameof(SortProperty)];
             set
             {
                 Settings.Default[nameof(SortProperty)] = value;
@@ -132,7 +132,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private readonly Dictionary<string, string> _sortOptions = new()
+        public Dictionary<string, string> SortOptions { get; } = new()
         {
             //("Display name","Property Name")
             { "Title", "SortingTitle" },
@@ -145,7 +145,6 @@ namespace COMPASS.ViewModels
             { "Page Count", "PageCount" },
             { "Times opened", "OpenedCount" }
         };
-        public Dictionary<string, string> SortOptions => _sortOptions;
         #endregion
 
         #region Functions
@@ -355,7 +354,7 @@ namespace COMPASS.ViewModels
         {
             //double check on typos by checking if all property names exist in codex class
             var PossibleSortProptertyNames = typeof(Codex).GetProperties().Select(p => p.Name).ToList();
-            if (_sortOptions.Select(pair => pair.Value).Except(PossibleSortProptertyNames).Any())
+            if (SortOptions.Select(pair => pair.Value).Except(PossibleSortProptertyNames).Any())
             {
                 MessageBox.Show("One of the sort property paths does not exist");
                 Logger.log.Error("One of the sort property paths does not exist");
@@ -434,7 +433,7 @@ namespace COMPASS.ViewModels
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
             //Included filter Listbox has extra empty collection to tell the difference
-            bool ToIncluded = ((CompositeCollection)(dropInfo.TargetCollection)).Count > 2;
+            bool ToIncluded = ((CompositeCollection)dropInfo.TargetCollection).Count > 2;
 
             switch (dropInfo.Data)
             {

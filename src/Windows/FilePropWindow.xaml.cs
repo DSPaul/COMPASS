@@ -21,9 +21,6 @@ namespace COMPASS
             AuthorsComboBox.ApplyTemplate();
         }
 
-        private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            MainGrid.Focus();
-        }
+        private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e) => MainGrid.Focus();
     }
 }

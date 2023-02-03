@@ -31,24 +31,21 @@ namespace COMPASS.ViewModels
 
         readonly Codex EditedCodex;
 
-        private bool CreateNewCodex
-        {
-            get { return EditedCodex == null; }
-        }
+        private bool CreateNewCodex => EditedCodex == null;
 
         private Codex _tempCodex;
         public Codex TempCodex
         {
-            get { return _tempCodex; }
-            set { SetProperty(ref _tempCodex, value); }
+            get => _tempCodex;
+            set => SetProperty(ref _tempCodex, value);
         }
 
         private bool CoverArtChanged = false;
         private bool _showLoading = false;
         public bool ShowLoading
         {
-            get { return _showLoading; }
-            set { SetProperty(ref _showLoading, value); }
+            get => _showLoading;
+            set => SetProperty(ref _showLoading, value);
         }
 
         public CreatableLookUpContract Contract { get; set; } = new();
@@ -172,10 +169,7 @@ namespace COMPASS.ViewModels
 
         private ActionCommand _cancelCommand;
         public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
-        public void Cancel()
-        {
-            CloseAction();
-        }
+        public void Cancel() => CloseAction();
 
         #endregion
     }

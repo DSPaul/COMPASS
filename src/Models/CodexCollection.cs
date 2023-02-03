@@ -27,8 +27,8 @@ namespace COMPASS.Models
         private string _directoryName;
         public string DirectoryName
         {
-            get { return _directoryName; }
-            set { SetProperty(ref _directoryName, value); }
+            get => _directoryName;
+            set => SetProperty(ref _directoryName, value);
         }
 
         public string CodicesDataFilePath => CollectionsPath + DirectoryName + @"\CodexInfo.xml";
@@ -45,15 +45,15 @@ namespace COMPASS.Models
         private ObservableCollection<string> _authorList = new();
         public ObservableCollection<string> AuthorList
         {
-            get { return _authorList; }
-            set { SetProperty(ref _authorList, value); }
+            get => _authorList;
+            set => SetProperty(ref _authorList, value);
         }
 
         private ObservableCollection<string> _publisherList = new();
         public ObservableCollection<string> PublisherList
         {
-            get { return _publisherList; }
-            set { SetProperty(ref _publisherList, value); }
+            get => _publisherList;
+            set => SetProperty(ref _publisherList, value);
         }
         #endregion
 

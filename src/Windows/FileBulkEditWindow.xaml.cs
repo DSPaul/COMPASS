@@ -18,9 +18,6 @@ namespace COMPASS
             ((CodexBulkEditViewModel)DataContext).CloseAction = new Action(this.Close);
         }
 
-        private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            MainGrid.Focus();
-        }
+        private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e) => MainGrid.Focus();
     }
 }

@@ -15,14 +15,8 @@ namespace COMPASS.ViewModels.Commands
             _execute = Execute;
         }
 
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
+        public bool CanExecute(object parameter) => true;
 
-        public void Execute(object parameter)
-        {
-            _execute.Invoke();
-        }
+        public void Execute(object parameter) => _execute.Invoke();
     }
 }

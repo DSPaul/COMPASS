@@ -34,15 +34,15 @@ namespace COMPASS.ViewModels
         private Tag tempTag;
         public Tag TempTag
         {
-            get { return tempTag; }
-            set { SetProperty(ref tempTag, value); }
+            get => tempTag;
+            set => SetProperty(ref tempTag, value);
         }
 
         //visibility of Color Selection
         private bool showcolorselection = false;
         public bool ShowColorSelection
         {
-            get { return showcolorselection; }
+            get => showcolorselection;
             set
             {
                 SetProperty(ref showcolorselection, value);
@@ -96,10 +96,7 @@ namespace COMPASS.ViewModels
         public ActionCommand CloseColorSelectionCommand { get; private set; }
         public Action CloseAction { get; set; }
 
-        private void CloseColorSelection()
-        {
-            ShowColorSelection = false;
-        }
+        private void CloseColorSelection() => ShowColorSelection = false;
 
         #endregion
     }

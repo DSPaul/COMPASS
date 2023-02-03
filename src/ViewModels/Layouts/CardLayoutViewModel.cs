@@ -14,13 +14,13 @@ namespace COMPASS.ViewModels
         private bool _showTitle = true;
         public bool ShowTitle
         {
-            get { return _showTitle; }
-            set { SetProperty(ref _showTitle, value); }
+            get => _showTitle;
+            set => SetProperty(ref _showTitle, value);
         }
 
         public bool ShowAuthor
         {
-            get { return Properties.Settings.Default.CardShowAuthor; }
+            get => Properties.Settings.Default.CardShowAuthor;
             set
             {
                 Properties.Settings.Default.CardShowAuthor = value;
@@ -30,7 +30,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowPublisher
         {
-            get { return Properties.Settings.Default.CardShowPublisher; }
+            get => Properties.Settings.Default.CardShowPublisher;
             set
             {
                 Properties.Settings.Default.CardShowPublisher = value;
@@ -40,7 +40,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowReleaseDate
         {
-            get { return Properties.Settings.Default.CardShowRelease; }
+            get => Properties.Settings.Default.CardShowRelease;
             set
             {
                 Properties.Settings.Default.CardShowRelease = value;
@@ -50,7 +50,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowVersion
         {
-            get { return Properties.Settings.Default.CardShowVersion; }
+            get => Properties.Settings.Default.CardShowVersion;
             set
             {
                 Properties.Settings.Default.CardShowVersion = value;
@@ -60,7 +60,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowRating
         {
-            get { return Properties.Settings.Default.CardShowRating; }
+            get => Properties.Settings.Default.CardShowRating;
             set
             {
                 Properties.Settings.Default.CardShowRating = value;
@@ -70,7 +70,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowTags
         {
-            get { return Properties.Settings.Default.CardShowTags; }
+            get => Properties.Settings.Default.CardShowTags;
             set
             {
                 Properties.Settings.Default.CardShowTags = value;
@@ -80,7 +80,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowFileIcons
         {
-            get { return Properties.Settings.Default.CardShowFileIcons; }
+            get => Properties.Settings.Default.CardShowFileIcons;
             set
             {
                 Properties.Settings.Default.CardShowFileIcons = value;

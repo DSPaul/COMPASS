@@ -23,23 +23,23 @@ namespace COMPASS.Models
         private ObservableCollection<Tag> _childeren = new();
         public ObservableCollection<Tag> Children
         {
-            get { return _childeren; }
-            set { SetProperty(ref _childeren, value); }
+            get => _childeren;
+            set => SetProperty(ref _childeren, value);
         }
 
         //implement ITag
         private string _content = "";
         public string Content
         {
-            get { return _content; }
-            set { SetProperty(ref _content, value); }
+            get => _content;
+            set => SetProperty(ref _content, value);
         }
 
         private Color _backgroundColor = Colors.Black;
         public Color BackgroundColor
         {
-            get { return _backgroundColor; }
-            set { SetProperty(ref _backgroundColor, value); }
+            get => _backgroundColor;
+            set => SetProperty(ref _backgroundColor, value);
         }
 
         //Implement IHasID
@@ -74,8 +74,8 @@ namespace COMPASS.Models
         private bool _isGroup;
         public bool IsGroup
         {
-            get { return _isGroup; }
-            set { SetProperty(ref _isGroup, value); }
+            get => _isGroup;
+            set => SetProperty(ref _isGroup, value);
         }
 
         //returns the first parent that is a group
@@ -108,6 +108,7 @@ namespace COMPASS.Models
 
         //Overwrite Equal operator
         public override bool Equals(object obj) => this.Equals(obj as Tag);
+
         public bool Equals(Tag other)
         {
             if (other is null)
@@ -116,7 +117,7 @@ namespace COMPASS.Models
                 return true;
             if (this.GetType() != other.GetType())
                 return false;
-            return (ID == other.ID);
+            return ID == other.ID;
         }
         public static bool operator ==(Tag lhs, Tag rhs)
         {
@@ -133,7 +134,11 @@ namespace COMPASS.Models
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(Tag lhs, Tag rhs) => !(lhs == rhs);
+        public static bool operator !=(Tag lhs, Tag rhs)
+        {
+            return !(lhs == rhs);
+        }
+
         public override int GetHashCode() => ID.GetHashCode();
         #endregion
     }

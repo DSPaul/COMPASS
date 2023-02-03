@@ -11,8 +11,8 @@ namespace COMPASS.ViewModels.Commands
 
         public event EventHandler CanExecuteChanged
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
 
         public RelayCommand(Action<T> Execute, Func<T, bool> CanExecute = null)
@@ -21,14 +21,8 @@ namespace COMPASS.ViewModels.Commands
             _canExecute = CanExecute;
         }
 
-        public bool CanExecute(object parameter)
-        {
-            return _canExecute == null || _canExecute((T)parameter);
-        }
+        public bool CanExecute(object parameter) => _canExecute == null || _canExecute((T)parameter);
 
-        public void Execute(object parameter)
-        {
-            _execute.Invoke((T)parameter);
-        }
+        public void Execute(object parameter) => _execute.Invoke((T)parameter);
     }
 }

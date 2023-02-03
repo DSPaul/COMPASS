@@ -37,8 +37,8 @@ namespace COMPASS.ViewModels
         private TagsTabViewModel _tagsTabVM;
         public TagsTabViewModel TagsTabVM
         {
-            get { return _tagsTabVM; }
-            set { SetProperty(ref _tagsTabVM, value); }
+            get => _tagsTabVM;
+            set => SetProperty(ref _tagsTabVM, value);
         }
         #endregion
 
@@ -47,8 +47,8 @@ namespace COMPASS.ViewModels
         private FiltersTabViewModel _filtersTabVM;
         public FiltersTabViewModel FiltersTabVM
         {
-            get { return _filtersTabVM; }
-            set { SetProperty(ref _filtersTabVM, value); }
+            get => _filtersTabVM;
+            set => SetProperty(ref _filtersTabVM, value);
         }
 
         #endregion
@@ -75,16 +75,13 @@ namespace COMPASS.ViewModels
         private ImportViewModel _currentImportVM;
         public ImportViewModel CurrentImportViewModel
         {
-            get { return _currentImportVM; }
-            set { SetProperty(ref _currentImportVM, value); }
+            get => _currentImportVM;
+            set => SetProperty(ref _currentImportVM, value);
         }
 
         private RelayCommand<Sources> _importFilesCommand;
         public RelayCommand<Sources> ImportFilesCommand => _importFilesCommand ??= new(ImportFiles);
-        public void ImportFiles(Sources source)
-        {
-            CurrentImportViewModel = new ImportViewModel(source, MVM.CurrentCollection);
-        }
+        public void ImportFiles(Sources source) => CurrentImportViewModel = new ImportViewModel(source, MVM.CurrentCollection);
         #endregion
 
     }

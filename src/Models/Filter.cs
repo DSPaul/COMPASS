@@ -41,6 +41,7 @@ namespace COMPASS.Models
 
         //Overwrite Equal operator
         public override bool Equals(object obj) => this.Equals(obj as Filter);
+
         public bool Equals(Filter other)
         {
             if (other is null)
@@ -49,7 +50,7 @@ namespace COMPASS.Models
                 return true;
             if (this.GetType() != other.GetType())
                 return false;
-            return (Content == other.Content);
+            return Content == other.Content;
         }
         public static bool operator ==(Filter lhs, Filter rhs)
         {
@@ -66,7 +67,11 @@ namespace COMPASS.Models
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(Filter lhs, Filter rhs) => !(lhs == rhs);
+        public static bool operator !=(Filter lhs, Filter rhs)
+        {
+            return !(lhs == rhs);
+        }
+
         public override int GetHashCode() => Content.GetHashCode();
     }
 }

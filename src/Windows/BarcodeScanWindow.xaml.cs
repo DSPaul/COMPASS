@@ -49,10 +49,7 @@ namespace COMPASS
             webcamPreview.Visibility = Visibility.Visible;
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            _webcamStreaming?.Dispose();
-        }
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => _webcamStreaming?.Dispose();
 
         private async void _webcamStreaming_OnQRCodeRead(object sender, EventArgs e)
         {
@@ -87,7 +84,7 @@ namespace COMPASS
                         int digit = isbn[i] - '0';
                         if (0 > digit || 9 < digit)
                             return false;
-                        sum += (digit * (10 - i));
+                        sum += digit * (10 - i);
                     }
 
                     // Checking last digit.
@@ -96,7 +93,7 @@ namespace COMPASS
                         return false;
 
                     // If last digit is 'X', add 10 to sum, else add its value.
-                    sum += ((last == 'X') ? 10 : (last - '0'));
+                    sum += (last == 'X') ? 10 : (last - '0');
 
                     // Return true if weighted sum of digits is divisible by 11.
                     return sum % 11 == 0;
@@ -107,7 +104,7 @@ namespace COMPASS
                         int digit = isbn[i] - '0';
                         if (0 > digit || 9 < digit)
                             return false;
-                        sum += digit * (1 + 2 * (i % 2));
+                        sum += digit * (1 + (2 * (i % 2)));
                     }
                     // Return true if weighted sum of digits is divisible by 10.
                     return sum % 10 == 0;

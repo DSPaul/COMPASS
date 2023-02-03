@@ -182,24 +182,21 @@ namespace COMPASS.ViewModels
             IsOnline = Utils.PingURL();
         }
 
-        private void FirstLaunch()
-        {
-            Properties.Settings.Default.Upgrade();
-        }
+        private void FirstLaunch() => Properties.Settings.Default.Upgrade();
         #endregion
 
         #region Properties
         private ObservableCollection<string> _collectionDirectories;
         public ObservableCollection<string> CollectionDirectories
         {
-            get { return _collectionDirectories; }
-            set { SetProperty(ref _collectionDirectories, value); }
+            get => _collectionDirectories;
+            set => SetProperty(ref _collectionDirectories, value);
         }
 
         private string _currentCollectionName;
         public string CurrentCollectionName
         {
-            get { return _currentCollectionName; }
+            get => _currentCollectionName;
             set
             {
                 if (CurrentCollection != null)
@@ -216,15 +213,15 @@ namespace COMPASS.ViewModels
         private CodexCollection _currentCollection;
         public CodexCollection CurrentCollection
         {
-            get { return _currentCollection; }
-            private set { SetProperty(ref _currentCollection, value); }
+            get => _currentCollection;
+            private set => SetProperty(ref _currentCollection, value);
         }
 
         private bool isOnline;
         public bool IsOnline
         {
-            get { return isOnline; }
-            private set { SetProperty(ref isOnline, value); }
+            get => isOnline;
+            private set => SetProperty(ref isOnline, value);
         }
 
         #endregion
@@ -235,30 +232,30 @@ namespace COMPASS.ViewModels
         private SettingsViewModel _settingsVM;
         public SettingsViewModel SettingsVM
         {
-            get { return _settingsVM; }
-            set { SetProperty(ref _settingsVM, value); }
+            get => _settingsVM;
+            set => SetProperty(ref _settingsVM, value);
         }
 
         private CollectionViewModel _collectionVM;
         public CollectionViewModel CollectionVM
         {
-            get { return _collectionVM; }
-            private set { SetProperty(ref _collectionVM, value); }
+            get => _collectionVM;
+            private set => SetProperty(ref _collectionVM, value);
         }
 
         private LayoutViewModel _currentLayout;
         public LayoutViewModel CurrentLayout
         {
-            get { return _currentLayout; }
-            set { SetProperty(ref _currentLayout, value); }
+            get => _currentLayout;
+            set => SetProperty(ref _currentLayout, value);
         }
 
         //Tags and Filters Tabs ViewModel (Left Dock)
         private LeftDockViewModel _tfViewModel;
         public LeftDockViewModel LeftDockVM
         {
-            get { return _tfViewModel; }
-            set { SetProperty(ref _tfViewModel, value); }
+            get => _tfViewModel;
+            set => SetProperty(ref _tfViewModel, value);
         }
 
         #endregion
@@ -309,8 +306,8 @@ namespace COMPASS.ViewModels
         {
             if (string.IsNullOrEmpty(dirName)) return;
 
-            Directory.CreateDirectory((CodexCollection.CollectionsPath + dirName + @"\CoverArt"));
-            Directory.CreateDirectory((CodexCollection.CollectionsPath + dirName + @"\Thumbnails"));
+            Directory.CreateDirectory(CodexCollection.CollectionsPath + dirName + @"\CoverArt");
+            Directory.CreateDirectory(CodexCollection.CollectionsPath + dirName + @"\Thumbnails");
             CollectionDirectories.Add(dirName);
             CurrentCollectionName = dirName;
         }
@@ -379,10 +376,7 @@ namespace COMPASS.ViewModels
         }
 
         //called every few seconds to update IsOnline
-        private void CheckConnection(object sender, EventArgs e)
-        {
-            IsOnline = Utils.PingURL();
-        }
+        private void CheckConnection(object sender, EventArgs e) => IsOnline = Utils.PingURL();
 
         public ActionCommand CheckForUpdatesCommand { get; init; }
         private void CheckForUpdates()

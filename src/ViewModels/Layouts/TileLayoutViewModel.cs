@@ -11,7 +11,7 @@ namespace COMPASS.ViewModels
         #region Properties
         public double TileWidth
         {
-            get { return Properties.Settings.Default.TileCoverSize; }
+            get => Properties.Settings.Default.TileCoverSize;
             set
             {
                 Properties.Settings.Default.TileCoverSize = value;
@@ -20,10 +20,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public double TileHeight
-        {
-            get { return (int)(TileWidth * 4 / 3); }
-        }
+        public double TileHeight => (int)(TileWidth * 4 / 3);
 
         public bool ShowTitle
         {

@@ -1,16 +1,13 @@
 ﻿//https://bengribaudo.com/blog/2012/03/14/1942/saving-restoring-wpf-datagrid-columns-size-sorting-and-order
 
-using COMPASS.ViewModels;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data.Common;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 
 namespace COMPASS.Resources.Controls
 {
@@ -49,8 +46,8 @@ namespace COMPASS.Resources.Controls
         }
         public ObservableCollection<ColumnInfo> ColumnInfo
         {
-            get { return (ObservableCollection<ColumnInfo>)GetValue(ColumnInfoProperty); }
-            set { SetValue(ColumnInfoProperty, value); }
+            get => (ObservableCollection<ColumnInfo>)GetValue(ColumnInfoProperty);
+            set => SetValue(ColumnInfoProperty, value);
         }
         private void UpdateColumnInfo()
         {
@@ -66,7 +63,7 @@ namespace COMPASS.Resources.Controls
                 Properties.Settings.Default["SortProperty"] = sd.PropertyName;
                 Properties.Settings.Default["SortDirection"] = (int)sd.Direction;
             }
-                
+
             Properties.Settings.Default["DataGridCollumnInfo"] = json;
             Properties.Settings.Default.Save();
             updatingColumnInfo = false;
@@ -100,7 +97,7 @@ namespace COMPASS.Resources.Controls
             foreach (var column in Columns)
             {
                 //var realColumn = Columns.FirstOrDefault(x => column.Header == x.Header);
-                if(column.SortMemberPath == prop)
+                if (column.SortMemberPath == prop)
                 {
                     column.SortDirection = (ListSortDirection?)direction;
                     return;

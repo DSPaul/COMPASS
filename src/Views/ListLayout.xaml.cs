@@ -35,20 +35,12 @@ namespace COMPASS.Views
             }
         }
 
-        private void FileView_DataContextChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
-        {
-            LoadDataGridInfo();
-        }
+        private void FileView_DataContextChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e) => LoadDataGridInfo();
 
-        private void LoadDataGridInfo()
-        {
-            ListLayoutGrid.ColumnInfo = JsonConvert.DeserializeObject<ObservableCollection<ColumnInfo>>(Properties.Settings.Default["DataGridCollumnInfo"].ToString());
+        private void LoadDataGridInfo() 
+            => ListLayoutGrid.ColumnInfo = JsonConvert.DeserializeObject<ObservableCollection<ColumnInfo>>(Properties.Settings.Default["DataGridCollumnInfo"].ToString());
 
-        }
-
-        private void FileView_TargetUpdated(object sender, System.Windows.Data.DataTransferEventArgs e)
-        {
-            LoadDataGridInfo();
-        }
+        private void FileView_TargetUpdated(object sender, System.Windows.Data.DataTransferEventArgs e) 
+            => LoadDataGridInfo();
     }
 }

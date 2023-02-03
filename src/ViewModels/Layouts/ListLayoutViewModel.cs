@@ -15,14 +15,14 @@ namespace COMPASS.ViewModels
         private bool _showTitle = true;
         public bool ShowTitle
         {
-            get { return _showTitle; }
-            set { SetProperty(ref _showTitle, value); }
+            get => _showTitle;
+            set => SetProperty(ref _showTitle, value);
         }
 
         [DisplayName("Show Authors Display")]
         public bool ShowAuthor
         {
-            get { return Properties.Settings.Default.ListShowAuthor; }
+            get => Properties.Settings.Default.ListShowAuthor;
             set
             {
                 Properties.Settings.Default.ListShowAuthor = value;
@@ -32,7 +32,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowPublisher
         {
-            get { return Properties.Settings.Default.ListShowPublisher; }
+            get => Properties.Settings.Default.ListShowPublisher;
             set
             {
                 Properties.Settings.Default.ListShowPublisher = value;
@@ -42,7 +42,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowReleaseDate
         {
-            get { return Properties.Settings.Default.ListShowRelease; }
+            get => Properties.Settings.Default.ListShowRelease;
             set
             {
                 Properties.Settings.Default.ListShowRelease = value;
@@ -52,7 +52,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowVersion
         {
-            get { return Properties.Settings.Default.ListShowVersion; }
+            get => Properties.Settings.Default.ListShowVersion;
             set
             {
                 Properties.Settings.Default.ListShowVersion = value;
@@ -62,7 +62,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowRating
         {
-            get { return Properties.Settings.Default.ListShowRating; }
+            get => Properties.Settings.Default.ListShowRating;
             set
             {
                 Properties.Settings.Default.ListShowRating = value;
@@ -72,7 +72,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowTags
         {
-            get { return Properties.Settings.Default.ListShowTags; }
+            get => Properties.Settings.Default.ListShowTags;
             set
             {
                 Properties.Settings.Default.ListShowTags = value;
@@ -82,7 +82,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowFileIcons
         {
-            get { return Properties.Settings.Default.ListShowFileIcons; }
+            get => Properties.Settings.Default.ListShowFileIcons;
             set
             {
                 Properties.Settings.Default.ListShowFileIcons = value;
@@ -92,7 +92,7 @@ namespace COMPASS.ViewModels
 
         public bool ShowEditIcon
         {
-            get { return Properties.Settings.Default.ListShowEditIcon; }
+            get => Properties.Settings.Default.ListShowEditIcon;
             set
             {
                 Properties.Settings.Default.ListShowEditIcon = value;

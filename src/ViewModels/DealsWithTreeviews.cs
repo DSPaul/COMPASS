@@ -21,16 +21,16 @@ namespace COMPASS.ViewModels
         private ObservableCollection<TreeViewNode> _treeviewsource;
         public ObservableCollection<TreeViewNode> TreeViewSource
         {
-            get { return _treeviewsource; }
-            set { SetProperty(ref _treeviewsource, value); }
+            get => _treeviewsource;
+            set => SetProperty(ref _treeviewsource, value);
         }
 
         //AllTreeViewNodes without hierarchy for iterating purposes
         private HashSet<TreeViewNode> _alltreeViewNodes;
         public HashSet<TreeViewNode> AllTreeViewNodes
         {
-            get { return _alltreeViewNodes; }
-            set { SetProperty(ref _alltreeViewNodes, value); }
+            get => _alltreeViewNodes;
+            set => SetProperty(ref _alltreeViewNodes, value);
         }
 
         public ObservableCollection<TreeViewNode> CreateTreeViewSource(List<Tag> rootTags)
@@ -92,10 +92,7 @@ namespace COMPASS.ViewModels
 
 
         //Drop on Treeview Behaviour
-        void IDropTarget.DragOver(IDropInfo dropInfo)
-        {
-            DragDrop.DefaultDropHandler.DragOver(dropInfo);
-        }
+        void IDropTarget.DragOver(IDropInfo dropInfo) => DragDrop.DefaultDropHandler.DragOver(dropInfo);
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
             DragDrop.DefaultDropHandler.Drop(dropInfo);

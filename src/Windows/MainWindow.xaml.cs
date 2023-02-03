@@ -26,10 +26,7 @@ namespace COMPASS
         private readonly MainViewModel MainViewModel;
 
         //Deselects when you click away
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            MainGrid.Focus();
-        }
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e) => MainGrid.Focus();
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
@@ -138,33 +135,27 @@ namespace COMPASS
             public POINT ptMinTrackSize;
             public POINT ptMaxTrackSize;
         }
-        private void MinimizeWindow(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
+        private void MinimizeWindow(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 
         private void MaximizeButton_Click(object sender, RoutedEventArgs e)
         {
             switch (WindowState)
             {
-                case (WindowState.Maximized):
+                case WindowState.Maximized:
                     WindowState = WindowState.Normal;
                     break;
-                case (WindowState.Normal):
+                case WindowState.Normal:
                     WindowState = WindowState.Maximized;
                     break;
             }
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
+        private void CloseButton_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
         #endregion
 
         private void Toggle_ContextMenu(object sender, RoutedEventArgs e)
         {
-            (sender as Button).ContextMenu.PlacementTarget = (sender as Button);
+            (sender as Button).ContextMenu.PlacementTarget = sender as Button;
             (sender as Button).ContextMenu.IsOpen = !(sender as Button).ContextMenu.IsOpen;
         }
     }

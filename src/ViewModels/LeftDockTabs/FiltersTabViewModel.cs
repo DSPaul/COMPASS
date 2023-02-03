@@ -11,10 +11,10 @@ namespace COMPASS.ViewModels
         public FiltersTabViewModel() : base() { }
 
         private bool _include = true;
-        public bool Include 
-        { 
-            get => _include; 
-            set => SetProperty(ref _include, value); 
+        public bool Include
+        {
+            get => _include;
+            set => SetProperty(ref _include, value);
         }
 
         #region Filters
@@ -22,7 +22,7 @@ namespace COMPASS.ViewModels
         private string selectedAuthor;
         public string SelectedAuthor
         {
-            get { return selectedAuthor; }
+            get => selectedAuthor;
             set
             {
                 SetProperty(ref selectedAuthor, value);
@@ -39,7 +39,7 @@ namespace COMPASS.ViewModels
         private string selectedPublisher;
         public string SelectedPublisher
         {
-            get { return selectedPublisher; }
+            get => selectedPublisher;
             set
             {
                 SetProperty(ref selectedPublisher, value);
@@ -58,7 +58,7 @@ namespace COMPASS.ViewModels
 
         public DateTime? StartReleaseDate
         {
-            get { return startReleaseDate; }
+            get => startReleaseDate;
             set
             {
                 SetProperty(ref startReleaseDate, value);
@@ -77,7 +77,7 @@ namespace COMPASS.ViewModels
 
         public DateTime? StopReleaseDate
         {
-            get { return stopReleaseDate; }
+            get => stopReleaseDate;
             set
             {
                 SetProperty(ref stopReleaseDate, value);
@@ -98,7 +98,7 @@ namespace COMPASS.ViewModels
         private int minRating;
         public int MinRating
         {
-            get { return minRating; }
+            get => minRating;
             set
             {
                 SetProperty(ref minRating, value);

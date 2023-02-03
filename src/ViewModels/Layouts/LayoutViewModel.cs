@@ -1,6 +1,5 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
-using System.Collections.ObjectModel;
 
 namespace COMPASS.ViewModels
 {
@@ -16,8 +15,8 @@ namespace COMPASS.ViewModels
         private Codex _selectedFile;
         public Codex SelectedFile
         {
-            get { return _selectedFile; }
-            set { SetProperty(ref _selectedFile, value); }
+            get => _selectedFile;
+            set => SetProperty(ref _selectedFile, value);
         }
 
         //Set Type of view

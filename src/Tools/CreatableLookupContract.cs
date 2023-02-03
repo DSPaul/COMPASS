@@ -7,10 +7,7 @@ namespace COMPASS.Tools
     {
         public bool SupportsNewObjectCreation => true;
 
-        public object CreateObject(object sender, string searchString)
-        {
-            return searchString.Trim();
-        }
+        public object CreateObject(object sender, string searchString) => searchString.Trim();
 
         public bool IsItemEqualToString(object sender, object item, string seachString)
         {

@@ -20,14 +20,15 @@ namespace COMPASS.ViewModels
         private IEditViewModel _addTagViewModel;
         public IEditViewModel AddTagViewModel
         {
-            get { return _addTagViewModel; }
-            set { SetProperty(ref _addTagViewModel, value); }
+            get => _addTagViewModel;
+            set => SetProperty(ref _addTagViewModel, value);
         }
 
         //Add Tag Btns
         public ActionCommand AddTagCommand { get; private set; }
         public ActionCommand AddGroupCommand { get; private set; }
         public void AddTag() => AddTagViewModel = new TagEditViewModel(null, false);
+
         public void AddGroup() => AddTagViewModel = new TagEditViewModel(null, true);
 
         private RelayCommand<object[]> _addTagFilterCommand;
@@ -36,7 +37,7 @@ namespace COMPASS.ViewModels
         {
             Tag tag = (Tag)par[0];
             bool include = (bool)par[1];
-            MVM.CollectionVM.AddTagFilter(tag,include); //needed because relaycommand only takes functions with one arg
+            MVM.CollectionVM.AddTagFilter(tag, include); //needed because relaycommand only takes functions with one arg
         }
 
         #region Tag Context Menu

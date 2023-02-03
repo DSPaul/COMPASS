@@ -83,59 +83,52 @@ namespace COMPASS.ViewModels
         private float _progressPercentage;
         public float ProgressPercentage
         {
-            get { return _progressPercentage; }
-            set { SetProperty(ref _progressPercentage, value); }
+            get => _progressPercentage;
+            set => SetProperty(ref _progressPercentage, value);
         }
 
         private readonly string _importText = "Import in Progress: {0} {1} / {2}";
         private int _importcounter;
-        private int _importamount;
         private string _importtype = "";
 
-        public int ImportAmount
-        {
-            get { return _importamount; }
-        }
+        public int ImportAmount { get; private set; }
 
-        public string ProgressText
-        {
-            get { return string.Format(_importText, _importtype, _importcounter + 1, _importamount); }
-        }
+        public string ProgressText => string.Format(_importText, _importtype, _importcounter + 1, ImportAmount);
 
         //import url props
         private string _previewURL;
         public string PreviewURL
         {
-            get { return _previewURL; }
-            set { SetProperty(ref _previewURL, value); }
+            get => _previewURL;
+            set => SetProperty(ref _previewURL, value);
         }
 
         private string _inputURL = "";
         public string InputURL
         {
-            get { return _inputURL; }
-            set { SetProperty(ref _inputURL, value); }
+            get => _inputURL;
+            set => SetProperty(ref _inputURL, value);
         }
 
         private string _importTitle;
         public string ImportTitle
         {
-            get { return _importTitle; }
-            set { SetProperty(ref _importTitle, value); }
+            get => _importTitle;
+            set => SetProperty(ref _importTitle, value);
         }
 
         private string _importError = "";
         public string ImportError
         {
-            get { return _importError; }
-            set { SetProperty(ref _importError, value); }
+            get => _importError;
+            set => SetProperty(ref _importError, value);
         }
 
         private ObservableCollection<LogEntry> _log = new();
         public ObservableCollection<LogEntry> Log
         {
-            get { return _log; }
-            set { SetProperty(ref _log, value); }
+            get => _log;
+            set => SetProperty(ref _log, value);
         }
 
         //folder import props
@@ -143,8 +136,8 @@ namespace COMPASS.ViewModels
         private IEnumerable<FileTypeSelectionHelper> _toImportFiletypes;
         public IEnumerable<FileTypeSelectionHelper> ToImportFiletypes
         {
-            get { return _toImportFiletypes; }
-            set { SetProperty(ref _toImportFiletypes, value); }
+            get => _toImportFiletypes;
+            set => SetProperty(ref _toImportFiletypes, value);
         }
 
         #endregion
@@ -153,28 +146,22 @@ namespace COMPASS.ViewModels
         {
             public FileTypeSelectionHelper(string type, int count, bool should)
             {
-                _filetype = type;
+                Key = type;
                 _fileCount = count;
                 _shouldImport = should;
             }
-            private readonly string _filetype;
+
             private readonly int _fileCount;
             private bool _shouldImport;
 
-            public string Key
-            {
-                get { return _filetype; }
-            }
+            public string Key { get; }
 
             public bool ShouldImport
             {
-                get { return _shouldImport; }
-                set { SetProperty(ref _shouldImport, value); }
+                get => _shouldImport;
+                set => SetProperty(ref _shouldImport, value);
             }
-            public string DisplayText
-            {
-                get { return String.Format("{0} ({1} file{2})", _filetype, _fileCount, _fileCount > 1 ? "s" : ""); }
-            }
+            public string DisplayText => String.Format("{0} ({1} file{2})", Key, _fileCount, _fileCount > 1 ? "s" : "");
         }
 
         #region Functions and Events
@@ -206,7 +193,7 @@ namespace COMPASS.ViewModels
 
                 //init progress tracking variables
                 _importcounter = 0;
-                _importamount = openFileDialog.FileNames.Length;
+                ImportAmount = openFileDialog.FileNames.Length;
                 importWorker.ReportProgress(_importcounter);
 
                 foreach (string path in openFileDialog.FileNames)
@@ -218,10 +205,7 @@ namespace COMPASS.ViewModels
                     importWorker.ReportProgress(_importcounter);
                 }
             }
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                MVM.Refresh();
-            });
+            Application.Current.Dispatcher.Invoke(MVM.Refresh);
         }
 
         public void ImportFolder(object sender, DoWorkEventArgs e)
@@ -248,8 +232,8 @@ namespace COMPASS.ViewModels
                 }
 
                 //find how many files of each filetype
-                _importamount = toImport.Count;
-                var toImport_grouped = toImport.GroupBy(p => Path.GetExtension(p));
+                ImportAmount = toImport.Count;
+                var toImport_grouped = toImport.GroupBy(Path.GetExtension);
                 ToImportFiletypes = toImport_grouped.Select(x => new FileTypeSelectionHelper(x.Key, x.Count(), true)).ToList();
 
                 //open window to let user choose which filetypes to import
@@ -278,7 +262,7 @@ namespace COMPASS.ViewModels
                 //init progress tracking variables
                 ProgressWindow pgw;
                 _importcounter = 0;
-                _importamount = toImport.Count;
+                ImportAmount = toImport.Count;
                 _importtype = "File";
                 //needed to avoid error "The calling Thread must be STA" when creating progress window
                 Application.Current.Dispatcher.Invoke(() =>
@@ -301,10 +285,7 @@ namespace COMPASS.ViewModels
                     importWorker.ReportProgress(_importcounter);
                 }
             }
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                MVM.Refresh();
-            });
+            Application.Current.Dispatcher.Invoke(MVM.Refresh);
         }
 
         public void ImportFilePath(string path)
@@ -447,7 +428,7 @@ namespace COMPASS.ViewModels
             _importtype = "Step";
             _importcounter = 0;
             //3 steps: 1. connect to site, 2. get metadata, 3. get Cover
-            _importamount = 3;
+            ImportAmount = 3;
 
             //needed to avoid error "The calling Thread must be STA" when creating progress window
             Application.Current.Dispatcher.Invoke(() =>
@@ -562,10 +543,7 @@ namespace COMPASS.ViewModels
             _importcounter++;
             worker.ReportProgress(_importcounter);
 
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                MVM.Refresh();
-            });
+            Application.Current.Dispatcher.Invoke(MVM.Refresh);
         }
 
         private void ImportFromAPI(object sender, DoWorkEventArgs e)
@@ -574,7 +552,7 @@ namespace COMPASS.ViewModels
             _importtype = "Step";
             _importcounter = 0;
             //3 steps: 1. connect to api, 2. get metadata, 3. get Cover
-            _importamount = 3;
+            ImportAmount = 3;
 
             //needed to avoid error "The calling Thread must be STA" when creating progress window
             Application.Current.Dispatcher.Invoke(() =>
@@ -645,16 +623,13 @@ namespace COMPASS.ViewModels
             _importcounter++;
             worker.ReportProgress(_importcounter);
 
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                MVM.Refresh();
-            });
+            Application.Current.Dispatcher.Invoke(MVM.Refresh);
         }
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             //calculate current percentage for progressbar
-            ProgressPercentage = (int)((float)_importcounter / _importamount * 100);
+            ProgressPercentage = (int)((float)_importcounter / ImportAmount * 100);
             //update text
             RaisePropertyChanged(nameof(ProgressText));
             //write log entry if any

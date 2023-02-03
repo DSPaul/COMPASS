@@ -68,10 +68,8 @@ namespace COMPASS.Tools
             }
             return success;
         }
-        public static bool TryFunctions<T>(ObservableCollection<PreferableFunction<T>> toTry, T arg)
-        {
-            return TryFunctions<T>(toTry.ToList(), arg);
-        }
+        public static bool TryFunctions<T>(ObservableCollection<PreferableFunction<T>> toTry, T arg) 
+            => TryFunctions(toTry.ToList(), arg);
 
         //Download data and put it in a byte[]
         public static async Task<byte[]> DownloadFileAsync(string uri)
@@ -116,10 +114,7 @@ namespace COMPASS.Tools
             return false;
         }
 
-        public static string FindFileDirectory(string fileName)
-        {
-            return FindFileDirectory(fileName, Directory.GetCurrentDirectory());
-        }
+        public static string FindFileDirectory(string fileName) => FindFileDirectory(fileName, Directory.GetCurrentDirectory());
         public static string FindFileDirectory(string fileName, string rootDirectory)
         {
             string filePath = Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories).Last();

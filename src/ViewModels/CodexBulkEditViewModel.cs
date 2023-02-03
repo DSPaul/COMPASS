@@ -32,8 +32,8 @@ namespace COMPASS.ViewModels
         private bool _tagMode = true;
         public bool TagMode
         {
-            get { return _tagMode; }
-            set { SetProperty(ref _tagMode, value); }
+            get => _tagMode;
+            set => SetProperty(ref _tagMode, value);
         }
 
 
@@ -42,21 +42,21 @@ namespace COMPASS.ViewModels
 
         public ObservableCollection<Tag> TagsToAdd
         {
-            get { return _tagsToAdd; }
-            set { SetProperty(ref _tagsToAdd, value); }
+            get => _tagsToAdd;
+            set => SetProperty(ref _tagsToAdd, value);
         }
 
         public ObservableCollection<Tag> TagsToRemove
         {
-            get { return _tagsToRemove; }
-            set { SetProperty(ref _tagsToRemove, value); }
+            get => _tagsToRemove;
+            set => SetProperty(ref _tagsToRemove, value);
         }
 
         private Codex _tempCodex;
         public Codex TempCodex
         {
-            get { return _tempCodex; }
-            set { SetProperty(ref _tempCodex, value); }
+            get => _tempCodex;
+            set => SetProperty(ref _tempCodex, value);
         }
 
         public CreatableLookUpContract Contract { get; set; } = new();
@@ -193,10 +193,7 @@ namespace COMPASS.ViewModels
 
         private ActionCommand _cancelCommand;
         public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
-        public void Cancel()
-        {
-            CloseAction();
-        }
+        public void Cancel() => CloseAction();
 
         #endregion
     }

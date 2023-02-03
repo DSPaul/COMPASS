@@ -62,10 +62,7 @@ namespace COMPASS.ViewModels
             OpenCodexPriority = new ObservableCollection<PreferableFunction<Codex>>(OpenCodexFunctions.OrderBy(pf => AllPreferences.OpenFilePriorityIDs.IndexOf(pf.ID)));
         }
 
-        public void CreateDefaultPreferences()
-        {
-            OpenCodexPriority = new(OpenCodexFunctions);
-        }
+        public void CreateDefaultPreferences() => OpenCodexPriority = new(OpenCodexFunctions);
         #endregion
 
         #region General Tab
@@ -81,8 +78,8 @@ namespace COMPASS.ViewModels
         private ObservableCollection<PreferableFunction<Codex>> _openCodexPriority;
         public ObservableCollection<PreferableFunction<Codex>> OpenCodexPriority
         {
-            get { return _openCodexPriority; }
-            set { SetProperty(ref _openCodexPriority, value); }
+            get => _openCodexPriority;
+            set => SetProperty(ref _openCodexPriority, value);
         }
         #endregion
 
@@ -94,7 +91,7 @@ namespace COMPASS.ViewModels
         private int _amountRenamed = 0;
         public int AmountRenamed
         {
-            get { return _amountRenamed; }
+            get => _amountRenamed;
             set
             {
                 SetProperty(ref _amountRenamed, value);
@@ -102,18 +99,12 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public string RenameCompleteMessage
-        {
-            get { return $"Renamed Path Reference in {AmountRenamed} Codices"; }
-        }
+        public string RenameCompleteMessage => $"Renamed Path Reference in {AmountRenamed} Codices";
 
         private RelayCommand<object[]> _renameFolderRefCommand;
         public RelayCommand<object[]> RenameFolderRefCommand => _renameFolderRefCommand ??= new(RenameFolderReferences);
 
-        private void RenameFolderReferences(object[] args)
-        {
-            RenameFolderReferences((string)args[0], (string)args[1]);
-        }
+        private void RenameFolderReferences(object[] args) => RenameFolderReferences((string)args[0], (string)args[1]);
         private void RenameFolderReferences(string oldpath, string newpath)
         {
             AmountRenamed = 0;
@@ -210,10 +201,7 @@ namespace COMPASS.ViewModels
             zip.ExtractAll(Constants.CompassDataPath, ExtractExistingFileAction.OverwriteSilently);
         }
 
-        private void CreateZipDone(object sender, RunWorkerCompletedEventArgs e)
-        {
-            lw.Close();
-        }
+        private void CreateZipDone(object sender, RunWorkerCompletedEventArgs e) => lw.Close();
 
         private void ExtractZipDone(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -238,8 +226,8 @@ namespace COMPASS.ViewModels
         private string _releaseNotes;
         public string ReleaseNotes
         {
-            get { return _releaseNotes; }
-            set { SetProperty(ref _releaseNotes, value); }
+            get => _releaseNotes;
+            set => SetProperty(ref _releaseNotes, value);
         }
         #endregion
 
