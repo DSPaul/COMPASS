@@ -226,7 +226,7 @@ namespace COMPASS
             catch (Exception ex)
             {
                 //will fail if image is corrupt
-                Logger.log.Error(String.Format("Could not get cover from {0}", imagepath));
+                Logger.log.Error($"Could not get cover from {imagepath}");
                 Logger.log.Error(ex.InnerException);
             }
         }
