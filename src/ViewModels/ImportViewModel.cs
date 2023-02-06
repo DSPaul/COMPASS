@@ -500,11 +500,11 @@ namespace COMPASS.ViewModels
                     JObject metadata = JObject.Parse(rawData);
 
                     newFile.Title = (string)metadata.SelectToken("brew.title");
-                    newFile.Authors = new(metadata.SelectToken("brew.authors").Values<string>());
+                    newFile.Authors = new(metadata.SelectToken("brew.authors")?.Values<string>());
                     newFile.Version = (string)metadata.SelectToken("brew.version");
                     newFile.PageCount = (int)metadata.SelectToken("brew.pageCount");
                     newFile.Description = (string)metadata.SelectToken("brew.description");
-                    newFile.ReleaseDate = DateTime.Parse(((string)metadata.SelectToken("brew.createdAt")).Split('T')[0], CultureInfo.InvariantCulture);
+                    newFile.ReleaseDate = DateTime.Parse(((string)metadata.SelectToken("brew.createdAt"))?.Split('T')[0], CultureInfo.InvariantCulture);
                     break;
 
                 case Sources.GoogleDrive:
