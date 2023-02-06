@@ -36,10 +36,7 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="10">
-                        <CheckBox IsChecked="{Binding ShouldImport, Mode=TwoWay}" Margin="5"/>
-                        <TextBlock Text="{Binding DisplayText}"/>
-                    </StackPanel>
+                    <CheckBox Content="{Binding DisplayText}" IsChecked="{Binding ShouldImport, Mode=TwoWay}" Margin="15"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
