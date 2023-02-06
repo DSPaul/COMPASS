@@ -10,7 +10,7 @@
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
         Background="{StaticResource WindowBackground}" 
         FocusManager.FocusedElement="{Binding ElementName=inputField}"
-        Title="Import URL" Height="190" Width="600" WindowStartupLocation="CenterScreen">
+        Title="Import URL" Height="210" Width="600" WindowStartupLocation="CenterScreen">
     <Grid>
         <StackPanel Margin="15">
             <TextBlock Text="{Binding ImportTitle, FallbackValue= URL:}" Margin="5"/>
@@ -37,6 +37,18 @@
                 <Button Grid.Column="2" Content="Import" Command="{Binding SubmitURLCommand}" IsDefault="True" Margin="5"
                         Style="{StaticResource TextButton}" Background="{StaticResource AccentColorMuted}"/>
             </Grid>
+            <CheckBox IsChecked="{Binding DontValidateURL}" Content="Disable URL validation (for self hosted instances of homebrewery)" Margin="5">
+                <CheckBox.Style>
+                    <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Tools:Enums+Sources.Homebrewery}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </CheckBox.Style>
+            </CheckBox>
             <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" Margin="5"/>
         </StackPanel>
     </Grid>

@@ -35,14 +35,14 @@ namespace COMPASS.ViewModels
             {
                 case Sources.File:
                     //Start new threat (so program doesn't freeze while importing)
-                    worker = new BackgroundWorker { WorkerReportsProgress = true };
+                    worker = new() { WorkerReportsProgress = true };
                     worker.DoWork += ImportFiles;
                     worker.ProgressChanged += ProgressChanged;
                     worker.RunWorkerAsync();
                     break;
                 case Sources.Folder:
                     //Start new threat (so program doesn't freeze while importing)
-                    worker = new BackgroundWorker { WorkerReportsProgress = true };
+                    worker = new(){ WorkerReportsProgress = true };
                     worker.DoWork += ImportFolder;
                     worker.ProgressChanged += ProgressChanged;
                     worker.RunWorkerAsync();
@@ -73,7 +73,7 @@ namespace COMPASS.ViewModels
 
         public Sources Source { get; init; }
         private BackgroundWorker worker;
-        private ImportURLWindow iURLw;
+        private ImportURLWindow importURLwindow;
 
         private const Sources Webscrape = Sources.Homebrewery | Sources.GmBinder | Sources.GoogleDrive;
         private const Sources APIAccess = Sources.ISBN;
@@ -87,21 +87,22 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _progressPercentage, value);
         }
 
-        private readonly string _importText = "Import in Progress: {0} {1} / {2}";
         private int _importcounter;
-        private string _importtype = "";
-
+        private string _importTextNoun = "";
         public int ImportAmount { get; private set; }
-
-        public string ProgressText => string.Format(_importText, _importtype, _importcounter + 1, ImportAmount);
+        public string ProgressText => $"Import in Progress: {_importTextNoun} {_importcounter + 1} / {ImportAmount}";
 
         //import url props
-        private string _previewURL;
-        public string PreviewURL
+        public string PreviewURL { get; set; }
+
+        public bool ValidateURL { get; set; } = true;
+        //checkbox to disable validation so need inverted prop
+        public bool DontValidateURL
         {
-            get => _previewURL;
-            set => SetProperty(ref _previewURL, value);
+            get => !ValidateURL;
+            set => ValidateURL = !value;
         }
+
 
         private string _inputURL = "";
         public string InputURL
@@ -110,12 +111,7 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _inputURL, value);
         }
 
-        private string _importTitle;
-        public string ImportTitle
-        {
-            get => _importTitle;
-            set => SetProperty(ref _importTitle, value);
-        }
+        public string ImportTitle { get; set; }
 
         private string _importError = "";
         public string ImportError
@@ -133,8 +129,8 @@ namespace COMPASS.ViewModels
 
         //folder import props
 
-        private IEnumerable<FileTypeSelectionHelper> _toImportFiletypes;
-        public IEnumerable<FileTypeSelectionHelper> ToImportFiletypes
+        private IEnumerable<FileTypeInfo> _toImportFiletypes;
+        public IEnumerable<FileTypeInfo> ToImportFiletypes
         {
             get => _toImportFiletypes;
             set => SetProperty(ref _toImportFiletypes, value);
@@ -142,26 +138,20 @@ namespace COMPASS.ViewModels
 
         #endregion
 
-        public class FileTypeSelectionHelper : ObservableObject
+        //helper class for file type selection during folder import
+        public class FileTypeInfo
         {
-            public FileTypeSelectionHelper(string type, int count, bool should)
+            public FileTypeInfo(string extension, int fileCount, bool shouldImport)
             {
-                Key = type;
-                _fileCount = count;
-                _shouldImport = should;
+                FileExtension = extension;
+                _fileCount = fileCount;
+                ShouldImport = shouldImport;
             }
 
             private readonly int _fileCount;
-            private bool _shouldImport;
-
-            public string Key { get; }
-
-            public bool ShouldImport
-            {
-                get => _shouldImport;
-                set => SetProperty(ref _shouldImport, value);
-            }
-            public string DisplayText => String.Format("{0} ({1} file{2})", Key, _fileCount, _fileCount > 1 ? "s" : "");
+            public string FileExtension { get; }
+            public bool ShouldImport { get; set; }
+            public string DisplayText => $"{FileExtension} ({_fileCount} file{(_fileCount > 1 ? @"s" : @"")})";
         }
 
         #region Functions and Events
@@ -178,17 +168,17 @@ namespace COMPASS.ViewModels
 
             if (openFileDialog.ShowDialog() == true)
             {
-                ProgressWindow pgw;
-                _importtype = "File";
+                ProgressWindow progressWindow;
+                _importTextNoun = "File";
 
                 //needed to avoid error "The calling Thread must be STA" when creating progress window
                 Application.Current.Dispatcher.Invoke(() =>
                     {
-                        pgw = new ProgressWindow(this)
+                        progressWindow = new(this)
                         {
                             Owner = Application.Current.MainWindow
                         };
-                        pgw.Show();
+                        progressWindow.Show();
                     });
 
                 //init progress tracking variables
@@ -234,17 +224,17 @@ namespace COMPASS.ViewModels
                 //find how many files of each filetype
                 ImportAmount = toImport.Count;
                 var toImport_grouped = toImport.GroupBy(Path.GetExtension);
-                ToImportFiletypes = toImport_grouped.Select(x => new FileTypeSelectionHelper(x.Key, x.Count(), true)).ToList();
+                ToImportFiletypes = toImport_grouped.Select(x => new FileTypeInfo(x.Key, x.Count(), true)).ToList();
 
                 //open window to let user choose which filetypes to import
-                ImportFolderWindow ipf;
+                ImportFolderWindow importFolderWindow;
                 var dialogresult = Application.Current.Dispatcher.Invoke(() =>
                 {
-                    ipf = new ImportFolderWindow(this)
+                    importFolderWindow = new(this)
                     {
                         Owner = Application.Current.MainWindow
                     };
-                    return ipf.ShowDialog();
+                    return importFolderWindow.ShowDialog();
                 });
 
                 if (dialogresult != true) return;
@@ -255,23 +245,23 @@ namespace COMPASS.ViewModels
                 {
                     if (filetypeHelper.ShouldImport)
                     {
-                        toImport.AddRange(toImport_grouped.First(g => g.Key == filetypeHelper.Key));
+                        toImport.AddRange(toImport_grouped.First(g => g.Key == filetypeHelper.FileExtension));
                     }
                 }
 
                 //init progress tracking variables
-                ProgressWindow pgw;
+                ProgressWindow progressWindow;
                 _importcounter = 0;
                 ImportAmount = toImport.Count;
-                _importtype = "File";
+                _importTextNoun = "File";
                 //needed to avoid error "The calling Thread must be STA" when creating progress window
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    pgw = new ProgressWindow(this)
+                    progressWindow = new(this)
                     {
                         Owner = Application.Current.MainWindow
                     };
-                    pgw.Show();
+                    progressWindow.Show();
                 });
 
                 importWorker.ReportProgress(_importcounter);
@@ -294,7 +284,7 @@ namespace COMPASS.ViewModels
             //Import File
             if (_codexCollection.AllCodices.All(p => p.Path != path))
             {
-                logEntry = new LogEntry(LogEntry.MsgType.Info, string.Format("Importing {0}", Path.GetFileName(path)));
+                logEntry = new(LogEntry.MsgType.Info, $"Importing {Path.GetFileName(path)}");
                 worker.ReportProgress(_importcounter, logEntry);
 
                 Codex newCodex = new(_codexCollection)
@@ -303,6 +293,7 @@ namespace COMPASS.ViewModels
                 };
 
                 string FileType = Path.GetExtension(path);
+                string FileName = Path.GetFileName(path);
 
                 switch (FileType)
                 {
@@ -323,7 +314,7 @@ namespace COMPASS.ViewModels
                             //in case pdf is corrupt: PdfReader will throw error
                             //in those cases: import the pdf without opening it
                             newCodex.Title = Path.GetFileNameWithoutExtension(path);
-                            logEntry = new LogEntry(LogEntry.MsgType.Warning, string.Format("Failed to read metadata from {0}", Path.GetFileName(path)));
+                            logEntry = new(LogEntry.MsgType.Warning, $"Failed to read metadata from {FileName}");
                             worker.ReportProgress(_importcounter, logEntry);
                         }
 
@@ -337,7 +328,7 @@ namespace COMPASS.ViewModels
                 bool succes = CoverFetcher.GetCoverFromFile(newCodex);
                 if (!succes)
                 {
-                    logEntry = new LogEntry(LogEntry.MsgType.Warning, string.Format("Failed to generate thumbnail from {0}", Path.GetFileName(path)));
+                    logEntry = new(LogEntry.MsgType.Warning, $"Failed to generate thumbnail from {FileName}");
                     worker.ReportProgress(_importcounter, logEntry);
                 }
                 _codexCollection.AllCodices.Add(newCodex);
@@ -347,7 +338,7 @@ namespace COMPASS.ViewModels
             else
             {
                 //if already in collection, skip
-                logEntry = new LogEntry(LogEntry.MsgType.Warning, string.Format("Skipped {0}, already imported", Path.GetFileName(path)));
+                logEntry = new(LogEntry.MsgType.Warning, $"Skipped {Path.GetFileName(path)}, already imported");
                 worker.ReportProgress(_importcounter, logEntry);
             }
         }
@@ -385,17 +376,17 @@ namespace COMPASS.ViewModels
                     break;
             }
 
-            iURLw = new ImportURLWindow(this);
-            iURLw.Show();
+            importURLwindow = new(this);
+            importURLwindow.Show();
         }
 
         private ActionCommand _submitUrlCommand;
         public ActionCommand SubmitURLCommand => _submitUrlCommand ??= new(SubmitURL);
         public void SubmitURL()
         {
-            if (!InputURL.Contains(PreviewURL))
+            if (!InputURL.Contains(PreviewURL) && ValidateURL)
             {
-                ImportError = String.Format("{0} is not a valid URL for {1}", InputURL, ImportTitle);
+                ImportError = $"'{InputURL}' is not a valid URL for {ImportTitle}";
                 return;
             }
             if (!Utils.PingURL())
@@ -403,8 +394,8 @@ namespace COMPASS.ViewModels
                 ImportError = "You need to be connected to the internet to import on online source.";
                 return;
             }
-            iURLw.Close();
-            worker = new BackgroundWorker { WorkerReportsProgress = true };
+            importURLwindow.Close();
+            worker = new() { WorkerReportsProgress = true };
             if (Webscrape.HasFlag(Source)) worker.DoWork += ImportURL;
             if (APIAccess.HasFlag(Source)) worker.DoWork += ImportFromAPI;
             worker.ProgressChanged += ProgressChanged;
@@ -415,7 +406,7 @@ namespace COMPASS.ViewModels
         public ActionCommand OpenBarcodeScannerCommand => _OpenBarcodeScannerCommand ??= new(OpenBarcodeScanner);
         public void OpenBarcodeScanner()
         {
-            var bcScanWindow = new BarcodeScanWindow();
+            BarcodeScanWindow bcScanWindow = new();
             if (bcScanWindow.ShowDialog() == true)
             {
                 InputURL = bcScanWindow.DecodedString;
@@ -424,8 +415,8 @@ namespace COMPASS.ViewModels
 
         private void ImportURL(object sender, DoWorkEventArgs e)
         {
-            ProgressWindow pgw;
-            _importtype = "Step";
+            ProgressWindow progressWindow;
+            _importTextNoun = "Step";
             _importcounter = 0;
             //3 steps: 1. connect to site, 2. get metadata, 3. get Cover
             ImportAmount = 3;
@@ -433,30 +424,39 @@ namespace COMPASS.ViewModels
             //needed to avoid error "The calling Thread must be STA" when creating progress window
             Application.Current.Dispatcher.Invoke(() =>
             {
-                pgw = new ProgressWindow(this);
-                pgw.Show();
+                progressWindow = new(this);
+                progressWindow.Show();
             });
 
-            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, String.Format("Connecting to {0}", ImportTitle)));
+            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
 
             //Webscraper for metadata using HtmlAgilityPack
             HtmlWeb web = new();
+            HtmlDocument doc;
 
-            //Load site, set URL here
-            HtmlDocument doc = Source switch
+            try 
+            { 
+                //Load site, set URL here
+                doc = Source switch
+                {
+                    Sources.DnDBeyond => web.Load(string.Concat(InputURL, "/credits")),
+                    _ => web.Load(InputURL),
+                };
+            }
+            catch (Exception ex) 
             {
-                Sources.DnDBeyond => web.Load(string.Concat(InputURL, "/credits")),
-                _ => web.Load(InputURL),
-            };
+                //fails if URL could not be loaded
+                worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Error, ex.Message));
+                return;
+            }
 
-            if (doc.ParsedText == null)
+            if (doc.ParsedText is null)
             {
-                worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Error, String.Format("{0} could not be reached", ImportTitle)));
+                worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Error, $"{ImportTitle} could not be reached"));
                 return;
             }
 
             HtmlNode src = doc.DocumentNode;
-
 
             Codex newFile = new(_codexCollection)
             {
@@ -530,12 +530,12 @@ namespace COMPASS.ViewModels
 
             //Scraping complete
             _importcounter++;
-            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, "Metadata loaded. Fetching cover art."));
+            worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, "Metadata loaded. Downloading cover art."));
 
             //Get Cover Art
             CoverFetcher.GetCoverFromURL(newFile, Source);
 
-            //add file to cc
+            //add file to co
             _codexCollection.AllCodices.Add(newFile);
             RaisePropertyChanged("FilteredCodices");
 
@@ -548,8 +548,8 @@ namespace COMPASS.ViewModels
 
         private void ImportFromAPI(object sender, DoWorkEventArgs e)
         {
-            ProgressWindow pgw;
-            _importtype = "Step";
+            ProgressWindow progressWindow;
+            _importTextNoun = "Step";
             _importcounter = 0;
             //3 steps: 1. connect to api, 2. get metadata, 3. get Cover
             ImportAmount = 3;
@@ -557,8 +557,8 @@ namespace COMPASS.ViewModels
             //needed to avoid error "The calling Thread must be STA" when creating progress window
             Application.Current.Dispatcher.Invoke(() =>
             {
-                pgw = new ProgressWindow(this);
-                pgw.Show();
+                progressWindow = new(this);
+                progressWindow.Show();
             });
 
             worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Info, "Fetching Data"));
@@ -592,7 +592,7 @@ namespace COMPASS.ViewModels
                     var details = metadata.First.First.SelectToken("details");
                     newFile.Title = (string)details.SelectToken("title");
                     if (details.SelectToken("authors") != null)
-                        newFile.Authors = new ObservableCollection<string>(details.SelectToken("authors").Select(item => item.SelectToken("name").ToString()));
+                        newFile.Authors = new(details.SelectToken("authors").Select(item => item.SelectToken("name").ToString()));
                     if (details.SelectToken("pagination") != null)
                     {
                         newFile.PageCount = Int32.Parse(Regex.Match(details.SelectToken("pagination").ToString(), @"\d+").Value);
