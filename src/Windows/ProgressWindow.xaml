@@ -50,7 +50,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Msg, FallbackValue=Message}" FontSize="12" 
+                                    <TextBlock Text="{Binding Msg, FallbackValue=Message}" FontSize="12"  TextWrapping="Wrap"
                                                Foreground="{Binding Type, Mode=OneWay,Converter={StaticResource MsgTypetoColorConverter}}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
