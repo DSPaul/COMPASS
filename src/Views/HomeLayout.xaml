@@ -46,6 +46,7 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <EventSetter Event="PreviewKeyDown" Handler="ListBox_PreviewKeyDown"/>
         </Style>
         <Style TargetType="{x:Type ListBoxItem}">
             <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />

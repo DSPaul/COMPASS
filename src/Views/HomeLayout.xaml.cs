@@ -20,5 +20,7 @@ namespace COMPASS.Views
             Codex toOpen = ((ListBoxItem)sender).DataContext as Codex;
             CodexViewModel.OpenCodex(toOpen);
         }
+
+        private void ListBox_PreviewKeyDown(object sender, KeyEventArgs e) => CodexViewModel.ListBoxHandleKeyDown(sender, e);
     }
 }

@@ -29,5 +29,7 @@ namespace COMPASS.Views
                 lb.ScrollIntoView(e.AddedItems[0]);
             }
         }
+
+        private void CardLayoutListBox_PreviewKeyDown(object sender, KeyEventArgs e) => CodexViewModel.ListBoxHandleKeyDown(sender, e);
     }
 }

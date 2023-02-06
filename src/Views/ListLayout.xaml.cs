@@ -42,5 +42,7 @@ namespace COMPASS.Views
 
         private void FileView_TargetUpdated(object sender, System.Windows.Data.DataTransferEventArgs e) 
             => LoadDataGridInfo();
+
+        private void ListLayoutGrid_PreviewKeyDown(object sender, KeyEventArgs e) => CodexViewModel.DataGridHandleKeyDown(sender, e);
     }
 }

@@ -19,7 +19,8 @@
         <!--#region CardView-->
     <ListBox x:Name="CardLayoutListBox" ItemsSource="{Binding MVM.CollectionVM.FilteredCodices}" Background="{x:Null}"
              BorderBrush="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}" SelectionMode="Extended"
-             ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" SelectionChanged="FileView_SelectionChanged">
+             ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" 
+             SelectionChanged="FileView_SelectionChanged" PreviewKeyDown="CardLayoutListBox_PreviewKeyDown">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />

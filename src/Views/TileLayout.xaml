@@ -14,7 +14,7 @@
     <ListBox x:Name="TileLayoutListBox" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
             ItemsSource="{Binding MVM.CollectionVM.FilteredCodices}" Background="{x:Null}" BorderBrush="{x:Null}"
             ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" VerticalContentAlignment="Top" 
-            SelectionChanged="FileView_SelectionChanged" SelectionMode="Extended">
+            SelectionChanged="FileView_SelectionChanged" SelectionMode="Extended" PreviewKeyDown="TileLayoutListBox_PreviewKeyDown">
         <ListBox.ItemContainerStyle>
             <Style TargetType="{x:Type ListBoxItem}">
                 <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
