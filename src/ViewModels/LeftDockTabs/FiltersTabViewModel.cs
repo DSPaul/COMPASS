@@ -17,14 +17,11 @@ namespace COMPASS.ViewModels
         }
 
         #region Filters
-        //Selected FileExtension in FilterTab
-        private string _selectedAuthor;
         public string SelectedAuthor
         {
-            get => _selectedAuthor;
-            set
-            {
-                SetProperty(ref _selectedAuthor, value);
+            get => null;
+            set 
+            {            
                 Filter AuthorFilter = new(Filter.FilterType.Author, value)
                 {
                     Label = "Author:",
@@ -34,14 +31,11 @@ namespace COMPASS.ViewModels
             }
         }
 
-        //Selected Publisher in FilterTab
-        private string _selectedPublisher;
         public string SelectedPublisher
         {
-            get => _selectedPublisher;
+            get => null;
             set
             {
-                SetProperty(ref _selectedPublisher, value);
                 Filter PublisherFilter = new(Filter.FilterType.Publisher, value)
                 {
                     Label = "Publisher:",
@@ -51,22 +45,22 @@ namespace COMPASS.ViewModels
             }
         }
 
-        //Selected FileExtension in FilterTab
-        private string _selectedFileType;
+        //Selected FileType in FilterTab
         public string SelectedFileType
         {
-            get => _selectedFileType;
+            get => null;
             set
             {
-                SetProperty(ref _selectedFileType, value);
                 Filter FileExtensionFilter = new(Filter.FilterType.FileExtension, value)
                 {
                     Label = "File Type:",
                     BackgroundColor = Colors.OrangeRed
                 };
                 MVM.CollectionVM.AddFieldFilter(FileExtensionFilter, Include);
+                    
             }
         }
+
 
         //Selected Start and Stop Release Dates
         private DateTime? _startReleaseDate;
@@ -143,9 +137,6 @@ namespace COMPASS.ViewModels
         public ActionCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
         public void ClearFilters()
         {
-            SelectedAuthor = null;
-            SelectedPublisher = null;
-            SelectedFileType = null;
             StartReleaseDate = null;
             StopReleaseDate = null;
             MinRating = 0;
