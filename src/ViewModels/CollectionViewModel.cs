@@ -236,7 +236,7 @@ namespace COMPASS.ViewModels
                 IncludedTags.Remove(t);
             }
         }
-        
+
         public void RemoveTagFilter(Tag t)
         {
             IncludedTags.Remove(t);

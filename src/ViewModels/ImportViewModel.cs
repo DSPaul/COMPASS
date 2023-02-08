@@ -43,7 +43,7 @@ namespace COMPASS.ViewModels
                     break;
                 case Sources.Folder:
                     //Start new threat (so program doesn't freeze while importing)
-                    worker = new(){ WorkerReportsProgress = true };
+                    worker = new() { WorkerReportsProgress = true };
                     worker.DoWork += ImportFolder;
                     worker.ProgressChanged += ProgressChanged;
                     worker.RunWorkerAsync();
@@ -303,7 +303,7 @@ namespace COMPASS.ViewModels
                         {
                             PdfDocument pdfdoc = new(new PdfReader(path));
                             var info = pdfdoc.GetDocumentInfo();
-                            newCodex.Title = !String.IsNullOrEmpty(info.GetTitle()) ?  info.GetTitle() : Path.GetFileNameWithoutExtension(path);
+                            newCodex.Title = !String.IsNullOrEmpty(info.GetTitle()) ? info.GetTitle() : Path.GetFileNameWithoutExtension(path);
                             newCodex.Authors = new() { info.GetAuthor() };
                             newCodex.PageCount = pdfdoc.GetNumberOfPages();
                             pdfdoc.Close();
@@ -434,8 +434,8 @@ namespace COMPASS.ViewModels
             HtmlWeb web = new();
             HtmlDocument doc;
 
-            try 
-            { 
+            try
+            {
                 //Load site, set URL here
                 doc = Source switch
                 {
@@ -443,7 +443,7 @@ namespace COMPASS.ViewModels
                     _ => web.Load(InputURL),
                 };
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 //fails if URL could not be loaded
                 worker.ReportProgress(_importcounter, new LogEntry(LogEntry.MsgType.Error, ex.Message));

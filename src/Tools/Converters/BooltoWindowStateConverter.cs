@@ -7,7 +7,7 @@ namespace COMPASS.Tools.Converters
 {
     class WindowStatetoBoolConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) 
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             => (WindowState)value == WindowState.Maximized;
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

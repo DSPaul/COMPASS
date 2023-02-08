@@ -246,7 +246,7 @@ namespace COMPASS
         }
 
         //Take screenshot of specific html element 
-        public static MagickImage GetCroppedScreenShot(IWebDriver driver, IWebElement webElement) 
+        public static MagickImage GetCroppedScreenShot(IWebDriver driver, IWebElement webElement)
             => GetCroppedScreenShot(driver, webElement.Location, webElement.Size);
 
         public static MagickImage GetCroppedScreenShot(IWebDriver driver, System.Drawing.Point location, System.Drawing.Size size)

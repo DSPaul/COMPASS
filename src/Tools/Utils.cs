@@ -68,7 +68,7 @@ namespace COMPASS.Tools
             }
             return success;
         }
-        public static bool TryFunctions<T>(ObservableCollection<PreferableFunction<T>> toTry, T arg) 
+        public static bool TryFunctions<T>(ObservableCollection<PreferableFunction<T>> toTry, T arg)
             => TryFunctions(toTry.ToList(), arg);
 
         //Download data and put it in a byte[]

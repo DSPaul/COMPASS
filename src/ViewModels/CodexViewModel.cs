@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 namespace COMPASS.ViewModels
@@ -250,8 +249,8 @@ namespace COMPASS.ViewModels
             MVM.Refresh();
         }
 
-        public static void DataGridHandleKeyDown(object sender, KeyEventArgs e) => HandleKeyDownOnCodex(((DataGrid)sender).SelectedItems,e);
-        public static void ListBoxHandleKeyDown(object sender, KeyEventArgs e) => HandleKeyDownOnCodex(((ListBox)sender).SelectedItems,e);
+        public static void DataGridHandleKeyDown(object sender, KeyEventArgs e) => HandleKeyDownOnCodex(((DataGrid)sender).SelectedItems, e);
+        public static void ListBoxHandleKeyDown(object sender, KeyEventArgs e) => HandleKeyDownOnCodex(((ListBox)sender).SelectedItems, e);
         public static void HandleKeyDownOnCodex(IList selectedItems, KeyEventArgs e)
         {
             int count = selectedItems.Count;

@@ -22,7 +22,6 @@ namespace COMPASS.Models
             ID = Utils.GetAvailableID(cc.AllCodices);
             CoverArt = CodexCollection.CollectionsPath + cc.DirectoryName + @"\CoverArt\" + ID.ToString() + ".png";
             Thumbnail = CodexCollection.CollectionsPath + cc.DirectoryName + @"\Thumbnails\" + ID.ToString() + ".png";
-
         }
 
         public void Copy(Codex c)
@@ -97,14 +96,10 @@ namespace COMPASS.Models
         }
 
         private string _sortingTitle = "";
-        [XmlIgnoreAttribute]
+        [XmlIgnore]
         public string SortingTitle
         {
-            get
-            {
-                if (String.IsNullOrEmpty(_sortingTitle)) return _title;
-                else return _sortingTitle;
-            }
+            get => String.IsNullOrEmpty(_sortingTitle) ? _title : _sortingTitle;
             set => SetProperty(ref _sortingTitle, value);
         }
         //seperate property needed for serialization or it will get _title and save that

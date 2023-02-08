@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Media;
-using static COMPASS.Tools.Enums;
 
 namespace COMPASS.Models
 {

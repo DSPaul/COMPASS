@@ -100,17 +100,10 @@ namespace COMPASS.Models
 
                 PopulateMetaDataCollections();
 
-                //Can be moved to empty constructor
                 foreach (Codex c in AllCodices)
                 {
                     //reconstruct tags from ID's
-                    foreach (int id in c.TagIDs)
-                    {
-                        c.Tags.Add(AllTags.First(t => t.ID == id));
-                    }
-
-                    //apply sorting titles
-                    c.SortingTitle = c.SerializableSortingTitle;
+                    c.Tags = new(AllTags.Where(t => c.TagIDs.Contains(t.ID)));
                 }
             }
             else
@@ -182,7 +175,7 @@ namespace COMPASS.Models
 
         public void PopulateMetaDataCollections()
         {
-            foreach(Codex c in AllCodices)
+            foreach (Codex c in AllCodices)
             {
                 //Populate Author Collection
                 AuthorList = new(AuthorList.Union(c.Authors));
