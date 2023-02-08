@@ -366,7 +366,7 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> SearchCommand => _searchCommand ??= new(SearchCommandHelper);
         private void SearchCommandHelper(string Searchterm)
         {
-            Filter SearchFilter = new(Enums.FilterType.Search, Searchterm)
+            Filter SearchFilter = new(Filter.FilterType.Search, Searchterm)
             {
                 Label = "Search:",
                 BackgroundColor = Colors.Salmon,

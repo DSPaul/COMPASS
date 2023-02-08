@@ -33,19 +33,19 @@ namespace COMPASS.ViewModels
             SearchTerm = "";
             SourceFilters = new()
             {
-                new(Enums.FilterType.OfflineSource)
+                new(Filter.FilterType.OfflineSource)
                 {
                     Label = "Available Offline",
                     BackgroundColor = Colors.DarkSeaGreen
                 },
 
-                new(Enums.FilterType.OnlineSource)
+                new(Filter.FilterType.OnlineSource)
                 {
                     Label = "Available Online",
                     BackgroundColor = Colors.DarkSeaGreen
                 },
 
-                new(Enums.FilterType.PhysicalSource)
+                new(Filter.FilterType.PhysicalSource)
                 {
                     Label = "Physically Owned",
                     BackgroundColor = Colors.DarkSeaGreen
@@ -249,7 +249,7 @@ namespace COMPASS.ViewModels
             ExcludedCodicesByFilters.Clear();
 
             //enumerate over all filter types
-            foreach (Enums.FilterType FT in Enum.GetValues(typeof(Enums.FilterType)))
+            foreach (Filter.FilterType FT in Enum.GetValues(typeof(Filter.FilterType)))
             {
                 ExcludedCodicesByFilters = ExcludedCodicesByFilters.Union(GetFilteredCodicesByProperty(FT, IncludedFilters)).ToHashSet();
                 ExcludedCodicesByFilters = ExcludedCodicesByFilters.Union(GetFilteredCodicesByProperty(FT, ExcludedFilters, false)).ToHashSet();
@@ -258,7 +258,7 @@ namespace COMPASS.ViewModels
         }
 
         //Return List of Codices that do Do/Don't match filter on a property (author, release date, ect.)
-        private List<Codex> GetFilteredCodicesByProperty(Enums.FilterType filtertype, IEnumerable<Filter> Filters, bool returnExcludedCodices = true)
+        private List<Codex> GetFilteredCodicesByProperty(Filter.FilterType filtertype, IEnumerable<Filter> Filters, bool returnExcludedCodices = true)
         {
             List<object> FilterValues = new(
                     Filters
@@ -271,31 +271,31 @@ namespace COMPASS.ViewModels
             IEnumerable<Codex> ExcludedCodices = new List<Codex>(); // generic IEnumerable doesn'tag have constructor so list instead
             switch (filtertype)
             {
-                case Enums.FilterType.Search:
+                case Filter.FilterType.Search:
                     ExcludedCodices = GetFilteredCodicesBySearch((string)FilterValues.FirstOrDefault());
                     break;
-                case Enums.FilterType.Author:
+                case Filter.FilterType.Author:
                     ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Intersect(f.Authors).Any());
                     break;
-                case Enums.FilterType.Publisher:
+                case Filter.FilterType.Publisher:
                     ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Contains(f.Publisher));
                     break;
-                case Enums.FilterType.StartReleaseDate:
+                case Filter.FilterType.StartReleaseDate:
                     ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate < (DateTime?)FilterValues.FirstOrDefault());
                     break;
-                case Enums.FilterType.StopReleaseDate:
+                case Filter.FilterType.StopReleaseDate:
                     ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate > (DateTime?)FilterValues.FirstOrDefault());
                     break;
-                case Enums.FilterType.MinimumRating:
+                case Filter.FilterType.MinimumRating:
                     ExcludedCodices = _cc.AllCodices.Where(f => f.Rating < (int?)FilterValues.FirstOrDefault());
                     break;
-                case Enums.FilterType.OfflineSource:
+                case Filter.FilterType.OfflineSource:
                     ExcludedCodices = _cc.AllCodices.Where(f => !f.HasOfflineSource());
                     break;
-                case Enums.FilterType.OnlineSource:
+                case Filter.FilterType.OnlineSource:
                     ExcludedCodices = _cc.AllCodices.Where(f => !f.HasOnlineSource());
                     break;
-                case Enums.FilterType.PhysicalSource:
+                case Filter.FilterType.PhysicalSource:
                     ExcludedCodices = _cc.AllCodices.Where(f => !f.Physically_Owned);
                     break;
             }

@@ -26,19 +26,6 @@ namespace COMPASS.Tools
             ISBN = 128
         }
 
-        public enum FilterType
-        {
-            Search,
-            Author,
-            Publisher,
-            StartReleaseDate,
-            StopReleaseDate,
-            MinimumRating,
-            OnlineSource,
-            OfflineSource,
-            PhysicalSource
-        }
-
         public enum Browser
         {
             Chrome,

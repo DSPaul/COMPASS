@@ -26,7 +26,7 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref selectedAuthor, value);
-                Filter AuthorFilter = new(FilterType.Author, value)
+                Filter AuthorFilter = new(Filter.FilterType.Author, value)
                 {
                     Label = "Author:",
                     BackgroundColor = Colors.Orange
@@ -43,7 +43,7 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref selectedPublisher, value);
-                Filter PublisherFilter = new(FilterType.Publisher, value)
+                Filter PublisherFilter = new(Filter.FilterType.Publisher, value)
                 {
                     Label = "Publisher:",
                     BackgroundColor = Colors.MediumPurple
@@ -64,7 +64,7 @@ namespace COMPASS.ViewModels
                 SetProperty(ref startReleaseDate, value);
                 if (value != null)
                 {
-                    Filter startDateFilter = new(FilterType.StartReleaseDate, value)
+                    Filter startDateFilter = new(Filter.FilterType.StartReleaseDate, value)
                     {
                         Label = "After:",
                         BackgroundColor = Colors.DeepSkyBlue,
@@ -83,7 +83,7 @@ namespace COMPASS.ViewModels
                 SetProperty(ref stopReleaseDate, value);
                 if (value != null)
                 {
-                    Filter stopDateFilter = new(FilterType.StopReleaseDate, value)
+                    Filter stopDateFilter = new(Filter.FilterType.StopReleaseDate, value)
                     {
                         Label = "Before:",
                         BackgroundColor = Colors.DeepSkyBlue,
@@ -104,7 +104,7 @@ namespace COMPASS.ViewModels
                 SetProperty(ref minRating, value);
                 if (value > 0 && value < 6)
                 {
-                    Filter minRatFilter = new(FilterType.MinimumRating, value)
+                    Filter minRatFilter = new(Filter.FilterType.MinimumRating, value)
                     {
                         Label = "At least",
                         Suffix = "stars",

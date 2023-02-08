@@ -12,6 +12,19 @@ namespace COMPASS.Models
             FilterValue = filterValue;
         }
 
+        public enum FilterType
+        {
+            Search,
+            Author,
+            Publisher,
+            StartReleaseDate,
+            StopReleaseDate,
+            MinimumRating,
+            OnlineSource,
+            OfflineSource,
+            PhysicalSource
+        }
+
         //Implement ITag interface
         public string Content
         {
