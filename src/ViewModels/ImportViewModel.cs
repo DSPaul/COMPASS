@@ -345,9 +345,9 @@ namespace COMPASS.ViewModels
 
         private void ImportManual()
         {
-            FilePropWindow fpw = new(new CodexEditViewModel(null));
-            fpw.ShowDialog();
-            fpw.Topmost = true;
+            CodexEditWindow editWindow = new(new CodexEditViewModel(null));
+            editWindow.ShowDialog();
+            editWindow.Topmost = true;
         }
 
         public void OpenImportURLDialog()

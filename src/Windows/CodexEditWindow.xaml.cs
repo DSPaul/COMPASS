@@ -7,12 +7,12 @@ using System.Windows.Input;
 namespace COMPASS
 {
     /// <summary>
-    /// Interaction logic for FilePropWindow.xaml
+    /// Interaction logic for CodexEditWindow.xaml
     /// </summary>
-    public partial class FilePropWindow : Window
+    public partial class CodexEditWindow : Window
     {
         //Constructor
-        public FilePropWindow(CodexEditViewModel vm)
+        public CodexEditWindow(CodexEditViewModel vm)
         {
             DataContext = vm;
             InitializeComponent();

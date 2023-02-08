@@ -120,9 +120,9 @@ namespace COMPASS.ViewModels
         public static void EditCodex(Codex toEdit)
         {
             //MVM.CurrentEditViewModel = new CodexEditViewModel(toEdit);
-            FilePropWindow fpw = new(new CodexEditViewModel(toEdit));
-            fpw.ShowDialog();
-            fpw.Topmost = true;
+            CodexEditWindow editWindow = new(new CodexEditViewModel(toEdit));
+            editWindow.ShowDialog();
+            editWindow.Topmost = true;
         }
 
         public RelayCommand<Codex> FavoriteCodexCommand => new(FavoriteCodex);
