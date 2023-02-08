@@ -275,28 +275,31 @@ namespace COMPASS.ViewModels
                     ExcludedCodices = GetFilteredCodicesBySearch((string)FilterValues.FirstOrDefault());
                     break;
                 case Filter.FilterType.Author:
-                    ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Intersect(f.Authors).Any());
+                    ExcludedCodices = _cc.AllCodices.Where(c => !FilterValues.Intersect(c.Authors).Any());
                     break;
                 case Filter.FilterType.Publisher:
-                    ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Contains(f.Publisher));
+                    ExcludedCodices = _cc.AllCodices.Where(c => !FilterValues.Contains(c.Publisher));
                     break;
                 case Filter.FilterType.StartReleaseDate:
-                    ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate < (DateTime?)FilterValues.FirstOrDefault());
+                    ExcludedCodices = _cc.AllCodices.Where(c => c.ReleaseDate < (DateTime?)FilterValues.FirstOrDefault());
                     break;
                 case Filter.FilterType.StopReleaseDate:
-                    ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate > (DateTime?)FilterValues.FirstOrDefault());
+                    ExcludedCodices = _cc.AllCodices.Where(c => c.ReleaseDate > (DateTime?)FilterValues.FirstOrDefault());
                     break;
                 case Filter.FilterType.MinimumRating:
-                    ExcludedCodices = _cc.AllCodices.Where(f => f.Rating < (int?)FilterValues.FirstOrDefault());
+                    ExcludedCodices = _cc.AllCodices.Where(c => c.Rating < (int?)FilterValues.FirstOrDefault());
                     break;
                 case Filter.FilterType.OfflineSource:
-                    ExcludedCodices = _cc.AllCodices.Where(f => !f.HasOfflineSource());
+                    ExcludedCodices = _cc.AllCodices.Where(c => !c.HasOfflineSource());
                     break;
                 case Filter.FilterType.OnlineSource:
-                    ExcludedCodices = _cc.AllCodices.Where(f => !f.HasOnlineSource());
+                    ExcludedCodices = _cc.AllCodices.Where(c => !c.HasOnlineSource());
                     break;
                 case Filter.FilterType.PhysicalSource:
-                    ExcludedCodices = _cc.AllCodices.Where(f => !f.Physically_Owned);
+                    ExcludedCodices = _cc.AllCodices.Where(c => !c.Physically_Owned);
+                    break;
+                case Filter.FilterType.FileExtension:
+                    ExcludedCodices = _cc.AllCodices.Where(c => !FilterValues.Contains(c.GetFileType()));
                     break;
             }
             return returnExcludedCodices ? ExcludedCodices.ToList() : _cc.AllCodices.Except(ExcludedCodices).ToList();

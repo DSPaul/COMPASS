@@ -312,6 +312,9 @@
                             <ItemsControl ItemTemplate="{StaticResource FilterTagTemplate}" ItemsSource="{Binding MVM.CollectionVM.SourceFilters}" 
                                           HorizontalContentAlignment="Left" HorizontalAlignment="Left" Margin="5" 
                                     dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding MVM.CollectionVM}"/>
+                            <TextBlock Text="File Type:"/>
+                            <ComboBox ItemsSource="{Binding MVM.CurrentCollection.FileTypeList}" FontSize="15"
+                                      SelectedValue="{Binding SelectedFileType}"/>
                         </StackPanel>
                         <Button Content="Clear All" Grid.Row="4" Margin="10" Command="{Binding ClearFiltersCommand}"
                             Style="{StaticResource IconTextButton}" Tools:AP.IconKind="FilterRemove" Background="Red"/>

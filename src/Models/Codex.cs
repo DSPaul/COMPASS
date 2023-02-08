@@ -54,6 +54,28 @@ namespace COMPASS.Models
 
         public bool HasOnlineSource() => !string.IsNullOrEmpty(SourceURL);
 
+        public string GetFileType()
+        {
+            if (HasOfflineSource())
+            {
+                return System.IO.Path.GetExtension(Path);
+            }
+
+            else if (HasOnlineSource())
+            {
+                // online sources can also also point to file 
+                // either hosted on cloud service like Google drive 
+                // or services like homebrewery are always .pdf
+                // skip this for now though
+                return "webpage";
+            }
+
+            else
+            {
+                return null;
+            }
+        }
+
         #region Properties
 
         private string _path;

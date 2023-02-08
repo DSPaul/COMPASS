@@ -18,14 +18,14 @@ namespace COMPASS.ViewModels
         }
 
         #region Filters
-        //Selected Autor in FilterTab
-        private string selectedAuthor;
+        //Selected FileExtension in FilterTab
+        private string _selectedAuthor;
         public string SelectedAuthor
         {
-            get => selectedAuthor;
+            get => _selectedAuthor;
             set
             {
-                SetProperty(ref selectedAuthor, value);
+                SetProperty(ref _selectedAuthor, value);
                 Filter AuthorFilter = new(Filter.FilterType.Author, value)
                 {
                     Label = "Author:",
@@ -36,13 +36,13 @@ namespace COMPASS.ViewModels
         }
 
         //Selected Publisher in FilterTab
-        private string selectedPublisher;
+        private string _selectedPublisher;
         public string SelectedPublisher
         {
-            get => selectedPublisher;
+            get => _selectedPublisher;
             set
             {
-                SetProperty(ref selectedPublisher, value);
+                SetProperty(ref _selectedPublisher, value);
                 Filter PublisherFilter = new(Filter.FilterType.Publisher, value)
                 {
                     Label = "Publisher:",
@@ -52,16 +52,33 @@ namespace COMPASS.ViewModels
             }
         }
 
+        //Selected FileExtension in FilterTab
+        private string _selectedFileType;
+        public string SelectedFileType
+        {
+            get => _selectedFileType;
+            set
+            {
+                SetProperty(ref _selectedFileType, value);
+                Filter FileExtensionFilter = new(Filter.FilterType.FileExtension, value)
+                {
+                    Label = "File Type:",
+                    BackgroundColor = Colors.OrangeRed
+                };
+                MVM.CollectionVM.AddFieldFilter(FileExtensionFilter, Include);
+            }
+        }
+
         //Selected Start and Stop Release Dates
-        private DateTime? startReleaseDate;
-        private DateTime? stopReleaseDate;
+        private DateTime? _startReleaseDate;
+        private DateTime? _stopReleaseDate;
 
         public DateTime? StartReleaseDate
         {
-            get => startReleaseDate;
+            get => _startReleaseDate;
             set
             {
-                SetProperty(ref startReleaseDate, value);
+                SetProperty(ref _startReleaseDate, value);
                 if (value != null)
                 {
                     Filter startDateFilter = new(Filter.FilterType.StartReleaseDate, value)
@@ -77,10 +94,10 @@ namespace COMPASS.ViewModels
 
         public DateTime? StopReleaseDate
         {
-            get => stopReleaseDate;
+            get => _stopReleaseDate;
             set
             {
-                SetProperty(ref stopReleaseDate, value);
+                SetProperty(ref _stopReleaseDate, value);
                 if (value != null)
                 {
                     Filter stopDateFilter = new(Filter.FilterType.StopReleaseDate, value)
@@ -95,13 +112,13 @@ namespace COMPASS.ViewModels
         }
 
         //Selected minimum rating
-        private int minRating;
+        private int _minRating;
         public int MinRating
         {
-            get => minRating;
+            get => _minRating;
             set
             {
-                SetProperty(ref minRating, value);
+                SetProperty(ref _minRating, value);
                 if (value > 0 && value < 6)
                 {
                     Filter minRatFilter = new(Filter.FilterType.MinimumRating, value)
@@ -129,6 +146,7 @@ namespace COMPASS.ViewModels
         {
             SelectedAuthor = null;
             SelectedPublisher = null;
+            SelectedFileType = null;
             StartReleaseDate = null;
             StopReleaseDate = null;
             MinRating = 0;

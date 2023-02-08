@@ -55,6 +55,13 @@ namespace COMPASS.Models
             get => _publisherList;
             set => SetProperty(ref _publisherList, value);
         }
+
+        private ObservableCollection<string> _fileTypeList = new();
+        public ObservableCollection<string> FileTypeList
+        {
+            get => _fileTypeList;
+            set => SetProperty(ref _fileTypeList, value);
+        }
         #endregion
 
         #region Load Data From File
@@ -91,25 +98,20 @@ namespace COMPASS.Models
                     AllCodices = serializer.Deserialize(Reader) as ObservableCollection<Codex>;
                 }
 
+                PopulateMetaDataCollections();
 
-                foreach (Codex f in AllCodices)
+                //Can be moved to empty constructor
+                foreach (Codex c in AllCodices)
                 {
-                    //Populate Author and Publisher List
-                    AddAuthors(f);
-                    if (!String.IsNullOrEmpty(f.Publisher) && !PublisherList.Contains(f.Publisher)) PublisherList.Add(f.Publisher);
-
                     //reconstruct tags from ID's
-                    foreach (int id in f.TagIDs)
+                    foreach (int id in c.TagIDs)
                     {
-                        f.Tags.Add(AllTags.First(t => t.ID == id));
+                        c.Tags.Add(AllTags.First(t => t.ID == id));
                     }
 
                     //apply sorting titles
-                    f.SortingTitle = f.SerializableSortingTitle;
+                    c.SortingTitle = c.SerializableSortingTitle;
                 }
-                //Sort them
-                AuthorList = new(AuthorList.OrderBy(n => n));
-                PublisherList = new(PublisherList.OrderBy(n => n));
             }
             else
             {
@@ -178,13 +180,26 @@ namespace COMPASS.Models
             DirectoryName = NewCollectionName;
         }
 
-        public void AddAuthors(Codex codex)
+        public void PopulateMetaDataCollections()
         {
-            foreach (var author in codex.Authors)
+            foreach(Codex c in AllCodices)
             {
-                if (!String.IsNullOrEmpty(author) && !AuthorList.Contains(author))
-                    AuthorList.Add(author);
+                //Populate Author Collection
+                AuthorList = new(AuthorList.Union(c.Authors));
+                //Populate Publisher Collection
+                if (!String.IsNullOrEmpty(c.Publisher) && !PublisherList.Contains(c.Publisher))
+                    PublisherList.Add(c.Publisher);
+                //Populate FileType Collection
+                string fileType = c.GetFileType(); // to avoid the same function call 3 times
+                if (!String.IsNullOrEmpty(fileType) && !FileTypeList.Contains(fileType))
+                    FileTypeList.Add(fileType);
             }
+            AuthorList.Remove(""); //remove "" author because String.IsNullOrEmpty cannot be called during Union
+
+            //Sort them
+            AuthorList = new(AuthorList.Order());
+            PublisherList = new(PublisherList.Order());
+            FileTypeList = new(FileTypeList.Order());
         }
     }
 }

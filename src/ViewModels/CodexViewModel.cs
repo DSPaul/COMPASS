@@ -201,9 +201,8 @@ namespace COMPASS.ViewModels
                     //Add Codex to target CodexCollection
                     TargetCollection.AllCodices.Add(ToMove);
 
-                    //Update Author and Publisher List
-                    TargetCollection.AddAuthors(ToMove);
-                    if (ToMove.Publisher != "" && !TargetCollection.PublisherList.Contains(ToMove.Publisher)) TargetCollection.PublisherList.Add(ToMove.Publisher);
+                    //Update Authors,Publisher, ect. list in target collection
+                    TargetCollection.PopulateMetaDataCollections();
 
                     //Move cover art to right folder with new ID
                     string newCoverArt = CodexCollection.CollectionsPath + targetCollectionName + @"\CoverArt\" + ToMove.ID + ".png";

@@ -119,10 +119,11 @@ namespace COMPASS.ViewModels
         public void OKBtn()
         {
             //Copy changes into each Codex
-            //add and remove authors
-            MVM.CurrentCollection.AddAuthors(TempCodex);
+
+            //find added and removed authors
             var deletedAuthors = _commonAuthors.Except(TempCodex.Authors);
             var addedAuthors = TempCodex.Authors.Except(_commonAuthors);
+
             foreach (Codex f in EditedCodices)
             {
                 f.Authors = new(f.Authors.Union(addedAuthors).Except(deletedAuthors));
@@ -168,8 +169,8 @@ namespace COMPASS.ViewModels
                 }
             }
 
-            //Add new Publishers to lists
-            if (TempCodex.Publisher != "" && !MVM.CurrentCollection.PublisherList.Contains(TempCodex.Publisher)) MVM.CurrentCollection.PublisherList.Add(TempCodex.Publisher);
+            //Update list of all authors, publishers, ect.
+            MVM.CurrentCollection.PopulateMetaDataCollections();
 
             //Add and remove Tags
             foreach (Codex f in EditedCodices)

@@ -149,7 +149,10 @@ namespace COMPASS.ViewModels
         public void OKBtn()
         {
             //Copy changes into Codex
-            if (!CreateNewCodex) EditedCodex.Copy(TempCodex);
+            if (!CreateNewCodex)
+            {
+                EditedCodex.Copy(TempCodex);
+            }
             else
             {
                 Codex ToAdd = new();
@@ -157,13 +160,15 @@ namespace COMPASS.ViewModels
                 MVM.CurrentCollection.AllCodices.Add(ToAdd);
                 MVM.Refresh();
             }
-            //Add new Author and Publishers to lists
-            MVM.CurrentCollection.AddAuthors(TempCodex);
-            if (TempCodex.Publisher != "" && !MVM.CurrentCollection.PublisherList.Contains(TempCodex.Publisher))
-                MVM.CurrentCollection.PublisherList.Add(TempCodex.Publisher);
+            //Add new Authors, Publishers, ect. to metadata lists
+            MVM.CurrentCollection.PopulateMetaDataCollections();
 
             //reset needed to show art update
-            if (CoverArtChanged) MVM.Refresh();
+            if (CoverArtChanged)
+            {
+                MVM.Refresh();
+            }
+
             CloseAction();
         }
 

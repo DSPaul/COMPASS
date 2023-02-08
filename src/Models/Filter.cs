@@ -22,7 +22,8 @@ namespace COMPASS.Models
             MinimumRating,
             OnlineSource,
             OfflineSource,
-            PhysicalSource
+            PhysicalSource,
+            FileExtension
         }
 
         //Implement ITag interface
