@@ -39,6 +39,7 @@ namespace COMPASS.ViewModels
                     worker.DoWork += ImportFiles;
                     worker.ProgressChanged += ProgressChanged;
                     worker.RunWorkerAsync();
+                    worker.RunWorkerCompleted += WorkerComplete;
                     break;
                 case Sources.Folder:
                     //Start new threat (so program doesn't freeze while importing)
@@ -46,6 +47,7 @@ namespace COMPASS.ViewModels
                     worker.DoWork += ImportFolder;
                     worker.ProgressChanged += ProgressChanged;
                     worker.RunWorkerAsync();
+                    worker.RunWorkerCompleted += WorkerComplete;
                     break;
                 case Sources.Manual:
                     ImportManual();
@@ -66,6 +68,8 @@ namespace COMPASS.ViewModels
                     OpenImportURLDialog();
                     break;
             }
+
+            WorkerComplete(null, null);
         }
 
         #region Properties
@@ -77,7 +81,6 @@ namespace COMPASS.ViewModels
 
         private const Sources Webscrape = Sources.Homebrewery | Sources.GmBinder | Sources.GoogleDrive;
         private const Sources APIAccess = Sources.ISBN;
-
 
         //progress window props
         private float _progressPercentage;
@@ -195,7 +198,6 @@ namespace COMPASS.ViewModels
                     importWorker.ReportProgress(_importcounter);
                 }
             }
-            Application.Current.Dispatcher.Invoke(MVM.Refresh);
         }
 
         public void ImportFolder(object sender, DoWorkEventArgs e)
@@ -275,7 +277,6 @@ namespace COMPASS.ViewModels
                     importWorker.ReportProgress(_importcounter);
                 }
             }
-            Application.Current.Dispatcher.Invoke(MVM.Refresh);
         }
 
         public void ImportFilePath(string path)
@@ -302,7 +303,7 @@ namespace COMPASS.ViewModels
                         {
                             PdfDocument pdfdoc = new(new PdfReader(path));
                             var info = pdfdoc.GetDocumentInfo();
-                            newCodex.Title = info.GetTitle() ?? Path.GetFileNameWithoutExtension(path);
+                            newCodex.Title = !String.IsNullOrEmpty(info.GetTitle()) ?  info.GetTitle() : Path.GetFileNameWithoutExtension(path);
                             newCodex.Authors = new() { info.GetAuthor() };
                             newCodex.PageCount = pdfdoc.GetNumberOfPages();
                             pdfdoc.Close();
@@ -332,7 +333,6 @@ namespace COMPASS.ViewModels
                     worker.ReportProgress(_importcounter, logEntry);
                 }
                 _codexCollection.AllCodices.Add(newCodex);
-
             }
 
             else
@@ -634,6 +634,12 @@ namespace COMPASS.ViewModels
             RaisePropertyChanged(nameof(ProgressText));
             //write log entry if any
             if (e.UserState is LogEntry logEntry) Log.Add(logEntry);
+        }
+
+        private void WorkerComplete(object sender, EventArgs e)
+        {
+            _codexCollection.PopulateMetaDataCollections();
+            MVM.Refresh();
         }
         #endregion
 
