@@ -490,9 +490,63 @@
                     </Grid>
                 </Border>
                 <Button Command="{Binding CollectionVM.ClearFiltersCommand}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FilterRemove" 
-                        Grid.Column="3" Grid.Row ="1" Width="30" Margin="0,0,20,0"/>
+                        Grid.Column="3" Grid.Row ="1" Width="30" Margin="0"/>
                 <!--#endregion-->
 
+                <!--#region View Selection-->
+                <Border Grid.Column="4" Grid.Row="1" Margin="10,0" BorderThickness="0" BorderBrush="Gray" CornerRadius="5">
+                    <StackPanel  Orientation="Horizontal" Margin="0,0,15,0">
+                        <StackPanel.Resources>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                                <Setter Property="BorderBrush" Value="{x:Null}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Foreground="{TemplateBinding Foreground}"
+                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"
+                                        Background="{TemplateBinding Background}"/>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+                                    </Trigger>
+                                    <DataTrigger Value="True">
+                                        <DataTrigger.Binding>
+                                            <MultiBinding>
+                                                <MultiBinding.Converter>
+                                                    <Converters:EqualityConverter/>
+                                                </MultiBinding.Converter>
+                                                <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
+                                                <Binding Path="CurrentLayout.LayoutType" />
+                                            </MultiBinding>
+                                        </DataTrigger.Binding>
+                                        <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+                                    </DataTrigger>
+
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Resources>
+                        <Rectangle Width="3" Fill="Gray" Margin="3,0"/>
+                        <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.HomeLayout}" 
+                            Tools:AP.IconKind="Home" Height="30" ToolTip="Home Layout"/>
+                        <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.ListLayout}" 
+                            Tools:AP.IconKind="ViewHeadline" Height="40" ToolTip="List Layout"/>
+                        <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.CardLayout}" 
+                            Tools:AP.IconKind="ViewCompact" Height="40" RenderTransformOrigin="0.5 0.5" ToolTip="Card Layout">
+                            <Button.RenderTransform>
+                                <ScaleTransform ScaleY="-1"/>
+                            </Button.RenderTransform>
+                        </Button>
+                        <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.TileLayout}" 
+                            Tools:AP.IconKind="ViewModule" Height="43" ToolTip="Tile Layout"/>
+                    </StackPanel>
+                </Border>
+                <!--#endregion-->
+                
                 <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="5" Content="{Binding CurrentLayout}"
                                  Visibility="{Binding CurrentCollection.AllCodices.Count, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=False}"/>
                 <Border Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="20"
