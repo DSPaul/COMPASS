@@ -9,7 +9,6 @@
     <ApplicationIcon>COMPASS.ico</ApplicationIcon>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <StartupObject>COMPASS.App</StartupObject>
-    <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
