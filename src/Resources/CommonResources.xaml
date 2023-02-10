@@ -91,11 +91,15 @@
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" 
                             CornerRadius="7" HorizontalAlignment="Stretch" Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                        <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon"/>
+                                <ColumnDefinition Width="*" SharedSizeGroup="ButtonText"/>
+                            </Grid.ColumnDefinitions>
                             <materialDesign:PackIcon Margin="0,0,10,0"
                                             Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
-                            <ContentPresenter VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
-                        </StackPanel>
+                            <ContentPresenter Grid.Column="1" VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -146,6 +150,16 @@
                 <Setter Property="Visibility" Value="Collapsed"/>
             </Trigger>
         </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type Button}" x:Key="ContentButton" BasedOn="{StaticResource BaseButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <ContentPresenter VerticalAlignment="Center"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
     <!--#endregion-->
 
