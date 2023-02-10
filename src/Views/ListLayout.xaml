@@ -61,21 +61,13 @@
                 <Setter Property="ContextMenu">
                     <Setter.Value>
                         <ContextMenu IsEnabled="True" Placement="Bottom">
-                            <ContextMenu.Template>
-                                <ControlTemplate>
-                                    <Border Background="#FF3C3C3C" CornerRadius="5" BorderThickness="0">
-                                        <StackPanel Margin="5">
-                                            <CheckBox Content="Author" IsChecked="{Binding Data.ShowAuthor, Source={StaticResource LayoutProxy}}"/>
-                                            <CheckBox Content="Publisher" IsChecked="{Binding Data.ShowPublisher, Source={StaticResource LayoutProxy}}"/>
-                                            <CheckBox Content="Rating" IsChecked="{Binding Data.ShowRating, Source={StaticResource LayoutProxy}}"/>
-                                            <CheckBox Content="Release Date" IsChecked="{Binding Data.ShowReleaseDate, Source={StaticResource LayoutProxy}}"/>
-                                            <CheckBox Content="Tags" IsChecked="{Binding Data.ShowTags, Source={StaticResource LayoutProxy}}"/>
-                                            <CheckBox Content="Version" IsChecked="{Binding Data.ShowVersion, Source={StaticResource LayoutProxy}}"/>
-                                            <CheckBox Content="File Icons" IsChecked="{Binding Data.ShowFileIcons, Source={StaticResource LayoutProxy}}"/>
-                                        </StackPanel>
-                                    </Border>
-                                </ControlTemplate>
-                            </ContextMenu.Template>
+                            <MenuItem Header="Author"       IsCheckable="True" IsChecked="{Binding Data.ShowAuthor,     Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Publisher"    IsCheckable="True" IsChecked="{Binding Data.ShowPublisher,  Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Rating"       IsCheckable="True" IsChecked="{Binding Data.ShowRating,     Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Release Date" IsCheckable="True" IsChecked="{Binding Data.ShowReleaseDate,Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Tags"         IsCheckable="True" IsChecked="{Binding Data.ShowTags,       Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Version"      IsCheckable="True" IsChecked="{Binding Data.ShowVersion,    Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="File Icons"   IsCheckable="True" IsChecked="{Binding Data.ShowFileIcons,  Source={StaticResource LayoutProxy}}"/>
                         </ContextMenu>
                     </Setter.Value>
                 </Setter>

@@ -6,12 +6,12 @@ using System.Windows.Input;
 namespace COMPASS
 {
     /// <summary>
-    /// Interaction logic for FileBulkEditWindow.xaml
+    /// Interaction logic for CodexBulkEditWindow.xaml
     /// </summary>
-    public partial class FileBulkEditWindow : Window
+    public partial class CodexBulkEditWindow : Window
     {
         //Constructor
-        public FileBulkEditWindow(CodexBulkEditViewModel vm)
+        public CodexBulkEditWindow(CodexBulkEditViewModel vm)
         {
             DataContext = vm;
             InitializeComponent();
