@@ -216,7 +216,7 @@
                 <ColumnDefinition Width="*"/>
 
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Name="OKBtn" Command ="{Binding OKCommand}"  Background="{StaticResource AcceptFill}">
+            <Button Grid.Column="0" Name="OKBtn" Command ="{Binding OKCommand}"  Background="{StaticResource AcceptFill}" IsDefault="True">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Check"/>
                     <TextBlock Text="OK"/>

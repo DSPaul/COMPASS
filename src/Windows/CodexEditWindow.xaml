@@ -323,7 +323,7 @@
             <Button Grid.Column="0" Content="Delete" Tools:AP.IconKind="Delete"
                     Name="DeleteFileBtn" Command="{Binding DeleteCodexCommand}" Margin="5"
                     Background="{StaticResource CancelFill}" Style="{StaticResource IconTextButton}"/>
-            <Button Grid.Column="2" Content="OK" Tools:AP.IconKind="Check"
+            <Button Grid.Column="2" Content="OK" Tools:AP.IconKind="Check" IsDefault="True"
                     Name="OKBtn" Command ="{Binding OKCommand}"  Margin="5"
                     Background="{StaticResource AcceptFill}" Style="{StaticResource IconTextButton}"/>
             <Button Grid.Column="3" Content="Cancel" Tools:AP.IconKind="WindowClose"

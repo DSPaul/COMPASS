@@ -105,7 +105,7 @@
                                 <TextBlock Text="To"/>
                                 <TextBox x:Name="NewPathTextBox" Tools:AP.PlaceHolderText = "new\folder\path\" MinWidth="200"/>
                                 <Button Content="Rename" Style="{StaticResource IconTextButton}" Tools:AP.IconKind="RenameBox"
-                                        Command="{Binding RenameFolderRefCommand}">
+                                        Command="{Binding RenameFolderRefCommand}" IsDefault="{Binding ElementName=NewPathTextBox, Path=IsFocused}">
                                     <Button.CommandParameter>
                                         <MultiBinding>
                                             <MultiBinding.Converter>
