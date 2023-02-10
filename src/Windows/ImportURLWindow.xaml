@@ -22,7 +22,8 @@
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="inputField" Tools:AP.PlaceHolderText="{Binding PreviewURL, Mode=TwoWay}"
                          Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5"/>
-                <Button  Grid.Column="1" Tools:AP.IconKind="BarcodeScan" Margin="5" Command="{Binding OpenBarcodeScannerCommand}">
+                <Button  Grid.Column="1" Tools:AP.IconKind="BarcodeScan" Margin="5" 
+                         Command="{Binding OpenBarcodeScannerCommand}" ToolTip="Scan Barcode With Webcam">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource IconBtn}">
                             <Setter Property="Visibility" Value="Collapsed"/>
