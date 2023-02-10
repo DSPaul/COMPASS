@@ -158,6 +158,21 @@ namespace COMPASS
             (sender as Button).ContextMenu.PlacementTarget = sender as Button;
             (sender as Button).ContextMenu.IsOpen = !(sender as Button).ContextMenu.IsOpen;
         }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.S:
+                    // Ctrl + S to search
+                    if (Keyboard.Modifiers == ModifierKeys.Control)
+                    {
+                        Searchbox.Focus();
+                        e.Handled = true;
+                    }
+                    break;
+            }
+        }
     }
 }
 
