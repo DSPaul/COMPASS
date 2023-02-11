@@ -12,9 +12,6 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-using WebDriverManager;
-using WebDriverManager.DriverConfigs.Impl;
-using static COMPASS.Models.Enums;
 
 namespace COMPASS.ViewModels
 {

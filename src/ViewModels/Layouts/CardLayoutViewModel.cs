@@ -1,6 +1,4 @@
-﻿using COMPASS.Models;
-
-namespace COMPASS.ViewModels
+﻿namespace COMPASS.ViewModels
 {
     public class CardLayoutViewModel : LayoutViewModel
     {

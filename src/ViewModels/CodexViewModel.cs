@@ -277,7 +277,7 @@ namespace COMPASS.ViewModels
         //Delete Codex
         private RelayCommand<Codex> _deleteCodexCommand;
         public RelayCommand<Codex> DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
-        public static void DeleteCodex(Codex toDelete) => DeleteCodices(new List<Codex>() {toDelete});
+        public static void DeleteCodex(Codex toDelete) => DeleteCodices(new List<Codex>() { toDelete });
 
         //Delete Codices
         private RelayCommand<IList> _deleteCodicesCommand;
@@ -302,7 +302,7 @@ namespace COMPASS.ViewModels
 
         public static void DataGridHandleKeyDown(object sender, KeyEventArgs e)
             => HandleKeyDownOnCodex(((DataGrid)sender).SelectedItems, e);
-        public static void ListBoxHandleKeyDown(object sender, KeyEventArgs e) 
+        public static void ListBoxHandleKeyDown(object sender, KeyEventArgs e)
             => HandleKeyDownOnCodex(((ListBox)sender).SelectedItems, e);
         public static void HandleKeyDownOnCodex(IList selectedItems, KeyEventArgs e)
         {
@@ -322,7 +322,7 @@ namespace COMPASS.ViewModels
                         break;
                     case Key.E:
                         //CTRL + E
-                        if(Keyboard.Modifiers == ModifierKeys.Control)
+                        if (Keyboard.Modifiers == ModifierKeys.Control)
                         {
                             EditCodices(codices);
                             e.Handled = true;

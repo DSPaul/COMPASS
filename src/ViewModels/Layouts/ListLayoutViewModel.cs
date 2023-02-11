@@ -1,5 +1,4 @@
-﻿using COMPASS.Models;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace COMPASS.ViewModels
 {

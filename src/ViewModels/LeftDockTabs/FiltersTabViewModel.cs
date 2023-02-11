@@ -20,8 +20,8 @@ namespace COMPASS.ViewModels
         public string SelectedAuthor
         {
             get => null;
-            set 
-            {            
+            set
+            {
                 Filter AuthorFilter = new(Filter.FilterType.Author, value)
                 {
                     Label = "Author:",
@@ -57,7 +57,7 @@ namespace COMPASS.ViewModels
                     BackgroundColor = Colors.OrangeRed
                 };
                 MVM.CollectionVM.AddFieldFilter(FileExtensionFilter, Include);
-                    
+
             }
         }
 

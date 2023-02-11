@@ -1,15 +1,14 @@
-﻿using System;
-using System.IO;
-using static COMPASS.Models.Enums;
-using WebDriverManager.DriverConfigs.Impl;
-using WebDriverManager;
-using COMPASS.Models;
+﻿using COMPASS.Models;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using WebDriverManager;
+using WebDriverManager.DriverConfigs.Impl;
 
 namespace COMPASS.Tools
 {
