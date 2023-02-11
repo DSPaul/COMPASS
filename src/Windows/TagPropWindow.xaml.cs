@@ -2,7 +2,7 @@
 using System;
 using System.Windows;
 
-namespace COMPASS
+namespace COMPASS.Windows
 {
     /// <summary>
     /// Interaction logic for TagPropWindow.xaml

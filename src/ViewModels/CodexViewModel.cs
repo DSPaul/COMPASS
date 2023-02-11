@@ -1,6 +1,7 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Commands;
+using COMPASS.Windows;
 using System;
 using System.Collections;
 using System.Collections.Generic;

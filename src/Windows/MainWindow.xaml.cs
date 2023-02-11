@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 
-namespace COMPASS
+namespace COMPASS.Windows
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

@@ -1,5 +1,4 @@
 ﻿using COMPASS.Models;
-using COMPASS.Tools;
 using HtmlAgilityPack;
 using ImageMagick;
 using Newtonsoft.Json.Linq;
@@ -11,7 +10,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace COMPASS
+namespace COMPASS.Tools
 {
     public static class CoverFetcher
     {

@@ -2,7 +2,7 @@
 using System;
 using System.Windows;
 
-namespace COMPASS
+namespace COMPASS.Windows
 {
     //based on https://github.com/FrancescoBonizzi/WebcamControl-WPF-With-OpenCV
     public partial class BarcodeScanWindow : Window

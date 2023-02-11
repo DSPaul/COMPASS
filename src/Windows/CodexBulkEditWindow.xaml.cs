@@ -3,7 +3,7 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 
-namespace COMPASS
+namespace COMPASS.Windows
 {
     /// <summary>
     /// Interaction logic for CodexBulkEditWindow.xaml
