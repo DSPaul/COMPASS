@@ -21,48 +21,38 @@ namespace COMPASS.ViewModels
         {
             ViewModelBase.MVM = this;
 
-            InitSettingsAndPreferences();
             InitLogger();
 
-            //Load data
-            InitCollection();
+            //Load everything
+            LoadSettingsAndPreferences();
+            LoadCollection();
+            CurrentLayout = LayoutViewModel.GetLayout();
 
-            //Get webdriver for Selenium
-            InitWebdriver();
+            //Update stuff
+            WebDriverFactory.UpdateWebdriver();
+            InitAutoUpdates();
 
             //Start timer that periodically checks if there is an internet connection
             InitConnectionTimer();
 
-            InitAutoUpdates();
-
-            //do stuff if first launch after update
-            if (Properties.Settings.Default.justUpdated)
-            {
-                FirstLaunch();
-                Properties.Settings.Default.justUpdated = false;
-            }
-
-            //Set ghostscript Directory
             MagickNET.SetGhostscriptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "gs"));
-
-            //Commands
-            CreateCollectionCommand = new RelayCommand<string>(CreateCollection);
-            EditCollectionNameCommand = new RelayCommand<string>(EditCollectionName);
-            DeleteCollectionCommand = new ActionCommand(RaiseDeleteCollectionWarning);
-            OpenSettingsCommand = new RelayCommand<string>(OpenSettings);
-            CheckForUpdatesCommand = new ActionCommand(CheckForUpdates);
         }
 
         #region Init Functions
 
-        private void InitSettingsAndPreferences()
+        private void LoadSettingsAndPreferences()
         {
             SettingsVM = new SettingsViewModel();
-            CurrentLayout = LayoutViewModel.GetLayout();
+
+            //migrate settings if first launch after update
+            if (Properties.Settings.Default.justUpdated)
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.justUpdated = false;
+            }
         }
 
-        //Get a collection at startup
-        private void InitCollection()
+        private void LoadCollection()
         {
             Directory.CreateDirectory(CodexCollection.CollectionsPath);
 
@@ -93,9 +83,6 @@ namespace COMPASS.ViewModels
                 CurrentCollectionName = Properties.Settings.Default.StartupCollection;
             }
         }
-
-        //Get latest version of relevant Webdriver for selenium
-        private void InitWebdriver() => WebDriverFactory.UpdateWebdriver();
 
         private void InitAutoUpdates()
         {
@@ -139,7 +126,6 @@ namespace COMPASS.ViewModels
             IsOnline = Utils.PingURL();
         }
 
-        private void FirstLaunch() => Properties.Settings.Default.Upgrade();
         #endregion
 
         #region Properties
@@ -173,11 +159,11 @@ namespace COMPASS.ViewModels
             private set => SetProperty(ref _currentCollection, value);
         }
 
-        private bool isOnline;
+        private bool _isOnline;
         public bool IsOnline
         {
-            get => isOnline;
-            private set => SetProperty(ref isOnline, value);
+            get => _isOnline;
+            private set => SetProperty(ref _isOnline, value);
         }
 
         #endregion
@@ -206,20 +192,20 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _currentLayout, value);
         }
 
-        //Tags and Filters Tabs ViewModel (Left Dock)
-        private LeftDockViewModel _tfViewModel;
+        private LeftDockViewModel _leftDockVM;
         public LeftDockViewModel LeftDockVM
         {
-            get => _tfViewModel;
-            set => SetProperty(ref _tfViewModel, value);
+            get => _leftDockVM;
+            set => SetProperty(ref _leftDockVM, value);
         }
 
         #endregion
 
-        #region Commands and functions for MainWindow
+        #region Commands and Methods
 
-        public RelayCommand<string> OpenSettingsCommand { get; private set; }
-
+        //Open settings
+        private RelayCommand<string> _openSettingsCommand;
+        public RelayCommand<string> OpenSettingsCommand => _openSettingsCommand ??= new(OpenSettings);
         public void OpenSettings(string tab = null)
         {
             var settingswindow = new SettingsWindow(SettingsVM, tab);
@@ -246,7 +232,8 @@ namespace COMPASS.ViewModels
         }
 
         //Add new CodexCollection
-        public RelayCommand<string> CreateCollectionCommand { get; private set; }
+        private RelayCommand<string> _createCollectionCommand;
+        public RelayCommand<string> CreateCollectionCommand => _createCollectionCommand ??= new(CreateCollection);
         public void CreateCollection(string dirName)
         {
             if (string.IsNullOrEmpty(dirName)) return;
@@ -258,7 +245,8 @@ namespace COMPASS.ViewModels
         }
 
         //Rename Collection
-        public RelayCommand<string> EditCollectionNameCommand { get; private set; }
+        private RelayCommand<string> _editCollectionNameCommand;
+        public RelayCommand<string> EditCollectionNameCommand => _editCollectionNameCommand ??= new(EditCollectionName);
         public void EditCollectionName(string newName)
         {
             var index = CollectionDirectories.IndexOf(CurrentCollectionName);
@@ -268,7 +256,8 @@ namespace COMPASS.ViewModels
         }
 
         //Delete Collection
-        public ActionCommand DeleteCollectionCommand { get; private set; }
+        private ActionCommand _deleteCollectionCommand;
+        public ActionCommand DeleteCollectionCommand => _deleteCollectionCommand ??= new(RaiseDeleteCollectionWarning);
         public void RaiseDeleteCollectionWarning()
         {
             if (CurrentCollection.AllCodices.Count > 0)
@@ -277,7 +266,7 @@ namespace COMPASS.ViewModels
                 string sCaption = "Are you Sure?";
 
                 string MessageSingle = "There is still one file in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
-                string MessageMultiple = "There are still" + _currentCollection.AllCodices.Count + " files in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
+                string MessageMultiple = $"There are still {CurrentCollection.AllCodices.Count} files in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
 
                 string sMessageBoxText = CurrentCollection.AllCodices.Count == 1 ? MessageSingle : MessageMultiple;
 
@@ -323,7 +312,8 @@ namespace COMPASS.ViewModels
         //called every few seconds to update IsOnline
         private void CheckConnection(object sender, EventArgs e) => IsOnline = Utils.PingURL();
 
-        public ActionCommand CheckForUpdatesCommand { get; init; }
+        private ActionCommand _checkForUpdatesCommand;
+        public ActionCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);
         private void CheckForUpdates()
         {
             AutoUpdater.Mandatory = true;
