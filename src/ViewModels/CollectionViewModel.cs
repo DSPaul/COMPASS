@@ -19,19 +19,58 @@ namespace COMPASS.ViewModels
     {
 
         //Constuctor
-        public CollectionViewModel(CodexCollection CurrentCollection)
+        public CollectionViewModel(CodexCollection currentCollection)
         {
-            _cc = CurrentCollection;
+            codexCollection = currentCollection;
 
             //load sorting from settings
             InitSortingProperties();
 
-            ExcludedCodicesByIncludedTags = new();
-            ExcludedCodicesByExcludedTags = new();
-            ExcludedCodicesByFilters = new();
+            IncludedTags.CollectionChanged += (e, v) => SetExcludedCodicesByTags();
+            ExcludedTags.CollectionChanged += (e, v) => SetExcludedCodicesByTags();
+            IncludedFilters.CollectionChanged += (e, v) => SetExcludedCodicesByFilters();
+            ExcludedFilters.CollectionChanged += (e, v) => SetExcludedCodicesByFilters();
 
-            SearchTerm = "";
-            SourceFilters = new()
+            currentCollection.AllCodices.CollectionChanged += (e, v) => SubscribeToCodexProperties();
+            SubscribeToCodexProperties();
+
+            ApplyFilters();
+        }
+
+        #region Properties
+        private readonly CodexCollection codexCollection;
+        private readonly int _itemsShown = 15;
+        public int ItemsShown => Math.Min(_itemsShown, FilteredCodices.Count);
+
+        public ObservableCollection<Tag> IncludedTags { get; set; } = new();
+        public ObservableCollection<Tag> ExcludedTags { get; set; } = new();
+        public ObservableCollection<Filter> IncludedFilters { get; set; } = new();
+        public ObservableCollection<Filter> ExcludedFilters { get; set; } = new();
+
+        private HashSet<Codex> ExcludedCodicesByIncludedTags { get; set; } = new();
+        private HashSet<Codex> ExcludedCodicesByExcludedTags { get; set; } = new();
+        private HashSet<Codex> ExcludedCodicesByFilters { get; set; } = new(); 
+
+        private ObservableCollection<Codex> _filteredCodices;
+        public ObservableCollection<Codex> FilteredCodices
+        {
+            get => _filteredCodices;
+            set => SetProperty(ref _filteredCodices, value);
+        }
+
+        public ObservableCollection<Codex> Favorites => new(FilteredCodices.Where(c => c.Favorite));
+        public List<Codex> RecentCodices => FilteredCodices.OrderByDescending(c => c.LastOpened).ToList().GetRange(0, ItemsShown);
+        public List<Codex> MostOpenedCodices => FilteredCodices.OrderByDescending(c => c.OpenedCount).ToList().GetRange(0, ItemsShown);
+        public List<Codex> RecentlyAddedCodices => FilteredCodices.OrderByDescending(c => c.DateAdded).ToList().GetRange(0, ItemsShown);
+
+        private string _searchTerm = "";
+        public string SearchTerm
+        {
+            get => _searchTerm;
+            set => SetProperty(ref _searchTerm, value);
+        }
+
+        private List<Filter> _sourceFilters = new()
             {
                 new(Filter.FilterType.OfflineSource)
                 {
@@ -51,61 +90,7 @@ namespace COMPASS.ViewModels
                     BackgroundColor = Colors.DarkSeaGreen
                 },
             };
-
-            IncludedTags = new();
-            IncludedTags.CollectionChanged += (e, v) => SetExcludedCodicesByTags();
-            ExcludedTags = new();
-            ExcludedTags.CollectionChanged += (e, v) => SetExcludedCodicesByTags();
-            IncludedFilters = new();
-            IncludedFilters.CollectionChanged += (e, v) => SetExcludedCodicesByFilters();
-            ExcludedFilters = new();
-            ExcludedFilters.CollectionChanged += (e, v) => SetExcludedCodicesByFilters();
-
-            _cc.AllCodices.CollectionChanged += (e, v) => SubscribeToCodexProperties();
-            SubscribeToCodexProperties();
-
-            ApplyFilters();
-        }
-
-        #region Properties
-        readonly CodexCollection _cc;
-        private readonly int _itemsShown = 15;
-        public int ItemsShown => Math.Min(_itemsShown, FilteredCodices.Count);
-
-        public ObservableCollection<Tag> IncludedTags { get; set; }
-        public ObservableCollection<Tag> ExcludedTags { get; set; }
-        public ObservableCollection<Filter> IncludedFilters { get; set; }
-        public ObservableCollection<Filter> ExcludedFilters { get; set; }
-
-        private HashSet<Codex> ExcludedCodicesByIncludedTags { get; set; }
-        private HashSet<Codex> ExcludedCodicesByExcludedTags { get; set; }
-        private HashSet<Codex> ExcludedCodicesByFilters { get; set; }
-
-        private ObservableCollection<Codex> _filteredCodices;
-        public ObservableCollection<Codex> FilteredCodices
-        {
-            get => _filteredCodices;
-            set => SetProperty(ref _filteredCodices, value);
-        }
-
-        public ObservableCollection<Codex> Favorites => new(FilteredCodices.Where(c => c.Favorite));
-        public List<Codex> RecentCodices => FilteredCodices.OrderByDescending(c => c.LastOpened).ToList().GetRange(0, ItemsShown);
-        public List<Codex> MostOpenedCodices => FilteredCodices.OrderByDescending(c => c.OpenedCount).ToList().GetRange(0, ItemsShown);
-        public List<Codex> RecentlyAddedCodices => FilteredCodices.OrderByDescending(c => c.DateAdded).ToList().GetRange(0, ItemsShown);
-
-        private string _searchTerm;
-        public string SearchTerm
-        {
-            get => _searchTerm;
-            set => SetProperty(ref _searchTerm, value);
-        }
-
-        private List<Filter> _sourceFilters;
-        public List<Filter> SourceFilters
-        {
-            get => _sourceFilters;
-            init => SetProperty(ref _sourceFilters, value);
-        }
+        public List<Filter> SourceFilters => _sourceFilters;
 
         public ListSortDirection SortDirection
         {
@@ -150,7 +135,7 @@ namespace COMPASS.ViewModels
         private void SubscribeToCodexProperties()
         {
             //cause derived lists to update when codex gets updated
-            foreach (Codex c in _cc.AllCodices)
+            foreach (Codex c in codexCollection.AllCodices)
             {
                 c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(Favorites));
                 c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(RecentCodices));
@@ -209,7 +194,7 @@ namespace COMPASS.ViewModels
                     Tag P = SingleGroupTags[i].Parent;
                     if (P != null && !P.IsGroup && !SingleGroupTags.Contains(P)) SingleGroupTags.Add(P);
                 }
-                SingleGroupFilteredCodices = new(_cc.AllCodices.Where(f => !SingleGroupTags.Intersect(f.Tags).Any()));
+                SingleGroupFilteredCodices = new(codexCollection.AllCodices.Where(f => !SingleGroupTags.Intersect(f.Tags).Any()));
 
                 ExcludedCodicesByIncludedTags = ExcludedCodicesByIncludedTags.Union(SingleGroupFilteredCodices).ToHashSet();
             }
@@ -217,7 +202,7 @@ namespace COMPASS.ViewModels
             //Filter out Codices with excluded tags
             //get childeren too, if parent is excluded, so should all the childeren
             List<Tag> AllExcludedTags = Utils.FlattenTree(ExcludedTags).ToList();
-            ExcludedCodicesByExcludedTags = new(_cc.AllCodices.Where(f => AllExcludedTags.Intersect(f.Tags).Any()));
+            ExcludedCodicesByExcludedTags = new(codexCollection.AllCodices.Where(f => AllExcludedTags.Intersect(f.Tags).Any()));
 
             ApplyFilters();
         }
@@ -275,34 +260,34 @@ namespace COMPASS.ViewModels
                     ExcludedCodices = GetFilteredCodicesBySearch((string)FilterValues.FirstOrDefault());
                     break;
                 case Filter.FilterType.Author:
-                    ExcludedCodices = _cc.AllCodices.Where(c => !FilterValues.Intersect(c.Authors).Any());
+                    ExcludedCodices = codexCollection.AllCodices.Where(c => !FilterValues.Intersect(c.Authors).Any());
                     break;
                 case Filter.FilterType.Publisher:
-                    ExcludedCodices = _cc.AllCodices.Where(c => !FilterValues.Contains(c.Publisher));
+                    ExcludedCodices = codexCollection.AllCodices.Where(c => !FilterValues.Contains(c.Publisher));
                     break;
                 case Filter.FilterType.StartReleaseDate:
-                    ExcludedCodices = _cc.AllCodices.Where(c => c.ReleaseDate < (DateTime?)FilterValues.FirstOrDefault());
+                    ExcludedCodices = codexCollection.AllCodices.Where(c => c.ReleaseDate < (DateTime?)FilterValues.FirstOrDefault());
                     break;
                 case Filter.FilterType.StopReleaseDate:
-                    ExcludedCodices = _cc.AllCodices.Where(c => c.ReleaseDate > (DateTime?)FilterValues.FirstOrDefault());
+                    ExcludedCodices = codexCollection.AllCodices.Where(c => c.ReleaseDate > (DateTime?)FilterValues.FirstOrDefault());
                     break;
                 case Filter.FilterType.MinimumRating:
-                    ExcludedCodices = _cc.AllCodices.Where(c => c.Rating < (int?)FilterValues.FirstOrDefault());
+                    ExcludedCodices = codexCollection.AllCodices.Where(c => c.Rating < (int?)FilterValues.FirstOrDefault());
                     break;
                 case Filter.FilterType.OfflineSource:
-                    ExcludedCodices = _cc.AllCodices.Where(c => !c.HasOfflineSource());
+                    ExcludedCodices = codexCollection.AllCodices.Where(c => !c.HasOfflineSource());
                     break;
                 case Filter.FilterType.OnlineSource:
-                    ExcludedCodices = _cc.AllCodices.Where(c => !c.HasOnlineSource());
+                    ExcludedCodices = codexCollection.AllCodices.Where(c => !c.HasOnlineSource());
                     break;
                 case Filter.FilterType.PhysicalSource:
-                    ExcludedCodices = _cc.AllCodices.Where(c => !c.Physically_Owned);
+                    ExcludedCodices = codexCollection.AllCodices.Where(c => !c.Physically_Owned);
                     break;
                 case Filter.FilterType.FileExtension:
-                    ExcludedCodices = _cc.AllCodices.Where(c => !FilterValues.Contains(c.GetFileType()));
+                    ExcludedCodices = codexCollection.AllCodices.Where(c => !FilterValues.Contains(c.GetFileType()));
                     break;
             }
-            return returnExcludedCodices ? ExcludedCodices.ToList() : _cc.AllCodices.Except(ExcludedCodices).ToList();
+            return returnExcludedCodices ? ExcludedCodices.ToList() : codexCollection.AllCodices.Except(ExcludedCodices).ToList();
         }
 
         //Return List of Codices that Do/Don't match search term
@@ -313,17 +298,17 @@ namespace COMPASS.ViewModels
             if (!string.IsNullOrEmpty(searchterm))
             {
                 //include acronyms
-                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
+                IncludedCodicesBySearch.UnionWith(codexCollection.AllCodices
                     .Where(f => Fuzz.TokenInitialismRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
                 //include string fragments
-                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
+                IncludedCodicesBySearch.UnionWith(codexCollection.AllCodices
                     .Where(f => f.Title.Contains(SearchTerm, StringComparison.InvariantCultureIgnoreCase)));
                 //include spelling errors
                 //include acronyms
-                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
+                IncludedCodicesBySearch.UnionWith(codexCollection.AllCodices
                     .Where(f => Fuzz.PartialRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
 
-                ExcludedCodicesBySearch = new(_cc.AllCodices.Except(IncludedCodicesBySearch));
+                ExcludedCodicesBySearch = new(codexCollection.AllCodices.Except(IncludedCodicesBySearch));
             }
             return returnExcludedCodices ? ExcludedCodicesBySearch : IncludedCodicesBySearch;
         }
@@ -372,7 +357,7 @@ namespace COMPASS.ViewModels
         }
         private void ApplyFilters()
         {
-            FilteredCodices = new(_cc.AllCodices
+            FilteredCodices = new(codexCollection.AllCodices
                 .Except(ExcludedCodicesByIncludedTags)
                 .Except(ExcludedCodicesByExcludedTags)
                 .Except(ExcludedCodicesByFilters)
