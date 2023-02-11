@@ -3,7 +3,10 @@ using System.Windows.Input;
 
 namespace COMPASS.Commands
 {
-    //Command with parameter but doesn't return
+    /// <summary>
+    /// Command for methods that take one argument
+    /// </summary>
+    /// <typeparam name="T"> Type of function argument </typeparam>
     public class RelayCommand<T> : ICommand
     {
         private readonly Action<T> _execute;

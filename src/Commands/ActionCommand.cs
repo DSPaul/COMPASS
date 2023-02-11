@@ -3,7 +3,9 @@ using System.Windows.Input;
 
 namespace COMPASS.Commands
 {
-    //Command without parameters
+    /// <summary>
+    /// Command for methods without arguments
+    /// </summary>
     public class ActionCommand : ICommand
     {
         readonly Action _execute;
