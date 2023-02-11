@@ -1,4 +1,4 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Models;
 
 namespace COMPASS.ViewModels
 {
@@ -6,7 +6,7 @@ namespace COMPASS.ViewModels
     {
         public CardLayoutViewModel() : base()
         {
-            LayoutType = Enums.CodexLayout.CardLayout;
+            LayoutType = Layout.Card;
         }
 
         #region VOptions

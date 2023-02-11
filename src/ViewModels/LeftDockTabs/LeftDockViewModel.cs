@@ -1,5 +1,6 @@
 ﻿using COMPASS.ViewModels.Commands;
-using static COMPASS.Tools.Enums;
+using static COMPASS.Models.Enums;
+
 
 namespace COMPASS.ViewModels
 {
@@ -51,24 +52,6 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _filtersTabVM, value);
         }
 
-        #endregion
-
-        #region Layouts Tab
-        //Change Fileview
-        private RelayCommand<CodexLayout> _changeFileViewCommand;
-        public RelayCommand<CodexLayout> ChangeFileViewCommand => _changeFileViewCommand ??= new(ChangeFileView);
-        public void ChangeFileView(CodexLayout v)
-        {
-            Properties.Settings.Default.PreferedView = (int)v;
-            MVM.CurrentLayout = v switch
-            {
-                CodexLayout.HomeLayout => new HomeLayoutViewModel(),
-                CodexLayout.ListLayout => new ListLayoutViewModel(),
-                CodexLayout.CardLayout => new CardLayoutViewModel(),
-                CodexLayout.TileLayout => new TileLayoutViewModel(),
-                _ => null
-            };
-        }
         #endregion
 
         #region Add Books Tab

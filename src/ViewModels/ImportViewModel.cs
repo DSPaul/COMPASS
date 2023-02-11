@@ -17,7 +17,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-using static COMPASS.Tools.Enums;
+using static COMPASS.Models.Enums;
 
 namespace COMPASS.ViewModels
 {

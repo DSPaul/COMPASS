@@ -1,17 +1,9 @@
 ﻿using System;
 
-namespace COMPASS.Tools
+namespace COMPASS.Models
 {
     public static class Enums
     {
-        public enum CodexLayout
-        {
-            ListLayout,
-            CardLayout,
-            TileLayout,
-            HomeLayout
-        }
-
         [Flags]
         public enum Sources
         {

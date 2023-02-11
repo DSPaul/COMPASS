@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
-using static COMPASS.Tools.Enums;
+using static COMPASS.Models.Enums;
 
 namespace COMPASS.ViewModels
 {
@@ -23,9 +23,8 @@ namespace COMPASS.ViewModels
         public MainViewModel()
         {
             ViewModelBase.MVM = this;
-            SettingsVM = new SettingsViewModel();
 
-            //init Logger
+            InitSettingsAndPreferences();
             InitLogger();
 
             //Load data
@@ -37,7 +36,6 @@ namespace COMPASS.ViewModels
             //Start timer that periodically checks if there is an internet connection
             InitConnectionTimer();
 
-            //check for updates
             InitAutoUpdates();
 
             //do stuff if first launch after update
@@ -51,7 +49,6 @@ namespace COMPASS.ViewModels
             MagickNET.SetGhostscriptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "gs"));
 
             //Commands
-            ChangeFileViewCommand = new RelayCommand<CodexLayout>(ChangeFileView);
             CreateCollectionCommand = new RelayCommand<string>(CreateCollection);
             EditCollectionNameCommand = new RelayCommand<string>(EditCollectionName);
             DeleteCollectionCommand = new ActionCommand(RaiseDeleteCollectionWarning);
@@ -61,12 +58,18 @@ namespace COMPASS.ViewModels
 
         #region Init Functions
 
+        private void InitSettingsAndPreferences()
+        {
+            SettingsVM = new SettingsViewModel();
+            CurrentLayout = LayoutViewModel.GetLayout();
+        }
+
         //Get a collection at startup
         private void InitCollection()
         {
             Directory.CreateDirectory(CodexCollection.CollectionsPath);
 
-            //Get all RPG systems by folder name
+            //Get all collections by folder name
             CollectionDirectories = new ObservableCollection<string>();
             string[] FullPathFolders = Directory.GetDirectories(CodexCollection.CollectionsPath);
             foreach (string p in FullPathFolders)
@@ -98,14 +101,14 @@ namespace COMPASS.ViewModels
         private void InitWebdriver()
         {
             Directory.CreateDirectory(Constants.WebDriverDirectoryPath);
-            DriverManager DM = new(Constants.WebDriverDirectoryPath);
+            DriverManager driverManager = new(Constants.WebDriverDirectoryPath);
 
             if (Utils.IsInstalled("chrome.exe"))
             {
                 Properties.Settings.Default.SeleniumBrowser = (int)Browser.Chrome;
                 try
                 {
-                    DM.SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
+                    driverManager.SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
                 }
                 catch (Exception ex)
                 {
@@ -118,7 +121,7 @@ namespace COMPASS.ViewModels
                 Properties.Settings.Default.SeleniumBrowser = (int)Browser.Firefox;
                 try
                 {
-                    DM.SetUpDriver(new FirefoxConfig());
+                    driverManager.SetUpDriver(new FirefoxConfig());
                 }
                 catch (Exception ex)
                 {
@@ -131,7 +134,7 @@ namespace COMPASS.ViewModels
                 Properties.Settings.Default.SeleniumBrowser = (int)Browser.Edge;
                 try
                 {
-                    DM.SetUpDriver(new EdgeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
+                    driverManager.SetUpDriver(new EdgeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
                 }
                 catch (Exception ex)
                 {
@@ -209,7 +212,6 @@ namespace COMPASS.ViewModels
             }
         }
 
-        //CodexCollection 
         private CodexCollection _currentCollection;
         public CodexCollection CurrentCollection
         {
@@ -270,20 +272,10 @@ namespace COMPASS.ViewModels
             settingswindow.Show();
         }
 
-        //Change Fileview
-        public RelayCommand<CodexLayout> ChangeFileViewCommand { get; private set; }
-        public void ChangeFileView(CodexLayout v)
-        {
-            Properties.Settings.Default.PreferedView = (int)v;
-            CurrentLayout = v switch
-            {
-                CodexLayout.HomeLayout => new HomeLayoutViewModel(),
-                CodexLayout.ListLayout => new ListLayoutViewModel(),
-                CodexLayout.CardLayout => new CardLayoutViewModel(),
-                CodexLayout.TileLayout => new TileLayoutViewModel(),
-                _ => null
-            };
-        }
+        //Change Layout
+        private RelayCommand<LayoutViewModel.Layout> _changeLayoutCommand;
+        public RelayCommand<LayoutViewModel.Layout> ChangeLayoutCommand => _changeLayoutCommand ??= new(ChangeLayout);
+        public void ChangeLayout(LayoutViewModel.Layout layout) => CurrentLayout = LayoutViewModel.GetLayout(layout);
 
         public void Refresh()
         {
@@ -295,8 +287,7 @@ namespace COMPASS.ViewModels
         public void ChangeCollection(string collectionDir)
         {
             CurrentCollection = new CodexCollection(collectionDir);
-            CollectionVM = new CollectionViewModel(_currentCollection);
-            ChangeFileView((CodexLayout)Properties.Settings.Default.PreferedView);
+            CollectionVM = new CollectionViewModel(CurrentCollection);
             LeftDockVM = new LeftDockViewModel();
         }
 

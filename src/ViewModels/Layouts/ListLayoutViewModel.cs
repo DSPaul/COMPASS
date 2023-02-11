@@ -1,4 +1,4 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Models;
 using System.ComponentModel;
 
 namespace COMPASS.ViewModels
@@ -7,7 +7,7 @@ namespace COMPASS.ViewModels
     {
         public ListLayoutViewModel() : base()
         {
-            LayoutType = Enums.CodexLayout.ListLayout;
+            LayoutType = Layout.List;
         }
 
         #region ViewOptions

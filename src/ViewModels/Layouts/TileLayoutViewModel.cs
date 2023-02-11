@@ -1,4 +1,4 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Models;
 
 namespace COMPASS.ViewModels
 {
@@ -6,7 +6,7 @@ namespace COMPASS.ViewModels
     {
         public TileLayoutViewModel() : base()
         {
-            LayoutType = Enums.CodexLayout.TileLayout;
+            LayoutType = Layout.Tile;
         }
         #region Properties
         public double TileWidth

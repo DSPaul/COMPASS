@@ -392,13 +392,13 @@
                 <ScrollViewer>
                     <StackPanel>
                         <UniformGrid Rows="2" Columns="2" Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}" Margin="5">
-                            <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.HomeLayout}" 
+                            <Button Command="{Binding MVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Home}" 
                             Tools:AP.IconKind="Home" ToolTip="Home Layout" Content="Home"/>
-                            <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.ListLayout}" 
+                            <Button Command="{Binding MVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.List}" 
                             Tools:AP.IconKind="ViewHeadline" ToolTip="List Layout" Content="List"/>
-                            <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.CardLayout}" 
+                            <Button Command="{Binding MVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Card}" 
                             Tools:AP.IconKind="FormatListText" ToolTip="Card Layout" Content="Card"/>
-                            <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.TileLayout}" 
+                            <Button Command="{Binding MVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Tile}" 
                             Tools:AP.IconKind="ViewGrid" ToolTip="Tile Layout" Content="Grid"/>
                         </UniformGrid>
                         <Rectangle Height="3" Fill="{StaticResource Separator}"/>
@@ -518,22 +518,22 @@
                         
                         <TextBlock Text="Physical Books" Style="{StaticResource Categorizer}"/>
                         <Button Tools:AP.IconKind="BookPlusOutline" Style="{StaticResource HighlightedButton}" Content="Add Manually"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Manual}"/>
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.Manual}"/>
                         <Button Tools:AP.IconKind="Barcode" Style="{StaticResource HighlightedButton}" Content="From ISBN"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.ISBN}"/>
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.ISBN}"/>
 
                         <TextBlock Text="Add Local Files" Style="{StaticResource Categorizer}"/>
                         <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource HighlightedButton}" Content="Import File(s)"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.File}"/>
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.File}"/>
                         <Button Tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource HighlightedButton}" Content="Import Folder"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Folder}"/>
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.Folder}"/>
 
 
                         <TextBlock Text="Add Online Files" Style="{StaticResource Categorizer}"/>
                         <Button Tools:AP.IconKind="GoogleDrive" Style="{StaticResource HighlightedButton}" Content="Google Drive"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.GoogleDrive}"/>
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.GoogleDrive}"/>
                         <Button Style="{StaticResource HighlightedContentButton}" Margin="20,5"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.Homebrewery}">
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.Homebrewery}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                 BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="7,2">
                                 <StackPanel Orientation="Horizontal">
@@ -544,7 +544,7 @@
                         </Button>
                         <!--DND Beyond doesn't work yet-->
                         <Button Style="{StaticResource HighlightedContentButton}" Visibility="Collapsed"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.DnDBeyond}">
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.DnDBeyond}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                 BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
                                 <StackPanel Orientation="Horizontal">
@@ -554,7 +554,7 @@
                             </Border>
                         </Button>
                         <Button Style="{StaticResource HighlightedContentButton}" Margin="20,5"
-                                Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Tools:Enums+Sources.GmBinder}">
+                                Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.GmBinder}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                     BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="30,2">
                                 <ContentControl Content="{StaticResource GMBinderLogo}" HorizontalContentAlignment="Center"/>

@@ -26,12 +26,12 @@ namespace COMPASS.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int PreferedView {
+        public int PreferedLayout {
             get {
-                return ((int)(this["PreferedView"]));
+                return ((int)(this["PreferedLayout"]));
             }
             set {
-                this["PreferedView"] = value;
+                this["PreferedLayout"] = value;
             }
         }
         

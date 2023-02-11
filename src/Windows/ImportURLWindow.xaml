@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Tools ="clr-namespace:COMPASS.Tools"
-        xmlns:local="clr-namespace:COMPASS.Windows" 
+        xmlns:Models ="clr-namespace:COMPASS.Models"
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
         d:DataContext="{d:DesignInstance Type=viewmodels:ImportViewModel}"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
@@ -28,7 +28,7 @@
                         <Style TargetType="Button" BasedOn="{StaticResource IconBtn}">
                             <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Tools:Enums+Sources.ISBN}">
+                                <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Models:Enums+Sources.ISBN}">
                                     <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -43,7 +43,7 @@
                     <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Tools:Enums+Sources.Homebrewery}">
+                            <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Models:Enums+Sources.Homebrewery}">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
                         </Style.Triggers>

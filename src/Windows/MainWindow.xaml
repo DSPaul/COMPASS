@@ -530,17 +530,17 @@
                             </Style>
                         </StackPanel.Resources>
                         <Rectangle Width="3" Fill="Gray" Margin="3,0"/>
-                        <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.HomeLayout}" 
+                        <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Home}" 
                             Tools:AP.IconKind="Home" Height="30" ToolTip="Home Layout"/>
-                        <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.ListLayout}" 
+                        <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.List}" 
                             Tools:AP.IconKind="ViewHeadline" Height="40" ToolTip="List Layout"/>
-                        <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.CardLayout}" 
+                        <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Card}" 
                             Tools:AP.IconKind="ViewCompact" Height="40" RenderTransformOrigin="0.5 0.5" ToolTip="Card Layout">
                             <Button.RenderTransform>
                                 <ScaleTransform ScaleY="-1"/>
                             </Button.RenderTransform>
                         </Button>
-                        <Button Command="{Binding ChangeFileViewCommand}" CommandParameter="{x:Static Tools:Enums+CodexLayout.TileLayout}" 
+                        <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Tile}" 
                             Tools:AP.IconKind="ViewModule" Height="43" ToolTip="Tile Layout"/>
                     </StackPanel>
                 </Border>
