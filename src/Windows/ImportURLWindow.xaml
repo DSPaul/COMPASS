@@ -8,9 +8,10 @@
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
         d:DataContext="{d:DesignInstance Type=viewmodels:ImportViewModel}"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
-        Background="{StaticResource WindowBackground}"  SizeToContent="Height"
-        FocusManager.FocusedElement="{Binding ElementName=inputField}"
-        Title="Import URL" Height="190" Width="600" WindowStartupLocation="CenterScreen">
+        Background="{StaticResource WindowBackground}" SizeToContent="Height"
+        FocusManager.FocusedElement="{Binding ElementName=inputField}" ResizeMode="NoResize"
+        Title="Import URL" Height="190" Width="600" WindowStartupLocation="CenterScreen"
+        x:Name="ImportWindow" MinWidth="{Binding ActualWidth, ElementName=ImportWindow}">
     <Grid>
         <StackPanel Margin="15">
             <TextBlock Text="{Binding ImportTitle, FallbackValue= URL:}" Margin="5"/>
@@ -20,7 +21,7 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="inputField" Tools:AP.PlaceHolderText="{Binding PreviewURL, Mode=TwoWay}"
+                <TextBox x:Name="inputField" Tools:AP.PlaceHolderText="{Binding PreviewURL}"
                          Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5"/>
                 <Button  Grid.Column="1" Tools:AP.IconKind="BarcodeScan" Margin="5" 
                          Command="{Binding OpenBarcodeScannerCommand}" ToolTip="Scan Barcode With Webcam">
@@ -50,7 +51,7 @@
                     </Style>
                 </CheckBox.Style>
             </CheckBox>
-            <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" Margin="5"/>
+            <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" Margin="5" TextWrapping="Wrap"/>
         </StackPanel>
     </Grid>
 </Window>
