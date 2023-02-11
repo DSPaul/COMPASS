@@ -165,7 +165,7 @@ namespace COMPASS
             //sites do not store cover as img, Use Selenium for screenshotting pages
             else if (source.HasFlag(Enums.Sources.GmBinder) || source.HasFlag(Enums.Sources.Homebrewery))
             {
-                WebDriver driver = Utils.GetWebDriver();
+                WebDriver driver = WebDriverFactory.GetWebDriver();
 
                 IWebElement Coverpage;
                 MagickImage image = null;

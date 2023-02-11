@@ -17,12 +17,5 @@ namespace COMPASS.Models
             GoogleDrive = 64,
             ISBN = 128
         }
-
-        public enum Browser
-        {
-            Chrome,
-            Firefox,
-            Edge
-        }
     }
 }

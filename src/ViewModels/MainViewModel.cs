@@ -98,50 +98,7 @@ namespace COMPASS.ViewModels
         }
 
         //Get latest version of relevant Webdriver for selenium
-        private void InitWebdriver()
-        {
-            Directory.CreateDirectory(Constants.WebDriverDirectoryPath);
-            DriverManager driverManager = new(Constants.WebDriverDirectoryPath);
-
-            if (Utils.IsInstalled("chrome.exe"))
-            {
-                Properties.Settings.Default.SeleniumBrowser = (int)Browser.Chrome;
-                try
-                {
-                    driverManager.SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
-                }
-                catch (Exception ex)
-                {
-                    Logger.log.Error(ex.Message);
-                }
-            }
-
-            else if (Utils.IsInstalled("firefox.exe"))
-            {
-                Properties.Settings.Default.SeleniumBrowser = (int)Browser.Firefox;
-                try
-                {
-                    driverManager.SetUpDriver(new FirefoxConfig());
-                }
-                catch (Exception ex)
-                {
-                    Logger.log.Error(ex.Message);
-                }
-            }
-
-            else
-            {
-                Properties.Settings.Default.SeleniumBrowser = (int)Browser.Edge;
-                try
-                {
-                    driverManager.SetUpDriver(new EdgeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
-                }
-                catch (Exception ex)
-                {
-                    Logger.log.Error(ex.Message);
-                }
-            }
-        }
+        private void InitWebdriver() => WebDriverFactory.UpdateWebdriver();
 
         private void InitAutoUpdates()
         {
