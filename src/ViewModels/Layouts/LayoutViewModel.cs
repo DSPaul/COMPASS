@@ -33,7 +33,7 @@ namespace COMPASS.ViewModels
 
         #region Properties
 
-        //public CodexViewModel CodexVM { get; init; } = new();
+        public CodexViewModel CodexVM { get; init; } = new();
 
         //Selected File
         private Codex _selectedFile;
