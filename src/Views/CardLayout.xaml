@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters" 
+             xmlns:Converters="clr-namespace:COMPASS.Converters" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
              d:DataContext="{d:DesignInstance Type=viewmodels:CardLayoutViewModel}"
              mc:Ignorable="d" 

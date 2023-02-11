@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                    xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
+                    xmlns:Converters ="clr-namespace:COMPASS.Converters"
                     xmlns:Tools="clr-namespace:COMPASS.Tools"
                     xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary">
     <ResourceDictionary.MergedDictionaries>

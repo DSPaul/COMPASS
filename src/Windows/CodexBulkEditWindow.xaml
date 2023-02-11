@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:Models ="clr-namespace:COMPASS.Models"
-        xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
+        xmlns:Converters ="clr-namespace:COMPASS.Converters"
         xmlns:Tools ="clr-namespace:COMPASS.Tools" xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary"
         mc:Ignorable="d"
         Title="Bulk Edit" Height="450" Width="800" FontSize="16" 

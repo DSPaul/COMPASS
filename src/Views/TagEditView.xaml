@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-            xmlns:Converters="clr-namespace:COMPASS.Tools.Converters"
+            xmlns:Converters="clr-namespace:COMPASS.Converters"
             xmlns:Tools="clr-namespace:COMPASS.Tools"
             xmlns:Models="clr-namespace:COMPASS.Models"
             xmlns:CustomControls ="clr-namespace:COMPASS.Resources.Controls"

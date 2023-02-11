@@ -7,7 +7,7 @@
         xmlns:self="clr-namespace:COMPASS"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:Models ="clr-namespace:COMPASS.Models"
-        xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
+        xmlns:Converters ="clr-namespace:COMPASS.Converters"
         xmlns:Tools ="clr-namespace:COMPASS.Tools" 
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
