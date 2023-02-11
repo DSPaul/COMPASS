@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace COMPASS.ViewModels.Commands
+namespace COMPASS.Commands
 {
     //Command without parameters
     public class ActionCommand : ICommand

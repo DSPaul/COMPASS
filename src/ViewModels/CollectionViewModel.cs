@@ -1,7 +1,7 @@
 ﻿using COMPASS.Models;
 using COMPASS.Properties;
 using COMPASS.Tools;
-using COMPASS.ViewModels.Commands;
+using COMPASS.Commands;
 using FuzzySharp;
 using GongSolutions.Wpf.DragDrop;
 using System;

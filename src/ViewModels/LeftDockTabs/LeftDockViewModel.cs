@@ -1,4 +1,4 @@
-﻿using COMPASS.ViewModels.Commands;
+﻿using COMPASS.Commands;
 using static COMPASS.Models.Enums;
 
 

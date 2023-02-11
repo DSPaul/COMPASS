@@ -1,5 +1,5 @@
 ﻿using COMPASS.Models;
-using COMPASS.ViewModels.Commands;
+using COMPASS.Commands;
 using System;
 using System.Windows.Media;
 
