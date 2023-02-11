@@ -3,8 +3,9 @@ using System;
 
 namespace COMPASS.ViewModels
 {
-    // Interface for windows with OK and Cancel buttons
-    // which are all windows that edit a codex or tag
+    /// <summary>
+    /// Interface for windows with OK and Cancel buttons which are all windows that edit a codex or tag
+    /// </summary>
     public interface IEditViewModel
     {
         public Action CloseAction { get; set; }
