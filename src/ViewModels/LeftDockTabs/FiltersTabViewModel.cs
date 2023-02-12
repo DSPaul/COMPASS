@@ -22,12 +22,15 @@ namespace COMPASS.ViewModels
             get => null;
             set
             {
-                Filter AuthorFilter = new(Filter.FilterType.Author, value)
+                if (!String.IsNullOrEmpty(value))
                 {
-                    Label = "Author:",
-                    BackgroundColor = Colors.Orange
-                };
-                MVM.CollectionVM.AddFieldFilter(AuthorFilter, Include);
+                    Filter AuthorFilter = new(Filter.FilterType.Author, value)
+                    {
+                        Label = "Author:",
+                        BackgroundColor = Colors.Orange
+                    };
+                    MVM.CollectionVM.AddFieldFilter(AuthorFilter, Include);
+                }
             }
         }
 
@@ -36,12 +39,15 @@ namespace COMPASS.ViewModels
             get => null;
             set
             {
-                Filter PublisherFilter = new(Filter.FilterType.Publisher, value)
+                if (!String.IsNullOrEmpty(value))
                 {
-                    Label = "Publisher:",
-                    BackgroundColor = Colors.MediumPurple
-                };
-                MVM.CollectionVM.AddFieldFilter(PublisherFilter, Include);
+                    Filter PublisherFilter = new(Filter.FilterType.Publisher, value)
+                    {
+                        Label = "Publisher:",
+                        BackgroundColor = Colors.MediumPurple
+                    };
+                    MVM.CollectionVM.AddFieldFilter(PublisherFilter, Include);
+                }
             }
         }
 
@@ -51,13 +57,15 @@ namespace COMPASS.ViewModels
             get => null;
             set
             {
-                Filter FileExtensionFilter = new(Filter.FilterType.FileExtension, value)
+                if (!String.IsNullOrEmpty(value))
                 {
-                    Label = "File Type:",
-                    BackgroundColor = Colors.OrangeRed
-                };
-                MVM.CollectionVM.AddFieldFilter(FileExtensionFilter, Include);
-
+                    Filter FileExtensionFilter = new(Filter.FilterType.FileExtension, value)
+                    {
+                        Label = "File Type:",
+                        BackgroundColor = Colors.OrangeRed
+                    };
+                    MVM.CollectionVM.AddFieldFilter(FileExtensionFilter, Include);
+                }
             }
         }
 

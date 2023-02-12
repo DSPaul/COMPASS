@@ -307,14 +307,14 @@
                             <Grid>
                                 <TextBlock Text="-- Select Author --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding MVM.CurrentCollection.AuthorList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedAuthor}" Style="{StaticResource ContentLess}"/>
+                                      SelectedValue="{Binding SelectedAuthor, Mode=OneWayToSource}" Style="{StaticResource ContentLess}"/>
                             </Grid>
 
                             <TextBlock Text="Publisher:" Margin="0,10,0,0"/>
                             <Grid>
                                 <TextBlock Text="-- Select Publisher --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding MVM.CurrentCollection.PublisherList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedPublisher}" Style="{StaticResource ContentLess}"/>
+                                      SelectedValue="{Binding SelectedPublisher, Mode=OneWayToSource}" Style="{StaticResource ContentLess}"/>
                             </Grid>
 
                             <TextBlock Text="Released Between:" Margin="0,10,0,0"/>
@@ -335,7 +335,7 @@
                             <Grid>
                                 <TextBlock Text="-- Select File Type --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding MVM.CurrentCollection.FileTypeList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedFileType}" Style="{StaticResource ContentLess}"/>
+                                      SelectedValue="{Binding SelectedFileType, Mode=OneWayToSource}" Style="{StaticResource ContentLess}"/>
                             </Grid>
                         </StackPanel>
                         <Button Content="Clear All" Grid.Row="4" Margin="10" Command="{Binding ClearFiltersCommand}"
