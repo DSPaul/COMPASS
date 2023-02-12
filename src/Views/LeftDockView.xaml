@@ -234,8 +234,8 @@
         </TabItem>
         <TabItem Header="Filter" Tools:AP.IconKind="Filter" DataContext="{Binding FiltersTabVM}" ToolTip="Apply Filters">
             <ContentControl Tools:AP.Header="Filters" Tools:AP.IconKind="Filter" Style="{StaticResource TabContentWrapper}">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-                    <Grid Margin="0 0 -10 0">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
@@ -317,21 +317,33 @@
                                       SelectedValue="{Binding SelectedPublisher, Mode=OneWayToSource}" Style="{StaticResource ContentLess}"/>
                             </Grid>
 
-                            <TextBlock Text="Released Between:" Margin="0,10,0,0"/>
-                            <DatePicker SelectedDate="{Binding StartReleaseDate}" HorizontalAlignment="Left" Margin="-5 0" FontSize="18"/>
-                            <TextBlock Text="And"/>
-                            <DatePicker SelectedDate="{Binding StopReleaseDate}"  HorizontalAlignment="Left" Margin="-5 0" FontSize="18"/>
+                            <TextBlock Text="Has Property:" Margin="0,10,0,0"/>
+
+                            <ItemsControl ItemTemplate="{StaticResource FilterTagTemplate}" ItemsSource="{Binding MVM.CollectionVM.BooleanFilters}" 
+                                          HorizontalContentAlignment="Left" HorizontalAlignment="Left" Margin="5" 
+                                    dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding MVM.CollectionVM}"/>
+
+                            <TextBlock Text="Release Date:" Margin="0,10,0,5"/>
+                            
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Column="0" Grid.Row="0" Text="From:" Margin="5" VerticalAlignment="Top"/>
+                                <DatePicker Grid.Column="1" Grid.Row="0" SelectedDate="{Binding StartReleaseDate}" FontSize="18"/>
+                                <TextBlock Grid.Column="0" Grid.Row="1" Text="Until: " Margin="5" VerticalAlignment="Top"/>
+                                <DatePicker Grid.Column="2" Grid.Row="1" SelectedDate="{Binding StopReleaseDate}" FontSize="18"/>
+                            </Grid>
 
                             <TextBlock Text="Minimum Rating:" Margin="0,10,0,0"/>
                             <materialDesign:RatingBar Value="{Binding MinRating, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                                                          IsPreviewValueEnabled="True" Margin="-2 3"/>
-
-                            <TextBlock Text="Sources:" Margin="0,0,10,0"/>
-
-                            <ItemsControl ItemTemplate="{StaticResource FilterTagTemplate}" ItemsSource="{Binding MVM.CollectionVM.SourceFilters}" 
-                                          HorizontalContentAlignment="Left" HorizontalAlignment="Left" Margin="5" 
-                                    dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding MVM.CollectionVM}"/>
-                            <TextBlock Text="File Type:"/>
+                                                          IsPreviewValueEnabled="True" Margin="5 3"/>
+                            <TextBlock Text="File Type:" Margin="0,5"/>
                             <Grid>
                                 <TextBlock Text="-- Select File Type --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding MVM.CurrentCollection.FileTypeList}" FontSize="15"
@@ -390,7 +402,7 @@
                         </Style.Triggers>
                     </Style>
                 </ContentControl.Resources>
-                <ScrollViewer>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel>
                         <UniformGrid Rows="2" Columns="2" Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}" Margin="5">
                             <Button Command="{Binding MVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Home}" 
@@ -452,7 +464,7 @@
         </TabItem>
         <TabItem Header="Sorting" Tools:AP.IconKind="Sort" ToolTip="Sorting">
             <UserControl Style="{StaticResource TabContentWrapper}" Tools:AP.Header="Sorting" Tools:AP.IconKind="Sort" DataContext="{Binding MVM.CollectionVM}">
-                <ScrollViewer>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10">
                             <RadioButton GroupName="SortDirection"
@@ -504,7 +516,7 @@
         </TabItem>
         <TabItem Header="AddBook" Tools:AP.IconKind="BookAdd" ToolTip="Add Books" Grid.IsSharedSizeScope="True">
             <ContentControl Tools:AP.Header="Add Books" Tools:AP.IconKind="BookAdd" Style="{StaticResource TabContentWrapper}">
-                <ScrollViewer>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <StackPanel.Resources>
                             <Style TargetType="Button" BasedOn="{StaticResource ContentButton}" x:Key="HighlightedContentButton">
