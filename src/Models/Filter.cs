@@ -22,8 +22,24 @@ namespace COMPASS.Models
             OnlineSource,
             OfflineSource,
             PhysicalSource,
+            Favorite,
             FileExtension
         }
+
+        public Func<Codex, bool> Method => Type switch
+        {
+            FilterType.Author => new(codex => codex.Authors.Contains((string)FilterValue)),
+            FilterType.Publisher => new(codex => codex.Publisher == (string)FilterValue),
+            FilterType.StartReleaseDate => new(codex => codex.ReleaseDate >= (DateTime?)FilterValue),
+            FilterType.StopReleaseDate => new(codex => codex.ReleaseDate < (DateTime?)FilterValue),
+            FilterType.MinimumRating => new(codex => codex.Rating >= (int?)FilterValue),
+            FilterType.OfflineSource => new(codex => codex.HasOfflineSource()),
+            FilterType.OnlineSource => new(codex => codex.HasOnlineSource()),
+            FilterType.PhysicalSource => new(codex => codex.Physically_Owned),
+            FilterType.Favorite => new(codex => codex.Favorite),
+            FilterType.FileExtension => new(codex => codex.GetFileType() == (string)FilterValue),
+            _ => new(_ => true)
+        };
 
         //Implement ITag interface
         public string Content

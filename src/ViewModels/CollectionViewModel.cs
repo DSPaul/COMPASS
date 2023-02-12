@@ -1,7 +1,7 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
 using COMPASS.Properties;
 using COMPASS.Tools;
-using COMPASS.Commands;
 using FuzzySharp;
 using GongSolutions.Wpf.DragDrop;
 using System;
@@ -11,7 +11,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace COMPASS.ViewModels
 {
@@ -49,7 +48,7 @@ namespace COMPASS.ViewModels
 
         private HashSet<Codex> ExcludedCodicesByIncludedTags { get; set; } = new();
         private HashSet<Codex> ExcludedCodicesByExcludedTags { get; set; } = new();
-        private HashSet<Codex> ExcludedCodicesByFilters { get; set; } = new(); 
+        private HashSet<Codex> ExcludedCodicesByFilters { get; set; } = new();
 
         private ObservableCollection<Codex> _filteredCodices;
         public ObservableCollection<Codex> FilteredCodices
@@ -69,28 +68,6 @@ namespace COMPASS.ViewModels
             get => _searchTerm;
             set => SetProperty(ref _searchTerm, value);
         }
-
-        private List<Filter> _sourceFilters = new()
-            {
-                new(Filter.FilterType.OfflineSource)
-                {
-                    Label = "Available Offline",
-                    BackgroundColor = Colors.DarkSeaGreen
-                },
-
-                new(Filter.FilterType.OnlineSource)
-                {
-                    Label = "Available Online",
-                    BackgroundColor = Colors.DarkSeaGreen
-                },
-
-                new(Filter.FilterType.PhysicalSource)
-                {
-                    Label = "Physically Owned",
-                    BackgroundColor = Colors.DarkSeaGreen
-                },
-            };
-        public List<Filter> SourceFilters => _sourceFilters;
 
         public ListSortDirection SortDirection
         {
@@ -245,54 +222,31 @@ namespace COMPASS.ViewModels
         //Return List of Codices that do Do/Don't match filter on a property (author, release date, ect.)
         private List<Codex> GetFilteredCodicesByProperty(Filter.FilterType filtertype, IEnumerable<Filter> Filters, bool returnExcludedCodices = true)
         {
-            List<object> FilterValues = new(
-                    Filters
-                    .Where(filter => filter.Type == filtertype)
-                    .Select(t => t.FilterValue)
-                    );
+            List<Filter> RelevantFilters = new(Filters.Where(filter => filter.Type == filtertype));
 
-            if (FilterValues.Count == 0) return new();
+            if (RelevantFilters.Count == 0) return new();
 
-            IEnumerable<Codex> ExcludedCodices = new List<Codex>(); // generic IEnumerable doesn'tag have constructor so list instead
-            switch (filtertype)
+            IEnumerable<Codex> IncludedCodices;
+            IEnumerable<Codex> ExcludedCodices;
+
+            if (filtertype == Filter.FilterType.Search)
             {
-                case Filter.FilterType.Search:
-                    ExcludedCodices = GetFilteredCodicesBySearch((string)FilterValues.FirstOrDefault());
-                    break;
-                case Filter.FilterType.Author:
-                    ExcludedCodices = codexCollection.AllCodices.Where(c => !FilterValues.Intersect(c.Authors).Any());
-                    break;
-                case Filter.FilterType.Publisher:
-                    ExcludedCodices = codexCollection.AllCodices.Where(c => !FilterValues.Contains(c.Publisher));
-                    break;
-                case Filter.FilterType.StartReleaseDate:
-                    ExcludedCodices = codexCollection.AllCodices.Where(c => c.ReleaseDate < (DateTime?)FilterValues.FirstOrDefault());
-                    break;
-                case Filter.FilterType.StopReleaseDate:
-                    ExcludedCodices = codexCollection.AllCodices.Where(c => c.ReleaseDate > (DateTime?)FilterValues.FirstOrDefault());
-                    break;
-                case Filter.FilterType.MinimumRating:
-                    ExcludedCodices = codexCollection.AllCodices.Where(c => c.Rating < (int?)FilterValues.FirstOrDefault());
-                    break;
-                case Filter.FilterType.OfflineSource:
-                    ExcludedCodices = codexCollection.AllCodices.Where(c => !c.HasOfflineSource());
-                    break;
-                case Filter.FilterType.OnlineSource:
-                    ExcludedCodices = codexCollection.AllCodices.Where(c => !c.HasOnlineSource());
-                    break;
-                case Filter.FilterType.PhysicalSource:
-                    ExcludedCodices = codexCollection.AllCodices.Where(c => !c.Physically_Owned);
-                    break;
-                case Filter.FilterType.FileExtension:
-                    ExcludedCodices = codexCollection.AllCodices.Where(c => !FilterValues.Contains(c.GetFileType()));
-                    break;
+                IncludedCodices = GetFilteredCodicesBySearch(RelevantFilters.First());
             }
-            return returnExcludedCodices ? ExcludedCodices.ToList() : codexCollection.AllCodices.Except(ExcludedCodices).ToList();
+            else
+            {
+                IncludedCodices = codexCollection.AllCodices.Where(codex => RelevantFilters.Any(filter => filter.Method(codex)));
+            }
+
+            ExcludedCodices = codexCollection.AllCodices.Except(IncludedCodices);
+            return returnExcludedCodices ? ExcludedCodices.ToList() : IncludedCodices.ToList();
         }
 
         //Return List of Codices that Do/Don't match search term
-        private HashSet<Codex> GetFilteredCodicesBySearch(string searchterm, bool returnExcludedCodices = true)
+        private HashSet<Codex> GetFilteredCodicesBySearch(Filter searchFilter, bool returnExcludedCodices = false)
         {
+            string searchterm = (string)searchFilter.FilterValue;
+
             HashSet<Codex> ExcludedCodicesBySearch = new();
             HashSet<Codex> IncludedCodicesBySearch = new();
             if (!string.IsNullOrEmpty(searchterm))
