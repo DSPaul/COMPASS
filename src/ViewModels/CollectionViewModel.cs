@@ -16,28 +16,33 @@ namespace COMPASS.ViewModels
 {
     public class CollectionViewModel : ViewModelBase, IDropTarget
     {
-
-        //Constuctor
-        public CollectionViewModel(CodexCollection currentCollection)
+        public CollectionViewModel(ObservableCollection<Codex> allCodices)
         {
-            codexCollection = currentCollection;
+            _allCodices = allCodices;
 
-            //load sorting from settings
+            // Load sorting from settings
             InitSortingProperties();
 
-            IncludedTags.CollectionChanged += (e, v) => SetExcludedCodicesByTags();
-            ExcludedTags.CollectionChanged += (e, v) => SetExcludedCodicesByTags();
-            IncludedFilters.CollectionChanged += (e, v) => SetExcludedCodicesByFilters();
-            ExcludedFilters.CollectionChanged += (e, v) => SetExcludedCodicesByFilters();
+            // Include all codices by default
+            IncludedCodicesByFilters = new(_allCodices);
+            IncludedCodicesByTags = new(_allCodices);
+            // Exclude none by default
+            ExcludedCodicesByFilters = new();
+            ExcludedCodicesByTags = new();
 
-            currentCollection.AllCodices.CollectionChanged += (e, v) => SubscribeToCodexProperties();
+            IncludedTags.CollectionChanged += (e, v) => UpdateIncludedCodicesByTags();
+            ExcludedTags.CollectionChanged += (e, v) => UpdateExcludedCodicesByTags();
+            IncludedFilters.CollectionChanged += (e, v) => UpdateIncludedCodicesByFilters();
+            ExcludedFilters.CollectionChanged += (e, v) => UpdateExcludedCodicesByFilters();
+
+            _allCodices.CollectionChanged += (e, v) => SubscribeToCodexProperties();
             SubscribeToCodexProperties();
 
             ApplyFilters();
         }
 
         #region Properties
-        private readonly CodexCollection codexCollection;
+        private ObservableCollection<Codex> _allCodices;
         private readonly int _itemsShown = 15;
         public int ItemsShown => Math.Min(_itemsShown, FilteredCodices.Count);
 
@@ -46,9 +51,10 @@ namespace COMPASS.ViewModels
         public ObservableCollection<Filter> IncludedFilters { get; set; } = new();
         public ObservableCollection<Filter> ExcludedFilters { get; set; } = new();
 
-        private HashSet<Codex> ExcludedCodicesByIncludedTags { get; set; } = new();
-        private HashSet<Codex> ExcludedCodicesByExcludedTags { get; set; } = new();
-        private HashSet<Codex> ExcludedCodicesByFilters { get; set; } = new();
+        private HashSet<Codex> IncludedCodicesByTags { get; set; }
+        private HashSet<Codex> ExcludedCodicesByTags { get; set; }
+        private HashSet<Codex> IncludedCodicesByFilters { get; set; }
+        private HashSet<Codex> ExcludedCodicesByFilters { get; set; }
 
         private ObservableCollection<Codex> _filteredCodices;
         public ObservableCollection<Codex> FilteredCodices
@@ -112,7 +118,7 @@ namespace COMPASS.ViewModels
         private void SubscribeToCodexProperties()
         {
             //cause derived lists to update when codex gets updated
-            foreach (Codex c in codexCollection.AllCodices)
+            foreach (Codex c in _allCodices)
             {
                 c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(Favorites));
                 c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(RecentCodices));
@@ -130,7 +136,7 @@ namespace COMPASS.ViewModels
                     RemoveTagFilter(t);
                     break;
                 case Filter f:
-                    RemoveFieldFilter(f);
+                    RemovePropertyFilter(f);
                     break;
             }
         }
@@ -147,39 +153,48 @@ namespace COMPASS.ViewModels
         }
 
         //-------------For Tags---------------//
-        private void SetExcludedCodicesByTags()
+        private void UpdateIncludedCodicesByTags()
         {
-            ExcludedCodicesByIncludedTags.Clear();
-            HashSet<Tag> IncludedGroups = new();
+            IncludedCodicesByTags = new(_allCodices);
 
-            //Find all the groups to filter in
-            foreach (Tag tag in IncludedTags)
+            if (IncludedTags.Count > 0)
             {
-                IncludedGroups.Add(tag.GetGroup());
-            }
+                HashSet<Tag> IncludedGroups = IncludedTags.Select(tag => tag.GetGroup()).ToHashSet();
 
-            //List of codices filtered out in that group
-            HashSet<Codex> SingleGroupFilteredCodices;
-            //Go over every group and filter out codices
-            foreach (Tag Group in IncludedGroups)
-            {
-                //Make list with all included tags in that group, including childeren
-                List<Tag> SingleGroupTags = Utils.FlattenTree(IncludedTags.Where(tag => tag.GetGroup() == Group)).ToList();
-                //add parents of those tags, must come AFTER chileren, otherwise childeren of parents are included which is wrong
-                for (int i = 0; i < SingleGroupTags.Count; i++)
+                //List of codices that match filters in one group
+                HashSet<Codex> SingleGroupFilteredCodices;
+
+                // Go over every group, tags within same group have OR relation, groups have AND relation
+                foreach (Tag Group in IncludedGroups)
                 {
-                    Tag P = SingleGroupTags[i].Parent;
-                    if (P != null && !P.IsGroup && !SingleGroupTags.Contains(P)) SingleGroupTags.Add(P);
-                }
-                SingleGroupFilteredCodices = new(codexCollection.AllCodices.Where(f => !SingleGroupTags.Intersect(f.Tags).Any()));
+                    // Make list with all included tags in that group, including childeren
+                    List<Tag> SingleGroupTags = Utils.FlattenTree(IncludedTags.Where(tag => tag.GetGroup() == Group)).ToList();
+                    // Add parents of those tags, must come AFTER chileren, otherwise childeren of parents are included which is wrong
+                    for (int i = 0; i < SingleGroupTags.Count; i++)
+                    {
+                        Tag parentTag = SingleGroupTags[i].Parent;
+                        if (parentTag != null && !parentTag.IsGroup && !SingleGroupTags.Contains(parentTag)) SingleGroupTags.Add(parentTag);
+                    }
 
-                ExcludedCodicesByIncludedTags = ExcludedCodicesByIncludedTags.Union(SingleGroupFilteredCodices).ToHashSet();
+                    SingleGroupFilteredCodices = new(_allCodices.Where(codex => SingleGroupTags.Intersect(codex.Tags).Any()));
+
+                    IncludedCodicesByTags = IncludedCodicesByTags.Intersect(SingleGroupFilteredCodices).ToHashSet();
+                }
             }
 
-            //Filter out Codices with excluded tags
-            //get childeren too, if parent is excluded, so should all the childeren
-            List<Tag> AllExcludedTags = Utils.FlattenTree(ExcludedTags).ToList();
-            ExcludedCodicesByExcludedTags = new(codexCollection.AllCodices.Where(f => AllExcludedTags.Intersect(f.Tags).Any()));
+            ApplyFilters();
+        }
+
+        private void UpdateExcludedCodicesByTags()
+        {
+            ExcludedCodicesByTags = new();
+
+            if (ExcludedTags.Count > 0)
+            {
+                // If parent is excluded, so should all the childeren
+                List<Tag> AllExcludedTags = Utils.FlattenTree(ExcludedTags).ToList();
+                ExcludedCodicesByTags = new(_allCodices.Where(f => AllExcludedTags.Intersect(f.Tags).Any()));
+            }
 
             ApplyFilters();
         }
@@ -206,65 +221,64 @@ namespace COMPASS.ViewModels
         }
 
         //-------------For Filters------------//
-        private void SetExcludedCodicesByFilters()
+        private void UpdateIncludedCodicesByFilters()
         {
-            ExcludedCodicesByFilters.Clear();
+            IncludedCodicesByFilters = new(_allCodices);
 
-            //enumerate over all filter types
-            foreach (Filter.FilterType FT in Enum.GetValues(typeof(Filter.FilterType)))
+            foreach (Filter.FilterType filterType in Enum.GetValues(typeof(Filter.FilterType)))
             {
-                ExcludedCodicesByFilters = ExcludedCodicesByFilters.Union(GetFilteredCodicesByProperty(FT, IncludedFilters)).ToHashSet();
-                ExcludedCodicesByFilters = ExcludedCodicesByFilters.Union(GetFilteredCodicesByProperty(FT, ExcludedFilters, false)).ToHashSet();
+                IncludedCodicesByFilters.IntersectWith(GetFilteredCodicesByType(IncludedFilters, filterType, false));
+            }
+            ApplyFilters();
+        }
+        private void UpdateExcludedCodicesByFilters()
+        {
+            ExcludedCodicesByFilters = new();
+
+            foreach (Filter.FilterType filterType in Enum.GetValues(typeof(Filter.FilterType)))
+            {
+                ExcludedCodicesByFilters.UnionWith(GetFilteredCodicesByType(ExcludedFilters, filterType, true));
             }
             ApplyFilters();
         }
 
         //Return List of Codices that do Do/Don't match filter on a property (author, release date, ect.)
-        private List<Codex> GetFilteredCodicesByProperty(Filter.FilterType filtertype, IEnumerable<Filter> Filters, bool returnExcludedCodices = true)
+        private IEnumerable<Codex> GetFilteredCodicesByType(IEnumerable<Filter> Filters, Filter.FilterType filtertype, bool defaultEmpty)
         {
             List<Filter> RelevantFilters = new(Filters.Where(filter => filter.Type == filtertype));
 
-            if (RelevantFilters.Count == 0) return new();
-
-            IEnumerable<Codex> IncludedCodices;
-            IEnumerable<Codex> ExcludedCodices;
+            if (RelevantFilters.Count == 0) return defaultEmpty ? Enumerable.Empty<Codex>() : _allCodices;
 
             if (filtertype == Filter.FilterType.Search)
             {
-                IncludedCodices = GetFilteredCodicesBySearch(RelevantFilters.First());
+                return GetFilteredCodicesBySearch(RelevantFilters.First()).ToList();
             }
             else
             {
-                IncludedCodices = codexCollection.AllCodices.Where(codex => RelevantFilters.Any(filter => filter.Method(codex)));
+                return _allCodices.Where(codex => RelevantFilters.Any(filter => filter.Method(codex)));
             }
-
-            ExcludedCodices = codexCollection.AllCodices.Except(IncludedCodices);
-            return returnExcludedCodices ? ExcludedCodices.ToList() : IncludedCodices.ToList();
         }
 
         //Return List of Codices that Do/Don't match search term
-        private HashSet<Codex> GetFilteredCodicesBySearch(Filter searchFilter, bool returnExcludedCodices = false)
+        private HashSet<Codex> GetFilteredCodicesBySearch(Filter searchFilter)
         {
             string searchterm = (string)searchFilter.FilterValue;
 
-            HashSet<Codex> ExcludedCodicesBySearch = new();
-            HashSet<Codex> IncludedCodicesBySearch = new();
-            if (!string.IsNullOrEmpty(searchterm))
-            {
-                //include acronyms
-                IncludedCodicesBySearch.UnionWith(codexCollection.AllCodices
-                    .Where(f => Fuzz.TokenInitialismRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
-                //include string fragments
-                IncludedCodicesBySearch.UnionWith(codexCollection.AllCodices
-                    .Where(f => f.Title.Contains(SearchTerm, StringComparison.InvariantCultureIgnoreCase)));
-                //include spelling errors
-                //include acronyms
-                IncludedCodicesBySearch.UnionWith(codexCollection.AllCodices
-                    .Where(f => Fuzz.PartialRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
+            if (String.IsNullOrEmpty(searchterm)) return new(_allCodices);
 
-                ExcludedCodicesBySearch = new(codexCollection.AllCodices.Except(IncludedCodicesBySearch));
-            }
-            return returnExcludedCodices ? ExcludedCodicesBySearch : IncludedCodicesBySearch;
+            HashSet<Codex> IncludedCodicesBySearch = new();
+            //include acronyms
+            IncludedCodicesBySearch.UnionWith(_allCodices
+                .Where(f => Fuzz.TokenInitialismRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
+            //include string fragments
+            IncludedCodicesBySearch.UnionWith(_allCodices
+                .Where(f => f.Title.Contains(SearchTerm, StringComparison.InvariantCultureIgnoreCase)));
+            //include spelling errors
+            //include acronyms
+            IncludedCodicesBySearch.UnionWith(_allCodices
+                .Where(f => Fuzz.PartialRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
+
+            return IncludedCodicesBySearch;
         }
 
         public void AddFieldFilter(Filter filter, bool include = true)
@@ -285,7 +299,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public void RemoveFieldFilter(Filter filter)
+        public void RemovePropertyFilter(Filter filter)
         {
             IncludedFilters.Remove(filter);
             ExcludedFilters.Remove(filter);
@@ -311,11 +325,11 @@ namespace COMPASS.ViewModels
         }
         private void ApplyFilters()
         {
-            FilteredCodices = new(codexCollection.AllCodices
-                .Except(ExcludedCodicesByIncludedTags)
-                .Except(ExcludedCodicesByExcludedTags)
-                .Except(ExcludedCodicesByFilters)
-                .ToList());
+            FilteredCodices = new(_allCodices
+                .Intersect(IncludedCodicesByTags)
+                .Except(ExcludedCodicesByTags)
+                .Intersect(IncludedCodicesByFilters)
+                .Except(ExcludedCodicesByFilters));
 
             //Also apply filtering to these lists
             RaisePropertyChanged(nameof(Favorites));
@@ -329,13 +343,15 @@ namespace COMPASS.ViewModels
 
         public void ReFilter()
         {
-            SetExcludedCodicesByTags();
-            SetExcludedCodicesByFilters();
+            UpdateIncludedCodicesByTags();
+            UpdateExcludedCodicesByTags();
+            UpdateIncludedCodicesByFilters();
+            UpdateExcludedCodicesByFilters();
         }
         public void RemoveCodex(Codex c)
         {
-            ExcludedCodicesByIncludedTags.Remove(c);
-            ExcludedCodicesByExcludedTags.Remove(c);
+            IncludedCodicesByTags.Remove(c);
+            ExcludedCodicesByTags.Remove(c);
             ExcludedCodicesByFilters.Remove(c);
             FilteredCodices.Remove(c);
         }

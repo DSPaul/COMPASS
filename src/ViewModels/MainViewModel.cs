@@ -227,7 +227,7 @@ namespace COMPASS.ViewModels
         public void ChangeCollection(string collectionDir)
         {
             CurrentCollection = new CodexCollection(collectionDir);
-            CollectionVM = new CollectionViewModel(CurrentCollection);
+            CollectionVM = new CollectionViewModel(CurrentCollection.AllCodices);
             LeftDockVM = new LeftDockViewModel();
         }
 
