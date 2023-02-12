@@ -1,6 +1,6 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
 using COMPASS.Tools;
-using COMPASS.Commands;
 using COMPASS.Windows;
 using System;
 using System.Collections;
@@ -29,8 +29,8 @@ namespace COMPASS.ViewModels
         }
 
         //Open File Offline
-        private ReturningRelayCommand<Codex,bool> _openCodexLocallyCommand;
-        public ReturningRelayCommand<Codex,bool> OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(OpenCodexLocally, CanOpenCodexLocally);
+        private ReturningRelayCommand<Codex, bool> _openCodexLocallyCommand;
+        public ReturningRelayCommand<Codex, bool> OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(OpenCodexLocally, CanOpenCodexLocally);
         public static bool OpenCodexLocally(Codex toOpen)
         {
             if (String.IsNullOrEmpty(toOpen.Path)) return false;
@@ -68,8 +68,8 @@ namespace COMPASS.ViewModels
         }
 
         //Open File Online
-        private ReturningRelayCommand<Codex,bool> _openCodexOnlineCommand;
-        public ReturningRelayCommand<Codex,bool> OpenCodexOnlineCommand => _openCodexOnlineCommand ??= new(OpenCodexOnline, CanOpenCodexOnline);
+        private ReturningRelayCommand<Codex, bool> _openCodexOnlineCommand;
+        public ReturningRelayCommand<Codex, bool> OpenCodexOnlineCommand => _openCodexOnlineCommand ??= new(OpenCodexOnline, CanOpenCodexOnline);
         public static bool OpenCodexOnline(Codex toOpen)
         {
             //fails if no internet, pinging 8.8.8.8 DNS instead of server because some sites like gmbinder block ping
@@ -97,8 +97,8 @@ namespace COMPASS.ViewModels
         }
 
         //Open Multiple Files
-        private ReturningRelayCommand<IEnumerable<Codex>,bool> _openSelectedCodicesCommand;
-        public ReturningRelayCommand<IEnumerable<Codex>,bool> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(OpenSelectedCodices);
+        private ReturningRelayCommand<IEnumerable<Codex>, bool> _openSelectedCodicesCommand;
+        public ReturningRelayCommand<IEnumerable<Codex>, bool> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(OpenSelectedCodices);
         public static bool OpenSelectedCodices(IEnumerable<Codex> toOpen)
         {
             List<Codex> ToOpen = toOpen?.ToList();

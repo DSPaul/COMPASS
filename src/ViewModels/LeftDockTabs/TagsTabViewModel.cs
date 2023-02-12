@@ -1,5 +1,5 @@
-﻿using COMPASS.Models;
-using COMPASS.Commands;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
 using COMPASS.Windows;
 
 namespace COMPASS.ViewModels

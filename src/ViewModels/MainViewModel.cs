@@ -1,7 +1,7 @@
 ﻿using AutoUpdaterDotNET;
+using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
-using COMPASS.Commands;
 using COMPASS.Windows;
 using ImageMagick;
 using System;

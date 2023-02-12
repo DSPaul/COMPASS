@@ -10,7 +10,7 @@ namespace COMPASS.Commands
     /// </summary>
     /// <typeparam name="T"> Type of function argument </typeparam>
     /// <typeparam name="R"> Type of return value </typeparam>
-    public class ReturningRelayCommand<T,R> : ICommand
+    public class ReturningRelayCommand<T, R> : ICommand
     {
         private readonly Func<T, R> _execute;
         private readonly Func<T, bool> _canExecute;

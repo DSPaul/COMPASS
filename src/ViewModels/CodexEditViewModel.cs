@@ -1,6 +1,6 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
 using COMPASS.Tools;
-using COMPASS.Commands;
 using Microsoft.Win32;
 using System;
 using System.IO;

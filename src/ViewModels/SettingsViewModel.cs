@@ -1,6 +1,6 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
 using COMPASS.Tools;
-using COMPASS.Commands;
 using COMPASS.Windows;
 using Ionic.Zip;
 using System.Collections.Generic;
