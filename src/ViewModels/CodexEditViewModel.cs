@@ -40,7 +40,6 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _tempCodex, value);
         }
 
-        private bool CoverArtChanged = false;
         private bool _showLoading = false;
         public bool ShowLoading
         {
@@ -138,8 +137,6 @@ namespace COMPASS.ViewModels
             TempCodex.Thumbnail = null;
             TempCodex.CoverArt = CovArt;
             TempCodex.Thumbnail = Thumbn;
-
-            CoverArtChanged = true;
         }
 
         public Action CloseAction { get; set; }
@@ -158,17 +155,10 @@ namespace COMPASS.ViewModels
                 Codex ToAdd = new();
                 ToAdd.Copy(TempCodex);
                 MVM.CurrentCollection.AllCodices.Add(ToAdd);
-                MVM.Refresh();
             }
             //Add new Authors, Publishers, ect. to metadata lists
             MVM.CurrentCollection.PopulateMetaDataCollections();
-
-            //reset needed to show art update
-            if (CoverArtChanged)
-            {
-                MVM.Refresh();
-            }
-
+            MVM.Refresh();
             CloseAction();
         }
 
