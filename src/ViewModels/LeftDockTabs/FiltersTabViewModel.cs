@@ -1,6 +1,7 @@
-﻿using COMPASS.Models;
-using COMPASS.Commands;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
 using System;
+using System.Collections.Generic;
 using System.Windows.Media;
 
 namespace COMPASS.ViewModels
@@ -17,6 +18,34 @@ namespace COMPASS.ViewModels
         }
 
         #region Filters
+
+        public List<Filter> BooleanFilters { get; } = new()
+            {
+                new(Filter.FilterType.OfflineSource)
+                {
+                    Label = "Available Offline",
+                    BackgroundColor = Colors.DarkSeaGreen
+                },
+
+                new(Filter.FilterType.OnlineSource)
+                {
+                    Label = "Available Online",
+                    BackgroundColor = Colors.DarkSeaGreen
+                },
+
+                new(Filter.FilterType.PhysicalSource)
+                {
+                    Label = "Physically Owned",
+                    BackgroundColor = Colors.DarkSeaGreen
+                },
+
+                new(Filter.FilterType.Favorite)
+                {
+                    Label = "Favorite",
+                    BackgroundColor = Colors.HotPink
+                },
+            };
+
         public string SelectedAuthor
         {
             get => null;

@@ -319,7 +319,7 @@
 
                             <TextBlock Text="Has Property:" Margin="0,10,0,0"/>
 
-                            <ItemsControl ItemTemplate="{StaticResource FilterTagTemplate}" ItemsSource="{Binding MVM.CollectionVM.BooleanFilters}" 
+                            <ItemsControl ItemTemplate="{StaticResource FilterTagTemplate}" ItemsSource="{Binding BooleanFilters}" 
                                           HorizontalContentAlignment="Left" HorizontalAlignment="Left" Margin="5" 
                                     dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding MVM.CollectionVM}"/>
 
