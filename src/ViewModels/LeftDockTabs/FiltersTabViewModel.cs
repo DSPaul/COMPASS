@@ -34,7 +34,7 @@ namespace COMPASS.ViewModels
                 if (!String.IsNullOrEmpty(value))
                 {
                     Filter AuthorFilter = new(Filter.FilterType.Author, value);
-                    MVM.CollectionVM.AddFilter(AuthorFilter, Include);
+                    MVM.FilterVM.AddFilter(AuthorFilter, Include);
                 }
             }
         }
@@ -47,7 +47,7 @@ namespace COMPASS.ViewModels
                 if (!String.IsNullOrEmpty(value))
                 {
                     Filter PublisherFilter = new(Filter.FilterType.Publisher, value);
-                    MVM.CollectionVM.AddFilter(PublisherFilter, Include);
+                    MVM.FilterVM.AddFilter(PublisherFilter, Include);
                 }
             }
         }
@@ -61,7 +61,7 @@ namespace COMPASS.ViewModels
                 if (!String.IsNullOrEmpty(value))
                 {
                     Filter FileExtensionFilter = new(Filter.FilterType.FileExtension, value);
-                    MVM.CollectionVM.AddFilter(FileExtensionFilter, Include);
+                    MVM.FilterVM.AddFilter(FileExtensionFilter, Include);
                 }
             }
         }
@@ -80,7 +80,7 @@ namespace COMPASS.ViewModels
                 if (value != null)
                 {
                     Filter startDateFilter = new(Filter.FilterType.StartReleaseDate, value);
-                    MVM.CollectionVM.AddFilter(startDateFilter, Include);
+                    MVM.FilterVM.AddFilter(startDateFilter, Include);
                 }
             }
         }
@@ -94,7 +94,7 @@ namespace COMPASS.ViewModels
                 if (value != null)
                 {
                     Filter stopDateFilter = new(Filter.FilterType.StopReleaseDate, value);
-                    MVM.CollectionVM.AddFilter(stopDateFilter, Include);
+                    MVM.FilterVM.AddFilter(stopDateFilter, Include);
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace COMPASS.ViewModels
                 if (value > 0 && value < 6)
                 {
                     Filter minRatFilter = new(Filter.FilterType.MinimumRating, value);
-                    MVM.CollectionVM.AddFilter(minRatFilter, Include);
+                    MVM.FilterVM.AddFilter(minRatFilter, Include);
                 }
             }
         }
@@ -120,7 +120,7 @@ namespace COMPASS.ViewModels
         #region Functions and Commands
         private RelayCommand<Filter> _addSourceFilterCommand;
         public RelayCommand<Filter> AddSourceFilterCommand => _addSourceFilterCommand ??= new(AddSourceFilter);
-        public void AddSourceFilter(Filter filter) => MVM.CollectionVM.AddFilter(filter, Include);
+        public void AddSourceFilter(Filter filter) => MVM.FilterVM.AddFilter(filter, Include);
 
         private ActionCommand _clearFiltersCommand;
         public ActionCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
@@ -129,7 +129,7 @@ namespace COMPASS.ViewModels
             StartReleaseDate = null;
             StopReleaseDate = null;
             MinRating = 0;
-            MVM.CollectionVM.ClearFilters();
+            MVM.FilterVM.ClearFilters();
         }
         #endregion
     }

@@ -38,7 +38,7 @@ namespace COMPASS.ViewModels
         {
             Tag tag = (Tag)par[0];
             bool include = (bool)par[1];
-            MVM.CollectionVM.AddFilter(new(Filter.FilterType.Tag, tag), include); //needed because relaycommand only takes functions with one arg
+            MVM.FilterVM.AddFilter(new(Filter.FilterType.Tag, tag), include); //needed because relaycommand only takes functions with one arg
         }
 
         #region Tag Context Menu
@@ -59,7 +59,7 @@ namespace COMPASS.ViewModels
             //tag to delete is context, because DeleteTag is called from context menu
             if (ContextTag == null) return;
             MVM.CurrentCollection.DeleteTag(ContextTag);
-            MVM.CollectionVM.RemoveFilter(new(Filter.FilterType.Tag, ContextTag));
+            MVM.FilterVM.RemoveFilter(new(Filter.FilterType.Tag, ContextTag));
 
             //Go over all files and remove the tag from tag list
             foreach (var f in MVM.CurrentCollection.AllCodices)

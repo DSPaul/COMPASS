@@ -13,7 +13,7 @@
 
     <Controls:EnhancedDataGrid x:Name="ListLayoutGrid" MaxWidth="{Binding ActualWidth, ElementName=LastLayoutControl}"
                 Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
-                AutoGenerateColumns="False" ItemsSource="{Binding MVM.CollectionVM.FilteredCodices, IsAsync=True}"
+                AutoGenerateColumns="False" ItemsSource="{Binding MVM.FilterVM.FilteredCodices, IsAsync=True}"
                 CanUserAddRows="False" SelectionMode="Extended" CanUserSortColumns="True"
                 RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
                 SelectedItem="{Binding SelectedFile, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848"

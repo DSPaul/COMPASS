@@ -14,9 +14,9 @@ using System.Windows.Data;
 
 namespace COMPASS.ViewModels
 {
-    public class CollectionViewModel : ViewModelBase, IDropTarget
+    public class FilterViewModel : ObservableObject, IDropTarget
     {
-        public CollectionViewModel(ObservableCollection<Codex> allCodices)
+        public FilterViewModel(ObservableCollection<Codex> allCodices)
         {
             _allCodices = allCodices;
 
@@ -273,7 +273,7 @@ namespace COMPASS.ViewModels
 
             var ExcludedTags = filters.Select(filter => (Tag)filter.FilterValue).ToList();
 
-            if (ExcludedTags.Count() > 0)
+            if (ExcludedTags.Count > 0)
             {
                 // If parent is excluded, so should all the childeren
                 ExcludedTags = Utils.FlattenTree(ExcludedTags).ToList();

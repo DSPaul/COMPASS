@@ -264,7 +264,7 @@ namespace COMPASS.ViewModels
 
                     //Delete file in original folder
                     MVM.CurrentCollection.DeleteCodex(ToMove);
-                    MVM.CollectionVM.RemoveCodex(ToMove);
+                    MVM.FilterVM.RemoveCodex(ToMove);
 
                     //Update the cover art metadata to new path, has to happen after delete so old one gets deleted
                     ToMove.CoverArt = newCoverArt;

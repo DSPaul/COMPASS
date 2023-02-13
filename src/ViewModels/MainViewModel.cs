@@ -177,11 +177,11 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _settingsVM, value);
         }
 
-        private CollectionViewModel _collectionVM;
-        public CollectionViewModel CollectionVM
+        private FilterViewModel _filterVM;
+        public FilterViewModel FilterVM
         {
-            get => _collectionVM;
-            private set => SetProperty(ref _collectionVM, value);
+            get => _filterVM;
+            private set => SetProperty(ref _filterVM, value);
         }
 
         private LayoutViewModel _currentLayout;
@@ -218,7 +218,7 @@ namespace COMPASS.ViewModels
 
         public void Refresh()
         {
-            CollectionVM.ReFilter();
+            FilterVM.ReFilter();
             LeftDockVM.TagsTabVM.RefreshTreeView();
         }
 
@@ -226,7 +226,7 @@ namespace COMPASS.ViewModels
         public void ChangeCollection(string collectionDir)
         {
             CurrentCollection = new CodexCollection(collectionDir);
-            CollectionVM = new CollectionViewModel(CurrentCollection.AllCodices);
+            FilterVM = new FilterViewModel(CurrentCollection.AllCodices);
             LeftDockVM = new LeftDockViewModel();
         }
 
@@ -302,11 +302,11 @@ namespace COMPASS.ViewModels
             Filter SearchFilter = new(Filter.FilterType.Search, Searchterm);
             if (!String.IsNullOrEmpty(Searchterm))
             {
-                CollectionVM.AddFilter(SearchFilter);
+                FilterVM.AddFilter(SearchFilter);
             }
             else
             {
-                CollectionVM.RemoveFilterType(Filter.FilterType.Search);
+                FilterVM.RemoveFilterType(Filter.FilterType.Search);
             }
         }
 

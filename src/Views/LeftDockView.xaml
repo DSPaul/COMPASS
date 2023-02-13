@@ -321,7 +321,7 @@
 
                             <ItemsControl ItemTemplate="{StaticResource FilterTagTemplate}" ItemsSource="{Binding BooleanFilters}" 
                                           HorizontalContentAlignment="Left" HorizontalAlignment="Left" Margin="5" 
-                                    dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding MVM.CollectionVM}"/>
+                                    dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding MVM.FilterVM}"/>
 
                             <TextBlock Text="Release Date:" Margin="0,10,0,5"/>
                             
@@ -463,7 +463,7 @@
             </ContentControl>
         </TabItem>
         <TabItem Header="Sorting" Tools:AP.IconKind="Sort" ToolTip="Sorting">
-            <UserControl Style="{StaticResource TabContentWrapper}" Tools:AP.Header="Sorting" Tools:AP.IconKind="Sort" DataContext="{Binding MVM.CollectionVM}">
+            <UserControl Style="{StaticResource TabContentWrapper}" Tools:AP.Header="Sorting" Tools:AP.IconKind="Sort" DataContext="{Binding MVM.FilterVM}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10">

@@ -164,7 +164,7 @@
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBox Grid.Column="0" x:Name="Searchbox" Tools:AP.PlaceHolderText="Search" Margin="0"
-                             Text="{Binding CollectionVM.SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
+                             Text="{Binding FilterVM.SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
                              Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"/>
                         <Button  Grid.Column="1" Style="{StaticResource IconBtn}" Margin="10,0" Tools:AP.IconKind="Search"
                         Command="{Binding SearchCommand}" CommandParameter="{Binding Text, ElementName=Searchbox}" 
@@ -430,7 +430,7 @@
                 <Border CornerRadius="5" Grid.Column="1" Grid.Row ="1" BorderBrush="ForestGreen" BorderThickness="3" VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}" >
                     <Border.Resources>
-                        <CollectionViewSource x:Key="Filters" Source="{Binding CollectionVM.IncludedFilters}"/>
+                        <CollectionViewSource x:Key="Filters" Source="{Binding FilterVM.IncludedFilters}"/>
                         <CollectionViewSource x:Key="Empty" Source="{x:Null}"/>
                     </Border.Resources>
                     <Grid>
@@ -441,7 +441,7 @@
                         <TextBlock Text="INCLUDE:" VerticalAlignment="Center" Margin="5 2" Foreground="Gray" FontSize="20"/>
                         <ItemsControl x:Name="CurrentTagList" ItemTemplate="{StaticResource TagDeletableTemplate}" MinHeight="30"
                              Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}"
-                             dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding CollectionVM}" >
+                             dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding FilterVM}" >
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="Horizontal" Width="{Binding ActualWidth, ElementName=CurrentTagList}"/>
@@ -460,7 +460,7 @@
                 <Border CornerRadius="5" Grid.Column="2" Grid.Row ="1" BorderBrush="OrangeRed" BorderThickness="3" VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}">
                     <Border.Resources>
-                        <CollectionViewSource x:Key="NegFilters" Source="{Binding CollectionVM.ExcludedFilters}"/>
+                        <CollectionViewSource x:Key="NegFilters" Source="{Binding FilterVM.ExcludedFilters}"/>
                     </Border.Resources>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -468,12 +468,12 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="EXCLUDE:" VerticalAlignment="Center" Margin="5 2" Foreground="Gray" FontSize="20"/>
-                        <ItemsControl x:Name="CurrentExcludedTagList" ItemTemplate="{StaticResource TagDeletableTemplate}" MinHeight="30"
+                        <ItemsControl x:Name="CurrentExcludedFilterList" ItemTemplate="{StaticResource TagDeletableTemplate}" MinHeight="30"
                              Grid.Column="1" VerticalAlignment="Center" VerticalContentAlignment="Center" Background="{StaticResource SelectableTransparent}"
-                            dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding CollectionVM}" >
+                            dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding FilterVM}" >
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal" Width="{Binding ActualWidth, ElementName=CurrentExcludedTagList}"/>
+                                    <WrapPanel Orientation="Horizontal" Width="{Binding ActualWidth, ElementName=CurrentExcludedFilterList}"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemsSource>
@@ -484,7 +484,7 @@
                         </ItemsControl>
                     </Grid>
                 </Border>
-                <Button Command="{Binding CollectionVM.ClearFiltersCommand}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FilterRemove" 
+                <Button Command="{Binding FilterVM.ClearFiltersCommand}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FilterRemove" 
                         Grid.Column="3" Grid.Row ="1" Width="30" Margin="0" ToolTip="Clear Filters"/>
                 <!--#endregion-->
 

@@ -862,7 +862,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="TagDeletableTemplate">
-        <Button Style="{x:Null}" Command="{Binding DataContext.CollectionVM.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+        <Button Style="{x:Null}" Command="{Binding DataContext.FilterVM.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                 CommandParameter="{Binding}" Cursor="Hand">
             <Button.Template>
                 <ControlTemplate>
