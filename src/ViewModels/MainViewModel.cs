@@ -219,7 +219,7 @@ namespace COMPASS.ViewModels
         public void Refresh()
         {
             FilterVM.ReFilter();
-            LeftDockVM.TagsTabVM.RefreshTreeView();
+            LeftDockVM.TagsTabVM.BuildTagTreeView();
         }
 
         //Change Collection

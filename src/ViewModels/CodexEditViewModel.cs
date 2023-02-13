@@ -3,15 +3,17 @@ using COMPASS.Models;
 using COMPASS.Tools;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexEditViewModel : DealsWithTreeviews, IEditViewModel
+    public class CodexEditViewModel : ViewModelBase, IEditViewModel
     {
-        public CodexEditViewModel(Codex toEdit) : base(MVM.CurrentCollection.RootTags)
+        public CodexEditViewModel(Codex toEdit)
         {
             EditedCodex = toEdit;
             //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked
@@ -30,6 +32,11 @@ namespace COMPASS.ViewModels
         #region Properties
 
         readonly Codex EditedCodex;
+
+        private ObservableCollection<TreeViewNode> _treeViewSource;
+        public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
+
+        private HashSet<TreeViewNode> AllTreeViewNodes => Utils.FlattenTree(TreeViewSource).ToHashSet();
 
         private bool CreateNewCodex => EditedCodex == null;
 
@@ -51,7 +58,7 @@ namespace COMPASS.ViewModels
 
         #endregion
 
-        #region Funtions and Commands
+        #region Methods and Commands
 
         private ActionCommand _browsePathCommand;
         public ActionCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);

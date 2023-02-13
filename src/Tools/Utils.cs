@@ -25,11 +25,11 @@ namespace COMPASS.Tools
         //put all childeren of object in a flat enumerable
         public static IEnumerable<T> FlattenTree<T>(IEnumerable<T> l) where T : IHasChilderen<T>
         {
-            var result = new List<T>(l);
+            var result = l.ToList();
             for (int i = 0; i < result.Count; i++)
             {
                 T parent = result[i];
-                foreach (T child in parent.Children) result.Add(child);
+                result.AddRange(parent.Children);
             }
             return result;
         }

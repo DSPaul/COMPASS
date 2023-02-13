@@ -8,9 +8,9 @@ using System.Linq;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexBulkEditViewModel : DealsWithTreeviews, IEditViewModel
+    public class CodexBulkEditViewModel : ViewModelBase, IEditViewModel
     {
-        public CodexBulkEditViewModel(List<Codex> ToEdit) : base(MVM.CurrentCollection.RootTags)
+        public CodexBulkEditViewModel(List<Codex> ToEdit)
         {
             EditedCodices = ToEdit;
             TempCodex = new(MVM.CurrentCollection);
@@ -18,15 +18,24 @@ namespace COMPASS.ViewModels
             //set common metadata
             _commonAuthors = EditedCodices.Select(f => f.Authors.ToList()).Aggregate((xs, ys) => xs.Intersect(ys).ToList());
             TempCodex.Authors = new(_commonAuthors);
-            if (EditedCodices.All(f => f.Publisher == EditedCodices[0].Publisher)) TempCodex.Publisher = EditedCodices[0].Publisher;
-            if (EditedCodices.All(f => f.Rating == EditedCodices[0].Rating)) TempCodex.Rating = EditedCodices[0].Rating;
-            if (EditedCodices.All(f => f.Physically_Owned == EditedCodices[0].Physically_Owned)) TempCodex.Physically_Owned = EditedCodices[0].Physically_Owned;
-            if (EditedCodices.All(f => f.ReleaseDate == EditedCodices[0].ReleaseDate)) TempCodex.ReleaseDate = EditedCodices[0].ReleaseDate;
+            if (EditedCodices.All(f => f.Publisher == EditedCodices[0].Publisher))
+                TempCodex.Publisher = EditedCodices[0].Publisher;
+            if (EditedCodices.All(f => f.Rating == EditedCodices[0].Rating))
+                TempCodex.Rating = EditedCodices[0].Rating;
+            if (EditedCodices.All(f => f.Physically_Owned == EditedCodices[0].Physically_Owned))
+                TempCodex.Physically_Owned = EditedCodices[0].Physically_Owned;
+            if (EditedCodices.All(f => f.ReleaseDate == EditedCodices[0].ReleaseDate))
+                TempCodex.ReleaseDate = EditedCodices[0].ReleaseDate;
         }
 
         #region Properties
 
         readonly List<Codex> EditedCodices;
+
+        private ObservableCollection<TreeViewNode> _treeViewSource;
+        public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
+
+        private HashSet<TreeViewNode> AllTreeViewNodes => Utils.FlattenTree(TreeViewSource).ToHashSet();
 
         //True if adding tags, false if removing
         private bool _tagMode = true;

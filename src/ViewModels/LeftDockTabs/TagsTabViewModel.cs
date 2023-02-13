@@ -1,13 +1,18 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Windows;
+using GongSolutions.Wpf.DragDrop;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace COMPASS.ViewModels
 {
-    public class TagsTabViewModel : DealsWithTreeviews
+    public class TagsTabViewModel : ViewModelBase, IDropTarget
     {
-        public TagsTabViewModel() : base(MVM.CurrentCollection.RootTags)
+        public TagsTabViewModel()
         {
+            BuildTagTreeView();
+
             AddTagCommand = new(AddTag);
             AddGroupCommand = new(AddGroup);
             EditTagCommand = new(EditTag);
@@ -16,6 +21,16 @@ namespace COMPASS.ViewModels
 
         //Tag for Context Menu
         public Tag ContextTag { get; set; }
+
+        //TreeViewSource with hierarchy
+        private ObservableCollection<TreeViewNode> _treeviewsource;
+        public ObservableCollection<TreeViewNode> TreeViewSource
+        {
+            get => _treeviewsource;
+            set => SetProperty(ref _treeviewsource, value);
+        }
+
+        public void BuildTagTreeView() => TreeViewSource = new(MVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
         //Tag Creation ViewModel
         private IEditViewModel _addTagViewModel;
@@ -40,6 +55,28 @@ namespace COMPASS.ViewModels
             bool include = (bool)par[1];
             MVM.FilterVM.AddFilter(new(Filter.FilterType.Tag, tag), include); //needed because relaycommand only takes functions with one arg
         }
+
+
+        #region Drag & Drop Tags Treeview
+        //Drop on Treeview Behaviour
+        void IDropTarget.DragOver(IDropInfo dropInfo) => DragDrop.DefaultDropHandler.DragOver(dropInfo);
+        void IDropTarget.Drop(IDropInfo dropInfo)
+        {
+            DragDrop.DefaultDropHandler.Drop(dropInfo);
+            // Drag & Drop will modify the Collection of Treeviewnodes that the treeview is bound to
+            // We need to convert that back to the collection of Tags so that the changes are saved
+            var newRootTags = TreeViewSource.Select(node => node.ToTag());
+
+            foreach (Tag t in newRootTags)
+            {
+                t.Parent = null;
+            }
+
+            // Cannot do TreeRoot = ExtractTagsFromTreeViewSource(TreeViewSource); because that changes ref of TreeRoot
+            MVM.CurrentCollection.RootTags.Clear();
+            MVM.CurrentCollection.RootTags.AddRange(newRootTags);
+        }
+        #endregion
 
         #region Tag Context Menu
         public ActionCommand EditTagCommand { get; init; }

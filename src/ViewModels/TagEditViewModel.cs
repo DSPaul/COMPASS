@@ -69,7 +69,7 @@ namespace COMPASS.ViewModels
 
             //Apply changes 
             EditedTag.Copy(TempTag);
-            MVM.LeftDockVM.TagsTabVM.RefreshTreeView();
+            MVM.LeftDockVM.TagsTabVM.BuildTagTreeView();
 
             if (!CreateNewTag) CloseAction();
             else
