@@ -2,7 +2,6 @@
 using COMPASS.Models;
 using System;
 using System.Collections.Generic;
-using System.Windows.Media;
 
 namespace COMPASS.ViewModels
 {
@@ -21,29 +20,10 @@ namespace COMPASS.ViewModels
 
         public List<Filter> BooleanFilters { get; } = new()
             {
-                new(Filter.FilterType.OfflineSource)
-                {
-                    Label = "Available Offline",
-                    BackgroundColor = Colors.DarkSeaGreen
-                },
-
-                new(Filter.FilterType.OnlineSource)
-                {
-                    Label = "Available Online",
-                    BackgroundColor = Colors.DarkSeaGreen
-                },
-
-                new(Filter.FilterType.PhysicalSource)
-                {
-                    Label = "Physically Owned",
-                    BackgroundColor = Colors.DarkSeaGreen
-                },
-
-                new(Filter.FilterType.Favorite)
-                {
-                    Label = "Favorite",
-                    BackgroundColor = Colors.HotPink
-                },
+                new(Filter.FilterType.OfflineSource),
+                new(Filter.FilterType.OnlineSource),
+                new(Filter.FilterType.PhysicalSource),
+                new(Filter.FilterType.Favorite),
             };
 
         public string SelectedAuthor
@@ -53,12 +33,8 @@ namespace COMPASS.ViewModels
             {
                 if (!String.IsNullOrEmpty(value))
                 {
-                    Filter AuthorFilter = new(Filter.FilterType.Author, value)
-                    {
-                        Label = "Author:",
-                        BackgroundColor = Colors.Orange
-                    };
-                    MVM.CollectionVM.AddFieldFilter(AuthorFilter, Include);
+                    Filter AuthorFilter = new(Filter.FilterType.Author, value);
+                    MVM.CollectionVM.AddFilter(AuthorFilter, Include);
                 }
             }
         }
@@ -70,12 +46,8 @@ namespace COMPASS.ViewModels
             {
                 if (!String.IsNullOrEmpty(value))
                 {
-                    Filter PublisherFilter = new(Filter.FilterType.Publisher, value)
-                    {
-                        Label = "Publisher:",
-                        BackgroundColor = Colors.MediumPurple
-                    };
-                    MVM.CollectionVM.AddFieldFilter(PublisherFilter, Include);
+                    Filter PublisherFilter = new(Filter.FilterType.Publisher, value);
+                    MVM.CollectionVM.AddFilter(PublisherFilter, Include);
                 }
             }
         }
@@ -88,12 +60,8 @@ namespace COMPASS.ViewModels
             {
                 if (!String.IsNullOrEmpty(value))
                 {
-                    Filter FileExtensionFilter = new(Filter.FilterType.FileExtension, value)
-                    {
-                        Label = "File Type:",
-                        BackgroundColor = Colors.OrangeRed
-                    };
-                    MVM.CollectionVM.AddFieldFilter(FileExtensionFilter, Include);
+                    Filter FileExtensionFilter = new(Filter.FilterType.FileExtension, value);
+                    MVM.CollectionVM.AddFilter(FileExtensionFilter, Include);
                 }
             }
         }
@@ -111,13 +79,8 @@ namespace COMPASS.ViewModels
                 SetProperty(ref _startReleaseDate, value);
                 if (value != null)
                 {
-                    Filter startDateFilter = new(Filter.FilterType.StartReleaseDate, value)
-                    {
-                        Label = "After:",
-                        BackgroundColor = Colors.DeepSkyBlue,
-                        Unique = true
-                    };
-                    MVM.CollectionVM.AddFieldFilter(startDateFilter, Include);
+                    Filter startDateFilter = new(Filter.FilterType.StartReleaseDate, value);
+                    MVM.CollectionVM.AddFilter(startDateFilter, Include);
                 }
             }
         }
@@ -130,13 +93,8 @@ namespace COMPASS.ViewModels
                 SetProperty(ref _stopReleaseDate, value);
                 if (value != null)
                 {
-                    Filter stopDateFilter = new(Filter.FilterType.StopReleaseDate, value)
-                    {
-                        Label = "Before:",
-                        BackgroundColor = Colors.DeepSkyBlue,
-                        Unique = true
-                    };
-                    MVM.CollectionVM.AddFieldFilter(stopDateFilter, Include);
+                    Filter stopDateFilter = new(Filter.FilterType.StopReleaseDate, value);
+                    MVM.CollectionVM.AddFilter(stopDateFilter, Include);
                 }
             }
         }
@@ -151,14 +109,8 @@ namespace COMPASS.ViewModels
                 SetProperty(ref _minRating, value);
                 if (value > 0 && value < 6)
                 {
-                    Filter minRatFilter = new(Filter.FilterType.MinimumRating, value)
-                    {
-                        Label = "At least",
-                        Suffix = "stars",
-                        BackgroundColor = Colors.Goldenrod,
-                        Unique = true
-                    };
-                    MVM.CollectionVM.AddFieldFilter(minRatFilter, Include);
+                    Filter minRatFilter = new(Filter.FilterType.MinimumRating, value);
+                    MVM.CollectionVM.AddFilter(minRatFilter, Include);
                 }
             }
         }
@@ -168,7 +120,7 @@ namespace COMPASS.ViewModels
         #region Functions and Commands
         private RelayCommand<Filter> _addSourceFilterCommand;
         public RelayCommand<Filter> AddSourceFilterCommand => _addSourceFilterCommand ??= new(AddSourceFilter);
-        public void AddSourceFilter(Filter filter) => MVM.CollectionVM.AddFieldFilter(filter, Include);
+        public void AddSourceFilter(Filter filter) => MVM.CollectionVM.AddFilter(filter, Include);
 
         private ActionCommand _clearFiltersCommand;
         public ActionCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);

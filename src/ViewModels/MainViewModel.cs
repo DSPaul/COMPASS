@@ -10,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace COMPASS.ViewModels
@@ -300,13 +299,15 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> SearchCommand => _searchCommand ??= new(SearchCommandHelper);
         private void SearchCommandHelper(string Searchterm)
         {
-            Filter SearchFilter = new(Filter.FilterType.Search, Searchterm)
+            Filter SearchFilter = new(Filter.FilterType.Search, Searchterm);
+            if (!String.IsNullOrEmpty(Searchterm))
             {
-                Label = "Search:",
-                BackgroundColor = Colors.Salmon,
-                Unique = true
-            };
-            CollectionVM.AddFieldFilter(SearchFilter);
+                CollectionVM.AddFilter(SearchFilter);
+            }
+            else
+            {
+                CollectionVM.RemoveFilterType(Filter.FilterType.Search);
+            }
         }
 
         //called every few seconds to update IsOnline

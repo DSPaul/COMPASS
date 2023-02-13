@@ -15,7 +15,7 @@ namespace COMPASS.ViewModels
         }
 
         //Tag for Context Menu
-        public Tag Context { get; set; }
+        public Tag ContextTag { get; set; }
 
         //Tag Creation ViewModel
         private IEditViewModel _addTagViewModel;
@@ -38,16 +38,16 @@ namespace COMPASS.ViewModels
         {
             Tag tag = (Tag)par[0];
             bool include = (bool)par[1];
-            MVM.CollectionVM.AddTagFilter(tag, include); //needed because relaycommand only takes functions with one arg
+            MVM.CollectionVM.AddFilter(new(Filter.FilterType.Tag, tag), include); //needed because relaycommand only takes functions with one arg
         }
 
         #region Tag Context Menu
         public ActionCommand EditTagCommand { get; init; }
         public void EditTag()
         {
-            if (Context != null)
+            if (ContextTag != null)
             {
-                TagPropWindow tpw = new(new TagEditViewModel(Context));
+                TagPropWindow tpw = new(new TagEditViewModel(ContextTag));
                 tpw.ShowDialog();
                 tpw.Topmost = true;
             }
@@ -57,15 +57,16 @@ namespace COMPASS.ViewModels
         public void DeleteTag()
         {
             //tag to delete is context, because DeleteTag is called from context menu
-            if (Context == null) return;
-            MVM.CurrentCollection.DeleteTag(Context);
-            MVM.CollectionVM.RemoveTagFilter(Context);
+            if (ContextTag == null) return;
+            MVM.CurrentCollection.DeleteTag(ContextTag);
+            MVM.CollectionVM.RemoveFilter(new(Filter.FilterType.Tag, ContextTag));
 
             //Go over all files and remove the tag from tag list
             foreach (var f in MVM.CurrentCollection.AllCodices)
             {
-                f.Tags.Remove(Context);
+                f.Tags.Remove(ContextTag);
             }
+
             MVM.Refresh();
         }
         #endregion

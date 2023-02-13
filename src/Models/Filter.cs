@@ -13,6 +13,7 @@ namespace COMPASS.Models
 
         public enum FilterType
         {
+            Tag,
             Search,
             Author,
             Publisher,
@@ -54,22 +55,64 @@ namespace COMPASS.Models
                 string formatedFilterValue = FilterValue switch
                 {
                     DateTime date => date.ToShortDateString(),
+                    ITag tag => tag.Content,
                     _ => FilterValue.ToString()
                 };
                 return $"{Label} {formatedFilterValue} {Suffix}".Trim();
             }
         }
-        public Color BackgroundColor { get; set; }
+
+        public Color BackgroundColor => Type switch
+        {
+            FilterType.Author => Colors.Orange,
+            FilterType.Publisher => Colors.MediumPurple,
+            FilterType.StartReleaseDate => Colors.DeepSkyBlue,
+            FilterType.StopReleaseDate => Colors.DeepSkyBlue,
+            FilterType.MinimumRating => Colors.Goldenrod,
+            FilterType.OfflineSource => Colors.DarkSeaGreen,
+            FilterType.OnlineSource => Colors.DarkSeaGreen,
+            FilterType.PhysicalSource => Colors.DarkSeaGreen,
+            FilterType.Favorite => Colors.HotPink,
+            FilterType.FileExtension => Colors.OrangeRed,
+            FilterType.Search => Colors.Salmon,
+            FilterType.Tag => ((ITag)FilterValue).BackgroundColor,
+            _ => throw new NotImplementedException(),
+        };
 
         //Properties
         public FilterType Type { get; init; }
         public object FilterValue { get; init; }
-        public string Label { get; set; }
-        public string Suffix { get; set; } = "";
-        public bool Unique { get; set; } = false;
+        public string Label => Type switch
+        {
+            FilterType.Author => "Author:",
+            FilterType.Publisher => "Publisher",
+            FilterType.StartReleaseDate => "After:",
+            FilterType.StopReleaseDate => "Before:",
+            FilterType.MinimumRating => "At least",
+            FilterType.OfflineSource => "Available Offline",
+            FilterType.OnlineSource => "Available Online",
+            FilterType.PhysicalSource => "Physically Owned",
+            FilterType.Favorite => "Favorite",
+            FilterType.FileExtension => "File Type:",
+            FilterType.Search => "Search:",
+            _ => "",
+        };
+        public string Suffix => Type switch
+        {
+            FilterType.MinimumRating => "stars",
+            _ => ""
+        };
+        public bool Unique => Type switch
+        {
+            FilterType.StartReleaseDate => true,
+            FilterType.StopReleaseDate => true,
+            FilterType.MinimumRating => true,
+            FilterType.Search => true,
+            _ => false
+        };
 
         //Overwrite Equal operator
-        public override bool Equals(object obj) => this.Equals(obj as Filter);
+        public override bool Equals(object obj) => Equals(obj as Filter);
 
         public bool Equals(Filter other)
         {
@@ -77,9 +120,9 @@ namespace COMPASS.Models
                 return false;
             if (ReferenceEquals(this, other))
                 return true;
-            if (this.GetType() != other.GetType())
+            if (GetType() != other.GetType())
                 return false;
-            return Content == other.Content;
+            return Type == other.Type && FilterValue == other.FilterValue;
         }
         public static bool operator ==(Filter lhs, Filter rhs)
         {

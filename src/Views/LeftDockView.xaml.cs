@@ -23,7 +23,7 @@ namespace COMPASS.Views
 
             if (treeViewItem != null)
             {
-                ((LeftDockViewModel)DataContext).TagsTabVM.Context = ((TreeViewNode)treeViewItem.Header).Tag;
+                ((LeftDockViewModel)DataContext).TagsTabVM.ContextTag = ((TreeViewNode)treeViewItem.Header).Tag;
                 e.Handled = true;
             }
         }
