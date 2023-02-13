@@ -17,6 +17,6 @@ namespace COMPASS.Models
     public interface ITag
     {
         public string Content { get; }
-        public Color BackgroundColor { get; set; }
+        public Color BackgroundColor { get; }
     }
 }
