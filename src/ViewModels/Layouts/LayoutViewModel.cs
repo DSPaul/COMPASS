@@ -2,7 +2,7 @@
 
 namespace COMPASS.ViewModels
 {
-    public abstract class LayoutViewModel : ViewModelBase
+    public abstract class LayoutViewModel : ObservableObject
     {
         protected LayoutViewModel() : base() { }
 

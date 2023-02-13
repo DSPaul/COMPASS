@@ -157,14 +157,14 @@
 
                 <!--Search Bar-->
                 <Border Grid.Column="1" CornerRadius="4" Width="300" MinWidth="100" Height="35" WindowChrome.IsHitTestVisibleInChrome="True"
-                    Background="{StaticResource UIElementBackground}" OpacityMask="#FF222222" Margin="30,5">
+                    Background="{StaticResource UIElementBackground}" OpacityMask="#FF222222" Margin="30,5" DataContext="{Binding CollectionVM.FilterVM}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width ="*"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBox Grid.Column="0" x:Name="Searchbox" Tools:AP.PlaceHolderText="Search" Margin="0"
-                             Text="{Binding FilterVM.SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
+                             Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
                              Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"/>
                         <Button  Grid.Column="1" Style="{StaticResource IconBtn}" Margin="10,0" Tools:AP.IconKind="Search"
                         Command="{Binding SearchCommand}" CommandParameter="{Binding Text, ElementName=Searchbox}" 
@@ -173,7 +173,7 @@
                 </Border>
 
                 <!--Collection Selection-->
-                <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="0,5" Height="35" WindowChrome.IsHitTestVisibleInChrome="True">
+                <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="0,5" Height="35" WindowChrome.IsHitTestVisibleInChrome="True" DataContext="{Binding CollectionVM}">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type ToggleButton}">
                             <Setter Property="Width" Value="30"/>
@@ -278,7 +278,7 @@
                                 <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
                             </ContextMenu.Resources>
                             <MenuItem Header="Preferences" Command="{Binding OpenSettingsCommand}" Tools:AP.IconKind="Cog"/>
-                            <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}" Tools:AP.IconKind="Autorenew"/>
+                            <MenuItem Header="Check for Updates" Command="{Binding SettingsVM.CheckForUpdatesCommand}" Tools:AP.IconKind="Autorenew"/>
                             <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New" Tools:AP.IconKind="AlertDecagram"/>
                             <!--<MenuItem Header="About" Command="{Binding OpenSettingsCommand}" CommandParameter="About"/>-->
                         </ContextMenu>
@@ -407,6 +407,9 @@
 
             <!--#region Main Dock-->
             <Grid x:Name="ViewsGrid">
+                <Grid.Resources>
+                    <viewmodels:CollectionViewModel x:Key="collectionViewModel"/>
+                </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
@@ -428,9 +431,9 @@
                 <TextBlock Grid.Column="0" Grid.Row="1" x:Name="CurrentTagTextBlock" Text="Filters:" 
                            Margin="20,0,0,0" VerticalAlignment="Center" FontSize="20"/>
                 <Border CornerRadius="5" Grid.Column="1" Grid.Row ="1" BorderBrush="ForestGreen" BorderThickness="3" VerticalAlignment="Center"
-                        MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}" >
+                        MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}" DataContext="{Binding CollectionVM.FilterVM}">
                     <Border.Resources>
-                        <CollectionViewSource x:Key="Filters" Source="{Binding FilterVM.IncludedFilters}"/>
+                        <CollectionViewSource x:Key="Filters" Source="{Binding IncludedFilters}"/>
                         <CollectionViewSource x:Key="Empty" Source="{x:Null}"/>
                     </Border.Resources>
                     <Grid>
@@ -441,7 +444,7 @@
                         <TextBlock Text="INCLUDE:" VerticalAlignment="Center" Margin="5 2" Foreground="Gray" FontSize="20"/>
                         <ItemsControl x:Name="CurrentTagList" ItemTemplate="{StaticResource TagDeletableTemplate}" MinHeight="30"
                              Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}"
-                             dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding FilterVM}" >
+                             dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding }" >
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="Horizontal" Width="{Binding ActualWidth, ElementName=CurrentTagList}"/>
@@ -458,9 +461,9 @@
                     
                 </Border>
                 <Border CornerRadius="5" Grid.Column="2" Grid.Row ="1" BorderBrush="OrangeRed" BorderThickness="3" VerticalAlignment="Center"
-                        MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}">
+                        MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}"  DataContext="{Binding CollectionVM.FilterVM}">
                     <Border.Resources>
-                        <CollectionViewSource x:Key="NegFilters" Source="{Binding FilterVM.ExcludedFilters}"/>
+                        <CollectionViewSource x:Key="NegFilters" Source="{Binding ExcludedFilters}"/>
                     </Border.Resources>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -470,7 +473,7 @@
                         <TextBlock Text="EXCLUDE:" VerticalAlignment="Center" Margin="5 2" Foreground="Gray" FontSize="20"/>
                         <ItemsControl x:Name="CurrentExcludedFilterList" ItemTemplate="{StaticResource TagDeletableTemplate}" MinHeight="30"
                              Grid.Column="1" VerticalAlignment="Center" VerticalContentAlignment="Center" Background="{StaticResource SelectableTransparent}"
-                            dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding FilterVM}" >
+                            dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding}" >
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="Horizontal" Width="{Binding ActualWidth, ElementName=CurrentExcludedFilterList}"/>
@@ -484,7 +487,7 @@
                         </ItemsControl>
                     </Grid>
                 </Border>
-                <Button Command="{Binding FilterVM.ClearFiltersCommand}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FilterRemove" 
+                <Button Command="{Binding CollectionVM.FilterVM.ClearFiltersCommand}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FilterRemove" 
                         Grid.Column="3" Grid.Row ="1" Width="30" Margin="0" ToolTip="Clear Filters"/>
                 <!--#endregion-->
 
@@ -541,11 +544,13 @@
                     </StackPanel>
                 </Border>
                 <!--#endregion-->
-                
+
                 <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="5" Content="{Binding CurrentLayout}"
-                                 Visibility="{Binding CurrentCollection.AllCodices.Count, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=False}"/>
+                                 Visibility="{Binding Source={StaticResource collectionViewModel}, Path=CurrentCollection.AllCodices.Count, 
+                                                Converter={StaticResource ToVisibilityConverter}, ConverterParameter=False}"/>
                 <Border Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="20"
-                        Visibility="{Binding CurrentCollection.AllCodices.Count, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
+                        Visibility="{Binding Source={StaticResource collectionViewModel}, Path=CurrentCollection.AllCodices.Count, 
+                                                Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <StackPanel.Resources>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">

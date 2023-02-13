@@ -99,18 +99,16 @@
             </Grid.RowDefinitions>
 
             <TextBlock Text="Authors:" Grid.Column="1" Grid.Row="3"/>
-            <!--<ComboBox Text="{Binding TempCodex.Author, Mode=TwoWay}" Grid.Column="1" Grid.Row="4" Name="FileAuthorTB"
-                  IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" ItemsSource="{Binding CurrentCollection.AuthorList}"/>-->
-
             <BlackPearl:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
                                                     Grid.Column="1" Grid.Row="4" ItemSeparator=";" 
                                                     LookUpContract="{Binding Contract}"
-                                                    ItemSource="{Binding MVM.CurrentCollection.AuthorList}" 
+                                                    ItemSource="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM.AuthorList}" 
                                                     SelectedItems="{Binding TempCodex.Authors, Mode=TwoWay}"/>
 
             <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
             <ComboBox Text="{Binding TempCodex.Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"
-                  IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" ItemsSource="{Binding CurrentCollection.PublisherList}"/>
+                  IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" 
+                      ItemsSource="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM.PublisherList}"/>
 
             <Grid Grid.Column="1" Grid.Row="7" Margin="0,5">
                 <Grid.RowDefinitions>

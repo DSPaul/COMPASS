@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:Converters ="clr-namespace:COMPASS.Converters"
+                    xmlns:ViewModels ="clr-namespace:COMPASS.ViewModels"
                     xmlns:Tools="clr-namespace:COMPASS.Tools"
                     xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary">
     <ResourceDictionary.MergedDictionaries>
@@ -457,10 +458,10 @@
         </Setter>
     </Style>
 
+    <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
+    <ViewModels:CollectionViewModel x:Key="collectionViewModel"/>
+
     <ContextMenu x:Key="CodexContextMenu">
-        <ContextMenu.Resources>
-            <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
-        </ContextMenu.Resources>
         <MenuItem Header="Open Locally" Tools:AP.IconKind="FileOutline"
                   Command="{Binding Path=DataContext.CodexVM.OpenCodexLocallyCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
@@ -492,8 +493,7 @@
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
         <MenuItem Header="Move to Collection" Tools:AP.IconKind="FolderMoveOutline"
-                  ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
-                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+                  ItemsSource="{Binding Source={StaticResource collectionViewModel}, Path=CollectionDirectories}">
             <MenuItem.ItemContainerStyle>
                 <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                     <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.CodexVM.MoveToCollectionCommand,
@@ -503,7 +503,7 @@
                         <Setter.Value>
                             <MultiBinding Converter="{StaticResource MultiParamConverter}">
                                 <Binding Path="Header" RelativeSource="{RelativeSource self}"/>
-                                <Binding Path="Parent.DataContext" RelativeSource="{RelativeSource AncestorType=MenuItem, AncestorLevel=1}"/>
+                                <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=MenuItem, AncestorLevel=1}"/>
                             </MultiBinding>
                         </Setter.Value>
                     </Setter>
@@ -516,7 +516,6 @@
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
     </ContextMenu>
 
-    <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
     <ContextMenu x:Key="MultiCodexContextMenu" x:Shared="False"
                     DataContext="{Binding SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Selector}}}">
         <MenuItem Header="Open Selection" Tools:AP.IconKind="FileMultipleOutline" CommandParameter="{Binding}" InputGestureText="Enter"
@@ -529,8 +528,7 @@
                   Command="{Binding Path=DataContext.CodexVM.FavoriteCodicesCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
         <MenuItem Header="Move to Collection" Tools:AP.IconKind="FileMoveOutline"
-                  ItemsSource="{Binding Path=DataContext.MVM.CollectionDirectories,
-                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+                  ItemsSource="{Binding Source={StaticResource collectionViewModel}, Path=CollectionDirectories}">
             <MenuItem.ItemContainerStyle>
                 <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                     <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.CodexVM.MoveToCollectionCommand, 
@@ -862,7 +860,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="TagDeletableTemplate">
-        <Button Style="{x:Null}" Command="{Binding DataContext.FilterVM.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+        <Button Style="{x:Null}" Command="{Binding DataContext.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                 CommandParameter="{Binding}" Cursor="Hand">
             <Button.Template>
                 <ControlTemplate>

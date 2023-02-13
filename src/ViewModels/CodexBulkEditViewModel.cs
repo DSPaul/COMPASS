@@ -8,12 +8,12 @@ using System.Linq;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexBulkEditViewModel : ViewModelBase, IEditViewModel
+    public class CodexBulkEditViewModel : ObservableObject, IEditViewModel
     {
-        public CodexBulkEditViewModel(List<Codex> ToEdit)
+        public CodexBulkEditViewModel(List<Codex> toEdit)
         {
-            EditedCodices = ToEdit;
-            TempCodex = new(MVM.CurrentCollection);
+            EditedCodices = toEdit;
+            TempCodex = new();
 
             //set common metadata
             _commonAuthors = EditedCodices.Select(f => f.Authors.ToList()).Aggregate((xs, ys) => xs.Intersect(ys).ToList());
@@ -28,12 +28,13 @@ namespace COMPASS.ViewModels
                 TempCodex.ReleaseDate = EditedCodices[0].ReleaseDate;
         }
 
+        readonly List<Codex> EditedCodices;
+        private List<string> _commonAuthors;
+
         #region Properties
 
-        readonly List<Codex> EditedCodices;
-
         private ObservableCollection<TreeViewNode> _treeViewSource;
-        public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
+        public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(CollectionViewModel.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
         private HashSet<TreeViewNode> AllTreeViewNodes => Utils.FlattenTree(TreeViewSource).ToHashSet();
 
@@ -45,16 +46,14 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _tagMode, value);
         }
 
-
         private ObservableCollection<Tag> _tagsToAdd = new();
-        private ObservableCollection<Tag> _tagsToRemove = new();
-
         public ObservableCollection<Tag> TagsToAdd
         {
             get => _tagsToAdd;
             set => SetProperty(ref _tagsToAdd, value);
         }
 
+        private ObservableCollection<Tag> _tagsToRemove = new();
         public ObservableCollection<Tag> TagsToRemove
         {
             get => _tagsToRemove;
@@ -70,11 +69,9 @@ namespace COMPASS.ViewModels
 
         public CreatableLookUpContract Contract { get; set; } = new();
 
-        public List<string> _commonAuthors;
-
         #endregion
 
-        #region Functions and Commands
+        #region Methods and Commands
 
         private RelayCommand<bool> _setTagModeCommand;
         public RelayCommand<bool> SetTagModeCommand => _setTagModeCommand ??= new(SetTagMode);
@@ -119,7 +116,6 @@ namespace COMPASS.ViewModels
                 }
             }
         }
-
 
         public Action CloseAction { get; set; }
 
@@ -179,7 +175,7 @@ namespace COMPASS.ViewModels
             }
 
             //Update list of all authors, publishers, ect.
-            MVM.CurrentCollection.PopulateMetaDataCollections();
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
 
             //Add and remove Tags
             foreach (Codex f in EditedCodices)

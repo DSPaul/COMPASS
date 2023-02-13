@@ -14,7 +14,7 @@ using System.Windows.Input;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexViewModel : ViewModelBase
+    public class CodexViewModel : ObservableObject
     {
         public CodexViewModel() { }
 
@@ -23,7 +23,7 @@ namespace COMPASS.ViewModels
         //Open Codex whereever
         public static bool OpenCodex(Codex codex)
         {
-            bool success = Utils.TryFunctions(MVM.SettingsVM.OpenCodexPriority, codex);
+            bool success = Utils.TryFunctions(MainViewModel.SettingsVM.OpenCodexPriority, codex);
             if (!success) MessageBox.Show("Could not open codex, please check local path or URL");
             return success;
         }
@@ -216,7 +216,7 @@ namespace COMPASS.ViewModels
             List<Codex> ToMoveList = new();
 
             //Check if target Collection is valid
-            if (targetCollectionName is null || targetCollectionName == MVM.CurrentCollectionName) return;
+            if (targetCollectionName is null || targetCollectionName == MainViewModel.CollectionVM.CurrentCollectionName) return;
 
             //extract Codex parameter
             if (par[1] is Codex codex)
@@ -253,8 +253,6 @@ namespace COMPASS.ViewModels
                     //Add Codex to target CodexCollection
                     TargetCollection.AllCodices.Add(ToMove);
 
-                    //Update Authors,Publisher, ect. list in target collection
-                    TargetCollection.PopulateMetaDataCollections();
 
                     //Move cover art to right folder with new ID
                     string newCoverArt = CodexCollection.CollectionsPath + targetCollectionName + @"\CoverArt\" + ToMove.ID + ".png";
@@ -263,8 +261,8 @@ namespace COMPASS.ViewModels
                     File.Copy(ToMove.Thumbnail, newThumbnail);
 
                     //Delete file in original folder
-                    MVM.CurrentCollection.DeleteCodex(ToMove);
-                    MVM.FilterVM.RemoveCodex(ToMove);
+                    CollectionViewModel.CurrentCollection.DeleteCodex(ToMove);
+                    MainViewModel.CollectionVM.FilterVM.RemoveCodex(ToMove);
 
                     //Update the cover art metadata to new path, has to happen after delete so old one gets deleted
                     ToMove.CoverArt = newCoverArt;
@@ -295,9 +293,9 @@ namespace COMPASS.ViewModels
             {
                 foreach (Codex ToDelete in toDeleteList)
                 {
-                    MVM.CurrentCollection.DeleteCodex(ToDelete);
+                    CollectionViewModel.CurrentCollection.DeleteCodex(ToDelete);
                 }
-                MVM.Refresh();
+                MainViewModel.CollectionVM.FilterVM.ReFilter();
             }
         }
 

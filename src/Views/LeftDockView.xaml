@@ -124,7 +124,8 @@
             </Style>
         </TabControl.Resources>
         <TabItem Visibility="Collapsed" />
-        <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple" DataContext="{Binding TagsTabVM}" ToolTip="Tags">
+        <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple" ToolTip="Tags"
+                 DataContext="{Binding Source={StaticResource collectionViewModel}, Path = TagsVM}" >
             <TabItem.Resources>
                 <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
                 <ContextMenu x:Key="TagContextMenu">
@@ -232,7 +233,7 @@
                 </Grid>
             </ContentControl>
         </TabItem>
-        <TabItem Header="Filter" Tools:AP.IconKind="Filter" DataContext="{Binding FiltersTabVM}" ToolTip="Apply Filters">
+        <TabItem Header="Filter" Tools:AP.IconKind="Filter" DataContext="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM}" ToolTip="Apply Filters">
             <ContentControl Tools:AP.Header="Filters" Tools:AP.IconKind="Filter" Style="{StaticResource TabContentWrapper}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <Grid>
@@ -306,14 +307,14 @@
                             <TextBlock Text="Author:"/>
                             <Grid>
                                 <TextBlock Text="-- Select Author --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
-                                <ComboBox ItemsSource="{Binding MVM.CurrentCollection.AuthorList}" FontSize="15"
+                                <ComboBox ItemsSource="{Binding AuthorList}" FontSize="15"
                                       SelectedValue="{Binding SelectedAuthor, Mode=OneWayToSource}" Style="{StaticResource ContentLess}"/>
                             </Grid>
 
                             <TextBlock Text="Publisher:" Margin="0,10,0,0"/>
                             <Grid>
                                 <TextBlock Text="-- Select Publisher --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
-                                <ComboBox ItemsSource="{Binding MVM.CurrentCollection.PublisherList}" FontSize="15"
+                                <ComboBox ItemsSource="{Binding PublisherList}" FontSize="15"
                                       SelectedValue="{Binding SelectedPublisher, Mode=OneWayToSource}" Style="{StaticResource ContentLess}"/>
                             </Grid>
 
@@ -321,7 +322,7 @@
 
                             <ItemsControl ItemTemplate="{StaticResource FilterTagTemplate}" ItemsSource="{Binding BooleanFilters}" 
                                           HorizontalContentAlignment="Left" HorizontalAlignment="Left" Margin="5" 
-                                    dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding MVM.FilterVM}"/>
+                                    dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding}"/>
 
                             <TextBlock Text="Release Date:" Margin="0,10,0,5"/>
                             
@@ -346,7 +347,7 @@
                             <TextBlock Text="File Type:" Margin="0,5"/>
                             <Grid>
                                 <TextBlock Text="-- Select File Type --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
-                                <ComboBox ItemsSource="{Binding MVM.CurrentCollection.FileTypeList}" FontSize="15"
+                                <ComboBox ItemsSource="{Binding FileTypeList}" FontSize="15"
                                       SelectedValue="{Binding SelectedFileType, Mode=OneWayToSource}" Style="{StaticResource ContentLess}"/>
                             </Grid>
                         </StackPanel>
@@ -393,7 +394,7 @@
                                             <Converters:EqualityConverter/>
                                         </MultiBinding.Converter>
                                         <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
-                                        <Binding Path="MVM.CurrentLayout.LayoutType" />
+                                        <Binding Path="MainVM.CurrentLayout.LayoutType" />
                                     </MultiBinding>
                                 </DataTrigger.Binding>
                                 <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
@@ -405,18 +406,18 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel>
                         <UniformGrid Rows="2" Columns="2" Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}" Margin="5">
-                            <Button Command="{Binding MVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Home}" 
+                            <Button Command="{Binding MainVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Home}" 
                             Tools:AP.IconKind="Home" ToolTip="Home Layout" Content="Home"/>
-                            <Button Command="{Binding MVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.List}" 
+                            <Button Command="{Binding MainVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.List}" 
                             Tools:AP.IconKind="ViewHeadline" ToolTip="List Layout" Content="List"/>
-                            <Button Command="{Binding MVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Card}" 
+                            <Button Command="{Binding MainVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Card}" 
                             Tools:AP.IconKind="FormatListText" ToolTip="Card Layout" Content="Card"/>
-                            <Button Command="{Binding MVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Tile}" 
+                            <Button Command="{Binding MainVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Tile}" 
                             Tools:AP.IconKind="ViewGrid" ToolTip="Tile Layout" Content="Grid"/>
                         </UniformGrid>
                         <Rectangle Height="3" Fill="{StaticResource Separator}"/>
                         <TextBlock Style="{StaticResource Categorizer}" Text="Customize"/>
-                        <ContentControl DataContext="{Binding MVM.CurrentLayout}"  Content="{Binding}" Margin="10">
+                        <ContentControl DataContext="{Binding MainVM.CurrentLayout}"  Content="{Binding}" Margin="10">
                             <ContentControl.Resources>
                                 <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
                                     <Setter Property="Margin" Value="5"/>
@@ -463,7 +464,8 @@
             </ContentControl>
         </TabItem>
         <TabItem Header="Sorting" Tools:AP.IconKind="Sort" ToolTip="Sorting">
-            <UserControl Style="{StaticResource TabContentWrapper}" Tools:AP.Header="Sorting" Tools:AP.IconKind="Sort" DataContext="{Binding MVM.FilterVM}">
+            <UserControl Style="{StaticResource TabContentWrapper}" Tools:AP.Header="Sorting" Tools:AP.IconKind="Sort" 
+                         DataContext="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10">

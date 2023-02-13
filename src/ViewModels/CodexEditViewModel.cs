@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexEditViewModel : ViewModelBase, IEditViewModel
+    public class CodexEditViewModel : ObservableObject, IEditViewModel
     {
         public CodexEditViewModel(Codex toEdit)
         {
             EditedCodex = toEdit;
             //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked
-            TempCodex = new(MVM.CurrentCollection);
+            TempCodex = new(CollectionViewModel.CurrentCollection);
             if (!CreateNewCodex) TempCodex.Copy(EditedCodex);
 
             //Apply right checkboxes in Alltags
@@ -34,7 +34,7 @@ namespace COMPASS.ViewModels
         readonly Codex EditedCodex;
 
         private ObservableCollection<TreeViewNode> _treeViewSource;
-        public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
+        public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(CollectionViewModel.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
         private HashSet<TreeViewNode> AllTreeViewNodes => Utils.FlattenTree(TreeViewSource).ToHashSet();
 
@@ -161,11 +161,11 @@ namespace COMPASS.ViewModels
             {
                 Codex ToAdd = new();
                 ToAdd.Copy(TempCodex);
-                MVM.CurrentCollection.AllCodices.Add(ToAdd);
+                CollectionViewModel.CurrentCollection.AllCodices.Add(ToAdd);
             }
             //Add new Authors, Publishers, ect. to metadata lists
-            MVM.CurrentCollection.PopulateMetaDataCollections();
-            MVM.Refresh();
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
             CloseAction();
         }
 

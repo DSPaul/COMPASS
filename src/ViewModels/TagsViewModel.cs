@@ -7,17 +7,15 @@ using System.Linq;
 
 namespace COMPASS.ViewModels
 {
-    public class TagsTabViewModel : ViewModelBase, IDropTarget
+    public class TagsViewModel : ObservableObject, IDropTarget
     {
-        public TagsTabViewModel()
+        public TagsViewModel(CollectionViewModel collectionVM)
         {
+            _collectionVM = collectionVM;
             BuildTagTreeView();
-
-            AddTagCommand = new(AddTag);
-            AddGroupCommand = new(AddGroup);
-            EditTagCommand = new(EditTag);
-            DeleteTagCommand = new(DeleteTag);
         }
+
+        private CollectionViewModel _collectionVM;
 
         //Tag for Context Menu
         public Tag ContextTag { get; set; }
@@ -30,7 +28,7 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _treeviewsource, value);
         }
 
-        public void BuildTagTreeView() => TreeViewSource = new(MVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
+        public void BuildTagTreeView() => TreeViewSource = new(CollectionViewModel.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
         //Tag Creation ViewModel
         private IEditViewModel _addTagViewModel;
@@ -41,10 +39,14 @@ namespace COMPASS.ViewModels
         }
 
         //Add Tag Btns
-        public ActionCommand AddTagCommand { get; private set; }
-        public ActionCommand AddGroupCommand { get; private set; }
+
+        private ActionCommand _addTagCommand;
+        public ActionCommand AddTagCommand => _addTagCommand ??= new(AddTag);
         public void AddTag() => AddTagViewModel = new TagEditViewModel(null, false);
 
+
+        private ActionCommand _addGroupCommand;
+        public ActionCommand AddGroupCommand => _addGroupCommand ??= new(AddGroup);
         public void AddGroup() => AddTagViewModel = new TagEditViewModel(null, true);
 
         private RelayCommand<object[]> _addTagFilterCommand;
@@ -53,7 +55,7 @@ namespace COMPASS.ViewModels
         {
             Tag tag = (Tag)par[0];
             bool include = (bool)par[1];
-            MVM.FilterVM.AddFilter(new(Filter.FilterType.Tag, tag), include); //needed because relaycommand only takes functions with one arg
+            _collectionVM.FilterVM.AddFilter(new(Filter.FilterType.Tag, tag), include); //needed because relaycommand only takes functions with one arg
         }
 
 
@@ -73,13 +75,14 @@ namespace COMPASS.ViewModels
             }
 
             // Cannot do TreeRoot = ExtractTagsFromTreeViewSource(TreeViewSource); because that changes ref of TreeRoot
-            MVM.CurrentCollection.RootTags.Clear();
-            MVM.CurrentCollection.RootTags.AddRange(newRootTags);
+            CollectionViewModel.CurrentCollection.RootTags.Clear();
+            CollectionViewModel.CurrentCollection.RootTags.AddRange(newRootTags);
         }
         #endregion
 
         #region Tag Context Menu
-        public ActionCommand EditTagCommand { get; init; }
+        private ActionCommand _editTagCommand;
+        public ActionCommand EditTagCommand => _editTagCommand ??= new(EditTag);
         public void EditTag()
         {
             if (ContextTag != null)
@@ -90,21 +93,22 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public ActionCommand DeleteTagCommand { get; init; }
+        private ActionCommand _deleteTagCommand;
+        public ActionCommand DeleteTagCommand => _deleteTagCommand ??= new(DeleteTag);
         public void DeleteTag()
         {
             //tag to delete is context, because DeleteTag is called from context menu
             if (ContextTag == null) return;
-            MVM.CurrentCollection.DeleteTag(ContextTag);
-            MVM.FilterVM.RemoveFilter(new(Filter.FilterType.Tag, ContextTag));
+            CollectionViewModel.CurrentCollection.DeleteTag(ContextTag);
+            _collectionVM.FilterVM.RemoveFilter(new(Filter.FilterType.Tag, ContextTag));
 
             //Go over all files and remove the tag from tag list
-            foreach (var f in MVM.CurrentCollection.AllCodices)
+            foreach (var f in CollectionViewModel.CurrentCollection.AllCodices)
             {
                 f.Tags.Remove(ContextTag);
             }
 
-            MVM.Refresh();
+            BuildTagTreeView();
         }
         #endregion
     }

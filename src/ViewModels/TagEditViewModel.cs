@@ -4,12 +4,12 @@ using System;
 
 namespace COMPASS.ViewModels
 {
-    public class TagEditViewModel : ViewModelBase, IEditViewModel
+    public class TagEditViewModel : ObservableObject, IEditViewModel
     {
         public TagEditViewModel(Tag ToEdit, bool isGroup = false) : base()
         {
             EditedTag = ToEdit;
-            TempTag = new Tag(MVM.CurrentCollection.AllTags);
+            TempTag = new Tag(CollectionViewModel.CurrentCollection.AllTags);
 
             if (ToEdit is null)
             {
@@ -63,20 +63,20 @@ namespace COMPASS.ViewModels
         {
             if (CreateNewTag)
             {
-                EditedTag = new Tag(MVM.CurrentCollection.AllTags);
-                if (TempTag.Parent is null) MVM.CurrentCollection.RootTags.Add(EditedTag);
+                EditedTag = new Tag(CollectionViewModel.CurrentCollection.AllTags);
+                if (TempTag.Parent is null) CollectionViewModel.CurrentCollection.RootTags.Add(EditedTag);
             }
 
             //Apply changes 
             EditedTag.Copy(TempTag);
-            MVM.LeftDockVM.TagsTabVM.BuildTagTreeView();
+            MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
 
             if (!CreateNewTag) CloseAction();
             else
             {
-                MVM.CurrentCollection.AllTags.Add(EditedTag);
+                CollectionViewModel.CurrentCollection.AllTags.Add(EditedTag);
                 //reset fields
-                TempTag = new Tag(MVM.CurrentCollection.AllTags);
+                TempTag = new Tag(CollectionViewModel.CurrentCollection.AllTags);
                 EditedTag = null;
             }
         }
@@ -88,7 +88,7 @@ namespace COMPASS.ViewModels
             if (!CreateNewTag) CloseAction();
             else
             {
-                TempTag = new Tag(MVM.CurrentCollection.AllTags);
+                TempTag = new Tag(CollectionViewModel.CurrentCollection.AllTags);
             }
             EditedTag = null;
         }

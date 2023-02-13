@@ -32,18 +32,34 @@ namespace COMPASS.ViewModels
             _allCodices.CollectionChanged += (e, v) => SubscribeToCodexProperties();
             SubscribeToCodexProperties();
 
+            PopulateMetaDataCollections();
+
             ApplyFilters();
         }
 
-        #region Properties
+        #region Fields
+
         private ObservableCollection<Codex> _allCodices;
         private readonly int _itemsShown = 15;
         public int ItemsShown => Math.Min(_itemsShown, FilteredCodices.Count);
 
+
+        private HashSet<Codex> IncludedCodices;
+        private HashSet<Codex> ExcludedCodices;
+
+        #endregion
+
+        #region Properties
+
+        private bool _include = true;
+        public bool Include
+        {
+            get => _include;
+            set => SetProperty(ref _include, value);
+        }
+
         public ObservableCollection<Filter> IncludedFilters { get; set; } = new();
         public ObservableCollection<Filter> ExcludedFilters { get; set; } = new();
-        private HashSet<Codex> IncludedCodices { get; set; }
-        private HashSet<Codex> ExcludedCodices { get; set; }
 
         private ObservableCollection<Codex> _filteredCodices;
         public ObservableCollection<Codex> FilteredCodices
@@ -62,6 +78,121 @@ namespace COMPASS.ViewModels
         {
             get => _searchTerm;
             set => SetProperty(ref _searchTerm, value);
+        }
+
+        public List<Filter> BooleanFilters { get; } = new()
+            {
+                new(Filter.FilterType.OfflineSource),
+                new(Filter.FilterType.OnlineSource),
+                new(Filter.FilterType.PhysicalSource),
+                new(Filter.FilterType.Favorite),
+            };
+
+        public string SelectedAuthor
+        {
+            get => null;
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                {
+                    Filter AuthorFilter = new(Filter.FilterType.Author, value);
+                    AddFilter(AuthorFilter, Include);
+                }
+            }
+        }
+
+        private ObservableCollection<string> _authorList = new();
+        public ObservableCollection<string> AuthorList
+        {
+            get => _authorList;
+            set => SetProperty(ref _authorList, value);
+        }
+
+        public string SelectedPublisher
+        {
+            get => null;
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                {
+                    Filter PublisherFilter = new(Filter.FilterType.Publisher, value);
+                    AddFilter(PublisherFilter, Include);
+                }
+            }
+        }
+
+        private ObservableCollection<string> _publisherList = new();
+        public ObservableCollection<string> PublisherList
+        {
+            get => _publisherList;
+            set => SetProperty(ref _publisherList, value);
+        }
+
+        public string SelectedFileType
+        {
+            get => null;
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                {
+                    Filter FileExtensionFilter = new(Filter.FilterType.FileExtension, value);
+                    AddFilter(FileExtensionFilter, Include);
+                }
+            }
+        }
+        private ObservableCollection<string> _fileTypeList = new();
+        public ObservableCollection<string> FileTypeList
+        {
+            get => _fileTypeList;
+            set => SetProperty(ref _fileTypeList, value);
+        }
+
+        //Selected Start and Stop Release Dates
+        private DateTime? _startReleaseDate;
+        private DateTime? _stopReleaseDate;
+
+        public DateTime? StartReleaseDate
+        {
+            get => _startReleaseDate;
+            set
+            {
+                SetProperty(ref _startReleaseDate, value);
+                if (value != null)
+                {
+                    Filter startDateFilter = new(Filter.FilterType.StartReleaseDate, value);
+                    AddFilter(startDateFilter, Include);
+                }
+            }
+        }
+
+        public DateTime? StopReleaseDate
+        {
+            get => _stopReleaseDate;
+            set
+            {
+                SetProperty(ref _stopReleaseDate, value);
+                if (value != null)
+                {
+                    Filter stopDateFilter = new(Filter.FilterType.StopReleaseDate, value);
+                    AddFilter(stopDateFilter, Include);
+                }
+            }
+        }
+
+        //Selected minimum rating
+        private int _minRating;
+        public int MinRating
+        {
+            get => _minRating;
+            set
+            {
+                SetProperty(ref _minRating, value);
+                if (value > 0 && value < 6)
+                {
+                    Filter minRatFilter = new(Filter.FilterType.MinimumRating, value);
+                    AddFilter(minRatFilter, Include);
+                }
+            }
         }
 
         public ListSortDirection SortDirection
@@ -101,6 +232,7 @@ namespace COMPASS.ViewModels
             { "Page Count", "PageCount" },
             { "Times opened", "OpenedCount" }
         };
+
         #endregion
 
         #region Methods and Commands
@@ -114,6 +246,7 @@ namespace COMPASS.ViewModels
                 c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(MostOpenedCodices));
             }
         }
+
         private void InitSortingProperties()
         {
             //double check on typos by checking if all property names exist in codex class
@@ -125,7 +258,48 @@ namespace COMPASS.ViewModels
             }
         }
 
+        public void PopulateMetaDataCollections()
+        {
+            foreach (Codex c in _allCodices)
+            {
+                //Populate Author Collection
+                AuthorList = new(AuthorList.Union(c.Authors));
+                //Populate Publisher Collection
+                if (!String.IsNullOrEmpty(c.Publisher) && !PublisherList.Contains(c.Publisher))
+                    PublisherList.Add(c.Publisher);
+                //Populate FileType Collection
+                string fileType = c.GetFileType(); // to avoid the same function call 3 times
+                if (!String.IsNullOrEmpty(fileType) && !FileTypeList.Contains(fileType))
+                    FileTypeList.Add(fileType);
+            }
+            AuthorList.Remove(""); //remove "" author because String.IsNullOrEmpty cannot be called during Union
+
+            //Sort them
+            AuthorList = new(AuthorList.Order());
+            PublisherList = new(PublisherList.Order());
+            FileTypeList = new(FileTypeList.Order());
+        }
+
         //------------- Adding, Removing, ect ------------//
+
+        // Remove Filter
+        private RelayCommand<Filter> _removeFilterCommand;
+        public RelayCommand<Filter> RemoveFilterCommand => _removeFilterCommand ??= new(RemoveFilter);
+        public void RemoveFilter(Filter filter)
+        {
+            IncludedFilters.Remove(filter);
+            ExcludedFilters.Remove(filter);
+        }
+        public void RemoveFilterType(Filter.FilterType filterType)
+        {
+            IncludedFilters.RemoveAll(filter => filter.Type == filterType);
+            ExcludedFilters.RemoveAll(filter => filter.Type == filterType);
+        }
+
+        // Add Filter
+        private RelayCommand<Filter> _addSourceFilterCommand;
+        public RelayCommand<Filter> AddSourceFilterCommand => _addSourceFilterCommand ??= new(AddSourceFilter);
+        public void AddSourceFilter(Filter filter) => AddFilter(filter, Include);
         public void AddFilter(Filter filter, bool include = true)
         {
             ObservableCollection<Filter> Target = include ? IncludedFilters : ExcludedFilters;
@@ -144,24 +318,31 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private RelayCommand<Filter> _removeFilterCommand;
-        public RelayCommand<Filter> RemoveFilterCommand => _removeFilterCommand ??= new(RemoveFilter);
-        public void RemoveFilter(Filter filter)
+        private RelayCommand<string> _searchCommand;
+        public RelayCommand<string> SearchCommand => _searchCommand ??= new(SearchCommandHelper);
+        private void SearchCommandHelper(string Searchterm)
         {
-            IncludedFilters.Remove(filter);
-            ExcludedFilters.Remove(filter);
-        }
-        public void RemoveFilterType(Filter.FilterType filterType)
-        {
-            IncludedFilters.RemoveAll(filter => filter.Type == filterType);
-            ExcludedFilters.RemoveAll(filter => filter.Type == filterType);
+            Filter SearchFilter = new(Filter.FilterType.Search, Searchterm);
+            if (!String.IsNullOrEmpty(Searchterm))
+            {
+                AddFilter(SearchFilter);
+            }
+            else
+            {
+                RemoveFilterType(Filter.FilterType.Search);
+            }
         }
 
+        //Clear Filters
         private ActionCommand _clearFiltersCommand;
         public ActionCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
         public void ClearFilters()
         {
+            StartReleaseDate = null;
+            StopReleaseDate = null;
+            MinRating = 0;
             SearchTerm = "";
+
             IncludedFilters.Clear();
             ExcludedFilters.Clear();
         }

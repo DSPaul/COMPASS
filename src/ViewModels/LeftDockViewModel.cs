@@ -1,15 +1,22 @@
 ﻿using COMPASS.Commands;
+using COMPASS.Models;
 using static COMPASS.Models.Enums;
 
 
 namespace COMPASS.ViewModels
 {
-    public class LeftDockViewModel : ViewModelBase
+    public class LeftDockViewModel : ObservableObject
     {
-        public LeftDockViewModel() : base()
+        public LeftDockViewModel(MainViewModel mainViewModel)
         {
-            TagsTabVM = new();
-            FiltersTabVM = new();
+            MainVM = mainViewModel;
+        }
+
+        private MainViewModel _mainVM;
+        public MainViewModel MainVM
+        {
+            get => _mainVM;
+            set => SetProperty(ref _mainVM, value);
         }
 
         public int SelectedTab
@@ -34,26 +41,6 @@ namespace COMPASS.ViewModels
             }
         }
 
-        #region Tags Tab
-        private TagsTabViewModel _tagsTabVM;
-        public TagsTabViewModel TagsTabVM
-        {
-            get => _tagsTabVM;
-            set => SetProperty(ref _tagsTabVM, value);
-        }
-        #endregion
-
-        #region Filters Tab
-
-        private FiltersTabViewModel _filtersTabVM;
-        public FiltersTabViewModel FiltersTabVM
-        {
-            get => _filtersTabVM;
-            set => SetProperty(ref _filtersTabVM, value);
-        }
-
-        #endregion
-
         #region Add Books Tab
         private ImportViewModel _currentImportVM;
         public ImportViewModel CurrentImportViewModel
@@ -64,7 +51,7 @@ namespace COMPASS.ViewModels
 
         private RelayCommand<Sources> _importFilesCommand;
         public RelayCommand<Sources> ImportFilesCommand => _importFilesCommand ??= new(ImportFiles);
-        public void ImportFiles(Sources source) => CurrentImportViewModel = new ImportViewModel(source, MVM.CurrentCollection);
+        public void ImportFiles(Sources source) => CurrentImportViewModel = new ImportViewModel(source);
         #endregion
 
     }

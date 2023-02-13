@@ -1,4 +1,5 @@
-﻿using COMPASS.Commands;
+﻿using AutoUpdaterDotNET;
+using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.Windows;
@@ -15,7 +16,7 @@ using System.Xml;
 
 namespace COMPASS.ViewModels
 {
-    public class SettingsViewModel : ViewModelBase
+    public class SettingsViewModel : ObservableObject
     {
         public SettingsViewModel()
         {
@@ -108,7 +109,7 @@ namespace COMPASS.ViewModels
         private void RenameFolderReferences(string oldpath, string newpath)
         {
             AmountRenamed = 0;
-            foreach (Codex c in MVM.CurrentCollection.AllCodices)
+            foreach (Codex c in CollectionViewModel.CurrentCollection.AllCodices)
             {
                 if (!string.IsNullOrEmpty(c.Path) && c.Path.Contains(oldpath))
                 {
@@ -152,8 +153,8 @@ namespace COMPASS.ViewModels
                 lw.Show();
 
                 //save first
-                MVM.CurrentCollection.SaveCodices();
-                MVM.CurrentCollection.SaveTags();
+                CollectionViewModel.CurrentCollection.SaveCodices();
+                CollectionViewModel.CurrentCollection.SaveTags();
                 SavePreferences();
 
                 createZipWorker.DoWork += CreateZip;
@@ -206,7 +207,7 @@ namespace COMPASS.ViewModels
         private void ExtractZipDone(object sender, RunWorkerCompletedEventArgs e)
         {
             //restore collection that was open
-            MVM.ChangeCollection(Properties.Settings.Default.StartupCollection);
+            MainViewModel.CollectionVM.ChangeCollection(Properties.Settings.Default.StartupCollection);
             lw.Close();
         }
 
@@ -215,7 +216,7 @@ namespace COMPASS.ViewModels
         //for debugging only
         public void RegenAllThumbnails()
         {
-            foreach (Codex codex in MVM.CurrentCollection.AllCodices)
+            foreach (Codex codex in CollectionViewModel.CurrentCollection.AllCodices)
             {
                 //codex.Thumbnail = codex.CoverArt.Replace("CoverArt", "Thumbnails");
                 CoverFetcher.CreateThumbnail(codex);
@@ -233,6 +234,14 @@ namespace COMPASS.ViewModels
 
         #region About Tab
         public string Version => "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString()[0..5];
+
+        private ActionCommand _checkForUpdatesCommand;
+        public ActionCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);
+        private void CheckForUpdates()
+        {
+            AutoUpdater.Mandatory = true;
+            AutoUpdater.Start();
+        }
         #endregion
     }
 }

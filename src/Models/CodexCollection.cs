@@ -1,6 +1,5 @@
 ﻿using COMPASS.Tools;
 using COMPASS.ViewModels;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -40,28 +39,6 @@ namespace COMPASS.Models
 
         //File Lists
         public ObservableCollection<Codex> AllCodices { get; private set; } = new();
-
-        //Metadata Lists
-        private ObservableCollection<string> _authorList = new();
-        public ObservableCollection<string> AuthorList
-        {
-            get => _authorList;
-            set => SetProperty(ref _authorList, value);
-        }
-
-        private ObservableCollection<string> _publisherList = new();
-        public ObservableCollection<string> PublisherList
-        {
-            get => _publisherList;
-            set => SetProperty(ref _publisherList, value);
-        }
-
-        private ObservableCollection<string> _fileTypeList = new();
-        public ObservableCollection<string> FileTypeList
-        {
-            get => _fileTypeList;
-            set => SetProperty(ref _fileTypeList, value);
-        }
         #endregion
 
         #region Load Data From File
@@ -97,8 +74,6 @@ namespace COMPASS.Models
                     System.Xml.Serialization.XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
                     AllCodices = serializer.Deserialize(Reader) as ObservableCollection<Codex>;
                 }
-
-                PopulateMetaDataCollections();
 
                 foreach (Codex c in AllCodices)
                 {
@@ -171,28 +146,6 @@ namespace COMPASS.Models
             }
             Directory.Move(CollectionsPath + DirectoryName, CollectionsPath + NewCollectionName);
             DirectoryName = NewCollectionName;
-        }
-
-        public void PopulateMetaDataCollections()
-        {
-            foreach (Codex c in AllCodices)
-            {
-                //Populate Author Collection
-                AuthorList = new(AuthorList.Union(c.Authors));
-                //Populate Publisher Collection
-                if (!String.IsNullOrEmpty(c.Publisher) && !PublisherList.Contains(c.Publisher))
-                    PublisherList.Add(c.Publisher);
-                //Populate FileType Collection
-                string fileType = c.GetFileType(); // to avoid the same function call 3 times
-                if (!String.IsNullOrEmpty(fileType) && !FileTypeList.Contains(fileType))
-                    FileTypeList.Add(fileType);
-            }
-            AuthorList.Remove(""); //remove "" author because String.IsNullOrEmpty cannot be called during Union
-
-            //Sort them
-            AuthorList = new(AuthorList.Order());
-            PublisherList = new(PublisherList.Order());
-            FileTypeList = new(FileTypeList.Order());
         }
     }
 }

@@ -21,13 +21,10 @@ using static COMPASS.Models.Enums;
 
 namespace COMPASS.ViewModels
 {
-    public class ImportViewModel : ViewModelBase
+    public class ImportViewModel : ObservableObject
     {
-        public ImportViewModel(Sources source, CodexCollection collection)
+        public ImportViewModel(Sources source)
         {
-            //set codexCollection so we know where to import to
-            _codexCollection = collection;
-
             Source = source;
 
             //Call Relevant function
@@ -73,7 +70,6 @@ namespace COMPASS.ViewModels
         }
 
         #region Properties
-        private readonly CodexCollection _codexCollection;
 
         public Sources Source { get; init; }
         private BackgroundWorker worker;
@@ -283,12 +279,12 @@ namespace COMPASS.ViewModels
         {
             LogEntry logEntry = null;
             //Import File
-            if (_codexCollection.AllCodices.All(p => p.Path != path))
+            if (CollectionViewModel.CurrentCollection.AllCodices.All(p => p.Path != path))
             {
                 logEntry = new(LogEntry.MsgType.Info, $"Importing {Path.GetFileName(path)}");
                 worker.ReportProgress(_importcounter, logEntry);
 
-                Codex newCodex = new(_codexCollection)
+                Codex newCodex = new(CollectionViewModel.CurrentCollection)
                 {
                     Path = path
                 };
@@ -332,7 +328,7 @@ namespace COMPASS.ViewModels
                     logEntry = new(LogEntry.MsgType.Warning, $"Failed to generate thumbnail from {FileName}");
                     worker.ReportProgress(_importcounter, logEntry);
                 }
-                _codexCollection.AllCodices.Add(newCodex);
+                CollectionViewModel.CurrentCollection.AllCodices.Add(newCodex);
             }
 
             else
@@ -458,7 +454,7 @@ namespace COMPASS.ViewModels
 
             HtmlNode src = doc.DocumentNode;
 
-            Codex newFile = new(_codexCollection)
+            Codex newFile = new(CollectionViewModel.CurrentCollection)
             {
                 SourceURL = InputURL
             };
@@ -536,14 +532,14 @@ namespace COMPASS.ViewModels
             CoverFetcher.GetCoverFromURL(newFile, Source);
 
             //add file to co
-            _codexCollection.AllCodices.Add(newFile);
+            CollectionViewModel.CurrentCollection.AllCodices.Add(newFile);
             RaisePropertyChanged("FilteredCodices");
 
             //import done
             _importcounter++;
             worker.ReportProgress(_importcounter);
 
-            Application.Current.Dispatcher.Invoke(MVM.Refresh);
+            Application.Current.Dispatcher.Invoke(MainViewModel.CollectionVM.FilterVM.ReFilter);
         }
 
         private void ImportFromAPI(object sender, DoWorkEventArgs e)
@@ -579,7 +575,7 @@ namespace COMPASS.ViewModels
                 return;
             }
 
-            Codex newFile = new(_codexCollection);
+            Codex newFile = new(CollectionViewModel.CurrentCollection);
 
             //loading complete
             _importcounter++;
@@ -616,14 +612,14 @@ namespace COMPASS.ViewModels
             CoverFetcher.GetCoverFromISBN(newFile);
 
             //add file to cc
-            _codexCollection.AllCodices.Add(newFile);
+            CollectionViewModel.CurrentCollection.AllCodices.Add(newFile);
             RaisePropertyChanged("FilteredCodices");
 
             //import done
             _importcounter++;
             worker.ReportProgress(_importcounter);
 
-            Application.Current.Dispatcher.Invoke(MVM.Refresh);
+            Application.Current.Dispatcher.Invoke(MainViewModel.CollectionVM.FilterVM.ReFilter);
         }
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -638,8 +634,8 @@ namespace COMPASS.ViewModels
 
         private void WorkerComplete(object sender, EventArgs e)
         {
-            _codexCollection.PopulateMetaDataCollections();
-            MVM.Refresh();
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
         #endregion
 

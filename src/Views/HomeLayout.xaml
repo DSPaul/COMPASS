@@ -115,13 +115,13 @@
                 <materialDesign:PackIcon Kind="Heart" Height="28" Width="20" Foreground="IndianRed" VerticalAlignment="Bottom"/>
                 <TextBlock Text="Favorites" Style="{StaticResource HomeSectionTitle}"/>
             </StackPanel>
-            <ListBox x:Name="FavoritsListBox" ItemsSource="{Binding MVM.FilterVM.Favorites}"/>
+            <ListBox x:Name="FavoritsListBox" ItemsSource="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM.Favorites}" />
 
             <StackPanel Orientation="Horizontal" Margin="30,0">
                 <materialDesign:PackIcon Kind="History" Height="28" Width="20" VerticalAlignment="Bottom"/>
                 <TextBlock Text="Recently Opened" Style="{StaticResource HomeSectionTitle}"/>
             </StackPanel>
-            <ListBox x:Name="RecOpendListBox" ItemsSource="{Binding MVM.FilterVM.RecentCodices}"/>
+            <ListBox x:Name="RecOpendListBox" ItemsSource="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM.RecentCodices}" />
 
 
            
@@ -129,14 +129,14 @@
                 <materialDesign:PackIcon Kind="BookOpenBlankVariant" Height="28" Width="20" VerticalAlignment="Bottom"/>
                 <TextBlock Text="Most Opened" Style="{StaticResource HomeSectionTitle}"/>
             </StackPanel>
-            <ListBox x:Name="MostOpentListBox" ItemsSource="{Binding MVM.FilterVM.MostOpenedCodices}"/>
+            <ListBox x:Name="MostOpentListBox" ItemsSource="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM.MostOpenedCodices}" />
 
             
             <StackPanel Orientation="Horizontal" Margin="30,0">
                 <materialDesign:PackIcon Kind="BookPlus" Height="28" Width="20" VerticalAlignment="Bottom"/>
                 <TextBlock Text="Recently Added" Style="{StaticResource HomeSectionTitle}"/>
             </StackPanel>
-            <ListBox x:Name="RecAddedListBox" ItemsSource="{Binding MVM.FilterVM.RecentlyAddedCodices}"/>
+            <ListBox x:Name="RecAddedListBox" ItemsSource="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM.RecentlyAddedCodices}" />
             
         </StackPanel>
             

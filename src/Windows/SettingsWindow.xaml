@@ -169,7 +169,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <ContentControl Content="{StaticResource CompassLogo}" Margin="20"/>
                                 <TextBlock Text="{Binding Version}"/>
-                                <Button Content="Check for Updates" Command="{Binding MVM.CheckForUpdatesCommand}" 
+                                <Button Content="Check for Updates" Command="{Binding CheckForUpdatesCommand}" 
                                     Tools:AP.IconKind="Autorenew" Style="{StaticResource IconTextButton}"/>
                                 <TextBlock Text="Author: Paul De Smul"/>
                             </StackPanel>
