@@ -28,7 +28,7 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _treeviewsource, value);
         }
 
-        public void BuildTagTreeView() => TreeViewSource = new(CollectionViewModel.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
+        public void BuildTagTreeView() => TreeViewSource = new(_collectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
         //Tag Creation ViewModel
         private IEditViewModel _addTagViewModel;
@@ -75,8 +75,8 @@ namespace COMPASS.ViewModels
             }
 
             // Cannot do TreeRoot = ExtractTagsFromTreeViewSource(TreeViewSource); because that changes ref of TreeRoot
-            CollectionViewModel.CurrentCollection.RootTags.Clear();
-            CollectionViewModel.CurrentCollection.RootTags.AddRange(newRootTags);
+            _collectionVM.CurrentCollection.RootTags.Clear();
+            _collectionVM.CurrentCollection.RootTags.AddRange(newRootTags);
         }
         #endregion
 
@@ -99,11 +99,11 @@ namespace COMPASS.ViewModels
         {
             //tag to delete is context, because DeleteTag is called from context menu
             if (ContextTag == null) return;
-            CollectionViewModel.CurrentCollection.DeleteTag(ContextTag);
+            MainViewModel.CollectionVM.CurrentCollection.DeleteTag(ContextTag);
             _collectionVM.FilterVM.RemoveFilter(new(Filter.FilterType.Tag, ContextTag));
 
             //Go over all files and remove the tag from tag list
-            foreach (var f in CollectionViewModel.CurrentCollection.AllCodices)
+            foreach (var f in _collectionVM.CurrentCollection.AllCodices)
             {
                 f.Tags.Remove(ContextTag);
             }

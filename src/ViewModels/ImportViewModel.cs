@@ -279,12 +279,12 @@ namespace COMPASS.ViewModels
         {
             LogEntry logEntry = null;
             //Import File
-            if (CollectionViewModel.CurrentCollection.AllCodices.All(p => p.Path != path))
+            if (MainViewModel.CollectionVM.CurrentCollection.AllCodices.All(p => p.Path != path))
             {
                 logEntry = new(LogEntry.MsgType.Info, $"Importing {Path.GetFileName(path)}");
                 worker.ReportProgress(_importcounter, logEntry);
 
-                Codex newCodex = new(CollectionViewModel.CurrentCollection)
+                Codex newCodex = new(MainViewModel.CollectionVM.CurrentCollection)
                 {
                     Path = path
                 };
@@ -328,7 +328,7 @@ namespace COMPASS.ViewModels
                     logEntry = new(LogEntry.MsgType.Warning, $"Failed to generate thumbnail from {FileName}");
                     worker.ReportProgress(_importcounter, logEntry);
                 }
-                CollectionViewModel.CurrentCollection.AllCodices.Add(newCodex);
+                MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
             }
 
             else
@@ -454,7 +454,7 @@ namespace COMPASS.ViewModels
 
             HtmlNode src = doc.DocumentNode;
 
-            Codex newFile = new(CollectionViewModel.CurrentCollection)
+            Codex newFile = new(MainViewModel.CollectionVM.CurrentCollection)
             {
                 SourceURL = InputURL
             };
@@ -532,7 +532,7 @@ namespace COMPASS.ViewModels
             CoverFetcher.GetCoverFromURL(newFile, Source);
 
             //add file to co
-            CollectionViewModel.CurrentCollection.AllCodices.Add(newFile);
+            MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newFile);
             RaisePropertyChanged("FilteredCodices");
 
             //import done
@@ -575,7 +575,7 @@ namespace COMPASS.ViewModels
                 return;
             }
 
-            Codex newFile = new(CollectionViewModel.CurrentCollection);
+            Codex newFile = new(MainViewModel.CollectionVM.CurrentCollection);
 
             //loading complete
             _importcounter++;
@@ -612,7 +612,7 @@ namespace COMPASS.ViewModels
             CoverFetcher.GetCoverFromISBN(newFile);
 
             //add file to cc
-            CollectionViewModel.CurrentCollection.AllCodices.Add(newFile);
+            MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newFile);
             RaisePropertyChanged("FilteredCodices");
 
             //import done

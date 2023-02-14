@@ -40,7 +40,12 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public static CodexCollection CurrentCollection { get; set; }
+        private CodexCollection _currentCollection;
+        public CodexCollection CurrentCollection
+        {
+            get => _currentCollection;
+            set => SetProperty(ref _currentCollection, value);
+        }
 
         private FilterViewModel _filterVM;
         public FilterViewModel FilterVM

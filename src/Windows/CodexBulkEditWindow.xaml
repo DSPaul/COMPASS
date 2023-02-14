@@ -102,13 +102,13 @@
             <BlackPearl:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
                                                     Grid.Column="1" Grid.Row="4" ItemSeparator=";" 
                                                     LookUpContract="{Binding Contract}"
-                                                    ItemSource="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM.AuthorList}" 
+                                                    ItemSource="{Binding MVM.CollectionVM.FilterVM.AuthorList}" 
                                                     SelectedItems="{Binding TempCodex.Authors, Mode=TwoWay}"/>
 
             <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
             <ComboBox Text="{Binding TempCodex.Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"
                   IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" 
-                      ItemsSource="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM.PublisherList}"/>
+                      ItemsSource="{Binding MVM.CollectionVM.FilterVM.PublisherList}"/>
 
             <Grid Grid.Column="1" Grid.Row="7" Margin="0,5">
                 <Grid.RowDefinitions>

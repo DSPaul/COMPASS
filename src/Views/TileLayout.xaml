@@ -14,7 +14,7 @@
     </UserControl.Resources>
 
     <ListBox x:Name="TileLayoutListBox" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
-            ItemsSource="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM.FilteredCodices}"  
+            ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}"  
              Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Top" 
             ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" SelectionMode="Extended"
             SelectionChanged="FileView_SelectionChanged" PreviewKeyDown="TileLayoutListBox_PreviewKeyDown">

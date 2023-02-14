@@ -30,8 +30,8 @@ namespace COMPASS.Windows
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            CollectionViewModel.CurrentCollection.SaveCodices();
-            CollectionViewModel.CurrentCollection.SaveTags();
+            MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
+            MainViewModel.CollectionVM.CurrentCollection.SaveTags();
             Properties.Settings.Default.Save();
         }
 

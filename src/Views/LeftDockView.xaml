@@ -125,7 +125,7 @@
         </TabControl.Resources>
         <TabItem Visibility="Collapsed" />
         <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple" ToolTip="Tags"
-                 DataContext="{Binding Source={StaticResource collectionViewModel}, Path = TagsVM}" >
+                 DataContext="{Binding MainVM.CollectionVM.TagsVM}" >
             <TabItem.Resources>
                 <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
                 <ContextMenu x:Key="TagContextMenu">
@@ -233,7 +233,7 @@
                 </Grid>
             </ContentControl>
         </TabItem>
-        <TabItem Header="Filter" Tools:AP.IconKind="Filter" DataContext="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM}" ToolTip="Apply Filters">
+        <TabItem Header="Filter" Tools:AP.IconKind="Filter" DataContext="{Binding MainVM.CollectionVM.FilterVM}" ToolTip="Apply Filters">
             <ContentControl Tools:AP.Header="Filters" Tools:AP.IconKind="Filter" Style="{StaticResource TabContentWrapper}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <Grid>
@@ -465,7 +465,7 @@
         </TabItem>
         <TabItem Header="Sorting" Tools:AP.IconKind="Sort" ToolTip="Sorting">
             <UserControl Style="{StaticResource TabContentWrapper}" Tools:AP.Header="Sorting" Tools:AP.IconKind="Sort" 
-                         DataContext="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM}">
+                         DataContext="{Binding MainVM.CollectionVM.FilterVM}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10">

@@ -17,7 +17,7 @@
         <Tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
     </UserControl.Resources>
         <!--#region CardView-->
-    <ListBox x:Name="CardLayoutListBox" ItemsSource="{Binding Source={StaticResource collectionViewModel}, Path=FilterVM.FilteredCodices}" 
+    <ListBox x:Name="CardLayoutListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}" 
              BorderBrush="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}" SelectionMode="Extended"
              ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" Background="{x:Null}"
              SelectionChanged="FileView_SelectionChanged" PreviewKeyDown="CardLayoutListBox_PreviewKeyDown">

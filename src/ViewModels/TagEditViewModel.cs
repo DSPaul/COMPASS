@@ -9,7 +9,7 @@ namespace COMPASS.ViewModels
         public TagEditViewModel(Tag ToEdit, bool isGroup = false) : base()
         {
             EditedTag = ToEdit;
-            TempTag = new Tag(CollectionViewModel.CurrentCollection.AllTags);
+            TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
 
             if (ToEdit is null)
             {
@@ -63,8 +63,8 @@ namespace COMPASS.ViewModels
         {
             if (CreateNewTag)
             {
-                EditedTag = new Tag(CollectionViewModel.CurrentCollection.AllTags);
-                if (TempTag.Parent is null) CollectionViewModel.CurrentCollection.RootTags.Add(EditedTag);
+                EditedTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+                if (TempTag.Parent is null) MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(EditedTag);
             }
 
             //Apply changes 
@@ -74,9 +74,9 @@ namespace COMPASS.ViewModels
             if (!CreateNewTag) CloseAction();
             else
             {
-                CollectionViewModel.CurrentCollection.AllTags.Add(EditedTag);
+                MainViewModel.CollectionVM.CurrentCollection.AllTags.Add(EditedTag);
                 //reset fields
-                TempTag = new Tag(CollectionViewModel.CurrentCollection.AllTags);
+                TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
                 EditedTag = null;
             }
         }
@@ -88,7 +88,7 @@ namespace COMPASS.ViewModels
             if (!CreateNewTag) CloseAction();
             else
             {
-                TempTag = new Tag(CollectionViewModel.CurrentCollection.AllTags);
+                TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             }
             EditedTag = null;
         }

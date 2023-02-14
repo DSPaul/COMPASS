@@ -109,7 +109,7 @@ namespace COMPASS.ViewModels
         private void RenameFolderReferences(string oldpath, string newpath)
         {
             AmountRenamed = 0;
-            foreach (Codex c in CollectionViewModel.CurrentCollection.AllCodices)
+            foreach (Codex c in MainViewModel.CollectionVM.CurrentCollection.AllCodices)
             {
                 if (!string.IsNullOrEmpty(c.Path) && c.Path.Contains(oldpath))
                 {
@@ -153,8 +153,8 @@ namespace COMPASS.ViewModels
                 lw.Show();
 
                 //save first
-                CollectionViewModel.CurrentCollection.SaveCodices();
-                CollectionViewModel.CurrentCollection.SaveTags();
+                MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
+                MainViewModel.CollectionVM.CurrentCollection.SaveTags();
                 SavePreferences();
 
                 createZipWorker.DoWork += CreateZip;
@@ -216,7 +216,7 @@ namespace COMPASS.ViewModels
         //for debugging only
         public void RegenAllThumbnails()
         {
-            foreach (Codex codex in CollectionViewModel.CurrentCollection.AllCodices)
+            foreach (Codex codex in MainViewModel.CollectionVM.CurrentCollection.AllCodices)
             {
                 //codex.Thumbnail = codex.CoverArt.Replace("CoverArt", "Thumbnails");
                 CoverFetcher.CreateThumbnail(codex);

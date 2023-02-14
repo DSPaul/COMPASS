@@ -257,11 +257,13 @@ namespace COMPASS.ViewModels
                     //Move cover art to right folder with new ID
                     string newCoverArt = CodexCollection.CollectionsPath + targetCollectionName + @"\CoverArt\" + ToMove.ID + ".png";
                     string newThumbnail = CodexCollection.CollectionsPath + targetCollectionName + @"\Thumbnails\" + ToMove.ID + ".png";
-                    File.Copy(ToMove.CoverArt, newCoverArt);
-                    File.Copy(ToMove.Thumbnail, newThumbnail);
+                    if (Path.Exists(ToMove.CoverArt))
+                        File.Copy(ToMove.CoverArt, newCoverArt);
+                    if (Path.Exists(ToMove.CoverArt))
+                        File.Copy(ToMove.Thumbnail, newThumbnail);
 
                     //Delete file in original folder
-                    CollectionViewModel.CurrentCollection.DeleteCodex(ToMove);
+                    MainViewModel.CollectionVM.CurrentCollection.DeleteCodex(ToMove);
                     MainViewModel.CollectionVM.FilterVM.RemoveCodex(ToMove);
 
                     //Update the cover art metadata to new path, has to happen after delete so old one gets deleted
@@ -293,7 +295,7 @@ namespace COMPASS.ViewModels
             {
                 foreach (Codex ToDelete in toDeleteList)
                 {
-                    CollectionViewModel.CurrentCollection.DeleteCodex(ToDelete);
+                    MainViewModel.CollectionVM.CurrentCollection.DeleteCodex(ToDelete);
                 }
                 MainViewModel.CollectionVM.FilterVM.ReFilter();
             }

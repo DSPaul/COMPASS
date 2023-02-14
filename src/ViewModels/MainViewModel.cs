@@ -17,6 +17,7 @@ namespace COMPASS.ViewModels
         public MainViewModel()
         {
             InitLogger();
+            ViewModelBase.MVM = this;
 
             //Load everything
             LoadSettingsAndPreferences();

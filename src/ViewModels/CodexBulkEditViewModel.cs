@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexBulkEditViewModel : ObservableObject, IEditViewModel
+    public class CodexBulkEditViewModel : ViewModelBase, IEditViewModel
     {
         public CodexBulkEditViewModel(List<Codex> toEdit)
         {
@@ -34,7 +34,7 @@ namespace COMPASS.ViewModels
         #region Properties
 
         private ObservableCollection<TreeViewNode> _treeViewSource;
-        public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(CollectionViewModel.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
+        public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
         private HashSet<TreeViewNode> AllTreeViewNodes => Utils.FlattenTree(TreeViewSource).ToHashSet();
 

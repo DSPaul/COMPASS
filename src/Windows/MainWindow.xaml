@@ -407,9 +407,6 @@
 
             <!--#region Main Dock-->
             <Grid x:Name="ViewsGrid">
-                <Grid.Resources>
-                    <viewmodels:CollectionViewModel x:Key="collectionViewModel"/>
-                </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
@@ -546,10 +543,10 @@
                 <!--#endregion-->
 
                 <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="5" Content="{Binding CurrentLayout}"
-                                 Visibility="{Binding Source={StaticResource collectionViewModel}, Path=CurrentCollection.AllCodices.Count, 
+                                 Visibility="{Binding CollectionVM.CurrentCollection.AllCodices.Count, 
                                                 Converter={StaticResource ToVisibilityConverter}, ConverterParameter=False}"/>
                 <Border Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="20"
-                        Visibility="{Binding Source={StaticResource collectionViewModel}, Path=CurrentCollection.AllCodices.Count, 
+                        Visibility="{Binding CollectionVM.CurrentCollection.AllCodices.Count, 
                                                 Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <StackPanel.Resources>
@@ -561,7 +558,7 @@
                         </StackPanel.Resources>
                         <TextBlock Text="Thank you for downloading COMPASS!"/>                        
                         <TextBlock Text="The Codex Organizer to Make Pen&amp;paper Adventuring Super Simple."/>                        
-                        <TextBlock Text="You can start building your digital library by clicking 'Import' in the bottom left."/>                        
+                        <TextBlock Text="You can start building your digital library by selecting the 'Add Book' tab on the left."/>                        
                     </StackPanel>
                 </Border>
             </Grid>
