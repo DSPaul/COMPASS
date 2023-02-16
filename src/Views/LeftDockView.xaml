@@ -11,6 +11,7 @@
              xmlns:CustomControls="clr-namespace:COMPASS.Resources.Controls" 
              xmlns:views="clr-namespace:COMPASS.Views" 
              xmlns:Converters="clr-namespace:COMPASS.Converters"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              d:DataContext="{d:DesignInstance Type=viewmodels:LeftDockViewModel}"
              Background="{StaticResource ButtonBackground}"
              mc:Ignorable="d" FontSize="20"
@@ -445,9 +446,19 @@
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type viewmodels:TileLayoutViewModel}">
                                     <StackPanel Margin="10">
-                                        <CheckBox Content="Show Title" IsChecked="{Binding ShowTitle}"/>
+                                        <StackPanel.Resources>
+                                            <ObjectDataProvider x:Key="DataOptionsFromEnum"
+                                                    MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+                                                <ObjectDataProvider.MethodParameters>
+                                                    <x:Type TypeName="viewmodels:TileLayoutViewModel+DataOption"/>
+                                                </ObjectDataProvider.MethodParameters>
+                                            </ObjectDataProvider>
+                                        </StackPanel.Resources>
                                         <TextBlock Text="Cover Size" Margin="5"/>
                                         <Slider Value="{Binding TileWidth}" Minimum="50" Interval="5" Maximum="400" Margin="5"/>
+                                        <CheckBox x:Name="ShowExtraDataCheckbox" Content="Show Extra Data" IsChecked="{Binding ShowExtraData}"/>
+                                        <ComboBox Visibility="{Binding ElementName=ShowExtraDataCheckbox, Path=IsChecked, Converter={StaticResource ToVisibilityConverter}}"
+                                                  ItemsSource="{Binding Source={StaticResource DataOptionsFromEnum}}" SelectedItem="{Binding DisplayedData, Mode=TwoWay}"/>
                                     </StackPanel>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type viewmodels:HomeLayoutViewModel}">

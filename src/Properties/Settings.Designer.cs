@@ -134,12 +134,12 @@ namespace COMPASS.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool TileShowTitle {
+        public bool TileShowExtraData {
             get {
-                return ((bool)(this["TileShowTitle"]));
+                return ((bool)(this["TileShowExtraData"]));
             }
             set {
-                this["TileShowTitle"] = value;
+                this["TileShowExtraData"] = value;
             }
         }
         
@@ -332,6 +332,18 @@ namespace COMPASS.Properties {
             }
             set {
                 this["SelectedTab"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int TileDisplayedData {
+            get {
+                return ((int)(this["TileDisplayedData"]));
+            }
+            set {
+                this["TileDisplayedData"] = value;
             }
         }
     }

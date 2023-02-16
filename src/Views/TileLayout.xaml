@@ -50,7 +50,7 @@
                     <Trigger Property="IsSelected" Value="True">
                         <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
                     </Trigger>
-                    <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" Value="1">
+                    <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}, FallbackValue=1, TargetNullValue=1}" Value="1">
                         <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/>
                     </DataTrigger>
                 </Style.Triggers>
@@ -80,10 +80,69 @@
                             <DropShadowEffect BlurRadius="15" Direction="300"/>
                         </Border.Effect>
                     </Border>
-                    <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" 
-                            MaxWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                            Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"
-                            Visibility="{Binding DataContext.ShowTitle, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource ToVisibilityConverter}}"/>
+                    <Grid Grid.Row="1" Margin="0,5" 
+                          MaxWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                          Visibility="{Binding DataContext.ShowExtraData, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource ToVisibilityConverter}}">
+                        <Grid.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                                <Setter Property="FontSize" Value="14"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </Style>
+                        </Grid.Resources>
+                        <TextBlock Text="{Binding Title}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DataContext.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}" 
+                                                     Value="{x:Static viewmodels:TileLayoutViewModel+DataOption.Title}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="{Binding AuthorsAsString}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DataContext.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}" 
+                                                     Value="{x:Static viewmodels:TileLayoutViewModel+DataOption.Author}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="{Binding Publisher}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DataContext.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}" 
+                                                     Value="{x:Static viewmodels:TileLayoutViewModel+DataOption.Publisher}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <materialDesign:RatingBar Value="{Binding Rating, Mode=TwoWay}" HorizontalAlignment="Center">
+                            <materialDesign:RatingBar.Style>
+                                <Style TargetType="materialDesign:RatingBar">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DataContext.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}" 
+                                                     Value="{x:Static viewmodels:TileLayoutViewModel+DataOption.Rating}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:RatingBar.Style>
+                        </materialDesign:RatingBar>
+                    </Grid>
                 </Grid>
             </DataTemplate>
         </ListBox.ItemTemplate>

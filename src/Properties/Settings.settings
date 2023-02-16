@@ -29,7 +29,7 @@
     <Setting Name="ListShowEditIcon" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="TileShowTitle" Type="System.Boolean" Scope="User">
+    <Setting Name="TileShowExtraData" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="CardShowAuthor" Type="System.Boolean" Scope="User">
@@ -78,6 +78,9 @@
       <Value Profile="(Default)">156</Value>
     </Setting>
     <Setting Name="SelectedTab" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="TileDisplayedData" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>

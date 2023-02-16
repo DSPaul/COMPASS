@@ -6,6 +6,15 @@
         {
             LayoutType = Layout.Tile;
         }
+
+        public enum DataOption
+        {
+            Title,
+            Author,
+            Publisher,
+            Rating
+        }
+
         #region Properties
         public double TileWidth
         {
@@ -20,13 +29,23 @@
 
         public double TileHeight => (int)(TileWidth * 4 / 3);
 
-        public bool ShowTitle
+        public bool ShowExtraData
         {
-            get { return Properties.Settings.Default.TileShowTitle; ; }
+            get => Properties.Settings.Default.TileShowExtraData;
             set
             {
-                Properties.Settings.Default.TileShowTitle = value;
-                RaisePropertyChanged(nameof(ShowTitle));
+                Properties.Settings.Default.TileShowExtraData = value;
+                RaisePropertyChanged(nameof(ShowExtraData));
+            }
+        }
+
+        public DataOption DisplayedData
+        {
+            get => (DataOption)Properties.Settings.Default.TileDisplayedData;
+            set
+            {
+                Properties.Settings.Default.TileDisplayedData = (int)value;
+                RaisePropertyChanged(nameof(DisplayedData));
             }
         }
 
