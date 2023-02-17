@@ -50,18 +50,11 @@ namespace COMPASS.ViewModels
                     ImportManual();
                     break;
                 case Sources.ISBN:
-                    OpenImportURLDialog();
-                    break;
                 case Sources.GmBinder:
-                    OpenImportURLDialog();
-                    break;
                 case Sources.Homebrewery:
-                    OpenImportURLDialog();
-                    break;
                 case Sources.DnDBeyond:
-                    OpenImportURLDialog();
-                    break;
                 case Sources.GoogleDrive:
+                case Sources.Dropbox:
                     OpenImportURLDialog();
                     break;
             }
@@ -370,6 +363,10 @@ namespace COMPASS.ViewModels
                     ImportTitle = "Google Drive";
                     PreviewURL = "https://drive.google.com/file/";
                     break;
+                case Sources.Dropbox:
+                    ImportTitle = "Dropbox";
+                    PreviewURL = "https://www.dropbox.com/s/";
+                    break;
             }
 
             importURLwindow = new(this);
@@ -391,6 +388,7 @@ namespace COMPASS.ViewModels
                 return;
             }
             importURLwindow.Close();
+
             worker = new() { WorkerReportsProgress = true };
             if (Webscrape.HasFlag(Source)) worker.DoWork += ImportURL;
             if (APIAccess.HasFlag(Source)) worker.DoWork += ImportFromAPI;
@@ -561,7 +559,7 @@ namespace COMPASS.ViewModels
             string uri = Source switch
             {
                 Sources.ISBN => $"http://openlibrary.org/api/books?bibkeys=ISBN:{InputURL.Trim('-', ' ')}&format=json&jscmd=details",
-                _ => null
+                _ => InputURL
             };
 
             JObject metadata = Task.Run(async () => await Utils.GetJsonAsync(uri)).Result;

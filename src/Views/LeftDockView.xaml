@@ -558,6 +558,9 @@
                         <TextBlock Text="Add Online Files" Style="{StaticResource Categorizer}"/>
                         <Button Tools:AP.IconKind="GoogleDrive" Style="{StaticResource HighlightedButton}" Content="Google Drive"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.GoogleDrive}"/>
+                        <!-- Dropbox not done yet, needs API key-->
+                        <!--<Button Tools:AP.IconKind="Dropbox" Style="{StaticResource HighlightedButton}" Content="Dropbox"
+                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.Dropbox}"/>-->
                         <Button Style="{StaticResource HighlightedContentButton}" Margin="20,5"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.Homebrewery}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
@@ -568,8 +571,8 @@
                                 </StackPanel>
                             </Border>
                         </Button>
-                        <!--DND Beyond doesn't work yet-->
-                        <Button Style="{StaticResource HighlightedContentButton}" Visibility="Collapsed"
+                        <!--DND Beyond doesn't work yet, blocks scrapers, no public api-->
+                        <!--<Button Style="{StaticResource HighlightedContentButton}"
                             Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.DnDBeyond}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                 BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
@@ -578,7 +581,7 @@
                                     <TextBlock Text="DnD Beyond"/>
                                 </StackPanel>
                             </Border>
-                        </Button>
+                        </Button>-->
                         <Button Style="{StaticResource HighlightedContentButton}" Margin="20,5"
                                 Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.GmBinder}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 

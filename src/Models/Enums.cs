@@ -15,7 +15,8 @@ namespace COMPASS.Models
             Homebrewery = 16,
             DnDBeyond = 32,
             GoogleDrive = 64,
-            ISBN = 128
+            Dropbox = 128,
+            ISBN = 256
         }
     }
 }
