@@ -527,9 +527,27 @@
                                 <Setter Property="TextWrapping" Value="Wrap"/>
                             </Style>
                         </StackPanel.Resources>
-                        <TextBlock Text="Thank you for downloading COMPASS!"/>                        
-                        <TextBlock Text="The Codex Organizer to Make Pen&amp;paper Adventuring Super Simple."/>                        
-                        <TextBlock Text="You can start building your digital library by selecting the 'Add Books' tab on the left."/>                        
+                        <TextBlock>
+                            Thank you for downloading COMPASS! <LineBreak/>
+                            <LineBreak/>
+                            The 
+                            <Run Foreground="{StaticResource AccentColor}" Text="C"/>odex
+                            <Run Foreground="{StaticResource AccentColor}" Text="O"/>rganizer to
+                            <Run Foreground="{StaticResource AccentColor}" Text="M"/>ake
+                            <Run Foreground="{StaticResource AccentColor}" Text="P"/>en&amp;paper
+                            <Run Foreground="{StaticResource AccentColor}" Text="A"/>dventuring
+                            <Run Foreground="{StaticResource AccentColor}" Text="S"/>uper
+                            <Run Foreground="{StaticResource AccentColor}" Text="S"/>imple.
+                            <LineBreak/><LineBreak/>
+                            You can start building your digital library by selecting the 'Add Books' tab on the left.<LineBreak/>
+                        </TextBlock>
+                        <TextBlock TextAlignment="Center" Width="700">
+                            COMPASS is a work in progress application that is made and maintained by a solo developer (Me).<LineBreak/>
+                            This means that you might still occasionally run into problems or find some of its features lacking. <LineBreak/>
+                            If this happens or if you have suggestions how to improve COMPASS, you can follow the links 
+                            in "About" section of the settings to share your feedback and support the project.
+                            
+                        </TextBlock>
                     </StackPanel>
                 </Border>
             </Grid>
