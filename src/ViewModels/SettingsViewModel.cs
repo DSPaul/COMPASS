@@ -212,7 +212,7 @@ namespace COMPASS.ViewModels
         private void ExtractZipDone(object sender, RunWorkerCompletedEventArgs e)
         {
             //restore collection that was open
-            MainViewModel.CollectionVM.ChangeCollection(Properties.Settings.Default.StartupCollection);
+            MainViewModel.CollectionVM.CurrentCollection = new(Properties.Settings.Default.StartupCollection);
             lw.Close();
         }
 

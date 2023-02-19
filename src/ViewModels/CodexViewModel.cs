@@ -212,11 +212,11 @@ namespace COMPASS.ViewModels
         public static void MoveToCollection(object[] par)
         {
             //par contains 2 parameters
-            string targetCollectionName = (string)par[0];
+            CodexCollection targetCollection = new((string)par[0]);
             List<Codex> ToMoveList = new();
 
             //Check if target Collection is valid
-            if (targetCollectionName is null || targetCollectionName == MainViewModel.CollectionVM.CurrentCollectionName) return;
+            if (targetCollection is null || targetCollection == MainViewModel.CollectionVM.CurrentCollection) return;
 
             //extract Codex parameter
             if (par[1] is Codex codex)
@@ -230,8 +230,8 @@ namespace COMPASS.ViewModels
             }
 
             //MessageBox "Are you Sure?"
-            string MessageSingle = "Moving " + ToMoveList[0].Title + " to " + targetCollectionName + " will remove all tags from the Codex, are you sure you wish to continue?";
-            string MessageMultiple = "Moving these " + ToMoveList.Count + " files to " + targetCollectionName + " will remove all tags from the Codices, are you sure you wish to continue?";
+            string MessageSingle = "Moving " + ToMoveList[0].Title + " to " + targetCollection.DirectoryName + " will remove all tags from the Codex, are you sure you wish to continue?";
+            string MessageMultiple = "Moving these " + ToMoveList.Count + " files to " + targetCollection.DirectoryName + " will remove all tags from the Codices, are you sure you wish to continue?";
 
             string sCaption = "Are you Sure?";
             string sMessageBoxText = ToMoveList.Count == 1 ? MessageSingle : MessageMultiple;
@@ -243,20 +243,19 @@ namespace COMPASS.ViewModels
 
             if (rsltMessageBox == MessageBoxResult.Yes)
             {
-                CodexCollection TargetCollection = new(targetCollectionName);
+                targetCollection.LoadCodices();
                 foreach (Codex ToMove in ToMoveList)
                 {
                     ToMove.Tags.Clear();
                     // Give file new ID and move it to other folder
-                    ToMove.ID = Utils.GetAvailableID(TargetCollection.AllCodices);
+                    ToMove.ID = Utils.GetAvailableID(targetCollection.AllCodices);
 
                     //Add Codex to target CodexCollection
-                    TargetCollection.AllCodices.Add(ToMove);
-
+                    targetCollection.AllCodices.Add(ToMove);
 
                     //Move cover art to right folder with new ID
-                    string newCoverArt = CodexCollection.CollectionsPath + targetCollectionName + @"\CoverArt\" + ToMove.ID + ".png";
-                    string newThumbnail = CodexCollection.CollectionsPath + targetCollectionName + @"\Thumbnails\" + ToMove.ID + ".png";
+                    string newCoverArt = CodexCollection.CollectionsPath + targetCollection.DirectoryName + @"\CoverArt\" + ToMove.ID + ".png";
+                    string newThumbnail = CodexCollection.CollectionsPath + targetCollection.DirectoryName + @"\Thumbnails\" + ToMove.ID + ".png";
                     if (Path.Exists(ToMove.CoverArt))
                         File.Copy(ToMove.CoverArt, newCoverArt);
                     if (Path.Exists(ToMove.CoverArt))
@@ -271,7 +270,7 @@ namespace COMPASS.ViewModels
                     ToMove.Thumbnail = newThumbnail;
                 }
                 //Save changes to TargetCollection
-                TargetCollection.SaveCodices();
+                targetCollection.SaveCodices();
             }
         }
 

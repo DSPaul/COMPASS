@@ -13,11 +13,6 @@ namespace COMPASS.Models
         public CodexCollection(string collectionDirectory)
         {
             DirectoryName = collectionDirectory;
-
-            LoadTags();
-            LoadCodices();
-
-            Properties.Settings.Default.StartupCollection = collectionDirectory;
         }
 
         public readonly static string CollectionsPath = Constants.CompassDataPath + @"\Collections\";
@@ -41,9 +36,16 @@ namespace COMPASS.Models
         public ObservableCollection<Codex> AllCodices { get; private set; } = new();
         #endregion
 
+
+        public void Load()
+        {
+            LoadTags();
+            LoadCodices();
+            Properties.Settings.Default.StartupCollection = DirectoryName;
+        }
         #region Load Data From File
         //Loads the RootTags from a file and constructs the Alltags list from it
-        private void LoadTags()
+        public void LoadTags()
         {
             if (File.Exists(TagsDataFilepath))
             {
@@ -65,7 +67,7 @@ namespace COMPASS.Models
         }
 
         //Loads AllCodices list from Files
-        private void LoadCodices()
+        public void LoadCodices()
         {
             if (File.Exists(CodicesDataFilePath))
             {
@@ -120,6 +122,7 @@ namespace COMPASS.Models
             //Delete Coverart & Thumbnail
             File.Delete(Todelete.CoverArt);
             File.Delete(Todelete.Thumbnail);
+            SaveCodices();
         }
 
         public void DeleteTag(Tag todel)
@@ -134,6 +137,8 @@ namespace COMPASS.Models
             //remove from parent items list
             if (todel.Parent is null) RootTags.Remove(todel);
             else todel.Parent.Children.Remove(todel);
+
+            SaveTags();
         }
 
         public void RenameCollection(string NewCollectionName)

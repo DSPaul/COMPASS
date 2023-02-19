@@ -461,7 +461,7 @@
 
     <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
 
-    <ContextMenu x:Key="CodexContextMenu">
+    <ContextMenu x:Key="CodexContextMenu" x:Shared="False">
         <MenuItem Header="Open Locally" Tools:AP.IconKind="FileOutline"
                   Command="{Binding Path=DataContext.CodexVM.OpenCodexLocallyCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"

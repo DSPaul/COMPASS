@@ -13,7 +13,7 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
     mc:Ignorable="d"
     Title="COMPASS" Height="540" Width="1156.8" FontSize="20"
-    Foreground="White"  Background="{StaticResource WindowBackground}"
+    Foreground="{StaticResource TextColor}"  Background="{StaticResource WindowBackground}"
     Closing="Window_Closing" WindowState="Maximized" WindowStyle="None" 
     WindowStartupLocation="CenterScreen" MouseDown="Window_MouseDown"
     PreviewKeyDown="Window_PreviewKeyDown">
@@ -52,10 +52,11 @@
             <Grid DockPanel.Dock="Top" x:Name="WindowsBar" MaxHeight="100" Background="{StaticResource TitlebarBackground}">
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width ="*"/>
                     <ColumnDefinition Width ="auto"/>
                     <ColumnDefinition Width ="*"/>
                     <ColumnDefinition Width ="auto"/>
+                    <ColumnDefinition Width ="auto"/>
+                    <ColumnDefinition Width ="*"/>
                     <ColumnDefinition Width ="auto"/>
                     <ColumnDefinition Width ="auto"/>
                     <ColumnDefinition Width ="auto"/>
@@ -153,10 +154,10 @@
                     <!--#endregion-->
                 </Grid.Resources>
 
-                <ContentControl Content="{StaticResource CompassLogo}" Margin="10,0" HorizontalAlignment="Left"/>
+                <ContentControl Content="{StaticResource CompassLogo}" Grid.Column="0" Margin="10,0" HorizontalAlignment="Left"/>
 
                 <!--Search Bar-->
-                <Border Grid.Column="1" CornerRadius="4" Width="300" MinWidth="100" Height="35" WindowChrome.IsHitTestVisibleInChrome="True"
+                <Border Grid.Column="2" CornerRadius="4" Width="300" MinWidth="100" Height="35" WindowChrome.IsHitTestVisibleInChrome="True"
                     Background="{StaticResource UIElementBackground}" OpacityMask="#FF222222" Margin="30,5" DataContext="{Binding CollectionVM.FilterVM}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -173,104 +174,74 @@
                 </Border>
 
                 <!--Collection Selection-->
-                <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="0,5" Height="35" WindowChrome.IsHitTestVisibleInChrome="True" DataContext="{Binding CollectionVM}">
-                    <StackPanel.Resources>
-                        <Style TargetType="{x:Type ToggleButton}">
-                            <Setter Property="Width" Value="30"/>
-                            <Setter Property="Background" Value="Transparent"/>
-                            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate>
-                                        <materialDesign:PackIcon  Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}" HorizontalAlignment="Center"
-                                                 Foreground="{TemplateBinding Foreground}" Background="{TemplateBinding Background}" Width="25" Height="25"/>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Cursor" Value="Hand"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="RenderTransform">
-                                        <Setter.Value>
-                                            <ScaleTransform ScaleX="1.1" ScaleY="1.1"/>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Resources>
-                    <ComboBox Style="{StaticResource RPGDropdownStyle}" SelectedValue="{Binding CurrentCollectionName, Mode=TwoWay}"
-                        ItemsSource="{Binding CollectionDirectories}"/>
-                    <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
-                    <Border Background="{StaticResource UIElementBackground}">
-                        <Grid>
-                            <ToggleButton x:Name="ShowCollectionCreation" Tools:AP.IconKind="FolderPlus" Foreground="{StaticResource CollectionIconFill}" ToolTip="Create New Collection"
-                                        Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"/>
-                            <StackPanel Orientation="Horizontal" x:Name="CollectionCreation"
-                                    Visibility="{Binding ElementName=ShowCollectionCreation, Path=IsChecked, 
-                                    Converter={StaticResource ToVisibilityConverter}, FallbackValue=Collapsed}">
-                                <TextBox x:Name="NewCollectionName" Tools:AP.PlaceHolderText="New Collection" FontSize="16" VerticalAlignment="Center" 
-                                         Background="{StaticResource SelectableTransparent}" BorderBrush="{StaticResource DarkUIElementBackground}"
-                                        Foreground="White" Margin="0" BorderThickness="0" MinWidth="80">
-                                    <TextBox.Style>
-                                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ElementName=CollectionCreation, Path=IsVisible}" Value="true">
-                                                    <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=NewCollectionName}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBox.Style>
-                                </TextBox>
-                                <ToggleButton Tools:AP.IconKind="Check" Foreground="{StaticResource AcceptFill}"
-                                             Command="{Binding CreateCollectionCommand}" CommandParameter="{Binding ElementName=NewCollectionName, Path=Text}"
-                                            IsChecked="{Binding ElementName=ShowCollectionCreation, Path=IsChecked}"/>
-                                <ToggleButton Tools:AP.IconKind="Close" Foreground="{StaticResource CancelFill}"
-                                            IsChecked="{Binding ElementName=ShowCollectionCreation, Path=IsChecked}">
-                                    <materialDesign:PackIcon Kind="Close" Foreground="{StaticResource CancelFill}" Width="30" Height="30"/>
-                                </ToggleButton>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                    <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
-                    <Border Background="{StaticResource UIElementBackground}">
-                        <Grid>
-                            <ToggleButton Tools:AP.IconKind="FolderEdit" Foreground="{StaticResource CollectionIconFill}" x:Name="ShowCollectionEditing" ToolTip="Rename Collection"
-                                        Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"/>
-                            <StackPanel Orientation="Horizontal" x:Name="CollectionEditing"
-                                    Visibility="{Binding ElementName=ShowCollectionEditing, Path=IsChecked, Converter={StaticResource ToVisibilityConverter}, FallbackValue=Collapsed}">
-                                <TextBox x:Name="EditCollectionName" Text="{Binding CurrentCollectionName, Mode=OneWay}" FontSize="16" 
-                                         VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}"
-                                        Foreground="{StaticResource TextColor}" Margin="5,0" BorderThickness="0" MinWidth="50">
-                                    <TextBox.Style>
-                                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ElementName=CollectionEditing, Path=IsVisible}" Value="true">
-                                                    <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=EditCollectionName}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBox.Style>
-                                </TextBox>
-                                <ToggleButton  Tools:AP.IconKind="Check" Foreground="{StaticResource AcceptFill}"
-                                            Command="{Binding EditCollectionNameCommand}" CommandParameter="{Binding ElementName=EditCollectionName, Path=Text}"
-                                            IsChecked="{Binding ElementName=ShowCollectionEditing, Path=IsChecked}">
-                                    <materialDesign:PackIcon Kind="Check" Foreground="{StaticResource AcceptFill}" Width="30" Height="30"/>
-                                </ToggleButton>
-                                <ToggleButton Tools:AP.IconKind="Close" Foreground="{StaticResource CancelFill}"
-                                            IsChecked="{Binding ElementName=ShowCollectionEditing, Path=IsChecked}"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                    <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
-                    <Border Background="{StaticResource UIElementBackground}" CornerRadius="0,4,4,0">
-                        <ToggleButton Tools:AP.IconKind="FolderRemove" Foreground="{StaticResource CollectionIconFill}" 
-                                      Command="{Binding DeleteCollectionCommand}" ToolTip="Delete This Collection"/>
-                    </Border>
-                </StackPanel>
+                <Border Background="{StaticResource UIElementBackground}" CornerRadius="4" Grid.Column="3" Margin="0,5" Height="35"
+                        WindowChrome.IsHitTestVisibleInChrome="True" DataContext="{Binding CollectionVM}">
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox Style="{StaticResource RPGDropdownStyle}" SelectedItem="{Binding CurrentCollection, Mode=TwoWay}" 
+                                  DisplayMemberPath="DirectoryName" ItemsSource="{Binding AllCodexCollections}"/>
+                        <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
+                        <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="FolderPlus" Foreground="{StaticResource CollectionIconFill}" ToolTip="Create New Collection"
+                                            Visibility="{Binding CreateCollectionVisibility,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"
+                                        Command="{Binding ToggleCreateCollectionCommand}"/>
+                        <StackPanel Orientation="Horizontal" x:Name="CollectionCreation"
+                                        Visibility="{Binding CreateCollectionVisibility, Converter={StaticResource ToVisibilityConverter}, FallbackValue=Collapsed}">
+                            <TextBox x:Name="NewCollectionName" Tools:AP.PlaceHolderText="New Collection" FontSize="16" VerticalAlignment="Center" 
+                                             Background="{StaticResource SelectableTransparent}" BorderBrush="{StaticResource DarkUIElementBackground}"
+                                            Foreground="{StaticResource TextColor}" Margin="0" BorderThickness="0" MinWidth="80">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=CollectionCreation, Path=IsVisible}" Value="true">
+                                                <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=NewCollectionName}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ElementName=CollectionCreation, Path=IsVisible}" Value="false">
+                                                <Setter Property="Text" Value=""/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <Button Tools:AP.IconKind="Check" Foreground="{StaticResource AcceptFill}" Style="{StaticResource IconBtn}" 
+                                            IsDefault="{Binding ElementName=NewCollectionName, Path=IsFocused}"
+                                            Command="{Binding CreateCollectionCommand}" CommandParameter="{Binding ElementName=NewCollectionName, Path=Text}">
+                            </Button>
+                            <Button Tools:AP.IconKind="Close" Foreground="{StaticResource CancelFill}" Command="{Binding ToggleCreateCollectionCommand}"
+                                            Style="{StaticResource IconBtn}"/>
+                        </StackPanel>
+                        <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
+                        <Button Tools:AP.IconKind="FolderEdit" Foreground="{StaticResource CollectionIconFill}" 
+                                    Style="{StaticResource IconBtn}" ToolTip="Rename Collection" Command="{Binding ToggleEditCollectionCommand}"
+                                    Visibility="{Binding EditCollectionVisibility,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"/>
+                        <StackPanel Orientation="Horizontal" x:Name="CollectionEditing"
+                                        Visibility="{Binding EditCollectionVisibility, Converter={StaticResource ToVisibilityConverter}, FallbackValue=Collapsed}">
+                            <TextBox x:Name="EditCollectionName" Text="{Binding CurrentCollection.DirectoryName, Mode=OneWay}" FontSize="16" 
+                                        VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}"
+                                        Foreground="{StaticResource TextColor}" Margin="0" BorderThickness="0" MinWidth="50">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=CollectionEditing, Path=IsVisible}" Value="true">
+                                                <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=EditCollectionName}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <Button Tools:AP.IconKind="Check" Foreground="{StaticResource AcceptFill}" Style="{StaticResource IconBtn}" 
+                                        IsDefault="{Binding ElementName=EditCollectionName, Path=IsFocused}"
+                                        Command="{Binding EditCollectionNameCommand}" CommandParameter="{Binding ElementName=EditCollectionName, Path=Text}">
+                            </Button>
+                            <Button Tools:AP.IconKind="Close" Foreground="{StaticResource CancelFill}" 
+                                        Command="{Binding ToggleEditCollectionCommand}" Style="{StaticResource IconBtn}"/>
+                        </StackPanel>
+                        <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
+                        <Button Tools:AP.IconKind="FolderRemove" Foreground="{StaticResource CollectionIconFill}" 
+                                Style="{StaticResource IconBtn}" Command="{Binding DeleteCollectionCommand}" ToolTip="Delete This Collection"/>
+                    </StackPanel>
+                </Border>
                 
                 <!--Settings button-->
-                <Button Click="Toggle_ContextMenu" Grid.Column="4" Tools:AP.IconKind="Settings" Height="25" Margin="15,0"
+                <Button Click="Toggle_ContextMenu" Grid.Column="5" Tools:AP.IconKind="Settings" Height="25" Margin="15,0"
                          WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Settings">
                     <Button.ContextMenu>
                         <ContextMenu Placement="Bottom">
@@ -307,7 +278,7 @@
                 </Button>
 
                 <!--Internet status indicator-->
-                <materialDesign:PackIcon Grid.Column="5" Margin="0" Padding="0" Kind="WebOff" Width="25" Height="25" VerticalAlignment="Center"
+                <materialDesign:PackIcon Grid.Column="6" Margin="0" Padding="0" Kind="WebOff" Width="25" Height="25" VerticalAlignment="Center"
                                          Foreground="{StaticResource OfflineFill}" ToolTip="No Internet Connection Found">
                     <materialDesign:PackIcon.Style>
                         <Style TargetType="materialDesign:PackIcon">
@@ -326,7 +297,7 @@
                 <!--Window management (minimize, maximize, close)-->
                 <StackPanel Orientation="Horizontal" WindowChrome.IsHitTestVisibleInChrome="True"
                 HorizontalAlignment="Right" Margin="15,0,0,0"
-                VerticalAlignment="Stretch" Grid.Column="6">
+                VerticalAlignment="Stretch" Grid.Column="7">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type Button}" >
                             <Setter Property="Width" Value="40"/>
@@ -558,7 +529,7 @@
                         </StackPanel.Resources>
                         <TextBlock Text="Thank you for downloading COMPASS!"/>                        
                         <TextBlock Text="The Codex Organizer to Make Pen&amp;paper Adventuring Super Simple."/>                        
-                        <TextBlock Text="You can start building your digital library by selecting the 'Add Book' tab on the left."/>                        
+                        <TextBlock Text="You can start building your digital library by selecting the 'Add Books' tab on the left."/>                        
                     </StackPanel>
                 </Border>
             </Grid>
