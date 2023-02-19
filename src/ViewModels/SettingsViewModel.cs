@@ -18,7 +18,7 @@ namespace COMPASS.ViewModels
 {
     public class SettingsViewModel : ObservableObject
     {
-        public SettingsViewModel()
+        private SettingsViewModel()
         {
             //find name of current release-notes
             var version = Assembly.GetEntryAssembly().GetName().Version.ToString()[..5];
@@ -37,6 +37,11 @@ namespace COMPASS.ViewModels
                 CreateDefaultPreferences();
             }
         }
+
+        #region singleton pattern
+        private static SettingsViewModel _settingsVM;
+        public static SettingsViewModel GetInstance() => _settingsVM ??= new SettingsViewModel();
+        #endregion
 
         #region Load and Save Settings
         public static XmlWriterSettings XmlWriteSettings { get; private set; } = new() { Indent = true };

@@ -20,7 +20,7 @@ namespace COMPASS.ViewModels
             ViewModelBase.MVM = this;
 
             //Load everything
-            LoadSettingsAndPreferences();
+            UpgradeSettings();
             CollectionVM = new();
             CurrentLayout = LayoutViewModel.GetLayout();
             LeftDockVM = new(this);
@@ -37,15 +37,13 @@ namespace COMPASS.ViewModels
 
         #region Init Functions
 
-        private void LoadSettingsAndPreferences()
+        private void UpgradeSettings()
         {
-            SettingsVM = new SettingsViewModel();
-
-            //migrate settings if first launch after update
             if (Properties.Settings.Default.justUpdated)
             {
                 Properties.Settings.Default.Upgrade();
                 Properties.Settings.Default.justUpdated = false;
+                Properties.Settings.Default.Save();
             }
         }
 
@@ -108,8 +106,6 @@ namespace COMPASS.ViewModels
 
         public static CollectionViewModel CollectionVM { get; private set; }
 
-        public static SettingsViewModel SettingsVM { get; private set; }
-
         private LayoutViewModel _currentLayout;
         public LayoutViewModel CurrentLayout
         {
@@ -128,7 +124,7 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> OpenSettingsCommand => _openSettingsCommand ??= new(OpenSettings);
         public void OpenSettings(string tab = null)
         {
-            var settingswindow = new SettingsWindow(SettingsVM, tab);
+            var settingswindow = new SettingsWindow(SettingsViewModel.GetInstance(), tab);
             settingswindow.Show();
         }
 
