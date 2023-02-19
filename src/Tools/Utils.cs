@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
@@ -15,7 +14,8 @@ namespace COMPASS.Tools
         public static int GetAvailableID<T>(IEnumerable<T> Collection) where T : IHasID
         {
             int tempID = 0;
-            while (Collection.Any(f => f.ID == tempID))
+            IEnumerable<int> UsedIDs = Collection.Select(x => x.ID);
+            while (UsedIDs.Contains(tempID))
             {
                 tempID++;
             }
@@ -50,21 +50,6 @@ namespace COMPASS.Tools
             }
             return false;
         }
-
-        //Try functions in order determined by list of preferablefunctions untill one succeeds
-        public static bool TryFunctions<T>(List<PreferableFunction<T>> toTry, T arg)
-        {
-            bool success = false;
-            int i = 0;
-            while (!success && i < toTry.Count)
-            {
-                success = toTry[i].Function(arg);
-                i++;
-            }
-            return success;
-        }
-        public static bool TryFunctions<T>(ObservableCollection<PreferableFunction<T>> toTry, T arg)
-            => TryFunctions(toTry.ToList(), arg);
 
         //Download data and put it in a byte[]
         public static async Task<byte[]> DownloadFileAsync(string uri)

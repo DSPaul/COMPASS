@@ -14,9 +14,9 @@ namespace COMPASS.Tools
 {
     public static class CoverFetcher
     {
-        public static bool GetCover(Codex c)
+        public static bool GetCover(Codex codex)
         {
-            bool success = Utils.TryFunctions(GetCoverFunctions, c);
+            bool success = PreferableFunction<Codex>.TryFunctions(GetCoverFunctions, codex);
             if (!success) MessageBox.Show("Could not get Cover, please check local path or URL");
             return success;
         }

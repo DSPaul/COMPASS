@@ -23,7 +23,7 @@ namespace COMPASS.ViewModels
         //Open Codex whereever
         public static bool OpenCodex(Codex codex)
         {
-            bool success = Utils.TryFunctions(SettingsViewModel.GetInstance().OpenCodexPriority, codex);
+            bool success = PreferableFunction<Codex>.TryFunctions(SettingsViewModel.GetInstance().OpenCodexPriority, codex);
             if (!success) MessageBox.Show("Could not open codex, please check local path or URL");
             return success;
         }
