@@ -27,27 +27,25 @@ namespace COMPASS.Tools
         private static WebDriver _webDriver;
         public static WebDriver GetWebDriver()
         {
-            if (_webDriver is null)
+            string driverName = browser switch
             {
-                string driverName = browser switch
-                {
-                    Browser.Chrome => "chromedriver.exe",
-                    Browser.Firefox => "geckodriver.exe",
-                    _ => "msedgedriver.exe"
-                };
+                Browser.Chrome => "chromedriver.exe",
+                Browser.Firefox => "geckodriver.exe",
+                _ => "msedgedriver.exe"
+            };
 
-                string driverPath = FindFileDirectory(driverName, WebDriverDirectoryPath);
+            string driverPath = FindFileDirectory(driverName, WebDriverDirectoryPath);
 
-                DriverService driverService = browser switch
-                {
-                    Browser.Chrome => ChromeDriverService.CreateDefaultService(driverPath),
-                    Browser.Firefox => FirefoxDriverService.CreateDefaultService(driverPath),
-                    _ => EdgeDriverService.CreateDefaultService(driverPath)
-                };
+            DriverService driverService = browser switch
+            {
+                Browser.Chrome => ChromeDriverService.CreateDefaultService(driverPath),
+                Browser.Firefox => FirefoxDriverService.CreateDefaultService(driverPath),
+                _ => EdgeDriverService.CreateDefaultService(driverPath)
+            };
 
-                driverService.HideCommandPromptWindow = true;
+            driverService.HideCommandPromptWindow = true;
 
-                List<string> DriverArguments = new()
+            List<string> DriverArguments = new()
                 {
                     "--headless",
                     "--window-size=3000,3000",
@@ -55,26 +53,25 @@ namespace COMPASS.Tools
                     "--height=3000"
                 };
 
-                switch (browser)
-                {
-                    case Browser.Chrome:
-                        ChromeOptions CO = new();
-                        CO.AddArguments(DriverArguments);
-                        _webDriver = new ChromeDriver((ChromeDriverService)driverService, CO);
-                        break;
+            switch (browser)
+            {
+                case Browser.Chrome:
+                    ChromeOptions CO = new();
+                    CO.AddArguments(DriverArguments);
+                    _webDriver = new ChromeDriver((ChromeDriverService)driverService, CO);
+                    break;
 
-                    case Browser.Firefox:
-                        FirefoxOptions FO = new();
-                        FO.AddArguments(DriverArguments);
-                        _webDriver = new FirefoxDriver((FirefoxDriverService)driverService, FO);
-                        break;
+                case Browser.Firefox:
+                    FirefoxOptions FO = new();
+                    FO.AddArguments(DriverArguments);
+                    _webDriver = new FirefoxDriver((FirefoxDriverService)driverService, FO);
+                    break;
 
-                    default:
-                        EdgeOptions EO = new();
-                        EO.AddArguments(DriverArguments);
-                        _webDriver = new EdgeDriver((EdgeDriverService)driverService, EO);
-                        break;
-                }
+                default:
+                    EdgeOptions EO = new();
+                    EO.AddArguments(DriverArguments);
+                    _webDriver = new EdgeDriver((EdgeDriverService)driverService, EO);
+                    break;
             }
             return _webDriver;
         }
