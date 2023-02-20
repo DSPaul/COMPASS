@@ -6,7 +6,9 @@
         xmlns:conv="clr-namespace:COMPASS.Converters"
         xmlns:Tools="clr-namespace:COMPASS.Tools"
         xmlns:local="clr-namespace:COMPASS.Windows" WindowStyle="None"
+        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:SourceViewModel}"
         AllowsTransparency="True" Background="Transparent"
         Title="ProgressWindow" Height="150" Width="450" WindowStartupLocation="CenterOwner">
     <Window.Style>
@@ -42,7 +44,7 @@
                 <Border Height="75" Width="400" Background="{StaticResource LogBackground}" 
                         CornerRadius="5" BorderBrush="{StaticResource LogBorder}" BorderThickness="1" Margin="0,5">
                     <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto">
-                        <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{Binding Log, Mode=OneWay}" Margin="10,5">
+                        <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{Binding ImportLog, Mode=OneWay}" Margin="10,5">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <VirtualizingStackPanel IsItemsHost="True"/>

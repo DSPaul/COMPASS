@@ -1,6 +1,5 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
-using static COMPASS.Models.Enums;
 
 
 namespace COMPASS.ViewModels
@@ -42,16 +41,13 @@ namespace COMPASS.ViewModels
         }
 
         #region Add Books Tab
-        private ImportViewModel _currentImportVM;
-        public ImportViewModel CurrentImportViewModel
+        private RelayCommand<SourceViewModel.Sources> _importCommand;
+        public RelayCommand<SourceViewModel.Sources> ImportCommand => _importCommand ??= new(ImportFromSource);
+        public void ImportFromSource(SourceViewModel.Sources source)
         {
-            get => _currentImportVM;
-            set => SetProperty(ref _currentImportVM, value);
+            SourceViewModel Source = SourceViewModel.GetSource(source);
+            Source.Import();
         }
-
-        private RelayCommand<Sources> _importFilesCommand;
-        public RelayCommand<Sources> ImportFilesCommand => _importFilesCommand ??= new(ImportFiles);
-        public void ImportFiles(Sources source) => CurrentImportViewModel = new ImportViewModel(source);
         #endregion
 
     }

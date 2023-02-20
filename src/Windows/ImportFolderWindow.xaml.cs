@@ -9,7 +9,7 @@ namespace COMPASS.Windows
     /// </summary>
     public partial class ImportFolderWindow : Window
     {
-        public ImportFolderWindow(ImportViewModel vm)
+        public ImportFolderWindow(FolderSourceViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;

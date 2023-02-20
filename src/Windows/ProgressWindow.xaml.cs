@@ -9,7 +9,7 @@ namespace COMPASS.Windows
     /// </summary>
     public partial class ProgressWindow : Window
     {
-        public ProgressWindow(ImportViewModel vm)
+        public ProgressWindow(SourceViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;

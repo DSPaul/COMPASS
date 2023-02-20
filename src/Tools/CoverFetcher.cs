@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.ViewModels;
 using HtmlAgilityPack;
 using ImageMagick;
 using Newtonsoft.Json.Linq;
@@ -92,13 +93,13 @@ namespace COMPASS.Tools
         public static bool GetCoverFromURL(Codex c)
         {
             string URL = c.SourceURL;
-            Enums.Sources source;
+            SourceViewModel.Sources source;
             if (String.IsNullOrEmpty(URL)) return false;
 
-            if (URL.Contains("dndbeyond.com")) source = Enums.Sources.DnDBeyond;
-            else if (URL.Contains("gmbinder.com")) source = Enums.Sources.GmBinder;
-            else if (URL.Contains("homebrewery.naturalcrit.com")) source = Enums.Sources.Homebrewery;
-            else if (URL.Contains("drive.google.com")) source = Enums.Sources.GoogleDrive;
+            if (URL.Contains("dndbeyond.com")) source = SourceViewModel.Sources.DnDBeyond;
+            else if (URL.Contains("gmbinder.com")) source = SourceViewModel.Sources.GmBinder;
+            else if (URL.Contains("homebrewery.naturalcrit.com")) source = SourceViewModel.Sources.Homebrewery;
+            else if (URL.Contains("drive.google.com")) source = SourceViewModel.Sources.GoogleDrive;
             //if none of above, unsupported site
             else
             {
@@ -111,12 +112,12 @@ namespace COMPASS.Tools
             return GetCoverFromURL(c, source);
         }
 
-        public static bool GetCoverFromURL(Codex destfile, Enums.Sources source)
+        public static bool GetCoverFromURL(Codex destfile, SourceViewModel.Sources source)
         {
             string URL = destfile.SourceURL;
 
             //sites that store cover as image that can be downloaded
-            if (source.HasFlag(Enums.Sources.DnDBeyond) || source.HasFlag(Enums.Sources.GoogleDrive) || source.HasFlag(Enums.Sources.ISBN))
+            if (source.HasFlag(SourceViewModel.Sources.DnDBeyond) || source.HasFlag(SourceViewModel.Sources.GoogleDrive) || source.HasFlag(SourceViewModel.Sources.ISBN))
             {
                 try
                 {
@@ -127,7 +128,7 @@ namespace COMPASS.Tools
 
                     switch (source)
                     {
-                        case Enums.Sources.DnDBeyond:
+                        case SourceViewModel.Sources.DnDBeyond:
                             //cover art is on store page, redirect there by going to /credits which every book has
                             doc = web.Load(string.Concat(URL, "/credits"));
                             src = doc.DocumentNode;
@@ -135,7 +136,7 @@ namespace COMPASS.Tools
                             imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);
                             break;
 
-                        case Enums.Sources.GoogleDrive:
+                        case SourceViewModel.Sources.GoogleDrive:
                             doc = web.Load(URL);
                             src = doc.DocumentNode;
 
@@ -143,7 +144,7 @@ namespace COMPASS.Tools
                             //cut of "=W***-h***-p" from URL that crops the image if it is present
                             if (imgURL.Contains('=')) imgURL = imgURL.Split('=')[0];
                             break;
-                        case Enums.Sources.ISBN:
+                        case SourceViewModel.Sources.ISBN:
                             string uri = $"https://openlibrary.org/isbn/{destfile.ISBN}.json";
                             JObject metadata = Task.Run(async () => await Utils.GetJsonAsync(uri)).Result;
                             string imgID = (string)metadata.SelectToken("covers[0]");
@@ -162,7 +163,7 @@ namespace COMPASS.Tools
             }
 
             //sites do not store cover as img, Use Selenium for screenshotting pages
-            else if (source.HasFlag(Enums.Sources.GmBinder) || source.HasFlag(Enums.Sources.Homebrewery))
+            else if (source.HasFlag(SourceViewModel.Sources.GmBinder) || source.HasFlag(SourceViewModel.Sources.Homebrewery))
             {
                 WebDriver driver = WebDriverFactory.GetWebDriver();
 
@@ -172,14 +173,14 @@ namespace COMPASS.Tools
                 {
                     switch (source)
                     {
-                        case Enums.Sources.GmBinder:
+                        case SourceViewModel.Sources.GmBinder:
                             driver.Navigate().GoToUrl(URL);
                             Coverpage = driver.FindElement(By.Id("p1"));
                             //screenshot and download the image
                             image = GetCroppedScreenShot(driver, Coverpage);
                             break;
 
-                        case Enums.Sources.Homebrewery:
+                        case SourceViewModel.Sources.Homebrewery:
                             URL = URL.Replace("/share/", "/print/"); //use print API to only show doc itself
                             driver.Navigate().GoToUrl(URL);
                             Coverpage = driver.FindElement(By.Id("p1"));
@@ -209,7 +210,7 @@ namespace COMPASS.Tools
         public static bool GetCoverFromISBN(Codex c)
         {
             if (string.IsNullOrEmpty(c.ISBN)) return false;
-            return GetCoverFromURL(c, Enums.Sources.ISBN);
+            return GetCoverFromURL(c, SourceViewModel.Sources.ISBN);
         }
 
         //get cover from image

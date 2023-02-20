@@ -6,7 +6,7 @@
         xmlns:Tools ="clr-namespace:COMPASS.Tools"
         xmlns:Models ="clr-namespace:COMPASS.Models"
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-        d:DataContext="{d:DesignInstance Type=viewmodels:ImportViewModel}"
+        d:DataContext="{d:DesignInstance Type=viewmodels:OnlineSourceViewModel}"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
         Background="{StaticResource WindowBackground}" SizeToContent="Height"
         FocusManager.FocusedElement="{Binding ElementName=inputField}" ResizeMode="NoResize"
@@ -21,7 +21,7 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="inputField" Tools:AP.PlaceHolderText="{Binding PreviewURL}"
+                <TextBox x:Name="inputField" Tools:AP.PlaceHolderText="{Binding ExampleURL}"
                          Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5"/>
                 <Button  Grid.Column="1" Tools:AP.IconKind="BarcodeScan" Margin="5" 
                          Command="{Binding OpenBarcodeScannerCommand}" ToolTip="Scan Barcode With Webcam">
@@ -29,7 +29,7 @@
                         <Style TargetType="Button" BasedOn="{StaticResource IconBtn}">
                             <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Models:Enums+Sources.ISBN}">
+                                <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static viewmodels:SourceViewModel+Sources.ISBN}">
                                     <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -44,7 +44,7 @@
                     <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Models:Enums+Sources.Homebrewery}">
+                            <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static viewmodels:SourceViewModel+Sources.Homebrewery}">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
                         </Style.Triggers>

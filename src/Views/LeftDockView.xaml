@@ -527,7 +527,7 @@
                 </ScrollViewer>
             </UserControl>
         </TabItem>
-        <TabItem Header="AddBook" Tools:AP.IconKind="BookAdd" ToolTip="Add Books" Grid.IsSharedSizeScope="True">
+        <TabItem Header="AddBooks" Tools:AP.IconKind="BookAdd" ToolTip="Add Books" Grid.IsSharedSizeScope="True">
             <ContentControl Tools:AP.Header="Add Books" Tools:AP.IconKind="BookAdd" Style="{StaticResource TabContentWrapper}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
@@ -544,25 +544,25 @@
                         
                         <TextBlock Text="Physical Books" Style="{StaticResource Categorizer}"/>
                         <Button Tools:AP.IconKind="BookPlusOutline" Style="{StaticResource HighlightedButton}" Content="Add Manually"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.Manual}"/>
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static viewmodels:SourceViewModel+Sources.Manual}"/>
                         <Button Tools:AP.IconKind="Barcode" Style="{StaticResource HighlightedButton}" Content="From ISBN"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.ISBN}"/>
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static viewmodels:SourceViewModel+Sources.ISBN}"/>
 
                         <TextBlock Text="Add Local Files" Style="{StaticResource Categorizer}"/>
                         <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource HighlightedButton}" Content="Import File(s)"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.File}"/>
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static viewmodels:SourceViewModel+Sources.File}"/>
                         <Button Tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource HighlightedButton}" Content="Import Folder"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.Folder}"/>
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static viewmodels:SourceViewModel+Sources.Folder}"/>
 
 
                         <TextBlock Text="Add Online Files" Style="{StaticResource Categorizer}"/>
                         <Button Tools:AP.IconKind="GoogleDrive" Style="{StaticResource HighlightedButton}" Content="Google Drive"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.GoogleDrive}"/>
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static viewmodels:SourceViewModel+Sources.GoogleDrive}"/>
                         <!-- Dropbox not done yet, needs API key-->
                         <!--<Button Tools:AP.IconKind="Dropbox" Style="{StaticResource HighlightedButton}" Content="Dropbox"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.Dropbox}"/>-->
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static viewmodels:SourceViewModel+Sources.Dropbox}"/>-->
                         <Button Style="{StaticResource HighlightedContentButton}" Margin="20,5"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.Homebrewery}">
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static viewmodels:SourceViewModel+Sources.Homebrewery}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                 BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="7,2">
                                 <StackPanel Orientation="Horizontal">
@@ -573,7 +573,7 @@
                         </Button>
                         <!--DND Beyond doesn't work yet, blocks scrapers, no public api-->
                         <!--<Button Style="{StaticResource HighlightedContentButton}"
-                            Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.DnDBeyond}">
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static viewmodels:SourceViewModel+Sources.DnDBeyond}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                 BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
                                 <StackPanel Orientation="Horizontal">
@@ -583,7 +583,7 @@
                             </Border>
                         </Button>-->
                         <Button Style="{StaticResource HighlightedContentButton}" Margin="20,5"
-                                Command="{Binding ImportFilesCommand}" CommandParameter="{x:Static Models:Enums+Sources.GmBinder}">
+                                Command="{Binding ImportCommand}" CommandParameter="{x:Static viewmodels:SourceViewModel+Sources.GmBinder}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                     BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="30,2">
                                 <ContentControl Content="{StaticResource GMBinderLogo}" HorizontalContentAlignment="Center"/>
