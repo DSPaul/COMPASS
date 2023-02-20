@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
 using HtmlAgilityPack;
 using System;
 
@@ -34,6 +35,28 @@ namespace COMPASS.ViewModels
             codex.Authors = new() { "Wizards of the Coast" };
 
             return codex;
+        }
+
+        public override bool FetchCover(Codex codex)
+        {
+            try
+            {
+                //cover art is on store page, redirect there by going to /credits which every book has
+                HtmlDocument doc = ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
+                HtmlNode src = doc?.DocumentNode;
+                if (src is null) return false;
+
+                string imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);
+
+                //download the file
+                CoverFetcher.SaveCover(imgURL, codex);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.log.Error(ex.InnerException);
+                return false;
+            }
         }
     }
 }

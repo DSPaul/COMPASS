@@ -36,9 +36,21 @@ namespace COMPASS.ViewModels
             _ => throw new NotSupportedException()
         };
 
-        protected BackgroundWorker worker;
+        #region Import Logic
+        public abstract Sources Source { get; }
+        public abstract void Import();
 
-        //progress window props
+        public abstract Codex SetMetaData(Codex codex);
+
+        public abstract bool FetchCover(Codex codex);
+        #endregion
+
+        #region Progress window stuff
+        protected ProgressWindow GetProgressWindow() => new(this)
+        {
+            Owner = Application.Current.MainWindow
+        };
+
         private float _progressPercentage;
         public float ProgressPercentage
         {
@@ -57,14 +69,12 @@ namespace COMPASS.ViewModels
         }
 
         public virtual string ProgressText => $"Import in Progress: {ProgressCounter + 1} / {ImportAmount}";
-        public abstract void Import();
-        public abstract Codex SetMetaData(Codex codex);
 
-        protected ProgressWindow GetProgressWindow() => new(this)
-        {
-            Owner = Application.Current.MainWindow
-        };
+        #endregion
 
+        #region Asynchronous worker stuff
+
+        protected BackgroundWorker worker;
 
         protected void InitWorker(DoWorkEventHandler workAction)
         {
@@ -91,5 +101,6 @@ namespace COMPASS.ViewModels
             MainViewModel.CollectionVM.FilterVM.ReFilter();
             ProgressCounter = 0;
         }
+        #endregion
     }
 }

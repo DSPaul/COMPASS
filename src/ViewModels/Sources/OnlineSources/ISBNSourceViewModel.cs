@@ -4,7 +4,6 @@ using COMPASS.Tools;
 using COMPASS.Windows;
 using Newtonsoft.Json.Linq;
 using System;
-using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,27 +15,6 @@ namespace COMPASS.ViewModels
         public override string ImportTitle => "ISBN";
         public override string ExampleURL => "";
         public override Sources Source => Sources.ISBN;
-
-        public new void ImportURL(object sender, DoWorkEventArgs e)
-        {
-            Codex newCodex = new(MainViewModel.CollectionVM.CurrentCollection);
-
-            newCodex = SetMetaData(newCodex);
-
-            //Scraping complete
-            ProgressCounter++;
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Metadata loaded. Fetching cover art."));
-
-            //Get Cover Art
-            CoverFetcher.GetCoverFromISBN(newCodex);
-
-            //add file to cc
-            MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
-
-            //import done
-            ProgressCounter++;
-            worker.ReportProgress(ProgressCounter);
-        }
 
         public override Codex SetMetaData(Codex codex)
         {
@@ -90,6 +68,23 @@ namespace COMPASS.ViewModels
             codex.Physically_Owned = true;
 
             return codex;
+        }
+        public override bool FetchCover(Codex codex)
+        {
+            try
+            {
+                string uri = $"https://openlibrary.org/isbn/{codex.ISBN}.json";
+                JObject metadata = Task.Run(async () => await Utils.GetJsonAsync(uri)).Result;
+                string imgID = (string)metadata.SelectToken("covers[0]");
+                string imgURL = $"https://covers.openlibrary.org/b/id/{imgID}.jpg";
+                CoverFetcher.SaveCover(imgURL, codex);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.log.Error(ex.InnerException);
+                return false;
+            }
         }
 
         private ActionCommand _OpenBarcodeScannerCommand;

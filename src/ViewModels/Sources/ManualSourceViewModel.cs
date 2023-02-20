@@ -5,6 +5,8 @@ namespace COMPASS.ViewModels
 {
     public class ManualSourceViewModel : SourceViewModel
     {
+        public override Sources Source => Sources.Manual;
+
         public override void Import()
         {
             CodexEditWindow editWindow = new(new CodexEditViewModel(null));
@@ -13,5 +15,6 @@ namespace COMPASS.ViewModels
         }
 
         public override Codex SetMetaData(Codex codex) => codex;
+        public override bool FetchCover(Codex codex) => false;
     }
 }

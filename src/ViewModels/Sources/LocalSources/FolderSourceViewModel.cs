@@ -9,30 +9,7 @@ namespace COMPASS.ViewModels
 {
     public class FolderSourceViewModel : LocalSourceViewModel
     {
-
-        //folder import props
-        private IEnumerable<FileTypeInfo> _toImportFiletypes;
-        public IEnumerable<FileTypeInfo> ToImportFiletypes
-        {
-            get => _toImportFiletypes;
-            set => SetProperty(ref _toImportFiletypes, value);
-        }
-
-        //helper class for file type selection during folder import
-        public class FileTypeInfo
-        {
-            public FileTypeInfo(string extension, int fileCount, bool shouldImport)
-            {
-                FileExtension = extension;
-                _fileCount = fileCount;
-                ShouldImport = shouldImport;
-            }
-
-            private readonly int _fileCount;
-            public string FileExtension { get; }
-            public bool ShouldImport { get; set; }
-            public string DisplayText => $"{FileExtension} ({_fileCount} file{(_fileCount > 1 ? @"s" : @"")})";
-        }
+        public override Sources Source => Sources.Folder;
 
         public override void Import()
         {
@@ -87,5 +64,30 @@ namespace COMPASS.ViewModels
             InitWorker(ImportFilePaths);
             worker.RunWorkerAsync(argument: toImport);
         }
+
+        #region File Type Selection Window stuff
+        private IEnumerable<FileTypeInfo> _toImportFiletypes;
+        public IEnumerable<FileTypeInfo> ToImportFiletypes
+        {
+            get => _toImportFiletypes;
+            set => SetProperty(ref _toImportFiletypes, value);
+        }
+
+        //helper class for file type selection during folder import
+        public class FileTypeInfo
+        {
+            public FileTypeInfo(string extension, int fileCount, bool shouldImport)
+            {
+                FileExtension = extension;
+                _fileCount = fileCount;
+                ShouldImport = shouldImport;
+            }
+
+            private readonly int _fileCount;
+            public string FileExtension { get; }
+            public bool ShouldImport { get; set; }
+            public string DisplayText => $"{FileExtension} ({_fileCount} file{(_fileCount > 1 ? @"s" : @"")})";
+        }
+        #endregion
     }
 }

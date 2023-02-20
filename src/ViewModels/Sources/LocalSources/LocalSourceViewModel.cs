@@ -54,6 +54,8 @@ namespace COMPASS.ViewModels
             return codex;
         }
 
+        public override bool FetchCover(Codex codex) => CoverFetcher.GetCoverFromFile(codex);
+
         protected void ImportFilePaths(object sender, DoWorkEventArgs e)
         {
             IEnumerable<string> paths = (IEnumerable<string>)e.Argument;
@@ -84,7 +86,7 @@ namespace COMPASS.ViewModels
                 newCodex = SetMetaData(newCodex);
 
                 //Get Cover from file
-                bool succes = CoverFetcher.GetCoverFromFile(newCodex);
+                bool succes = FetchCover(newCodex);
                 if (!succes)
                 {
                     logEntry = new(LogEntry.MsgType.Warning, $"Failed to generate thumbnail from {Path.GetFileName(path)}");

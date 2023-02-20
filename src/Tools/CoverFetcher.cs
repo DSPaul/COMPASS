@@ -1,8 +1,6 @@
 ﻿using COMPASS.Models;
 using COMPASS.ViewModels;
-using HtmlAgilityPack;
 using ImageMagick;
-using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
@@ -90,16 +88,16 @@ namespace COMPASS.Tools
         }
 
         //Get cover from URL
-        public static bool GetCoverFromURL(Codex c)
+        public static bool GetCoverFromURL(Codex codex)
         {
-            string URL = c.SourceURL;
-            SourceViewModel.Sources source;
+            string URL = codex.SourceURL;
             if (String.IsNullOrEmpty(URL)) return false;
 
-            if (URL.Contains("dndbeyond.com")) source = SourceViewModel.Sources.DnDBeyond;
-            else if (URL.Contains("gmbinder.com")) source = SourceViewModel.Sources.GmBinder;
-            else if (URL.Contains("homebrewery.naturalcrit.com")) source = SourceViewModel.Sources.Homebrewery;
-            else if (URL.Contains("drive.google.com")) source = SourceViewModel.Sources.GoogleDrive;
+            OnlineSourceViewModel sourceViewModel; ;
+            if (URL.Contains("dndbeyond.com")) sourceViewModel = new DndBeyondSourceViewModel();
+            else if (URL.Contains("gmbinder.com")) sourceViewModel = new GmBinderSourceViewModel();
+            else if (URL.Contains("homebrewery.naturalcrit.com")) sourceViewModel = new HomebrewerySourceViewModel();
+            else if (URL.Contains("drive.google.com")) sourceViewModel = new GoogleDriveSourceViewModel();
             //if none of above, unsupported site
             else
             {
@@ -109,111 +107,29 @@ namespace COMPASS.Tools
                 return false;
             }
 
-            return GetCoverFromURL(c, source);
+            return sourceViewModel.FetchCover(codex);
         }
 
-        public static bool GetCoverFromURL(Codex destfile, SourceViewModel.Sources source)
+        public static bool GetCoverFromISBN(Codex codex)
         {
-            string URL = destfile.SourceURL;
-
-            //sites that store cover as image that can be downloaded
-            if (source.HasFlag(SourceViewModel.Sources.DnDBeyond) || source.HasFlag(SourceViewModel.Sources.GoogleDrive) || source.HasFlag(SourceViewModel.Sources.ISBN))
-            {
-                try
-                {
-                    HtmlWeb web = new();
-                    HtmlDocument doc;
-                    HtmlNode src;
-                    string imgURL = "";
-
-                    switch (source)
-                    {
-                        case SourceViewModel.Sources.DnDBeyond:
-                            //cover art is on store page, redirect there by going to /credits which every book has
-                            doc = web.Load(string.Concat(URL, "/credits"));
-                            src = doc.DocumentNode;
-
-                            imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);
-                            break;
-
-                        case SourceViewModel.Sources.GoogleDrive:
-                            doc = web.Load(URL);
-                            src = doc.DocumentNode;
-
-                            imgURL = src.SelectSingleNode("//meta[@property='og:image']").GetAttributeValue("content", String.Empty);
-                            //cut of "=W***-h***-p" from URL that crops the image if it is present
-                            if (imgURL.Contains('=')) imgURL = imgURL.Split('=')[0];
-                            break;
-                        case SourceViewModel.Sources.ISBN:
-                            string uri = $"https://openlibrary.org/isbn/{destfile.ISBN}.json";
-                            JObject metadata = Task.Run(async () => await Utils.GetJsonAsync(uri)).Result;
-                            string imgID = (string)metadata.SelectToken("covers[0]");
-                            imgURL = $"https://covers.openlibrary.org/b/id/{imgID}.jpg";
-                            break;
-                    }
-                    //download the file
-                    var imgBytes = Task.Run(async () => await Utils.DownloadFileAsync(imgURL)).Result;
-                    File.WriteAllBytes(destfile.CoverArt, imgBytes);
-                }
-                catch (Exception ex)
-                {
-                    Logger.log.Error(ex.InnerException);
-                    return false;
-                }
-            }
-
-            //sites do not store cover as img, Use Selenium for screenshotting pages
-            else if (source.HasFlag(SourceViewModel.Sources.GmBinder) || source.HasFlag(SourceViewModel.Sources.Homebrewery))
-            {
-                WebDriver driver = WebDriverFactory.GetWebDriver();
-
-                IWebElement Coverpage;
-                MagickImage image = null;
-                try
-                {
-                    switch (source)
-                    {
-                        case SourceViewModel.Sources.GmBinder:
-                            driver.Navigate().GoToUrl(URL);
-                            Coverpage = driver.FindElement(By.Id("p1"));
-                            //screenshot and download the image
-                            image = GetCroppedScreenShot(driver, Coverpage);
-                            break;
-
-                        case SourceViewModel.Sources.Homebrewery:
-                            URL = URL.Replace("/share/", "/print/"); //use print API to only show doc itself
-                            driver.Navigate().GoToUrl(URL);
-                            Coverpage = driver.FindElement(By.Id("p1"));
-                            //screenshot and download the image
-                            image = GetCroppedScreenShot(driver, Coverpage);
-                            break;
-                    }
-
-                    if (image.Width > 850) image.Resize(850, 0);
-                    image.Write(destfile.CoverArt);
-                }
-                catch (Exception ex)
-                {
-                    Logger.log.Error(ex.InnerException);
-                    return false;
-                }
-                finally
-                {
-                    driver.Quit();
-                }
-            }
-
-            CreateThumbnail(destfile);
-            return true;
+            if (string.IsNullOrEmpty(codex.ISBN)) return false;
+            return new ISBNSourceViewModel().FetchCover(codex);
         }
 
-        public static bool GetCoverFromISBN(Codex c)
+        public static void SaveCover(MagickImage image, Codex destCodex)
         {
-            if (string.IsNullOrEmpty(c.ISBN)) return false;
-            return GetCoverFromURL(c, SourceViewModel.Sources.ISBN);
+            if (image.Width > 850) image.Resize(850, 0);
+            image.Write(destCodex.CoverArt);
+            CreateThumbnail(destCodex);
         }
 
-        //get cover from image
+        public static void SaveCover(string imgURL, Codex destCodex)
+        {
+            var imgBytes = Task.Run(async () => await Utils.DownloadFileAsync(imgURL)).Result;
+            File.WriteAllBytes(destCodex.CoverArt, imgBytes);
+            CreateThumbnail(destCodex);
+        }
+
         public static void GetCoverFromImage(string imagepath, Codex destfile)
         {
             try
@@ -231,7 +147,6 @@ namespace COMPASS.Tools
             }
         }
 
-        //create thumbnail from cover
         public static void CreateThumbnail(Codex c)
         {
             int newwidth = 200; //sets resolution of thumbnail in pixels

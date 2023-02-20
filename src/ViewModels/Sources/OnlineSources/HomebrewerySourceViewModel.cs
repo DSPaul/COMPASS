@@ -1,5 +1,7 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
 using HtmlAgilityPack;
+using ImageMagick;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Globalization;
@@ -46,6 +48,30 @@ namespace COMPASS.ViewModels
             codex.ReleaseDate = DateTime.Parse(((string)metadata.SelectToken("brew.createdAt"))?.Split('T')[0], CultureInfo.InvariantCulture);
 
             return codex;
+        }
+
+        public override bool FetchCover(Codex codex)
+        {
+            OpenQA.Selenium.WebDriver driver = WebDriverFactory.GetWebDriver();
+            try
+            {
+                string URL = codex.SourceURL.Replace("/share/", "/print/"); //use print API to only show doc itself
+                driver.Navigate().GoToUrl(URL);
+                var Coverpage = driver.FindElement(OpenQA.Selenium.By.Id("p1"));
+                //screenshot and download the image
+                MagickImage image = CoverFetcher.GetCroppedScreenShot(driver, Coverpage);
+                CoverFetcher.SaveCover(image, codex);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.log.Error(ex.InnerException);
+                return false;
+            }
+            finally
+            {
+                driver.Quit();
+            }
         }
     }
 }

@@ -5,6 +5,8 @@ namespace COMPASS.ViewModels
 {
     public class FileSourceViewModel : LocalSourceViewModel
     {
+        public override Sources Source => Sources.File;
+
         public override void Import()
         {
             OpenFileDialog openFileDialog = new()

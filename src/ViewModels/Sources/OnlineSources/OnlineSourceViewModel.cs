@@ -10,12 +10,39 @@ namespace COMPASS.ViewModels
 {
     public abstract class OnlineSourceViewModel : SourceViewModel
     {
-        protected ImportURLWindow importURLwindow;
+        #region Import logic
+        public override void Import()
+        {
+            importURLwindow = new(this);
+            importURLwindow.Show();
+        }
 
-        //import url props}
+        public void ImportURL(object sender, DoWorkEventArgs e)
+        {
+            Codex newCodex = new(MainViewModel.CollectionVM.CurrentCollection)
+            {
+                SourceURL = InputURL
+            };
+
+            // Steps 1 & 2: Load Source and Scrape metadata
+            newCodex = SetMetaData(newCodex);
+            ProgressCounter++;
+            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Metadata loaded. Downloading cover art."));
+
+            // Step 3: Get Cover Art
+            FetchCover(newCodex);
+            ProgressCounter++;
+
+            //Complete import
+            MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
+            worker.ReportProgress(ProgressCounter);
+        }
+        #endregion
+
+        #region Input URL Window Stuff
+        protected ImportURLWindow importURLwindow;
         public abstract string ImportTitle { get; }
         public abstract string ExampleURL { get; }
-        public abstract Sources Source { get; }
 
         public override string ProgressText => $"Import in Progress: Step {ProgressCounter + 1} / {ImportAmount}";
 
@@ -39,33 +66,6 @@ namespace COMPASS.ViewModels
         {
             get => _importError;
             set => SetProperty(ref _importError, value);
-        }
-
-        public override void Import()
-        {
-            importURLwindow = new(this);
-            importURLwindow.Show();
-        }
-
-        public void ImportURL(object sender, DoWorkEventArgs e)
-        {
-            Codex newCodex = new(MainViewModel.CollectionVM.CurrentCollection)
-            {
-                SourceURL = InputURL
-            };
-
-            // Steps 1 & 2: Load Source and Scrape metadata
-            newCodex = SetMetaData(newCodex);
-            ProgressCounter++;
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Metadata loaded. Downloading cover art."));
-
-            // Step 3: Get Cover Art
-            CoverFetcher.GetCoverFromURL(newCodex, Source);
-            ProgressCounter++;
-
-            //Complete import
-            MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
-            worker.ReportProgress(ProgressCounter);
         }
 
         private ActionCommand _submitUrlCommand;
@@ -95,6 +95,10 @@ namespace COMPASS.ViewModels
             worker.RunWorkerAsync();
         }
 
+
+        #endregion
+
+        #region methods when scraping for metadata
         public HtmlDocument ScrapeSite(string url)
         {
             HtmlWeb web = new();
@@ -139,5 +143,6 @@ namespace COMPASS.ViewModels
 
             return codex;
         }
+        #endregion
     }
 }

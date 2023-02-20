@@ -1,5 +1,8 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
 using HtmlAgilityPack;
+using ImageMagick;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -37,6 +40,29 @@ namespace COMPASS.ViewModels
             codex.PageCount = pages.Count();
 
             return codex;
+        }
+
+        public override bool FetchCover(Codex codex)
+        {
+            OpenQA.Selenium.WebDriver driver = WebDriverFactory.GetWebDriver();
+            try
+            {
+                driver.Navigate().GoToUrl(codex.SourceURL);
+                var Coverpage = driver.FindElement(OpenQA.Selenium.By.Id("p1"));
+                //screenshot and download the image
+                MagickImage image = CoverFetcher.GetCroppedScreenShot(driver, Coverpage);
+                CoverFetcher.SaveCover(image, codex);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.log.Error(ex.InnerException);
+                return false;
+            }
+            finally
+            {
+                driver.Quit();
+            }
         }
     }
 }
