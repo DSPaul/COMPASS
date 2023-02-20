@@ -349,7 +349,7 @@ namespace COMPASS.ViewModels
 
 
         //------------- Filter Logic ------------//
-        private void UpdateIncludedCodices()
+        private void UpdateIncludedCodices(bool apply = true)
         {
             IncludedCodices = new(_allCodices);
             foreach (Filter.FilterType filterType in Enum.GetValues(typeof(Filter.FilterType)))
@@ -357,9 +357,9 @@ namespace COMPASS.ViewModels
                 // Included codices must match filters of all types so IntersectWith()
                 IncludedCodices.IntersectWith(GetFilteredCodicesByType(IncludedFilters, filterType, true));
             }
-            ApplyFilters();
+            if (apply) ApplyFilters();
         }
-        private void UpdateExcludedCodices()
+        private void UpdateExcludedCodices(bool apply = true)
         {
             ExcludedCodices = new();
             foreach (Filter.FilterType filterType in Enum.GetValues(typeof(Filter.FilterType)))
@@ -367,7 +367,7 @@ namespace COMPASS.ViewModels
                 // Codex is excluded as soon as it matches any excluded filter so UnionWith()
                 ExcludedCodices.UnionWith(GetFilteredCodicesByType(ExcludedFilters, filterType, false));
             }
-            ApplyFilters();
+            if (apply) ApplyFilters();
         }
 
         /// <summary>
@@ -490,8 +490,9 @@ namespace COMPASS.ViewModels
 
         public void ReFilter()
         {
-            UpdateIncludedCodices();
-            UpdateExcludedCodices();
+            UpdateIncludedCodices(false);
+            UpdateExcludedCodices(false);
+            ApplyFilters();
         }
         public void RemoveCodex(Codex c)
         {
