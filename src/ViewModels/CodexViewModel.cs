@@ -2,6 +2,7 @@
 using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.Windows;
+using GongSolutions.Wpf.DragDrop;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ using System.Windows.Input;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexViewModel : ObservableObject
+    public class CodexViewModel : ObservableObject, IDropTarget
     {
         public CodexViewModel() { }
 
@@ -339,5 +340,29 @@ namespace COMPASS.ViewModels
                 }
             }
         }
+
+        #region Drag & Drop
+        void IDropTarget.DragOver(IDropInfo dropInfo)
+        {
+            if (dropInfo.Data is TreeViewNode node && !node.Tag.IsGroup)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+        }
+
+        void IDropTarget.Drop(IDropInfo dropInfo)
+        {
+            if (dropInfo.Data is TreeViewNode node)
+            {
+                Codex TargetCodex = (Codex)dropInfo.TargetItem;
+                if (TargetCodex is not null && !TargetCodex.Tags.Contains(node.Tag))
+                {
+                    TargetCodex.Tags.Add(node.Tag);
+                    MainViewModel.CollectionVM.FilterVM.ReFilter();
+                }
+            }
+        }
+        #endregion
     }
 }

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:local="clr-namespace:COMPASS.Views" 
              xmlns:Converters="clr-namespace:COMPASS.Converters" 
              xmlns:Tools="clr-namespace:COMPASS.Tools" 
@@ -31,6 +32,8 @@
             <Setter Property="VerticalContentAlignment" Value="Top"/>
             <Setter Property="SelectionMode" Value="Extended"/>
             <Setter Property="ItemTemplate" Value="{DynamicResource ListBoxItemCoverTemplate}"/>
+            <Setter Property="dd:DragDrop.IsDropTarget" Value="True"/>
+            <Setter Property="dd:DragDrop.DropHandler" Value="{Binding CodexVM}"/>
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>

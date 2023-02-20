@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:Controls="clr-namespace:COMPASS.Resources.Controls"
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
@@ -19,7 +20,9 @@
                 SelectedItem="{Binding SelectedFile, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848"
                 ClipToBounds="True" VirtualizingPanel.IsVirtualizing ="True" PreviewKeyDown="ListLayoutGrid_PreviewKeyDown"
                 VirtualizingStackPanel.VirtualizationMode = "Recycling" MaxHeight="4000"
-                SelectionChanged="FileView_SelectionChanged" DataContextChanged="FileView_DataContextChanged" TargetUpdated="FileView_TargetUpdated" >
+                SelectionChanged="FileView_SelectionChanged" DataContextChanged="FileView_DataContextChanged" 
+                TargetUpdated="FileView_TargetUpdated"  
+                dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CodexVM}">
         <DataGrid.Resources>
             <Tools:BindingProxy x:Key="LayoutProxy" Data="{Binding}" />
             <Tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />

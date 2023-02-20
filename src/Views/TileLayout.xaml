@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:Converters="clr-namespace:COMPASS.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
@@ -17,7 +18,8 @@
             ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}"  
              Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Top" 
             ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" SelectionMode="Extended"
-            SelectionChanged="FileView_SelectionChanged" PreviewKeyDown="TileLayoutListBox_PreviewKeyDown">
+            SelectionChanged="FileView_SelectionChanged" PreviewKeyDown="TileLayoutListBox_PreviewKeyDown"
+             dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CodexVM}">
         <ListBox.ItemContainerStyle>
             <Style TargetType="{x:Type ListBoxItem}">
                 <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
