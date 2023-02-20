@@ -1,11 +1,11 @@
 ﻿using COMPASS.Models;
 using COMPASS.Windows;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.ViewModels.Sources
 {
     public class ManualSourceViewModel : SourceViewModel
     {
-        public override Sources Source => Sources.Manual;
+        public override ImportSource Source => ImportSource.Manual;
 
         public override void Import()
         {

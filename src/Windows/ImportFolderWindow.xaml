@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMPASS.Windows"
-        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-        d:DataContext="{d:DesignInstance Type=viewmodels:FolderSourceViewModel}"
+        xmlns:Sources="clr-namespace:COMPASS.ViewModels.Sources" 
+        d:DataContext="{d:DesignInstance Type=Sources:FolderSourceViewModel}"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
         Background="{StaticResource WindowBackground}" SizeToContent="WidthAndHeight"
         Title="Import URL" Height="300" Width="600" WindowStartupLocation="CenterScreen">

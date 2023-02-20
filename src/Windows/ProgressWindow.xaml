@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:conv="clr-namespace:COMPASS.Converters"
         xmlns:Tools="clr-namespace:COMPASS.Tools"
-        xmlns:local="clr-namespace:COMPASS.Windows" WindowStyle="None"
-        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
+        xmlns:local="clr-namespace:COMPASS.Windows" 
+        xmlns:Sources="clr-namespace:COMPASS.ViewModels.Sources"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" 
-        d:DataContext="{d:DesignInstance Type=viewmodels:SourceViewModel}"
-        AllowsTransparency="True" Background="Transparent"
+        d:DataContext="{d:DesignInstance Type=Sources:SourceViewModel}"
+        AllowsTransparency="True" Background="Transparent" WindowStyle="None"
         Title="ProgressWindow" Height="150" Width="450" WindowStartupLocation="CenterOwner">
     <Window.Style>
         <Style>

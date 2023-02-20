@@ -5,39 +5,24 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.ViewModels.Sources
 {
     abstract public class SourceViewModel : ObservableObject
     {
-        [Flags]
-        public enum Sources
+        public static SourceViewModel GetSource(ImportSource source) => source switch
         {
-            None = 0,
-            Manual = 1,
-            File = 2,
-            Folder = 4,
-            GmBinder = 8,
-            Homebrewery = 16,
-            DnDBeyond = 32,
-            GoogleDrive = 64,
-            Dropbox = 128,
-            ISBN = 256
-        }
-
-        public static SourceViewModel GetSource(Sources source) => source switch
-        {
-            Sources.File => new FileSourceViewModel(),
-            Sources.Folder => new FolderSourceViewModel(),
-            Sources.Manual => new ManualSourceViewModel(),
-            Sources.ISBN => new ISBNSourceViewModel(),
-            Sources.GmBinder => new GmBinderSourceViewModel(),
-            Sources.Homebrewery => new HomebrewerySourceViewModel(),
-            Sources.GoogleDrive => new GoogleDriveSourceViewModel(),
+            ImportSource.File => new FileSourceViewModel(),
+            ImportSource.Folder => new FolderSourceViewModel(),
+            ImportSource.Manual => new ManualSourceViewModel(),
+            ImportSource.ISBN => new ISBNSourceViewModel(),
+            ImportSource.GmBinder => new GmBinderSourceViewModel(),
+            ImportSource.Homebrewery => new HomebrewerySourceViewModel(),
+            ImportSource.GoogleDrive => new GoogleDriveSourceViewModel(),
             _ => throw new NotSupportedException()
         };
 
         #region Import Logic
-        public abstract Sources Source { get; }
+        public abstract ImportSource Source { get; }
         public abstract void Import();
 
         public abstract Codex SetMetaData(Codex codex);

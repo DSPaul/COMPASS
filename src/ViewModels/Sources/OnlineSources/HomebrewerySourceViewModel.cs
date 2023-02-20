@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Globalization;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.ViewModels.Sources
 {
     public class HomebrewerySourceViewModel : OnlineSourceViewModel
     {
@@ -14,7 +14,7 @@ namespace COMPASS.ViewModels
 
         public override string ExampleURL => "https://homebrewery.naturalcrit.com/share/";
 
-        public override Sources Source => Sources.Homebrewery;
+        public override ImportSource Source => ImportSource.Homebrewery;
 
         public override Codex SetMetaData(Codex codex)
         {
@@ -28,7 +28,7 @@ namespace COMPASS.ViewModels
                 return codex;
             }
 
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Brew loaded, reading metadata"));
+            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Fetching metadata"));
 
             //Set known metadata
             codex.Publisher = "Homebrewery";

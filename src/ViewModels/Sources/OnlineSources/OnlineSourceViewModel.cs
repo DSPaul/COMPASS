@@ -6,7 +6,7 @@ using HtmlAgilityPack;
 using System;
 using System.ComponentModel;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.ViewModels.Sources
 {
     public abstract class OnlineSourceViewModel : SourceViewModel
     {

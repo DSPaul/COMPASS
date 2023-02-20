@@ -3,7 +3,7 @@ using COMPASS.Tools;
 using HtmlAgilityPack;
 using System;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.ViewModels.Sources
 {
     public class DndBeyondSourceViewModel : OnlineSourceViewModel
     {
@@ -11,7 +11,7 @@ namespace COMPASS.ViewModels
 
         public override string ExampleURL => "https://www.dndbeyond.com/sources/";
 
-        public override Sources Source => Sources.DnDBeyond;
+        public override ImportSource Source => ImportSource.DnDBeyond;
 
         public override Codex SetMetaData(Codex codex)
         {

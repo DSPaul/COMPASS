@@ -3,10 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Tools ="clr-namespace:COMPASS.Tools"
-        xmlns:Models ="clr-namespace:COMPASS.Models"
-        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-        d:DataContext="{d:DesignInstance Type=viewmodels:OnlineSourceViewModel}"
+        xmlns:Tools ="clr-namespace:COMPASS.Tools" 
+        xmlns:Sources="clr-namespace:COMPASS.ViewModels.Sources" 
+        d:DataContext="{d:DesignInstance Type=Sources:OnlineSourceViewModel}"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
         Background="{StaticResource WindowBackground}" SizeToContent="Height"
         FocusManager.FocusedElement="{Binding ElementName=inputField}" ResizeMode="NoResize"
@@ -29,7 +28,7 @@
                         <Style TargetType="Button" BasedOn="{StaticResource IconBtn}">
                             <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static viewmodels:SourceViewModel+Sources.ISBN}">
+                                <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Sources:ImportSource.ISBN}">
                                     <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -44,7 +43,7 @@
                     <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static viewmodels:SourceViewModel+Sources.Homebrewery}">
+                            <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Sources:ImportSource.Homebrewery}">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
                         </Style.Triggers>

@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.ViewModels.Sources
 {
     public class GmBinderSourceViewModel : OnlineSourceViewModel
     {
@@ -14,7 +14,7 @@ namespace COMPASS.ViewModels
 
         public override string ExampleURL => "https://www.gmbinder.com/share/";
 
-        public override Sources Source => Sources.GmBinder;
+        public override ImportSource Source => ImportSource.GmBinder;
 
         public override Codex SetMetaData(Codex codex)
         {

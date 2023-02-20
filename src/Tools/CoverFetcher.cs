@@ -1,5 +1,5 @@
 ﻿using COMPASS.Models;
-using COMPASS.ViewModels;
+using COMPASS.ViewModels.Sources;
 using ImageMagick;
 using OpenQA.Selenium;
 using System;

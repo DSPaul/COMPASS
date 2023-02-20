@@ -3,7 +3,7 @@ using COMPASS.Tools;
 using HtmlAgilityPack;
 using System;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.ViewModels.Sources
 {
     public class GoogleDriveSourceViewModel : OnlineSourceViewModel
     {
@@ -11,7 +11,7 @@ namespace COMPASS.ViewModels
 
         public override string ExampleURL => "https://drive.google.com/file/";
 
-        public override Sources Source => Sources.GoogleDrive;
+        public override ImportSource Source => ImportSource.GoogleDrive;
 
         public override Codex SetMetaData(Codex codex)
         {

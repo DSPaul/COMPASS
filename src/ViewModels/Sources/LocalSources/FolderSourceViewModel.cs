@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.ViewModels.Sources
 {
     public class FolderSourceViewModel : LocalSourceViewModel
     {
-        public override Sources Source => Sources.Folder;
+        public override ImportSource Source => ImportSource.Folder;
 
         public override void Import()
         {

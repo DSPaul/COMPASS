@@ -1,11 +1,11 @@
 ﻿using COMPASS.Windows;
 using Microsoft.Win32;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.ViewModels.Sources
 {
     public class FileSourceViewModel : LocalSourceViewModel
     {
-        public override Sources Source => Sources.File;
+        public override ImportSource Source => ImportSource.File;
 
         public override void Import()
         {

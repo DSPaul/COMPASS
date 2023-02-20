@@ -8,13 +8,13 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.ViewModels.Sources
 {
     public class ISBNSourceViewModel : OnlineSourceViewModel
     {
         public override string ImportTitle => "ISBN";
         public override string ExampleURL => "";
-        public override Sources Source => Sources.ISBN;
+        public override ImportSource Source => ImportSource.ISBN;
 
         public override Codex SetMetaData(Codex codex)
         {
