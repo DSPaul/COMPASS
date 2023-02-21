@@ -590,6 +590,8 @@
                                 <ContentControl Content="{StaticResource GMBinderLogo}" HorizontalContentAlignment="Center"/>
                             </Border>
                         </Button>
+                        <Button Tools:AP.IconKind="Web" Style="{StaticResource HighlightedButton}" Content="Other"
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Sources:ImportSource.GenericURL}"/>
                     </StackPanel>
                 </ScrollViewer>
             </ContentControl>

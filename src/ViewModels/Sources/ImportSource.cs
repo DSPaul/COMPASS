@@ -14,6 +14,7 @@ namespace COMPASS.ViewModels.Sources
         DnDBeyond = 32,
         GoogleDrive = 64,
         Dropbox = 128,
-        ISBN = 256
+        ISBN = 256,
+        GenericURL = 512
     }
 }

@@ -18,6 +18,7 @@ namespace COMPASS.ViewModels.Sources
             ImportSource.GmBinder => new GmBinderSourceViewModel(),
             ImportSource.Homebrewery => new HomebrewerySourceViewModel(),
             ImportSource.GoogleDrive => new GoogleDriveSourceViewModel(),
+            ImportSource.GenericURL => new GenericOnlineSourceViewModel(),
             _ => throw new NotSupportedException()
         };
 
