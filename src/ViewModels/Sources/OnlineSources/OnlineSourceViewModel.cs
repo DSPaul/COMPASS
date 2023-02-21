@@ -5,6 +5,7 @@ using COMPASS.Windows;
 using HtmlAgilityPack;
 using System;
 using System.ComponentModel;
+using System.Windows;
 
 namespace COMPASS.ViewModels.Sources
 {
@@ -36,6 +37,19 @@ namespace COMPASS.ViewModels.Sources
             //Complete import
             MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
             worker.ReportProgress(ProgressCounter);
+
+            if (ShowEditWhenDone)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    CodexEditWindow editWindow = new(new CodexEditViewModel(newCodex))
+                    {
+                        Topmost = true,
+                        Owner = Application.Current.MainWindow
+                    };
+                    editWindow.ShowDialog();
+                });
+            }
         }
         #endregion
 
@@ -46,6 +60,7 @@ namespace COMPASS.ViewModels.Sources
 
         public override string ProgressText => $"Import in Progress: Step {ProgressCounter + 1} / {ImportAmount}";
 
+        public virtual bool ShowValidateDisableCheckbox => false;
         public bool ValidateURL { get; set; } = true;
         //checkbox to disable validation so need inverted prop
         public bool DontValidateURL
@@ -67,6 +82,10 @@ namespace COMPASS.ViewModels.Sources
             get => _importError;
             set => SetProperty(ref _importError, value);
         }
+
+        public bool ShowEditWhenDone { get; set; } = false;
+
+        public virtual bool ShowScannerButton => false;
 
         private ActionCommand _submitUrlCommand;
         public ActionCommand SubmitURLCommand => _submitUrlCommand ??= new(SubmitURL);
@@ -94,8 +113,6 @@ namespace COMPASS.ViewModels.Sources
             InitWorker(ImportURL);
             worker.RunWorkerAsync();
         }
-
-
         #endregion
 
         #region methods when scraping for metadata

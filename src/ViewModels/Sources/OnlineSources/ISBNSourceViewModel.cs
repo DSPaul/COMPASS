@@ -87,6 +87,8 @@ namespace COMPASS.ViewModels.Sources
             }
         }
 
+        public override bool ShowScannerButton => true;
+
         private ActionCommand _OpenBarcodeScannerCommand;
         public ActionCommand OpenBarcodeScannerCommand => _OpenBarcodeScannerCommand ??= new(OpenBarcodeScanner);
         public void OpenBarcodeScanner()

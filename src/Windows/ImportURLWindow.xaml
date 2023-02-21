@@ -22,34 +22,15 @@
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="inputField" Tools:AP.PlaceHolderText="{Binding ExampleURL}"
                          Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5"/>
-                <Button  Grid.Column="1" Tools:AP.IconKind="BarcodeScan" Margin="5" 
-                         Command="{Binding OpenBarcodeScannerCommand}" ToolTip="Scan Barcode With Webcam">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource IconBtn}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Sources:ImportSource.ISBN}">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
+                <Button Style="{StaticResource IconBtn}" Grid.Column="1" Tools:AP.IconKind="BarcodeScan" Margin="5"  
+                         Visibility="{Binding ShowScannerButton, Converter={StaticResource ToVisibilityConverter}}"
+                         Command="{Binding OpenBarcodeScannerCommand}" ToolTip="Scan Barcode With Webcam"/>
                 <Button Grid.Column="2" Content="Import" Command="{Binding SubmitURLCommand}" IsDefault="True" Margin="5"
                         Style="{StaticResource TextButton}" Background="{StaticResource AccentColorMuted}"/>
             </Grid>
-            <CheckBox IsChecked="{Binding DontValidateURL}" Content="Disable URL validation (for self-hosted instances)" Margin="5">
-                <CheckBox.Style>
-                    <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Sources:ImportSource.Homebrewery}">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </CheckBox.Style>
-            </CheckBox>
+            <CheckBox IsChecked="{Binding DontValidateURL}" Content="Disable URL validation (for self-hosted instances)" Margin="5"
+                      Visibility="{Binding ShowValidateDisableCheckbox, Converter={StaticResource ToVisibilityConverter}}"/>
+            <CheckBox IsChecked="{Binding ShowEditWhenDone}" Content="Open Edit Window when done" Margin="5"/>
             <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" Margin="5" TextWrapping="Wrap"/>
         </StackPanel>
     </Grid>

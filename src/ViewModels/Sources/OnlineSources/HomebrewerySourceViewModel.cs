@@ -16,6 +16,8 @@ namespace COMPASS.ViewModels.Sources
 
         public override ImportSource Source => ImportSource.Homebrewery;
 
+        public override bool ShowValidateDisableCheckbox => true;
+
         public override Codex SetMetaData(Codex codex)
         {
             worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
