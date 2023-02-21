@@ -7,6 +7,7 @@ using ImageMagick;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -81,12 +82,12 @@ namespace COMPASS.ViewModels
         private void InitConnectionTimer()
         {
             //Start internet checkup timer
-            DispatcherTimer CheckConnectionTimer = new();
-            CheckConnectionTimer.Tick += new EventHandler(CheckConnection);
-            CheckConnectionTimer.Interval = new TimeSpan(0, 0, 30);
-            CheckConnectionTimer.Start();
+            _checkConnectionTimer = new();
+            _checkConnectionTimer.Tick += (s, e) => Task.Run(() => IsOnline = Utils.PingURL());
+            _checkConnectionTimer.Interval = new TimeSpan(0, 0, 10);
+            _checkConnectionTimer.Start();
             //to check right away on startup
-            IsOnline = Utils.PingURL();
+            Task.Run(() => IsOnline = Utils.PingURL());
         }
 
         #endregion
@@ -100,6 +101,8 @@ namespace COMPASS.ViewModels
             private set => SetProperty(ref _isOnline, value);
         }
 
+
+        private DispatcherTimer _checkConnectionTimer;
         #endregion
 
         #region ViewModels
@@ -132,9 +135,6 @@ namespace COMPASS.ViewModels
         private RelayCommand<LayoutViewModel.Layout> _changeLayoutCommand;
         public RelayCommand<LayoutViewModel.Layout> ChangeLayoutCommand => _changeLayoutCommand ??= new(ChangeLayout);
         public void ChangeLayout(LayoutViewModel.Layout layout) => CurrentLayout = LayoutViewModel.GetLayout(layout);
-
-        //called every few seconds to update IsOnline
-        private void CheckConnection(object sender, EventArgs e) => IsOnline = Utils.PingURL();
         #endregion
     }
 }
