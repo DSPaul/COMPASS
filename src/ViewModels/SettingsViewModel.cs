@@ -27,15 +27,7 @@ namespace COMPASS.ViewModels
                 ReleaseNotes = File.ReadAllText($"release-notes-{version}.md");
             }
 
-            if (File.Exists(Constants.PreferencesFilePath))
-            {
-                LoadPreferences();
-            }
-            else
-            {
-                Logger.log.Warn($"{Constants.PreferencesFilePath} does not exist.");
-                CreateDefaultPreferences();
-            }
+            LoadPreferences();
         }
 
         #region singleton pattern
@@ -58,14 +50,22 @@ namespace COMPASS.ViewModels
 
         public void LoadPreferences()
         {
-            using (var Reader = new StreamReader(Constants.PreferencesFilePath))
+            if (File.Exists(Constants.PreferencesFilePath))
             {
-                System.Xml.Serialization.XmlSerializer serializer = new(typeof(SerializablePreferences));
-                AllPreferences = serializer.Deserialize(Reader) as SerializablePreferences;
-                Reader.Close();
+                using (var Reader = new StreamReader(Constants.PreferencesFilePath))
+                {
+                    System.Xml.Serialization.XmlSerializer serializer = new(typeof(SerializablePreferences));
+                    AllPreferences = serializer.Deserialize(Reader) as SerializablePreferences;
+                    Reader.Close();
+                }
+                //put openFilePriority in right order
+                OpenCodexPriority = new(OpenCodexFunctions.OrderBy(pf => AllPreferences.OpenFilePriorityIDs.IndexOf(pf.ID)));
             }
-            //put openFilePriority in right order
-            OpenCodexPriority = new ObservableCollection<PreferableFunction<Codex>>(OpenCodexFunctions.OrderBy(pf => AllPreferences.OpenFilePriorityIDs.IndexOf(pf.ID)));
+            else
+            {
+                Logger.Warn($"{Constants.PreferencesFilePath} does not exist.", new FileNotFoundException());
+                CreateDefaultPreferences();
+            }
         }
 
         public void CreateDefaultPreferences() => OpenCodexPriority = new(OpenCodexFunctions);

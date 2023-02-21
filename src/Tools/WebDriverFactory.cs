@@ -90,7 +90,7 @@ namespace COMPASS.Tools
                 }
                 catch (Exception ex)
                 {
-                    Logger.log.Error(ex.Message);
+                    Logger.Error("Chrome webdriver could not be initialised", ex);
                 }
             }
 
@@ -103,7 +103,7 @@ namespace COMPASS.Tools
                 }
                 catch (Exception ex)
                 {
-                    Logger.log.Error(ex.Message);
+                    Logger.Error("Firefox webdriver could not be initialised", ex);
                 }
             }
 
@@ -116,7 +116,7 @@ namespace COMPASS.Tools
                 }
                 catch (Exception ex)
                 {
-                    Logger.log.Error(ex.Message);
+                    Logger.Error("Firefox webdriver could not be initialised", ex);
                 }
             }
         }

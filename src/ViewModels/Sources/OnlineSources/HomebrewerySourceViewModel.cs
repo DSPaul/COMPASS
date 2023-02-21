@@ -67,7 +67,7 @@ namespace COMPASS.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                Logger.log.Error(ex.InnerException);
+                Logger.Error($"Failed to get cover from {ImportTitle}", ex);
                 return false;
             }
             finally

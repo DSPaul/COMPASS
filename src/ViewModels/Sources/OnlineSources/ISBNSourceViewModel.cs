@@ -29,6 +29,7 @@ namespace COMPASS.ViewModels.Sources
                     $"You can contribute by submitting this book at \n" +
                     $"https://openlibrary.org/books/add";
                 worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Error, message));
+                Logger.Error($"Could not find ISBN {InputURL} on openlibrary.org", new Exception());
                 return codex;
             }
 
@@ -82,7 +83,7 @@ namespace COMPASS.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                Logger.log.Error(ex.InnerException);
+                Logger.Error($"Failed to get cover from OpenLibrary", ex);
                 return false;
             }
         }

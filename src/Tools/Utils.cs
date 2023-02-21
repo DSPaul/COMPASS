@@ -43,10 +43,11 @@ namespace COMPASS.Tools
                 PingReply reply = p.Send(URL, 3000);
                 if (reply.Status == IPStatus.Success)
                     return true;
+                else return false;
             }
             catch (Exception ex)
             {
-                Logger.log.Warn(ex.InnerException);
+                Logger.Warn($"Could not ping {URL}", ex);
             }
             return false;
         }

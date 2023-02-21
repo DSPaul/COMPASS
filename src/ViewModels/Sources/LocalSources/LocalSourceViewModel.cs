@@ -39,9 +39,9 @@ namespace COMPASS.ViewModels.Sources
 
                     catch (Exception ex)
                     {
-                        Logger.log.Error(ex.InnerException);
                         //in case pdf is corrupt: PdfReader will throw error
                         //in those cases: import the pdf without opening it
+                        Logger.Error($"Failed to read metadata from {Path.GetFileName(codex.Path)}", ex);
                         LogEntry logEntry = new(LogEntry.MsgType.Warning, $"Failed to read metadata from {codex.Title}");
                         worker.ReportProgress(ProgressCounter, logEntry);
                     }
@@ -68,6 +68,7 @@ namespace COMPASS.ViewModels.Sources
                 if (MainViewModel.CollectionVM.CurrentCollection.AllCodices.Any(codex => codex.Path == path))
                 {
                     logEntry = new(LogEntry.MsgType.Warning, $"Skipped {Path.GetFileName(path)}, already imported");
+                    Logger.Info($"Skipped {Path.GetFileName(path)}, already in collection");
                     ProgressCounter++;
                     importWorker.ReportProgress(ProgressCounter, logEntry);
                     continue;
@@ -97,6 +98,7 @@ namespace COMPASS.ViewModels.Sources
                 MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
                 ProgressCounter++;
                 importWorker.ReportProgress(ProgressCounter);
+                Logger.Info($"Imported {newCodex.Title}");
             }
         }
     }

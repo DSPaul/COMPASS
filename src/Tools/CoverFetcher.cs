@@ -69,9 +69,7 @@ namespace COMPASS.Tools
                     }
                     catch (Exception ex)
                     {
-                        Logger.log.Error(ex.InnerException);
-                        string messageBoxText = "Failed to extract Cover from pdf.";
-                        MessageBox.Show(messageBoxText, "Failed to extract Cover from pdf", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        Logger.Error("Failed to extract Cover from pdf.", ex);
                         return false;
                     }
                 case ".jpg":
@@ -142,8 +140,7 @@ namespace COMPASS.Tools
             catch (Exception ex)
             {
                 //will fail if image is corrupt
-                Logger.log.Error($"Could not get cover from {imagepath}");
-                Logger.log.Error(ex.InnerException);
+                Logger.Error($"Could not get cover from {imagepath}", ex);
             }
         }
 

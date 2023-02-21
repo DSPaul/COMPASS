@@ -34,19 +34,20 @@ namespace COMPASS.ViewModels
         public ReturningRelayCommand<Codex, bool> OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(OpenCodexLocally, CanOpenCodexLocally);
         public static bool OpenCodexLocally(Codex toOpen)
         {
-            if (String.IsNullOrEmpty(toOpen.Path)) return false;
+            if (String.IsNullOrWhiteSpace(toOpen.Path)) return false;
             try
             {
                 Process.Start(new ProcessStartInfo(toOpen.Path) { UseShellExecute = true });
                 toOpen.LastOpened = DateTime.Now;
                 toOpen.OpenedCount++;
+                Logger.Info($"Opened {toOpen.Path}");
                 return true;
             }
             catch (Exception ex)
             {
-                Logger.log.Error(ex.InnerException);
+                Logger.Warn($"Failed to open {toOpen.Path}", ex);
 
-                if (toOpen == null) return false;
+                if (toOpen is null) return false;
 
                 //Check if folder exists, if not ask users to rename
                 var dir = Path.GetDirectoryName(toOpen.Path);
@@ -73,19 +74,20 @@ namespace COMPASS.ViewModels
         public ReturningRelayCommand<Codex, bool> OpenCodexOnlineCommand => _openCodexOnlineCommand ??= new(OpenCodexOnline, CanOpenCodexOnline);
         public static bool OpenCodexOnline(Codex toOpen)
         {
-            //fails if no internet, pinging 8.8.8.8 DNS instead of server because some sites like gmbinder block ping
-            if (!Utils.PingURL()) return false;
-
+            if (!CanOpenCodexOnline(toOpen)) return false;
             try
             {
                 Process.Start(new ProcessStartInfo(toOpen.SourceURL) { UseShellExecute = true });
                 toOpen.LastOpened = DateTime.Now;
                 toOpen.OpenedCount++;
+                Logger.Info($"Opened {toOpen.SourceURL}");
                 return true;
             }
             catch (Exception ex)
             {
-                Logger.log.Error(ex.InnerException);
+                Logger.Error($"Failed to open {toOpen.SourceURL}", ex);
+                //fails if no internet, pinging 8.8.8.8 DNS instead of server because some sites like gmbinder block ping
+                if (!Utils.PingURL()) Logger.Warn($"Cannot open online files when not connected to the internet", ex);
                 return false;
             }
 
@@ -167,7 +169,12 @@ namespace COMPASS.ViewModels
         //Toggle Favorite
         private RelayCommand<Codex> _favoriteCodexCommand;
         public RelayCommand<Codex> FavoriteCodexCommand => _favoriteCodexCommand ??= new(FavoriteCodex);
-        public static void FavoriteCodex(Codex toFavorite) => toFavorite.Favorite = !toFavorite.Favorite;
+        public static void FavoriteCodex(Codex toFavorite)
+        {
+            toFavorite.Favorite = !toFavorite.Favorite;
+            string prefix = toFavorite.Favorite ? "Favorited" : "Unfavorited";
+            Logger.Info($"{prefix} {toFavorite.Title}");
+        }
 
         //Toggle Favorite
         private RelayCommand<IList> _favoriteCodicesCommand;
@@ -184,9 +191,10 @@ namespace COMPASS.ViewModels
             // if at least one is not favorited, set all to favorite
             // if all are already favorited, unfavorite all
             bool newVal = ToFavorite.Any(c => !c.Favorite);
-            foreach (Codex c in toFavorite)
+            foreach (Codex codex in toFavorite)
             {
-                c.Favorite = newVal;
+                codex.Favorite = newVal;
+                Logger.Info($"{(newVal ? "Favorited" : "Unfavorited")} {codex.Title}");
             }
         }
 
@@ -217,7 +225,11 @@ namespace COMPASS.ViewModels
             List<Codex> ToMoveList = new();
 
             //Check if target Collection is valid
-            if (targetCollection is null || targetCollection == MainViewModel.CollectionVM.CurrentCollection) return;
+            if (targetCollection is null || targetCollection.DirectoryName == MainViewModel.CollectionVM.CurrentCollection.DirectoryName)
+            {
+                Logger.Warn($"Target Collection {targetCollection.DirectoryName} is invalid", new ArgumentException());
+                return;
+            }
 
             //extract Codex parameter
             if (par[1] is Codex codex)
@@ -231,8 +243,8 @@ namespace COMPASS.ViewModels
             }
 
             //MessageBox "Are you Sure?"
-            string MessageSingle = "Moving " + ToMoveList[0].Title + " to " + targetCollection.DirectoryName + " will remove all tags from the Codex, are you sure you wish to continue?";
-            string MessageMultiple = "Moving these " + ToMoveList.Count + " files to " + targetCollection.DirectoryName + " will remove all tags from the Codices, are you sure you wish to continue?";
+            string MessageSingle = $"Moving  {ToMoveList[0].Title} to {targetCollection.DirectoryName} will remove all tags from the Codex, are you sure you wish to continue?";
+            string MessageMultiple = $"Moving these {ToMoveList.Count} files to {targetCollection.DirectoryName} will remove all tags from the Codices, are you sure you wish to continue?";
 
             string sCaption = "Are you Sure?";
             string sMessageBoxText = ToMoveList.Count == 1 ? MessageSingle : MessageMultiple;
@@ -269,6 +281,8 @@ namespace COMPASS.ViewModels
                     //Update the cover art metadata to new path, has to happen after delete so old one gets deleted
                     ToMove.CoverArt = newCoverArt;
                     ToMove.Thumbnail = newThumbnail;
+
+                    Logger.Info($"Moved {ToMove.Title} from {MainViewModel.CollectionVM.CurrentCollection.DirectoryName} to {targetCollection.DirectoryName}");
                 }
                 //Save changes to TargetCollection
                 targetCollection.SaveCodices();

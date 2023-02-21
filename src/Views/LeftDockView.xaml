@@ -77,7 +77,7 @@
                 </Setter>
             </Style>
             <Style TargetType="ContentControl" x:Key="TabContentWrapper">
-                <Setter Property="MinWidth" Value="250"/>
+                <Setter Property="Width" Value="250"/>
                 <Setter Property="Visibility" Value="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
                 <Setter Property="ItemsControl.Template">
                     <Setter.Value>
@@ -95,7 +95,7 @@
                                         <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.Header)}" FontSize="20"/>
                                     </StackPanel>
                                     <Rectangle Grid.Row="1" Grid.Column="1" Height="3" Fill="{StaticResource Separator}"/>
-                                    <ContentPresenter Grid.Row="2" Grid.Column="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"/>
+                                    <ContentPresenter Grid.Row="2" Grid.Column="1" Cursor="Arrow" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"/>
                                     <ToggleButton ToolTip="Collapse" IsChecked="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}}" 
                                                   Height="35" Width="35" HorizontalAlignment="Right">
                                         <ToggleButton.Template>
@@ -593,6 +593,50 @@
                         <Button Tools:AP.IconKind="Web" Style="{StaticResource HighlightedButton}" Content="Other"
                             Command="{Binding ImportCommand}" CommandParameter="{x:Static Sources:ImportSource.GenericURL}"/>
                     </StackPanel>
+                </ScrollViewer>
+            </ContentControl>
+        </TabItem>
+        <TabItem x:Name="Logs" Header="Logs" Tools:AP.IconKind="TextLong" ToolTip="Activity Log" GotFocus="Logs_GotFocus">
+            <TabItem.Template>
+                <ControlTemplate TargetType="TabItem">
+                    <Border x:Name="TabBorder" CornerRadius="5,0,0,5">
+                        <Grid>
+                            <materialDesign:PackIcon Height="35" Width="35" HorizontalAlignment="Center"
+                                         Margin="10" Kind="TextLong"/>
+                            <Ellipse x:Name="WarningNotification" Fill="Orange" Width="10" Height="10" Visibility="Collapsed" 
+                                     VerticalAlignment="Top" HorizontalAlignment="Right" Margin="5"/>
+                            <Ellipse x:Name="ErrorNotification" Fill="Red" Width="10" Height="10" Visibility="Collapsed"
+                                     VerticalAlignment="Top" HorizontalAlignment="Right" Margin="5"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource TabFocus}"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="False">
+                            <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </TabItem.Template>
+            <ContentControl Tools:AP.Header="Activity Log" Tools:AP.IconKind="TextLong" Style="{StaticResource TabContentWrapper}">
+                <ContentControl.Resources>
+                    <Converters:MsgTypetoColorConverter x:Key="MsgTypetoColorConverter"/>
+                </ContentControl.Resources>
+                <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto" Background="{StaticResource LogBackground}">
+                    <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{x:Static Tools:Logger.ActivityLog}" Margin="10,5">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel IsItemsHost="True"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Msg, FallbackValue=Message}" FontSize="12" TextWrapping="Wrap" Margin="0,3"
+                                               Foreground="{Binding Type, Mode=OneWay,Converter={StaticResource MsgTypetoColorConverter}}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </ScrollViewer>
             </ContentControl>
         </TabItem>

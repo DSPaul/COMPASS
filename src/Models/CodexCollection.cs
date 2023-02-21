@@ -1,5 +1,6 @@
 ﻿using COMPASS.Tools;
 using COMPASS.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -25,8 +26,10 @@ namespace COMPASS.Models
             set => SetProperty(ref _directoryName, value);
         }
 
-        public string CodicesDataFilePath => CollectionsPath + DirectoryName + @"\CodexInfo.xml";
-        public string TagsDataFilepath => CollectionsPath + DirectoryName + @"\Tags.xml";
+        public string RelativeCodicesDataFilePath => DirectoryName + @"\CodexInfo.xml";
+        public string CodicesDataFilePath => Path.Combine(CollectionsPath, RelativeCodicesDataFilePath);
+        private string RelativeTagsDataFilePath => DirectoryName + @"\Tags.xml";
+        public string TagsDataFilePath => Path.Combine(CollectionsPath, RelativeTagsDataFilePath);
 
         //Tag Lists
         public List<Tag> AllTags { get; private set; } = new();
@@ -47,10 +50,10 @@ namespace COMPASS.Models
         //Loads the RootTags from a file and constructs the Alltags list from it
         public void LoadTags()
         {
-            if (File.Exists(TagsDataFilepath))
+            if (File.Exists(TagsDataFilePath))
             {
                 //loading root tags          
-                using (var Reader = new StreamReader(TagsDataFilepath))
+                using (var Reader = new StreamReader(TagsDataFilePath))
                 {
                     System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Tag>));
                     RootTags = serializer.Deserialize(Reader) as List<Tag>;
@@ -59,6 +62,7 @@ namespace COMPASS.Models
                 //Constructing AllTags and pass it to all the tags
                 AllTags = Utils.FlattenTree(RootTags).ToList();
                 foreach (Tag t in AllTags) t.AllTags = AllTags;
+                Logger.Info($"Loaded {RelativeTagsDataFilePath}");
             }
             else
             {
@@ -82,6 +86,7 @@ namespace COMPASS.Models
                     //reconstruct tags from ID's
                     c.Tags = new(AllTags.Where(t => c.TagIDs.Contains(t.ID)));
                 }
+                Logger.Info($"Loaded {RelativeCodicesDataFilePath}");
             }
             else
             {
@@ -94,9 +99,10 @@ namespace COMPASS.Models
 
         public void SaveTags()
         {
-            using var writer = XmlWriter.Create(TagsDataFilepath, SettingsViewModel.XmlWriteSettings);
+            using var writer = XmlWriter.Create(TagsDataFilePath, SettingsViewModel.XmlWriteSettings);
             System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Tag>));
             serializer.Serialize(writer, RootTags);
+            Logger.Info($"Saved {RelativeTagsDataFilePath}");
         }
 
         public void SaveCodices()
@@ -110,6 +116,7 @@ namespace COMPASS.Models
             using var writer = XmlWriter.Create(CodicesDataFilePath, SettingsViewModel.XmlWriteSettings);
             System.Xml.Serialization.XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
             serializer.Serialize(writer, AllCodices);
+            Logger.Info($"Saved {RelativeCodicesDataFilePath}");
         }
 
         #endregion    
@@ -122,6 +129,7 @@ namespace COMPASS.Models
             //Delete Coverart & Thumbnail
             File.Delete(Todelete.CoverArt);
             File.Delete(Todelete.Thumbnail);
+            Logger.Info($"Deleted {Todelete.Title} from {DirectoryName}");
             SaveCodices();
         }
 
@@ -149,8 +157,17 @@ namespace COMPASS.Models
                 codex.CoverArt = codex.CoverArt.Replace(@"\" + DirectoryName + @"\", @"\" + NewCollectionName + @"\");
                 codex.Thumbnail = codex.Thumbnail.Replace(@"\" + DirectoryName + @"\", @"\" + NewCollectionName + @"\");
             }
-            Directory.Move(CollectionsPath + DirectoryName, CollectionsPath + NewCollectionName);
+            try
+            {
+                Directory.Move(CollectionsPath + DirectoryName, CollectionsPath + NewCollectionName);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to move data files from {DirectoryName} to {NewCollectionName}", ex);
+            }
+
             DirectoryName = NewCollectionName;
+            Logger.Info($"Renamed  {DirectoryName} to {NewCollectionName}");
         }
     }
 }

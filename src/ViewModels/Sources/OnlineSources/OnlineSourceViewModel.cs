@@ -38,6 +38,8 @@ namespace COMPASS.ViewModels.Sources
             MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
             worker.ReportProgress(ProgressCounter);
 
+            Logger.Info($"Imported {newCodex.Title}");
+
             if (ShowEditWhenDone)
             {
                 Application.Current.Dispatcher.Invoke(() =>
@@ -129,6 +131,7 @@ namespace COMPASS.ViewModels.Sources
             {
                 //fails if URL could not be loaded
                 worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Error, ex.Message));
+                Logger.Error($"Could not load {url}", ex);
                 return null;
             }
 
@@ -138,6 +141,7 @@ namespace COMPASS.ViewModels.Sources
             {
                 LogEntry entry = new(LogEntry.MsgType.Error, $"{InputURL} could not be reached");
                 worker.ReportProgress(ProgressCounter, entry);
+                Logger.Error($"{url} does not have any content", new ArgumentNullException());
                 return null;
             }
             else

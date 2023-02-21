@@ -253,8 +253,7 @@ namespace COMPASS.ViewModels
             var PossibleSortProptertyNames = typeof(Codex).GetProperties().Select(p => p.Name).ToList();
             if (SortOptions.Select(pair => pair.Value).Except(PossibleSortProptertyNames).Any())
             {
-                MessageBox.Show("One of the sort property paths does not exist");
-                Logger.log.Error("One of the sort property paths does not exist");
+                Logger.Warn("One of the sort property paths does not exist", new MissingMemberException());
             }
         }
 

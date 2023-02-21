@@ -76,7 +76,7 @@ namespace COMPASS.ViewModels
         public void InitLogger()
         {
             Application.Current.DispatcherUnhandledException += Logger.LogUnhandledException;
-            Logger.log.Info($"Launching Compass v{Assembly.GetExecutingAssembly().GetName().Version}");
+            Logger.Info($"Launching Compass v{Assembly.GetExecutingAssembly().GetName().Version}");
         }
 
         private void InitConnectionTimer()
