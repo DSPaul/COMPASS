@@ -29,7 +29,7 @@ COMPASS solves this problem by bringing all of your resources together in one pl
 - Have **Quick Access** to your books thanks to the Home view which lists your favorites, recently opened, most opened and recently added books for your convenience.
 - **Group** your books into collections. Each collection has their own list of tags, authors, ect. and helps you keep an overview by reducing the amount of books that are on your screen at once.
 
-## :warning: Why am I getting a Warnings from Windows and Virus scanners when installing COMPASS?
+## :warning: Why am I getting warnings from Windows and Virus scanners when installing COMPASS?
 
 The COMPASS files are not digitally signed which results in these kinds of warnings. Signing code is expensive and requires a bunch of paperwork and is just not worth it for a small project like this. If this project ever takes off and gains a large amount of users, I will look into this again. If you do not trust the executable, you can always build the code from source. To do so, simply clone the repo, install Visual Studio, open the solution file and and either build in release mode or publish.
 
@@ -37,7 +37,7 @@ The COMPASS files are not digitally signed which results in these kinds of warni
 
 I created this project to solve a problem I had and as a learning opportunity. I eventually chose to release it publicly and open source because I believe others might find it useful as well. If you like this project and would like to contribute, there are many ways you can do so.
 
-- If you find a bug, please open a github issue and report it there so it can be fixed. Please include a clear explanation the nature of the bug and if possible steps to reproduce it.
+- If you find a bug, please open a github issue and report it there so it can be fixed. Please include a clear explanation of the nature of the bug and if possible steps to reproduce it.
 - If you have ideas for new features or improvements, you can put those in a github issue as well.
 - As for code contributions and pull requests, I am not currently looking for contributors. There are many reasons for this but [this video](https://www.youtube.com/watch?v=YIL5fuAUPiA) summarizes it pretty well. If you cannot help yourself however, all pull requests should be made against the dev branch. Dev gets merged into master with every new release.
 
@@ -46,7 +46,7 @@ I created this project to solve a problem I had and as a learning opportunity. I
 If you would to support the project, you can do so in multiple ways.
 
 - If you have any ideas or problems, you can contribute as outlined above, it helps a lot.
-- If you have friends or family of which you know they would enjoy it, feel free to share it with them.
+- Feel free to share this around on forum, discord groups ect. if you think it can help others.
 - If you would like to financially support me so I can justify spending more time on this, help with potential costs such as code signing or just show some love, you can buy me a coffee over on [ko-fi](https://ko-fi.com/pauldesmul), I would greatly appreciate it.
 
 ## :camera: Screenshots
