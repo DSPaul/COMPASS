@@ -1,5 +1,4 @@
-﻿using COMPASS.Models;
-using COMPASS.Tools;
+﻿using System.ComponentModel;
 
 namespace COMPASS.ViewModels
 {
@@ -7,104 +6,96 @@ namespace COMPASS.ViewModels
     {
         public ListLayoutViewModel() : base()
         {
-            LayoutType = Enums.CodexLayout.ListLayout;
-
-            //MyMenuItem Columnvisibility = new MyMenuItem("Column Visibility")
-            //{
-            //    Submenus = new ObservableCollection<MyMenuItem>()
-            //};
-
-            //ViewOptions.Add(new MyMenuItem("Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
-            ViewOptions.Add(new MyMenuItem("Author", value => ShowAuthor = (bool)value) { Prop = ShowAuthor});
-            ViewOptions.Add(new MyMenuItem("Publisher", value => ShowPublisher= (bool)value) { Prop = ShowPublisher });
-            ViewOptions.Add(new MyMenuItem("Release Date", value => ShowReleaseDate = (bool)value) { Prop = ShowReleaseDate });
-            ViewOptions.Add(new MyMenuItem("Version", value => ShowVersion = (bool)value) { Prop = ShowVersion });
-            ViewOptions.Add(new MyMenuItem("Rating", value => ShowRating = (bool)value) { Prop = ShowRating });
-            ViewOptions.Add(new MyMenuItem("Tags", value => ShowTags = (bool)value) { Prop = ShowTags });
-            ViewOptions.Add(new MyMenuItem("File Icons", value => ShowFileIcons = (bool)value) { Prop = ShowFileIcons });
-            //ViewOptions.Add(new MyMenuItem("Edit Icon", value => ShowEditIcon = (bool)value) { Prop = ShowEditIcon });
-            
-            //ViewOptions.Add(Columnvisibility);
+            LayoutType = Layout.List;
         }
 
         #region ViewOptions
 
         private bool _showTitle = true;
-        public bool ShowTitle 
+        public bool ShowTitle
         {
-            get {return _showTitle; }
-            set{ SetProperty(ref _showTitle, value); }
+            get => _showTitle;
+            set => SetProperty(ref _showTitle, value);
         }
 
-        private bool _showAuthor = Properties.Settings.Default.ListShowAuthor;
+        [DisplayName("Show Authors Display")]
         public bool ShowAuthor
         {
-            get { return _showAuthor; }
-            set { SetProperty(ref _showAuthor, value);
+            get => Properties.Settings.Default.ListShowAuthor;
+            set
+            {
                 Properties.Settings.Default.ListShowAuthor = value;
+                RaisePropertyChanged(nameof(ShowAuthor));
             }
         }
 
-        private bool _showPublisher = Properties.Settings.Default.ListShowPublisher;
         public bool ShowPublisher
         {
-            get { return _showPublisher; }
-            set { SetProperty(ref _showPublisher, value);
+            get => Properties.Settings.Default.ListShowPublisher;
+            set
+            {
                 Properties.Settings.Default.ListShowPublisher = value;
+                RaisePropertyChanged(nameof(ShowPublisher));
             }
         }
 
-        private bool _showReleaseDate = Properties.Settings.Default.ListShowRelease;
         public bool ShowReleaseDate
         {
-            get { return _showReleaseDate; }
-            set { SetProperty(ref _showReleaseDate, value);
+            get => Properties.Settings.Default.ListShowRelease;
+            set
+            {
                 Properties.Settings.Default.ListShowRelease = value;
+                RaisePropertyChanged(nameof(ShowReleaseDate));
             }
         }
 
-        private bool _showVersion = Properties.Settings.Default.ListShowVersion;
         public bool ShowVersion
         {
-            get { return _showVersion; }
-            set { SetProperty(ref _showVersion, value);
+            get => Properties.Settings.Default.ListShowVersion;
+            set
+            {
                 Properties.Settings.Default.ListShowVersion = value;
+                RaisePropertyChanged(nameof(ShowVersion));
             }
         }
 
-        private bool _showRating = Properties.Settings.Default.ListShowRating;
         public bool ShowRating
         {
-            get { return _showRating; }
-            set { SetProperty(ref _showRating, value);
+            get => Properties.Settings.Default.ListShowRating;
+            set
+            {
                 Properties.Settings.Default.ListShowRating = value;
+                RaisePropertyChanged(nameof(ShowRating));
             }
         }
 
-        private bool _showTags = Properties.Settings.Default.ListShowTags;
         public bool ShowTags
         {
-            get { return _showTags; }
-            set { SetProperty(ref _showTags, value);
+            get => Properties.Settings.Default.ListShowTags;
+            set
+            {
                 Properties.Settings.Default.ListShowTags = value;
+                RaisePropertyChanged(nameof(ShowTags));
             }
         }
 
-        private bool _showFileIcons = Properties.Settings.Default.ListShowFileIcons;
         public bool ShowFileIcons
         {
-            get { return _showFileIcons; }
-            set { SetProperty(ref _showFileIcons, value);
+            get => Properties.Settings.Default.ListShowFileIcons;
+            set
+            {
                 Properties.Settings.Default.ListShowFileIcons = value;
+                RaisePropertyChanged(nameof(ShowFileIcons));
             }
         }
 
-        private bool _showEditIcon = Properties.Settings.Default.ListShowEditIcon;
         public bool ShowEditIcon
         {
-            get { return _showEditIcon; }
-            set { SetProperty(ref _showEditIcon, value);
+            get => Properties.Settings.Default.ListShowEditIcon;
+            set
+            {
                 Properties.Settings.Default.ListShowEditIcon = value;
+                RaisePropertyChanged(nameof(ShowEditIcon));
             }
         }
 

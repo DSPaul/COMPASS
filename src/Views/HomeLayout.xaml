@@ -3,8 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:local="clr-namespace:COMPASS.Views" 
-             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters" 
+             xmlns:Converters="clr-namespace:COMPASS.Converters" 
              xmlns:Tools="clr-namespace:COMPASS.Tools" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              d:DataContext="{d:DesignInstance Type=viewmodels:HomeLayoutViewModel}"
@@ -31,6 +32,8 @@
             <Setter Property="VerticalContentAlignment" Value="Top"/>
             <Setter Property="SelectionMode" Value="Extended"/>
             <Setter Property="ItemTemplate" Value="{DynamicResource ListBoxItemCoverTemplate}"/>
+            <Setter Property="dd:DragDrop.IsDropTarget" Value="True"/>
+            <Setter Property="dd:DragDrop.DropHandler" Value="{Binding CodexVM}"/>
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>
@@ -38,6 +41,15 @@
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>
+            <!--Simplify template to remove scroll https://stackoverflow.com/questions/1739216/how-to-disable-scrollviewer-in-listbox-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <ItemsPresenter />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <EventSetter Event="PreviewKeyDown" Handler="ListBox_PreviewKeyDown"/>
         </Style>
         <Style TargetType="{x:Type ListBoxItem}">
             <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
@@ -106,13 +118,13 @@
                 <materialDesign:PackIcon Kind="Heart" Height="28" Width="20" Foreground="IndianRed" VerticalAlignment="Bottom"/>
                 <TextBlock Text="Favorites" Style="{StaticResource HomeSectionTitle}"/>
             </StackPanel>
-            <ListBox x:Name="FavoritsListBox" ItemsSource="{Binding MVM.CollectionVM.Favorites}"/>
+            <ListBox x:Name="FavoritsListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.Favorites}" />
 
             <StackPanel Orientation="Horizontal" Margin="30,0">
                 <materialDesign:PackIcon Kind="History" Height="28" Width="20" VerticalAlignment="Bottom"/>
                 <TextBlock Text="Recently Opened" Style="{StaticResource HomeSectionTitle}"/>
             </StackPanel>
-            <ListBox x:Name="RecOpendListBox" ItemsSource="{Binding MVM.CollectionVM.RecentCodices}"/>
+            <ListBox x:Name="RecOpendListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.RecentCodices}" />
 
 
            
@@ -120,14 +132,14 @@
                 <materialDesign:PackIcon Kind="BookOpenBlankVariant" Height="28" Width="20" VerticalAlignment="Bottom"/>
                 <TextBlock Text="Most Opened" Style="{StaticResource HomeSectionTitle}"/>
             </StackPanel>
-            <ListBox x:Name="MostOpentListBox" ItemsSource="{Binding MVM.CollectionVM.MostOpenedCodices}"/>
+            <ListBox x:Name="MostOpentListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.MostOpenedCodices}" />
 
             
             <StackPanel Orientation="Horizontal" Margin="30,0">
                 <materialDesign:PackIcon Kind="BookPlus" Height="28" Width="20" VerticalAlignment="Bottom"/>
                 <TextBlock Text="Recently Added" Style="{StaticResource HomeSectionTitle}"/>
             </StackPanel>
-            <ListBox x:Name="RecAddedListBox" ItemsSource="{Binding MVM.CollectionVM.RecentlyAddedCodices}"/>
+            <ListBox x:Name="RecAddedListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.RecentlyAddedCodices}" />
             
         </StackPanel>
             

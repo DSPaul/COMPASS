@@ -3,26 +3,24 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Xml.Serialization;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace COMPASS.Models
 {
     public class Codex : ObservableObject, IHasID
     {
         //empty constructor for serialization
-        public Codex() 
+        public Codex()
         {
             Authors.CollectionChanged += (e, v) => RaisePropertyChanged(nameof(AuthorsAsString));
         }
 
-        public Codex(CodexCollection cc):this()
+        public Codex(CodexCollection cc) : this()
         {
-            Tags = new();
             ID = Utils.GetAvailableID(cc.AllCodices);
             CoverArt = CodexCollection.CollectionsPath + cc.DirectoryName + @"\CoverArt\" + ID.ToString() + ".png";
             Thumbnail = CodexCollection.CollectionsPath + cc.DirectoryName + @"\Thumbnails\" + ID.ToString() + ".png";
-
         }
 
         public void Copy(Codex c)
@@ -50,14 +48,30 @@ namespace COMPASS.Models
             ISBN = c.ISBN;
         }
 
-        public bool HasOfflineSource()
-        {
-            return File.Exists(Path);
-        }
+        public bool HasOfflineSource() => File.Exists(Path);
 
-        public bool HasOnlineSource()
+        public bool HasOnlineSource() => !string.IsNullOrEmpty(SourceURL);
+
+        public string GetFileType()
         {
-            return !string.IsNullOrEmpty(SourceURL);
+            if (HasOfflineSource())
+            {
+                return System.IO.Path.GetExtension(Path);
+            }
+
+            else if (HasOnlineSource())
+            {
+                // online sources can also also point to file 
+                // either hosted on cloud service like Google drive 
+                // or services like homebrewery are always .pdf
+                // skip this for now though
+                return "webpage";
+            }
+
+            else
+            {
+                return null;
+            }
         }
 
         #region Properties
@@ -65,83 +79,80 @@ namespace COMPASS.Models
         private string _path;
         public string Path
         {
-            get { return _path; }
-            set { SetProperty(ref _path, value); }
+            get => _path;
+            set => SetProperty(ref _path, value);
         }
 
         private string _title;
         public string Title
         {
-            get { return _title; }
-            set 
-            { 
+            get => _title;
+            set
+            {
                 SetProperty(ref _title, value);
                 RaisePropertyChanged(nameof(SortingTitle));
             }
         }
 
         private string _sortingTitle = "";
-        [XmlIgnoreAttribute]
+        [XmlIgnore]
         public string SortingTitle
         {
-            get 
-            {
-                if (String.IsNullOrEmpty(_sortingTitle)) return _title;
-                else return _sortingTitle;
-            }
-            set { SetProperty(ref _sortingTitle, value); }
+            get => String.IsNullOrEmpty(_sortingTitle) ? _title : _sortingTitle;
+            set => SetProperty(ref _sortingTitle, value);
         }
         //seperate property needed for serialization or it will get _title and save that
         //instead of saving an empty and mirroring _title during runtime
         public string SerializableSortingTitle
         {
-            get { return _sortingTitle; }
-            set { SetProperty(ref _sortingTitle, value); }
+            get => _sortingTitle;
+            set => SetProperty(ref _sortingTitle, value);
         }
 
         private ObservableCollection<string> _authors = new();
         public ObservableCollection<string> Authors
         {
-            get { return _authors; }
-            set 
-            { 
+            get => _authors;
+            set
+            {
                 SetProperty(ref _authors, value);
                 RaisePropertyChanged(nameof(AuthorsAsString));
             }
         }
 
-        public string AuthorsAsString {
+        public string AuthorsAsString
+        {
             get
             {
                 string str = Authors.Count switch
                 {
                     1 => Authors[0],
-                    > 1 => String.Join(", ", Authors.OrderBy(a=>a)),
+                    > 1 => String.Join(", ", Authors.OrderBy(a => a)),
                     _ => ""
                 };
                 return str;
-            }            
+            }
         }
 
         private string _publisher;
         public string Publisher
         {
-            get { return _publisher; }
-            set { SetProperty(ref _publisher, value); }
+            get => _publisher;
+            set => SetProperty(ref _publisher, value);
         }
 
         private string _version;
         public string Version
         {
-            get { return _version; }
-            set { SetProperty(ref _version, value); }
+            get => _version;
+            set => SetProperty(ref _version, value);
         }
 
         private string _sourceURL;
         public string SourceURL
         {
-            get { return _sourceURL; }
-            set { SetProperty(ref _sourceURL, value); }
+            get => _sourceURL;
+            set => SetProperty(ref _sourceURL, value);
         }
 
         public int ID { get; set; }
@@ -149,22 +160,22 @@ namespace COMPASS.Models
         private string _coverArt;
         public string CoverArt
         {
-            get { return _coverArt; }
-            set { SetProperty(ref _coverArt, value); }
+            get => _coverArt;
+            set => SetProperty(ref _coverArt, value);
         }
 
         private string _thumbnail;
         public string Thumbnail
         {
-            get { return _thumbnail; }
-            set { SetProperty(ref _thumbnail, value); }
+            get => _thumbnail;
+            set => SetProperty(ref _thumbnail, value);
         }
 
         private bool _physically_Owned;
         public bool Physically_Owned
         {
-            get { return _physically_Owned; }
-            set { SetProperty(ref _physically_Owned, value); }
+            get => _physically_Owned;
+            set => SetProperty(ref _physically_Owned, value);
         }
 
         private ObservableCollection<Tag> _tags = new();
@@ -172,72 +183,72 @@ namespace COMPASS.Models
         [XmlIgnoreAttribute]
         public ObservableCollection<Tag> Tags
         {
-            get { return _tags; }
-            set { SetProperty(ref _tags, value); }
+            get => _tags;
+            set => SetProperty(ref _tags, value);
         }
         public List<int> TagIDs { get; set; }
 
         private string _description;
         public string Description
         {
-            get { return _description; }
-            set { SetProperty(ref _description, value); }
+            get => _description;
+            set => SetProperty(ref _description, value);
         }
 
         private DateTime? _releaseDate = null;
         public DateTime? ReleaseDate
         {
-            get { return _releaseDate; }
-            set { SetProperty(ref _releaseDate, value); }
+            get => _releaseDate;
+            set => SetProperty(ref _releaseDate, value);
         }
 
         private int _rating;
         public int Rating
         {
-            get { return _rating; }
-            set { SetProperty(ref _rating, value); }
+            get => _rating;
+            set => SetProperty(ref _rating, value);
         }
 
         private int _pageCount;
         public int PageCount
         {
-            get { return _pageCount; }
-            set { SetProperty(ref _pageCount, value); }
+            get => _pageCount;
+            set => SetProperty(ref _pageCount, value);
         }
 
         private DateTime _dateAdded = DateTime.Now;
         public DateTime DateAdded
         {
-            get { return _dateAdded; }
-            set { SetProperty(ref _dateAdded, value); }
+            get => _dateAdded;
+            set => SetProperty(ref _dateAdded, value);
         }
 
         private DateTime _lastOpened;
         public DateTime LastOpened
         {
-            get { return _lastOpened; }
-            set { SetProperty(ref _lastOpened,value); }
+            get => _lastOpened;
+            set => SetProperty(ref _lastOpened, value);
         }
 
         private int _openedCount = 0;
         public int OpenedCount
         {
-            get { return _openedCount; }
-            set { SetProperty(ref _openedCount, value); }
+            get => _openedCount;
+            set => SetProperty(ref _openedCount, value);
         }
 
         private bool _favorite;
         public bool Favorite
         {
-            get { return _favorite; }
-            set { SetProperty(ref _favorite, value); }
+            get => _favorite;
+            set => SetProperty(ref _favorite, value);
         }
 
-        public string _ISBN;
+        private string _ISBN;
         public string ISBN
         {
-            get { return _ISBN; }
-            set { SetProperty(ref _ISBN, value); }
+            get => _ISBN;
+            set => SetProperty(ref _ISBN, value);
         }
         #endregion 
     }

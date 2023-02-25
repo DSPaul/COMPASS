@@ -1,46 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace COMPASS.Models
 {
     public class TreeViewNode : ObservableObject, IHasChilderen<TreeViewNode>
-{
-        public TreeViewNode(Tag t)
+    {
+        public TreeViewNode(Tag tag)
         {
-            Tag = t;
-            Expanded = t.IsGroup;
+            Tag = tag;
+            Children = new(tag.Children.Select(childTag => new TreeViewNode(childTag)));
+            Expanded = tag.IsGroup;
         }
 
         private Tag _tag;
         public Tag Tag
         {
-            get { return _tag; }
-            set { SetProperty(ref _tag, value); }
+            get => _tag;
+            set => SetProperty(ref _tag, value);
         }
 
         private ObservableCollection<TreeViewNode> _children = new();
         public ObservableCollection<TreeViewNode> Children
         {
-            get { return _children; }
-            set { SetProperty(ref _children, value); }
+            get => _children;
+            set => SetProperty(ref _children, value);
         }
 
         private bool _selected = false;
         public bool Selected
         {
-            get { return _selected; }
-            set { SetProperty(ref _selected, value); }
+            get => _selected;
+            set => SetProperty(ref _selected, value);
         }
 
-        private bool _expanded;
+        private bool _expanded = true;
         public bool Expanded
         {
-            get { return _expanded; }
-            set { SetProperty(ref _expanded, value); }
+            get => _expanded;
+            set => SetProperty(ref _expanded, value);
+        }
+
+        public Tag ToTag()
+        {
+            //add childeren according to treeview
+            Tag.Children = new(Children.Select(childnode => childnode.ToTag()));
+
+            //set partentID for all the childeren
+            foreach (Tag childtag in Tag.Children)
+            {
+                childtag.Parent = Tag;
+            }
+
+            return Tag;
         }
     }
 }

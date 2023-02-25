@@ -3,14 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Tools ="clr-namespace:COMPASS.Tools"
-        xmlns:local="clr-namespace:COMPASS.Windows" 
-        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-        d:DataContext="{d:DesignInstance Type=viewmodels:ImportViewModel}"
+        xmlns:Tools ="clr-namespace:COMPASS.Tools" 
+        xmlns:Sources="clr-namespace:COMPASS.ViewModels.Sources" 
+        d:DataContext="{d:DesignInstance Type=Sources:OnlineSourceViewModel}"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
-        Background="{StaticResource WindowBackground}" 
-        FocusManager.FocusedElement="{Binding ElementName=inputField}"
-        Title="Import URL" Height="190" Width="600" WindowStartupLocation="CenterScreen">
+        Background="{StaticResource WindowBackground}" SizeToContent="Height"
+        FocusManager.FocusedElement="{Binding ElementName=inputField}" ResizeMode="NoResize"
+        Title="Import URL" Height="190" Width="600" WindowStartupLocation="CenterScreen"
+        x:Name="ImportWindow" MinWidth="{Binding ActualWidth, ElementName=ImportWindow}">
     <Grid>
         <StackPanel Margin="15">
             <TextBlock Text="{Binding ImportTitle, FallbackValue= URL:}" Margin="5"/>
@@ -20,24 +20,18 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="inputField" Tools:AP.PlaceHolderText="{Binding PreviewURL, Mode=TwoWay}"
+                <TextBox x:Name="inputField" Tools:AP.PlaceHolderText="{Binding ExampleURL}"
                          Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5"/>
-                <Button  Grid.Column="1" Tools:AP.IconKind="BarcodeScan" Margin="5" Command="{Binding OpenBarcodeScannerCommand}">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource IconBtn}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=Source}" Value="{x:Static Tools:Enums+Sources.ISBN}">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
+                <Button Style="{StaticResource IconBtn}" Grid.Column="1" Tools:AP.IconKind="BarcodeScan" Margin="5"  
+                         Visibility="{Binding ShowScannerButton, Converter={StaticResource ToVisibilityConverter}}"
+                         Command="{Binding OpenBarcodeScannerCommand}" ToolTip="Scan Barcode With Webcam"/>
                 <Button Grid.Column="2" Content="Import" Command="{Binding SubmitURLCommand}" IsDefault="True" Margin="5"
                         Style="{StaticResource TextButton}" Background="{StaticResource AccentColorMuted}"/>
             </Grid>
-            <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" Margin="5"/>
+            <CheckBox IsChecked="{Binding DontValidateURL}" Content="Disable URL validation (for self-hosted instances)" Margin="5"
+                      Visibility="{Binding ShowValidateDisableCheckbox, Converter={StaticResource ToVisibilityConverter}}"/>
+            <CheckBox IsChecked="{Binding ShowEditWhenDone}" Content="Open Edit Window when done" Margin="5"/>
+            <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" Margin="5" TextWrapping="Wrap"/>
         </StackPanel>
     </Grid>
 </Window>

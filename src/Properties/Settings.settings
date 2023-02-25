@@ -2,7 +2,7 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="COMPASS.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="PreferedView" Type="System.Int32" Scope="User">
+    <Setting Name="PreferedLayout" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="ListShowAuthor" Type="System.Boolean" Scope="User">
@@ -18,7 +18,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ListShowRating" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ListShowTags" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -29,7 +29,7 @@
     <Setting Name="ListShowEditIcon" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="TileShowTitle" Type="System.Boolean" Scope="User">
+    <Setting Name="TileShowExtraData" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="CardShowAuthor" Type="System.Boolean" Scope="User">
@@ -56,9 +56,6 @@
     <Setting Name="StartupCollection" Type="System.String" Scope="User">
       <Value Profile="(Default)">DnD</Value>
     </Setting>
-    <Setting Name="SeleniumBrowser" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
     <Setting Name="DataGridCollumnInfo" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -79,6 +76,12 @@
     </Setting>
     <Setting Name="TileCoverSize" Type="System.Double" Scope="User">
       <Value Profile="(Default)">156</Value>
+    </Setting>
+    <Setting Name="SelectedTab" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="TileDisplayedData" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

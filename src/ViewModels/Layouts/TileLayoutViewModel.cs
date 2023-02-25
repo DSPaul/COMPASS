@@ -1,44 +1,51 @@
-﻿using COMPASS.Models;
-using COMPASS.Tools;
-
-namespace COMPASS.ViewModels
+﻿namespace COMPASS.ViewModels
 {
     public class TileLayoutViewModel : LayoutViewModel
     {
         public TileLayoutViewModel() : base()
         {
-            LayoutType = Enums.CodexLayout.TileLayout;
-
-            ViewOptions.Add(new MyMenuItem("Cover Size", value => TileWidth = (double)value) { Prop = TileWidth });
-            ViewOptions.Add(new MyMenuItem("Show Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
-            ViewOptions.Add(SortOptionsMenuItem);
+            LayoutType = Layout.Tile;
         }
+
+        public enum DataOption
+        {
+            Title,
+            Author,
+            Publisher,
+            Rating
+        }
+
         #region Properties
-        private double _width = Properties.Settings.Default.TileCoverSize;
         public double TileWidth
         {
-            get { return _width; }
-            set 
-            { 
-                SetProperty(ref _width, value);
-                RaisePropertyChanged(nameof(TileHeight));
+            get => Properties.Settings.Default.TileCoverSize;
+            set
+            {
                 Properties.Settings.Default.TileCoverSize = value;
+                RaisePropertyChanged(nameof(TileWidth));
+                RaisePropertyChanged(nameof(TileHeight));
             }
         }
 
-        public double TileHeight
+        public double TileHeight => (int)(TileWidth * 4 / 3);
+
+        public bool ShowExtraData
         {
-            get { return (int)(_width * 4/3); }
+            get => Properties.Settings.Default.TileShowExtraData;
+            set
+            {
+                Properties.Settings.Default.TileShowExtraData = value;
+                RaisePropertyChanged(nameof(ShowExtraData));
+            }
         }
 
-        private bool _showtitle = Properties.Settings.Default.TileShowTitle;
-        public bool ShowTitle
+        public DataOption DisplayedData
         {
-            get { return _showtitle; }
-            set 
-            { 
-                SetProperty(ref _showtitle, value);
-                Properties.Settings.Default.TileShowTitle = value;
+            get => (DataOption)Properties.Settings.Default.TileDisplayedData;
+            set
+            {
+                Properties.Settings.Default.TileDisplayedData = (int)value;
+                RaisePropertyChanged(nameof(DisplayedData));
             }
         }
 

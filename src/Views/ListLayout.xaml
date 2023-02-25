@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:Controls="clr-namespace:COMPASS.Resources.Controls"
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
-             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
              d:DataContext="{d:DesignInstance Type=viewmodels:ListLayoutViewModel}"
              mc:Ignorable="d"  x:Name="LastLayoutControl"
@@ -14,13 +14,15 @@
 
     <Controls:EnhancedDataGrid x:Name="ListLayoutGrid" MaxWidth="{Binding ActualWidth, ElementName=LastLayoutControl}"
                 Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
-                AutoGenerateColumns="False" ItemsSource="{Binding MVM.CollectionVM.ActiveFiles, IsAsync=True}"
-                CanUserAddRows="False" SelectionMode="Extended" CanUserSortColumns="True"
+                ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices, IsAsync=True}" 
+                CanUserAddRows="False" SelectionMode="Extended" CanUserSortColumns="True" AutoGenerateColumns="False" 
                 RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
                 SelectedItem="{Binding SelectedFile, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848"
-                ClipToBounds="True" VirtualizingPanel.IsVirtualizing ="True"
+                ClipToBounds="True" VirtualizingPanel.IsVirtualizing ="True" PreviewKeyDown="ListLayoutGrid_PreviewKeyDown"
                 VirtualizingStackPanel.VirtualizationMode = "Recycling" MaxHeight="4000"
-                SelectionChanged="FileView_SelectionChanged" DataContextChanged="FileView_DataContextChanged" TargetUpdated="FileView_TargetUpdated" >
+                SelectionChanged="FileView_SelectionChanged" DataContextChanged="FileView_DataContextChanged" 
+                TargetUpdated="FileView_TargetUpdated"  
+                dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CodexVM}">
         <DataGrid.Resources>
             <Tools:BindingProxy x:Key="LayoutProxy" Data="{Binding}" />
             <Tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
@@ -61,8 +63,15 @@
                 </Setter>
                 <Setter Property="ContextMenu">
                     <Setter.Value>
-                        <ContextMenu IsEnabled="True" Placement="Bottom" ItemsSource="{Binding Source = {StaticResource LayoutProxy}, Path=Data.ViewOptions}"
-                                     ItemContainerStyle="{StaticResource DropdownMenuItem}"/>
+                        <ContextMenu IsEnabled="True" Placement="Bottom">
+                            <MenuItem Header="Author"       IsCheckable="True" IsChecked="{Binding Data.ShowAuthor,     Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Publisher"    IsCheckable="True" IsChecked="{Binding Data.ShowPublisher,  Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Rating"       IsCheckable="True" IsChecked="{Binding Data.ShowRating,     Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Release Date" IsCheckable="True" IsChecked="{Binding Data.ShowReleaseDate,Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Tags"         IsCheckable="True" IsChecked="{Binding Data.ShowTags,       Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Version"      IsCheckable="True" IsChecked="{Binding Data.ShowVersion,    Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="File Icons"   IsCheckable="True" IsChecked="{Binding Data.ShowFileIcons,  Source={StaticResource LayoutProxy}}"/>
+                        </ContextMenu>
                     </Setter.Value>
                 </Setter>
             </Style>
@@ -199,12 +208,12 @@
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Command="{Binding Path=Data.OpenCodexLocallyCommand, Source={StaticResource CodexProxy}}"
+                            <Button Command="{Binding Path=Data.OpenCodexLocallyCommand, Source={StaticResource CodexProxy}}" ToolTip="Open Locally"
                                     CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FileOutline"/>
-                            <Button Command="{Binding Path=Data.OpenCodexOnlineCommand, Source={StaticResource CodexProxy}}"
+                            <Button Command="{Binding Path=Data.OpenCodexOnlineCommand, Source={StaticResource CodexProxy}}" ToolTip="Open Online"
                                     CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>
                             <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
-                                Converter={StaticResource ToVisibilityConverter}}"/>
+                                Converter={StaticResource ToVisibilityConverter}}" Margin="5"  ToolTip="Physically Owned"/>
                         </StackPanel>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>

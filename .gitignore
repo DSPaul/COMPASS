@@ -88,3 +88,5 @@ Images/
 *.diagsession
 src/GlobalSuppressions.cs
 *.xlsx
+AnalysisReport.sarif
+upgrade-assistant.clef

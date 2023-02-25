@@ -1,4 +1,41 @@
 # CHANGELOG
+## COMPASS v1.0.0 (25 February 2023)
+
+### New Features / Enhancements
+  
+- New advanced tab was added to the *Edit Codex* window with COMPASS specific metadata like how often you opened a book and how long ago
+- You can now filter by favorite and filetype (file extension), all online sources are currently considered a "webpage" filetype
+- Major UI/UX redesign, most user actions have been moved to the into tabs on the left side of the screen.
+- The dock on the left can now be collapsed
+- You can now inlcude/exclude filters and tags by flipping a toggle before selecting the filter in addition to drag&drop
+- You can now disabling URL validation on homebrewery import to support from self hosted instances of homebrewery
+- The *Delete* key now works in all layouts to remove books from COMPASS, a warning before deleting was also added
+- ISBN number was added to the sources tab of a codex
+- Keyboard Shortcuts were added to interact with books
+  - **Enter**  to open
+  - **Ctrl+E** to Edit
+  - **Ctrl+F** to Favorite
+  - **Delete** to Delete
+  - **Ctrl+S** to search
+- Added more customisation to the Tile layout, you can now have the option to display the title, author, publisher or user rating underneath the cover.
+- You can now Drag and Drop tags from Tags tab directly onto books to tag them.
+- Added the option to open Edit Window after import so you can review and complete the auto imported metadata
+- Added Activity log that saves errors and warning that used to just disappear so you have time to read them
+
+### Fixes
+
+- Fixed not being able to scroll on home view
+- Fixed Window moving behind other windows when adding books completes
+- Fixed multiple bugs related to sorting
+- Fixed text not wrapping in multiple places
+- Fixed the Delete Key not properly deleting codices in List View
+- Fixed crash when moving files without cover art
+- Fixed various other small bugs
+- Added restrictions to collection names
+
+### Other Changes
+
+- Update to .NET 7.0
 
 ## COMPASS v0.9.1 (14 January 2023)
 

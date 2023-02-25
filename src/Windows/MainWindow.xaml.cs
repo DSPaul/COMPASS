@@ -1,18 +1,13 @@
-﻿using System;
-using Microsoft.Win32;
-using System.Linq;
+﻿using COMPASS.ViewModels;
+using System;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.ComponentModel;
-using COMPASS.ViewModels;
-using COMPASS.Models;
-using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Interop;
 
-namespace COMPASS
+namespace COMPASS.Windows
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -31,15 +26,12 @@ namespace COMPASS
         private readonly MainViewModel MainViewModel;
 
         //Deselects when you click away
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            MainGrid.Focus();
-        }
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e) => MainGrid.Focus();
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            MainViewModel.CurrentCollection.SaveCodices();
-            MainViewModel.CurrentCollection.SaveTags();
+            MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
+            MainViewModel.CollectionVM.CurrentCollection.SaveTags();
             Properties.Settings.Default.Save();
         }
 
@@ -143,35 +135,43 @@ namespace COMPASS
             public POINT ptMinTrackSize;
             public POINT ptMaxTrackSize;
         }
-        private void MinimizeWindow(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
+        private void MinimizeWindow(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 
         private void MaximizeButton_Click(object sender, RoutedEventArgs e)
         {
             switch (WindowState)
             {
-                case (WindowState.Maximized):
+                case WindowState.Maximized:
                     WindowState = WindowState.Normal;
                     break;
-                case (WindowState.Normal):
+                case WindowState.Normal:
                     WindowState = WindowState.Maximized;
                     break;
             }
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            //this.Close();
-            Application.Current.Shutdown();
-        }
+        private void CloseButton_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
         #endregion
 
         private void Toggle_ContextMenu(object sender, RoutedEventArgs e)
         {
-            (sender as Button).ContextMenu.PlacementTarget = (sender as Button);
+            (sender as Button).ContextMenu.PlacementTarget = sender as Button;
             (sender as Button).ContextMenu.IsOpen = !(sender as Button).ContextMenu.IsOpen;
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.S:
+                    // Ctrl + S to search
+                    if (Keyboard.Modifiers == ModifierKeys.Control)
+                    {
+                        Searchbox.Focus();
+                        e.Handled = true;
+                    }
+                    break;
+            }
         }
     }
 }

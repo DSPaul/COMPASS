@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:Converters="clr-namespace:COMPASS.Tools.Converters" 
+             xmlns:Converters="clr-namespace:COMPASS.Converters" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
              d:DataContext="{d:DesignInstance Type=viewmodels:CardLayoutViewModel}"
              mc:Ignorable="d" 
@@ -17,9 +18,11 @@
         <Tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
     </UserControl.Resources>
         <!--#region CardView-->
-    <ListBox x:Name="CardLayoutListBox" ItemsSource="{Binding MVM.CollectionVM.ActiveFiles}" Background="{x:Null}"
+    <ListBox x:Name="CardLayoutListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}" 
              BorderBrush="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}" SelectionMode="Extended"
-             ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" SelectionChanged="FileView_SelectionChanged">
+             ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" Background="{x:Null}"
+             SelectionChanged="FileView_SelectionChanged" PreviewKeyDown="CardLayoutListBox_PreviewKeyDown"
+             dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CodexVM}">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
@@ -79,9 +82,9 @@
                             <Image Source="{Binding Thumbnail, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png }" HorizontalAlignment="Center"/>
                             <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
                                          Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource ToVisibilityConverter}}">
-                                <Button Command="{Binding Path=Data.OpenCodexLocallyCommand, Source={StaticResource CodexProxy}}"
+                                <Button Command="{Binding Path=Data.OpenCodexLocallyCommand, Source={StaticResource CodexProxy}}" ToolTip="Open Locally"
                                     CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FileOutline"/>
-                                <Button Command="{Binding Path=Data.OpenCodexOnlineCommand, Source={StaticResource CodexProxy}}"
+                                <Button Command="{Binding Path=Data.OpenCodexOnlineCommand, Source={StaticResource CodexProxy}}" ToolTip="Open Online"
                                     CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>
                                 <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
                                 Converter={StaticResource ToVisibilityConverter}}"/>

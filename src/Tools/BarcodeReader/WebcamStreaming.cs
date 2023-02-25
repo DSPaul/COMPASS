@@ -91,10 +91,9 @@ namespace BarcodeReaderTool
                                 }
 
                                 // Releases the lock on first not empty frame
-                                if (initializationSemaphore != null)
-                                    initializationSemaphore.Release();
+                                initializationSemaphore?.Release();
 
-                                _lastFrame = FlipHorizontally 
+                                _lastFrame = FlipHorizontally
                                     ? BitmapConverter.ToBitmap(frame.Flip(FlipMode.Y))
                                     : BitmapConverter.ToBitmap(frame);
 
@@ -113,8 +112,7 @@ namespace BarcodeReaderTool
                 }
                 finally
                 {
-                    if (initializationSemaphore != null)
-                        initializationSemaphore.Release();
+                    initializationSemaphore?.Release();
                 }
 
             }, _cancellationTokenSource.Token);
@@ -148,16 +146,8 @@ namespace BarcodeReaderTool
 
             if (_lastFrame != null)
             {
-                //using (var imageFactory = new ImageFactory())
                 using (var stream = new MemoryStream())
                 {
-                    //imageFactory
-                    //    .Load(_lastFrame)
-                    //    .Resize(new ResizeLayer(
-                    //        size: new System.Drawing.Size(_frameWidth, _frameHeight),
-                    //        resizeMode: ResizeMode.Crop,
-                    //        anchorPosition: AnchorPosition.Center))
-                    //    .Save(stream);
                     LastPngFrame = stream.ToArray();
                 }
             }

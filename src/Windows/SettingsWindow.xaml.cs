@@ -1,18 +1,8 @@
 ﻿using COMPASS.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace COMPASS.Windows
 {
@@ -29,7 +19,7 @@ namespace COMPASS.Windows
 
             //jump to tab
             var TabItems = SettingsTabControl.Items;
-            foreach(TabItem item in TabItems)
+            foreach (TabItem item in TabItems)
             {
                 if ((string)item.Header == tab)
                 {
@@ -41,15 +31,9 @@ namespace COMPASS.Windows
 
         private SettingsViewModel VM;
 
-        private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            MainGrid.Focus();
-        }
+        private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e) => MainGrid.Focus();
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            VM.SavePreferences();
-        }
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => VM.SavePreferences();
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {

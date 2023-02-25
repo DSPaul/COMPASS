@@ -1,6 +1,5 @@
 ﻿using OpenCvSharp;
 using OpenCvSharp.Extensions;
-using ZXing;
 using ZXing.Common;
 
 namespace BarcodeReaderTool

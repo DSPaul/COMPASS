@@ -1,462 +1,199 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.IO;
 using System.Linq;
-using System.Windows.Data;
-using FuzzySharp;
-using COMPASS.Tools;
-using COMPASS.ViewModels.Commands;
-using GongSolutions.Wpf.DragDrop;
 using System.Windows;
-using System.Windows.Media;
 
 namespace COMPASS.ViewModels
 {
-    public class CollectionViewModel : ViewModelBase, IDropTarget
+    public class CollectionViewModel : ObservableObject
     {
-
-        //Constuctor
-        public CollectionViewModel(CodexCollection CurrentCollection)
+        public CollectionViewModel()
         {
-            _cc = CurrentCollection;
-
-            ActiveFiles = new(_cc.AllCodices);
-
-            //load sorting from settings
-            var PropertyPath = (string)Properties.Settings.Default["SortProperty"];
-            var SortDirection = (ListSortDirection)Properties.Settings.Default["SortDirection"];
-            SortBy(PropertyPath, SortDirection);
-
-            ExcludedCodicesByTag = new();
-            ExcludedCodicesByExcludedTags = new();
-            ExcludedCodicesByFilter = new();
-
-            SearchTerm = "";
-            SourceTags = new()
-            {
-                new(Enums.FilterType.OfflineSource)
-                {
-                    Label = "Available Offline",
-                    BackgroundColor = Colors.DarkSeaGreen
-                },
-
-                new(Enums.FilterType.OnlineSource)
-                {
-                    Label = "Available Online",
-                    BackgroundColor = Colors.DarkSeaGreen
-                },
-
-                new(Enums.FilterType.PhysicalSource)
-                {
-                    Label = "Physically Owned",
-                    BackgroundColor = Colors.DarkSeaGreen
-                },
-            };
-
-            ActiveTags = new();
-            ActiveTags.CollectionChanged += (e, v) => UpdateTagFilteredFiles();
-            DeActiveTags = new();
-            DeActiveTags.CollectionChanged += (e, v) => UpdateTagFilteredFiles();
-            ActiveFilters = new();
-            ActiveFilters.CollectionChanged += (e, v) => UpdateFieldFilteredFiles();
-            DeActiveFilters = new();
-            DeActiveFilters.CollectionChanged += (e, v) => UpdateFieldFilteredFiles();
-
-            _cc.AllCodices.CollectionChanged += (e, v) => SubscribeToCodexProperties();
-            SubscribeToCodexProperties();
+            LoadInitialCollection();
         }
 
         #region Properties
-        readonly CodexCollection _cc;
-        private int _itemsShown = 15;
-        public int ItemsShown => Math.Min(_itemsShown, ActiveFiles.Count);
 
-        //CollectionDirectories
-        public ObservableCollection<Tag> ActiveTags { get; set; }
-        public ObservableCollection<Tag> DeActiveTags { get; set; }
-        public ObservableCollection<FilterTag> ActiveFilters { get; set; }
-        public ObservableCollection<FilterTag> DeActiveFilters { get; set; }
-
-        public HashSet<Codex> ExcludedCodicesByTag { get; set; }
-        public HashSet<Codex> ExcludedCodicesByExcludedTags { get; set; }
-        public HashSet<Codex> ExcludedCodicesByFilter { get; set; }
-
-        private ObservableCollection<Codex> _activeFiles;
-        public ObservableCollection<Codex> ActiveFiles 
+        private CodexCollection _currentCollection;
+        public CodexCollection CurrentCollection
         {
-            get { return _activeFiles; }
-            set { SetProperty(ref _activeFiles, value); }
+            get => _currentCollection;
+            set
+            {
+                if (_currentCollection != null)
+                {
+                    _currentCollection.SaveCodices();
+                    _currentCollection.SaveTags();
+                }
+
+                if (value != null)
+                {
+                    value.Load();
+                    SetProperty(ref _currentCollection, value);
+                    FilterVM = new(value.AllCodices);
+                    TagsVM = new(this);
+                }
+            }
         }
 
-        public ObservableCollection<Codex> Favorites => new (ActiveFiles.Where(c => c.Favorite));
-        public List<Codex> RecentCodices => ActiveFiles.OrderByDescending(c => c.LastOpened).ToList().GetRange(0, ItemsShown);
-        public List<Codex> MostOpenedCodices => ActiveFiles.OrderByDescending(c => c.OpenedCount).ToList().GetRange(0, ItemsShown);
-        public List<Codex> RecentlyAddedCodices => ActiveFiles.OrderByDescending(c => c.DateAdded).ToList().GetRange(0, ItemsShown);
-
-        private string _searchTerm;
-        public string SearchTerm
+        private ObservableCollection<CodexCollection> _allCodexCollections;
+        public ObservableCollection<CodexCollection> AllCodexCollections
         {
-            get { return _searchTerm; }
-            set { SetProperty(ref _searchTerm, value); }
+            get => _allCodexCollections;
+            set => SetProperty(ref _allCodexCollections, value);
         }
 
-        private List<FilterTag> _sourceTags;
-        public List<FilterTag> SourceTags
+        //Needed for binding to context menu "Move to Collection"
+        public ObservableCollection<string> CollectionDirectories => new(AllCodexCollections.Select(collection => collection.DirectoryName));
+
+        private FilterViewModel _filterVM;
+        public FilterViewModel FilterVM
         {
-            get { return _sourceTags; }
-            init { SetProperty(ref (_sourceTags), value); }
+            get => _filterVM;
+            private set => SetProperty(ref _filterVM, value);
+        }
+
+        private TagsViewModel _tagsVM;
+        public TagsViewModel TagsVM
+        {
+            get => _tagsVM;
+            set => SetProperty(ref _tagsVM, value);
+        }
+
+        //show edit Collection Stuff
+        private bool _createCollectionVisibility = false;
+        public bool CreateCollectionVisibility
+        {
+            get => _createCollectionVisibility;
+            set => SetProperty(ref _createCollectionVisibility, value);
+        }
+
+        //show edit Collection Stuff
+        private bool _editCollectionVisibility = false;
+        public bool EditCollectionVisibility
+        {
+            get => _editCollectionVisibility;
+            set => SetProperty(ref _editCollectionVisibility, value);
         }
 
         #endregion
 
-        #region Functions
-        public void SubscribeToCodexProperties()
+        #region Methods and Commands
+        private void LoadInitialCollection()
         {
-            //cause derived lists to update when codex gets updated
-            foreach (Codex c in _cc.AllCodices)
+            Directory.CreateDirectory(CodexCollection.CollectionsPath);
+
+            //Get all collections by folder name
+            AllCodexCollections = new(Directory
+                .GetDirectories(CodexCollection.CollectionsPath)
+                .Select(Path.GetFileName)
+                .Select(dir => new CodexCollection(dir)));
+
+            //in case of first boot, create default folder
+            if (AllCodexCollections.Count == 0)
             {
-                c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(Favorites));
-                c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(RecentCodices));
-                c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(MostOpenedCodices));
+                CreateCollection("Default");
+            }
+
+            //in case startup collection no longer exists, pick first one that does exists
+            else if (!AllCodexCollections.Any(collection => collection.DirectoryName == Properties.Settings.Default.StartupCollection))
+            {
+                MessageBox.Show("The collection " + Properties.Settings.Default.StartupCollection + " could not be found. ");
+                CurrentCollection = AllCodexCollections.First();
+            }
+
+            //otherwise, open startup collection
+            else
+            {
+                CurrentCollection = AllCodexCollections.First(collection => collection.DirectoryName == Properties.Settings.Default.StartupCollection);
             }
         }
 
-        private ActionCommand _clearFiltersCommand;
-        public ActionCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
-        public void ClearFilters()
+        private bool isLegalCollectionName(string dirName)
         {
-            SearchTerm = "";
-            ActiveTags.Clear();
-            DeActiveTags.Clear();
-            ActiveFilters.Clear();
-            DeActiveFilters.Clear();
-            ActiveFiles = new(_cc.AllCodices);
+            bool legal =
+                dirName.IndexOfAny(Path.GetInvalidPathChars()) < 0
+                && dirName.IndexOfAny(Path.GetInvalidFileNameChars()) < 0
+                && !AllCodexCollections.Any(collection => collection.DirectoryName == dirName)
+                && !String.IsNullOrWhiteSpace(dirName)
+                && dirName.Length < 100;
+            return legal;
         }
 
-        //-------------For Tags---------------//
-        public void UpdateTagFilteredFiles()
+        private ActionCommand _toggleCreateCollectionCommand;
+        public ActionCommand ToggleCreateCollectionCommand => _toggleCreateCollectionCommand ??= new(ToggleCreateCollection);
+        private void ToggleCreateCollection() => CreateCollectionVisibility = !CreateCollectionVisibility;
+
+        private ActionCommand _toggleEditCollectionCommand;
+        public ActionCommand ToggleEditCollectionCommand => _toggleEditCollectionCommand ??= new(ToggleEditCollection);
+        private void ToggleEditCollection() => EditCollectionVisibility = !EditCollectionVisibility;
+
+        // Create CodexCollection
+        private RelayCommand<string> _createCollectionCommand;
+        public RelayCommand<string> CreateCollectionCommand => _createCollectionCommand ??= new(CreateCollection, isLegalCollectionName);
+        public void CreateCollection(string dirName)
         {
-            ExcludedCodicesByTag.Clear();
-            HashSet<Tag> ActiveGroups = new();
+            if (string.IsNullOrEmpty(dirName)) return;
 
-            //Find all the active groups to filter in
-            foreach (Tag t in ActiveTags)
-            {
-                Tag Group = (Tag)t.GetGroup();
-                ActiveGroups.Add(Group);
-            }
+            CodexCollection newCollection = new(dirName);
+            Directory.CreateDirectory(CodexCollection.CollectionsPath + dirName + @"\CoverArt");
+            Directory.CreateDirectory(CodexCollection.CollectionsPath + dirName + @"\Thumbnails");
+            AllCodexCollections.Add(newCollection);
+            CurrentCollection = newCollection;
 
-            //List of Files filtered out in that group
-            HashSet<Codex> SingleGroupFilteredFiles;
-            //Go over every group and filter out files
-            foreach (Tag Group in ActiveGroups)
+            CreateCollectionVisibility = false;
+        }
+
+        // Rename Collection
+        private RelayCommand<string> _editCollectionNameCommand;
+        public RelayCommand<string> EditCollectionNameCommand => _editCollectionNameCommand ??= new(EditCollectionName, isLegalCollectionName);
+        public void EditCollectionName(string newName)
+        {
+            CurrentCollection.RenameCollection(newName);
+            EditCollectionVisibility = false;
+        }
+
+        // Delete Collection
+        private ActionCommand _deleteCollectionCommand;
+        public ActionCommand DeleteCollectionCommand => _deleteCollectionCommand ??= new(RaiseDeleteCollectionWarning);
+        public void RaiseDeleteCollectionWarning()
+        {
+            if (CurrentCollection.AllCodices.Count > 0)
             {
-                //Make list with all active tags in that group, including childeren
-                List<Tag> SingleGroupTags = Utils.FlattenTree(ActiveTags.Where(tag => tag.GetGroup() == Group)).ToList();
-                //add parents of those tags, must come AFTER chileren, otherwise childeren of parents are included which is wrong
-                for (int i = 0; i < SingleGroupTags.Count; i++)
+                //MessageBox "Are you Sure?"
+                string sCaption = "Are you Sure?";
+
+                string MessageSingle = "There is still one file in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
+                string MessageMultiple = $"There are still {CurrentCollection.AllCodices.Count} files in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
+
+                string sMessageBoxText = CurrentCollection.AllCodices.Count == 1 ? MessageSingle : MessageMultiple;
+
+                MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
+                MessageBoxImage imgMessageBox = MessageBoxImage.Warning;
+
+                MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, imgMessageBox);
+
+                if (rsltMessageBox == MessageBoxResult.Yes)
                 {
-                    Tag P = SingleGroupTags[i].GetParent();
-                    if (P != null && !P.IsGroup && !SingleGroupTags.Contains(P)) SingleGroupTags.Add(P);
+                    DeleteCollection(CurrentCollection);
                 }
-                SingleGroupFilteredFiles = new(_cc.AllCodices.Where(f => !SingleGroupTags.Intersect(f.Tags).Any()));
-                
-                ExcludedCodicesByTag = ExcludedCodicesByTag.Union(SingleGroupFilteredFiles).ToHashSet();
             }
-
-            //Filter out Codices with excluded tags
-            //get childeren too, if parent is excluded, so should all the childeren
-            List<Tag> AllDeActiveTags = Utils.FlattenTree(DeActiveTags).ToList();
-            ExcludedCodicesByExcludedTags = new(_cc.AllCodices.Where(f => AllDeActiveTags.Intersect(f.Tags).Any()));
-
-            UpdateActiveFiles();
-        }
-
-        private RelayCommand<Tag> _addTagFilterCommand;
-        public RelayCommand<Tag> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilter);
-        public void AddTagFilter(Tag t)
-        {
-            //only add if not yet in activetags
-            if (ActiveTags.All(p => p.ID != t.ID))
+            else
             {
-                ActiveTags.Add(t);
-                DeActiveTags.Remove(t);
+                DeleteCollection(CurrentCollection);
             }
         }
-        public void AddNegTagFilter(Tag t)
+        public void DeleteCollection(CodexCollection toDelete)
         {
-            //only add if not yet in deactivetags
-            if (DeActiveTags.All(p => p.ID != t.ID))
-            {
-                DeActiveTags.Add(t);
-                ActiveTags.Remove(t);
-            }
-        }
+            AllCodexCollections.Remove(CurrentCollection);
+            CurrentCollection = AllCodexCollections.FirstOrDefault();
 
-        private RelayCommand<Tag> _removeFilterCommand;
-        public RelayCommand<Tag> RemoveFilterCommand => _removeFilterCommand ??= new(RemoveFilter);
-        public void RemoveFilter(Tag t)
-        {
-            if (!t.GetType().IsSubclassOf(typeof(Tag))) RemoveTagFilter(t);
-            else RemoveFieldFilter((FilterTag)t);
-        }
-        public void RemoveTagFilter(Tag t)
-        {
-            ActiveTags.Remove(t);
-            DeActiveTags.Remove(t);
-        }
-
-        //-------------For Filters------------//
-        public void UpdateFieldFilteredFiles()
-        {
-            ExcludedCodicesByFilter.Clear();
-
-            //enumerate over all filter types
-            foreach (Enums.FilterType FT in Enum.GetValues(typeof(Enums.FilterType)))
-            {
-                ExcludedCodicesByFilter = ExcludedCodicesByFilter.Union(GetFieldFilteredCodices(FT, ActiveFilters)).ToHashSet();
-                ExcludedCodicesByFilter = ExcludedCodicesByFilter.Union(GetFieldFilteredCodices(FT, DeActiveFilters,true)).ToHashSet();
-            }
-            UpdateActiveFiles();
-        }
-
-        public List<Codex> GetFieldFilteredCodices(Enums.FilterType filtertype, IEnumerable<FilterTag> FilterTags, bool invert = false)
-        {
-            List<object> FilterValues = new(
-                    FilterTags
-                    .Where(filter => (Enums.FilterType)filter.GetGroup() == filtertype)
-                    .Select(t => t.FilterValue)
-                    );
-
-            if (FilterValues.Count == 0) return new();
-
-            IEnumerable<Codex> ExcludedCodices = new List<Codex>(); // generic IEnumerable doesn't have constructor so list instead
-            switch (filtertype)
-            {
-                case Enums.FilterType.Search:
-                    ExcludedCodices = GetSearchFilteredCodices((string)FilterValues.FirstOrDefault());
-                    break;
-                case Enums.FilterType.Author:
-                    ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Intersect(f.Authors).Any());
-                    break;
-                case Enums.FilterType.Publisher:
-                    ExcludedCodices = _cc.AllCodices.Where(f => !FilterValues.Contains(f.Publisher));
-                    break;
-                case Enums.FilterType.StartReleaseDate:
-                    ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate < (DateTime?)FilterValues.FirstOrDefault());
-                    break;
-                case Enums.FilterType.StopReleaseDate:
-                    ExcludedCodices = _cc.AllCodices.Where(f => f.ReleaseDate > (DateTime?)FilterValues.FirstOrDefault());
-                    break;
-                case Enums.FilterType.MinimumRating:
-                    ExcludedCodices = _cc.AllCodices.Where(f => f.Rating < (int?)FilterValues.FirstOrDefault());
-                    break;
-                case Enums.FilterType.OfflineSource:
-                    ExcludedCodices = _cc.AllCodices.Where(f => !f.HasOfflineSource());
-                    break;
-                case Enums.FilterType.OnlineSource:
-                    ExcludedCodices = _cc.AllCodices.Where(f => !f.HasOnlineSource());
-                    break;
-                case Enums.FilterType.PhysicalSource:
-                    ExcludedCodices = _cc.AllCodices.Where(f => !f.Physically_Owned);
-                    break;
-            }
-            return invert ? _cc.AllCodices.Except(ExcludedCodices).ToList() : ExcludedCodices.ToList();
-        }
-        
-        public HashSet<Codex> GetSearchFilteredCodices(string searchterm, bool returnExcludedCodices = true)
-        {
-            HashSet<Codex> ExcludedCodicesBySearch = new();
-            HashSet<Codex> IncludedCodicesBySearch = new();
-            if (!string.IsNullOrEmpty(searchterm))
-            {
-                //include acronyms
-                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
-                    .Where(f => Fuzz.TokenInitialismRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
-                //include string fragments
-                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
-                    .Where(f => f.Title.Contains(SearchTerm, StringComparison.InvariantCultureIgnoreCase)));
-                //include spelling errors
-                //include acronyms
-                IncludedCodicesBySearch.UnionWith(_cc.AllCodices
-                    .Where(f => Fuzz.PartialRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
-
-                ExcludedCodicesBySearch = new(_cc.AllCodices.Except(IncludedCodicesBySearch));
-            }
-            return returnExcludedCodices?  ExcludedCodicesBySearch : IncludedCodicesBySearch;
-        }
-
-        public void AddFieldFilter(FilterTag t, bool include = true)
-        {
-            ObservableCollection<FilterTag> Target = include ? ActiveFilters : DeActiveFilters;
-            ObservableCollection<FilterTag> Other = !include ? ActiveFilters : DeActiveFilters;
-            //if Filter is unique, remove previous instance of that Filter before adding
-            if (t.Unique)
-            {
-                Target.Remove(
-                    Target.SingleOrDefault(tag => (int)tag.GetGroup() == (int)t.GetGroup()));
-            }
-            //only add if not yet in activetags
-            if (Target.All(p => p.ID != t.ID))
-            {
-                Target.Add(t);
-                Other.Remove(t);
-            }
-        }
-
-        public void RemoveFieldFilter(FilterTag t)
-        {
-            ActiveFilters.Remove(t);
-            DeActiveFilters.Remove(t);
-        }
-        //------------------------------------//
-
-
-        public void SortBy(string PropertyPath, ListSortDirection? SortDirection)
-        {
-            if (PropertyPath != null && PropertyPath.Length > 0)
-            {
-                var sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions;
-                //determine sorting direction, ascending by default
-                ListSortDirection lsd = ListSortDirection.Ascending; ;
-
-                if (SortDirection != null) //if direction is given, use that instead
-                {
-                    lsd = (ListSortDirection)SortDirection;
-                }
-                else if (sortDescr.Count > 0)
-                {
-                    if (sortDescr[0].PropertyName == PropertyPath) //if already sorting, change direction
-                    {
-                        if (sortDescr[0].Direction == ListSortDirection.Ascending) lsd = ListSortDirection.Descending;
-                        else lsd = ListSortDirection.Ascending;
-                    }
-                }
-
-                sortDescr.Clear();
-                sortDescr.Add(new SortDescription(PropertyPath, lsd));
-                SaveSortDescriptions(PropertyPath, lsd);
-            }
-        }
-        //Single parameter version needed for relaycommand
-        public void SortBy(string PropertyPath)
-        {
-            SortBy(PropertyPath, null);
-        }
-        private void SaveSortDescriptions(string property, ListSortDirection dir)
-        {
-            Properties.Settings.Default["SortProperty"] = property;
-            Properties.Settings.Default["SortDirection"] = (int)dir;
-            Properties.Settings.Default.Save();
-        }
-
-        public void ReFilter()
-        {
-            UpdateTagFilteredFiles();
-            UpdateFieldFilteredFiles();
-            UpdateActiveFiles();
-        }
-
-        public void UpdateActiveFiles()
-        {
-            //get sorting info
-            SortDescription sortDescr;
-            if  (CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Count > 0)
-            {
-                sortDescr = CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions[0];
-            }
-            SaveSortDescriptions(sortDescr.PropertyName, sortDescr.Direction);
-
-            //compile list of "active" files, which are files that match all the different filters
-            ActiveFiles = new (_cc.AllCodices
-                .Except(ExcludedCodicesByTag)
-                .Except(ExcludedCodicesByExcludedTags)
-                .Except(ExcludedCodicesByFilter)
-                .ToList());
-
-            //Also apply filtering to these lists
-            RaisePropertyChanged(nameof(Favorites));
-            RaisePropertyChanged(nameof(RecentCodices));
-            RaisePropertyChanged(nameof(MostOpenedCodices));
-            RaisePropertyChanged(nameof(RecentlyAddedCodices));
-
-            //reapply sorting, will fail if there aren't any
-            try
-            {
-                CollectionViewSource.GetDefaultView(ActiveFiles).SortDescriptions.Add(sortDescr);
-            }
-            catch (Exception ex)
-            {
-                Logger.log.Warn(ex.InnerException);
-            }
-        }
-
-        public void RemoveCodex(Codex c)
-        {
-            ExcludedCodicesByTag.Remove(c);
-            ExcludedCodicesByExcludedTags.Remove(c);
-            ExcludedCodicesByFilter.Remove(c);
-            ActiveFiles.Remove(c);
-        }
-
-        #endregion
-
-        #region Drag Drop Handlers
-        //Drop on Treeview Behaviour
-        void IDropTarget.DragOver(IDropInfo dropInfo)
-        { 
-            //Tree to Filter Box
-            switch (dropInfo.Data){
-                //Move From Treeview
-                case TreeViewNode DraggedTVN:
-                    if (!DraggedTVN.Tag.IsGroup)
-                    {
-                        dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-                        dropInfo.Effects = DragDropEffects.Copy;
-                    }
-                    break;
-                //Move Filter included/excluded
-                case FilterTag ft:
-                    //Do filtertag specific stuff here if needed
-                //Move Tag between included/excluded
-                case Tag t:
-                    dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-                    dropInfo.Effects = DragDropEffects.Move;
-                    break;
-            }
-        }
-
-        void IDropTarget.Drop(IDropInfo dropInfo)
-        {
-            //Included filter Listbox has extra empty collection to tell the difference
-            bool ToExcludeTags = ((CompositeCollection)(dropInfo.TargetCollection)).Count < 3;
-
-            //Tree to Filter Box
-            if (dropInfo.Data is TreeViewNode)
-            {
-                TreeViewNode DraggedTVN = (TreeViewNode)dropInfo.Data;
-                if (ToExcludeTags) { AddNegTagFilter(DraggedTVN.Tag); }
-                else { AddTagFilter(DraggedTVN.Tag); }
-            }
-
-            //Move between included/excluded
-            if (dropInfo.Data is Tag)
-            {
-                if (dropInfo.Data is FilterTag)
-                {
-                    FilterTag DraggedTag = (FilterTag)dropInfo.Data;
-                    if (ToExcludeTags) { AddFieldFilter(DraggedTag, false); }
-                    else { AddFieldFilter(DraggedTag); }
-                }
-                else
-                {
-                    Tag DraggedTag = (Tag)dropInfo.Data;
-                    if (ToExcludeTags) { AddNegTagFilter(DraggedTag); }
-                    else { AddTagFilter(DraggedTag); }
-                } 
-            }
+            //if Dir name of toDelete is empty, it will delete the entire collections folder
+            if (String.IsNullOrEmpty(toDelete.DirectoryName)) return;
+            Directory.Delete(CodexCollection.CollectionsPath + toDelete.DirectoryName, true);
         }
         #endregion
     }

@@ -12,7 +12,7 @@ namespace COMPASS.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.2.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.4.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -26,12 +26,12 @@ namespace COMPASS.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int PreferedView {
+        public int PreferedLayout {
             get {
-                return ((int)(this["PreferedView"]));
+                return ((int)(this["PreferedLayout"]));
             }
             set {
-                this["PreferedView"] = value;
+                this["PreferedLayout"] = value;
             }
         }
         
@@ -85,7 +85,7 @@ namespace COMPASS.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ListShowRating {
             get {
                 return ((bool)(this["ListShowRating"]));
@@ -134,12 +134,12 @@ namespace COMPASS.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool TileShowTitle {
+        public bool TileShowExtraData {
             get {
-                return ((bool)(this["TileShowTitle"]));
+                return ((bool)(this["TileShowExtraData"]));
             }
             set {
-                this["TileShowTitle"] = value;
+                this["TileShowExtraData"] = value;
             }
         }
         
@@ -241,18 +241,6 @@ namespace COMPASS.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int SeleniumBrowser {
-            get {
-                return ((int)(this["SeleniumBrowser"]));
-            }
-            set {
-                this["SeleniumBrowser"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string DataGridCollumnInfo {
             get {
@@ -332,6 +320,30 @@ namespace COMPASS.Properties {
             }
             set {
                 this["TileCoverSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int SelectedTab {
+            get {
+                return ((int)(this["SelectedTab"]));
+            }
+            set {
+                this["SelectedTab"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int TileDisplayedData {
+            get {
+                return ((int)(this["TileDisplayedData"]));
+            }
+            set {
+                this["TileDisplayedData"] = value;
             }
         }
     }

@@ -1,23 +1,25 @@
-﻿using COMPASS.Models;
-using COMPASS.ViewModels.Commands;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class TagEditViewModel : ViewModelBase, IEditViewModel
+    public class TagEditViewModel : ObservableObject, IEditViewModel
     {
-        public TagEditViewModel(Tag ToEdit) : base()
+        public TagEditViewModel(Tag ToEdit, bool isGroup = false) : base()
         {
             EditedTag = ToEdit;
-            if (ToEdit == null) CreateNewTag = true;
-            TempTag = new Tag(MVM.CurrentCollection.AllTags);
-            if (!CreateNewTag) TempTag.Copy(EditedTag);
+            TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
 
-            ShowColorSelection = false;
+            if (ToEdit is null)
+            {
+                CreateNewTag = true;
+                TempTag.IsGroup = isGroup;
+            }
+            else
+            {
+                TempTag.Copy(EditedTag);
+            }
 
             //Commands
             CloseColorSelectionCommand = new ActionCommand(CloseColorSelection);
@@ -26,34 +28,30 @@ namespace COMPASS.ViewModels
         #region Properties
 
         private Tag EditedTag;
-        private readonly bool CreateNewTag;
+        public bool CreateNewTag { get; init; }
 
         //TempTag to work with
         private Tag tempTag;
         public Tag TempTag
         {
-            get { return tempTag; }
-            set { SetProperty(ref tempTag, value); }
+            get => tempTag;
+            set => SetProperty(ref tempTag, value);
         }
 
         //visibility of Color Selection
         private bool showcolorselection = false;
         public bool ShowColorSelection
         {
-            get { return showcolorselection; }
-            set 
-            { 
+            get => showcolorselection;
+            set
+            {
                 SetProperty(ref showcolorselection, value);
                 RaisePropertyChanged(nameof(ShowInfoGrid));
             }
         }
 
         //visibility of General Info Selection
-        public bool ShowInfoGrid
-        {
-            get { return !ShowColorSelection; }
-            set { }
-        }
+        public bool ShowInfoGrid => !ShowColorSelection;
 
         #endregion
 
@@ -63,22 +61,22 @@ namespace COMPASS.ViewModels
         public ActionCommand OKCommand => _oKCommand ??= new(OKBtn);
         public void OKBtn()
         {
-            if(CreateNewTag)
+            if (CreateNewTag)
             {
-                EditedTag = new Tag(MVM.CurrentCollection.AllTags);
-                if (TempTag.ParentID == -1) MVM.CurrentCollection.RootTags.Add(EditedTag);
+                EditedTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+                if (TempTag.Parent is null) MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(EditedTag);
             }
 
             //Apply changes 
             EditedTag.Copy(TempTag);
-            MVM.TFViewModel.TagsTabVM.RefreshTreeView();
+            MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
 
             if (!CreateNewTag) CloseAction();
             else
             {
-                MVM.CurrentCollection.AllTags.Add(EditedTag);
+                MainViewModel.CollectionVM.CurrentCollection.AllTags.Add(EditedTag);
                 //reset fields
-                TempTag = new Tag(MVM.CurrentCollection.AllTags);
+                TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
                 EditedTag = null;
             }
         }
@@ -90,18 +88,15 @@ namespace COMPASS.ViewModels
             if (!CreateNewTag) CloseAction();
             else
             {
-                TempTag = new Tag(MVM.CurrentCollection.AllTags);
+                TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             }
             EditedTag = null;
         }
 
         public ActionCommand CloseColorSelectionCommand { get; private set; }
-        public Action CloseAction {get; set;}
+        public Action CloseAction { get; set; }
 
-        private void CloseColorSelection()
-        {
-            ShowColorSelection = false;
-        }
+        private void CloseColorSelection() => ShowColorSelection = false;
 
         #endregion
     }

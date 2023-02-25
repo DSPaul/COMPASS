@@ -1,22 +1,24 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
 using COMPASS.Tools;
-using COMPASS.ViewModels.Commands;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexEditViewModel : DealsWithTreeviews ,IEditViewModel
+    public class CodexEditViewModel : ViewModelBase, IEditViewModel
     {
-        public CodexEditViewModel(Codex toEdit) : base(MVM.CurrentCollection.RootTags)
+        public CodexEditViewModel(Codex toEdit)
         {
             EditedCodex = toEdit;
             //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked
-            TempCodex = new(MVM.CurrentCollection);
-            if(!CreateNewCodex) TempCodex.Copy(EditedCodex);
+            TempCodex = new(MainViewModel.CollectionVM.CurrentCollection);
+            if (!CreateNewCodex) TempCodex.Copy(EditedCodex);
 
             //Apply right checkboxes in Alltags
             foreach (TreeViewNode t in AllTreeViewNodes)
@@ -31,30 +33,32 @@ namespace COMPASS.ViewModels
 
         readonly Codex EditedCodex;
 
-        private bool CreateNewCodex
-        {
-            get { return EditedCodex == null; }
-        }
+        private ObservableCollection<TreeViewNode> _treeViewSource;
+        public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
+
+        private HashSet<TreeViewNode> AllTreeViewNodes => Utils.FlattenTree(TreeViewSource).ToHashSet();
+
+        private bool CreateNewCodex => EditedCodex == null;
 
         private Codex _tempCodex;
         public Codex TempCodex
         {
-            get { return _tempCodex; }
-            set { SetProperty(ref _tempCodex, value); }
+            get => _tempCodex;
+            set => SetProperty(ref _tempCodex, value);
         }
 
-        private bool CoverArtChanged = false;
         private bool _showLoading = false;
-        public bool ShowLoading {
-            get { return _showLoading; }
-            set { SetProperty(ref _showLoading, value); } 
+        public bool ShowLoading
+        {
+            get => _showLoading;
+            set => SetProperty(ref _showLoading, value);
         }
 
         public CreatableLookUpContract Contract { get; set; } = new();
 
         #endregion
 
-        #region Funtions and Commands
+        #region Methods and Commands
 
         private ActionCommand _browsePathCommand;
         public ActionCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
@@ -123,7 +127,7 @@ namespace COMPASS.ViewModels
                 AddExtension = false,
                 Multiselect = false,
                 Filter = "Image files (*.jpg, *.jpeg, *.png) | *.jpg; *.jpeg; *.png"
-        };
+            };
             if (openFileDialog.ShowDialog() == true)
             {
                 CoverFetcher.GetCoverFromImage(openFileDialog.FileName, TempCodex);
@@ -140,8 +144,6 @@ namespace COMPASS.ViewModels
             TempCodex.Thumbnail = null;
             TempCodex.CoverArt = CovArt;
             TempCodex.Thumbnail = Thumbn;
-
-            CoverArtChanged = true;
         }
 
         public Action CloseAction { get; set; }
@@ -151,30 +153,25 @@ namespace COMPASS.ViewModels
         public void OKBtn()
         {
             //Copy changes into Codex
-            if (!CreateNewCodex) EditedCodex.Copy(TempCodex);
+            if (!CreateNewCodex)
+            {
+                EditedCodex.Copy(TempCodex);
+            }
             else
             {
                 Codex ToAdd = new();
                 ToAdd.Copy(TempCodex);
-                MVM.CurrentCollection.AllCodices.Add(ToAdd);
-                MVM.Refresh();
+                MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(ToAdd);
             }
-            //Add new Author and Publishers to lists
-            MVM.CurrentCollection.AddAuthors(TempCodex);
-            if (TempCodex.Publisher != "" && !MVM.CurrentCollection.PublisherList.Contains(TempCodex.Publisher))
-                MVM.CurrentCollection.PublisherList.Add(TempCodex.Publisher);
-
-            //reset needed to show art update
-            if (CoverArtChanged) MVM.Refresh();
+            //Add new Authors, Publishers, ect. to metadata lists
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
             CloseAction();
         }
 
         private ActionCommand _cancelCommand;
         public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
-        public void Cancel()
-        {
-            CloseAction();
-        }
+        public void Cancel() => CloseAction();
 
         #endregion
     }

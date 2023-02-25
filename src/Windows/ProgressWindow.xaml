@@ -3,11 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:conv="clr-namespace:COMPASS.Tools.Converters"
+        xmlns:conv="clr-namespace:COMPASS.Converters"
         xmlns:Tools="clr-namespace:COMPASS.Tools"
-        xmlns:local="clr-namespace:COMPASS.Windows" WindowStyle="None"
+        xmlns:local="clr-namespace:COMPASS.Windows" 
+        xmlns:Sources="clr-namespace:COMPASS.ViewModels.Sources"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" 
-        AllowsTransparency="True" Background="Transparent"
+        d:DataContext="{d:DesignInstance Type=Sources:SourceViewModel}"
+        AllowsTransparency="True" Background="Transparent" WindowStyle="None"
         Title="ProgressWindow" Height="150" Width="450" WindowStartupLocation="CenterOwner">
     <Window.Style>
         <Style>
@@ -42,7 +44,7 @@
                 <Border Height="75" Width="400" Background="{StaticResource LogBackground}" 
                         CornerRadius="5" BorderBrush="{StaticResource LogBorder}" BorderThickness="1" Margin="0,5">
                     <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto">
-                        <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{Binding Log, Mode=OneWay}" Margin="10,5">
+                        <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{Binding ImportLog, Mode=OneWay}" Margin="10,5">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <VirtualizingStackPanel IsItemsHost="True"/>
@@ -50,7 +52,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Msg, FallbackValue=Message}" FontSize="12" 
+                                    <TextBlock Text="{Binding Msg, FallbackValue=Message}" FontSize="12"  TextWrapping="Wrap"
                                                Foreground="{Binding Type, Mode=OneWay,Converter={StaticResource MsgTypetoColorConverter}}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

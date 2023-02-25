@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Tools ="clr-namespace:COMPASS.Tools"
-        xmlns:Converters ="clr-namespace:COMPASS.Tools.Converters"
+        xmlns:Converters ="clr-namespace:COMPASS.Converters"
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
         xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf" xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
@@ -54,7 +54,7 @@
             </Style>
         </Grid.Resources>
         <TabControl x:Name="SettingsTabControl" TabStripPlacement="Left"
-                    Background="{StaticResource LeftDockBackground}" BorderThickness="0">
+                    Background="{StaticResource TabFocus}" BorderThickness="0">
             <TabControl.Resources>
                 <Style TargetType="Border" x:Key="SettingsContainer">
                     <Setter Property="BorderThickness" Value="2"/>
@@ -105,7 +105,7 @@
                                 <TextBlock Text="To"/>
                                 <TextBox x:Name="NewPathTextBox" Tools:AP.PlaceHolderText = "new\folder\path\" MinWidth="200"/>
                                 <Button Content="Rename" Style="{StaticResource IconTextButton}" Tools:AP.IconKind="RenameBox"
-                                        Command="{Binding RenameFolderRefCommand}">
+                                        Command="{Binding RenameFolderRefCommand}" IsDefault="{Binding ElementName=NewPathTextBox, Path=IsFocused}">
                                     <Button.CommandParameter>
                                         <MultiBinding>
                                             <MultiBinding.Converter>
@@ -169,7 +169,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <ContentControl Content="{StaticResource CompassLogo}" Margin="20"/>
                                 <TextBlock Text="{Binding Version}"/>
-                                <Button Content="Check for Updates" Command="{Binding MVM.CheckForUpdatesCommand}" 
+                                <Button Content="Check for Updates" Command="{Binding CheckForUpdatesCommand}" 
                                     Tools:AP.IconKind="Autorenew" Style="{StaticResource IconTextButton}"/>
                                 <TextBlock Text="Author: Paul De Smul"/>
                             </StackPanel>

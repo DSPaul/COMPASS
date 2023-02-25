@@ -1,43 +1,31 @@
-﻿using COMPASS.Models;
-using COMPASS.Tools;
-
-namespace COMPASS.ViewModels
+﻿namespace COMPASS.ViewModels
 {
     internal class HomeLayoutViewModel : LayoutViewModel
     {
-        public HomeLayoutViewModel():base()
+        public HomeLayoutViewModel() : base()
         {
-            LayoutType = Enums.CodexLayout.HomeLayout;
-
-            ViewOptions.Add(new MyMenuItem("Cover Size", value => TileWidth = (double)value) { Prop = TileWidth });
-            ViewOptions.Add(new MyMenuItem("Show Title", value => ShowTitle = (bool)value) { Prop = ShowTitle });
+            LayoutType = Layout.Home;
         }
-
-        private double _width = Properties.Settings.Default.HomeCoverSize;
         public double TileWidth
         {
-            get { return _width; }
+            get => Properties.Settings.Default.HomeCoverSize;
             set
             {
-                SetProperty(ref _width, value);
-                RaisePropertyChanged(nameof(TileHeight));
                 Properties.Settings.Default.HomeCoverSize = value;
+                RaisePropertyChanged(nameof(TileWidth));
+                RaisePropertyChanged(nameof(TileHeight));
             }
         }
 
-        public double TileHeight
-        {
-            get { return (int)(_width * 4 / 3); }
-        }
+        public double TileHeight => (int)(TileWidth * 4 / 3);
 
-        private bool _showtitle = Properties.Settings.Default.HomeShowTitle;
         public bool ShowTitle
         {
-            get { return _showtitle; }
+            get => Properties.Settings.Default.HomeShowTitle;
             set
             {
-                SetProperty(ref _showtitle, value);
                 Properties.Settings.Default.HomeShowTitle = value;
+                RaisePropertyChanged(nameof(ShowTitle));
             }
         }
     }
