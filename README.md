@@ -31,7 +31,7 @@ COMPASS solves this problem by bringing all of your resources together in one pl
 
 ## :warning: Why am I getting warnings from Windows and Virus scanners when installing COMPASS?
 
-The COMPASS files are not digitally signed which results in these kinds of warnings. Signing code is expensive and requires a bunch of paperwork and is just not worth it for a small project like this. If this project ever takes off and gains a large amount of users, I will look into this again. If you do not trust the executable, you can always build the code from source. To do so, simply clone the repo, install Visual Studio, open the solution file and and either build in release mode or publish.
+The COMPASS files are not digitally signed which results in these kinds of warnings. Signing code is expensive, requires a bunch of paperwork and is just not worth it for a small project like this. If this project ever takes off and gains a large amount of users, I will look into this again. If you do not trust the executable, you can always build the code from source. To do so, simply clone the repo, install Visual Studio, open the solution file and and either build in release mode or publish.
 
 ## :construction: Contributing
 
