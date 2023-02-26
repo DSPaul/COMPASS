@@ -34,6 +34,7 @@
             <Setter Property="ItemTemplate" Value="{DynamicResource ListBoxItemCoverTemplate}"/>
             <Setter Property="dd:DragDrop.IsDropTarget" Value="True"/>
             <Setter Property="dd:DragDrop.DropHandler" Value="{Binding CodexVM}"/>
+            <Setter Property="SelectedItem" Value="{Binding SelectedCodex, Mode=OneWayToSource}"/>
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>

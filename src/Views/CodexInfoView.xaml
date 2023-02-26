@@ -1,0 +1,135 @@
+﻿<UserControl x:Class="COMPASS.Views.CodexInfoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:COMPASS.Views"
+             xmlns:Converters="clr-namespace:COMPASS.Converters" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
+             Background="{StaticResource TabFocus}"
+             d:DataContext="{d:DesignInstance Type=viewmodels:CodexInfoViewModel}"
+             mc:Ignorable="d">
+
+    <Border BorderBrush="{StaticResource Separator}" BorderThickness="3" 
+            Visibility="{Binding ShowCodexInfo, Converter={StaticResource ToVisibilityConverter}}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                <materialDesign:PackIcon Height="25" Width="25" HorizontalAlignment="Center"
+                                             Margin="5"  Kind="BookInformationVariant"/>
+                <TextBlock Text="Book Info" FontSize="20"/>
+            </StackPanel>
+            <Rectangle Grid.Row="1" Grid.Column="1" Height="3" Fill="{StaticResource Separator}"/>
+
+            <ToggleButton ToolTip="Collapse" Height="35" Width="35" HorizontalAlignment="Left" 
+                          IsChecked="{Binding ShowCodexInfo, Mode=TwoWay}" Cursor="Hand">
+                <ToggleButton.Template>
+                    <ControlTemplate>
+                        <materialDesign:PackIcon Height="25" Width="25" Margin="5"  Kind="ArrowCollapseRight"/>
+                    </ControlTemplate>
+                </ToggleButton.Template>
+            </ToggleButton>
+
+            <ScrollViewer Grid.Row="2" Grid.Column="1" DataContext="{Binding MVM.CurrentLayout.SelectedCodex}">
+                <Grid Name="MainGrid" Focusable="True" Margin="5" Width="270">
+                    <Grid.Resources>
+                        <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                            <Setter Property="FontSize" Value="14"/>
+                            <Setter Property="Margin" Value="5"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="170"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Border CornerRadius="5" SnapsToDevicePixels="True" Grid.ColumnSpan="2" BorderThickness="3"  Width="200" Height="270"
+                            BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Margin="10">
+                        <Border.Background>
+                            <ImageBrush ImageSource="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, 
+                                Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png}"/>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="15" Direction="300"/>
+                        </Border.Effect>
+                    </Border>
+                    <TextBlock Text="Title:" Grid.Column="0" Grid.Row="1"/>
+                    <TextBlock Text="{Binding Title}" Grid.Column="1" Grid.Row="1"/>
+
+                    <TextBlock Text="Authors:"  Grid.Column="0" Grid.Row="2"/>
+                    <TextBlock Text="{Binding AuthorsAsString}" Grid.Column="1" Grid.Row="2"/>
+
+                    <TextBlock Text="Publisher:"  Grid.Column="0" Grid.Row="3"/>
+                    <TextBlock Text="{Binding Publisher}"  Grid.Column="1" Grid.Row="3"/>
+
+                    <TextBlock Text="Version:"  Grid.Column="0" Grid.Row="4"/>
+                    <TextBlock Text="{Binding Version}"  Grid.Column="1" Grid.Row="4"/>
+
+                    <TextBlock Text="Release Date:" Grid.Column="0" Grid.Row="5"/>
+                    <TextBlock Text="{Binding ReleaseDate, StringFormat=dd/MM/yyyy}"
+                                    Grid.Column="1" Grid.Row="5"/>
+
+                    <TextBlock Text="PageCount:"  Grid.Column="0" Grid.Row="6"/>
+                    <TextBlock Text="{Binding PageCount}" Grid.Column="1" Grid.Row="6"/>
+
+                    <TextBlock Text="Hard Copy:" Grid.Column="0" Grid.Row="7"/>
+                    <CheckBox IsChecked="{Binding Physically_Owned, Mode=OneWay}" Grid.Column="1" Grid.Row="7" Margin="5"/>
+
+                    <TextBlock Text="Rating:"  Grid.Column="0" Grid.Row="8"/>
+                    <materialDesign:RatingBar Value="{Binding Rating, Mode=OneWay}" Margin="5" Grid.Column="2" Grid.Row="8"/>
+
+                    <TextBlock Text="Favorite:" Grid.Column="0" Grid.Row="9"/>
+                    <CheckBox Name="FileFavoriteCB" IsChecked="{Binding Favorite, Mode=OneWay}"
+                                       Grid.Column="1" Grid.Row="9" Margin="5"/>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.ColumnSpan="2">
+                        <TextBlock Text="Tags:" VerticalAlignment="Top" Margin="5,5,10,5"/>
+                        <ItemsControl ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" 
+                                    Foreground="Black" FontSize="15" Grid.Column="1" VerticalAlignment="Bottom"
+                                    ItemTemplate="{StaticResource TagTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" Width="200"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <TextBlock Text="Description:" Grid.Row="11"/>
+                    <Border CornerRadius="3" Grid.Row="12" Grid.ColumnSpan="2" BorderBrush="{StaticResource LogBorder}"
+                    BorderThickness="2">
+                        <TextBlock Text="{Binding Description}" MinHeight="50" Grid.Row="12" Grid.ColumnSpan="2" 
+                             TextWrapping="Wrap" Background="{StaticResource SelectableTransparent}"/>
+                    </Border>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</UserControl>

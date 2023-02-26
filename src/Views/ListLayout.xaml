@@ -17,7 +17,7 @@
                 ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices, IsAsync=True}" 
                 CanUserAddRows="False" SelectionMode="Extended" CanUserSortColumns="True" AutoGenerateColumns="False" 
                 RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
-                SelectedItem="{Binding SelectedFile, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848"
+                SelectedItem="{Binding SelectedCodex, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848"
                 ClipToBounds="True" VirtualizingPanel.IsVirtualizing ="True" PreviewKeyDown="ListLayoutGrid_PreviewKeyDown"
                 VirtualizingStackPanel.VirtualizationMode = "Recycling" MaxHeight="4000"
                 SelectionChanged="FileView_SelectionChanged" DataContextChanged="FileView_DataContextChanged" 

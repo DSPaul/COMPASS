@@ -36,11 +36,11 @@ namespace COMPASS.ViewModels
         public CodexViewModel CodexVM { get; init; } = new();
 
         //Selected File
-        private Codex _selectedFile;
-        public Codex SelectedFile
+        private Codex _selectedCodex;
+        public Codex SelectedCodex
         {
-            get => _selectedFile;
-            set => SetProperty(ref _selectedFile, value);
+            get => _selectedCodex;
+            set => SetProperty(ref _selectedCodex, value);
         }
 
         //Set Type of view

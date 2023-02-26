@@ -8,6 +8,7 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:views="clr-namespace:COMPASS.Views"
     xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
+    xmlns:models="clr-namespace:COMPASS.Models"
     xmlns:Tools ="clr-namespace:COMPASS.Tools"
     xmlns:Converters ="clr-namespace:COMPASS.Converters"
     d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
@@ -34,6 +35,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewmodels:LeftDockViewModel}">
             <views:LeftDockView DataContext="{Binding}"/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:CodexInfoViewModel}">
+            <views:CodexInfoView DataContext="{Binding}"/>
         </DataTemplate>
     </Window.Resources>
     <Window.Style>
@@ -376,6 +380,11 @@
             <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}"/>
             <!--#endregion-->
 
+            <!--#region Right Dock-->
+
+            <UserControl DockPanel.Dock="Right" Content="{Binding CodexInfoVM}"/>
+            <!--#endregion-->
+
             <!--#region Main Dock-->
             <Grid x:Name="ViewsGrid">
                 <Grid.ColumnDefinitions>
@@ -385,7 +394,7 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width ="auto"/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="15" />
@@ -509,6 +518,16 @@
                         </Button>
                         <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Tile}" 
                             Tools:AP.IconKind="ViewModule" Height="43" ToolTip="Tile Layout"/>
+                        <Rectangle Width="3" Fill="Gray" Margin="3,0"
+                                   Visibility="{Binding CodexInfoVM.ShowCodexInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
+                        <ToggleButton ToolTip="Show Book Info" IsChecked="{Binding CodexInfoVM.ShowCodexInfo, Mode=TwoWay}" Cursor="Hand"
+                                      Visibility="{Binding CodexInfoVM.ShowCodexInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
+                            <ToggleButton.Template>
+                                <ControlTemplate>
+                                    <materialDesign:PackIcon Height="30" Width="30" Kind="BookInformationVariant"/>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
                     </StackPanel>
                 </Border>
                 <!--#endregion-->
@@ -552,6 +571,7 @@
                 </Border>
             </Grid>
             <!--#endregion-->
+           
         </DockPanel>
     </Border>
 

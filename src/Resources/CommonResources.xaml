@@ -360,6 +360,18 @@
     </Style>
     <!--#endregion-->
 
+    <Style TargetType="Separator" x:Key="MarginlessSeparator">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Separator}">
+                    <Border Background="{TemplateBinding Control.Background}"
+                    BorderBrush="{TemplateBinding Control.BorderBrush}"
+                    BorderThickness="{TemplateBinding Control.BorderThickness}" Margin="0"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!--#region Contextmenu-->
     <Style TargetType="ContextMenu">
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -367,6 +379,8 @@
         <Setter Property="HasDropShadow" Value="True"/>
         <Setter Property="FontSize" Value="15"/>
         <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
         <Setter Property="Template" >
             <Setter.Value>
                 <ControlTemplate TargetType="ContextMenu">
@@ -427,7 +441,7 @@
                                 </Polygon.Style>
                             </Polygon>
                             <!--Submenu-->
-                            <Popup Name="Popup" Placement="Right" HorizontalOffset="15" VerticalOffset="-15" AllowsTransparency="True"
+                            <Popup Name="Popup" Placement="Right" HorizontalOffset="15" VerticalOffset="-20" AllowsTransparency="True"
                                    IsOpen="{TemplateBinding IsSubmenuOpen}" PopupAnimation="Fade">
                                 <Border Name="SubmenuBorder" SnapsToDevicePixels="True" Background="#FF3C3C3C"
                                         CornerRadius="5">
@@ -470,6 +484,7 @@
                   Command="{Binding Path=DataContext.CodexVM.OpenCodexOnlineCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
+        <Separator Style="{StaticResource MarginlessSeparator}"/>
         <MenuItem Header="Edit" Tools:AP.IconKind="Edit" InputGestureText="Ctrl + E"
                   Command="{Binding Path=DataContext.CodexVM.EditCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
@@ -488,10 +503,26 @@
                 </Style>
             </MenuItem.Resources>
         </MenuItem>
+        <MenuItem Tools:AP.IconKind="BookInformationVariant" InputGestureText="Ctrl + I"
+                  Command="{Binding DataContext.MVM.CodexInfoVM.ToggleCodexInfoCommand,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+            <MenuItem.Style>
+                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="Header" Value="Show Info"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding DataContext.MVM.CodexInfoVM.ShowCodexInfo,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" Value="True">
+                            <Setter Property="Header" Value="Hide Info"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </MenuItem.Style>
+        </MenuItem>
         <MenuItem Header="Show in Explorer" Tools:AP.IconKind="FolderEyeOutline"
                   Command="{Binding Path=DataContext.CodexVM.ShowInExplorerCommand, 
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
+        <Separator Style="{StaticResource MarginlessSeparator}"/>
         <MenuItem Header="Move to Collection" Tools:AP.IconKind="FolderMoveOutline"
                   ItemsSource="{Binding DataContext.MVM.CollectionVM.CollectionDirectories, 
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">

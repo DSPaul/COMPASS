@@ -25,6 +25,7 @@ namespace COMPASS.ViewModels
             CollectionVM = new();
             CurrentLayout = LayoutViewModel.GetLayout();
             LeftDockVM = new(this);
+            CodexInfoVM = new(this);
 
             //Update stuff
             WebDriverFactory.UpdateWebdriver();
@@ -117,6 +118,8 @@ namespace COMPASS.ViewModels
         }
 
         public LeftDockViewModel LeftDockVM { get; private set; }
+
+        public CodexInfoViewModel CodexInfoVM { get; private set; }
 
         #endregion
 

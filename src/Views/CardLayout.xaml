@@ -19,7 +19,7 @@
     </UserControl.Resources>
         <!--#region CardView-->
     <ListBox x:Name="CardLayoutListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}" 
-             BorderBrush="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}" SelectionMode="Extended"
+             BorderBrush="{x:Null}" SelectedItem="{Binding SelectedCodex, Mode=TwoWay}" SelectionMode="Extended"
              ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" Background="{x:Null}"
              SelectionChanged="FileView_SelectionChanged" PreviewKeyDown="CardLayoutListBox_PreviewKeyDown"
              dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CodexVM}">
