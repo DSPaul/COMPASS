@@ -91,8 +91,20 @@
                 </ToggleButton>
             </StackPanel>
             <UniformGrid Grid.Row="5" Margin="5" Rows="1" Columns="2">
-                <Button Style="{StaticResource IconBtn}" Background="{StaticResource AcceptFill}" Command="{Binding OKCommand}"
-                        Tools:AP.IconKind="Check" Margin="5" Height="25" IsDefault="True"/>
+                <Button Command="{Binding OKCommand}" Visibility="Visible"
+                        Tools:AP.IconKind="Check" Margin="5" Height="25" IsDefault="True">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource IconBtn}">
+                            <Setter Property="Background" Value="{StaticResource AcceptFill}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Background" Value="{StaticResource DisabledButton}"/>
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
                 <Button Style="{StaticResource IconBtn}" Background="{StaticResource CancelFill}" Command="{Binding CancelCommand}"
                         Tools:AP.IconKind="WindowClose" Margin="5" Height="25"/>
             </UniformGrid>

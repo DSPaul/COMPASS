@@ -29,6 +29,7 @@
     <SolidColorBrush x:Key="DarkUIElementBackground" Color="{StaticResource DarkGray}"/>
     <SolidColorBrush x:Key="TitlebarElementHoverBackground" Color="DimGray"/>
     <SolidColorBrush x:Key="Separator" Color="{StaticResource KindaDarkGray}"/>
+    <SolidColorBrush x:Key="DisabledButton" Color="{StaticResource KindaDarkGray}"/>
 
     <SolidColorBrush x:Key="CollectionIconFill" Color="{StaticResource DarkerGray}"/>
     <SolidColorBrush x:Key="AcceptFill" Color="Green"/>

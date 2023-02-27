@@ -58,7 +58,7 @@ namespace COMPASS.ViewModels
         #region Functions and Commands
 
         private ActionCommand _oKCommand;
-        public ActionCommand OKCommand => _oKCommand ??= new(OKBtn);
+        public ActionCommand OKCommand => _oKCommand ??= new(OKBtn, canOkBtn);
         public void OKBtn()
         {
             if (CreateNewTag)
@@ -71,30 +71,31 @@ namespace COMPASS.ViewModels
             EditedTag.Copy(TempTag);
             MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
 
-            if (!CreateNewTag) CloseAction();
-            else
+            if (CreateNewTag)
             {
                 MainViewModel.CollectionVM.CurrentCollection.AllTags.Add(EditedTag);
                 //reset fields
                 TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
                 EditedTag = null;
             }
+            CloseAction();
         }
+        public bool canOkBtn() => !String.IsNullOrWhiteSpace(TempTag.Content);
 
         private ActionCommand _cancelCommand;
         public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel()
         {
-            if (!CreateNewTag) CloseAction();
-            else
+            if (CreateNewTag)
             {
                 TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             }
             EditedTag = null;
+            CloseAction();
         }
 
         public ActionCommand CloseColorSelectionCommand { get; private set; }
-        public Action CloseAction { get; set; }
+        public Action CloseAction { get; set; } = new(() => { });
 
         private void CloseColorSelection() => ShowColorSelection = false;
 

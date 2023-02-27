@@ -133,7 +133,8 @@
                     <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" CornerRadius="5">
                         <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Style="{StaticResource ClickableIcon}"
                             Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}" 
-                            Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Visibility="{TemplateBinding Visibility}">
                         </materialDesign:PackIcon>
                     </Border>
                 </ControlTemplate>
