@@ -35,6 +35,7 @@ namespace COMPASS.Tools
         }
 
         //check internet connection
+        private static bool _showedOfflineWarning = false;
         public static bool PingURL(string URL = "8.8.8.8")
         {
             Ping p = new();
@@ -42,12 +43,25 @@ namespace COMPASS.Tools
             {
                 PingReply reply = p.Send(URL, 3000);
                 if (reply.Status == IPStatus.Success)
+                {
+                    if (_showedOfflineWarning == true)
+                    {
+                        string msg = "Internet connection restored";
+                        Logger.Info(msg);
+                        Logger.FileLog.Info(msg);
+                        _showedOfflineWarning = false;
+                    }
                     return true;
+                }
                 else return false;
             }
             catch (Exception ex)
             {
-                Logger.Warn($"Could not ping {URL}", ex);
+                if (_showedOfflineWarning == false)
+                {
+                    Logger.Warn($"Could not ping {URL}", ex);
+                }
+                _showedOfflineWarning = true;
             }
             return false;
         }
