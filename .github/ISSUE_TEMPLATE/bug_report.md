@@ -2,7 +2,7 @@
 name: Bug report
 about: Report a Bug
 title: ''
-labels: Feature
+labels: bug
 assignees: DSPaul
 
 ---
