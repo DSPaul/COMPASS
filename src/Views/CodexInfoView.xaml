@@ -63,6 +63,9 @@
                                 </Setter.Value>
                             </Setter>
                         </Style>
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                            <Setter Property="IsHitTestVisible" Value="False"/>
+                        </Style>
                     </Grid.Resources>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100"/>
