@@ -81,6 +81,8 @@ namespace COMPASS.Models
                     AllCodices = serializer.Deserialize(Reader) as ObservableCollection<Codex>;
                 }
 
+                AllCodices.CollectionChanged += (e, v) => SaveCodices();
+
                 foreach (Codex c in AllCodices)
                 {
                     //reconstruct tags from ID's
@@ -130,7 +132,6 @@ namespace COMPASS.Models
             File.Delete(Todelete.CoverArt);
             File.Delete(Todelete.Thumbnail);
             Logger.Info($"Deleted {Todelete.Title} from {DirectoryName}");
-            SaveCodices();
         }
 
         public void DeleteTag(Tag todel)
