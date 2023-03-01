@@ -1,5 +1,6 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Tools;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -31,7 +32,19 @@ namespace COMPASS.ViewModels
 
                 if (value != null)
                 {
-                    value.Load();
+                    int success = value.Load();
+                    if (success < 0)
+                    {
+                        string msg = success switch
+                        {
+                            -1 => "The Tag data seems to be corrupted and could not be read.",
+                            -2 => "The Codex data seems to be corrupted and could not be read.",
+                            -3 => "Both the Tag and Codex data seems to be corrupted and could not be read.",
+                            _ => ""
+                        };
+                        _ = MessageBox.Show($"Could not load {value.DirectoryName}. \n" + msg, "Fail to Load Collection", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
                     SetProperty(ref _currentCollection, value);
                     FilterVM = new(value.AllCodices);
                     TagsVM = new(this);
@@ -92,23 +105,54 @@ namespace COMPASS.ViewModels
                 .Select(Path.GetFileName)
                 .Select(dir => new CodexCollection(dir)));
 
-            //in case of first boot, create default folder
-            if (AllCodexCollections.Count == 0)
+            while (CurrentCollection is null)
             {
-                CreateCollection("Default");
-            }
+                //in case of first boot or all saves are corrupted, create default collection
+                if (AllCodexCollections.Count == 0)
+                {
+                    // if default collection already exists but is corrupted
+                    // keep generating new collection names until a new one is found
+                    bool created = false;
+                    int i = 0;
+                    string name = "Default Collection";
+                    while (!created && i < 10) //only try 10 times as safefail if there is a bug to prevent infinite loop
+                    {
+                        if (!Path.Exists(Path.Combine(CodexCollection.CollectionsPath, name)))
+                        {
+                            CreateCollection(name);
+                            created = true;
+                            return; //not needed but extra safety because while loops are dangerous
+                        }
+                        else
+                        {
+                            name = $"Default Collection {i}";
+                            i++;
+                        }
+                    }
+                }
 
-            //in case startup collection no longer exists, pick first one that does exists
-            else if (!AllCodexCollections.Any(collection => collection.DirectoryName == Properties.Settings.Default.StartupCollection))
-            {
-                MessageBox.Show("The collection " + Properties.Settings.Default.StartupCollection + " could not be found. ");
-                CurrentCollection = AllCodexCollections.First();
-            }
+                //in case startup collection no longer exists, pick first one that does exists
+                else if (!AllCodexCollections.Any(collection => collection.DirectoryName == Properties.Settings.Default.StartupCollection))
+                {
+                    Logger.Warn($"The collection {Properties.Settings.Default.StartupCollection} could not be found.", new DirectoryNotFoundException());
+                    CurrentCollection = AllCodexCollections.First();
+                    if (CurrentCollection is null)
+                    {
+                        // if it is null -> loading failed -> remove it from the pool and try again
+                        AllCodexCollections.RemoveAt(0);
+                    }
+                }
 
-            //otherwise, open startup collection
-            else
-            {
-                CurrentCollection = AllCodexCollections.First(collection => collection.DirectoryName == Properties.Settings.Default.StartupCollection);
+                //otherwise, open startup collection
+                else
+                {
+                    CurrentCollection = AllCodexCollections.First(collection => collection.DirectoryName == Properties.Settings.Default.StartupCollection);
+                    if (CurrentCollection is null)
+                    {
+                        // if it is null -> loading failed -> remove it from the pool and try again
+                        AllCodexCollections.Remove(AllCodexCollections.First(collection => collection.DirectoryName == Properties.Settings.Default.StartupCollection));
+                    }
+                }
             }
         }
 

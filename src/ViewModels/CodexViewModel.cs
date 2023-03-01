@@ -256,7 +256,12 @@ namespace COMPASS.ViewModels
 
             if (rsltMessageBox == MessageBoxResult.Yes)
             {
-                targetCollection.LoadCodices();
+                bool succes = targetCollection.LoadCodices();
+                if (!succes)
+                {
+                    MessageBox.Show($"Could not move books to {targetCollection.DirectoryName}", "Target collection could not be loaded.", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
                 foreach (Codex ToMove in ToMoveList)
                 {
                     ToMove.Tags.Clear();
