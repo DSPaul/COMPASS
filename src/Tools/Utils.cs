@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace COMPASS.Tools
@@ -92,5 +93,38 @@ namespace COMPASS.Tools
             }
             return json;
         }
+
+        //based on https://seattlesoftware.wordpress.com/2008/09/11/hexadecimal-value-0-is-an-invalid-character/
+        /// <summary>
+        /// Remove illegal XML characters from a string.
+        /// </summary>
+        public static string SanitizeXmlString(string xml)
+        {
+            if (xml is null) { return null; }
+
+            StringBuilder buffer = new(xml.Length);
+            foreach (char c in xml)
+            {
+                if (IsLegalXmlChar(c))
+                {
+                    buffer.Append(c);
+                }
+            }
+            return buffer.ToString();
+        }
+
+        /// <summary>
+        /// Whether a given character is allowed by XML 1.0.
+        /// </summary>
+        public static bool IsLegalXmlChar(int character) => character switch
+        {
+            0x9 => true, // '\t' == 9 
+            0xA => true, // '\n' == 10         
+            0xD => true, // '\r' == 13        
+            (>= 0x20) and (<= 0xD7FF) => true,
+            (>= 0xE000) and (<= 0xFFFD) => true,
+            (>= 0x10000) and (<= 0x10FFFF) => true,
+            _ => false
+        };
     }
 }

@@ -32,7 +32,11 @@ namespace COMPASS.Models
         public string Content
         {
             get => _content;
-            set => SetProperty(ref _content, value);
+            set
+            {
+                value = Utils.SanitizeXmlString(value);
+                SetProperty(ref _content, value);
+            }
         }
 
         private Color _backgroundColor = Colors.Black;
