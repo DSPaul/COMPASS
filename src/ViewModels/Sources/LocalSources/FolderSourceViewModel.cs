@@ -13,6 +13,8 @@ namespace COMPASS.ViewModels.Sources
 
         public override void Import()
         {
+            IsImporting = true;
+
             VistaFolderBrowserDialog openFolderDialog = new();
 
             var dialogresult = openFolderDialog.ShowDialog();

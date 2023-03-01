@@ -56,6 +56,8 @@ namespace COMPASS.ViewModels.Sources
 
         public virtual string ProgressText => $"Import in Progress: {ProgressCounter + 1} / {ImportAmount}";
 
+        public bool IsImporting { get; set; } = false; //true on initial import, false otherwise
+
         #endregion
 
         #region Asynchronous worker stuff

@@ -14,6 +14,7 @@ namespace COMPASS.ViewModels.Sources
         #region Import logic
         public override void Import()
         {
+            IsImporting = true;
             importURLwindow = new(this);
             importURLwindow.Show();
         }

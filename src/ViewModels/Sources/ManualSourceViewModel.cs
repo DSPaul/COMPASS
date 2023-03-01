@@ -9,6 +9,8 @@ namespace COMPASS.ViewModels.Sources
 
         public override void Import()
         {
+            IsImporting = true;
+
             CodexEditWindow editWindow = new(new CodexEditViewModel(null));
             editWindow.ShowDialog();
             editWindow.Topmost = true;

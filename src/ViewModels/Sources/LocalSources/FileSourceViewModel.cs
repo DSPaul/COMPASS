@@ -9,6 +9,8 @@ namespace COMPASS.ViewModels.Sources
 
         public override void Import()
         {
+            IsImporting = true;
+
             OpenFileDialog openFileDialog = new()
             {
                 AddExtension = false,
