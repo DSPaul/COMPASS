@@ -7,11 +7,12 @@
              xmlns:Converters="clr-namespace:COMPASS.Converters" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
+             xmlns:dd="urn:gong-wpf-dragdrop"
              Background="{StaticResource TabFocus}"
              d:DataContext="{d:DesignInstance Type=viewmodels:CodexInfoViewModel}"
              mc:Ignorable="d">
 
-    <Border BorderBrush="{StaticResource Separator}" BorderThickness="3" 
+    <Border BorderBrush="{StaticResource Separator}" BorderThickness="3" x:Name="CodexInfoContainer"
             Visibility="{Binding ShowCodexInfo, Converter={StaticResource ToVisibilityConverter}}">
         <Grid>
             <Grid.RowDefinitions>
@@ -45,6 +46,22 @@
                             <Setter Property="Margin" Value="5"/>
                             <Setter Property="TextWrapping" Value="Wrap"/>
                             <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                        <Style TargetType="TextBlock" x:Key="Link" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Setter Property="TextDecorations" Value="Underline"/>
+                        </Style>
+                        <Style TargetType="Button" x:Key="BlankButton">
+                            <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <ContentPresenter Content="{TemplateBinding Content}"/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </Grid.Resources>
                     <Grid.ColumnDefinitions>
@@ -83,11 +100,31 @@
                     <TextBlock Text="Title:" Grid.Column="0" Grid.Row="1"/>
                     <TextBlock Text="{Binding Title}" Grid.Column="1" Grid.Row="1"/>
 
-                    <TextBlock Text="Authors:"  Grid.Column="0" Grid.Row="2"/>
-                    <TextBlock Text="{Binding AuthorsAsString}" Grid.Column="1" Grid.Row="2"/>
+                    <TextBlock Text="Authors:"  Grid.Column="0" Grid.Row="2" VerticalAlignment="Top"/>
+                    <ItemsControl ItemsSource="{Binding Authors}" Grid.Column="1" Grid.Row="2">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" Width="200"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource BlankButton}"
+                                        Command="{Binding ElementName=CodexInfoContainer, 
+                                    Path= DataContext.AddAuthorFilterCommand}" CommandParameter="{Binding}">
+                                    <TextBlock Text="{Binding}" Style="{StaticResource Link}" Margin="5,2"/>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <!--<TextBlock Text="{Binding AuthorsAsString}" Grid.Column="1" Grid.Row="2"/>-->
 
                     <TextBlock Text="Publisher:"  Grid.Column="0" Grid.Row="3"/>
-                    <TextBlock Text="{Binding Publisher}"  Grid.Column="1" Grid.Row="3"/>
+                    <Button Style="{StaticResource BlankButton}" Grid.Column="1" Grid.Row="3"
+                            Command="{Binding ElementName=CodexInfoContainer, 
+                            Path= DataContext.AddPublisherFilterCommand}" CommandParameter="{Binding Publisher}">
+                        <TextBlock Text="{Binding Publisher}" Style="{StaticResource Link}" Margin="5,2"/>
+                    </Button>
 
                     <TextBlock Text="Version:"  Grid.Column="0" Grid.Row="4"/>
                     <TextBlock Text="{Binding Version}"  Grid.Column="1" Grid.Row="4"/>
@@ -111,14 +148,26 @@
 
                     <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.ColumnSpan="2">
                         <TextBlock Text="Tags:" VerticalAlignment="Top" Margin="5,5,10,5"/>
-                        <ItemsControl ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" 
-                                    Foreground="Black" FontSize="15" Grid.Column="1" VerticalAlignment="Bottom"
-                                    ItemTemplate="{StaticResource TagTemplate}">
+                        <ItemsControl ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" dd:DragDrop.IsDragSource="True"
+                                    Foreground="Black" FontSize="15" Grid.Column="1" VerticalAlignment="Bottom">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="Horizontal" Width="200"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource BlankButton}" Command="{Binding ElementName=CodexInfoContainer, 
+                                        Path=DataContext.AddTagFilterCommand}" CommandParameter="{Binding}">
+                                        <Border CornerRadius="5" Margin="2,3">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding BackgroundColor}" Opacity=".8"/>
+                                            </Border.Background>
+                                            <TextBlock Text="{Binding Content}" Margin="7,2" Foreground="White" FontSize="14"/>
+                                        </Border>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </StackPanel>
 

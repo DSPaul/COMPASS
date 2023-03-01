@@ -358,7 +358,8 @@ namespace COMPASS.ViewModels
         #region Drag & Drop
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
-            if (dropInfo.Data is TreeViewNode node && !node.Tag.IsGroup)
+            if ((dropInfo.Data is TreeViewNode node && !node.Tag.IsGroup)
+                || (dropInfo.Data is Tag tag && !tag.IsGroup))
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
@@ -367,12 +368,19 @@ namespace COMPASS.ViewModels
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            if (dropInfo.Data is TreeViewNode node)
+            Codex TargetCodex = (Codex)dropInfo.TargetItem;
+            if (TargetCodex is not null)
             {
-                Codex TargetCodex = (Codex)dropInfo.TargetItem;
-                if (TargetCodex is not null && !TargetCodex.Tags.Contains(node.Tag))
+                Tag toAdd = dropInfo.Data switch
                 {
-                    TargetCodex.Tags.Add(node.Tag);
+                    TreeViewNode node => node.Tag,
+                    Tag tag => tag,
+                    _ => null
+                };
+
+                if (!TargetCodex.Tags.Contains(toAdd))
+                {
+                    TargetCodex.Tags.Add(toAdd);
                     MainViewModel.CollectionVM.FilterVM.ReFilter();
                 }
             }
