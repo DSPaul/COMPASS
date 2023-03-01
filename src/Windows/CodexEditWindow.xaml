@@ -14,7 +14,7 @@
         xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary"
         d:DataContext="{d:DesignInstance Type=viewmodels:CodexEditViewModel}"
         mc:Ignorable="d"
-        Title="File Properties" Height="500" Width="1200" FontSize="16" 
+        Title="Book Properties" Height="500" Width="1200" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
         Foreground="{StaticResource TextColor}" Background="{StaticResource WindowBackground}" MouseDown="MainGrid_MouseDown">
     <Window.Resources>

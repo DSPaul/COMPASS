@@ -10,7 +10,7 @@
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" 
         d:DataContext="{d:DesignInstance Type=Sources:SourceViewModel}"
         AllowsTransparency="True" Background="Transparent" WindowStyle="None"
-        Title="ProgressWindow" Height="150" Width="450" WindowStartupLocation="CenterOwner">
+        Title="Progress Window" Height="150" Width="450" WindowStartupLocation="CenterOwner">
     <Window.Style>
         <Style>
             <Setter Property="WindowChrome.WindowChrome">

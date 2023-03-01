@@ -8,7 +8,7 @@
         d:DataContext="{d:DesignInstance Type=Sources:FolderSourceViewModel}"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
         Background="{StaticResource WindowBackground}" SizeToContent="WidthAndHeight"
-        Title="Import URL" Height="300" Width="600" WindowStartupLocation="CenterScreen">
+        Title="Import Folder" Height="300" Width="600" WindowStartupLocation="CenterScreen">
     <StackPanel Orientation="Vertical" Margin="20">
         <TextBlock Text="{Binding Path=ImportAmount, StringFormat=Files found: {0:#}, FallbackValue=Files found: 0}"
                    TextWrapping="Wrap" VerticalAlignment="Top" Margin="5"/>
