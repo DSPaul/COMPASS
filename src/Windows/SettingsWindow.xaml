@@ -176,20 +176,27 @@
                         </Border>
                         <Border Style="{StaticResource SettingsContainer}">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Text="Links"/>
+                                <TextBlock Text="Links:"/>
+
                                 <TextBlock>
                                 Source Code:
-                                <Hyperlink NavigateUri="https://github.com/DSPAUL/COMPASS"
-                                            RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
-                                    github.com/DSPAUL/COMPASS
-                                </Hyperlink>
+                                    <Hyperlink NavigateUri="https://github.com/DSPAUL/COMPASS"
+                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        github.com/DSPAUL/COMPASS
+                                    </Hyperlink>
                                 </TextBlock>
                                 <TextBlock>
-                                Buy Me a Coffee:
-                                <Hyperlink NavigateUri="https://ko-fi.com/pauldesmul"
-                                            RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
-                                    ko-fi.com/pauldesmul
-                                </Hyperlink>
+                                Buy Me a Drink:
+                                    <Hyperlink NavigateUri="https://ko-fi.com/pauldesmul"
+                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        ko-fi.com/pauldesmul
+                                    </Hyperlink>
+                                </TextBlock><TextBlock>
+                                Join the Discord:
+                                    <Hyperlink NavigateUri="https://discord.gg/HawGMJgS9Y"
+                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        discord.gg/HawGMJgS9Y
+                                    </Hyperlink>
                                 </TextBlock>
                             </StackPanel>
                         </Border>
