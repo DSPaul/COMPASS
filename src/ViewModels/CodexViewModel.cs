@@ -34,7 +34,7 @@ namespace COMPASS.ViewModels
         public ReturningRelayCommand<Codex, bool> OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(OpenCodexLocally, CanOpenCodexLocally);
         public static bool OpenCodexLocally(Codex toOpen)
         {
-            if (String.IsNullOrWhiteSpace(toOpen.Path)) return false;
+            if (!toOpen.HasOfflineSource()) return false;
             try
             {
                 Process.Start(new ProcessStartInfo(toOpen.Path) { UseShellExecute = true });
@@ -302,22 +302,10 @@ namespace COMPASS.ViewModels
         //Delete Codices
         private RelayCommand<IList> _deleteCodicesCommand;
         public RelayCommand<IList> DeleteCodicesCommand => _deleteCodicesCommand ??= new(DeleteCodices);
-        public static void DeleteCodices(IList toDel)
+        public static void DeleteCodices(IList toDelete)
         {
-            List<Codex> toDeleteList = toDel?.Cast<Codex>().ToList();
-            int count = toDeleteList.Count;
-            string message = $"You are about to delete {count} file{(count > 1 ? @"s" : @"")}. " +
-                           $"This cannot be undone. " +
-                           $"Are you sure you want to continue?";
-            var result = MessageBox.Show(message, "Delete", MessageBoxButton.OKCancel);
-            if (result == MessageBoxResult.OK)
-            {
-                foreach (Codex ToDelete in toDeleteList)
-                {
-                    MainViewModel.CollectionVM.CurrentCollection.DeleteCodex(ToDelete);
-                }
-                MainViewModel.CollectionVM.FilterVM.ReFilter();
-            }
+            MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(toDelete);
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
 
         public static void DataGridHandleKeyDown(object sender, KeyEventArgs e)

@@ -4,6 +4,7 @@ using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.Windows;
 using Ionic.Zip;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -93,7 +94,22 @@ namespace COMPASS.ViewModels
 
         #region Data Tab
 
-        #region Fix Renamed Folder
+        #region Fix Broken refs
+
+        public IEnumerable<Codex> BrokenCodices => MainViewModel.CollectionVM.CurrentCollection.AllCodices
+               .Where(codex => codex.HasOfflineSource()) //do this check so message doesn't count codices that never had a path to begin with
+               .Where(codex => !Path.Exists(codex.Path));
+        public int BrokenCodicesAmount => BrokenCodices.Count();
+        public string BrokenCodicesMessage => $"Broken references detected: {BrokenCodicesAmount}.";
+
+        private void BrokenCodicesChanged()
+        {
+            RaisePropertyChanged(nameof(BrokenCodices));
+            RaisePropertyChanged(nameof(BrokenCodicesAmount));
+            RaisePropertyChanged(nameof(BrokenCodicesMessage));
+        }
+
+        //Rename the refs
         private int _amountRenamed = 0;
         public int AmountRenamed
         {
@@ -102,10 +118,11 @@ namespace COMPASS.ViewModels
             {
                 SetProperty(ref _amountRenamed, value);
                 RaisePropertyChanged(nameof(RenameCompleteMessage));
+                BrokenCodicesChanged();
             }
         }
 
-        public string RenameCompleteMessage => $"Renamed Path Reference in {AmountRenamed} Codices";
+        public string RenameCompleteMessage => $"Renamed Path Reference in {AmountRenamed} Files.";
 
         private RelayCommand<object[]> _renameFolderRefCommand;
         public RelayCommand<object[]> RenameFolderRefCommand => _renameFolderRefCommand ??= new(RenameFolderReferences);
@@ -114,17 +131,48 @@ namespace COMPASS.ViewModels
         private void RenameFolderReferences(string oldpath, string newpath)
         {
             AmountRenamed = 0;
-            foreach (Codex c in MainViewModel.CollectionVM.CurrentCollection.AllCodices)
+            foreach (Codex codex in MainViewModel.CollectionVM.CurrentCollection.AllCodices)
             {
-                if (!string.IsNullOrEmpty(c.Path) && c.Path.Contains(oldpath))
+                if (codex.HasOfflineSource() && codex.Path.Contains(oldpath) && !String.IsNullOrWhiteSpace(oldpath) && newpath is not null)
                 {
-                    AmountRenamed++;
-                    c.Path = c.Path.Replace(oldpath, newpath);
+                    string updatedPath = codex.Path.Replace(oldpath, newpath);
+                    //only replace path if old one was broken and new one exists
+                    if (!File.Exists(codex.Path) && File.Exists(updatedPath))
+                    {
+                        codex.Path = updatedPath;
+                        AmountRenamed++;
+                    }
                 }
-
             }
+            MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
+        }
+
+        //remove refs from codices
+        private ActionCommand _removeBrokenRefsCommand;
+        public ActionCommand RemoveBrokenRefsCommand => _removeBrokenRefsCommand ??= new(RemoveBrokenReferences);
+        public void RemoveBrokenReferences()
+        {
+            foreach (Codex codex in BrokenCodices)
+            {
+                codex.Path = "";
+            }
+            BrokenCodicesChanged();
+            MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
+        }
+
+        //Remove Codices with broken refs
+        private ActionCommand _deleteCodicesWithBrokenRefsCommand;
+        public ActionCommand DeleteCodicesWithBrokenRefsCommand => _deleteCodicesWithBrokenRefsCommand ??= new(RemoveCodicesWithBrokenRefs);
+        public void RemoveCodicesWithBrokenRefs()
+        {
+            MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(BrokenCodices.ToList());
+            BrokenCodicesChanged();
+            MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
         #endregion
+
+        #region manage data
 
         private ActionCommand _browseLocalFilesCommand;
         public ActionCommand BrowseLocalFilesCommand => _browseLocalFilesCommand ??= new(BrowseLocalFiles);
@@ -215,6 +263,7 @@ namespace COMPASS.ViewModels
             MainViewModel.CollectionVM.CurrentCollection = new(Properties.Settings.Default.StartupCollection);
             lw.Close();
         }
+        #endregion
 
         #endregion
 

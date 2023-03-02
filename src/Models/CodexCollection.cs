@@ -1,10 +1,12 @@
 ﻿using COMPASS.Tools;
 using COMPASS.ViewModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Xml;
 
 namespace COMPASS.Models
@@ -149,15 +151,32 @@ namespace COMPASS.Models
 
         #endregion    
 
-        public void DeleteCodex(Codex Todelete)
+        public void DeleteCodex(Codex toDelete)
         {
             //Delete file from all lists
-            AllCodices.Remove(Todelete);
+            AllCodices.Remove(toDelete);
 
             //Delete Coverart & Thumbnail
-            File.Delete(Todelete.CoverArt);
-            File.Delete(Todelete.Thumbnail);
-            Logger.Info($"Deleted {Todelete.Title} from {DirectoryName}");
+            File.Delete(toDelete.CoverArt);
+            File.Delete(toDelete.Thumbnail);
+            Logger.Info($"Deleted {toDelete.Title} from {DirectoryName}");
+        }
+
+        public void DeleteCodices(IList toDelete)
+        {
+            List<Codex> toDeleteList = toDelete?.Cast<Codex>().ToList();
+            int count = toDeleteList.Count;
+            string message = $"You are about to delete {count} file{(count > 1 ? @"s" : @"")}. " +
+                           $"This cannot be undone. " +
+                           $"Are you sure you want to continue?";
+            var result = MessageBox.Show(message, "Delete", MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.OK)
+            {
+                foreach (Codex toDel in toDeleteList)
+                {
+                    DeleteCodex(toDel);
+                }
+            }
         }
 
         public void DeleteTag(Tag todel)

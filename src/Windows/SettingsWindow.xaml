@@ -46,6 +46,15 @@
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="10,5"/>
             </Style>
+            <Style TargetType="TextBlock" x:Key="SectionTitle">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="10,5"/>
+                <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+                <Setter Property="Typography.Capitals" Value="AllSmallCaps"/>
+                <Setter Property="FontWeight" Value="Light"/>
+                <Setter Property="FontSize" Value="20"/>
+            </Style>
+            
             <Style TargetType="Rectangle" x:Key="Separator">
                 <Setter Property="Fill" Value="{StaticResource DarkUIElementBackground}"/>
                 <Setter Property="Width" Value="10000"/>
@@ -96,50 +105,84 @@
                 </StackPanel>
             </TabItem>
             <TabItem Header="Manage Data" Tools:AP.IconKind="DatabaseCog">
-                <StackPanel Orientation="Vertical" Margin="20">
-                    <Border x:Name="FixRenamedFolder"  Style="{StaticResource SettingsContainer}">
-                        <StackPanel>
-                            <TextBlock Text="Update references to renamed folder:" Grid.Row="0" Margin="10,5"/>
-                            <StackPanel Orientation="Horizontal" Grid.Row="1">
-                                <TextBox x:Name="OldPathTextBox" Tools:AP.PlaceHolderText="old\folder\path\" MinWidth="200"/>
-                                <TextBlock Text="To"/>
-                                <TextBox x:Name="NewPathTextBox" Tools:AP.PlaceHolderText = "new\folder\path\" MinWidth="200"/>
-                                <Button Content="Rename" Style="{StaticResource IconTextButton}" Tools:AP.IconKind="RenameBox"
+                <ScrollViewer>
+                    <StackPanel Orientation="Vertical" Margin="20">
+                        <Border x:Name="FixRenamedFolder"  Style="{StaticResource SettingsContainer}">
+                            <StackPanel>
+                                <TextBlock Text="Tools for broken file references" Style="{StaticResource SectionTitle}"/>
+                                <TextBlock Text="{Binding BrokenCodicesMessage, FallbackValue=Could not detect how many broken references are present.}"
+                                           FontSize="12" Margin="10,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                            <Setter Property="Foreground" Value="Goldenrod"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding BrokenCodicesAmount}" Value="0">
+                                                    <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Update broken references:" Margin="10,5"/>
+                                    <materialDesign:PackIcon Kind="InfoCircleOutline">
+                                        <materialDesign:PackIcon.ToolTip>
+                                            <TextBlock>
+                                                Only files with broken references will be updated and only if the updated path points to a file that exists.
+                                                <LineBreak/>
+                                                If you moved half of your files out of a folder, you can safely use this tool to rename the folder reference.
+                                                <LineBreak/>
+                                                The files that stayed behind will not be touched, only the files that were moved will get the updated reference.
+                                            </TextBlock>
+                                        </materialDesign:PackIcon.ToolTip>
+                                    </materialDesign:PackIcon>
+                                </StackPanel>
+                                
+                                <StackPanel Orientation="Horizontal" Margin="12,0">
+                                    <TextBox x:Name="OldPathTextBox" Tools:AP.PlaceHolderText="old\folder\path\" MinWidth="200"/>
+                                    <TextBlock Text="To"/>
+                                    <TextBox x:Name="NewPathTextBox" Tools:AP.PlaceHolderText = "new\folder\path\" MinWidth="200"/>
+                                    <Button Content="Rename" Style="{StaticResource IconTextButton}" Tools:AP.IconKind="RenameBox"
                                         Command="{Binding RenameFolderRefCommand}" IsDefault="{Binding ElementName=NewPathTextBox, Path=IsFocused}">
-                                    <Button.CommandParameter>
-                                        <MultiBinding>
-                                            <MultiBinding.Converter>
-                                                <Converters:MultiParamConverter/>
-                                            </MultiBinding.Converter>
-                                            <Binding Path="Text" ElementName="OldPathTextBox"/>
-                                            <Binding Path="Text" ElementName="NewPathTextBox"/>
-                                        </MultiBinding>
-                                    </Button.CommandParameter>
-                                </Button>
-                            </StackPanel>
-                            <TextBlock Grid.Row="2" Text="{Binding RenameCompleteMessage}" FontSize="14" Foreground="{StaticResource TextMutedColor}"
+                                        <Button.CommandParameter>
+                                            <MultiBinding>
+                                                <MultiBinding.Converter>
+                                                    <Converters:MultiParamConverter/>
+                                                </MultiBinding.Converter>
+                                                <Binding Path="Text" ElementName="OldPathTextBox"/>
+                                                <Binding Path="Text" ElementName="NewPathTextBox"/>
+                                            </MultiBinding>
+                                        </Button.CommandParameter>
+                                    </Button>
+                                </StackPanel>
+                                <TextBlock Text="{Binding RenameCompleteMessage}" FontSize="14" Foreground="{StaticResource TextMutedColor}"
                                        Visibility="{Binding Path=AmountRenamed, Converter={StaticResource ToVisibilityConverter}}"/>
-                        </StackPanel>
-                    </Border>
-                    <Border x:Name="ManageLocalData" Style="{StaticResource SettingsContainer}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Manage Local Data:" Grid.Row="0"/>
-                            <Button Content="Browse Local Files" Grid.Row="1" Tools:AP.IconKind="FolderOpen"
-                                    Command="{Binding BrowseLocalFilesCommand}" Style="{StaticResource IconTextButton}"/>
-                            <Button Content="Backup User Data" Grid.Row="2" Tools:AP.IconKind="FolderZip"
-                                    Command="{Binding BackupLocalFilesCommand}" Style="{StaticResource IconTextButton}" 
-                                    ToolTip="Saves metadata, tags, thumbnails and preferences to zip"/>
-                            <Button Content="Restore Backup" Grid.Row="3" Tools:AP.IconKind="BackupRestore"
-                                    Command="{Binding RestoreBackupCommand}" Style="{StaticResource IconTextButton}"/>
-                        </Grid>
-                    </Border>
-                </StackPanel>
+                                <TextBlock Text="Remove broken references:" Margin="10,5"/>
+                                <Button Style="{StaticResource IconTextButton}" Tools:AP.IconKind="FileDocumentRemoveOutline" 
+                                    Content="Remove broken references from books." HorizontalAlignment="Left" 
+                                        Command="{Binding RemoveBrokenRefsCommand}" />
+
+                                <Button Style="{StaticResource IconTextButton}" Tools:AP.IconKind="BookRemove" 
+                                    Content="Delete books with broken references.   " HorizontalAlignment="Left"
+                                        Command="{Binding DeleteCodicesWithBrokenRefsCommand}"/>
+                                </StackPanel>
+                        </Border>
+                        <Border x:Name="ManageLocalData" Style="{StaticResource SettingsContainer}">
+                            <StackPanel>
+                                <TextBlock Text="Manage Local Data" Style="{StaticResource SectionTitle}"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Content="Browse Local Files" Tools:AP.IconKind="FolderOpen"
+                                        Command="{Binding BrowseLocalFilesCommand}" Style="{StaticResource IconTextButton}"/>
+                                    <Button Content="Backup User Data" Tools:AP.IconKind="FolderZip"
+                                        Command="{Binding BackupLocalFilesCommand}" Style="{StaticResource IconTextButton}" 
+                                        ToolTip="Saves metadata, tags, thumbnails and preferences to zip"/>
+                                    <Button Content="Restore Backup" Tools:AP.IconKind="BackupRestore"
+                                        Command="{Binding RestoreBackupCommand}" Style="{StaticResource IconTextButton}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="What's New"  Tools:AP.IconKind="Update">
                 <markdig:MarkdownViewer Margin="30" Markdown="{Binding ReleaseNotes}">
@@ -176,7 +219,7 @@
                         </Border>
                         <Border Style="{StaticResource SettingsContainer}">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Text="Links:"/>
+                                <TextBlock Text="Links" Style="{StaticResource SectionTitle}"/>
 
                                 <TextBlock>
                                 Source Code:
@@ -202,7 +245,8 @@
                         </Border>
                         <Border Style="{StaticResource SettingsContainer}">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Text="COMPASS depends on the following open source projects:"/>
+                                <TextBlock Text="Dependencies" Style="{StaticResource SectionTitle}"/>
+                                <TextBlock Text="COMPASS could not exist without the following open source projects:" />
                                 <UniformGrid Columns="4" >
                                     <TextBlock Text="Automatic Updates:"/>
                                     <TextBlock>

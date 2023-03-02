@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -48,9 +47,9 @@ namespace COMPASS.Models
             ISBN = c.ISBN;
         }
 
-        public bool HasOfflineSource() => File.Exists(Path);
+        public bool HasOfflineSource() => !String.IsNullOrWhiteSpace(Path);
 
-        public bool HasOnlineSource() => !string.IsNullOrEmpty(SourceURL);
+        public bool HasOnlineSource() => !String.IsNullOrWhiteSpace(SourceURL);
 
         public string GetFileType()
         {
