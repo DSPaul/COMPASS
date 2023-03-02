@@ -164,6 +164,20 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="Button" x:Key="BlankButton">
+        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <ContentPresenter Content="{TemplateBinding Content}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
     <!--#endregion-->
 
     <!--#region ScrollBar Style-->

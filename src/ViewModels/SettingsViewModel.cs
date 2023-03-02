@@ -109,6 +109,14 @@ namespace COMPASS.ViewModels
             RaisePropertyChanged(nameof(BrokenCodicesMessage));
         }
 
+        private ActionCommand _showBrokenCodicesCommand;
+        public ActionCommand ShowBrokenCodicesCommand => _showBrokenCodicesCommand ??= new(ShowBrokenCodices);
+        private void ShowBrokenCodices()
+        {
+            MainViewModel.CollectionVM.FilterVM.AddFilter(new(Filter.FilterType.HasBrokenPath));
+            System.Windows.Application.Current.MainWindow.Activate();
+        }
+
         //Rename the refs
         private int _amountRenamed = 0;
         public int AmountRenamed

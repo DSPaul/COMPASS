@@ -110,19 +110,25 @@
                         <Border x:Name="FixRenamedFolder"  Style="{StaticResource SettingsContainer}">
                             <StackPanel>
                                 <TextBlock Text="Tools for broken file references" Style="{StaticResource SectionTitle}"/>
-                                <TextBlock Text="{Binding BrokenCodicesMessage, FallbackValue=Could not detect how many broken references are present.}"
-                                           FontSize="12" Margin="10,0">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                            <Setter Property="Foreground" Value="Goldenrod"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding BrokenCodicesAmount}" Value="0">
-                                                    <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding BrokenCodicesMessage, FallbackValue=Could not detect how many broken references are present.}"
+                                           FontSize="12" Margin="10,0,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                <Setter Property="Foreground" Value="Goldenrod"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding BrokenCodicesAmount}" Value="0">
+                                                        <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <Button Style="{StaticResource BlankButton}" Command="{Binding ShowBrokenCodicesCommand}">
+                                        <TextBlock Text="Show" TextDecorations="Underline" 
+                                                   Foreground="{StaticResource TextMutedColor}" FontSize="12"/>
+                                    </Button>
+                                </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Update broken references:" Margin="10,5"/>
                                     <materialDesign:PackIcon Kind="InfoCircleOutline">
