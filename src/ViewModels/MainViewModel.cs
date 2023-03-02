@@ -134,6 +134,9 @@ namespace COMPASS.ViewModels
             settingswindow.Show();
         }
 
+        //check updates
+        public ActionCommand CheckForUpdatesCommand => SettingsViewModel.GetInstance().CheckForUpdatesCommand;
+
         //Change Layout
         private RelayCommand<LayoutViewModel.Layout> _changeLayoutCommand;
         public RelayCommand<LayoutViewModel.Layout> ChangeLayoutCommand => _changeLayoutCommand ??= new(ChangeLayout);
