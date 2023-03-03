@@ -31,8 +31,8 @@ namespace COMPASS.ViewModels
                 MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
                 CodexViewModel.OpenCodexLocally(_codex);
                 SetDialogResult(true);
+                CloseAction();
             }
-            CloseAction();
         }
 
         private ActionCommand _removePathCommand;
