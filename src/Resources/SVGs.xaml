@@ -113,4 +113,33 @@
         </Canvas>
     </Canvas>
 
+    <Canvas x:Key="Warning" Width="85.772171" Height="75.167618">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas Name="layer1">
+            <Canvas.RenderTransform>
+                <TranslateTransform X="-65.354987" Y="-120.97478"/>
+            </Canvas.RenderTransform>
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3443" Fill="#FFC3C234" StrokeThickness="6.618" Stroke="#FF353535" StrokeMiterLimit="4" StrokeLineJoin="Round" Data="M 68.663745 192.83339 108.24107 124.28345 147.8184 192.8334 Z"/>
+            <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="105.74107" Canvas.Top="144.526" Width="5" Height="27.593374" RadiusY="0.17764075" RadiusX="0.17764075" Name="rect3445" Fill="#FF353535" StrokeThickness="6.26493" StrokeMiterLimit="4" StrokeLineJoin="Round"/>
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3453" Fill="#FF353535" StrokeThickness="0.943251" Stroke="#FF353535" StrokeMiterLimit="4" StrokeLineJoin="Round" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Data="m 100.93241 10.639901 0 3.3424 -2.894606 1.6712 -2.894604 -1.6712 0 -3.3424 2.894604 -1.6712001 z">
+                <Path.RenderTransform>
+                    <RotateTransform Angle="-60" CenterX="250.34939" CenterY="88.466527"/>
+                </Path.RenderTransform>
+            </Path>
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path34532" Fill="#FF353535" StrokeThickness="0.943251" Stroke="#FF353535" StrokeMiterLimit="4" StrokeLineJoin="Round" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Data="m 100.93241 10.639901 0 3.3424 -2.894606 1.6712 -2.894604 -1.6712 0 -3.3424 2.894604 -1.6712001 z">
+                <Path.RenderTransform>
+                    <MatrixTransform Matrix="0.37133541 -0.6431718 0.6431718 0.37133541 63.918005 231.01547"/>
+                </Path.RenderTransform>
+            </Path>
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3470" Fill="#FF353535" StrokeThickness="0.943251" Stroke="#FF353535" StrokeMiterLimit="4" StrokeLineJoin="Round" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Data="m 100.93241 10.639901 0 3.3424 -2.894606 1.6712 -2.894604 -1.6712 0 -3.3424 2.894604 -1.6712001 z">
+                <Path.RenderTransform>
+                    <MatrixTransform Matrix="0.37133541 -0.6431718 0.6431718 0.37133541 63.918005 203.70669"/>
+                </Path.RenderTransform>
+            </Path>
+        </Canvas>
+    </Canvas>
+
+
 </ResourceDictionary>

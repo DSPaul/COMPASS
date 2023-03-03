@@ -49,17 +49,11 @@ namespace COMPASS.ViewModels
 
                 if (toOpen is null) return false;
 
-                //Check if folder exists, if not ask users to rename
-                var dir = Path.GetDirectoryName(toOpen.Path);
-                if (!Directory.Exists(dir))
+                FileNotFoundWindow fileNotFoundWindow = new(new(toOpen))
                 {
-                    string message = $"{toOpen.Path} could not be found. \n" +
-                    $"If you renamed a folder, go to \n" +
-                    $"Settings -> General -> Fix Renamed Folder\n" +
-                    $"to update all references to the old folder name.";
-                    MessageBox.Show(message, "Path could not be found", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                return false;
+                    Owner = Application.Current.MainWindow
+                };
+                return (bool)fileNotFoundWindow.ShowDialog();
             }
         }
         public static bool CanOpenCodexLocally(Codex toOpen)
