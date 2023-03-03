@@ -102,7 +102,7 @@ namespace COMPASS.ViewModels
         public ActionCommand QuickCreateTagCommand => _quickCreateTagCommand ??= new(QuickCreateTag);
         public void QuickCreateTag()
         {
-            TagPropWindow tpw = new(new TagEditViewModel(null));
+            TagPropWindow tpw = new(new TagEditViewModel(null, true));
             tpw.Topmost = true;
             _ = tpw.ShowDialog();
 

@@ -3,6 +3,7 @@
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:Converters ="clr-namespace:COMPASS.Converters"
                     xmlns:ViewModels ="clr-namespace:COMPASS.ViewModels"
+                    xmlns:Models ="clr-namespace:COMPASS.Models"
                     xmlns:Tools="clr-namespace:COMPASS.Tools"
                     xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary">
     <ResourceDictionary.MergedDictionaries>
@@ -11,6 +12,7 @@
 
     <!--Converters-->
     <Converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
+    <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
 
     <!--TextBlock Style-->
     <Style TargetType="{x:Type TextBlock}">
@@ -112,7 +114,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" 
+                    <Border Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"
                             CornerRadius="7" HorizontalAlignment="Stretch" Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
                         <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
                     </Border>
@@ -897,7 +899,7 @@
 
     <!--#endregion-->
  
-    <!--#region Tags Style-->
+    <!--#region Tags Stuff-->
     <DataTemplate x:Key="TagTemplate">
         <Border CornerRadius="5" Margin="2,3">
             <Border.Background>
@@ -960,6 +962,17 @@
             <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/>
         </Border>
     </DataTemplate>
+
+    <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+        <Border Margin="0,3" Background="{x:Null}">
+            <StackPanel Orientation="Horizontal">
+                <Rectangle Fill="{Binding Tag.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
+                                       Width="2" Height="10" Margin="3" VerticalAlignment="Bottom"/>
+                <TextBlock Text="{Binding Tag.Content}" Foreground="LightGray"
+                                           FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
+            </StackPanel>
+        </Border>
+    </HierarchicalDataTemplate>
     <!--#endregion-->
 
     <Style TargetType="materialDesign:PackIcon">

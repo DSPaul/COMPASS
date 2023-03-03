@@ -68,14 +68,6 @@
                                   Content="{Binding Tag.Content}" Foreground="{StaticResource TextColor}"/>
                 </Border>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                <Border CornerRadius="5" Margin="0,3" Background="{x:Null}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="{StaticResource TextMutedColor}" 
-                                   Typography.Capitals="AllSmallCaps" FontWeight="Bold"/>
-                    </StackPanel>
-                </Border>
-            </HierarchicalDataTemplate>
             <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
         </Grid.Resources>
 

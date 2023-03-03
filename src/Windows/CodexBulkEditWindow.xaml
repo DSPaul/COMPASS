@@ -7,7 +7,10 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:Models ="clr-namespace:COMPASS.Models"
         xmlns:Converters ="clr-namespace:COMPASS.Converters"
-        xmlns:Tools ="clr-namespace:COMPASS.Tools" xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary"
+        xmlns:Tools ="clr-namespace:COMPASS.Tools" 
+        xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary" 
+        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:CodexBulkEditViewModel}"
         mc:Ignorable="d"
         Title="Bulk Edit" Height="450" Width="800" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
@@ -60,21 +63,11 @@
                     <Border.Background>
                         <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
                     </Border.Background>
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox Background="{StaticResource SelectableTransparent}"
-                                       Margin="5,0,0,0" Command="{Binding Path=DataContext.TagCheckCommand,
+                    <CheckBox Margin="5,0,0,0" Command="{Binding Path=DataContext.TagCheckCommand,
                                        RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeView}}}"
                                       CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
-                                       IsChecked="{Binding Selected, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2"/>
-                    </StackPanel>
-                </Border>
-            </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                <Border CornerRadius="5" Margin="0,3" Background="{StaticResource SelectableTransparent}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="{StaticResource TextMutedColor}" Typography.Capitals="AllSmallCaps" FontWeight="Bold"/>
-                    </StackPanel>
+                                       IsChecked="{Binding Selected, Mode=TwoWay}" 
+                                  Content="{Binding Tag.Content}" Foreground="{StaticResource TextColor}"/>
                 </Border>
             </HierarchicalDataTemplate>
             <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
