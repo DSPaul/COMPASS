@@ -45,7 +45,7 @@
             <Setter Property="WindowChrome.WindowChrome">
                 <Setter.Value>
                     <WindowChrome CaptionHeight="40" CornerRadius="4" GlassFrameThickness="0"
-                        NonClientFrameEdges="None" ResizeBorderThickness="4"/>
+                        NonClientFrameEdges="None" ResizeBorderThickness="6"/>
                 </Setter.Value>
             </Setter>
         </Style>
