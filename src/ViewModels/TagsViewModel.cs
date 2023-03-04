@@ -1,7 +1,9 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Tools;
 using COMPASS.Windows;
 using GongSolutions.Wpf.DragDrop;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -28,7 +30,20 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _treeviewsource, value);
         }
 
-        public void BuildTagTreeView() => TreeViewSource = new(_collectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
+        public void BuildTagTreeView()
+        {
+            List<TreeViewNode> newTreeViewSource = _collectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)).ToList();
+
+            // transfer expanded property
+            if (TreeViewSource is not null)
+            {
+                foreach (TreeViewNode node in Utils.FlattenTree(newTreeViewSource))
+                {
+                    node.Expanded = Utils.FlattenTree(TreeViewSource).FirstOrDefault(n => n.Tag == node.Tag)?.Expanded ?? node.Expanded;
+                }
+            }
+            TreeViewSource = new(newTreeViewSource);
+        }
 
         //Tag Creation ViewModel
         private IEditViewModel _addTagViewModel;

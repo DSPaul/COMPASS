@@ -9,6 +9,7 @@ namespace COMPASS.Models
         {
             Tag = tag;
             Children = new(tag.Children.Select(childTag => new TreeViewNode(childTag)));
+            Expanded = tag.IsGroup;
         }
 
         private Tag _tag;

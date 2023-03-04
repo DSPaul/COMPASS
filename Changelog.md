@@ -1,4 +1,10 @@
 # CHANGELOG
+## COMPASS v1.1.1 (04 March 2023)
+
+### Fixes
+
+- Fix all tags expanding whenever a tag gets edited, added or deleted [#32](https://github.com/DSPaul/COMPASS/issues/32)
+- Fix a crash when trying to create multiple tags back to back [#34](https://github.com/DSPaul/COMPASS/issues/34)
 
 ## COMPASS v1.1.0 (04 March 2023)
 

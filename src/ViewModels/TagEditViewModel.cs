@@ -68,8 +68,8 @@ namespace COMPASS.ViewModels
             MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
 
             //reset fields
-            TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
-            EditedTag = null;
+            TempTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+            EditedTag = new();
             CloseAction();
         }
         public bool canOkBtn() => !String.IsNullOrWhiteSpace(TempTag.Content);
