@@ -90,3 +90,4 @@ src/GlobalSuppressions.cs
 *.xlsx
 AnalysisReport.sarif
 upgrade-assistant.clef
+TagTrees/
