@@ -172,6 +172,18 @@ namespace COMPASS.Windows
                     }
                     break;
             }
+
+            switch (e.Key)
+            {
+                case Key.I:
+                    // Ctrl + I toggle info
+                    if (Keyboard.Modifiers == ModifierKeys.Control)
+                    {
+                        ((MainViewModel)DataContext).CodexInfoVM.ShowCodexInfo = !((MainViewModel)DataContext).CodexInfoVM.ShowCodexInfo;
+                        e.Handled = true;
+                    }
+                    break;
+            }
         }
     }
 }

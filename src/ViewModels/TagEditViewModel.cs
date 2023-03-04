@@ -6,25 +6,19 @@ namespace COMPASS.ViewModels
 {
     public class TagEditViewModel : ObservableObject, IEditViewModel
     {
-        public TagEditViewModel(Tag ToEdit, bool isGroup = false) : base()
+        public TagEditViewModel(Tag toEdit, bool createNew) : base()
         {
-            EditedTag = ToEdit;
-            TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+            EditedTag = toEdit;
+            CreateNewTag = createNew;
 
-            if (ToEdit is null)
+            if (EditedTag is null)
             {
-                CreateNewTag = true;
-                TempTag.IsGroup = isGroup;
-            }
-            else
-            {
-                TempTag.Copy(EditedTag);
+                EditedTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             }
 
-            //Commands
-            CloseColorSelectionCommand = new ActionCommand(CloseColorSelection);
+            TempTag = new Tag();
+            TempTag.Copy(EditedTag);
         }
-
         #region Properties
 
         private Tag EditedTag;
@@ -58,45 +52,53 @@ namespace COMPASS.ViewModels
         #region Functions and Commands
 
         private ActionCommand _oKCommand;
-        public ActionCommand OKCommand => _oKCommand ??= new(OKBtn);
+        public ActionCommand OKCommand => _oKCommand ??= new(OKBtn, canOkBtn);
         public void OKBtn()
         {
-            if (CreateNewTag)
-            {
-                EditedTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
-                if (TempTag.Parent is null) MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(EditedTag);
-            }
-
             //Apply changes 
             EditedTag.Copy(TempTag);
+
+            if (CreateNewTag)
+            {
+                if (TempTag.Parent is null) MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(EditedTag);
+                else TempTag.Parent.Children.Add(EditedTag);
+                MainViewModel.CollectionVM.CurrentCollection.AllTags.Add(EditedTag);
+            }
+
             MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
 
-            if (!CreateNewTag) CloseAction();
-            else
-            {
-                MainViewModel.CollectionVM.CurrentCollection.AllTags.Add(EditedTag);
-                //reset fields
-                TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
-                EditedTag = null;
-            }
+            //reset fields
+            TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+            EditedTag = null;
+            CloseAction();
         }
+        public bool canOkBtn() => !String.IsNullOrWhiteSpace(TempTag.Content);
 
         private ActionCommand _cancelCommand;
         public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel()
         {
-            if (!CreateNewTag) CloseAction();
-            else
+            if (CreateNewTag)
             {
                 TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             }
             EditedTag = null;
+            CloseAction();
         }
 
-        public ActionCommand CloseColorSelectionCommand { get; private set; }
-        public Action CloseAction { get; set; }
+        private ActionCommand _closeColorSelectionCommand;
+        public ActionCommand CloseColorSelectionCommand => _closeColorSelectionCommand ??= new(CloseColorSelection);
+
+        private ActionCommand _colorSameAsParentCommand;
+        public ActionCommand ColorSameAsParentCommand => _colorSameAsParentCommand ??= new(SetColorSameAsParent);
+        private void SetColorSameAsParent()
+        {
+            TempTag.SerializableBackgroundColor = null;
+            CloseColorSelection();
+        }
 
         private void CloseColorSelection() => ShowColorSelection = false;
+        public Action CloseAction { get; set; } = new(() => { });
 
         #endregion
     }

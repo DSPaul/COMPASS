@@ -16,7 +16,15 @@ namespace COMPASS.Converters
             if (value is string str_value)
                 visible = !string.IsNullOrEmpty(str_value);
             else
-                visible = System.Convert.ToBoolean(value);
+                try
+                {
+                    visible = System.Convert.ToBoolean(value);
+                }
+                catch
+                {
+                    visible = value is not null;
+                }
+
 
             if (visible ^ Invert)
                 return Visibility.Visible;

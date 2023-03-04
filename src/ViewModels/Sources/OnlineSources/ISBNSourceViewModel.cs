@@ -18,29 +18,50 @@ namespace COMPASS.ViewModels.Sources
 
         public override Codex SetMetaData(Codex codex)
         {
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Fetching Data"));
-            string uri = $"http://openlibrary.org/api/books?bibkeys=ISBN:{InputURL.Trim('-', ' ')}&format=json&jscmd=details";
+            if (IsImporting)
+            {
+                codex.ISBN = InputURL;
+                worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Fetching Data"));
+            }
+
+            string uri = $"http://openlibrary.org/api/books?bibkeys=ISBN:{codex.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
 
             JObject metadata = Task.Run(async () => await Utils.GetJsonAsync(uri)).Result;
 
             if (!metadata.HasValues)
             {
-                string message = $"ISBN {InputURL} was not found on openlibrary.org \n" +
+                string message = $"ISBN {codex.ISBN} was not found on openlibrary.org \n" +
                     $"You can contribute by submitting this book at \n" +
                     $"https://openlibrary.org/books/add";
-                worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Error, message));
-                Logger.Error($"Could not find ISBN {InputURL} on openlibrary.org", new Exception());
+                if (IsImporting) worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Error, message));
+                Logger.Warn($"Could not find ISBN {codex.ISBN} on openlibrary.org", new Exception());
                 return codex;
             }
 
-            //loading complete
-            ProgressCounter++;
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "File loaded, parsing metadata"));
+            if (IsImporting)
+            {
+                //loading complete
+                ProgressCounter++;
+                worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "File loaded, parsing metadata"));
+            }
 
             //Start parsing json
             var details = metadata.First.First.SelectToken("details");
             //Title
-            codex.Title = (string)details.SelectToken("title");
+            if (!String.IsNullOrWhiteSpace((string)details.SelectToken("full_title")))
+            {
+                codex.Title = (string)details.SelectToken("full_title");
+            }
+            else
+            {
+                codex.Title = (string)details.SelectToken("title") ?? codex.Title;
+                if (!String.IsNullOrWhiteSpace((string)details.SelectToken("subtitle")))
+                {
+                    codex.Title += " ";
+                    codex.Title += (string)details.SelectToken("subtitle");
+                }
+            }
+
             //Authors
             if (details.SelectToken("authors") != null)
             {
@@ -64,12 +85,9 @@ namespace COMPASS.ViewModels.Sources
             if (DateTime.TryParse((string)details.SelectToken("publish_date"), out tempDate))
                 codex.ReleaseDate = tempDate;
 
-            //Other
-            codex.ISBN = InputURL;
-            codex.Physically_Owned = true;
-
             return codex;
         }
+
         public override bool FetchCover(Codex codex)
         {
             try

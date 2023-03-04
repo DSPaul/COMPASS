@@ -1,6 +1,8 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
 using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Parser;
+using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,8 +25,8 @@ namespace COMPASS.ViewModels.Sources
                 case ".pdf":
                     try
                     {
-                        PdfDocument pdfdoc = new(new PdfReader(codex.Path));
-                        var info = pdfdoc.GetDocumentInfo();
+                        PdfDocument pdfDoc = new(new PdfReader(codex.Path));
+                        var info = pdfDoc.GetDocumentInfo();
                         if (!String.IsNullOrWhiteSpace(info.GetTitle()))
                         {
                             codex.Title = info.GetTitle();
@@ -33,8 +35,28 @@ namespace COMPASS.ViewModels.Sources
                         {
                             codex.Authors = new() { info.GetAuthor() };
                         }
-                        codex.PageCount = pdfdoc.GetNumberOfPages();
-                        pdfdoc.Close();
+                        codex.PageCount = pdfDoc.GetNumberOfPages();
+
+                        //Search for ISBN number in first 5 pages
+                        for (int page = 1; page <= Math.Max(5, pdfDoc.GetNumberOfPages()); page++)
+                        {
+                            ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
+                            string pageContent = PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(page), strategy);
+                            //strip text of spaces
+                            pageContent = Constants.RegexWhitespace().Replace(pageContent, "");
+                            //search ISBN
+                            string ISBN = Constants.RegexISBN().Match(pageContent)?.Value;
+                            if (!String.IsNullOrEmpty(ISBN))
+                            {
+                                //Remove the "ISBN" so only number remains
+                                ISBN = Constants.RegexISBNNumberOnly().Match(pageContent).Value;
+                                codex.ISBN = ISBN;
+                                codex = new ISBNSourceViewModel().SetMetaData(codex);
+                                break;
+                            }
+                        }
+
+                        pdfDoc.Close();
                     }
 
                     catch (Exception ex)

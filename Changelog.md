@@ -1,5 +1,49 @@
 # CHANGELOG
-## COMPASS v1.0.0 (25 February 2023)
+
+## COMPASS v1.1.0 (04 March 2023)
+
+### New Features
+
+- Added new Info panel on the right side, can be toggled with **Ctrl+I** or using the new  button in the top right or through the new "show info" option in the context menu. The Authors, publisher and tags are also clickable to quickly add the corresponding filter.
+- Added a new color option to tags: "Same as parent". Group tags now also have a color to work in tandem with this feature, which is shown with a little stripe in front. [#27](https://github.com/DSPaul/COMPASS/issues/27)
+- You can now right click a tag to create a new subtag which has its parent's color by default. [#27](https://github.com/DSPaul/COMPASS/issues/27)
+- Pdf's that contain ISBN numbers in the first 5 pages will now automatically detect it and use it to fetch metadata. [#21](https://github.com/DSPaul/COMPASS/issues/21)
+- Added new options to deal with broken file references [#23](https://github.com/DSPaul/COMPASS/issues/23)
+  - In the *Manage Data* section of the settings:
+    - Added message telling you how many files have a broken reference.
+    - Clicking "show" will add a new filter that shows which files have a broken reference.
+    - Added a button to remove all the broken references from the books.
+    - Added a button to delete all books that have broken references.
+  - When trying to open a file with a broken file reference:
+    - Added option to open a file selection dialog to find the file and immediately  open it.
+    - Added option to remove the broken file reference.
+    - Added option to delete the book.
+
+### Enhancements
+
+- Added a button to quickly create a Tag while editing a book.
+- Renamed the default collection as follows: "Default" -> "Default Collection" to communicate the collections feature better.
+- The update path references tool now only updates the filepath if the old file path pointed to a file that no longer exists in that location and the new filepath points to a file that does exists, rather than just blindly renaming paths.
+- Increased thickness of resizing border.
+- All tags are now expanded by default instead of only groups.
+- The tag name textbox is now automatically focussed on loading.
+
+### Fixes
+
+- You cannot create tags with empty names anymore.
+- Only show the warning for no internet connection once instead of every 10 seconds.
+- If a crash occurs during import, it no longer loses all progress. [#19](https://github.com/DSPaul/COMPASS/issues/19)
+- Fixed crash on startup if data file is corrupted, it will now try to open another collection instead or create a new one if there aren't any others. [#20](https://github.com/DSPaul/COMPASS/issues/20)
+- Fixed save data corrupting due to illegal characters in imported data. [#20](https://github.com/DSPaul/COMPASS/issues/20)
+- Fixed "Check for Updates" button not working.
+- Removed unnecessary reloads.
+  
+### Other Changes
+
+- I made a discord! This way people can more easily get help and give feedback without the need for a github account, you can join with the following link: <https://discord.gg/HawGMJgS9Y>.
+- There is also a [subreddit](https://www.reddit.com/r/compassapp) for people who prefer that.
+
+## COMPASS v1.0.0 (25 February 2023)
 
 ### New Features / Enhancements
   

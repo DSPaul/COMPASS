@@ -1,5 +1,13 @@
 ![COMPASS Banner](Docs/CompassWideLogo.png)
 
+<p align="center">
+<img alt="GitHub all releases" src="https://img.shields.io/github/downloads/dspaul/compass/total?color=%2316d68a&logo=github">
+<img alt="GitHub" src="https://img.shields.io/github/license/dspaul/compass">
+ <a href="https://discord.gg/HawGMJgS9Y"><img alt="Discord" src="https://img.shields.io/badge/discord-chat-5865f2?logo=discord&logoColor=f5f5f5" /></a>
+ <img alt="Subreddit subscribers" src="https://img.shields.io/reddit/subreddit-subscribers/compassapp?color=FF5700&logo=reddit&logoColor=white">
+</p>
+
+
 # COMPASS
 The Codex Organizer to make Pen-and-paper Adventuring Super Simple or COMPASS for short is a windows application to organize and manage all your TTRPG rulebooks, inspired by [Playnite](https://github.com/JosefNemec/Playnite). 
 

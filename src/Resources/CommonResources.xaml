@@ -3,6 +3,7 @@
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:Converters ="clr-namespace:COMPASS.Converters"
                     xmlns:ViewModels ="clr-namespace:COMPASS.ViewModels"
+                    xmlns:Models ="clr-namespace:COMPASS.Models"
                     xmlns:Tools="clr-namespace:COMPASS.Tools"
                     xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary">
     <ResourceDictionary.MergedDictionaries>
@@ -11,6 +12,7 @@
 
     <!--Converters-->
     <Converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
+    <Converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
 
     <!--TextBlock Style-->
     <Style TargetType="{x:Type TextBlock}">
@@ -112,7 +114,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" 
+                    <Border Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"
                             CornerRadius="7" HorizontalAlignment="Stretch" Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
                         <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
                     </Border>
@@ -133,7 +135,8 @@
                     <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" CornerRadius="5">
                         <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Style="{StaticResource ClickableIcon}"
                             Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}" 
-                            Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Visibility="{TemplateBinding Visibility}">
                         </materialDesign:PackIcon>
                     </Border>
                 </ControlTemplate>
@@ -159,6 +162,20 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <ContentPresenter VerticalAlignment="Center"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Button" x:Key="BlankButton">
+        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <ContentPresenter Content="{TemplateBinding Content}"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -360,6 +377,18 @@
     </Style>
     <!--#endregion-->
 
+    <Style TargetType="Separator" x:Key="MarginlessSeparator">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Separator}">
+                    <Border Background="{TemplateBinding Control.Background}"
+                    BorderBrush="{TemplateBinding Control.BorderBrush}"
+                    BorderThickness="{TemplateBinding Control.BorderThickness}" Margin="0"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!--#region Contextmenu-->
     <Style TargetType="ContextMenu">
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -367,6 +396,8 @@
         <Setter Property="HasDropShadow" Value="True"/>
         <Setter Property="FontSize" Value="15"/>
         <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
         <Setter Property="Template" >
             <Setter.Value>
                 <ControlTemplate TargetType="ContextMenu">
@@ -427,7 +458,7 @@
                                 </Polygon.Style>
                             </Polygon>
                             <!--Submenu-->
-                            <Popup Name="Popup" Placement="Right" HorizontalOffset="15" VerticalOffset="-15" AllowsTransparency="True"
+                            <Popup Name="Popup" Placement="Right" HorizontalOffset="15" VerticalOffset="-20" AllowsTransparency="True"
                                    IsOpen="{TemplateBinding IsSubmenuOpen}" PopupAnimation="Fade">
                                 <Border Name="SubmenuBorder" SnapsToDevicePixels="True" Background="#FF3C3C3C"
                                         CornerRadius="5">
@@ -470,6 +501,7 @@
                   Command="{Binding Path=DataContext.CodexVM.OpenCodexOnlineCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
+        <Separator Style="{StaticResource MarginlessSeparator}"/>
         <MenuItem Header="Edit" Tools:AP.IconKind="Edit" InputGestureText="Ctrl + E"
                   Command="{Binding Path=DataContext.CodexVM.EditCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
@@ -488,10 +520,26 @@
                 </Style>
             </MenuItem.Resources>
         </MenuItem>
+        <MenuItem Tools:AP.IconKind="BookInformationVariant" InputGestureText="Ctrl + I"
+                  Command="{Binding DataContext.MVM.CodexInfoVM.ToggleCodexInfoCommand,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+            <MenuItem.Style>
+                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="Header" Value="Show Info"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding DataContext.MVM.CodexInfoVM.ShowCodexInfo,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" Value="True">
+                            <Setter Property="Header" Value="Hide Info"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </MenuItem.Style>
+        </MenuItem>
         <MenuItem Header="Show in Explorer" Tools:AP.IconKind="FolderEyeOutline"
                   Command="{Binding Path=DataContext.CodexVM.ShowInExplorerCommand, 
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
+        <Separator Style="{StaticResource MarginlessSeparator}"/>
         <MenuItem Header="Move to Collection" Tools:AP.IconKind="FolderMoveOutline"
                   ItemsSource="{Binding DataContext.MVM.CollectionVM.CollectionDirectories, 
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
@@ -851,7 +899,7 @@
 
     <!--#endregion-->
  
-    <!--#region Tags Style-->
+    <!--#region Tags Stuff-->
     <DataTemplate x:Key="TagTemplate">
         <Border CornerRadius="5" Margin="2,3">
             <Border.Background>
@@ -914,6 +962,17 @@
             <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/>
         </Border>
     </DataTemplate>
+
+    <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+        <Border Margin="0,3" Background="{x:Null}">
+            <StackPanel Orientation="Horizontal">
+                <Rectangle Fill="{Binding Tag.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
+                                       Width="2" Height="10" Margin="3" VerticalAlignment="Bottom"/>
+                <TextBlock Text="{Binding Tag.Content}" Foreground="LightGray"
+                                           FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
+            </StackPanel>
+        </Border>
+    </HierarchicalDataTemplate>
     <!--#endregion-->
 
     <Style TargetType="materialDesign:PackIcon">

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace COMPASS.Tools
@@ -35,6 +36,7 @@ namespace COMPASS.Tools
         }
 
         //check internet connection
+        private static bool _showedOfflineWarning = false;
         public static bool PingURL(string URL = "8.8.8.8")
         {
             Ping p = new();
@@ -42,12 +44,25 @@ namespace COMPASS.Tools
             {
                 PingReply reply = p.Send(URL, 3000);
                 if (reply.Status == IPStatus.Success)
+                {
+                    if (_showedOfflineWarning == true)
+                    {
+                        string msg = "Internet connection restored";
+                        Logger.Info(msg);
+                        Logger.FileLog.Info(msg);
+                        _showedOfflineWarning = false;
+                    }
                     return true;
+                }
                 else return false;
             }
             catch (Exception ex)
             {
-                Logger.Warn($"Could not ping {URL}", ex);
+                if (_showedOfflineWarning == false)
+                {
+                    Logger.Warn($"Could not ping {URL}", ex);
+                }
+                _showedOfflineWarning = true;
             }
             return false;
         }
@@ -78,5 +93,38 @@ namespace COMPASS.Tools
             }
             return json;
         }
+
+        //based on https://seattlesoftware.wordpress.com/2008/09/11/hexadecimal-value-0-is-an-invalid-character/
+        /// <summary>
+        /// Remove illegal XML characters from a string.
+        /// </summary>
+        public static string SanitizeXmlString(string xml)
+        {
+            if (xml is null) { return null; }
+
+            StringBuilder buffer = new(xml.Length);
+            foreach (char c in xml)
+            {
+                if (IsLegalXmlChar(c))
+                {
+                    buffer.Append(c);
+                }
+            }
+            return buffer.ToString();
+        }
+
+        /// <summary>
+        /// Whether a given character is allowed by XML 1.0.
+        /// </summary>
+        public static bool IsLegalXmlChar(int character) => character switch
+        {
+            0x9 => true, // '\t' == 9 
+            0xA => true, // '\n' == 10         
+            0xD => true, // '\r' == 13        
+            (>= 0x20) and (<= 0xD7FF) => true,
+            (>= 0xE000) and (<= 0xFFFD) => true,
+            (>= 0x10000) and (<= 0x10FFFF) => true,
+            _ => false
+        };
     }
 }

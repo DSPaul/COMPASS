@@ -14,7 +14,7 @@
         xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary"
         d:DataContext="{d:DesignInstance Type=viewmodels:CodexEditViewModel}"
         mc:Ignorable="d"
-        Title="File Properties" Height="500" Width="1200" FontSize="16" 
+        Title="Book Properties" Height="500" Width="1200" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
         Foreground="{StaticResource TextColor}" Background="{StaticResource WindowBackground}" MouseDown="MainGrid_MouseDown">
     <Window.Resources>
@@ -66,14 +66,6 @@
                                       CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
                                        IsChecked="{Binding Selected, Mode=TwoWay}" 
                                   Content="{Binding Tag.Content}" Foreground="{StaticResource TextColor}"/>
-                </Border>
-            </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                <Border CornerRadius="5" Margin="0,3" Background="{x:Null}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2" Foreground="{StaticResource TextMutedColor}" 
-                                   Typography.Capitals="AllSmallCaps" FontWeight="Bold"/>
-                    </StackPanel>
                 </Border>
             </HierarchicalDataTemplate>
             <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
@@ -234,16 +226,34 @@
                     </Grid>
                     <Rectangle Grid.Column="1" Fill="{StaticResource Separator}" Width="3" Margin="10,0"/>
 
-                    <TreeView x:Name="TagSelection" Grid.Column="2" ItemsSource="{Binding TreeViewSource}" 
-                              MinWidth="200" MaxHeight="350"
-                              BorderBrush="{x:Null}" Background="{x:Null}" ItemTemplateSelector="{StaticResource TagTemplateSelector}">
-                        <TreeView.Resources>
-                            <Style TargetType="{x:Type TreeViewItem}">
-                                <Setter Property="IsExpanded" Value="{Binding Expanded}"/>
-                                <Setter Property="Focusable" Value="False"/>
-                            </Style>
-                        </TreeView.Resources>
-                    </TreeView>
+                    <ScrollViewer Grid.Column="2" MaxHeight="360">
+                        <StackPanel>
+                            <TreeView x:Name="TagSelection" ItemsSource="{Binding TreeViewSource}" 
+                                  MinWidth="200" PreviewMouseWheel="treeView_PreviewMouseWheel"
+                                  BorderBrush="{x:Null}" Background="{x:Null}" ItemTemplateSelector="{StaticResource TagTemplateSelector}">
+                                <TreeView.Resources>
+                                    <Style TargetType="{x:Type TreeViewItem}">
+                                        <Setter Property="IsExpanded" Value="{Binding Expanded}"/>
+                                        <Setter Property="Focusable" Value="False"/>
+                                    </Style>
+                                </TreeView.Resources>
+                            </TreeView>
+                            <Button  Grid.Row="1" Command="{Binding QuickCreateTagCommand}" Cursor="Hand" Margin="20,5">
+                                <Button.Template>
+                                    <ControlTemplate>
+                                        <Border BorderBrush="{StaticResource Separator}"
+                                                BorderThickness="1" CornerRadius="3">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <materialDesign:PackIcon Kind="TagAdd" Height="15"/>
+                                                <TextBlock Text="Quick Create Tag" Margin="5" FontSize="14"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </ScrollViewer>
+                    
                 </Grid>
             </TabItem>
             <TabItem Header="Description">

@@ -32,14 +32,30 @@ namespace COMPASS.Models
         public string Content
         {
             get => _content;
-            set => SetProperty(ref _content, value);
+            set
+            {
+                value = Utils.SanitizeXmlString(value);
+                SetProperty(ref _content, value);
+            }
         }
 
-        private Color _backgroundColor = Colors.Black;
+        // Add [XmlIgnoreAttribute] in a future update and delete the setter
+        // these are only needed to load tags.xml files created before the 1.1.0 update
         public Color BackgroundColor
         {
-            get => _backgroundColor;
-            set => SetProperty(ref _backgroundColor, value);
+            get => _serializableBackgroundColor ?? Parent?.BackgroundColor ?? Colors.DarkGray;
+            set => _serializableBackgroundColor = value;
+        }
+
+        private Color? _serializableBackgroundColor = Colors.DarkGray;
+        public Color? SerializableBackgroundColor
+        {
+            get => _serializableBackgroundColor;
+            set
+            {
+                SetProperty(ref _serializableBackgroundColor, value);
+                RaisePropertyChanged(nameof(BackgroundColor));
+            }
         }
 
         //Implement IHasID
@@ -101,7 +117,7 @@ namespace COMPASS.Models
             Content = t.Content;
             Parent = t.Parent;
             IsGroup = t.IsGroup;
-            BackgroundColor = t.BackgroundColor;
+            SerializableBackgroundColor = t.SerializableBackgroundColor;
             Children = new ObservableCollection<Tag>(t.Children);
             AllTags = t.AllTags;
         }

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -48,9 +47,9 @@ namespace COMPASS.Models
             ISBN = c.ISBN;
         }
 
-        public bool HasOfflineSource() => File.Exists(Path);
+        public bool HasOfflineSource() => !String.IsNullOrWhiteSpace(Path);
 
-        public bool HasOnlineSource() => !string.IsNullOrEmpty(SourceURL);
+        public bool HasOnlineSource() => !String.IsNullOrWhiteSpace(SourceURL);
 
         public string GetFileType()
         {
@@ -80,7 +79,11 @@ namespace COMPASS.Models
         public string Path
         {
             get => _path;
-            set => SetProperty(ref _path, value);
+            set
+            {
+                value = Utils.SanitizeXmlString(value);
+                SetProperty(ref _path, value);
+            }
         }
 
         private string _title;
@@ -89,6 +92,7 @@ namespace COMPASS.Models
             get => _title;
             set
             {
+                value = Utils.SanitizeXmlString(value);
                 SetProperty(ref _title, value);
                 RaisePropertyChanged(nameof(SortingTitle));
             }
@@ -106,7 +110,11 @@ namespace COMPASS.Models
         public string SerializableSortingTitle
         {
             get => _sortingTitle;
-            set => SetProperty(ref _sortingTitle, value);
+            set
+            {
+                value = Utils.SanitizeXmlString(value);
+                SetProperty(ref _sortingTitle, value);
+            }
         }
 
         private ObservableCollection<string> _authors = new();
@@ -138,21 +146,33 @@ namespace COMPASS.Models
         public string Publisher
         {
             get => _publisher;
-            set => SetProperty(ref _publisher, value);
+            set
+            {
+                value = Utils.SanitizeXmlString(value);
+                SetProperty(ref _publisher, value);
+            }
         }
 
         private string _version;
         public string Version
         {
             get => _version;
-            set => SetProperty(ref _version, value);
+            set
+            {
+                value = Utils.SanitizeXmlString(value);
+                SetProperty(ref _version, value);
+            }
         }
 
         private string _sourceURL;
         public string SourceURL
         {
             get => _sourceURL;
-            set => SetProperty(ref _sourceURL, value);
+            set
+            {
+                value = Utils.SanitizeXmlString(value);
+                SetProperty(ref _sourceURL, value);
+            }
         }
 
         public int ID { get; set; }
@@ -161,14 +181,22 @@ namespace COMPASS.Models
         public string CoverArt
         {
             get => _coverArt;
-            set => SetProperty(ref _coverArt, value);
+            set
+            {
+                value = Utils.SanitizeXmlString(value);
+                SetProperty(ref _coverArt, value);
+            }
         }
 
         private string _thumbnail;
         public string Thumbnail
         {
             get => _thumbnail;
-            set => SetProperty(ref _thumbnail, value);
+            set
+            {
+                value = Utils.SanitizeXmlString(value);
+                SetProperty(ref _thumbnail, value);
+            }
         }
 
         private bool _physically_Owned;
@@ -192,7 +220,11 @@ namespace COMPASS.Models
         public string Description
         {
             get => _description;
-            set => SetProperty(ref _description, value);
+            set
+            {
+                value = Utils.SanitizeXmlString(value);
+                SetProperty(ref _description, value);
+            }
         }
 
         private DateTime? _releaseDate = null;
@@ -248,7 +280,11 @@ namespace COMPASS.Models
         public string ISBN
         {
             get => _ISBN;
-            set => SetProperty(ref _ISBN, value);
+            set
+            {
+                value = Utils.SanitizeXmlString(value);
+                SetProperty(ref _ISBN, value);
+            }
         }
         #endregion 
     }

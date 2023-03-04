@@ -1,10 +1,12 @@
 ﻿using COMPASS.Tools;
 using COMPASS.ViewModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Xml;
 
 namespace COMPASS.Models
@@ -39,16 +41,23 @@ namespace COMPASS.Models
         public ObservableCollection<Codex> AllCodices { get; private set; } = new();
         #endregion
 
-
-        public void Load()
+        /// <summary>
+        /// Loads the collection and sets it as the new default to load on startup
+        /// </summary>
+        /// <returns>int that gives status: 0 for success, -1 for failed tags, -2 for failed codices, -3 if fails both</returns>
+        public int Load()
         {
-            LoadTags();
-            LoadCodices();
+            int result = 0;
+            bool loadedTags = LoadTags();
+            bool loadedCodices = LoadCodices();
+            if (!loadedTags) { result -= 1; };
+            if (!loadedCodices) { result -= 2; };
             Properties.Settings.Default.StartupCollection = DirectoryName;
+            return result;
         }
         #region Load Data From File
         //Loads the RootTags from a file and constructs the Alltags list from it
-        public void LoadTags()
+        public bool LoadTags()
         {
             if (File.Exists(TagsDataFilePath))
             {
@@ -56,7 +65,16 @@ namespace COMPASS.Models
                 using (var Reader = new StreamReader(TagsDataFilePath))
                 {
                     System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Tag>));
-                    RootTags = serializer.Deserialize(Reader) as List<Tag>;
+                    try
+                    {
+                        RootTags = serializer.Deserialize(Reader) as List<Tag>;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error($"Could not load {TagsDataFilePath}.", ex);
+                        return false;
+                    }
+
                 }
 
                 //Constructing AllTags and pass it to all the tags
@@ -68,18 +86,29 @@ namespace COMPASS.Models
             {
                 RootTags = new();
             }
+            return true;
         }
 
         //Loads AllCodices list from Files
-        public void LoadCodices()
+        public bool LoadCodices()
         {
             if (File.Exists(CodicesDataFilePath))
             {
                 using (var Reader = new StreamReader(CodicesDataFilePath))
                 {
                     System.Xml.Serialization.XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
-                    AllCodices = serializer.Deserialize(Reader) as ObservableCollection<Codex>;
+                    try
+                    {
+                        AllCodices = serializer.Deserialize(Reader) as ObservableCollection<Codex>;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error($"Could not load {CodicesDataFilePath}", ex);
+                        return false;
+                    }
                 }
+
+                AllCodices.CollectionChanged += (e, v) => SaveCodices();
 
                 foreach (Codex c in AllCodices)
                 {
@@ -92,6 +121,7 @@ namespace COMPASS.Models
             {
                 AllCodices = new();
             }
+            return true;
         }
         #endregion
 
@@ -121,16 +151,32 @@ namespace COMPASS.Models
 
         #endregion    
 
-        public void DeleteCodex(Codex Todelete)
+        public void DeleteCodex(Codex toDelete)
         {
             //Delete file from all lists
-            AllCodices.Remove(Todelete);
+            AllCodices.Remove(toDelete);
 
             //Delete Coverart & Thumbnail
-            File.Delete(Todelete.CoverArt);
-            File.Delete(Todelete.Thumbnail);
-            Logger.Info($"Deleted {Todelete.Title} from {DirectoryName}");
-            SaveCodices();
+            File.Delete(toDelete.CoverArt);
+            File.Delete(toDelete.Thumbnail);
+            Logger.Info($"Deleted {toDelete.Title} from {DirectoryName}");
+        }
+
+        public void DeleteCodices(IList toDelete)
+        {
+            List<Codex> toDeleteList = toDelete?.Cast<Codex>().ToList();
+            int count = toDeleteList.Count;
+            string message = $"You are about to delete {count} file{(count > 1 ? @"s" : @"")}. " +
+                           $"This cannot be undone. " +
+                           $"Are you sure you want to continue?";
+            var result = MessageBox.Show(message, "Delete", MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.OK)
+            {
+                foreach (Codex toDel in toDeleteList)
+                {
+                    DeleteCodex(toDel);
+                }
+            }
         }
 
         public void DeleteTag(Tag todel)

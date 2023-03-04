@@ -9,15 +9,21 @@ namespace COMPASS.Commands
     public class ActionCommand : ICommand
     {
         readonly Action _execute;
+        private readonly Func<bool> _canExecute;
 
-        public event EventHandler CanExecuteChanged;
-
-        public ActionCommand(Action Execute)
+        public event EventHandler CanExecuteChanged
         {
-            _execute = Execute;
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
 
-        public bool CanExecute(object parameter) => true;
+        public ActionCommand(Action Execute, Func<bool> CanExecute = null)
+        {
+            _execute = Execute;
+            _canExecute = CanExecute;
+        }
+
+        public bool CanExecute(object parameter) => _canExecute == null || _canExecute();
 
         public void Execute(object parameter) => _execute.Invoke();
     }

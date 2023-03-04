@@ -131,6 +131,7 @@
             <TabItem.Resources>
                 <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
                 <ContextMenu x:Key="TagContextMenu">
+                    <MenuItem Header="New Tag" Tools:AP.IconKind="TagPlusOutline" Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateChildCommand}"/>
                     <MenuItem Header="Edit" Tools:AP.IconKind="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
                     <MenuItem Header="Delete" Tools:AP.IconKind="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
                 </ContextMenu>
@@ -153,12 +154,6 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-                </HierarchicalDataTemplate>
-                <HierarchicalDataTemplate x:Key="GroupTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
-                    <Border CornerRadius="5" Margin="0,3" Background="{x:Null}" ContextMenu="{StaticResource TagContextMenu}">
-                        <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="LightGray" 
-                                       FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
-                    </Border>
                 </HierarchicalDataTemplate>
                 <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
             </TabItem.Resources>
@@ -225,6 +220,7 @@
                             <Style TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
                                 <Setter Property="IsSelected" Value="{Binding Selected, Mode=TwoWay}"/>
+                                <Setter Property="ContextMenu" Value="{StaticResource TagContextMenu}"/>
                             </Style>
                             <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                             <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />

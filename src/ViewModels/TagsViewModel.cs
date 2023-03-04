@@ -42,20 +42,28 @@ namespace COMPASS.ViewModels
 
         private ActionCommand _addTagCommand;
         public ActionCommand AddTagCommand => _addTagCommand ??= new(AddTag);
-        public void AddTag() => AddTagViewModel = new TagEditViewModel(null, false);
+        public void AddTag() => AddTagViewModel = new TagEditViewModel(null, true);
 
 
         private ActionCommand _addGroupCommand;
         public ActionCommand AddGroupCommand => _addGroupCommand ??= new(AddGroup);
-        public void AddGroup() => AddTagViewModel = new TagEditViewModel(null, true);
+        public void AddGroup()
+        {
+            Tag newTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags)
+            {
+                IsGroup = true,
+            };
+            AddTagViewModel = new TagEditViewModel(newTag, true);
+        }
 
         private RelayCommand<object[]> _addTagFilterCommand;
         public RelayCommand<object[]> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
         public void AddTagFilterHelper(object[] par)
         {
+            //needed because relaycommand only takes functions with one arg
             Tag tag = (Tag)par[0];
             bool include = (bool)par[1];
-            _collectionVM.FilterVM.AddFilter(new(Filter.FilterType.Tag, tag), include); //needed because relaycommand only takes functions with one arg
+            _collectionVM.FilterVM.AddFilter(new(Filter.FilterType.Tag, tag), include);
         }
 
 
@@ -81,13 +89,31 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Tag Context Menu
+        private ActionCommand _createChildCommand;
+        public ActionCommand CreateChildCommand => _createChildCommand ??= new(CreateChildTag);
+        private void CreateChildTag()
+        {
+            if (ContextTag != null)
+            {
+                Tag newTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags)
+                {
+                    Parent = ContextTag,
+                    SerializableBackgroundColor = null,
+                };
+                TagPropWindow tpw = new(new TagEditViewModel(newTag, true));
+                tpw.ShowDialog();
+                tpw.Topmost = true;
+            }
+        }
+
+
         private ActionCommand _editTagCommand;
         public ActionCommand EditTagCommand => _editTagCommand ??= new(EditTag);
         public void EditTag()
         {
             if (ContextTag != null)
             {
-                TagPropWindow tpw = new(new TagEditViewModel(ContextTag));
+                TagPropWindow tpw = new(new TagEditViewModel(ContextTag, false));
                 tpw.ShowDialog();
                 tpw.Topmost = true;
             }

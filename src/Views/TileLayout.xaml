@@ -14,7 +14,7 @@
         <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
     </UserControl.Resources>
 
-    <ListBox x:Name="TileLayoutListBox" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}"
+    <ListBox x:Name="TileLayoutListBox" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedCodex, Mode=TwoWay}"
             ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}"  
              Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Top" 
             ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10,0" SelectionMode="Extended"

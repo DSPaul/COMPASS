@@ -1,6 +1,7 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
+using COMPASS.Windows;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -95,6 +96,19 @@ namespace COMPASS.ViewModels
                     TempCodex.Tags.Add(t.Tag);
                 }
             }
+        }
+
+        private ActionCommand _quickCreateTagCommand;
+        public ActionCommand QuickCreateTagCommand => _quickCreateTagCommand ??= new(QuickCreateTag);
+        public void QuickCreateTag()
+        {
+            TagPropWindow tpw = new(new TagEditViewModel(null, true));
+            tpw.Topmost = true;
+            _ = tpw.ShowDialog();
+
+            //recalc treeviewsource
+            _treeViewSource = null;
+            RaisePropertyChanged(nameof(TreeViewSource));
         }
 
         private ActionCommand _deleteCodexCommand;

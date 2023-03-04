@@ -34,7 +34,7 @@ namespace COMPASS.ViewModels
         public ReturningRelayCommand<Codex, bool> OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(OpenCodexLocally, CanOpenCodexLocally);
         public static bool OpenCodexLocally(Codex toOpen)
         {
-            if (String.IsNullOrWhiteSpace(toOpen.Path)) return false;
+            if (!toOpen.HasOfflineSource()) return false;
             try
             {
                 Process.Start(new ProcessStartInfo(toOpen.Path) { UseShellExecute = true });
@@ -49,17 +49,11 @@ namespace COMPASS.ViewModels
 
                 if (toOpen is null) return false;
 
-                //Check if folder exists, if not ask users to rename
-                var dir = Path.GetDirectoryName(toOpen.Path);
-                if (!Directory.Exists(dir))
+                FileNotFoundWindow fileNotFoundWindow = new(new(toOpen))
                 {
-                    string message = $"{toOpen.Path} could not be found. \n" +
-                    $"If you renamed a folder, go to \n" +
-                    $"Settings -> General -> Fix Renamed Folder\n" +
-                    $"to update all references to the old folder name.";
-                    MessageBox.Show(message, "Path could not be found", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                return false;
+                    Owner = Application.Current.MainWindow
+                };
+                return (bool)fileNotFoundWindow.ShowDialog();
             }
         }
         public static bool CanOpenCodexLocally(Codex toOpen)
@@ -256,7 +250,12 @@ namespace COMPASS.ViewModels
 
             if (rsltMessageBox == MessageBoxResult.Yes)
             {
-                targetCollection.LoadCodices();
+                bool succes = targetCollection.LoadCodices();
+                if (!succes)
+                {
+                    MessageBox.Show($"Could not move books to {targetCollection.DirectoryName}", "Target collection could not be loaded.", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
                 foreach (Codex ToMove in ToMoveList)
                 {
                     ToMove.Tags.Clear();
@@ -297,22 +296,10 @@ namespace COMPASS.ViewModels
         //Delete Codices
         private RelayCommand<IList> _deleteCodicesCommand;
         public RelayCommand<IList> DeleteCodicesCommand => _deleteCodicesCommand ??= new(DeleteCodices);
-        public static void DeleteCodices(IList toDel)
+        public static void DeleteCodices(IList toDelete)
         {
-            List<Codex> toDeleteList = toDel?.Cast<Codex>().ToList();
-            int count = toDeleteList.Count;
-            string message = $"You are about to delete {count} file{(count > 1 ? @"s" : @"")}. " +
-                           $"This cannot be undone. " +
-                           $"Are you sure you want to continue?";
-            var result = MessageBox.Show(message, "Delete", MessageBoxButton.OKCancel);
-            if (result == MessageBoxResult.OK)
-            {
-                foreach (Codex ToDelete in toDeleteList)
-                {
-                    MainViewModel.CollectionVM.CurrentCollection.DeleteCodex(ToDelete);
-                }
-                MainViewModel.CollectionVM.FilterVM.ReFilter();
-            }
+            MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(toDelete);
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
 
         public static void DataGridHandleKeyDown(object sender, KeyEventArgs e)
@@ -358,7 +345,8 @@ namespace COMPASS.ViewModels
         #region Drag & Drop
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
-            if (dropInfo.Data is TreeViewNode node && !node.Tag.IsGroup)
+            if ((dropInfo.Data is TreeViewNode node && !node.Tag.IsGroup)
+                || (dropInfo.Data is Tag tag && !tag.IsGroup))
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
@@ -367,12 +355,19 @@ namespace COMPASS.ViewModels
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            if (dropInfo.Data is TreeViewNode node)
+            Codex TargetCodex = (Codex)dropInfo.TargetItem;
+            if (TargetCodex is not null)
             {
-                Codex TargetCodex = (Codex)dropInfo.TargetItem;
-                if (TargetCodex is not null && !TargetCodex.Tags.Contains(node.Tag))
+                Tag toAdd = dropInfo.Data switch
                 {
-                    TargetCodex.Tags.Add(node.Tag);
+                    TreeViewNode node => node.Tag,
+                    Tag tag => tag,
+                    _ => null
+                };
+
+                if (!TargetCodex.Tags.Contains(toAdd))
+                {
+                    TargetCodex.Tags.Add(toAdd);
                     MainViewModel.CollectionVM.FilterVM.ReFilter();
                 }
             }

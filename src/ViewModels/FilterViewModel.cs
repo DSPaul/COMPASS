@@ -473,18 +473,22 @@ namespace COMPASS.ViewModels
         }
         private void ApplyFilters()
         {
-            FilteredCodices = new(_allCodices
+            IEnumerable<Codex> _filteredCodices = _allCodices
                 .Intersect(IncludedCodices)
-                .Except(ExcludedCodices));
+                .Except(ExcludedCodices);
 
-            //Also apply filtering to these lists
-            RaisePropertyChanged(nameof(Favorites));
-            RaisePropertyChanged(nameof(RecentCodices));
-            RaisePropertyChanged(nameof(MostOpenedCodices));
-            RaisePropertyChanged(nameof(RecentlyAddedCodices));
+            if (FilteredCodices is null || !FilteredCodices.SequenceEqual(_filteredCodices))
+            {
+                FilteredCodices = new(_filteredCodices);
+                //Also apply filtering to these lists
+                RaisePropertyChanged(nameof(Favorites));
+                RaisePropertyChanged(nameof(RecentCodices));
+                RaisePropertyChanged(nameof(MostOpenedCodices));
+                RaisePropertyChanged(nameof(RecentlyAddedCodices));
 
-            FilteredCodices.CollectionChanged += (e, v) => ApplySorting();
-            ApplySorting();
+                FilteredCodices.CollectionChanged += (e, v) => ApplySorting();
+                ApplySorting();
+            }
         }
 
         public void ReFilter()

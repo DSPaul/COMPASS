@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Media;
 
 namespace COMPASS.Models
@@ -24,7 +25,8 @@ namespace COMPASS.Models
             OfflineSource,
             PhysicalSource,
             Favorite,
-            FileExtension
+            FileExtension,
+            HasBrokenPath
         }
 
         public Func<Codex, bool> Method => Type switch
@@ -39,6 +41,7 @@ namespace COMPASS.Models
             FilterType.PhysicalSource => new(codex => codex.Physically_Owned),
             FilterType.Favorite => new(codex => codex.Favorite),
             FilterType.FileExtension => new(codex => codex.GetFileType() == (string)FilterValue),
+            FilterType.HasBrokenPath => new(codex => codex.HasOfflineSource() && !Path.Exists(codex.Path)),
             _ => new(_ => true)
         };
 
@@ -76,6 +79,7 @@ namespace COMPASS.Models
             FilterType.FileExtension => Colors.OrangeRed,
             FilterType.Search => Colors.Salmon,
             FilterType.Tag => ((ITag)FilterValue).BackgroundColor,
+            FilterType.HasBrokenPath => Colors.Gold,
             _ => throw new NotImplementedException(),
         };
 
@@ -95,6 +99,7 @@ namespace COMPASS.Models
             FilterType.Favorite => "Favorite",
             FilterType.FileExtension => "File Type:",
             FilterType.Search => "Search:",
+            FilterType.HasBrokenPath => "Has Broken Path",
             _ => "",
         };
         public string Suffix => Type switch
@@ -108,6 +113,7 @@ namespace COMPASS.Models
             FilterType.StopReleaseDate => true,
             FilterType.MinimumRating => true,
             FilterType.Search => true,
+            FilterType.HasBrokenPath => true,
             _ => false
         };
 
