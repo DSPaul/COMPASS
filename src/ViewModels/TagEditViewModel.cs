@@ -1,5 +1,6 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Tools;
 using System;
 
 namespace COMPASS.ViewModels
@@ -8,16 +9,10 @@ namespace COMPASS.ViewModels
     {
         public TagEditViewModel(Tag toEdit, bool createNew) : base()
         {
-            EditedTag = toEdit;
+            EditedTag = toEdit ?? new();
             CreateNewTag = createNew;
 
-            if (EditedTag is null)
-            {
-                EditedTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
-            }
-
-            TempTag = new Tag();
-            TempTag.Copy(EditedTag);
+            TempTag = new Tag(EditedTag);
         }
         #region Properties
 
@@ -62,6 +57,7 @@ namespace COMPASS.ViewModels
             {
                 if (TempTag.Parent is null) MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(EditedTag);
                 else TempTag.Parent.Children.Add(EditedTag);
+                EditedTag.ID = Utils.GetAvailableID(MainViewModel.CollectionVM.CurrentCollection.AllTags);
                 MainViewModel.CollectionVM.CurrentCollection.AllTags.Add(EditedTag);
             }
 
