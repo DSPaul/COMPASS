@@ -207,7 +207,7 @@
                             Content="New Group" Command="{Binding AddGroupCommand}" Margin="0"/>
                         </CustomControls:ExpandingButton.Toggle>
                         <CustomControls:ExpandingButton.HiddenContent>
-                            <views:TagEditView DataContext="{Binding AddTagViewModel}"/>
+                            <views:TagEditView DataContext="{Binding AddGroupViewModel}"/>
                         </CustomControls:ExpandingButton.HiddenContent>
                     </CustomControls:ExpandingButton>
                     
