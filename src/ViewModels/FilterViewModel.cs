@@ -282,8 +282,8 @@ namespace COMPASS.ViewModels
         //------------- Adding, Removing, ect ------------//
 
         // Remove Filter
-        private RelayCommand<Filter> _removeFilterCommand;
-        public RelayCommand<Filter> RemoveFilterCommand => _removeFilterCommand ??= new(RemoveFilter);
+        private RelayCommand<Filter> _removeFromItemsControlCommand;
+        public RelayCommand<Filter> RemoveFromItemsControlCommand => _removeFromItemsControlCommand ??= new(RemoveFilter);
         public void RemoveFilter(Filter filter)
         {
             IncludedFilters.Remove(filter);
