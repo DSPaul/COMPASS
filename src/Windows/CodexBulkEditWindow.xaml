@@ -161,7 +161,7 @@
             </Border>
         </Grid>
 
-        <StackPanel Grid.Row="8" Orientation="Horizontal">
+        <StackPanel Grid.Row="8" Orientation="Horizontal" Grid.ColumnSpan="2">
             <Button Style="{StaticResource IconTextButton}" Tools:AP.IconKind="Check" Content="OK" Margin="5"
                         Command ="{Binding OKCommand}"  Background="{StaticResource AcceptFill}" IsDefault="True"/>
             <Button Grid.Column="1"  Style="{StaticResource IconTextButton}" Tools:AP.IconKind="Close" Margin="5"
@@ -173,7 +173,7 @@
         <TextBlock Grid.Column="3" Grid.Row="0" Text="Add/Remove Tags" TextAlignment="Center" HorizontalAlignment="Stretch"
                    FontWeight="Bold"/>
 
-        <TreeView x:Name="TagSelection" BorderBrush="{x:Null}" Margin="0" Grid.Row="1" Grid.Column="3" Grid.RowSpan="8"
+        <TreeView x:Name="TagSelection" BorderBrush="{x:Null}" Margin="0" Grid.Row="1" Grid.Column="3" Grid.RowSpan="8" MaxWidth="300"
                     ItemsSource="{Binding TreeViewSource}" Background="{x:Null}" ItemTemplateSelector="{StaticResource TagTemplateSelector}">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}">

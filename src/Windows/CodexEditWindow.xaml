@@ -226,7 +226,7 @@
                     </Grid>
                     <Rectangle Grid.Column="1" Fill="{StaticResource Separator}" Width="3" Margin="10,0"/>
 
-                    <ScrollViewer Grid.Column="2" MaxHeight="360">
+                    <ScrollViewer Grid.Column="2" MaxHeight="360" MaxWidth="300">
                         <StackPanel>
                             <TreeView x:Name="TagSelection" ItemsSource="{Binding TreeViewSource}" 
                                   MinWidth="200" PreviewMouseWheel="treeView_PreviewMouseWheel"
