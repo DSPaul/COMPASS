@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -29,6 +30,19 @@ namespace COMPASS.Tools
                     collection.Remove(itemToRemove);
                 }
             }
+        }
+
+        /// <summary>
+        /// Same as addRange of lists.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <param name="range"></param>
+        public static void AddRange<T>(
+        this ObservableCollection<T> collection, IEnumerable<T> toAdd)
+        {
+            if (toAdd == null) throw new ArgumentNullException("collection");
+            foreach (var i in toAdd) collection.Add(i);
         }
         #endregion
     }

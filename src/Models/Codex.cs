@@ -211,7 +211,14 @@ namespace COMPASS.Models
         [XmlIgnoreAttribute]
         public ObservableCollection<Tag> Tags
         {
-            get => _tags;
+            get
+            {
+                List<Tag> orderedTags = new(_tags.OrderBy(t => t.AllTags.IndexOf(t)));
+                _tags.Clear();
+                _tags.AddRange(orderedTags);
+                return _tags;
+            }
+
             set => SetProperty(ref _tags, value);
         }
         public List<int> TagIDs { get; set; }
