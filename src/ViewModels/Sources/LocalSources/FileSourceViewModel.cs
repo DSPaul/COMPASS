@@ -1,11 +1,15 @@
 ﻿using COMPASS.Windows;
 using Microsoft.Win32;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace COMPASS.ViewModels.Sources
 {
     public class FileSourceViewModel : LocalSourceViewModel
     {
         public override ImportSource Source => ImportSource.File;
+        public List<string> FileNames { get; set; }
+
 
         public override void Import()
         {
@@ -19,15 +23,21 @@ namespace COMPASS.ViewModels.Sources
 
             if (openFileDialog.ShowDialog() == true)
             {
-                ProgressCounter = 0;
-                ImportAmount = openFileDialog.FileNames.Length; ;
-
-                ProgressWindow window = GetProgressWindow();
-                window.Show();
-
-                InitWorker(ImportFilePaths);
-                worker.RunWorkerAsync(argument: openFileDialog.FileNames);
+                FileNames = openFileDialog.FileNames.ToList();
+                StartAsyncImport();
             }
+        }
+
+        public void StartAsyncImport()
+        {
+            ProgressCounter = 0;
+            ImportAmount = FileNames.Count;
+
+            ProgressWindow window = GetProgressWindow();
+            window.Show();
+
+            InitWorker(ImportFilePaths);
+            worker.RunWorkerAsync(argument: FileNames);
         }
     }
 }

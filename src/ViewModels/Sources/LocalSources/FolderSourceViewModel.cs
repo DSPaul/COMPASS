@@ -10,19 +10,31 @@ namespace COMPASS.ViewModels.Sources
     public class FolderSourceViewModel : LocalSourceViewModel
     {
         public override ImportSource Source => ImportSource.Folder;
+        public List<string> FolderNames { get; set; } = new();
+        public List<string> FileNames { get; set; } = new();
 
         public override void Import()
         {
             IsImporting = true;
 
-            VistaFolderBrowserDialog openFolderDialog = new();
+            VistaFolderBrowserDialog openFolderDialog = new()
+            {
+                Multiselect = true,
+            };
 
             var dialogresult = openFolderDialog.ShowDialog();
             if (dialogresult == false) return;
 
+            FolderNames = openFolderDialog.SelectedPaths.ToList();
+
+            StartAsyncImport();
+        }
+
+        public void StartAsyncImport()
+        {
             //find files in folder, including subfolder
-            List<string> toSearch = new(openFolderDialog.SelectedPaths); //list with folders to search
-            List<string> toImport = new(); //list with files to import
+            List<string> toSearch = new(FolderNames); //list with folders to search
+            List<string> toImport = new(FileNames); //list with files to import
 
             while (toSearch.Count > 0)
             {
@@ -44,7 +56,7 @@ namespace COMPASS.ViewModels.Sources
                 Owner = Application.Current.MainWindow
             };
 
-            dialogresult = importFolderWindow.ShowDialog();
+            var dialogresult = importFolderWindow.ShowDialog();
             if (dialogresult == false) return;
 
             //Make new toImport with only selected Filetypes

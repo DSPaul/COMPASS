@@ -534,10 +534,14 @@
 
                 <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="5" Content="{Binding CurrentLayout}"
                                  Visibility="{Binding CollectionVM.CurrentCollection.AllCodices.Count, 
-                                                Converter={StaticResource ToVisibilityConverter}, ConverterParameter=False}"/>
+                                                Converter={StaticResource ToVisibilityConverter}, ConverterParameter=False}"
+                                dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CurrentLayout}"/>
+                
                 <Border Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="20"
                         Visibility="{Binding CollectionVM.CurrentCollection.AllCodices.Count, 
-                                                Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
+                        Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"
+                         dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CurrentLayout}" Background="Transparent"
+                        >
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <StackPanel.Resources>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -559,6 +563,7 @@
                             <Run Foreground="{StaticResource AccentColor}" Text="S"/>imple.
                             <LineBreak/><LineBreak/>
                             You can start building your digital library by selecting the 'Add Books' tab on the left.<LineBreak/>
+                            You can also drag and drop your files or folders right here!
                         </TextBlock>
                         <TextBlock TextAlignment="Center" Width="700">
                             COMPASS is a work in progress application that is made and maintained by a solo developer (Me).<LineBreak/>
