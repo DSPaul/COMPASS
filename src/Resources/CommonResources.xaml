@@ -36,6 +36,7 @@
                                        VerticalAlignment="{TemplateBinding VerticalAlignment}"
                                        Foreground="{StaticResource TextMutedColor}" 
                                        Margin="{Binding Path=Margin, ElementName=PART_ContentHost}"
+                                       Padding="{Binding Path=Padding, ElementName=PART_ContentHost}"
                                        FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}"
                                        Visibility="{TemplateBinding Text, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
                             <ScrollViewer Name="PART_ContentHost" Style="{x:Null}"/>
@@ -124,7 +125,7 @@
 
     <Style TargetType="{x:Type Button}" x:Key="IconBtn" BasedOn="{StaticResource BaseButton}">
         <Setter Property="BorderBrush" Value="{x:Null}"/>
-        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
         <Setter Property="Margin" Value="3"/>
         <Setter Property="Padding" Value="0"/>
@@ -167,7 +168,7 @@
     </Style>
 
     <Style TargetType="Button" x:Key="BlankButton">
-        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Cursor" Value="Hand"/>
@@ -703,7 +704,7 @@
                             Margin="5,5,30,5" VerticalAlignment="Center" HorizontalAlignment="Left" />
                         <TextBox x:Name="PART_EditableTextBox" Style="{x:Null}" Template="{StaticResource ComboBoxTextBox}" 
                             HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" Focusable="True" 
-                            Background="{StaticResource SelectableTransparent}" Foreground="{StaticResource TextColor}"
+                            Background="Transparent" Foreground="{StaticResource TextColor}"
                             Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"/>
                         <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}"
                             AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
@@ -743,7 +744,7 @@
             <!--Rich TextBox bound to document-->
             <RichTextBox x:Name="rtxt" IsDocumentEnabled="False" AcceptsReturn="False" VerticalContentAlignment="Center"
                         FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,30,5" Focusable="True" 
-                        Background="{StaticResource SelectableTransparent}" Foreground="{StaticResource TextColor}"
+                        Background="Transparent" Foreground="{StaticResource TextColor}"
                             BorderThickness="0"/>
             <!--Suggestion Drop-Down -->
             <Popup Name="popup" Placement="Bottom"
@@ -1005,7 +1006,7 @@
     <Style TargetType="materialDesign:PackIcon">
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Width" Value="20"/>
         <Setter Property="Height" Value="20"/>
     </Style>

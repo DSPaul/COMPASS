@@ -165,7 +165,7 @@
                     <Border CornerRadius="3" Grid.Row="12" Grid.ColumnSpan="2" BorderBrush="{StaticResource LogBorder}"
                     BorderThickness="2">
                         <TextBlock Text="{Binding Description}" MinHeight="50" Grid.Row="12" Grid.ColumnSpan="2" 
-                             TextWrapping="Wrap" Background="{StaticResource SelectableTransparent}"/>
+                             TextWrapping="Wrap" Background="Transparent"/>
                     </Border>
                 </Grid>
             </ScrollViewer>

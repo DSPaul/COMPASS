@@ -69,7 +69,7 @@
                                     <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource TabFocus}"/>
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="False">
-                                    <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                                    <Setter TargetName="TabBorder" Property="Background" Value="Transparent"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -610,7 +610,7 @@
                             <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource TabFocus}"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="False">
-                            <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                            <Setter TargetName="TabBorder" Property="Background" Value="Transparent"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
