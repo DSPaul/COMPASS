@@ -14,6 +14,8 @@
     <Color x:Key="CompassJade">     #16D68A</Color>
     <Color x:Key="CompassJadeDark"> #13a886</Color>
 
+    <Color x:Key="ScrollbarColor">  #686868  </Color>
+
     <!--Like transparant but bacause it is black, cursor on this transparant background will be white-->
     <SolidColorBrush x:Key="SelectableTransparent" Color="Black" Opacity="0"/>
 
@@ -49,6 +51,8 @@
     <SolidColorBrush x:Key="ListHover" Color="{StaticResource DarkerGray}"/>
     <SolidColorBrush x:Key="ListSelected" Color="{StaticResource KindaDarkGray}"/>
     <SolidColorBrush x:Key="PopupOutline" Color="{StaticResource DarkerGray}"/>
+    
+    <SolidColorBrush x:Key="ScrollBar" Color="{StaticResource ScrollbarColor}"/>
     
 
 </ResourceDictionary>
