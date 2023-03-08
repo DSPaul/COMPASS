@@ -38,7 +38,7 @@ namespace COMPASS.ViewModels.Sources
                         codex.PageCount = pdfDoc.GetNumberOfPages();
 
                         //Search for ISBN number in first 5 pages
-                        for (int page = 1; page <= Math.Max(5, pdfDoc.GetNumberOfPages()); page++)
+                        for (int page = 1; page <= Math.Min(5, pdfDoc.GetNumberOfPages()); page++)
                         {
                             ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
                             string pageContent = PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(page), strategy);
