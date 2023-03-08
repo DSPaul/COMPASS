@@ -47,6 +47,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+
     <Resource Include="Media\LoadingAnimation.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
