@@ -13,7 +13,7 @@
              mc:Ignorable="d">
 
     <Border BorderBrush="{StaticResource Separator}" BorderThickness="3" x:Name="CodexInfoContainer"
-            Visibility="{Binding ShowCodexInfo, Converter={StaticResource ToVisibilityConverter}}">
+            Visibility="{Binding ShowInfo, Converter={StaticResource ToVisibilityConverter}}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
@@ -36,7 +36,7 @@
                 </ToggleButton.Template>
             </ToggleButton>
 
-            <ScrollViewer Grid.Row="2" Grid.Column="1" DataContext="{Binding MVM.CurrentLayout.SelectedCodex}">
+            <ScrollViewer Grid.Row="2" Grid.Column="1" DataContext="{Binding MVM.CurrentLayout.SelectedCodex}" DataContextChanged="SelectedCodexChanged">
                 <Grid Name="MainGrid" Focusable="True" Margin="5" Width="270">
                     <Grid.Resources>
                         <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />

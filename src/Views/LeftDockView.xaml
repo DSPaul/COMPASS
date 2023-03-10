@@ -414,7 +414,7 @@
                             Tools:AP.IconKind="ViewGrid" ToolTip="Tile Layout" Content="Grid"/>
                         </UniformGrid>
                         <Rectangle Height="3" Fill="{StaticResource Separator}"/>
-                        <TextBlock Style="{StaticResource Categorizer}" Text="Customize"/>
+                        <TextBlock Style="{StaticResource Categorizer}" Text="Customize layout"/>
                         <ContentControl DataContext="{Binding MainVM.CurrentLayout}"  Content="{Binding}" Margin="10">
                             <ContentControl.Resources>
                                 <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
@@ -467,6 +467,11 @@
                                 </DataTemplate>
                             </ContentControl.Resources>
                         </ContentControl>
+                        <Rectangle Height="3" Fill="{StaticResource Separator}"/>
+                        <TextBlock Style="{StaticResource Categorizer}" Text="Customize Info Panel"/>
+                        <CheckBox Margin="10" IsChecked="{Binding MainVM.CodexInfoVM.AutoHide}">
+                            <TextBlock Text="Auto hide panel when nothing is selected." TextWrapping="Wrap" Width="200" Margin="5"/>
+                        </CheckBox>
                     </StackPanel>
                 </ScrollViewer>
             </ContentControl>

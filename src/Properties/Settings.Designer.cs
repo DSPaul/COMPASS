@@ -358,5 +358,17 @@ namespace COMPASS.Properties {
                 this["ShowCodexInfo"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoHideCodexInfo {
+            get {
+                return ((bool)(this["AutoHideCodexInfo"]));
+            }
+            set {
+                this["AutoHideCodexInfo"] = value;
+            }
+        }
     }
 }

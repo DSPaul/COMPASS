@@ -519,12 +519,22 @@
                         <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Tile}" 
                             Tools:AP.IconKind="ViewModule" Height="43" ToolTip="Tile Layout"/>
                         <Rectangle Width="3" Fill="Gray" Margin="3,0"
-                                   Visibility="{Binding CodexInfoVM.ShowCodexInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
+                                   Visibility="{Binding CodexInfoVM.ShowInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
                         <ToggleButton ToolTip="Show Book Info" IsChecked="{Binding CodexInfoVM.ShowCodexInfo, Mode=TwoWay}" Cursor="Hand"
-                                      Visibility="{Binding CodexInfoVM.ShowCodexInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
+                                      Visibility="{Binding CodexInfoVM.ShowInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
                             <ToggleButton.Template>
                                 <ControlTemplate>
-                                    <materialDesign:PackIcon Height="30" Width="30" Kind="BookInformationVariant"/>
+                                    <materialDesign:PackIcon Height="30" Width="30" Kind="BookInformationVariant">
+                                        <materialDesign:PackIcon.Style>
+                                            <Style TargetType="materialDesign:PackIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding CodexInfoVM.ShowCodexInfo}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </materialDesign:PackIcon.Style>
+                                    </materialDesign:PackIcon>
                                 </ControlTemplate>
                             </ToggleButton.Template>
                         </ToggleButton>
