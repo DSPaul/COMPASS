@@ -12,6 +12,8 @@
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
         xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary"
+        xmlns:dd="urn:gong-wpf-dragdrop"
+        
         d:DataContext="{d:DesignInstance Type=viewmodels:CodexEditViewModel}"
         mc:Ignorable="d"
         Title="Book Properties" Height="500" Width="1200" FontSize="16" 
@@ -73,7 +75,8 @@
 
         <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" x:Name="CoverIm" Margin="10" Width="300"
                Visibility="{Binding ShowLoading, UpdateSourceTrigger=PropertyChanged, 
-            Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
+            Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"
+                dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}">
             <Image.Source>
                 <Binding Path="TempCodex.CoverArt" Converter="{StaticResource UriToBitmapConverter}" 
                          TargetNullValue="Media\CoverPlaceholder.png">

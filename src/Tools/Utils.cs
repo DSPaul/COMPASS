@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
@@ -142,5 +143,20 @@ namespace COMPASS.Tools
             (>= 0x10000) and (<= 0x10FFFF) => true,
             _ => false
         };
+
+        public static bool IsImageFile(string path)
+        {
+            if (string.IsNullOrEmpty(path)) { return false; }
+            string extension = Path.GetExtension(path);
+            List<string> imgExtensions = new()
+            {
+                ".png",
+                ".jpg",
+                ".jpeg",
+                ".webp"
+            };
+
+            return imgExtensions.Contains(extension);
+        }
     }
 }
