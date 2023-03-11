@@ -60,7 +60,7 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="TabItem">
-                            <Border x:Name="TabBorder" CornerRadius="5,0,0,5">
+                            <Border x:Name="TabBorder" CornerRadius="5,0,0,5" MouseDown="TabItemClick">
                                 <materialDesign:PackIcon Height="35" Width="35" HorizontalAlignment="Center"
                                          Margin="10" Kind="{TemplateBinding Tools:AP.IconKind}"/>
                             </Border>
@@ -600,7 +600,7 @@
         <TabItem x:Name="Logs" Header="Logs" Tools:AP.IconKind="TextLong" ToolTip="Activity Log" GotFocus="Logs_GotFocus">
             <TabItem.Template>
                 <ControlTemplate TargetType="TabItem">
-                    <Border x:Name="TabBorder" CornerRadius="5,0,0,5">
+                    <Border x:Name="TabBorder" CornerRadius="5,0,0,5" MouseDown="TabItemClick">
                         <Grid>
                             <materialDesign:PackIcon Height="35" Width="35" HorizontalAlignment="Center"
                                          Margin="10" Kind="TextLong"/>
