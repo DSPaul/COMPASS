@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace COMPASS.ViewModels
 {
@@ -301,6 +302,11 @@ namespace COMPASS.ViewModels
         public void AddSourceFilter(Filter filter) => AddFilter(filter, Include);
         public void AddFilter(Filter filter, bool include = true)
         {
+            if (Keyboard.Modifiers == ModifierKeys.Alt)
+            {
+                include = false;
+            }
+
             ObservableCollection<Filter> Target = include ? IncludedFilters : ExcludedFilters;
             ObservableCollection<Filter> Other = !include ? IncludedFilters : ExcludedFilters;
             //if Filter is unique, remove previous instance of that Filter before adding
