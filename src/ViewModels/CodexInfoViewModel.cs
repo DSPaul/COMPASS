@@ -12,13 +12,31 @@ namespace COMPASS.ViewModels
         }
 
         public MainViewModel MVM { get; init; }
+
+        //whether or not the codex info panel is active
         public bool ShowCodexInfo
         {
             get => Properties.Settings.Default.ShowCodexInfo;
             set
             {
                 Properties.Settings.Default.ShowCodexInfo = value;
+                RaisePropertyChanged(nameof(ShowInfo));
                 RaisePropertyChanged(nameof(ShowCodexInfo));
+            }
+        }
+
+        //what the visiblity is actually bound to
+        public bool ShowInfo => AutoHide ? ShowCodexInfo && MVM.CurrentLayout.SelectedCodex is not null : ShowCodexInfo;
+        public void SelectedItemChanged() => RaisePropertyChanged(nameof(ShowInfo));
+
+        public bool AutoHide
+        {
+            get => Properties.Settings.Default.AutoHideCodexInfo;
+            set
+            {
+                Properties.Settings.Default.AutoHideCodexInfo = value;
+                RaisePropertyChanged(nameof(AutoHide));
+                RaisePropertyChanged(nameof(ShowInfo));
             }
         }
 

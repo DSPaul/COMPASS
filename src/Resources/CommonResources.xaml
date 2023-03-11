@@ -39,7 +39,7 @@
                                        Padding="{Binding Path=Padding, ElementName=PART_ContentHost}"
                                        FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}"
                                        Visibility="{TemplateBinding Text, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
-                            <ScrollViewer Name="PART_ContentHost"/>
+                            <ScrollViewer Name="PART_ContentHost" Style="{x:Null}"/>
                         </Grid>
                     </Border>
                 </ControlTemplate>
@@ -125,7 +125,7 @@
 
     <Style TargetType="{x:Type Button}" x:Key="IconBtn" BasedOn="{StaticResource BaseButton}">
         <Setter Property="BorderBrush" Value="{x:Null}"/>
-        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
         <Setter Property="Margin" Value="3"/>
         <Setter Property="Padding" Value="0"/>
@@ -168,7 +168,7 @@
     </Style>
 
     <Style TargetType="Button" x:Key="BlankButton">
-        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Cursor" Value="Hand"/>
@@ -184,26 +184,34 @@
 
     <!--#region ScrollBar Style-->
     <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
-        <Setter Property="Visibility" Value="Hidden"/>
+        <Setter Property="Visibility" Value="Visible"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Border Background="Transparent">
+                        <materialDesign:PackIcon Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}" Foreground="{StaticResource ScrollBar}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <!--<Setter Property="OverridesDefaultStyle" Value="true"/>-->
     </Style>
     <Style x:Key="ScrollBarPageButton" TargetType="{x:Type RepeatButton}">
-        <Setter Property="Visibility" Value="Hidden"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Setter Property="OverridesDefaultStyle" Value="true"/>
         <Setter Property="IsTabStop" Value="false"/>
         <Setter Property="Focusable" Value="false"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
-                    <Border Background="Black" />
+                    <Border Background="Transparent" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <Style x:Key="ScrollBarThumb" TargetType="{x:Type Thumb}">
+    <Style x:Key="VerticalScrollBarThumb" TargetType="{x:Type Thumb}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="true"/>
         <Setter Property="IsTabStop" Value="false"/>
@@ -212,59 +220,76 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
                     <Border CornerRadius="4" Background="{TemplateBinding Background}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0"  Width="8"/>
+                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Width="8"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+    
+    <Style x:Key="HorizontalScrollBarThumb" TargetType="{x:Type Thumb}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Focusable" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border CornerRadius="4" Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Height="8"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
     <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition MaxHeight="0"/>
+                <RowDefinition MaxHeight="15"/>
                 <RowDefinition Height="0.00001*"/>
-                <RowDefinition MaxHeight="0"/>
+                <RowDefinition MaxHeight="15"/>
             </Grid.RowDefinitions>
             <Border Grid.RowSpan="3" CornerRadius="2" Background="Transparent" />
-            <RepeatButton Grid.Row="0" Style="{StaticResource ScrollBarLineButton}" Height="18" Command="ScrollBar.LineUpCommand" Content="M 0 4 L 8 4 L 4 0 Z" />
-            <Track Name="PART_Track" Grid.Row="1" IsDirectionReversed="true">
+            <RepeatButton Grid.Row="0" Style="{StaticResource ScrollBarLineButton}" Command="ScrollBar.LineUpCommand" Tools:AP.IconKind="MenuUp"/>
+            <Track Name="PART_Track" Grid.Row="1" IsDirectionReversed="True">
                 <Track.DecreaseRepeatButton>
-                    <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageUpCommand" />
+                    <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageUpCommand"/>
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
-                    <Thumb Style="{StaticResource ScrollBarThumb}" Margin="1,0,1,0" Background="#FF686868" BorderBrush="#FF686868"/>
+                    <Thumb Style="{StaticResource VerticalScrollBarThumb}" Margin="1,0,1,0" 
+                           Background="{StaticResource ScrollBar}" BorderBrush="{StaticResource ScrollBar}"/>
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
                     <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageDownCommand" />
                 </Track.IncreaseRepeatButton>
             </Track>
-            <RepeatButton Grid.Row="3" Style="{StaticResource ScrollBarLineButton}" Height="18" Command="ScrollBar.LineDownCommand" Content="M 0 0 L 4 4 L 8 0 Z"/>
+            <RepeatButton Grid.Row="3" Style="{StaticResource ScrollBarLineButton}" Command="ScrollBar.LineDownCommand" Tools:AP.IconKind="MenuDown"/>
         </Grid>
     </ControlTemplate>
 
     <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition MaxWidth="18"/>
+                <ColumnDefinition MaxWidth="15"/>
                 <ColumnDefinition Width="0.00001*"/>
-                <ColumnDefinition MaxWidth="18"/>
+                <ColumnDefinition MaxWidth="15"/>
             </Grid.ColumnDefinitions>
-            <Border Grid.ColumnSpan="3" CornerRadius="2" Background="#F0F0F0"/>
-            <RepeatButton Grid.Column="0"  Style="{StaticResource ScrollBarLineButton}" Width="18" Command="ScrollBar.LineLeftCommand" Content="M 4 0 L 4 8 L 0 4 Z" />
+            <Border Grid.ColumnSpan="3" CornerRadius="2" Background="Transparent"/>
+            <RepeatButton Grid.Column="0"  Style="{StaticResource ScrollBarLineButton}" Command="ScrollBar.LineLeftCommand" Tools:AP.IconKind="MenuLeft"/>
             <Track Name="PART_Track" Grid.Column="1" IsDirectionReversed="False">
                 <Track.DecreaseRepeatButton>
                     <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageLeftCommand" />
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
-                    <Thumb Style="{StaticResource ScrollBarThumb}" Margin="0,1,0,1" Background="#888" BorderBrush="#888" />
+                    <Thumb Style="{StaticResource HorizontalScrollBarThumb}" Margin="0,1,0,1" Background="{StaticResource ScrollBar}" BorderBrush="{StaticResource ScrollBar}" />
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
                     <RepeatButton Style="{StaticResource ScrollBarPageButton}" Command="ScrollBar.PageRightCommand" />
                 </Track.IncreaseRepeatButton>
             </Track>
-            <RepeatButton Grid.Column="3" Style="{StaticResource ScrollBarLineButton}" Width="18" Command="ScrollBar.LineRightCommand" Content="M 0 0 L 4 4 L 0 8 Z"/>
+            <RepeatButton Grid.Column="3" Style="{StaticResource ScrollBarLineButton}" Command="ScrollBar.LineRightCommand" Tools:AP.IconKind="MenuRight"/>
         </Grid>
     </ControlTemplate>
+
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -272,7 +297,7 @@
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
                 <Setter Property="Width" Value="Auto"/>
-                <Setter Property="Height" Value="18" />
+                <Setter Property="Height" Value="auto" />
                 <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
             </Trigger>
             <Trigger Property="Orientation" Value="Vertical">
@@ -283,28 +308,31 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="FavsScrollViewer" TargetType="{x:Type ScrollViewer}">
-        <Setter Property="OverridesDefaultStyle" Value="True"/>
+    <Style TargetType="{x:Type ScrollViewer}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollViewer}">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <ScrollContentPresenter Grid.Column="1"/>
-                        <ScrollBar Name="PART_VerticalScrollBar" Value="{TemplateBinding VerticalOffset}" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
-                        <ScrollBar Name="PART_HorizontalScrollBar" Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Value="{TemplateBinding HorizontalOffset}" Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+                        <ScrollContentPresenter Grid.Column="0" />
+                        <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Row="0" Grid.Column="1" Value="{TemplateBinding VerticalOffset}" Maximum="{TemplateBinding ScrollableHeight}" 
+                                   ViewportSize="{TemplateBinding ViewportHeight}" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                        <ScrollBar x:Name="PART_HorizontalScrollBar" Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Value="{TemplateBinding HorizontalOffset}" 
+                                   Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+                        <!--<Rectangle Grid.Row="1" Grid.Column="1" Fill="Red"/>-->
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+
     <!--#endregion-->
 
     <!--#region Slider-->
@@ -676,7 +704,7 @@
                             Margin="5,5,30,5" VerticalAlignment="Center" HorizontalAlignment="Left" />
                         <TextBox x:Name="PART_EditableTextBox" Style="{x:Null}" Template="{StaticResource ComboBoxTextBox}" 
                             HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" Focusable="True" 
-                            Background="{StaticResource SelectableTransparent}" Foreground="{StaticResource TextColor}"
+                            Background="Transparent" Foreground="{StaticResource TextColor}"
                             Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"/>
                         <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}"
                             AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
@@ -716,7 +744,7 @@
             <!--Rich TextBox bound to document-->
             <RichTextBox x:Name="rtxt" IsDocumentEnabled="False" AcceptsReturn="False" VerticalContentAlignment="Center"
                         FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,30,5" Focusable="True" 
-                        Background="{StaticResource SelectableTransparent}" Foreground="{StaticResource TextColor}"
+                        Background="Transparent" Foreground="{StaticResource TextColor}"
                             BorderThickness="0"/>
             <!--Suggestion Drop-Down -->
             <Popup Name="popup" Placement="Bottom"
@@ -910,7 +938,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="TagDeletableTemplate">
-        <Button Style="{x:Null}" Command="{Binding DataContext.RemoveFilterCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+        <Button Style="{x:Null}" Command="{Binding DataContext.RemoveFromItemsControlCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                 CommandParameter="{Binding}" Cursor="Hand">
             <Button.Template>
                 <ControlTemplate>
@@ -978,7 +1006,7 @@
     <Style TargetType="materialDesign:PackIcon">
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-        <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Width" Value="20"/>
         <Setter Property="Height" Value="20"/>
     </Style>

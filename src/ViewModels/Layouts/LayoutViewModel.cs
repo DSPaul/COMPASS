@@ -1,8 +1,13 @@
 ﻿using COMPASS.Models;
+using COMPASS.ViewModels.Sources;
+using GongSolutions.Wpf.DragDrop;
+using System.IO;
+using System.Linq;
+using System.Windows;
 
 namespace COMPASS.ViewModels
 {
-    public abstract class LayoutViewModel : ViewModelBase
+    public abstract class LayoutViewModel : ViewModelBase, IDropTarget
     {
         protected LayoutViewModel() : base() { }
 
@@ -46,5 +51,49 @@ namespace COMPASS.ViewModels
         //Set Type of view
         public Layout LayoutType { get; init; }
         #endregion
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            if (dropInfo.Data is DataObject)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                dropInfo.NotHandled = true;
+            }
+
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            if (dropInfo.Data is DataObject data)
+            {
+                var paths = data.GetFileDropList();
+
+                var folders = paths.Cast<string>().ToList().Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory));
+                var files = paths.Cast<string>().ToList().Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory));
+
+
+                if (folders.Any())
+                {
+                    FolderSourceViewModel fsvm = new()
+                    {
+                        FolderNames = folders.ToList(),
+                        FileNames = files.ToList()
+                    };
+                    fsvm.StartAsyncImport();
+                    return;
+                }
+
+                if (files.Any())
+                {
+                    FileSourceViewModel fsvm = new() { FileNames = files.ToList() };
+                    fsvm.StartAsyncImport();
+                    return;
+                }
+            }
+        }
     }
 }

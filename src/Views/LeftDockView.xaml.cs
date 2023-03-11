@@ -70,5 +70,19 @@ namespace COMPASS.Views
             var ErrorNotification = (Ellipse)template.FindName("ErrorNotification", Logs);
             ErrorNotification.Visibility = Visibility.Collapsed;
         }
+
+        private void TabItemClick(object sender, MouseButtonEventArgs e)
+        {
+            var border = sender as Border;
+            var tabItem = border.TemplatedParent as TabItem;
+            var tabControl = tabItem.Parent as TabControl;
+            var LeftDockVM = tabControl.DataContext as LeftDockViewModel;
+            if (tabItem.IsSelected)
+            {
+                LeftDockVM.SelectedTab = 0;
+                e.Handled = true;
+            }
+
+        }
     }
 }

@@ -12,7 +12,7 @@
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
         d:DataContext="{d:DesignInstance Type=viewmodels:CodexBulkEditViewModel}"
         mc:Ignorable="d"
-        Title="Bulk Edit" Height="450" Width="800" FontSize="16" 
+        Title="Bulk Edit" Height="470" Width="800" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
         Foreground="{StaticResource TextColor}" Background="{StaticResource WindowBackground}" MouseDown="MainGrid_MouseDown">
     <Window.Resources>
@@ -21,22 +21,7 @@
         <sys:Boolean x:Key="False">False</sys:Boolean>
     </Window.Resources>
 
-    <Grid Name="MainGrid" Focusable="True" Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="10"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="*"/>
-            <RowDefinition Height ="auto"/>
-            <RowDefinition Height ="10"/>
-        </Grid.RowDefinitions>
-
+    <Grid Name="MainGrid" Focusable="True" Margin="20,10,20,10">
         <Grid.Resources>
             <ControlTemplate x:Key="Btn" TargetType="Button">
                 <Border Background="{TemplateBinding Background}" CornerRadius="5" Margin="3">
@@ -50,7 +35,7 @@
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
             <Style TargetType="TextBox">
-                <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="Foreground" Value ="{StaticResource TextMutedColor}"/>
                 <Setter Property="BorderBrush" Value="{StaticResource TextColor}"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
@@ -63,132 +48,132 @@
                     <Border.Background>
                         <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
                     </Border.Background>
-                    <CheckBox Margin="5,0,0,0" Command="{Binding Path=DataContext.TagCheckCommand,
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Margin="5,0,0,0" Command="{Binding Path=DataContext.PlusCheckCommand,
                                        RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeView}}}"
-                                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
-                                       IsChecked="{Binding Selected, Mode=TwoWay}" 
-                                  Content="{Binding Tag.Content}" Foreground="{StaticResource TextColor}"/>
+                                      CommandParameter="{Binding Tag}" Foreground="{StaticResource TextColor}">
+                            <CheckBox.Template>
+                                <ControlTemplate TargetType="CheckBox">
+                                    <materialDesign:PackIcon Kind="PlusCircleOutline" Foreground="{TemplateBinding Foreground}" 
+                                                                 Background="Transparent"/>
+                                </ControlTemplate>
+                            </CheckBox.Template>
+                        </CheckBox>
+                        <CheckBox Margin="0" Command="{Binding Path=DataContext.MinCheckCommand,
+                                       RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeView}}}"
+                                      CommandParameter="{Binding Tag}" Foreground="{StaticResource TextColor}">
+                            <CheckBox.Template>
+                                <ControlTemplate TargetType="CheckBox">
+                                    <materialDesign:PackIcon Kind="MinusCircleOutline" Foreground="{TemplateBinding Foreground}" 
+                                                                 Background="Transparent"/>
+                                </ControlTemplate>
+                            </CheckBox.Template>
+                        </CheckBox>
+                        <Rectangle Width="2" Fill="{StaticResource TextMutedColor}" Margin="5,1"/>
+                        <TextBlock Text="{Binding Tag.Content}" Margin="10,2"/>
+                    </StackPanel>
+
                 </Border>
             </HierarchicalDataTemplate>
             <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
         </Grid.Resources>
-        <Grid Grid.Column="1" Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="auto"/>
-                <RowDefinition Height ="*"/>
-                <RowDefinition Height ="auto"/>
-            </Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height ="auto"/>
+            <RowDefinition Height ="auto"/>
+            <RowDefinition Height ="auto"/>
+            <RowDefinition Height ="auto"/>
+            <RowDefinition Height ="auto"/>
+            <RowDefinition Height ="auto"/>
+            <RowDefinition Height ="auto"/>
+            <RowDefinition Height ="*"/>
+            <RowDefinition Height ="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Authors:" Grid.Column="1" Grid.Row="3"/>
-            <BlackPearl:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
-                                                    Grid.Column="1" Grid.Row="4" ItemSeparator=";" 
+        <TextBlock Text="Authors:" Margin="0,10"/>
+        <BlackPearl:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
+                                                    Grid.ColumnSpan="2" Grid.Row="1" ItemSeparator=";" 
                                                     LookUpContract="{Binding Contract}"
                                                     ItemSource="{Binding MVM.CollectionVM.FilterVM.AuthorList}" 
                                                     SelectedItems="{Binding TempCodex.Authors, Mode=TwoWay}"/>
 
-            <TextBlock Text="Publisher:" Grid.Column="1" Grid.Row="5"/>
-            <ComboBox Text="{Binding TempCodex.Publisher, Mode=TwoWay}" Grid.Column="1" Grid.Row="6" Name="FilePublisherTB"
-                  IsEditable="True" Background="{StaticResource SelectableTransparent}" BorderBrush="{x:Null}" 
+        <TextBlock Text="Publisher:" Grid.Row="2" Margin="0,10"/>
+        <ComboBox Text="{Binding TempCodex.Publisher, Mode=TwoWay}" Grid.Row="4" Grid.ColumnSpan="2" Name="FilePublisherTB"
+                  IsEditable="True" Background="Transparent" BorderBrush="{x:Null}" 
                       ItemsSource="{Binding MVM.CollectionVM.FilterVM.PublisherList}"/>
 
-            <Grid Grid.Column="1" Grid.Row="7" Margin="0,5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Version:"/>
-                    <TextBox Text="{Binding TempCodex.Version, Mode=TwoWay}" MinWidth="100" Name="FileVersionTB" Margin="5,0"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Grid.Column="1">
-                    <TextBlock Text="Release Date:"/>
-                    <DatePicker SelectedDate="{Binding TempCodex.ReleaseDate, TargetNullValue={x:Null}, FallbackValue={x:Null}}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Grid.Row="1">
-                    <TextBlock Text="Hard Copy:" Margin="3,1,3,0" VerticalAlignment="Top"/>
-                    <CheckBox Name="FileOwnedCB" IsChecked="{Binding TempCodex.Physically_Owned, Mode=TwoWay}" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
-                    <TextBlock Text="Rating:"/>
-                    <materialDesign:RatingBar Value="{Binding TempCodex.Rating, Mode=TwoWay}" Margin="50,0,0,0"/>
-                </StackPanel>
-            </Grid>
+        <StackPanel Orientation="Horizontal" Grid.Row="5" Margin="0,10">
+            <TextBlock Text="Version:"/>
+            <TextBox Text="{Binding TempCodex.Version, Mode=TwoWay}" MinWidth="100" Name="FileVersionTB" Margin="5,0"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Margin="0,10">
+            <TextBlock Text="Release Date:"/>
+            <DatePicker SelectedDate="{Binding TempCodex.ReleaseDate, TargetNullValue={x:Null}, FallbackValue={x:Null}}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="6" Margin="0,10">
+            <TextBlock Text="Hard Copy:" Margin="3,1,3,0" VerticalAlignment="Top"/>
+            <CheckBox Name="FileOwnedCB" IsChecked="{Binding TempCodex.Physically_Owned, Mode=TwoWay}" VerticalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="6" Grid.Column="1">
+            <TextBlock Text="Rating:"/>
+            <materialDesign:RatingBar Value="{Binding TempCodex.Rating, Mode=TwoWay}" Margin="50,0,0,0"/>
+        </StackPanel>
 
-            <!--#region Tags-->
-            <Grid Grid.Column="1" Grid.Row="9">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                
-                <TextBlock Text="Tags To Add:"/>
-                <ItemsControl ItemsSource="{Binding TagsToAdd}" Background="{x:Null}" BorderBrush="{x:Null}" 
-                      Foreground="Black" FontSize="15" Grid.Column="1" VerticalAlignment="Center" 
-                          ItemTemplate="{StaticResource TagTemplate}">
+        <Grid Grid.Row="7" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Tags To Add:"/>
+            <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="2" CornerRadius="5" Padding="10,3" Margin="5">
+                <ItemsControl ItemsSource="{Binding TagsToAdd}" VerticalAlignment="Center" MinHeight="20"
+                          ItemTemplate="{StaticResource TagDeletableTemplate}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-                <Button Background="{StaticResource ButtonBackground}" Grid.Column="2" Command="{Binding SetTagModeCommand}" CommandParameter="{StaticResource True}">
-                    <StackPanel Orientation="Horizontal" Margin="2,0">
-                        <materialDesign:PackIcon Kind="Plus"/>
-                        <TextBlock Text="Add Tag" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-                
-                <TextBlock Grid.Row="1" Text="Tags To Remove:"/>
-                <ItemsControl Grid.Row="1" ItemsSource="{Binding TagsToRemove}" Background="{x:Null}" BorderBrush="{x:Null}" 
-                      Foreground="Black" FontSize="15" Grid.Column="1" VerticalAlignment="Center" 
-                          ItemTemplate="{StaticResource TagTemplate}">
+            </Border>
+
+
+            <TextBlock Grid.Row="1" Text="Tags To Remove:"/>
+            <Border  Grid.Row="1"  Grid.Column="1" BorderBrush="Gray" BorderThickness="2" 
+                         CornerRadius="5" Padding="10,3" Margin="5">
+                <ItemsControl ItemsSource="{Binding TagsToRemove}" VerticalAlignment="Center" MinHeight="20"
+                          ItemTemplate="{StaticResource TagDeletableTemplate}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel Orientation="Horizontal"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-                <Button Grid.Row="1" Background="{StaticResource ButtonBackground}" Grid.Column="2" Command="{Binding SetTagModeCommand}" CommandParameter="{StaticResource False}">
-                    <StackPanel Orientation="Horizontal" Margin="2,0">
-                        <materialDesign:PackIcon Kind="Plus"/>
-                        <TextBlock Text="Add Tag" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-            </Grid>
-            <!--#endregion-->
-
+            </Border>
         </Grid>
 
-        <Rectangle Grid.Column="2" Grid.Row="1" Grid.RowSpan="3" Fill="DarkGray" Width="3" Margin="10,0"/>
+        <StackPanel Grid.Row="8" Orientation="Horizontal" Grid.ColumnSpan="2">
+            <Button Style="{StaticResource IconTextButton}" Tools:AP.IconKind="Check" Content="OK" Margin="5"
+                        Command ="{Binding OKCommand}"  Background="{StaticResource AcceptFill}" IsDefault="True"/>
+            <Button Grid.Column="1"  Style="{StaticResource IconTextButton}" Tools:AP.IconKind="Close" Margin="5"
+                        Command="{Binding CancelCommand}" Background="{StaticResource CancelFill}" Content="Cancel"/>
+        </StackPanel>
 
-        <TextBlock Grid.Column="3" Grid.Row="0" Text="Select Tags To Add" 
-                Visibility="{Binding TagMode, Converter={StaticResource ToVisibilityConverter}}"/>
-        <TextBlock Grid.Column="3" Grid.Row="0" Text="Select Tags To Remove" 
-                Visibility="{Binding TagMode, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"/>
-        
-        <TreeView x:Name="TagSelection" BorderBrush="{x:Null}" Margin="-15,0,10,0" Grid.Row="1" Grid.Column="3" Grid.RowSpan="3"
+        <Rectangle Grid.Column="2" Grid.Row="0" Grid.RowSpan="9" Fill="DarkGray" Width="3" Margin="10,0"/>
+
+        <TextBlock Grid.Column="3" Grid.Row="0" Text="Add/Remove Tags" TextAlignment="Center" HorizontalAlignment="Stretch"
+                   FontWeight="Bold"/>
+
+        <TreeView x:Name="TagSelection" BorderBrush="{x:Null}" Margin="0" Grid.Row="1" Grid.Column="3" Grid.RowSpan="8" MaxWidth="300"
                     ItemsSource="{Binding TreeViewSource}" Background="{x:Null}" ItemTemplateSelector="{StaticResource TagTemplateSelector}">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}">
@@ -199,27 +184,5 @@
             </TreeView.Resources>
         </TreeView>
 
-        <!--#region Confirmation Buttons -->
-        <Grid Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Name="OKBtn" Command ="{Binding OKCommand}"  Background="{StaticResource AcceptFill}" IsDefault="True">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Check"/>
-                    <TextBlock Text="OK"/>
-                </StackPanel>
-            </Button>
-            <Button Grid.Column="1" Name="CancelBtn" Command="{Binding CancelCommand}" Background="{StaticResource CancelFill}">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="WindowClose"/>
-                    <TextBlock Text="Cancel"/>
-                </StackPanel>
-            </Button>
-        </Grid>
-        <!--#endregion-->
     </Grid>
 </Window>

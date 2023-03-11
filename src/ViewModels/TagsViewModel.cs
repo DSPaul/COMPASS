@@ -53,6 +53,14 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _addTagViewModel, value);
         }
 
+        //Tag Creation ViewModel
+        private IEditViewModel _addGroupViewModel;
+        public IEditViewModel AddGroupViewModel
+        {
+            get => _addGroupViewModel;
+            set => SetProperty(ref _addGroupViewModel, value);
+        }
+
         //Add Tag Btns
 
         private ActionCommand _addTagCommand;
@@ -64,11 +72,11 @@ namespace COMPASS.ViewModels
         public ActionCommand AddGroupCommand => _addGroupCommand ??= new(AddGroup);
         public void AddGroup()
         {
-            Tag newTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags)
+            Tag newTag = new()
             {
                 IsGroup = true,
             };
-            AddTagViewModel = new TagEditViewModel(newTag, true);
+            AddGroupViewModel = new TagEditViewModel(newTag, true);
         }
 
         private RelayCommand<object[]> _addTagFilterCommand;

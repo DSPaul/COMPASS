@@ -2,6 +2,7 @@
 using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.Windows;
+using GongSolutions.Wpf.DragDrop;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,11 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexEditViewModel : ViewModelBase, IEditViewModel
+    public class CodexEditViewModel : ViewModelBase, IEditViewModel, IDropTarget
     {
         public CodexEditViewModel(Codex toEdit)
         {
@@ -187,6 +189,36 @@ namespace COMPASS.ViewModels
         public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel() => CloseAction();
 
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            if (dropInfo.Data is DataObject data
+                && data.GetFileDropList().Count == 1
+                && Utils.IsImageFile(data.GetFileDropList().Cast<string>().First()))
+            {
+
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                dropInfo.Effects = DragDropEffects.None;
+
+            }
+
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            if (dropInfo.Data is DataObject data
+                && data.GetFileDropList().Count == 1
+                && Utils.IsImageFile(data.GetFileDropList().Cast<string>().First()))
+            {
+                string path = data.GetFileDropList().Cast<string>().First();
+                CoverFetcher.GetCoverFromImage(path, TempCodex);
+                RefreshCover();
+            }
+        }
         #endregion
     }
 }

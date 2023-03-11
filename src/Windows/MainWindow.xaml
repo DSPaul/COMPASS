@@ -190,7 +190,7 @@
                         <StackPanel Orientation="Horizontal" x:Name="CollectionCreation"
                                         Visibility="{Binding CreateCollectionVisibility, Converter={StaticResource ToVisibilityConverter}, FallbackValue=Collapsed}">
                             <TextBox x:Name="NewCollectionName" Tools:AP.PlaceHolderText="New Collection" FontSize="16" VerticalAlignment="Center" 
-                                             Background="{StaticResource SelectableTransparent}" BorderBrush="{StaticResource DarkUIElementBackground}"
+                                             Background="Transparent" BorderBrush="{StaticResource DarkUIElementBackground}" MaxLength="50"
                                             Foreground="{StaticResource TextColor}" Margin="0" BorderThickness="0" MinWidth="80">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -219,7 +219,7 @@
                         <StackPanel Orientation="Horizontal" x:Name="CollectionEditing"
                                         Visibility="{Binding EditCollectionVisibility, Converter={StaticResource ToVisibilityConverter}, FallbackValue=Collapsed}">
                             <TextBox x:Name="EditCollectionName" Text="{Binding CurrentCollection.DirectoryName, Mode=OneWay}" FontSize="16" 
-                                        VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}"
+                                        VerticalAlignment="Center" Background="Transparent" MaxLength="50"
                                         Foreground="{StaticResource TextColor}" Margin="0" BorderThickness="0" MinWidth="50">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -260,7 +260,7 @@
                     </Button.ContextMenu>
                     <Button.Style>
                         <Style TargetType="Button">
-                            <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                            <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="BorderBrush" Value="{x:Null}"/>
                             <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
                             <Setter Property="Template">
@@ -306,7 +306,7 @@
                         <Style TargetType="{x:Type Button}" >
                             <Setter Property="Width" Value="40"/>
                             <Setter Property="Padding" Value="7"/>
-                            <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                            <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type Button}">
@@ -325,7 +325,7 @@
                         <Style TargetType="{x:Type ToggleButton}" >
                             <Setter Property="Width" Value="40"/>
                             <Setter Property="Padding" Value="7"/>
-                            <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                            <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -420,7 +420,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="INCLUDE:" VerticalAlignment="Center" Margin="5 2" Foreground="Gray" FontSize="20"/>
                         <ItemsControl x:Name="CurrentTagList" ItemTemplate="{StaticResource TagDeletableTemplate}" MinHeight="30"
-                             Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center" Background="{StaticResource SelectableTransparent}"
+                             Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center" Background="Transparent"
                              dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding }" >
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -449,7 +449,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="EXCLUDE:" VerticalAlignment="Center" Margin="5 2" Foreground="Gray" FontSize="20"/>
                         <ItemsControl x:Name="CurrentExcludedFilterList" ItemTemplate="{StaticResource TagDeletableTemplate}" MinHeight="30"
-                             Grid.Column="1" VerticalAlignment="Center" VerticalContentAlignment="Center" Background="{StaticResource SelectableTransparent}"
+                             Grid.Column="1" VerticalAlignment="Center" VerticalContentAlignment="Center" Background="Transparent"
                             dd:DragDrop.IsDropTarget="True" dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding}" >
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -473,7 +473,7 @@
                     <StackPanel  Orientation="Horizontal" Margin="0,0,15,0">
                         <StackPanel.Resources>
                             <Style TargetType="Button">
-                                <Setter Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                                <Setter Property="Background" Value="Transparent"/>
                                 <Setter Property="BorderBrush" Value="{x:Null}"/>
                                 <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
                                 <Setter Property="Template">
@@ -519,12 +519,22 @@
                         <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Tile}" 
                             Tools:AP.IconKind="ViewModule" Height="43" ToolTip="Tile Layout"/>
                         <Rectangle Width="3" Fill="Gray" Margin="3,0"
-                                   Visibility="{Binding CodexInfoVM.ShowCodexInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
+                                   Visibility="{Binding CodexInfoVM.ShowInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
                         <ToggleButton ToolTip="Show Book Info" IsChecked="{Binding CodexInfoVM.ShowCodexInfo, Mode=TwoWay}" Cursor="Hand"
-                                      Visibility="{Binding CodexInfoVM.ShowCodexInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
+                                      Visibility="{Binding CodexInfoVM.ShowInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
                             <ToggleButton.Template>
                                 <ControlTemplate>
-                                    <materialDesign:PackIcon Height="30" Width="30" Kind="BookInformationVariant"/>
+                                    <materialDesign:PackIcon Height="30" Width="30" Kind="BookInformationVariant">
+                                        <materialDesign:PackIcon.Style>
+                                            <Style TargetType="materialDesign:PackIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding CodexInfoVM.ShowCodexInfo}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </materialDesign:PackIcon.Style>
+                                    </materialDesign:PackIcon>
                                 </ControlTemplate>
                             </ToggleButton.Template>
                         </ToggleButton>
@@ -534,10 +544,14 @@
 
                 <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="5" Content="{Binding CurrentLayout}"
                                  Visibility="{Binding CollectionVM.CurrentCollection.AllCodices.Count, 
-                                                Converter={StaticResource ToVisibilityConverter}, ConverterParameter=False}"/>
+                                                Converter={StaticResource ToVisibilityConverter}, ConverterParameter=False}"
+                                dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CurrentLayout}"/>
+                
                 <Border Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="20"
                         Visibility="{Binding CollectionVM.CurrentCollection.AllCodices.Count, 
-                                                Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
+                        Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"
+                         dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CurrentLayout}" Background="Transparent"
+                        >
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <StackPanel.Resources>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
@@ -559,6 +573,7 @@
                             <Run Foreground="{StaticResource AccentColor}" Text="S"/>imple.
                             <LineBreak/><LineBreak/>
                             You can start building your digital library by selecting the 'Add Books' tab on the left.<LineBreak/>
+                            You can also drag and drop your files and folders right here!
                         </TextBlock>
                         <TextBlock TextAlignment="Center" Width="700">
                             COMPASS is a work in progress application that is made and maintained by a solo developer (Me).<LineBreak/>

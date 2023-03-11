@@ -13,6 +13,11 @@ namespace COMPASS.Models
         //Emtpy Contructor needed for serialization
         public Tag() { }
 
+        public Tag(Tag tag)
+        {
+            Copy(tag);
+        }
+
         public Tag(List<Tag> alltags)
         {
             AllTags = alltags;
@@ -111,6 +116,7 @@ namespace COMPASS.Models
         }
 
         #region Equal and Copy Functions
+        //can use copy over ctor to retain reference
         public void Copy(Tag t)
         {
             ID = t.ID;

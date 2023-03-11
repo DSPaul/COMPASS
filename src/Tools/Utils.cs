@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
@@ -24,14 +25,30 @@ namespace COMPASS.Tools
         }
 
         //put all childeren of object in a flat enumerable
-        public static IEnumerable<T> FlattenTree<T>(IEnumerable<T> l) where T : IHasChilderen<T>
+        public static IEnumerable<T> FlattenTree<T>(IEnumerable<T> l, string method = "dfs") where T : IHasChilderen<T>
         {
             var result = l.ToList();
-            for (int i = 0; i < result.Count; i++)
+
+            //Breadth first search
+            if (method == "bfs")
             {
-                T parent = result[i];
-                result.AddRange(parent.Children);
+                for (int i = 0; i < result.Count; i++)
+                {
+                    T parent = result[i];
+                    result.AddRange(parent.Children);
+                }
             }
+
+            //Depth first search (pre-order)
+            else if (method == "dfs")
+            {
+                for (int i = 0; i < result.Count; i++)
+                {
+                    T parent = result[i];
+                    result.InsertRange(i + 1, parent.Children);
+                }
+            }
+
             return result;
         }
 
@@ -126,5 +143,20 @@ namespace COMPASS.Tools
             (>= 0x10000) and (<= 0x10FFFF) => true,
             _ => false
         };
+
+        public static bool IsImageFile(string path)
+        {
+            if (string.IsNullOrEmpty(path)) { return false; }
+            string extension = Path.GetExtension(path);
+            List<string> imgExtensions = new()
+            {
+                ".png",
+                ".jpg",
+                ".jpeg",
+                ".webp"
+            };
+
+            return imgExtensions.Contains(extension);
+        }
     }
 }

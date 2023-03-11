@@ -1,5 +1,27 @@
 # CHANGELOG
-## COMPASS v1.1.1 (04 March 2023)
+## COMPASS v1.1.2 (11 March 2023)
+
+### Improvements
+
+- Improved the bulk edit UI/UX to make it more intuitive. [#33](https://github.com/DSPaul/COMPASS/issues/33)
+- Improved functionality of the scrollbar with arrow buttons and snap scrolling by clicking on the desired scroll location.
+- Limited the width of tags section in edit windows. [#41](https://github.com/DSPaul/COMPASS/issues/41)
+- The tags of a book are now displayed in the same order as your tree of tags, top to bottom. [#37](https://github.com/DSPaul/COMPASS/issues/37)
+- You can now select multiple folders when adding books from folder.
+- Import files and folders by dragginng and dropping them onto a layout. [#29](https://github.com/DSPaul/COMPASS/issues/29)
+- Change the cover by dragging and dropping an image onto the cover in the edit window.
+- Added option to auto hide the info panel if nothing is selected. On by default. Found in Layouts Tab.
+- Clicking the selected tab on the left will hide collapse it.
+- Holding `Alt` while selecting filters will send them to the **Excluded** filters section.
+- Press `F5` to reload the current collection.
+  
+### Fixes
+
+- fixed a bug where Tags could have the same ID
+- fixed a bug where the "new tag" and "new group" dropdowns were linked
+- fixed broken look of horizontal scrollbar
+- fixed "Failed to import metadata" on pdf's whith less than 5 pages
+## COMPASS v1.1.1 (04 March 2023)
 
 ### Fixes
 

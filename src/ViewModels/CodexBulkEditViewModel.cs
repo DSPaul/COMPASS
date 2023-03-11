@@ -36,15 +36,6 @@ namespace COMPASS.ViewModels
         private ObservableCollection<TreeViewNode> _treeViewSource;
         public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
-        private HashSet<TreeViewNode> AllTreeViewNodes => Utils.FlattenTree(TreeViewSource).ToHashSet();
-
-        //True if adding tags, false if removing
-        private bool _tagMode = true;
-        public bool TagMode
-        {
-            get => _tagMode;
-            set => SetProperty(ref _tagMode, value);
-        }
 
         private ObservableCollection<Tag> _tagsToAdd = new();
         public ObservableCollection<Tag> TagsToAdd
@@ -73,46 +64,39 @@ namespace COMPASS.ViewModels
 
         #region Methods and Commands
 
-        private RelayCommand<bool> _setTagModeCommand;
-        public RelayCommand<bool> SetTagModeCommand => _setTagModeCommand ??= new(SetTagMode);
-        public void SetTagMode(bool tagMode)
+        private RelayCommand<Tag> _plusCheckCommand;
+        public RelayCommand<Tag> PlusCheckCommand => _plusCheckCommand ??= new(AddTag);
+
+        public void AddTag(Tag t)
         {
-            TagMode = tagMode;
-
-            // Apply right checkboxes in Alltags
-            if (TagMode)
-            {
-                foreach (TreeViewNode t in AllTreeViewNodes)
-                {
-                    t.Expanded = false;
-                    t.Selected = TagsToAdd.Contains(t.Tag);
-                    if (t.Children.Any(node => TagsToAdd.Contains(node.Tag))) t.Expanded = true;
-                }
-            }
-
-            else
-            {
-                foreach (TreeViewNode t in AllTreeViewNodes)
-                {
-                    t.Expanded = false;
-                    t.Selected = TagsToRemove.Contains(t.Tag);
-                    if (t.Children.Any(node => TagsToRemove.Contains(node.Tag))) t.Expanded = true;
-                }
-            }
+            if (!TagsToAdd.Contains(t)) TagsToAdd.Add(t);
+            else TagsToAdd.Remove(t);
+            TagsToRemove.Remove(t);
         }
 
-        private ActionCommand _tagCheckCommand;
-        public ActionCommand TagCheckCommand => _tagCheckCommand ??= new(Update_Taglist);
-        public void Update_Taglist()
+        private RelayCommand<Tag> _minCheckCommand;
+        public RelayCommand<Tag> MinCheckCommand => _minCheckCommand ??= new(RemoveTag);
+
+        public void RemoveTag(Tag t)
         {
-            if (TagMode) TagsToAdd.Clear();
-            else TagsToRemove.Clear();
-            foreach (TreeViewNode t in AllTreeViewNodes)
+            if (!TagsToRemove.Contains(t)) TagsToRemove.Add(t);
+            else TagsToRemove.Remove(t);
+            TagsToAdd.Remove(t);
+        }
+
+        private RelayCommand<Tag> _removeFromItemsControlCommand;
+        public RelayCommand<Tag> RemoveFromItemsControlCommand => _removeFromItemsControlCommand ??= new(RemoveTagFromItemsControl);
+        private void RemoveTagFromItemsControl(Tag t)
+        {
+            TagsToAdd.Remove(t);
+            TagsToRemove.Remove(t);
+            foreach (var node in Utils.FlattenTree(TreeViewSource))
             {
-                if (t.Selected)
+                if (node.Tag == t)
                 {
-                    if (TagMode) TagsToAdd.Add(t.Tag);
-                    else TagsToRemove.Add(t.Tag);
+                    node.Selected = true;
+                    node.Selected = false;
+                    break;
                 }
             }
         }

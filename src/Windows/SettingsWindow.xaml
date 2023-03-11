@@ -35,7 +35,7 @@
                                     <Setter TargetName="TabBorder" Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=TabControl}, Path=Background}"/>
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="False">
-                                    <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource SelectableTransparent}"/>
+                                    <Setter TargetName="TabBorder" Property="Background" Value="Transparent"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
