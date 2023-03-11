@@ -171,10 +171,7 @@ namespace COMPASS.Windows
                         e.Handled = true;
                     }
                     break;
-            }
 
-            switch (e.Key)
-            {
                 case Key.I:
                     // Ctrl + I toggle info
                     if (Keyboard.Modifiers == ModifierKeys.Control)
@@ -182,6 +179,11 @@ namespace COMPASS.Windows
                         ((MainViewModel)DataContext).CodexInfoVM.ShowCodexInfo = !((MainViewModel)DataContext).CodexInfoVM.ShowCodexInfo;
                         e.Handled = true;
                     }
+                    break;
+
+                case Key.F5:
+                    MainViewModel.CollectionVM.CurrentCollection = MainViewModel.CollectionVM.CurrentCollection;
+                    e.Handled = true;
                     break;
             }
         }
