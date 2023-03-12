@@ -1,5 +1,10 @@
 # CHANGELOG
-## COMPASS v1.1.2 (11 March 2023)
+## COMPASS v1.1.3 (12 March 2023)
+
+### Fixes
+
+- Fixes tags getting deleted when importing a new file
+## COMPASS v1.1.2 (11 March 2023)
 
 ### Improvements
 
