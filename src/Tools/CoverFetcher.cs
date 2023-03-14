@@ -57,8 +57,8 @@ namespace COMPASS.Tools
                         {
                             image.Read(codex.Path, settings);
                             image.Format = MagickFormat.Png;
-                            image.BackgroundColor = new MagickColor("#000000"); //set background color as transparant
-                            image.Border(20); //adds transparant border around image
+                            image.BackgroundColor = new MagickColor("#000000"); //set background color as transparent
+                            image.Border(20); //adds transparent border around image
                             image.Trim(); //cut off all transparancy
                             image.RePage(); //resize image to fit what was cropped
 
