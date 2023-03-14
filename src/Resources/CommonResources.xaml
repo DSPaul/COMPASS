@@ -168,7 +168,7 @@
     </Style>
 
     <Style TargetType="Button" x:Key="BlankButton">
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Background" Value="{StaticResource TransparentBlack}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Cursor" Value="Hand"/>
@@ -704,7 +704,7 @@
                             Margin="5,5,30,5" VerticalAlignment="Center" HorizontalAlignment="Left" />
                         <TextBox x:Name="PART_EditableTextBox" Style="{x:Null}" Template="{StaticResource ComboBoxTextBox}" 
                             HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" Focusable="True" 
-                            Background="Transparent" Foreground="{StaticResource TextColor}"
+                            Background="{StaticResource TransparentBlack}" Foreground="{StaticResource TextColor}"
                             Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"/>
                         <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}"
                             AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
@@ -744,7 +744,7 @@
             <!--Rich TextBox bound to document-->
             <RichTextBox x:Name="rtxt" IsDocumentEnabled="False" AcceptsReturn="False" VerticalContentAlignment="Center"
                         FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,30,5" Focusable="True" 
-                        Background="Transparent" Foreground="{StaticResource TextColor}"
+                        Background="{StaticResource TransparentBlack}" Foreground="{StaticResource TextColor}"
                             BorderThickness="0"/>
             <!--Suggestion Drop-Down -->
             <Popup Name="popup" Placement="Bottom"

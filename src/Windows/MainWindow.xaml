@@ -190,7 +190,7 @@
                         <StackPanel Orientation="Horizontal" x:Name="CollectionCreation"
                                         Visibility="{Binding CreateCollectionVisibility, Converter={StaticResource ToVisibilityConverter}, FallbackValue=Collapsed}">
                             <TextBox x:Name="NewCollectionName" Tools:AP.PlaceHolderText="New Collection" FontSize="16" VerticalAlignment="Center" 
-                                             Background="Transparent" BorderBrush="{StaticResource DarkUIElementBackground}" MaxLength="50"
+                                             Background="{StaticResource TransparentBlack}" BorderBrush="{StaticResource DarkUIElementBackground}" MaxLength="50"
                                             Foreground="{StaticResource TextColor}" Margin="0" BorderThickness="0" MinWidth="80">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -219,7 +219,7 @@
                         <StackPanel Orientation="Horizontal" x:Name="CollectionEditing"
                                         Visibility="{Binding EditCollectionVisibility, Converter={StaticResource ToVisibilityConverter}, FallbackValue=Collapsed}">
                             <TextBox x:Name="EditCollectionName" Text="{Binding CurrentCollection.DirectoryName, Mode=OneWay}" FontSize="16" 
-                                        VerticalAlignment="Center" Background="Transparent" MaxLength="50"
+                                        VerticalAlignment="Center" Background="{StaticResource TransparentBlack}" MaxLength="50"
                                         Foreground="{StaticResource TextColor}" Margin="0" BorderThickness="0" MinWidth="50">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
@@ -550,8 +550,7 @@
                 <Border Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="20"
                         Visibility="{Binding CollectionVM.CurrentCollection.AllCodices.Count, 
                         Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"
-                         dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CurrentLayout}" Background="Transparent"
-                        >
+                         dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CurrentLayout}" Background="Transparent">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <StackPanel.Resources>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">

@@ -16,8 +16,8 @@
 
     <Color x:Key="ScrollbarColor">  #686868  </Color>
 
-    <!--Like transparant but bacause it is black, cursor on this transparant background will be white-->
-    <SolidColorBrush x:Key="SelectableTransparent" Color="Black" Opacity="0"/>
+    <!--Like transparent but bacause it is black, cursor on this transparant background will be white-->
+    <SolidColorBrush x:Key="TransparentBlack" Color="Black" Opacity="0"/>
 
     <SolidColorBrush x:Key="WindowBackground" Color="{StaticResource DarkestGray}"/>
     <SolidColorBrush x:Key="LeftDockBackground" Color="{StaticResource DarkestGray}"/>
