@@ -76,6 +76,7 @@ namespace COMPASS.ViewModels
 
         public void InitLogger()
         {
+            log4net.GlobalContext.Properties["CompassDataPath"] = SettingsViewModel.CompassDataPath;
             Application.Current.DispatcherUnhandledException += Logger.LogUnhandledException;
             Logger.Info($"Launching Compass v{Assembly.GetExecutingAssembly().GetName().Version}");
         }
@@ -130,7 +131,10 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> OpenSettingsCommand => _openSettingsCommand ??= new(OpenSettings);
         public void OpenSettings(string tab = null)
         {
-            var settingswindow = new SettingsWindow(SettingsViewModel.GetInstance(), tab);
+            var settingswindow = new SettingsWindow(SettingsViewModel.GetInstance(), tab)
+            {
+                Owner = Application.Current.MainWindow
+            };
             settingswindow.Show();
         }
 

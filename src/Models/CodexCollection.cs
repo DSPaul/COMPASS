@@ -18,7 +18,7 @@ namespace COMPASS.Models
             DirectoryName = collectionDirectory;
         }
 
-        public readonly static string CollectionsPath = Constants.CompassDataPath + @"\Collections\";
+        public static string CollectionsPath => Path.Combine(SettingsViewModel.CompassDataPath, "Collections");
 
         #region Properties
         private string _directoryName;
@@ -129,10 +129,18 @@ namespace COMPASS.Models
 
         public void SaveTags()
         {
-            using var writer = XmlWriter.Create(TagsDataFilePath, SettingsViewModel.XmlWriteSettings);
-            System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Tag>));
-            serializer.Serialize(writer, RootTags);
-            Logger.Info($"Saved {RelativeTagsDataFilePath}");
+            try
+            {
+                using var writer = XmlWriter.Create(TagsDataFilePath, SettingsViewModel.XmlWriteSettings);
+                System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Tag>));
+                serializer.Serialize(writer, RootTags);
+                Logger.Info($"Saved {RelativeTagsDataFilePath}");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to Save Tags to {TagsDataFilePath}", ex);
+            }
+
         }
 
         public void SaveCodices()
@@ -143,10 +151,19 @@ namespace COMPASS.Models
                 codex.TagIDs = codex.Tags.Select(t => t.ID).ToList();
             }
 
-            using var writer = XmlWriter.Create(CodicesDataFilePath, SettingsViewModel.XmlWriteSettings);
-            System.Xml.Serialization.XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
-            serializer.Serialize(writer, AllCodices);
-            Logger.Info($"Saved {RelativeCodicesDataFilePath}");
+            try
+            {
+                using var writer = XmlWriter.Create(CodicesDataFilePath, SettingsViewModel.XmlWriteSettings);
+                System.Xml.Serialization.XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
+                serializer.Serialize(writer, AllCodices);
+                Logger.Info($"Saved {RelativeCodicesDataFilePath}");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to Save Codex Info to {CodicesDataFilePath}", ex);
+            }
+
+
         }
 
         #endregion    

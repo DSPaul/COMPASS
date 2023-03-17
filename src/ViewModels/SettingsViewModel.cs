@@ -44,16 +44,16 @@ namespace COMPASS.ViewModels
             //Save OpenCodexPriority
             AllPreferences.OpenFilePriorityIDs = OpenCodexPriority.Select(pf => pf.ID).ToList();
 
-            using var writer = XmlWriter.Create(Constants.PreferencesFilePath, XmlWriteSettings);
+            using var writer = XmlWriter.Create(PreferencesFilePath, XmlWriteSettings);
             System.Xml.Serialization.XmlSerializer serializer = new(typeof(SerializablePreferences));
             serializer.Serialize(writer, AllPreferences);
         }
 
         public void LoadPreferences()
         {
-            if (File.Exists(Constants.PreferencesFilePath))
+            if (File.Exists(PreferencesFilePath))
             {
-                using (var Reader = new StreamReader(Constants.PreferencesFilePath))
+                using (var Reader = new StreamReader(PreferencesFilePath))
                 {
                     System.Xml.Serialization.XmlSerializer serializer = new(typeof(SerializablePreferences));
                     AllPreferences = serializer.Deserialize(Reader) as SerializablePreferences;
@@ -64,7 +64,7 @@ namespace COMPASS.ViewModels
             }
             else
             {
-                Logger.Warn($"{Constants.PreferencesFilePath} does not exist.", new FileNotFoundException());
+                Logger.Warn($"{PreferencesFilePath} does not exist.", new FileNotFoundException());
                 CreateDefaultPreferences();
             }
         }
@@ -182,13 +182,149 @@ namespace COMPASS.ViewModels
 
         #region manage data
 
+        #region Data Path stuff
+
+        private static string _defaultDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "COMPASS");
+        public static string CompassDataPath
+        {
+            get
+            {
+                if (Path.Exists(Properties.Settings.Default.CompassDataPath))
+                    return Properties.Settings.Default.CompassDataPath;
+                else return _defaultDataPath;
+            }
+
+            set
+            {
+                Properties.Settings.Default.CompassDataPath = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        public string BindableDataPath => CompassDataPath; // used because binding to static stuff has its problems
+
+        public string NewDataPath { get; set; }
+
+        public static string PreferencesFilePath => Path.Combine(CompassDataPath, "Preferences.xml");
+
+        private ActionCommand _changeDataPathCommand;
+        public ActionCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
+        private void ChooseNewDataPath()
+        {
+            FolderBrowserDialog folderBrowserDialog = new()
+            {
+                Description = "Choose a new data location",
+                InitialDirectory = CompassDataPath
+            };
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                string newPath = folderBrowserDialog.SelectedPath;
+                SetNewDataPath(newPath);
+            };
+        }
+
+        private ActionCommand _resetDataPathCommand;
+        public ActionCommand ResetDataPathCommand => _resetDataPathCommand ??= new(() => SetNewDataPath(_defaultDataPath));
+
+        private void SetNewDataPath(string newPath)
+        {
+            if (String.IsNullOrWhiteSpace(newPath) || !Path.Exists(newPath)) { return; }
+
+            //make sure new folder ends on /COMPASS
+            string foldername = new DirectoryInfo(newPath).Name;
+            if (foldername != "COMPASS")
+            {
+                newPath = Path.Combine(newPath, "COMPASS");
+                Directory.CreateDirectory(newPath);
+            }
+
+            if (newPath == CompassDataPath) { return; }
+
+            NewDataPath = newPath;
+
+            //Give users choice between moving or copying
+            ChangeDataLocationWindow window = new(this);
+            window.ShowDialog();
+        }
+
+        private ActionCommand _moveToNewDataPathCommand;
+        public ActionCommand MoveToNewDataPathCommand => _moveToNewDataPathCommand ??= new(MoveToNewDataPath);
+        public void MoveToNewDataPath()
+        {
+            bool success = CopyData(CompassDataPath, NewDataPath);
+            if (success)
+            {
+                DeleteDataLocation();
+            }
+        }
+
+        private ActionCommand _copyToNewDataPathCommand;
+        public ActionCommand CopyToNewDataPathCommand => _copyToNewDataPathCommand ??=
+            new(() =>
+            {
+                CopyData(CompassDataPath, NewDataPath);
+                ChangeToNewDataPath();
+            });
+
+        private ActionCommand _changeToNewDataPathCommand;
+        public ActionCommand ChangeToNewDataPathCommand => _changeToNewDataPathCommand ??= new(ChangeToNewDataPath);
+        public void ChangeToNewDataPath()
+        {
+            MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
+            MainViewModel.CollectionVM.CurrentCollection.SaveTags();
+            CompassDataPath = NewDataPath;
+
+            Application.Restart();
+            Environment.Exit(0);
+        }
+
+        private ActionCommand _deleteDataCommand;
+        public ActionCommand DeleteDataCommand => _deleteDataCommand ??= new(DeleteDataLocation);
+
+        public void DeleteDataLocation()
+        {
+            Directory.Delete(CompassDataPath, true);
+            ChangeToNewDataPath();
+        }
+
+        public static bool CopyData(string sourceDir, string destDir)
+        {
+            try
+            {
+                //Create all of the directories
+                foreach (string dirPath in Directory.GetDirectories(sourceDir, "*", SearchOption.AllDirectories))
+                {
+                    Directory.CreateDirectory(dirPath.Replace(sourceDir, destDir));
+                }
+
+                //Copy all the files & Replaces any files with the same name
+                foreach (string sourcePath in Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories))
+                {
+                    // don't copy log file, causes error because log file is open
+                    if (Path.GetExtension(sourcePath) != ".log")
+                    {
+                        File.Copy(sourcePath, sourcePath.Replace(sourceDir, destDir), true);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Could not move data to {destDir}", ex);
+                return false;
+            }
+            return true;
+        }
+
+        #endregion
+
         private ActionCommand _browseLocalFilesCommand;
         public ActionCommand BrowseLocalFilesCommand => _browseLocalFilesCommand ??= new(BrowseLocalFiles);
         public void BrowseLocalFiles()
         {
             ProcessStartInfo startInfo = new()
             {
-                Arguments = Constants.CompassDataPath,
+                Arguments = CompassDataPath,
                 FileName = "explorer.exe"
             };
             Process.Start(startInfo);
@@ -252,7 +388,7 @@ namespace COMPASS.ViewModels
             string targetPath = e.Argument as string;
             using ZipFile zip = new();
             zip.AddDirectory(CodexCollection.CollectionsPath, "Collections");
-            zip.AddFile(Constants.PreferencesFilePath, "");
+            zip.AddFile(PreferencesFilePath, "");
             zip.Save(targetPath);
         }
 
@@ -260,7 +396,7 @@ namespace COMPASS.ViewModels
         {
             string sourcePath = e.Argument as string;
             using ZipFile zip = ZipFile.Read(sourcePath);
-            zip.ExtractAll(Constants.CompassDataPath, ExtractExistingFileAction.OverwriteSilently);
+            zip.ExtractAll(CompassDataPath, ExtractExistingFileAction.OverwriteSilently);
         }
 
         private void CreateZipDone(object sender, RunWorkerCompletedEventArgs e) => lw.Close();
