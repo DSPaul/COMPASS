@@ -1,5 +1,11 @@
 # CHANGELOG
-## COMPASS v1.1.3 (12 March 2023)
+
+## COMPASS v1.1.4 (17 March 2023)
+
+### Fixes
+
+- fix crash when trying to add a newly created tag to a book
+## COMPASS v1.1.3 (12 March 2023)
 
 ### Fixes
 
