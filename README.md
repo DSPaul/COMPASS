@@ -9,7 +9,7 @@
 
 
 # COMPASS
-The Codex Organizer to make Pen-and-paper Adventuring Super Simple or COMPASS for short is a windows application to organize and manage all your TTRPG rulebooks, inspired by [Playnite](https://github.com/JosefNemec/Playnite). 
+The Codex Organizer to make Pen-and-paper Adventuring Super Simple or COMPASS for short is a windows application to organize and manage all your TTRPG rulebooks, inspired by [Playnite](https://github.com/JosefNemec/Playnite). You can download the latest version of COMPASS [here](https://github.com/DSPaul/COMPASS/releases/latest).
 
 ## :scroll: Story
 
@@ -45,16 +45,16 @@ The COMPASS files are not digitally signed which results in these kinds of warni
 
 I created this project to solve a problem I had and as a learning opportunity. I eventually chose to release it publicly and open source because I believe others might find it useful as well. If you like this project and would like to contribute, there are many ways you can do so.
 
-- If you find a bug, please open a github issue and report it there so it can be fixed. Please include a clear explanation of the nature of the bug and if possible steps to reproduce it.
+- If you find a bug, please open a github issue and report it there so it can be fixed. If you don't have a github account, you can also join the [discord](https://discord.gg/HawGMJgS9Y) and share it there. Please include a clear explanation of the nature of the bug and if possible steps to reproduce it.
 - If you have ideas for new features or improvements, you can put those in a github issue as well.
 - As for code contributions and pull requests, I am not currently looking for contributors. There are many reasons for this but [this video](https://www.youtube.com/watch?v=YIL5fuAUPiA) summarizes it pretty well. If you cannot help yourself however, all pull requests should be made against the dev branch. Dev gets merged into master with every new release.
 
 ## :heart: Support the project
 
-If you would to support the project, you can do so in multiple ways.
+If you would like to support the project, you can do so in multiple ways.
 
-- If you have any ideas or problems, you can contribute as outlined above, it helps a lot.
-- Feel free to share this around on forum, discord groups ect. if you think it can help others.
+- If you have any ideas or suggestion on how to make COMPASS better, you can share those in the [discord](https://discord.gg/HawGMJgS9Y) or in a github issue, it helps a lot.
+- Feel free to share this on forums, social media, discord servers ect. if you think it can help others.
 - If you would like to financially support me so I can justify spending more time on this, help with potential costs such as code signing or just show some love, you can buy me a coffee over on [ko-fi](https://ko-fi.com/pauldesmul), I would greatly appreciate it.
 
 ## :camera: Screenshots

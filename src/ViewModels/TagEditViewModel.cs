@@ -9,7 +9,7 @@ namespace COMPASS.ViewModels
     {
         public TagEditViewModel(Tag toEdit, bool createNew) : base()
         {
-            EditedTag = toEdit ?? new();
+            EditedTag = toEdit ?? new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             CreateNewTag = createNew;
 
             TempTag = new Tag(EditedTag);

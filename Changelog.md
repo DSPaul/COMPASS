@@ -1,15 +1,21 @@
 # CHANGELOG
-## COMPASS v1.2 (21 March 2023)
+
+## COMPASS v1.2 (21 March 2023)
 
 ### New Features
 
-- The file path to your user data can now be changed from `%appdata%` to any other location. This enables cloud syncing your data by moving it to a cloud synced folder like a google drive, dropbox or onedrive directory on your pc or even to a network attached storage solution. User data includes your colections, tags, metadata and thumbnails. Note that moving your data to a slower drive might increase load times. 
+- The file path to your user data can now be changed from `%appdata%` to any other location. This enables cloud syncing your data by moving it to a cloud synced folder like a google drive, dropbox or onedrive directory on your pc or even to a network attached storage solution. User data includes your collections, tags, metadata and thumbnails. Note that moving your data to a slower drive might increase load times. 
 
 ### Fixes
 
 - fix dark cursors in some places
 - fix file paths to covers and thumbnails being broken and related crashes
 
+## COMPASS v1.1.4 (17 March 2023)
+
+### Fixes
+
+- fix crash when trying to add a newly created tag to a book
 ## COMPASS v1.1.3 (12 March 2023)
 
 ### Fixes
