@@ -1,4 +1,4 @@
-﻿using COMPASS.ViewModels.Sources;
+﻿using COMPASS.ViewModels;
 using System.Collections.Specialized;
 using System.Windows;
 
@@ -9,7 +9,7 @@ namespace COMPASS.Windows
     /// </summary>
     public partial class ProgressWindow : Window
     {
-        public ProgressWindow(SourceViewModel vm)
+        public ProgressWindow(ProgressViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;

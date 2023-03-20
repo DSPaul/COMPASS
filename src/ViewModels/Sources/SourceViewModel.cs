@@ -1,7 +1,6 @@
 ﻿using COMPASS.Models;
 using COMPASS.Windows;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 
@@ -23,6 +22,9 @@ namespace COMPASS.ViewModels.Sources
         };
 
         #region Import Logic
+
+        ProgressViewModel ProgressVM = new();
+
         public abstract ImportSource Source { get; }
         public abstract void Import();
 
@@ -32,27 +34,13 @@ namespace COMPASS.ViewModels.Sources
         #endregion
 
         #region Progress window stuff
-        protected ProgressWindow GetProgressWindow() => new(this)
+        protected ProgressWindow GetProgressWindow() => new(ProgressVM)
         {
             Owner = Application.Current.MainWindow
         };
 
-        private float _progressPercentage;
-        public float ProgressPercentage
-        {
-            get => _progressPercentage;
-            set => SetProperty(ref _progressPercentage, value);
-        }
-
         public int ProgressCounter { get; protected set; } = 0;
         public int ImportAmount { get; protected set; }
-
-        private ObservableCollection<LogEntry> _importLog = new();
-        public ObservableCollection<LogEntry> ImportLog
-        {
-            get => _importLog;
-            set => SetProperty(ref _importLog, value);
-        }
 
         public virtual string ProgressText => $"Import in Progress: {ProgressCounter + 1} / {ImportAmount}";
 
@@ -76,11 +64,10 @@ namespace COMPASS.ViewModels.Sources
         protected void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             //calculate current percentage for progressbar
-            ProgressPercentage = (int)((float)ProgressCounter / ImportAmount * 100);
-            //update text
-            RaisePropertyChanged(nameof(ProgressText));
+            ProgressVM.SetPercentage(ProgressCounter, ImportAmount);
+            ProgressVM.Text = ProgressText;
             //write log entry if any
-            if (e.UserState is LogEntry logEntry) ImportLog.Add(logEntry);
+            if (e.UserState is LogEntry logEntry) ProgressVM.Log.Add(logEntry);
         }
 
         protected void WorkerComplete(object sender, EventArgs e)
