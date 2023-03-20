@@ -370,5 +370,17 @@ namespace COMPASS.Properties {
                 this["AutoHideCodexInfo"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\"\"")]
+        public string CompassDataPath {
+            get {
+                return ((string)(this["CompassDataPath"]));
+            }
+            set {
+                this["CompassDataPath"] = value;
+            }
+        }
     }
 }

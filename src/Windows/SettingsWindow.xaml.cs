@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace COMPASS.Windows
 {
@@ -30,8 +29,6 @@ namespace COMPASS.Windows
         }
 
         private SettingsViewModel VM;
-
-        private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e) => MainGrid.Focus();
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => VM.SavePreferences();
 

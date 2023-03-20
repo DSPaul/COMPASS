@@ -1,4 +1,4 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.ViewModels;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
@@ -14,7 +14,7 @@ namespace COMPASS.Tools
 {
     public static class WebDriverFactory
     {
-        private static readonly string WebDriverDirectoryPath = Path.Combine(Constants.CompassDataPath, "WebDrivers");
+        private static readonly string WebDriverDirectoryPath = Path.Combine(SettingsViewModel.CompassDataPath, "WebDrivers");
         private static Browser browser;
         public enum Browser
         {

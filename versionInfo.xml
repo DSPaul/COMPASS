@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
-  <version>1.1.4</version>
-  <url>https://github.com/DSPAUL/COMPASS/releases/download/v1.1.4/COMPASS_Setup_1.1.4.exe</url>
-  <changelog>https://github.com/DSPAUL/COMPASS/blob/master/Changelog.md#compass-v114-17-march-2023</changelog>
+  <version>1.2</version>
+  <url>https://github.com/DSPAUL/COMPASS/releases/download/v1.2/COMPASS_Setup_1.2.exe</url>
+  <changelog>https://github.com/DSPAUL/COMPASS/blob/master/Changelog.md#compass-v12-21-march-2023</changelog>
   <mandatory>false</mandatory>
 </item>
