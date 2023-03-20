@@ -114,6 +114,9 @@ namespace COMPASS.Models
                 {
                     //reconstruct tags from ID's
                     c.Tags = new(AllTags.Where(t => c.TagIDs.Contains(t.ID)));
+
+                    //double check image location, redundant but got fucked in an update
+                    c.setImagePaths(this);
                 }
                 Logger.Info($"Loaded {RelativeCodicesDataFilePath}");
             }

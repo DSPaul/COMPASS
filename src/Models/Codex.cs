@@ -19,8 +19,13 @@ namespace COMPASS.Models
         public Codex(CodexCollection cc) : this()
         {
             ID = Utils.GetAvailableID(cc.AllCodices);
-            CoverArt = System.IO.Path.Combine(CodexCollection.CollectionsPath, cc.DirectoryName, "CoverArt", ID.ToString() + ".png");
-            Thumbnail = System.IO.Path.Combine(CodexCollection.CollectionsPath, cc.DirectoryName, "Thumbnails", ID.ToString() + ".png");
+            setImagePaths(cc);
+        }
+
+        public void setImagePaths(CodexCollection collection)
+        {
+            CoverArt = System.IO.Path.Combine(CodexCollection.CollectionsPath, collection.DirectoryName, "CoverArt", ID.ToString() + ".png");
+            Thumbnail = System.IO.Path.Combine(CodexCollection.CollectionsPath, collection.DirectoryName, "Thumbnails", ID.ToString() + ".png");
         }
 
         public void Copy(Codex c)
