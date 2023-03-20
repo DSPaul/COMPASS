@@ -4,6 +4,7 @@ using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.Windows;
 using Ionic.Zip;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +13,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Forms;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Xml;
 
 namespace COMPASS.ViewModels
@@ -210,12 +212,12 @@ namespace COMPASS.ViewModels
         public ActionCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
         private void ChooseNewDataPath()
         {
-            FolderBrowserDialog folderBrowserDialog = new()
+            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog folderBrowserDialog = new()
             {
                 Description = "Choose a new data location",
-                InitialDirectory = CompassDataPath
+                //InitialDirectory = CompassDataPath
             };
-            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            if (folderBrowserDialog.ShowDialog() == true)
             {
                 string newPath = folderBrowserDialog.SelectedPath;
                 SetNewDataPath(newPath);
@@ -248,9 +250,9 @@ namespace COMPASS.ViewModels
 
         private ActionCommand _moveToNewDataPathCommand;
         public ActionCommand MoveToNewDataPathCommand => _moveToNewDataPathCommand ??= new(MoveToNewDataPath);
-        public void MoveToNewDataPath()
+        public async void MoveToNewDataPath()
         {
-            bool success = CopyData(CompassDataPath, NewDataPath);
+            bool success = await CopyData(CompassDataPath, NewDataPath);
             if (success)
             {
                 DeleteDataLocation();
@@ -259,9 +261,9 @@ namespace COMPASS.ViewModels
 
         private ActionCommand _copyToNewDataPathCommand;
         public ActionCommand CopyToNewDataPathCommand => _copyToNewDataPathCommand ??=
-            new(() =>
+            new(async () =>
             {
-                CopyData(CompassDataPath, NewDataPath);
+                await CopyData(CompassDataPath, NewDataPath);
                 ChangeToNewDataPath();
             });
 
@@ -271,10 +273,14 @@ namespace COMPASS.ViewModels
         {
             MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
             MainViewModel.CollectionVM.CurrentCollection.SaveTags();
+
             CompassDataPath = NewDataPath;
 
-            Application.Restart();
-            Environment.Exit(0);
+            //Restart COMPASS
+            var currentExecutablePath = Environment.ProcessPath;
+            var args = Environment.GetCommandLineArgs();
+            Process.Start(currentExecutablePath, args);
+            Application.Current.Shutdown();
         }
 
         private ActionCommand _deleteDataCommand;
@@ -286,8 +292,20 @@ namespace COMPASS.ViewModels
             ChangeToNewDataPath();
         }
 
-        public static bool CopyData(string sourceDir, string destDir)
+        public static async Task<bool> CopyData(string sourceDir, string destDir)
         {
+            ProgressViewModel progressVM = new();
+            ProgressWindow progressWindow = new(progressVM)
+            {
+                Owner = Application.Current.MainWindow,
+            };
+
+            var toCopy = Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories);
+            int totalToDo = toCopy.Length;
+            int counter = 0;
+
+            progressWindow.Show();
+
             try
             {
                 //Create all of the directories
@@ -297,15 +315,23 @@ namespace COMPASS.ViewModels
                 }
 
                 //Copy all the files & Replaces any files with the same name
-                foreach (string sourcePath in Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories))
+                await Task.Run(() =>
                 {
-                    // don't copy log file, causes error because log file is open
-                    if (Path.GetExtension(sourcePath) != ".log")
+                    foreach (string sourcePath in toCopy)
                     {
-                        File.Copy(sourcePath, sourcePath.Replace(sourceDir, destDir), true);
-                    }
+                        progressVM.Text = $"Files Copied: {counter} / {totalToDo}";
 
-                }
+                        // don't copy log file, causes error because log file is open
+                        if (Path.GetExtension(sourcePath) != ".log")
+                        {
+                            File.Copy(sourcePath, sourcePath.Replace(sourceDir, destDir), true);
+                        }
+                        counter++;
+                        progressVM.SetPercentage(counter, totalToDo);
+                        Application.Current.Dispatcher.Invoke(() =>
+                            progressVM.Log.Add(new LogEntry(LogEntry.MsgType.Info, $"Copied {sourcePath}")));
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -314,7 +340,6 @@ namespace COMPASS.ViewModels
             }
             return true;
         }
-
         #endregion
 
         private ActionCommand _browseLocalFilesCommand;
@@ -342,7 +367,7 @@ namespace COMPASS.ViewModels
                 Filter = "Zip file (*.zip)|*.zip"
             };
 
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            if (saveFileDialog.ShowDialog() == true)
             {
                 string targetPath = saveFileDialog.FileName;
                 lw = new("Compressing to Zip File");
@@ -369,7 +394,7 @@ namespace COMPASS.ViewModels
                 Filter = "Zip file (*.zip)|*.zip"
             };
 
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            if (openFileDialog.ShowDialog() == true)
             {
                 string targetPath = openFileDialog.FileName;
                 lw = new("Restoring Backup");
