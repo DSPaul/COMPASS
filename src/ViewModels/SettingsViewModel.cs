@@ -37,6 +37,7 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Load and Save Settings
+        public static string PreferencesFilePath => Path.Combine(CompassDataPath, "Preferences.xml");
         public static XmlWriterSettings XmlWriteSettings { get; private set; } = new() { Indent = true };
         private static SerializablePreferences AllPreferences = new();
         public void SavePreferences()
@@ -72,7 +73,7 @@ namespace COMPASS.ViewModels
         public void CreateDefaultPreferences() => OpenCodexPriority = new(OpenCodexFunctions);
         #endregion
 
-        #region General Tab
+        #region Tab: Preferences
 
         #region File Source Preference
         //list with possible functions to open a file
@@ -92,7 +93,7 @@ namespace COMPASS.ViewModels
 
         #endregion
 
-        #region Data Tab
+        #region Tab: Data
 
         #region Fix Broken refs
 
@@ -180,7 +181,7 @@ namespace COMPASS.ViewModels
         }
         #endregion
 
-        #region manage data
+        #region Manage Data
 
         #region Data Path stuff
 
@@ -204,8 +205,6 @@ namespace COMPASS.ViewModels
         public string BindableDataPath => CompassDataPath; // used because binding to static stuff has its problems
 
         public string NewDataPath { get; set; }
-
-        public static string PreferencesFilePath => Path.Combine(CompassDataPath, "Preferences.xml");
 
         private ActionCommand _changeDataPathCommand;
         public ActionCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
@@ -421,7 +420,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        #region What's New Tab
+        #region Tab: What's New
         private string _releaseNotes;
         public string ReleaseNotes
         {
@@ -430,7 +429,7 @@ namespace COMPASS.ViewModels
         }
         #endregion
 
-        #region About Tab
+        #region Tab: About
         public string Version => "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString()[0..5];
 
         private ActionCommand _checkForUpdatesCommand;
