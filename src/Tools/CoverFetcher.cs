@@ -41,6 +41,7 @@ namespace COMPASS.Tools
                     var pdfReadDefines = new ImageMagick.Formats.PdfReadDefines()
                     {
                         HideAnnotations = true,
+                        UseCropBox = true,
                     };
 
                     MagickReadSettings settings = new()
@@ -53,18 +54,14 @@ namespace COMPASS.Tools
 
                     try //image.Read can throw exception if file can not be opened/read
                     {
-                        using (MagickImage image = new())
-                        {
-                            image.Read(codex.Path, settings);
-                            image.Format = MagickFormat.Png;
-                            image.BackgroundColor = new MagickColor("#000000"); //set background color as transparent
-                            image.Border(20); //adds transparent border around image
-                            image.Trim(); //cut off all transparancy
-                            image.RePage(); //resize image to fit what was cropped
+                        using MagickImage image = new();
+                        image.Read(codex.Path, settings);
+                        image.Format = MagickFormat.Png;
+                        image.BackgroundColor = new MagickColor("#000000"); //set background color as transparent
+                        image.Trim(); //cut off all transparancy
 
-                            image.Write(codex.CoverArt);
-                            CreateThumbnail(codex);
-                        }
+                        image.Write(codex.CoverArt);
+                        CreateThumbnail(codex);
                         return true;
                     }
                     catch (Exception ex)
