@@ -182,7 +182,7 @@ namespace COMPASS.Windows
                     break;
 
                 case Key.F5:
-                    MainViewModel.CollectionVM.CurrentCollection = MainViewModel.CollectionVM.CurrentCollection;
+                    MainViewModel.CollectionVM.Refresh();
                     e.Handled = true;
                     break;
             }

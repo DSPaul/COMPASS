@@ -167,6 +167,8 @@ namespace COMPASS.ViewModels
             return legal;
         }
 
+        public void Refresh() => CurrentCollection = CurrentCollection;
+
         private ActionCommand _toggleCreateCollectionCommand;
         public ActionCommand ToggleCreateCollectionCommand => _toggleCreateCollectionCommand ??= new(ToggleCreateCollection);
         private void ToggleCreateCollection() => CreateCollectionVisibility = !CreateCollectionVisibility;
