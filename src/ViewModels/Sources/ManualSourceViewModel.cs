@@ -1,5 +1,6 @@
 ﻿using COMPASS.Models;
 using COMPASS.Windows;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
@@ -16,7 +17,7 @@ namespace COMPASS.ViewModels.Sources
             editWindow.Topmost = true;
         }
 
-        public override Codex SetMetaData(Codex codex) => codex;
+        public override Task<Codex> SetMetaData(Codex codex) => Task.FromResult(codex);
         public override bool FetchCover(Codex codex) => false;
     }
 }

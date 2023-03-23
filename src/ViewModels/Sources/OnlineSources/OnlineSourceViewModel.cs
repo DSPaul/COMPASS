@@ -4,7 +4,7 @@ using COMPASS.Tools;
 using COMPASS.Windows;
 using HtmlAgilityPack;
 using System;
-using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace COMPASS.ViewModels.Sources
@@ -19,7 +19,7 @@ namespace COMPASS.ViewModels.Sources
             importURLwindow.Show();
         }
 
-        public void ImportURL(object sender, DoWorkEventArgs e)
+        public async void ImportURL()
         {
             Codex newCodex = new(MainViewModel.CollectionVM.CurrentCollection)
             {
@@ -27,9 +27,9 @@ namespace COMPASS.ViewModels.Sources
             };
 
             // Steps 1 & 2: Load Source and Scrape metadata
-            newCodex = SetMetaData(newCodex);
+            newCodex = await SetMetaData(newCodex);
             ProgressCounter++;
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Metadata loaded. Downloading cover art."));
+            ProgressChanged(new(LogEntry.MsgType.Info, "Metadata loaded. Downloading cover art."));
 
             // Step 3: Get Cover Art
             FetchCover(newCodex);
@@ -37,9 +37,12 @@ namespace COMPASS.ViewModels.Sources
 
             //Complete import
             MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
-            worker.ReportProgress(ProgressCounter);
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
 
-            Logger.Info($"Imported {newCodex.Title}");
+            string logMsg = $"Imported {newCodex.Title}";
+            Logger.Info(logMsg);
+            ProgressChanged(new LogEntry(LogEntry.MsgType.Info, logMsg));
+
 
             if (ShowEditWhenDone)
             {
@@ -113,25 +116,26 @@ namespace COMPASS.ViewModels.Sources
             ProgressWindow progressWindow = GetProgressWindow();
             progressWindow.Show();
 
-            InitWorker(ImportURL);
-            worker.RunWorkerAsync();
+            ProgressChanged();
+
+            Task.Run(ImportURL);
         }
         #endregion
 
         #region methods when scraping for metadata
-        public HtmlDocument ScrapeSite(string url)
+        public async Task<HtmlDocument> ScrapeSite(string url)
         {
             HtmlWeb web = new();
             HtmlDocument doc;
             try
             {
-                doc = web.Load(url);
+                doc = await Task.Run(() => web.Load(url));
             }
 
             catch (Exception ex)
             {
                 //fails if URL could not be loaded
-                worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Error, ex.Message));
+                ProgressChanged(new(LogEntry.MsgType.Error, ex.Message));
                 Logger.Error($"Could not load {url}", ex);
                 return null;
             }
@@ -141,14 +145,14 @@ namespace COMPASS.ViewModels.Sources
             if (doc.ParsedText is null || doc.DocumentNode is null)
             {
                 LogEntry entry = new(LogEntry.MsgType.Error, $"{InputURL} could not be reached");
-                worker.ReportProgress(ProgressCounter, entry);
+                ProgressChanged(entry);
                 Logger.Error($"{url} does not have any content", new ArgumentNullException());
                 return null;
             }
             else
             {
                 LogEntry entry = new(LogEntry.MsgType.Info, "File loaded");
-                worker.ReportProgress(ProgressCounter, entry);
+                ProgressChanged(entry);
                 return doc;
             }
         }

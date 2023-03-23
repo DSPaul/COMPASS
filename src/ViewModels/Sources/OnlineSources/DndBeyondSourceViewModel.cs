@@ -2,6 +2,7 @@
 using COMPASS.Tools;
 using HtmlAgilityPack;
 using System;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
@@ -13,11 +14,11 @@ namespace COMPASS.ViewModels.Sources
 
         public override ImportSource Source => ImportSource.DnDBeyond;
 
-        public override Codex SetMetaData(Codex codex)
+        public override async Task<Codex> SetMetaData(Codex codex)
         {
             //Scrape metadata by going to storepage, get to storepage by using that /credits redirects there
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
-            HtmlDocument doc = ScrapeSite(String.Concat(InputURL, "/credits"));
+            ProgressChanged(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
+            HtmlDocument doc = await ScrapeSite(String.Concat(InputURL, "/credits"));
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -25,7 +26,7 @@ namespace COMPASS.ViewModels.Sources
                 return codex;
             }
 
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Fetching Metadata"));
+            ProgressChanged(new(LogEntry.MsgType.Info, "Fetching Metadata"));
 
             //Scrape headers
             codex = SetWebScrapeHeaderMetadata(codex, src);
@@ -33,6 +34,9 @@ namespace COMPASS.ViewModels.Sources
             //Set known metadata
             codex.Publisher = "D&D Beyond";
             codex.Authors = new() { "Wizards of the Coast" };
+
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
 
             return codex;
         }
@@ -42,7 +46,7 @@ namespace COMPASS.ViewModels.Sources
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument doc = ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
+                HtmlDocument doc = ScrapeSite(String.Concat(codex.SourceURL, "/credits")).Result;
                 HtmlNode src = doc?.DocumentNode;
                 if (src is null) return false;
 

@@ -1,5 +1,6 @@
 ﻿using COMPASS.Models;
 using HtmlAgilityPack;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
@@ -12,11 +13,11 @@ namespace COMPASS.ViewModels.Sources
         public override ImportSource Source => ImportSource.GenericURL;
 
         public override bool FetchCover(Codex codex) => false;
-        public override Codex SetMetaData(Codex codex)
+        public override async Task<Codex> SetMetaData(Codex codex)
         {
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, $"Connecting to {InputURL}"));
+            ProgressChanged(new(LogEntry.MsgType.Info, $"Connecting to {InputURL}"));
 
-            HtmlDocument doc = ScrapeSite(InputURL);
+            HtmlDocument doc = await ScrapeSite(InputURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -24,9 +25,13 @@ namespace COMPASS.ViewModels.Sources
                 return codex;
             }
 
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Fetching Metadata"));
+            ProgressChanged(new(LogEntry.MsgType.Info, "Fetching Metadata"));
             //Scrape metadata
             codex = SetWebScrapeHeaderMetadata(codex, src);
+
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
+
             return codex;
         }
     }

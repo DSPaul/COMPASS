@@ -16,24 +16,24 @@ namespace COMPASS.ViewModels.Sources
         public override string ExampleURL => "";
         public override ImportSource Source => ImportSource.ISBN;
 
-        public override Codex SetMetaData(Codex codex)
+        public override async Task<Codex> SetMetaData(Codex codex)
         {
             if (IsImporting)
             {
                 codex.ISBN = InputURL;
-                worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Fetching Data"));
+                ProgressChanged(new LogEntry(LogEntry.MsgType.Info, "Fetching Data"));
             }
 
             string uri = $"http://openlibrary.org/api/books?bibkeys=ISBN:{codex.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
 
-            JObject metadata = Task.Run(async () => await Utils.GetJsonAsync(uri)).Result;
+            JObject metadata = await Utils.GetJsonAsync(uri);
 
             if (!metadata.HasValues)
             {
                 string message = $"ISBN {codex.ISBN} was not found on openlibrary.org \n" +
                     $"You can contribute by submitting this book at \n" +
                     $"https://openlibrary.org/books/add";
-                if (IsImporting) worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Error, message));
+                if (IsImporting) ProgressChanged(new(LogEntry.MsgType.Error, message));
                 Logger.Warn($"Could not find ISBN {codex.ISBN} on openlibrary.org", new Exception());
                 return codex;
             }
@@ -42,7 +42,7 @@ namespace COMPASS.ViewModels.Sources
             {
                 //loading complete
                 ProgressCounter++;
-                worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "File loaded, parsing metadata"));
+                ProgressChanged(new(LogEntry.MsgType.Info, "File loaded, parsing metadata"));
             }
 
             //Start parsing json
@@ -84,6 +84,9 @@ namespace COMPASS.ViewModels.Sources
             DateTime tempDate;
             if (DateTime.TryParse((string)details.SelectToken("publish_date"), out tempDate))
                 codex.ReleaseDate = tempDate;
+
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
 
             return codex;
         }

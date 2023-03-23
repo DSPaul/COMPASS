@@ -27,10 +27,10 @@ namespace COMPASS.ViewModels.Sources
 
             FolderNames = openFolderDialog.SelectedPaths.ToList();
 
-            StartAsyncImport();
+            ImportFolder();
         }
 
-        public void StartAsyncImport()
+        public void ImportFolder()
         {
             //find files in folder, including subfolder
             List<string> toSearch = new(FolderNames); //list with folders to search
@@ -69,14 +69,7 @@ namespace COMPASS.ViewModels.Sources
                 }
             }
 
-            ProgressCounter = 0;
-            ImportAmount = toImport.Count;
-
-            ProgressWindow window = GetProgressWindow();
-            window.Show();
-
-            InitWorker(ImportFilePaths);
-            worker.RunWorkerAsync(argument: toImport);
+            ImportFiles(toImport);
         }
 
         #region File Type Selection Window stuff

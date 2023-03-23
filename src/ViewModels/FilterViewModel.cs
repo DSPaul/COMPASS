@@ -258,7 +258,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public void PopulateMetaDataCollections()
+        public void PopulateMetaDataCollections() => Application.Current.Dispatcher.Invoke(() =>
         {
             foreach (Codex c in _allCodices)
             {
@@ -278,7 +278,7 @@ namespace COMPASS.ViewModels
             AuthorList = new(AuthorList.Order());
             PublisherList = new(PublisherList.Order());
             FileTypeList = new(FileTypeList.Order());
-        }
+        });
 
         //------------- Adding, Removing, ect ------------//
 

@@ -83,14 +83,14 @@ namespace COMPASS.ViewModels
                         FolderNames = folders.ToList(),
                         FileNames = files.ToList()
                     };
-                    fsvm.StartAsyncImport();
+                    fsvm.ImportFolder();
                     return;
                 }
 
                 if (files.Any())
                 {
-                    FileSourceViewModel fsvm = new() { FileNames = files.ToList() };
-                    fsvm.StartAsyncImport();
+                    FileSourceViewModel fsvm = new();
+                    fsvm.ImportFiles(files.ToList());
                     return;
                 }
             }

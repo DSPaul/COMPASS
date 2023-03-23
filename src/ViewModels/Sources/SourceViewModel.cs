@@ -1,7 +1,9 @@
 ﻿using COMPASS.Models;
+using COMPASS.Tools;
 using COMPASS.Windows;
 using System;
-using System.ComponentModel;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace COMPASS.ViewModels.Sources
@@ -23,12 +25,36 @@ namespace COMPASS.ViewModels.Sources
 
         #region Import Logic
 
-        ProgressViewModel ProgressVM = new();
+        protected ProgressViewModel ProgressVM = new();
 
         public abstract ImportSource Source { get; }
         public abstract void Import();
 
-        public abstract Codex SetMetaData(Codex codex);
+        protected async void ImportCodex(Codex newCodex)
+        {
+            //Start the Import
+            LogEntry logEntry = new(LogEntry.MsgType.Info, $"Importing {Path.GetFileName(newCodex.HasOfflineSource() ? newCodex.Path : newCodex.SourceURL)}");
+            ProgressChanged(logEntry);
+
+            //Get metadata from file
+            newCodex = await SetMetaData(newCodex);
+
+            //Get Cover from file
+            bool succes = FetchCover(newCodex);
+            if (!succes)
+            {
+                logEntry = new(LogEntry.MsgType.Warning, $"Failed to generate thumbnail for {Path.GetFileName(newCodex.Title)}");
+                ProgressChanged(logEntry);
+            }
+
+            //Complete Import
+            string logMsg = $"Imported {newCodex.Title}";
+            Logger.Info(logMsg);
+            ProgressCounter++;
+            ProgressChanged(new LogEntry(LogEntry.MsgType.Info, logMsg));
+        }
+
+        public abstract Task<Codex> SetMetaData(Codex codex);
 
         public abstract bool FetchCover(Codex codex);
         #endregion
@@ -50,32 +76,14 @@ namespace COMPASS.ViewModels.Sources
 
         #region Asynchronous worker stuff
 
-        protected BackgroundWorker worker;
-
-        protected void InitWorker(DoWorkEventHandler workAction)
-        {
-            //Starts new threat (so program doesn't freeze while importing)
-            worker = new() { WorkerReportsProgress = true };
-            worker.DoWork += workAction;
-            worker.ProgressChanged += ProgressChanged;
-            worker.RunWorkerCompleted += WorkerComplete;
-        }
-
-        protected void ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            //calculate current percentage for progressbar
-            ProgressVM.SetPercentage(ProgressCounter, ImportAmount);
-            ProgressVM.Text = ProgressText;
-            //write log entry if any
-            if (e.UserState is LogEntry logEntry) ProgressVM.Log.Add(logEntry);
-        }
-
-        protected void WorkerComplete(object sender, EventArgs e)
-        {
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
-            ProgressCounter = 0;
-        }
+        protected void ProgressChanged(LogEntry logEntry = null) => Application.Current.Dispatcher.Invoke(() =>
+            {
+                //calculate current percentage for progressbar
+                ProgressVM.SetPercentage(ProgressCounter, ImportAmount);
+                ProgressVM.Text = ProgressText;
+                //write log entry if any
+                if (logEntry != null) ProgressVM.Log.Add(logEntry);
+            });
         #endregion
     }
 }

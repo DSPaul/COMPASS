@@ -2,6 +2,7 @@
 using COMPASS.Tools;
 using HtmlAgilityPack;
 using System;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
@@ -13,25 +14,29 @@ namespace COMPASS.ViewModels.Sources
 
         public override ImportSource Source => ImportSource.GoogleDrive;
 
-        public override Codex SetMetaData(Codex codex)
+        public override async Task<Codex> SetMetaData(Codex codex)
         {
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
+            ProgressChanged(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
 
-            HtmlDocument doc = ScrapeSite(InputURL);
+            HtmlDocument doc = await ScrapeSite(InputURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
             {
+                ProgressChanged(new(LogEntry.MsgType.Info, "File not found"));
                 return codex;
             }
 
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Fetching Metadata"));
+            ProgressChanged(new(LogEntry.MsgType.Info, "Fetching Metadata"));
 
             //Scrape metadata
             codex = SetWebScrapeHeaderMetadata(codex, src);
 
             //Set known metadata
             codex.Publisher = "Google Drive";
+
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
 
             return codex;
         }
@@ -41,7 +46,7 @@ namespace COMPASS.ViewModels.Sources
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument doc = ScrapeSite(codex.SourceURL);
+                HtmlDocument doc = ScrapeSite(codex.SourceURL).Result;
                 HtmlNode src = doc?.DocumentNode;
                 if (src is null) return false;
 

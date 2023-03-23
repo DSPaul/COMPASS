@@ -5,6 +5,7 @@ using ImageMagick;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
@@ -16,9 +17,9 @@ namespace COMPASS.ViewModels.Sources
 
         public override ImportSource Source => ImportSource.GmBinder;
 
-        public override Codex SetMetaData(Codex codex)
+        public override async Task<Codex> SetMetaData(Codex codex)
         {
-            HtmlDocument doc = ScrapeSite(InputURL);
+            HtmlDocument doc = await ScrapeSite(InputURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -26,7 +27,7 @@ namespace COMPASS.ViewModels.Sources
                 return codex;
             }
 
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Fetching Metadata"));
+            ProgressChanged(new(LogEntry.MsgType.Info, "Fetching Metadata"));
 
             //Scrape metadata
             codex = SetWebScrapeHeaderMetadata(codex, src);
@@ -38,6 +39,9 @@ namespace COMPASS.ViewModels.Sources
             HtmlNode previewDiv = doc.GetElementbyId("preview");
             IEnumerable<HtmlNode> pages = previewDiv.ChildNodes.Where(node => node.Id.Contains('p'));
             codex.PageCount = pages.Count();
+
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
 
             return codex;
         }

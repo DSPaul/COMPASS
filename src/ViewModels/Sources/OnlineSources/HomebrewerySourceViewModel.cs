@@ -5,6 +5,7 @@ using ImageMagick;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
@@ -18,11 +19,11 @@ namespace COMPASS.ViewModels.Sources
 
         public override bool ShowValidateDisableCheckbox => true;
 
-        public override Codex SetMetaData(Codex codex)
+        public override async Task<Codex> SetMetaData(Codex codex)
         {
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
+            ProgressChanged(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
 
-            HtmlDocument doc = ScrapeSite(InputURL);
+            HtmlDocument doc = await ScrapeSite(InputURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -30,7 +31,7 @@ namespace COMPASS.ViewModels.Sources
                 return codex;
             }
 
-            worker.ReportProgress(ProgressCounter, new LogEntry(LogEntry.MsgType.Info, "Fetching metadata"));
+            ProgressChanged(new(LogEntry.MsgType.Info, "Fetching metadata"));
 
             //Set known metadata
             codex.Publisher = "Homebrewery";
@@ -48,6 +49,9 @@ namespace COMPASS.ViewModels.Sources
             codex.PageCount = (int)metadata.SelectToken("brew.pageCount");
             codex.Description = (string)metadata.SelectToken("brew.description");
             codex.ReleaseDate = DateTime.Parse(((string)metadata.SelectToken("brew.createdAt"))?.Split('T')[0], CultureInfo.InvariantCulture);
+
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
 
             return codex;
         }
