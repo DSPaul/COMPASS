@@ -91,12 +91,12 @@ namespace COMPASS.ViewModels.Sources
             return codex;
         }
 
-        public override bool FetchCover(Codex codex)
+        public override async Task<bool> FetchCover(Codex codex)
         {
             try
             {
                 string uri = $"https://openlibrary.org/isbn/{codex.ISBN}.json";
-                JObject metadata = Task.Run(async () => await Utils.GetJsonAsync(uri)).Result;
+                JObject metadata = await Utils.GetJsonAsync(uri);
                 string imgID = (string)metadata.SelectToken("covers[0]");
                 string imgURL = $"https://covers.openlibrary.org/b/id/{imgID}.jpg";
                 CoverFetcher.SaveCover(imgURL, codex);

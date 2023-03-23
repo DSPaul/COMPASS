@@ -102,13 +102,13 @@ namespace COMPASS.Tools
                 return false;
             }
 
-            return sourceViewModel.FetchCover(codex);
+            return sourceViewModel.FetchCover(codex).Result;
         }
 
         public static bool GetCoverFromISBN(Codex codex)
         {
             if (string.IsNullOrEmpty(codex.ISBN)) return false;
-            return new ISBNSourceViewModel().FetchCover(codex);
+            return new ISBNSourceViewModel().FetchCover(codex).Result;
         }
 
         public static void SaveCover(MagickImage image, Codex destCodex)

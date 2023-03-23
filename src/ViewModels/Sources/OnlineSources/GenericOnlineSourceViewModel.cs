@@ -12,7 +12,7 @@ namespace COMPASS.ViewModels.Sources
 
         public override ImportSource Source => ImportSource.GenericURL;
 
-        public override bool FetchCover(Codex codex) => false;
+        public override Task<bool> FetchCover(Codex codex) => Task.FromResult(false);
         public override async Task<Codex> SetMetaData(Codex codex)
         {
             ProgressChanged(new(LogEntry.MsgType.Info, $"Connecting to {InputURL}"));

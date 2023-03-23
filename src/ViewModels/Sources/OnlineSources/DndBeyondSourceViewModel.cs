@@ -41,12 +41,12 @@ namespace COMPASS.ViewModels.Sources
             return codex;
         }
 
-        public override bool FetchCover(Codex codex)
+        public override async Task<bool> FetchCover(Codex codex)
         {
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument doc = ScrapeSite(String.Concat(codex.SourceURL, "/credits")).Result;
+                HtmlDocument doc = await ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
                 HtmlNode src = doc?.DocumentNode;
                 if (src is null) return false;
 

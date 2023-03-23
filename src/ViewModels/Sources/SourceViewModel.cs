@@ -40,7 +40,7 @@ namespace COMPASS.ViewModels.Sources
             newCodex = await SetMetaData(newCodex);
 
             //Get Cover from file
-            bool succes = FetchCover(newCodex);
+            bool succes = await FetchCover(newCodex);
             if (!succes)
             {
                 logEntry = new(LogEntry.MsgType.Warning, $"Failed to generate thumbnail for {Path.GetFileName(newCodex.Title)}");
@@ -56,7 +56,7 @@ namespace COMPASS.ViewModels.Sources
 
         public abstract Task<Codex> SetMetaData(Codex codex);
 
-        public abstract bool FetchCover(Codex codex);
+        public abstract Task<bool> FetchCover(Codex codex);
         #endregion
 
         #region Progress window stuff

@@ -46,7 +46,7 @@ namespace COMPASS.ViewModels.Sources
             return codex;
         }
 
-        public override bool FetchCover(Codex codex)
+        public override async Task<bool> FetchCover(Codex codex)
         {
             OpenQA.Selenium.WebDriver driver = WebDriverFactory.GetWebDriver();
             try

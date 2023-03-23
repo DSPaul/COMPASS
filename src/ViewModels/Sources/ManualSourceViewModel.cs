@@ -18,6 +18,6 @@ namespace COMPASS.ViewModels.Sources
         }
 
         public override Task<Codex> SetMetaData(Codex codex) => Task.FromResult(codex);
-        public override bool FetchCover(Codex codex) => false;
+        public override Task<bool> FetchCover(Codex codex) => Task.FromResult(false);
     }
 }

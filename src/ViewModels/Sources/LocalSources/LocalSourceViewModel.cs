@@ -80,7 +80,7 @@ namespace COMPASS.ViewModels.Sources
             return codex;
         }
 
-        public override bool FetchCover(Codex codex) => CoverFetcher.GetCoverFromFile(codex);
+        public override async Task<bool> FetchCover(Codex codex) => await Task.Run(() => CoverFetcher.GetCoverFromFile(codex));
 
         public async void ImportFiles(List<string> paths)
         {
@@ -111,7 +111,7 @@ namespace COMPASS.ViewModels.Sources
             ProgressWindow window = GetProgressWindow();
             window.Show();
 
-            await Task.Run(() => Parallel.ForEach(newCodices, ImportCodex));
+            var result = await Task.Run(() => Parallel.ForEach(newCodices, ImportCodex));
         }
     }
 }
