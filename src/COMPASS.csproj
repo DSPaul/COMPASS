@@ -70,8 +70,8 @@
       <Version>7.2.5</Version>
     </PackageReference>
     <PackageReference Include="log4net" Version="2.0.15" />
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="12.3.0" />
-    <PackageReference Include="Magick.NET.SystemDrawing" Version="6.1.4" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.0.0" />
+    <PackageReference Include="Magick.NET.SystemDrawing" Version="7.0.0" />
     <PackageReference Include="Markdig" Version="0.31.0" />
     <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
     <PackageReference Include="MaterialDesignThemes">
