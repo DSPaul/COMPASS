@@ -32,7 +32,7 @@ namespace COMPASS.ViewModels.Sources
             ProgressChanged(new(LogEntry.MsgType.Info, "Metadata loaded. Downloading cover art."));
 
             // Step 3: Get Cover Art
-            FetchCover(newCodex);
+            await FetchCover(newCodex);
             ProgressCounter++;
 
             //Complete import
