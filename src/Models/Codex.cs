@@ -79,6 +79,8 @@ namespace COMPASS.Models
             }
         }
 
+        public void RefreshThumbnail() => RaisePropertyChanged(nameof(Thumbnail));
+
         #region Properties
 
         private string _path;

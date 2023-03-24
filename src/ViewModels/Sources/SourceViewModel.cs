@@ -46,6 +46,7 @@ namespace COMPASS.ViewModels.Sources
                 logEntry = new(LogEntry.MsgType.Warning, $"Failed to generate thumbnail for {Path.GetFileName(newCodex.Title)}");
                 ProgressChanged(logEntry);
             }
+            newCodex.RefreshThumbnail();
 
             //Complete Import
             string logMsg = $"Imported {newCodex.Title}";
