@@ -32,6 +32,9 @@ namespace COMPASS.Models
         public string CodicesDataFilePath => Path.Combine(CollectionsPath, RelativeCodicesDataFilePath);
         private string RelativeTagsDataFilePath => DirectoryName + @"\Tags.xml";
         public string TagsDataFilePath => Path.Combine(CollectionsPath, RelativeTagsDataFilePath);
+        private string RelativeCollectionInfoFilePath => DirectoryName + @"\CollectionInfo.xml";
+        public string CollectionInfoFilePath => Path.Combine(CollectionsPath, RelativeCollectionInfoFilePath);
+
 
         //Tag Lists
         public List<Tag> AllTags { get; private set; } = new();
@@ -39,23 +42,31 @@ namespace COMPASS.Models
 
         //File Lists
         public ObservableCollection<Codex> AllCodices { get; private set; } = new();
+
+        public CollectionInfo Info { get; private set; } = new();
+
         #endregion
+
+        #region Load Data From File
 
         /// <summary>
         /// Loads the collection and sets it as the new default to load on startup
         /// </summary>
-        /// <returns>int that gives status: 0 for success, -1 for failed tags, -2 for failed codices, -3 if fails both</returns>
+        /// <returns>int that gives status: 0 for success, -1 for failed tags, -2 for failed codices, -4 for failed info, or combination of those</returns>
         public int Load()
         {
             int result = 0;
             bool loadedTags = LoadTags();
             bool loadedCodices = LoadCodices();
+            bool loadedInfo = LoadInfo();
             if (!loadedTags) { result -= 1; };
             if (!loadedCodices) { result -= 2; };
+            if (!loadedInfo) { result -= 4; };
             Properties.Settings.Default.StartupCollection = DirectoryName;
+            Logger.Info($"Loaded {DirectoryName}");
             return result;
         }
-        #region Load Data From File
+
         //Loads the RootTags from a file and constructs the Alltags list from it
         public bool LoadTags()
         {
@@ -74,13 +85,11 @@ namespace COMPASS.Models
                         Logger.Error($"Could not load {TagsDataFilePath}.", ex);
                         return false;
                     }
-
                 }
 
                 //Constructing AllTags and pass it to all the tags
                 AllTags = Utils.FlattenTree(RootTags).ToList();
                 foreach (Tag t in AllTags) t.AllTags = AllTags;
-                Logger.Info($"Loaded {RelativeTagsDataFilePath}");
             }
             else
             {
@@ -118,7 +127,6 @@ namespace COMPASS.Models
                     //double check image location, redundant but got fucked in an update
                     c.setImagePaths(this);
                 }
-                Logger.Info($"Loaded {RelativeCodicesDataFilePath}");
             }
             else
             {
@@ -126,9 +134,45 @@ namespace COMPASS.Models
             }
             return true;
         }
+
+        public bool LoadInfo()
+        {
+            if (File.Exists(CollectionInfoFilePath))
+            {
+                using var Reader = new StreamReader(CollectionInfoFilePath);
+                System.Xml.Serialization.XmlSerializer serializer = new(typeof(CollectionInfo));
+                try
+                {
+                    Info = serializer.Deserialize(Reader) as CollectionInfo;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Could not load {CollectionInfoFilePath}", ex);
+                    return false;
+                }
+
+                //temp for testing
+                string temp = @"C:\Users\pauld\AppData\Roaming\COMPASS\Collections\Testing";
+                if (!Info.AutoImportDirectories.Contains(temp)) Info.AutoImportDirectories.Add(temp);
+            }
+            else
+            {
+                Info = new();
+            }
+            return true;
+        }
         #endregion
 
         #region Save Data To XML File
+
+        public void Save()
+        {
+            SaveTags();
+            SaveCodices();
+            SaveInfo();
+            Properties.Settings.Default.Save();
+            Logger.Info($"Saved {DirectoryName}");
+        }
 
         public void SaveTags()
         {
@@ -137,13 +181,11 @@ namespace COMPASS.Models
                 using var writer = XmlWriter.Create(TagsDataFilePath, SettingsViewModel.XmlWriteSettings);
                 System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Tag>));
                 serializer.Serialize(writer, RootTags);
-                Logger.Info($"Saved {RelativeTagsDataFilePath}");
             }
             catch (Exception ex)
             {
                 Logger.Error($"Failed to Save Tags to {TagsDataFilePath}", ex);
             }
-
         }
 
         public void SaveCodices()
@@ -159,14 +201,25 @@ namespace COMPASS.Models
                 using var writer = XmlWriter.Create(CodicesDataFilePath, SettingsViewModel.XmlWriteSettings);
                 System.Xml.Serialization.XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
                 serializer.Serialize(writer, AllCodices);
-                Logger.Info($"Saved {RelativeCodicesDataFilePath}");
             }
             catch (Exception ex)
             {
                 Logger.Error($"Failed to Save Codex Info to {CodicesDataFilePath}", ex);
             }
+        }
 
-
+        public void SaveInfo()
+        {
+            try
+            {
+                using var writer = XmlWriter.Create(CollectionInfoFilePath, SettingsViewModel.XmlWriteSettings);
+                System.Xml.Serialization.XmlSerializer serializer = new(typeof(CollectionInfo));
+                serializer.Serialize(writer, Info);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to Save Tags to {TagsDataFilePath}", ex);
+            }
         }
 
         #endregion    

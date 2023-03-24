@@ -44,6 +44,24 @@ namespace COMPASS.Tools
             if (toAdd == null) throw new ArgumentNullException("collection");
             foreach (var i in toAdd) collection.Add(i);
         }
+
+        /// <summary>
+        /// Add an object to the end of the Collection if it is not yet in the collection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <param name="toAdd"></param>
+        /// <returns>Returns true if item was added, false if not </returns>
+        public static bool AddIfMissing<T>(
+            this ObservableCollection<T> collection, T toAdd)
+        {
+            if (!collection.Contains(toAdd))
+            {
+                collection.Add(toAdd);
+                return true;
+            }
+            return false;
+        }
         #endregion
     }
 }

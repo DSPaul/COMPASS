@@ -41,14 +41,14 @@ namespace COMPASS.ViewModels
         #region Load and Save Settings
         public static string PreferencesFilePath => Path.Combine(CompassDataPath, "Preferences.xml");
         public static XmlWriterSettings XmlWriteSettings { get; private set; } = new() { Indent = true };
-        private static SerializablePreferences AllPreferences = new();
+        private static GlobalPreferences AllPreferences = new();
         public void SavePreferences()
         {
             //Save OpenCodexPriority
             AllPreferences.OpenFilePriorityIDs = OpenCodexPriority.Select(pf => pf.ID).ToList();
 
             using var writer = XmlWriter.Create(PreferencesFilePath, XmlWriteSettings);
-            System.Xml.Serialization.XmlSerializer serializer = new(typeof(SerializablePreferences));
+            System.Xml.Serialization.XmlSerializer serializer = new(typeof(GlobalPreferences));
             serializer.Serialize(writer, AllPreferences);
         }
 
@@ -58,8 +58,8 @@ namespace COMPASS.ViewModels
             {
                 using (var Reader = new StreamReader(PreferencesFilePath))
                 {
-                    System.Xml.Serialization.XmlSerializer serializer = new(typeof(SerializablePreferences));
-                    AllPreferences = serializer.Deserialize(Reader) as SerializablePreferences;
+                    System.Xml.Serialization.XmlSerializer serializer = new(typeof(GlobalPreferences));
+                    AllPreferences = serializer.Deserialize(Reader) as GlobalPreferences;
                     Reader.Close();
                 }
                 //put openFilePriority in right order
@@ -92,6 +92,27 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _openCodexPriority, value);
         }
         #endregion
+
+        #endregion
+
+        #region Tab: Sources
+
+        //Remove a directory from auto import
+        private RelayCommand<string> _removeAutoImportDirectoryCommand;
+        public RelayCommand<string> RemoveAutoImportDirectoryCommand => _removeAutoImportDirectoryCommand ??= new(dir =>
+            MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories.Remove(dir));
+
+        //Add a directory from auto import
+        private RelayCommand<string> _addAutoImportDirectoryCommand;
+        public RelayCommand<string> AddAutoImportDirectoryCommand => _addAutoImportDirectoryCommand ??= new(AddAutoImportDirectory);
+
+        private void AddAutoImportDirectory(string dir)
+        {
+            if (!String.IsNullOrEmpty(dir))
+            {
+                MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories.AddIfMissing(dir);
+            }
+        }
 
         #endregion
 
@@ -271,8 +292,7 @@ namespace COMPASS.ViewModels
         public ActionCommand ChangeToNewDataPathCommand => _changeToNewDataPathCommand ??= new(ChangeToNewDataPath);
         public void ChangeToNewDataPath()
         {
-            MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
-            MainViewModel.CollectionVM.CurrentCollection.SaveTags();
+            MainViewModel.CollectionVM.CurrentCollection.Save();
 
             CompassDataPath = NewDataPath;
 
@@ -374,8 +394,7 @@ namespace COMPASS.ViewModels
                 lw.Show();
 
                 //save first
-                MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
-                MainViewModel.CollectionVM.CurrentCollection.SaveTags();
+                MainViewModel.CollectionVM.CurrentCollection.Save();
                 SavePreferences();
 
                 createZipWorker.DoWork += CreateZip;

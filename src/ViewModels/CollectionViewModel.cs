@@ -24,11 +24,7 @@ namespace COMPASS.ViewModels
             get => _currentCollection;
             set
             {
-                if (_currentCollection != null)
-                {
-                    _currentCollection.SaveCodices();
-                    _currentCollection.SaveTags();
-                }
+                _currentCollection?.Save();
 
                 if (value != null)
                 {

@@ -34,7 +34,7 @@ namespace COMPASS.Tools
             //return false if file doesn't exist
             if (String.IsNullOrEmpty(codex.Path) || !File.Exists(codex.Path)) return false;
 
-            string FileType = System.IO.Path.GetExtension(codex.Path);
+            string FileType = Path.GetExtension(codex.Path);
             switch (FileType)
             {
                 case ".pdf":

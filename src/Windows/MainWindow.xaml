@@ -252,7 +252,7 @@
                             <ContextMenu.Resources>
                                 <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
                             </ContextMenu.Resources>
-                            <MenuItem Header="Preferences" Command="{Binding OpenSettingsCommand}" Tools:AP.IconKind="Cog"/>
+                            <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}" Tools:AP.IconKind="Cog"/>
                             <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}" Tools:AP.IconKind="Autorenew"/>
                             <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New" Tools:AP.IconKind="AlertDecagram"/>
                             <!--<MenuItem Header="About" Command="{Binding OpenSettingsCommand}" CommandParameter="About"/>-->
