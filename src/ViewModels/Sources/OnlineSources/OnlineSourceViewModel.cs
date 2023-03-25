@@ -11,6 +11,9 @@ namespace COMPASS.ViewModels.Sources
 {
     public abstract class OnlineSourceViewModel : SourceViewModel
     {
+        public OnlineSourceViewModel() : base() { }
+        public OnlineSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
+
         #region Import logic
         public override void Import()
         {

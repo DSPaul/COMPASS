@@ -11,6 +11,9 @@ namespace COMPASS.ViewModels.Sources
 {
     public class GmBinderSourceViewModel : OnlineSourceViewModel
     {
+        public GmBinderSourceViewModel() : base() { }
+        public GmBinderSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
+
         public override string ImportTitle => "GM Binder";
 
         public override string ExampleURL => "https://www.gmbinder.com/share/";

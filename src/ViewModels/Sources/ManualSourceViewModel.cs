@@ -6,6 +6,8 @@ namespace COMPASS.ViewModels.Sources
 {
     public class ManualSourceViewModel : SourceViewModel
     {
+        public ManualSourceViewModel() : base() { }
+        public ManualSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
         public override ImportSource Source => ImportSource.Manual;
 
         public override void Import()

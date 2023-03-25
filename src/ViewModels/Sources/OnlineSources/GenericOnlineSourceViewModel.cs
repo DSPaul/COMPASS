@@ -6,6 +6,9 @@ namespace COMPASS.ViewModels.Sources
 {
     public class GenericOnlineSourceViewModel : OnlineSourceViewModel
     {
+        public GenericOnlineSourceViewModel() : base() { }
+        public GenericOnlineSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
+
         public override string ImportTitle => "Any URL";
 
         public override string ExampleURL => "https://";

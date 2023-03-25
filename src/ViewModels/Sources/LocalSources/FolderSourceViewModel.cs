@@ -1,4 +1,7 @@
-﻿using COMPASS.Windows;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
+using COMPASS.Tools;
+using COMPASS.Windows;
 using Ookii.Dialogs.Wpf;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +12,9 @@ namespace COMPASS.ViewModels.Sources
 {
     public class FolderSourceViewModel : LocalSourceViewModel
     {
+        public FolderSourceViewModel() : base() { }
+        public FolderSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
+
         public override ImportSource Source => ImportSource.Folder;
         public List<string> FolderNames { get; set; } = new();
         public List<string> FileNames { get; set; } = new();
@@ -87,6 +93,19 @@ namespace COMPASS.ViewModels.Sources
         {
             get => _toImportFiletypes;
             set => SetProperty(ref _toImportFiletypes, value);
+        }
+
+        private RelayCommand<bool> _confirmImportCommand;
+        public RelayCommand<bool> ConfirmImportCommand => _confirmImportCommand ??= new(ConfirmImport);
+        public void ConfirmImport(bool isChecked)
+        {
+            if (isChecked)
+            {
+                foreach (string dir in FolderNames)
+                {
+                    TargetCollection.Info.AutoImportDirectories.AddIfMissing(dir);
+                }
+            }
         }
 
         //helper class for file type selection during folder import

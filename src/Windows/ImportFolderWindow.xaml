@@ -12,6 +12,20 @@
     <StackPanel Orientation="Vertical" Margin="20">
         <TextBlock Text="{Binding Path=ImportAmount, StringFormat=Files found: {0:#}, FallbackValue=Files found: 0}"
                    TextWrapping="Wrap" VerticalAlignment="Top" Margin="5"/>
+
+        <CheckBox Margin="10" IsChecked="True" x:Name="AutoImportCheckbox">
+            <CheckBox.Style>
+                <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                    <Setter Property="Content" Value="Automatically import future files from these folders"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding FolderNames.Count}" Value="1">
+                            <Setter Property="Content" Value="Automatically import future files from this folder"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </CheckBox.Style>
+        </CheckBox>
+
         <TextBlock Text="Select which file types should be imported."  Margin="5"/>
 
         <Separator/>
@@ -43,7 +57,9 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Cancel" Click="Cancel_Click"  Margin="5"
                 Style="{StaticResource TextButton}" Background="{StaticResource CancelFill}"/>
-            <Button Content="Import" Click="CloseWindow" IsDefault="True" Margin="5"
+            <Button Content="Import" Click="CloseWindow" IsDefault="True" Margin="5" 
+                    Command="{Binding ConfirmImportCommand}" 
+                    CommandParameter="{Binding ElementName=AutoImportCheckbox, Path=IsChecked}"
                 Style="{StaticResource TextButton}" Background="{StaticResource AccentColorMuted}"/>
         </StackPanel>
         

@@ -164,18 +164,19 @@ namespace COMPASS.ViewModels
             }
 
             _currentCollection = collection;
+            RaisePropertyChanged(nameof(CurrentCollection));
 
             //create new viewmodels
             FilterVM = new(collection.AllCodices);
             TagsVM = new(this);
 
-            AutoImport();
+            _ = AutoImport();
         }
 
-        public async void AutoImport()
+        public async Task AutoImport()
         {
             //Start Auto Imports
-            FolderSourceViewModel folderVM = new()
+            FolderSourceViewModel folderVM = new(CurrentCollection)
             {
                 FolderNames = CurrentCollection.Info.AutoImportDirectories.ToList(),
             };
@@ -184,10 +185,13 @@ namespace COMPASS.ViewModels
 
             await Task.Delay(TimeSpan.FromSeconds(2));
             folderVM.ImportFolders(FileExtensionFilters);
-            CurrentCollection.SaveCodices();
         }
 
-        public void Refresh() => LoadCollection(CurrentCollection);
+        public void Refresh()
+        {
+            LoadCollection(CurrentCollection);
+            FilterVM.ReFilter(true);
+        }
 
         private ActionCommand _toggleCreateCollectionCommand;
         public ActionCommand ToggleCreateCollectionCommand => _toggleCreateCollectionCommand ??= new(ToggleCreateCollection);

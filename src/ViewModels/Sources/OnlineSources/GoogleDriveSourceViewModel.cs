@@ -8,6 +8,9 @@ namespace COMPASS.ViewModels.Sources
 {
     public class GoogleDriveSourceViewModel : OnlineSourceViewModel
     {
+        public GoogleDriveSourceViewModel() : base() { }
+        public GoogleDriveSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
+
         public override string ImportTitle => "Google Drive";
 
         public override string ExampleURL => "https://drive.google.com/file/";

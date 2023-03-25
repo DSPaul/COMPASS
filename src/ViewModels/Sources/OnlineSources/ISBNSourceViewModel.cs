@@ -12,6 +12,9 @@ namespace COMPASS.ViewModels.Sources
 {
     public class ISBNSourceViewModel : OnlineSourceViewModel
     {
+        public ISBNSourceViewModel() : base() { }
+        public ISBNSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
+
         public override string ImportTitle => "ISBN";
         public override string ExampleURL => "";
         public override ImportSource Source => ImportSource.ISBN;

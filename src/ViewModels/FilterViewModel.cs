@@ -477,13 +477,13 @@ namespace COMPASS.ViewModels
             if (string.IsNullOrEmpty(SortProperty)) return;
             sortDescr.Add(new SortDescription(SortProperty, SortDirection));
         }
-        private void ApplyFilters()
+        private void ApplyFilters(bool force = false)
         {
             IEnumerable<Codex> _filteredCodices = _allCodices
                 .Intersect(IncludedCodices)
                 .Except(ExcludedCodices);
 
-            if (FilteredCodices is null || !FilteredCodices.SequenceEqual(_filteredCodices))
+            if (force || FilteredCodices is null || !FilteredCodices.SequenceEqual(_filteredCodices))
             {
                 FilteredCodices = new(_filteredCodices);
                 //Also apply filtering to these lists
@@ -497,11 +497,11 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public void ReFilter()
+        public void ReFilter(bool force = false)
         {
             UpdateIncludedCodices(false);
             UpdateExcludedCodices(false);
-            ApplyFilters();
+            ApplyFilters(force);
         }
         public void RemoveCodex(Codex c)
         {

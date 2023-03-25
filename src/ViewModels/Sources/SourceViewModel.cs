@@ -10,22 +10,31 @@ namespace COMPASS.ViewModels.Sources
 {
     abstract public class SourceViewModel : ObservableObject
     {
-        public static SourceViewModel GetSource(ImportSource source) => source switch
+        public SourceViewModel() : this(MainViewModel.CollectionVM.CurrentCollection) { }
+        public SourceViewModel(CodexCollection targetCollection)
         {
-            ImportSource.File => new FileSourceViewModel(),
-            ImportSource.Folder => new FolderSourceViewModel(),
-            ImportSource.Manual => new ManualSourceViewModel(),
-            ImportSource.ISBN => new ISBNSourceViewModel(),
-            ImportSource.GmBinder => new GmBinderSourceViewModel(),
-            ImportSource.Homebrewery => new HomebrewerySourceViewModel(),
-            ImportSource.GoogleDrive => new GoogleDriveSourceViewModel(),
-            ImportSource.GenericURL => new GenericOnlineSourceViewModel(),
+            TargetCollection = targetCollection;
+        }
+
+        public static SourceViewModel GetSource(ImportSource source) => GetSource(MainViewModel.CollectionVM.CurrentCollection, source);
+        public static SourceViewModel GetSource(CodexCollection targetCollection, ImportSource source) => source switch
+        {
+            ImportSource.File => new FileSourceViewModel(targetCollection),
+            ImportSource.Folder => new FolderSourceViewModel(targetCollection),
+            ImportSource.Manual => new ManualSourceViewModel(targetCollection),
+            ImportSource.ISBN => new ISBNSourceViewModel(targetCollection),
+            ImportSource.GmBinder => new GmBinderSourceViewModel(targetCollection),
+            ImportSource.Homebrewery => new HomebrewerySourceViewModel(targetCollection),
+            ImportSource.GoogleDrive => new GoogleDriveSourceViewModel(targetCollection),
+            ImportSource.GenericURL => new GenericOnlineSourceViewModel(targetCollection),
             _ => throw new NotSupportedException()
         };
 
         #region Import Logic
 
         protected ProgressViewModel ProgressVM = new();
+
+        protected CodexCollection TargetCollection;
 
         public abstract ImportSource Source { get; }
         public abstract void Import();

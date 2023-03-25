@@ -14,7 +14,10 @@ namespace COMPASS.ViewModels.Sources
 {
     public abstract class LocalSourceViewModel : SourceViewModel
     {
-        public override string ProgressText => $"Import in Progress: File {ProgressCounter + 1} / {ImportAmount}";
+        public LocalSourceViewModel() : base() { }
+        public LocalSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
+
+        public override string ProgressText => $"Import in Progress: [{ProgressCounter} / {ImportAmount}]";
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
@@ -53,7 +56,7 @@ namespace COMPASS.ViewModels.Sources
                                 //Remove the "ISBN" so only number remains
                                 ISBN = Constants.RegexISBNNumberOnly().Match(pageContent).Value;
                                 codex.ISBN = ISBN;
-                                codex = await new ISBNSourceViewModel().SetMetaData(codex);
+                                codex = await new ISBNSourceViewModel(TargetCollection).SetMetaData(codex);
                                 break;
                             }
                         }
@@ -85,7 +88,7 @@ namespace COMPASS.ViewModels.Sources
         public async void ImportFiles(List<string> paths, bool showProgressWindow)
         {
             //filter out files already in collection
-            IEnumerable<string> existingPaths = MainViewModel.CollectionVM.CurrentCollection.AllCodices.Select(codex => codex.Path);
+            IEnumerable<string> existingPaths = TargetCollection.AllCodices.Select(codex => codex.Path);
             paths = paths.Except(existingPaths).ToList();
 
             ProgressCounter = 0;
@@ -96,9 +99,9 @@ namespace COMPASS.ViewModels.Sources
             //make new codices first so they all have a valid ID
             foreach (string path in paths)
             {
-                Codex newCodex = new(MainViewModel.CollectionVM.CurrentCollection) { Path = path };
+                Codex newCodex = new(TargetCollection) { Path = path };
                 newCodices.Add(newCodex);
-                MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
+                TargetCollection.AllCodices.Add(newCodex);
             }
 
             if (showProgressWindow)

@@ -8,6 +8,9 @@ namespace COMPASS.ViewModels.Sources
 {
     public class DndBeyondSourceViewModel : OnlineSourceViewModel
     {
+        public DndBeyondSourceViewModel() : base() { }
+        public DndBeyondSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
+
         public override string ImportTitle => "D&D Beyond";
 
         public override string ExampleURL => "https://www.dndbeyond.com/sources/";

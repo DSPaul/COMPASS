@@ -11,6 +11,9 @@ namespace COMPASS.ViewModels.Sources
 {
     public class HomebrewerySourceViewModel : OnlineSourceViewModel
     {
+        public HomebrewerySourceViewModel() : base() { }
+        public HomebrewerySourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
+
         public override string ImportTitle => "Homebrewery";
 
         public override string ExampleURL => "https://homebrewery.naturalcrit.com/share/";
