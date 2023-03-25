@@ -41,23 +41,24 @@ namespace COMPASS.Tools
         public static void AddRange<T>(
         this ObservableCollection<T> collection, IEnumerable<T> toAdd)
         {
-            if (toAdd == null) throw new ArgumentNullException("collection");
+            if (toAdd == null) throw new ArgumentNullException(nameof(toAdd));
             foreach (var i in toAdd) collection.Add(i);
         }
 
         /// <summary>
-        /// Add an object to the end of the Collection if it is not yet in the collection.
+        /// Add an object to the end of the list if it is not yet in the list.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="collection"></param>
+        /// <param name="list"></param>
         /// <param name="toAdd"></param>
         /// <returns>Returns true if item was added, false if not </returns>
         public static bool AddIfMissing<T>(
-            this ObservableCollection<T> collection, T toAdd)
+            this IList<T> list, T toAdd)
         {
-            if (!collection.Contains(toAdd))
+            if (toAdd == null) throw new ArgumentNullException(nameof(toAdd));
+            if (!list.Contains(toAdd))
             {
-                collection.Add(toAdd);
+                list.Add(toAdd);
                 return true;
             }
             return false;

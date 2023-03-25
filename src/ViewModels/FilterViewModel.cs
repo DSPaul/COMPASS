@@ -265,12 +265,12 @@ namespace COMPASS.ViewModels
                 //Populate Author Collection
                 AuthorList = new(AuthorList.Union(c.Authors));
                 //Populate Publisher Collection
-                if (!String.IsNullOrEmpty(c.Publisher) && !PublisherList.Contains(c.Publisher))
-                    PublisherList.Add(c.Publisher);
+                if (!String.IsNullOrEmpty(c.Publisher))
+                    PublisherList.AddIfMissing(c.Publisher);
                 //Populate FileType Collection
                 string fileType = c.GetFileType(); // to avoid the same function call 3 times
-                if (!String.IsNullOrEmpty(fileType) && !FileTypeList.Contains(fileType))
-                    FileTypeList.Add(fileType);
+                if (!String.IsNullOrEmpty(fileType))
+                    FileTypeList.AddIfMissing(fileType);
             }
             AuthorList.Remove(""); //remove "" author because String.IsNullOrEmpty cannot be called during Union
 
@@ -443,7 +443,7 @@ namespace COMPASS.ViewModels
                     for (int i = 0; i < SingleGroupTags.Count; i++)
                     {
                         Tag parentTag = SingleGroupTags[i].Parent;
-                        if (parentTag != null && !parentTag.IsGroup && !SingleGroupTags.Contains(parentTag)) SingleGroupTags.Add(parentTag);
+                        if (parentTag != null && !parentTag.IsGroup) SingleGroupTags.AddIfMissing(parentTag);
                     }
 
                     SingleGroupFilteredCodices = new(_allCodices.Where(codex => SingleGroupTags.Intersect(codex.Tags).Any()));
