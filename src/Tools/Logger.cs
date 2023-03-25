@@ -33,13 +33,13 @@ namespace COMPASS.Tools
         {
             FileLog.Fatal(e.Exception.ToString(), e.Exception);
             //prompt user to submit logs and open an issue
-            string message = "Its seems COMPASS has run into an error and crashed.\n" +
-                $"You can help improve COMPASS by opening an issue on {Constants.RepoURL}. \n" +
+            string message = $"Its seems COMPASS has run into a critical error ({e.Exception.Message}).\n" +
+                $"You can help improve COMPASS by opening an issue on {Constants.RepoURL} with the error message. \n" +
                 @"Please include the log file located at %appdata%\COMPASS\logs.";
-            if (Task.Run(() => MessageBox.Show(message, "COMPASS has crashed.", MessageBoxButton.OK, MessageBoxImage.Error)).Result == MessageBoxResult.OK)
+            if (Task.Run(() => MessageBox.Show(message, $"COMPASS ran into a critical error.", MessageBoxButton.OK, MessageBoxImage.Error)).Result == MessageBoxResult.OK)
             {
                 e.Handled = true;
-                Environment.Exit(1);
+                //Environment.Exit(1);
             }
         }
     }
