@@ -97,6 +97,15 @@ namespace COMPASS.ViewModels
 
         #region Tab: Sources
 
+        public ObservableCollection<string> AutoImportDirectories
+        {
+            get
+            {
+                MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories.CollectionChanged += (e, v) => RaisePropertyChanged(nameof(AutoImportDirectories));
+                return MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories;
+            }
+        }
+
         //Remove a directory from auto import
         private RelayCommand<string> _removeAutoImportDirectoryCommand;
         public RelayCommand<string> RemoveAutoImportDirectoryCommand => _removeAutoImportDirectoryCommand ??= new(dir =>

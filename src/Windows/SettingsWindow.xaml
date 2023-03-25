@@ -115,7 +115,7 @@
                             <TextBlock Text="From folders:"/>
                             <Border CornerRadius="5" Background="{StaticResource LogBackground}"  Margin="10,0">
                                 <StackPanel Margin="0,10,0,5">
-                                    <ItemsControl ItemsSource="{Binding Source={StaticResource MVM}, Path=CollectionVM.CurrentCollection.Info.AutoImportDirectories}" >
+                                    <ItemsControl ItemsSource="{Binding AutoImportDirectories}" >
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <StackPanel/>
@@ -134,7 +134,8 @@
                                                         <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="FolderOpen" Width="20" 
                                                                 VerticalAlignment="Bottom" Margin="5,0" Grid.Column="1" ToolTip="Show In Explorer"/>
                                                         <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="Delete" Width="20" 
-                                                                Command="{Binding DataContext.RemoveAutoImportDirectoryCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                                                Command="{Binding DataContext.RemoveAutoImportDirectoryCommand, 
+                                                                RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                 CommandParameter="{Binding}" VerticalAlignment="Bottom" Margin="5,0" 
                                                                 Grid.Column="2" ToolTip="Remove From Auto Import"/>
                                                     </Grid>
