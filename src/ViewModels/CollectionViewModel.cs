@@ -1,21 +1,19 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
+using COMPASS.ViewModels.Sources;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace COMPASS.ViewModels
 {
     public class CollectionViewModel : ObservableObject
     {
-        public CollectionViewModel()
-        {
-            LoadInitialCollection();
-        }
-
         #region Properties
 
         private CodexCollection _currentCollection;
@@ -24,26 +22,10 @@ namespace COMPASS.ViewModels
             get => _currentCollection;
             set
             {
-                _currentCollection?.Save();
-
                 if (value != null)
                 {
-                    int success = value.Load();
-                    if (success < 0)
-                    {
-                        string msg = success switch
-                        {
-                            -1 => "The Tag data seems to be corrupted and could not be read.",
-                            -2 => "The Codex data seems to be corrupted and could not be read.",
-                            -3 => "Both the Tag and Codex data seems to be corrupted and could not be read.",
-                            _ => ""
-                        };
-                        _ = MessageBox.Show($"Could not load {value.DirectoryName}. \n" + msg, "Fail to Load Collection", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    SetProperty(ref _currentCollection, value);
-                    FilterVM = new(value.AllCodices);
-                    TagsVM = new(this);
+                    LoadCollection(value);
+                    RaisePropertyChanged(nameof(CurrentCollection));
                 }
             }
         }
@@ -91,7 +73,7 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Methods and Commands
-        private void LoadInitialCollection()
+        public void LoadInitialCollection()
         {
             Directory.CreateDirectory(CodexCollection.CollectionsPath);
 
@@ -152,7 +134,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private bool isLegalCollectionName(string dirName)
+        private bool _isLegalCollectionName(string dirName)
         {
             bool legal =
                 dirName.IndexOfAny(Path.GetInvalidPathChars()) < 0
@@ -163,7 +145,49 @@ namespace COMPASS.ViewModels
             return legal;
         }
 
-        public void Refresh() => CurrentCollection = CurrentCollection;
+        public void LoadCollection(CodexCollection collection)
+        {
+            _currentCollection?.Save();
+
+            int success = collection.Load();
+            if (success < 0)
+            {
+                string msg = success switch
+                {
+                    -1 => "The Tag data seems to be corrupted and could not be read.",
+                    -2 => "The Codex data seems to be corrupted and could not be read.",
+                    -3 => "Both the Tag and Codex data seems to be corrupted and could not be read.",
+                    _ => ""
+                };
+                _ = MessageBox.Show($"Could not load {collection.DirectoryName}. \n" + msg, "Fail to Load Collection", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            _currentCollection = collection;
+
+            //create new viewmodels
+            FilterVM = new(collection.AllCodices);
+            TagsVM = new(this);
+
+            AutoImport();
+        }
+
+        public async void AutoImport()
+        {
+            //Start Auto Imports
+            FolderSourceViewModel folderVM = new()
+            {
+                FolderNames = CurrentCollection.Info.AutoImportDirectories.ToList(),
+            };
+
+            Dictionary<string, bool> FileExtensionFilters = new();
+
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            folderVM.ImportFolders(FileExtensionFilters);
+            CurrentCollection.SaveCodices();
+        }
+
+        public void Refresh() => LoadCollection(CurrentCollection);
 
         private ActionCommand _toggleCreateCollectionCommand;
         public ActionCommand ToggleCreateCollectionCommand => _toggleCreateCollectionCommand ??= new(ToggleCreateCollection);
@@ -175,7 +199,7 @@ namespace COMPASS.ViewModels
 
         // Create CodexCollection
         private RelayCommand<string> _createCollectionCommand;
-        public RelayCommand<string> CreateCollectionCommand => _createCollectionCommand ??= new(CreateCollection, isLegalCollectionName);
+        public RelayCommand<string> CreateCollectionCommand => _createCollectionCommand ??= new(CreateCollection, _isLegalCollectionName);
         public void CreateCollection(string dirName)
         {
             if (string.IsNullOrEmpty(dirName)) return;
@@ -191,7 +215,7 @@ namespace COMPASS.ViewModels
 
         // Rename Collection
         private RelayCommand<string> _editCollectionNameCommand;
-        public RelayCommand<string> EditCollectionNameCommand => _editCollectionNameCommand ??= new(EditCollectionName, isLegalCollectionName);
+        public RelayCommand<string> EditCollectionNameCommand => _editCollectionNameCommand ??= new(EditCollectionName, _isLegalCollectionName);
         public void EditCollectionName(string newName)
         {
             CurrentCollection.RenameCollection(newName);

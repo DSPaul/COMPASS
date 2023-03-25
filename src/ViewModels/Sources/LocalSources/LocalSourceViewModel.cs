@@ -82,8 +82,12 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<bool> FetchCover(Codex codex) => await Task.Run(() => CoverFetcher.GetCoverFromFile(codex));
 
-        public async void ImportFiles(List<string> paths)
+        public async void ImportFiles(List<string> paths, bool showProgressWindow)
         {
+            //filter out files already in collection
+            IEnumerable<string> existingPaths = MainViewModel.CollectionVM.CurrentCollection.AllCodices.Select(codex => codex.Path);
+            paths = paths.Except(existingPaths).ToList();
+
             ProgressCounter = 0;
             ImportAmount = paths.Count;
 
@@ -92,24 +96,16 @@ namespace COMPASS.ViewModels.Sources
             //make new codices first so they all have a valid ID
             foreach (string path in paths)
             {
-                //if already in collection, skip
-                if (MainViewModel.CollectionVM.CurrentCollection.AllCodices.Any(codex => codex.Path == path))
-                {
-                    string logMsg = $"Skipped {Path.GetFileName(path)}, already in collection";
-                    Logger.Info(logMsg);
-                    ProgressCounter++;
-                    ProgressChanged(new(LogEntry.MsgType.Warning, logMsg));
-                }
-                else
-                {
-                    Codex newCodex = new(MainViewModel.CollectionVM.CurrentCollection) { Path = path };
-                    newCodices.Add(newCodex);
-                    MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
-                }
+                Codex newCodex = new(MainViewModel.CollectionVM.CurrentCollection) { Path = path };
+                newCodices.Add(newCodex);
+                MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
             }
 
-            ProgressWindow window = GetProgressWindow();
-            window.Show();
+            if (showProgressWindow)
+            {
+                ProgressWindow window = GetProgressWindow();
+                window.Show();
+            }
 
             var result = await Task.Run(() => Parallel.ForEach(newCodices, ImportCodex));
         }

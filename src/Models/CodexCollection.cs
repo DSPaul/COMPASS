@@ -150,10 +150,6 @@ namespace COMPASS.Models
                     Logger.Error($"Could not load {CollectionInfoFilePath}", ex);
                     return false;
                 }
-
-                //temp for testing
-                string temp = @"C:\Users\pauld\AppData\Roaming\COMPASS\Collections\Testing";
-                if (!Info.AutoImportDirectories.Contains(temp)) Info.AutoImportDirectories.Add(temp);
             }
             else
             {

@@ -19,7 +19,7 @@ namespace COMPASS.ViewModels.Sources
 
             if (openFileDialog.ShowDialog() == true)
             {
-                ImportFiles(openFileDialog.FileNames.ToList());
+                ImportFiles(openFileDialog.FileNames.ToList(), true);
             }
         }
     }

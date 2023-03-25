@@ -27,10 +27,10 @@ namespace COMPASS.ViewModels.Sources
 
             FolderNames = openFolderDialog.SelectedPaths.ToList();
 
-            ImportFolder();
+            ImportFolders();
         }
 
-        public void ImportFolder()
+        public void ImportFolders(Dictionary<string, bool> filetypeFilter = null)
         {
             //find files in folder, including subfolder
             List<string> toSearch = new(FolderNames); //list with folders to search
@@ -48,16 +48,24 @@ namespace COMPASS.ViewModels.Sources
             var toImport_grouped = toImport.GroupBy(Path.GetExtension);
             ToImportFiletypes = toImport_grouped.Select(x => new FileTypeInfo(x.Key, x.Count(), true)).ToList();
 
-            //open window to let user choose which filetypes to import
-            ImportFolderWindow importFolderWindow;
-
-            importFolderWindow = new(this)
+            if (filetypeFilter is null)
             {
-                Owner = Application.Current.MainWindow
-            };
+                //open window to let user choose which filetypes to import
+                ImportFolderWindow importFolderWindow;
 
-            var dialogresult = importFolderWindow.ShowDialog();
-            if (dialogresult == false) return;
+                importFolderWindow = new(this)
+                {
+                    Owner = Application.Current.MainWindow
+                };
+
+                var dialogresult = importFolderWindow.ShowDialog();
+                if (dialogresult == false) return;
+            }
+
+            else
+            {
+                //TODO: set which file types to import using the dictionary
+            }
 
             //Make new toImport with only selected Filetypes
             toImport = new List<string>();
@@ -69,7 +77,8 @@ namespace COMPASS.ViewModels.Sources
                 }
             }
 
-            ImportFiles(toImport);
+            bool showProgressWindow = filetypeFilter is null; //if filetypeFilter was given, it's a background import
+            ImportFiles(toImport, showProgressWindow);
         }
 
         #region File Type Selection Window stuff

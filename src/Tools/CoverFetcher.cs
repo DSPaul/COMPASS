@@ -152,6 +152,7 @@ namespace COMPASS.Tools
             //create thumbnail
             image.Thumbnail(newwidth, newheight);
             image.Write(c.Thumbnail);
+            c.RefreshThumbnail();
         }
 
         //Take screenshot of specific html element 

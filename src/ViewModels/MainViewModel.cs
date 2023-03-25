@@ -23,6 +23,7 @@ namespace COMPASS.ViewModels
             //Load everything
             UpgradeSettings();
             CollectionVM = new();
+            CollectionVM.LoadInitialCollection();
             CurrentLayout = LayoutViewModel.GetLayout();
             LeftDockVM = new(this);
             CodexInfoVM = new(this);
