@@ -78,8 +78,9 @@ namespace COMPASS.ViewModels
         public void InitLogger()
         {
             log4net.GlobalContext.Properties["CompassDataPath"] = SettingsViewModel.CompassDataPath;
+            Logger.FileLog = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             Application.Current.DispatcherUnhandledException += Logger.LogUnhandledException;
-            Logger.Info($"Launching Compass v{Assembly.GetExecutingAssembly().GetName().Version}");
+            Logger.Info($"Launching Compass v{Assembly.GetExecutingAssembly().GetName().Version.ToString()[0..5]}");
         }
 
         private void InitConnectionTimer()

@@ -9,7 +9,7 @@ namespace COMPASS.Tools
     public static class Logger
     {
         // Log To file
-        public static readonly log4net.ILog FileLog = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        public static log4net.ILog FileLog;
 
         // Log to Log Tab
         public static ObservableCollection<LogEntry> ActivityLog { get; private set; } = new ObservableCollection<LogEntry>();
@@ -39,7 +39,7 @@ namespace COMPASS.Tools
             if (Task.Run(() => MessageBox.Show(message, $"COMPASS ran into a critical error.", MessageBoxButton.OK, MessageBoxImage.Error)).Result == MessageBoxResult.OK)
             {
                 e.Handled = true;
-                //Environment.Exit(1);
+                Environment.Exit(1);
             }
         }
     }
