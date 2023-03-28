@@ -302,6 +302,19 @@ namespace COMPASS.ViewModels
             MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
 
+        //Banish Codex
+        private RelayCommand<Codex> _banishCodexCommand;
+        public RelayCommand<Codex> BanishCodexCommand => _banishCodexCommand ??= new((codex) => BanishCodices(new List<Codex>() { codex }));
+
+        //Banish Codices
+        private RelayCommand<IList> _banishCodicesCommand;
+        public RelayCommand<IList> BanishCodicesCommand => _banishCodicesCommand ??= new(BanishCodices);
+        public static void BanishCodices(IList toBanish)
+        {
+            MainViewModel.CollectionVM.CurrentCollection.BanishCodices(toBanish);
+            DeleteCodices(toBanish);
+        }
+
         public static void DataGridHandleKeyDown(object sender, KeyEventArgs e)
             => HandleKeyDownOnCodex(((DataGrid)sender).SelectedItems, e);
         public static void ListBoxHandleKeyDown(object sender, KeyEventArgs e)
@@ -315,7 +328,16 @@ namespace COMPASS.ViewModels
                 switch (e.Key)
                 {
                     case Key.Delete:
-                        DeleteCodices(codices);
+                        if (Keyboard.Modifiers == ModifierKeys.Alt)
+                        {
+                            //Alt + Delete
+                            BanishCodices(codices);
+                        }
+                        else
+                        {
+                            //Delete
+                            DeleteCodices(codices);
+                        }
                         e.Handled = true;
                         break;
                     case Key.Enter:
@@ -323,17 +345,17 @@ namespace COMPASS.ViewModels
                         e.Handled = true;
                         break;
                     case Key.E:
-                        //CTRL + E
                         if (Keyboard.Modifiers == ModifierKeys.Control)
                         {
+                            //CTRL + E
                             EditCodices(codices);
                             e.Handled = true;
                         }
                         break;
                     case Key.F:
-                        //CTRL + F
                         if (Keyboard.Modifiers == ModifierKeys.Control)
                         {
+                            //CTRL + F
                             FavoriteCodices(codices);
                             e.Handled = true;
                         }

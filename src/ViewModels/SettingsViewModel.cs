@@ -97,14 +97,7 @@ namespace COMPASS.ViewModels
 
         #region Tab: Sources
 
-        public ObservableCollection<string> AutoImportDirectories
-        {
-            get
-            {
-                MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories.CollectionChanged += (e, v) => RaisePropertyChanged(nameof(AutoImportDirectories));
-                return MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories;
-            }
-        }
+        public ObservableCollection<string> AutoImportDirectories => MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories;
 
         //Remove a directory from auto import
         private RelayCommand<string> _removeAutoImportDirectoryCommand;
@@ -122,6 +115,13 @@ namespace COMPASS.ViewModels
                 MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories.AddIfMissing(dir);
             }
         }
+
+        public ObservableCollection<string> BanishedPaths => MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths;
+
+        //Remove a directory from auto import
+        private RelayCommand<string> _removeBanishedPathCommand;
+        public RelayCommand<string> RemoveBanishedPathCommand => _removeBanishedPathCommand ??= new(path =>
+            MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.Remove(path));
 
         #endregion
 

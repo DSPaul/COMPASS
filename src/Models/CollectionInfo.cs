@@ -9,5 +9,6 @@ namespace COMPASS.Models
     {
         //Folders to check for new files
         public ObservableCollection<string> AutoImportDirectories { get; set; } = new();
+        public ObservableCollection<string> BanishedPaths { get; set; } = new();
     }
 }

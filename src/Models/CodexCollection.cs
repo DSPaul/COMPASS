@@ -248,6 +248,19 @@ namespace COMPASS.Models
             }
         }
 
+        public void BanishCodices(IList toBanish)
+        {
+            IEnumerable<Codex> toBanishList = toBanish?.Cast<Codex>();
+            IEnumerable<string> toBanishPaths = toBanishList.Select(codex => codex.Path);
+            IEnumerable<string> toBanishURLs = toBanishList.Select(codex => codex.SourceURL);
+            IEnumerable<string> toBanishStrings = toBanishPaths
+                .Concat(toBanishURLs)
+                .Where(s => !String.IsNullOrWhiteSpace(s))
+                .ToHashSet();
+
+            Info.BanishedPaths.AddRange(toBanishStrings);
+        }
+
         public void DeleteTag(Tag todel)
         {
             //Recursive loop to delete all childeren

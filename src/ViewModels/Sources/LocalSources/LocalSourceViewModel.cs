@@ -87,9 +87,12 @@ namespace COMPASS.ViewModels.Sources
 
         public async void ImportFiles(List<string> paths, bool showProgressWindow)
         {
-            //filter out files already in collection
+            //filter out files already in collection & banned paths
             IEnumerable<string> existingPaths = TargetCollection.AllCodices.Select(codex => codex.Path);
-            paths = paths.Except(existingPaths).ToList();
+            paths = paths
+                .Except(existingPaths)
+                .Except(TargetCollection.Info.BanishedPaths)
+                .ToList();
 
             ProgressCounter = 0;
             ImportAmount = paths.Count;

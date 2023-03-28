@@ -591,6 +591,11 @@
                   Command="{Binding Path=DataContext.CodexVM.DeleteCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
+        <MenuItem Header="Delete Forever" Tools:AP.IconKind="DeleteForever" InputGestureText="Alt+Delete"
+                  Command="{Binding Path=DataContext.CodexVM.BanishCodexCommand,
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"
+                  ToolTip="Deletes the file and excludes it from future imports."/>
     </ContextMenu>
 
     <ContextMenu x:Key="MultiCodexContextMenu" x:Shared="False"
@@ -622,9 +627,13 @@
                 </Style>
             </MenuItem.ItemContainerStyle>
         </MenuItem>
-        <MenuItem Header="Delete Selection" Tools:AP.IconKind="Delete" CommandParameter="{Binding}" InputGestureText="Delete"
+        <MenuItem Header="Delete" Tools:AP.IconKind="Delete" CommandParameter="{Binding}" InputGestureText="Delete"
                   Command="{Binding Path=DataContext.CodexVM.DeleteCodicesCommand, 
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Delete Forever" Tools:AP.IconKind="DeleteForever" CommandParameter="{Binding}" InputGestureText="Alt+Delete"
+                  Command="{Binding Path=DataContext.CodexVM.BanishCodicesCommand, 
+                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  ToolTip="Deletes the files and excludes them from future imports."/>
     </ContextMenu>
     <!--#endregion-->
 
