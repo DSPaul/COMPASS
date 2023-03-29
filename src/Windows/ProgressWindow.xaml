@@ -6,9 +6,9 @@
         xmlns:conv="clr-namespace:COMPASS.Converters"
         xmlns:Tools="clr-namespace:COMPASS.Tools"
         xmlns:local="clr-namespace:COMPASS.Windows" 
-        xmlns:Sources="clr-namespace:COMPASS.ViewModels.Sources"
-        mc:Ignorable="d" Foreground="{StaticResource TextColor}" 
-        d:DataContext="{d:DesignInstance Type=Sources:ProgressViewModel}"
+        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
+        mc:Ignorable="d" Foreground="{StaticResource TextColor}"
+        d:DataContext="{d:DesignInstance Type=viewmodels:ProgressViewModel}"
         AllowsTransparency="True" Background="Transparent" WindowStyle="None"
         Title="Progress Window" Height="150" Width="450" WindowStartupLocation="CenterOwner">
     <Window.Style>
