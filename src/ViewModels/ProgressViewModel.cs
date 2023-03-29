@@ -27,6 +27,10 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _text, value);
         }
 
-        public float SetPercentage(int counter, int total) => Percentage = (int)((float)counter / total * 100);
+        public float SetPercentage(int counter, int total)
+        {
+            if (total == 0) return Percentage = 100;
+            return Percentage = (int)((float)counter / total * 100);
+        }
     }
 }

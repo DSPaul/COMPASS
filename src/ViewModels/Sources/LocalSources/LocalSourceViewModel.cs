@@ -97,6 +97,12 @@ namespace COMPASS.ViewModels.Sources
             ProgressCounter = 0;
             ImportAmount = paths.Count;
 
+            if (paths.Count == 0)
+            {
+                ProgressVM.SetPercentage(ProgressCounter, ImportAmount);
+                return;
+            }
+
             List<Codex> newCodices = new();
 
             //make new codices first so they all have a valid ID
