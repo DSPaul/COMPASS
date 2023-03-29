@@ -30,7 +30,7 @@ namespace COMPASS.ViewModels
                 ReleaseNotes = File.ReadAllText($"release-notes-{version}.md");
             }
 
-            LoadPreferences();
+            LoadGlobalPreferences();
         }
 
         #region singleton pattern
@@ -44,15 +44,18 @@ namespace COMPASS.ViewModels
         private static GlobalPreferences AllPreferences = new();
         public void SavePreferences()
         {
-            //Save OpenCodexPriority
+            //Prep OpenCodexPriority for save
             AllPreferences.OpenFilePriorityIDs = OpenCodexPriority.Select(pf => pf.ID).ToList();
 
             using var writer = XmlWriter.Create(PreferencesFilePath, XmlWriteSettings);
             System.Xml.Serialization.XmlSerializer serializer = new(typeof(GlobalPreferences));
             serializer.Serialize(writer, AllPreferences);
+
+            //Convert list back to dict because dict does not support two way binding
+            MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences = FiletypePreferences.ToDictionary(x => x.Key, x => x.Value);
         }
 
-        public void LoadPreferences()
+        public void LoadGlobalPreferences()
         {
             if (File.Exists(PreferencesFilePath))
             {
@@ -70,6 +73,13 @@ namespace COMPASS.ViewModels
                 Logger.Warn($"{PreferencesFilePath} does not exist.", new FileNotFoundException());
                 CreateDefaultPreferences();
             }
+        }
+
+        public void Refresh()
+        {
+            //Tell the window that the FiletypePreferences dict might have changed so it needs to fetch it again
+            _filetypePreferences = null;
+            RaisePropertyChanged(nameof(FiletypePreferences));
         }
 
         public void CreateDefaultPreferences() => OpenCodexPriority = new(OpenCodexFunctions);
@@ -115,6 +125,11 @@ namespace COMPASS.ViewModels
                 MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories.AddIfMissing(dir);
             }
         }
+
+        private List<ObservableKeyValuePair<string, bool>> _filetypePreferences;
+        public List<ObservableKeyValuePair<string, bool>> FiletypePreferences
+            => _filetypePreferences
+            ??= MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences.Select(x => new ObservableKeyValuePair<string, bool>(x)).ToList();
 
         public ObservableCollection<string> BanishedPaths => MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths;
 

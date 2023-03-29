@@ -3,7 +3,6 @@ using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Sources;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -181,10 +180,8 @@ namespace COMPASS.ViewModels
                 FolderNames = CurrentCollection.Info.AutoImportDirectories.ToList(),
             };
 
-            Dictionary<string, bool> FileExtensionFilters = new();
-
             await Task.Delay(TimeSpan.FromSeconds(2));
-            folderVM.ImportFolders(FileExtensionFilters);
+            folderVM.ImportFolders(true);
         }
 
         public void Refresh()

@@ -36,7 +36,7 @@ namespace COMPASS.ViewModels.Sources
             ImportFolders();
         }
 
-        public void ImportFolders(Dictionary<string, bool> filetypeFilter = null)
+        public void ImportFolders(bool hidden = false)
         {
             //find files in folder, including subfolder
             List<string> toSearch = new(FolderNames); //list with folders to search
@@ -52,10 +52,18 @@ namespace COMPASS.ViewModels.Sources
 
             //find how many files of each filetype
             var toImport_grouped = toImport.GroupBy(Path.GetExtension);
-            ToImportFiletypes = toImport_grouped.Select(x => new FileTypeInfo(x.Key, x.Count(), true)).ToList();
 
-            if (filetypeFilter is null)
+            //add new file extension to global file preferences
+            foreach (string extension in toImport_grouped.Select(x => x.Key))
             {
+                TargetCollection.Info.FiletypePreferences.TryAdd(extension, true);
+            }
+
+            if (!hidden)
+            {
+                //init ToImportFileTypes with values from FileTypePreferences
+                ToImportFiletypes = toImport_grouped.Select(x => new FileTypeInfo(x.Key, TargetCollection.Info.FiletypePreferences[x.Key], x.Count())).ToList();
+
                 //open window to let user choose which filetypes to import
                 ImportFolderWindow importFolderWindow;
 
@@ -66,25 +74,17 @@ namespace COMPASS.ViewModels.Sources
 
                 var dialogresult = importFolderWindow.ShowDialog();
                 if (dialogresult == false) return;
-            }
 
-            else
-            {
-                //TODO: set which file types to import using the dictionary
-            }
-
-            //Make new toImport with only selected Filetypes
-            toImport = new List<string>();
-            foreach (var filetypeHelper in ToImportFiletypes)
-            {
-                if (filetypeHelper.ShouldImport)
+                //update the global file type preferences for the collection
+                foreach (var filetypeHelper in ToImportFiletypes)
                 {
-                    toImport.AddRange(toImport_grouped.First(g => g.Key == filetypeHelper.FileExtension));
+                    TargetCollection.Info.FiletypePreferences[filetypeHelper.FileExtension] = filetypeHelper.ShouldImport;
                 }
             }
 
-            bool showProgressWindow = filetypeFilter is null; //if filetypeFilter was given, it's a background import
-            ImportFiles(toImport, showProgressWindow);
+            //Make new toImport with only selected Filetypes
+            toImport = toImport.Where(path => TargetCollection.Info.FiletypePreferences[Path.GetExtension(path)]).ToList();
+            ImportFiles(toImport, !hidden);
         }
 
         #region File Type Selection Window stuff
@@ -111,7 +111,7 @@ namespace COMPASS.ViewModels.Sources
         //helper class for file type selection during folder import
         public class FileTypeInfo
         {
-            public FileTypeInfo(string extension, int fileCount, bool shouldImport)
+            public FileTypeInfo(string extension, bool shouldImport, int fileCount = 0)
             {
                 FileExtension = extension;
                 _fileCount = fileCount;

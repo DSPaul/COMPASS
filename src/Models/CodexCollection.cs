@@ -206,6 +206,7 @@ namespace COMPASS.Models
 
         public void SaveInfo()
         {
+            Info.PrepareSave();
             try
             {
                 using var writer = XmlWriter.Create(CollectionInfoFilePath, SettingsViewModel.XmlWriteSettings);

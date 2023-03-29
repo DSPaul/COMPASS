@@ -14,6 +14,7 @@ namespace COMPASS.Windows
         {
             VM = vm;
             DataContext = vm;
+            vm.Refresh();
             InitializeComponent();
 
             //jump to tab
