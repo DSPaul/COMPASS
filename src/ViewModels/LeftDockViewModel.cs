@@ -45,8 +45,8 @@ namespace COMPASS.ViewModels
         public RelayCommand<ImportSource> ImportCommand => _importCommand ??= new(ImportFromSource);
         public void ImportFromSource(ImportSource source)
         {
-            SourceViewModel Source = SourceViewModel.GetSource(source);
-            Source.Import();
+            MainVM.ActiveSourceVM = SourceViewModel.GetSource(source);
+            MainVM.ActiveSourceVM.Import();
         }
         #endregion
 

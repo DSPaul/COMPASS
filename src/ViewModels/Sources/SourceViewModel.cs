@@ -32,7 +32,7 @@ namespace COMPASS.ViewModels.Sources
 
         #region Import Logic
 
-        protected ProgressViewModel ProgressVM = new();
+        public ProgressViewModel ProgressVM { get; set; } = new();
 
         protected CodexCollection TargetCollection;
 

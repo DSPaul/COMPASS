@@ -2,6 +2,7 @@
 using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
+using COMPASS.ViewModels.Sources;
 using COMPASS.Windows;
 using ImageMagick;
 using System;
@@ -22,7 +23,7 @@ namespace COMPASS.ViewModels
 
             //Load everything
             UpgradeSettings();
-            CollectionVM = new();
+            CollectionVM = new(this);
             CollectionVM.LoadInitialCollection();
             CurrentLayout = LayoutViewModel.GetLayout();
             LeftDockVM = new(this);
@@ -80,7 +81,7 @@ namespace COMPASS.ViewModels
             log4net.GlobalContext.Properties["CompassDataPath"] = SettingsViewModel.CompassDataPath;
             Logger.FileLog = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             Application.Current.DispatcherUnhandledException += Logger.LogUnhandledException;
-            Logger.Info($"Launching Compass v{Assembly.GetExecutingAssembly().GetName().Version.ToString()[0..5]}");
+            Logger.Info($"Launching Compass {Version}");
         }
 
         private void InitConnectionTimer()
@@ -105,13 +106,17 @@ namespace COMPASS.ViewModels
             private set => SetProperty(ref _isOnline, value);
         }
 
-
         private DispatcherTimer _checkConnectionTimer;
+
+        public string Version => $"v{Assembly.GetExecutingAssembly().GetName().Version.ToString()[0..5]}";
+
         #endregion
 
         #region ViewModels
 
         public static CollectionViewModel CollectionVM { get; private set; }
+
+        public CollectionViewModel BindableCollectionVM => CollectionVM; //because binding to static properties sucks
 
         private LayoutViewModel _currentLayout;
         public LayoutViewModel CurrentLayout
@@ -121,6 +126,13 @@ namespace COMPASS.ViewModels
         }
 
         public LeftDockViewModel LeftDockVM { get; private set; }
+
+        private SourceViewModel _activeSourceVM;
+        public SourceViewModel ActiveSourceVM
+        {
+            get => _activeSourceVM;
+            set => SetProperty(ref _activeSourceVM, value);
+        }
 
         public CodexInfoViewModel CodexInfoVM { get; private set; }
 

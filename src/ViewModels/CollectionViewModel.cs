@@ -13,7 +13,13 @@ namespace COMPASS.ViewModels
 {
     public class CollectionViewModel : ObservableObject
     {
+        public CollectionViewModel(MainViewModel mainViewModel)
+        {
+            MainVM = mainViewModel;
+        }
+
         #region Properties
+        public MainViewModel MainVM { get; init; }
 
         private CodexCollection _currentCollection;
         public CodexCollection CurrentCollection
@@ -175,13 +181,13 @@ namespace COMPASS.ViewModels
         public async Task AutoImport()
         {
             //Start Auto Imports
-            FolderSourceViewModel folderVM = new(CurrentCollection)
+            MainVM.ActiveSourceVM = new FolderSourceViewModel(CurrentCollection)
             {
                 FolderNames = CurrentCollection.Info.AutoImportDirectories.ToList(),
             };
 
             await Task.Delay(TimeSpan.FromSeconds(2));
-            folderVM.ImportFolders(true);
+            ((FolderSourceViewModel)MainVM.ActiveSourceVM).ImportFolders(true);
         }
 
         public void Refresh()
