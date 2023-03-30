@@ -1,6 +1,7 @@
 ﻿using COMPASS.Models;
 using System;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -8,6 +9,8 @@ namespace COMPASS.Tools
 {
     public static class Logger
     {
+        public static void Init() => FileLog = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         // Log To file
         public static log4net.ILog FileLog;
 
