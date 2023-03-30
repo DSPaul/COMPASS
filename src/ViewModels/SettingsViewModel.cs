@@ -23,13 +23,6 @@ namespace COMPASS.ViewModels
     {
         private SettingsViewModel()
         {
-            //find name of current release-notes
-            var version = Assembly.GetEntryAssembly().GetName().Version.ToString()[..5];
-            if (File.Exists($"release-notes-{version}.md"))
-            {
-                ReleaseNotes = File.ReadAllText($"release-notes-{version}.md");
-            }
-
             LoadGlobalPreferences();
         }
 
@@ -489,12 +482,9 @@ namespace COMPASS.ViewModels
         }
 
         #region Tab: What's New
-        private string _releaseNotes;
-        public string ReleaseNotes
-        {
-            get => _releaseNotes;
-            set => SetProperty(ref _releaseNotes, value);
-        }
+
+        public string WebViewDataDir = Path.Combine(CompassDataPath, "WebViewData");
+
         #endregion
 
         #region Tab: About

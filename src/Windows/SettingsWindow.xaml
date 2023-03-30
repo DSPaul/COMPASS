@@ -7,9 +7,9 @@
         xmlns:Converters ="clr-namespace:COMPASS.Converters"
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
-        xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf" 
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
         d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d" Closing="Window_Closing"
         Title="Settings" Height="500" Width="1000"  FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
@@ -329,25 +329,7 @@
             </ScrollViewer>
         </TabItem>
         <TabItem Header="What's New"  Tools:AP.IconKind="Update">
-            <markdig:MarkdownViewer Margin="30" Markdown="{Binding ReleaseNotes}">
-                <markdig:MarkdownViewer.Resources>
-                    <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static markdig:Styles.Heading1StyleKey}">
-                        <Setter Property="FontSize" Value="40"/>
-                        <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
-                        <Setter Property="Margin" Value="0"/>
-                        <Setter Property="FontWeight" Value="Bold" />
-                    </Style>
-                    <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static markdig:Styles.Heading2StyleKey}">
-                        <Setter Property="FontSize" Value="30"/>
-                        <Setter Property="Foreground" Value="{StaticResource AccentColorMuted}"/>
-                        <Setter Property="Margin" Value="0"/>
-                        <Setter Property="FontWeight" Value="Bold" />
-                    </Style>
-                    <Style TargetType="{x:Type Hyperlink}" x:Key="{x:Static markdig:Styles.HyperlinkStyleKey}">
-                        <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
-                    </Style>
-                </markdig:MarkdownViewer.Resources>
-            </markdig:MarkdownViewer>
+            <wv2:WebView2 Name="ChangelogWebView" DefaultBackgroundColor=""/>
         </TabItem>
         <TabItem Header="About"  Tools:AP.IconKind="InformationCircleOutline">
             <ScrollViewer>
@@ -407,6 +389,13 @@
                                         BlackPearl
                                     </Hyperlink>
                                 </TextBlock>
+                                <TextBlock Text="Embed GitHub files:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/yusanshi/emgithub"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        emgithub
+                                    </Hyperlink>
+                                </TextBlock>
                                 <TextBlock Text="Fuzzy Search:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/JakeBayer/FuzzySharp"
@@ -456,13 +445,13 @@
                                         Magick.NET
                                     </Hyperlink>
                                 </TextBlock>
-                                <TextBlock Text="Display Markdown:"/>
+                                <!--<TextBlock Text="Display Markdown:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/xoofx/markdig"
                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         Markdig
                                     </Hyperlink>
-                                </TextBlock>
+                                </TextBlock>-->
                                 <TextBlock Text="Icons and Controls:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit"
