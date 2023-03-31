@@ -89,7 +89,7 @@ namespace COMPASS.Models
         public string Label => Type switch
         {
             FilterType.Author => "Author:",
-            FilterType.Publisher => "Publisher",
+            FilterType.Publisher => "Publisher:",
             FilterType.StartReleaseDate => "After:",
             FilterType.StopReleaseDate => "Before:",
             FilterType.MinimumRating => "At least",
