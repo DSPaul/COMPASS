@@ -4,10 +4,10 @@
 
 ### New Features
 
-- Whenever you import a folder, COMPASS will now check that folder for new files on each startup and automatically import any new files it finds there. Your file type preferences will also be applied to the automatic imports. This features can be disables during the folder import process. [#26](https://github.com/DSPaul/COMPASS/issues/26)
+- Whenever you import a folder, COMPASS will now check that folder for new files on each startup and automatically import any new files it finds there. Your file type preferences will also be applied to the automatic imports. This features can be disabled during the folder import process. [#26](https://github.com/DSPaul/COMPASS/issues/26)
 - A new "Delete Forever" option was added which prevents files from automatically being imported again, which is intended to complement the new automatic import feature.
 - You can manage both the folders to check for new files and the list of banished (deleted forever) files in the new `sources` tab of the settings.
-- Added a new bar along the bottom with extra info such as:
+- Added a new ribbon along the bottom with extra info such as:
   - How many files are present in a collection and how many of them match all the filters. [#39](https://github.com/DSPaul/COMPASS/issues/39)
   - Progress indication when tasks are running in the background.
   
