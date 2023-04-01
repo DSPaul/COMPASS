@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## COMPASS v1.3.0 (01 April 2023)
+
+### New Features
+
+- Whenever you import a folder, COMPASS will now check that folder for new files on each startup and automatically import any new files it finds there. Your file type preferences will also be applied to the automatic imports. This features can be disables during the folder import process. [#26](https://github.com/DSPaul/COMPASS/issues/26)
+- A new "Delete Forever" option was added which prevents files from automatically being imported again, which is intended to complement the new automatic import feature.
+- You can manage both the folders to check for new files and the list of banished (deleted forever) files in the new `sources` tab of the settings.
+- Added a new bar along the bottom with extra info such as:
+  - How many files are present in a collection and how many of them match all the filters. [#39](https://github.com/DSPaul/COMPASS/issues/39)
+  - Progress indication when tasks are running in the background.
+  
+### Improvements
+
+- Importing is now multithreaded which massively reduces import times.
+- `What's new` now shows the full changelog and got a visual overhaul.
+
+### Fixes
+
+- Fixed multiple of bugs related to missing "/" in paths
+- Fixed covers sometimes having extra whitespace around it
+- Fixed logger no longer logging
+- Fixed empty popup when importing 0 files
+- Fixed logo disappearing when opening the "about" tab of the settings
+
 ## COMPASS v1.2 (21 March 2023)
 
 ### New Features
