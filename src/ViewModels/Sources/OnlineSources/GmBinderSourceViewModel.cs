@@ -54,7 +54,7 @@ namespace COMPASS.ViewModels.Sources
             OpenQA.Selenium.WebDriver driver = WebDriverFactory.GetWebDriver();
             try
             {
-                driver.Navigate().GoToUrl(codex.SourceURL);
+                await Task.Run(() => driver.Navigate().GoToUrl(codex.SourceURL));
                 var Coverpage = driver.FindElement(OpenQA.Selenium.By.Id("p1"));
                 //screenshot and download the image
                 MagickImage image = CoverFetcher.GetCroppedScreenShot(driver, Coverpage);

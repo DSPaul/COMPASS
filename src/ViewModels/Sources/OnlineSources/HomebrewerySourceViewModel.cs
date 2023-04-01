@@ -65,7 +65,7 @@ namespace COMPASS.ViewModels.Sources
             try
             {
                 string URL = codex.SourceURL.Replace("/share/", "/print/"); //use print API to only show doc itself
-                driver.Navigate().GoToUrl(URL);
+                await Task.Run(() => driver.Navigate().GoToUrl(URL));
                 var Coverpage = driver.FindElement(OpenQA.Selenium.By.Id("p1"));
                 //screenshot and download the image
                 MagickImage image = CoverFetcher.GetCroppedScreenShot(driver, Coverpage);
