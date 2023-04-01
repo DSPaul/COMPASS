@@ -212,8 +212,8 @@ namespace COMPASS.ViewModels
             if (string.IsNullOrEmpty(dirName)) return;
 
             CodexCollection newCollection = new(dirName);
-            Directory.CreateDirectory(CodexCollection.CollectionsPath + dirName + @"\CoverArt");
-            Directory.CreateDirectory(CodexCollection.CollectionsPath + dirName + @"\Thumbnails");
+            Directory.CreateDirectory(Path.Combine(CodexCollection.CollectionsPath, dirName, "CoverArt"));
+            Directory.CreateDirectory(Path.Combine(CodexCollection.CollectionsPath, dirName, "Thumbnails"));
             AllCodexCollections.Add(newCollection);
             CurrentCollection = newCollection;
 
