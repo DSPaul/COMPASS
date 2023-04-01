@@ -19,6 +19,10 @@ namespace COMPASS.Models
         }
 
         public static string CollectionsPath => Path.Combine(SettingsViewModel.CompassDataPath, "Collections");
+        public string FullDataPath => Path.Combine(CollectionsPath, DirectoryName);
+        public string CodicesDataFilePath => Path.Combine(FullDataPath, "CodexInfo.xml");
+        public string TagsDataFilePath => Path.Combine(FullDataPath, "Tags.xml");
+        public string CollectionInfoFilePath => Path.Combine(FullDataPath, "CollectionInfo.xml");
 
         #region Properties
         private string _directoryName;
@@ -27,14 +31,6 @@ namespace COMPASS.Models
             get => _directoryName;
             set => SetProperty(ref _directoryName, value);
         }
-
-        public string RelativeCodicesDataFilePath => DirectoryName + @"\CodexInfo.xml";
-        public string CodicesDataFilePath => Path.Combine(CollectionsPath, RelativeCodicesDataFilePath);
-        private string RelativeTagsDataFilePath => DirectoryName + @"\Tags.xml";
-        public string TagsDataFilePath => Path.Combine(CollectionsPath, RelativeTagsDataFilePath);
-        private string RelativeCollectionInfoFilePath => DirectoryName + @"\CollectionInfo.xml";
-        public string CollectionInfoFilePath => Path.Combine(CollectionsPath, RelativeCollectionInfoFilePath);
-
 
         //Tag Lists
         public List<Tag> AllTags { get; private set; } = new();
@@ -125,7 +121,7 @@ namespace COMPASS.Models
                     c.Tags = new(AllTags.Where(t => c.TagIDs.Contains(t.ID)));
 
                     //double check image location, redundant but got fucked in an update
-                    c.setImagePaths(this);
+                    c.SetImagePaths(this);
                 }
             }
             else
@@ -282,13 +278,12 @@ namespace COMPASS.Models
         {
             foreach (Codex codex in AllCodices)
             {
-                //Replace folder names in image paths, include leading and ending "\" to avoid replacing wrong things
-                codex.CoverArt = codex.CoverArt.Replace(@"\" + DirectoryName + @"\", @"\" + NewCollectionName + @"\");
-                codex.Thumbnail = codex.Thumbnail.Replace(@"\" + DirectoryName + @"\", @"\" + NewCollectionName + @"\");
+                //Replace folder names in image paths
+                codex.SetImagePaths(NewCollectionName);
             }
             try
             {
-                Directory.Move(CollectionsPath + DirectoryName, CollectionsPath + NewCollectionName);
+                Directory.Move(Path.Combine(CollectionsPath, DirectoryName), Path.Combine(CollectionsPath, NewCollectionName));
             }
             catch (Exception ex)
             {

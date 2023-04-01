@@ -212,8 +212,8 @@ namespace COMPASS.ViewModels
             if (string.IsNullOrEmpty(dirName)) return;
 
             CodexCollection newCollection = new(dirName);
-            Directory.CreateDirectory(Path.Combine(CodexCollection.CollectionsPath, dirName, "CoverArt"));
-            Directory.CreateDirectory(Path.Combine(CodexCollection.CollectionsPath, dirName, "Thumbnails"));
+            Directory.CreateDirectory(Path.Combine(newCollection.FullDataPath, "CoverArt"));
+            Directory.CreateDirectory(Path.Combine(newCollection.FullDataPath, "Thumbnails"));
             AllCodexCollections.Add(newCollection);
             CurrentCollection = newCollection;
 
@@ -266,7 +266,7 @@ namespace COMPASS.ViewModels
 
             //if Dir name of toDelete is empty, it will delete the entire collections folder
             if (String.IsNullOrEmpty(toDelete.DirectoryName)) return;
-            Directory.Delete(CodexCollection.CollectionsPath + toDelete.DirectoryName, true);
+            Directory.Delete(toDelete.FullDataPath, true);
         }
         #endregion
     }
