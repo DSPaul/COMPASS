@@ -8,6 +8,7 @@
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+        xmlns:models="clr-namespace:COMPASS.Models" 
         d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d" Closing="Window_Closing"
@@ -155,36 +156,19 @@
                                        Visibility="{Binding FiletypePreferences.Count, Converter={StaticResource ToVisibilityConverter}}"/>
                             <Border CornerRadius="5" Background="{StaticResource  WindowBackground}"  Margin="10,0"
                                     Visibility="{Binding FiletypePreferences.Count, Converter={StaticResource ToVisibilityConverter}}">
-                                <ListBox x:Name="FileTypeListBox" FocusVisualStyle="{x:Null}"
+                                <ItemsControl x:Name="FileTypeListBox" FocusVisualStyle="{x:Null}"
                                             ItemsSource="{Binding FiletypePreferences}" Background="{x:Null}" BorderBrush="{x:Null}">
-                                    <ListBox.Template>
-                                        <!--Simplify template to remove scroll https://stackoverflow.com/questions/1739216/how-to-disable-scrollviewer-in-listbox-->
-                                        <ControlTemplate>
-                                            <ItemsPresenter />
-                                        </ControlTemplate>
-                                    </ListBox.Template>
-                                    <ListBox.ItemContainerStyle>
-                                        <Style TargetType="{x:Type ListBoxItem}">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                                        <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </ListBox.ItemContainerStyle>
-                                    <ListBox.ItemsPanel>
+                                    <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel IsItemsHost="True" MaxWidth="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                         </ItemsPanelTemplate>
-                                    </ListBox.ItemsPanel>
-                                    <ListBox.ItemTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <CheckBox Content="{Binding Key}" IsChecked="{Binding Value, Mode=TwoWay}" Margin="15"/>
                                         </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                </ListBox>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Border>
                             <TextBlock Text="Banished Files (will be excluded from automatic import):"
                                        Visibility="{Binding BanishedPaths.Count, Converter={StaticResource ToVisibilityConverter}}"/>
@@ -212,6 +196,108 @@
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
+                                </ScrollViewer>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                    <Border x:Name="FolderTagMapping" Style="{StaticResource SettingsContainer}">
+                        <Border.Resources>
+                            <Converters:ToFolderTagPairConverter x:Key="ToFolderTagPairConverter"/>
+                        </Border.Resources>
+                        <StackPanel>
+                            <TextBlock Text="Map Tags to Folders and URL's" Style="{StaticResource SectionTitle}"/>
+                            <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0">
+                                <ScrollViewer MaxHeight="400">
+                                    <StackPanel Margin="0,10,0,5">
+                                        <ItemsControl ItemsSource="{Binding FolderTagPairs}"  Grid.IsSharedSizeScope="True">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border BorderBrush="{StaticResource AccentColorMuted}" BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="auto"/>
+                                                                <ColumnDefinition Width="auto" SharedSizeGroup="Tag"/>
+                                                                <ColumnDefinition Width="auto"/>
+                                                                <ColumnDefinition Width="auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Text="{Binding Folder}" Margin="0" TextWrapping="Wrap"/>
+                                                            <TextBlock Text="=>" Margin="10,0" TextWrapping="Wrap" Grid.Column="1"/>
+                                                            <Border CornerRadius="5" Margin="10,0" Grid.Column="2" HorizontalAlignment="Left"
+                                                                    Background="{Binding Tag.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}">
+                                                                <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/>
+                                                            </Border>
+                                                            <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="FolderOpen" Width="20" 
+                                                                    Margin="5,0" Grid.Column="3" ToolTip="Show In Explorer" 
+                                                                    Command="{Binding DataContext.ShowInExplorerCommand,
+                                                                    RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                                                    CommandParameter="{Binding Folder}"/>
+                                                            <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="Delete" Width="20" 
+                                                                Command="{Binding DataContext.RemoveFolderTagPairCommand, 
+                                                                RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                                                CommandParameter="{Binding}" Margin="5,0" 
+                                                                Grid.Column="4" ToolTip="Remove From Auto Import"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Grid Margin="10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition Width="auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox x:Name="NewFolderTagPairTextBox" Tools:AP.PlaceHolderText="New Folder/URL" Margin="0" BorderThickness="0"/>
+                                            <TextBlock Text="=>" Grid.Column="1"/>
+                                            <ComboBox x:Name="NewFolderTagPairComboBox" Grid.Column="2" ItemsSource="{Binding AllTags}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Border CornerRadius="5" Margin="0,3" Background="{Binding BackgroundColor, Converter={StaticResource ColorToBrushConverter}}"
+                                                                    Visibility="{Binding IsGroup, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}">
+                                                                <TextBlock Text="{Binding Content}" Margin="7,0" Foreground="White" FontSize="15" HorizontalAlignment="Center"/>
+                                                            </Border>
+                                                            <Border Margin="0,3" Background="{x:Null}" Visibility="{Binding IsGroup, Converter={StaticResource ToVisibilityConverter}}">
+                                                                <StackPanel>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <Rectangle Fill="{Binding BackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
+                                                                            Width="2" Height="10" Margin="3" VerticalAlignment="Bottom"/>
+                                                                        <TextBlock Text="{Binding Content}" Foreground="LightGray"
+                                                                            FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
+                                                                    </StackPanel>
+                                                                    <Rectangle Height="1" Fill="Gray" SnapsToDevicePixels="True"/>
+                                                                </StackPanel>
+                                                            </Border>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                            <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="Plus" Grid.Column="3" Margin="10,0,5,0" 
+                                                Background="{StaticResource AccentColorMuted}" Padding="3,2" 
+                                                Command="{Binding AddFolderTagPairCommand}" >
+                                                <Button.CommandParameter>
+                                                    <MultiBinding Converter="{StaticResource ToFolderTagPairConverter}">
+                                                        <Binding Path="Text" ElementName="NewFolderTagPairTextBox"/>
+                                                        <Binding Path="SelectedItem" ElementName="NewFolderTagPairComboBox"/>
+                                                    </MultiBinding>
+                                                </Button.CommandParameter>
+                                            </Button>
+                                        </Grid>
+                                        <TextBlock Text="Tag cannot be a group" Foreground="Red">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SelectedItem.IsGroup, ElementName=NewFolderTagPairComboBox}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
                                 </ScrollViewer>
                             </Border>
                         </StackPanel>

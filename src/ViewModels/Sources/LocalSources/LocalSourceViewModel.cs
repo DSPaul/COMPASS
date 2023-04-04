@@ -24,6 +24,8 @@ namespace COMPASS.ViewModels.Sources
             codex.Title = Path.GetFileNameWithoutExtension(codex.Path);
 
             string FileType = Path.GetExtension(codex.Path);
+
+            //Fill in metadata fields
             switch (FileType)
             {
                 case ".pdf":
@@ -80,6 +82,19 @@ namespace COMPASS.ViewModels.Sources
 
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
             MainViewModel.CollectionVM.FilterVM.ReFilter();
+            return codex;
+        }
+
+        public override Codex SetTags(Codex codex)
+        {
+            //Auto Add Tags
+            foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)
+            {
+                if (codex.Path.Contains(folderTagPair.Folder))
+                {
+                    codex.Tags.AddIfMissing(folderTagPair.Tag);
+                }
+            }
             return codex;
         }
 

@@ -111,6 +111,10 @@ namespace COMPASS.ViewModels
         private RelayCommand<string> _addAutoImportDirectoryCommand;
         public RelayCommand<string> AddAutoImportDirectoryCommand => _addAutoImportDirectoryCommand ??= new(AddAutoImportDirectory);
 
+        //Open folder in explorer
+        private RelayCommand<string> _showInExplorerCommand;
+        public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(Utils.ShowInExplorer);
+
         private void AddAutoImportDirectory(string dir)
         {
             if (!String.IsNullOrEmpty(dir))
@@ -130,6 +134,23 @@ namespace COMPASS.ViewModels
         private RelayCommand<string> _removeBanishedPathCommand;
         public RelayCommand<string> RemoveBanishedPathCommand => _removeBanishedPathCommand ??= new(path =>
             MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.Remove(path));
+
+        public ObservableCollection<FolderTagPair> FolderTagPairs => MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs;
+        public List<Tag> AllTags => MainViewModel.CollectionVM.CurrentCollection.AllTags;
+
+        //Remove a directory from auto import
+        private RelayCommand<FolderTagPair> _removeFolderTagPairCommand;
+        public RelayCommand<FolderTagPair> RemoveFolderTagPairCommand => _removeFolderTagPairCommand ??= new(pair =>
+            MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Remove(pair));
+
+        //Add a directory from auto import
+        private RelayCommand<FolderTagPair> _addFolderTagPairCommand;
+        public RelayCommand<FolderTagPair> AddFolderTagPairCommand => _addFolderTagPairCommand ??= new(AddFolderTagPair);
+        private void AddFolderTagPair(FolderTagPair pair)
+        {
+            if (String.IsNullOrWhiteSpace(pair.Folder) || pair.Tag.IsGroup) return;
+            FolderTagPairs.Add(pair);
+        }
 
         #endregion
 
