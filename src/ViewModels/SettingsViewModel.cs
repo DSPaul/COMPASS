@@ -15,6 +15,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Xml;
 
 namespace COMPASS.ViewModels
@@ -105,7 +106,19 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(Utils.ShowInExplorer);
 
         #region Auto import folders
-        public ObservableCollection<string> AutoImportDirectories => MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories;
+        public CollectionViewSource AutoImportDirectories
+        {
+            get
+            {
+                CollectionViewSource temp = new()
+                {
+                    Source = MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories,
+                    IsLiveSortingRequested = true,
+                };
+                temp.SortDescriptions.Add(new SortDescription());
+                return temp;
+            }
+        }
 
         //Remove a directory from auto import
         private RelayCommand<string> _removeAutoImportDirectoryCommand;
@@ -128,21 +141,48 @@ namespace COMPASS.ViewModels
         private ActionCommand _pickAutoImportDirectoryCommand;
         public ActionCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(() => AddAutoImportDirectory(Utils.PickFolder()));
 
-        #endregion
-
+        //File types to import
         private List<ObservableKeyValuePair<string, bool>> _filetypePreferences;
         public List<ObservableKeyValuePair<string, bool>> FiletypePreferences
             => _filetypePreferences
             ??= MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences.Select(x => new ObservableKeyValuePair<string, bool>(x)).ToList();
 
-        public ObservableCollection<string> BanishedPaths => MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths;
+        public CollectionViewSource BanishedPaths
+        {
+            get
+            {
+                CollectionViewSource temp = new()
+                {
+                    Source = MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths,
+                    IsLiveSortingRequested = true,
+                };
+                temp.SortDescriptions.Add(new SortDescription());
+                return temp;
+            }
+        }
 
         //Remove a directory from auto import
         private RelayCommand<string> _removeBanishedPathCommand;
         public RelayCommand<string> RemoveBanishedPathCommand => _removeBanishedPathCommand ??= new(path =>
             MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.Remove(path));
 
-        public ObservableCollection<FolderTagPair> FolderTagPairs => MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs;
+        #endregion
+
+        #region Map Folders/URL to Tag
+
+        public CollectionViewSource FolderTagPairs
+        {
+            get
+            {
+                CollectionViewSource temp = new()
+                {
+                    Source = MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs,
+                    IsLiveSortingRequested = true,
+                };
+                temp.SortDescriptions.Add(new SortDescription("Folder", ListSortDirection.Ascending));
+                return temp;
+            }
+        }
         public List<Tag> AllTags => MainViewModel.CollectionVM.CurrentCollection.AllTags;
 
         //Remove a directory from auto import
@@ -155,9 +195,10 @@ namespace COMPASS.ViewModels
         public RelayCommand<FolderTagPair> AddFolderTagPairCommand => _addFolderTagPairCommand ??= new(AddFolderTagPair);
         private void AddFolderTagPair(FolderTagPair pair)
         {
-            if (String.IsNullOrWhiteSpace(pair.Folder) || pair.Tag.IsGroup) return;
-            FolderTagPairs.Add(pair);
+            if (String.IsNullOrWhiteSpace(pair.Folder) || pair.Tag is null || pair.Tag.IsGroup) return;
+            MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Add(pair);
         }
+        #endregion
 
         #endregion
 
