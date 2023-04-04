@@ -100,6 +100,11 @@ namespace COMPASS.ViewModels
 
         #region Tab: Sources
 
+        //Open folder in explorer
+        private RelayCommand<string> _showInExplorerCommand;
+        public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(Utils.ShowInExplorer);
+
+        #region Auto import folders
         public ObservableCollection<string> AutoImportDirectories => MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories;
 
         //Remove a directory from auto import
@@ -111,17 +116,19 @@ namespace COMPASS.ViewModels
         private RelayCommand<string> _addAutoImportDirectoryCommand;
         public RelayCommand<string> AddAutoImportDirectoryCommand => _addAutoImportDirectoryCommand ??= new(AddAutoImportDirectory);
 
-        //Open folder in explorer
-        private RelayCommand<string> _showInExplorerCommand;
-        public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(Utils.ShowInExplorer);
-
         private void AddAutoImportDirectory(string dir)
         {
-            if (!String.IsNullOrEmpty(dir))
+            if (!String.IsNullOrWhiteSpace(dir))
             {
                 MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories.AddIfMissing(dir);
             }
         }
+
+        //Add a directory from auto import
+        private ActionCommand _pickAutoImportDirectoryCommand;
+        public ActionCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(() => AddAutoImportDirectory(Utils.PickFolder()));
+
+        #endregion
 
         private List<ObservableKeyValuePair<string, bool>> _filetypePreferences;
         public List<ObservableKeyValuePair<string, bool>> FiletypePreferences

@@ -1,5 +1,6 @@
 ﻿using COMPASS.Models;
 using Newtonsoft.Json.Linq;
+using Ookii.Dialogs.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -168,6 +169,14 @@ namespace COMPASS.Tools
                 FileName = "explorer.exe"
             };
             Process.Start(startInfo);
+        }
+
+        public static string PickFolder()
+        {
+            VistaFolderBrowserDialog openFolderDialog = new();
+            var dialogresult = openFolderDialog.ShowDialog();
+            if (dialogresult == false) return null;
+            return openFolderDialog.SelectedPath;
         }
     }
 }
