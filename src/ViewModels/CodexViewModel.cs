@@ -200,14 +200,8 @@ namespace COMPASS.ViewModels
         public static void ShowInExplorer(Codex toShow)
         {
             string folderPath = Path.GetDirectoryName(toShow.Path);
-            ProcessStartInfo startInfo = new()
-            {
-                Arguments = folderPath,
-                FileName = "explorer.exe"
-            };
-            Process.Start(startInfo);
+            Utils.ShowInExplorer(folderPath);
         }
-
 
         //Move Codex to other CodexCollection
         private RelayCommand<object[]> _moveToCollectionCommand;
