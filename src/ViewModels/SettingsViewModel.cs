@@ -168,7 +168,7 @@ namespace COMPASS.ViewModels
 
         #endregion
 
-        #region Map Folders/URL to Tag
+        #region Link Folders/URL to Tag
 
         public CollectionViewSource FolderTagPairs
         {
@@ -196,7 +196,44 @@ namespace COMPASS.ViewModels
         private void AddFolderTagPair(FolderTagPair pair)
         {
             if (String.IsNullOrWhiteSpace(pair.Folder) || pair.Tag is null || pair.Tag.IsGroup) return;
-            MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Add(pair);
+            MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.AddIfMissing(pair);
+        }
+
+        private ActionCommand _detectFolderTagPairsCommand;
+        public ActionCommand DetectFolderTagPairsCommand => _detectFolderTagPairsCommand ??= new(DetectFolderTagPairs);
+        private void DetectFolderTagPairs()
+        {
+            var SplitFolders = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+                .Where(codex => codex.HasOfflineSource())
+                .Select(codex => codex.Path)
+                .SelectMany(path => path.Split("\\"))
+                .ToHashSet()
+                .Select(folder => @"\" + folder + @"\");
+            foreach (string folder in SplitFolders)
+            {
+                var CodicesInFolder = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+                    .Where(codex => codex.HasOfflineSource())
+                    .Where(codex => codex.Path.Contains(folder));
+
+                if (CodicesInFolder.Count() < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
+
+                var TagsToLink = CodicesInFolder
+                    .Select(codex => codex.Tags)
+                    .Aggregate<IEnumerable<Tag>>((prev, next) => prev.Intersect(next));
+
+                // if there are tags that aren't associated with any folder so far,
+                // do only those to try and avoid doubles
+                if (TagsToLink.Count() > 1)
+                {
+                    var strippedTagsToLink = TagsToLink.Except(MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Select(pair => pair.Tag));
+                    if (strippedTagsToLink.Any()) TagsToLink = strippedTagsToLink;
+                }
+
+                foreach (var tag in TagsToLink)
+                {
+                    AddFolderTagPair(new FolderTagPair(folder, tag));
+                }
+            }
         }
         #endregion
 
