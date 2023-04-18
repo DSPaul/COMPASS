@@ -645,7 +645,13 @@
                 <ControlTemplate TargetType="ToolTip">
                     <Border Name="Border" BorderThickness="1" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" 
                             Background="{StaticResource ButtonBackground}" BorderBrush="{StaticResource TabFocus}">
-                        <ContentPresenter Margin="4" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                        <ContentPresenter Margin="4" HorizontalAlignment="Left" VerticalAlignment="Top" MaxWidth="400">
+                            <ContentPresenter.Resources>
+                                <Style TargetType="{x:Type TextBlock}" x:Key="{x:Type TextBlock}">
+                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                </Style>
+                            </ContentPresenter.Resources>
+                        </ContentPresenter>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="HasDropShadow" Value="true">
