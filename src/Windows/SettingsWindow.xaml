@@ -280,7 +280,7 @@
                                                              ToolTip="Pick a Folder"  HorizontalAlignment="Right" Padding="3,2" 
                                                              Tools:AP.IconKind="FolderOpen" Click="SelectFolderForFolderTagPairButton_Click" 
                                                              DockPanel.Dock="Right" Margin="5,0" Height="20"/>    
-                                                    <TextBox x:Name="NewFolderTagPairTextBox" Tools:AP.PlaceHolderText="New Folder/URL" 
+                                                    <TextBox x:Name="NewFolderTagPairTextBox" Tools:AP.PlaceHolderText="Folder to Link" 
                                                              Margin="0" BorderThickness="0" HorizontalAlignment="Stretch"/>
                                                 </DockPanel>
                                             </Border>
