@@ -399,9 +399,27 @@
                                          Foreground="{StaticResource OfflineFill}" ToolTip="No Internet Connection Found"
                                          Visibility="{Binding IsOnline, Converter={StaticResource ToVisibilityConverter}, 
                                             ConverterParameter=True}"/>
-                <TextBlock Text="{Binding Version, FallbackValue=v1.0.0}" Margin="10,0" Grid.Column="3" FontFamily="Segoe UI"
-                           Typography.Capitals="AllSmallCaps" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
-                
+                <Button Grid.Column="3" Command="{Binding OpenSettingsCommand}" CommandParameter="About" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource UIElementBackground}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <Rectangle Width="2" Fill="{StaticResource Separator}"/>
+                                <TextBlock Text="{Binding Version, FallbackValue=v1.0.0}" FontFamily="Segoe UI" Margin="10,0"
+                                  Typography.Capitals="AllSmallCaps" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
             </Grid>
 
             <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}"/>
