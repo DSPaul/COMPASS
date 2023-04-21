@@ -103,13 +103,17 @@
                 </Border>
             </StackPanel>
         </TabItem>
-        <TabItem Header="Sources" Tools:AP.IconKind="FileImport">
+        <TabItem Header="Import" Tools:AP.IconKind="FileImport">
             <ScrollViewer>
                 <StackPanel Margin="20">
                     <Border x:Name="AutoImportSettings" Style="{StaticResource SettingsContainer}">
                         <StackPanel>
-                            <TextBlock Text="Automatic Import" Style="{StaticResource SectionTitle}"/>
-                            <TextBlock Text="From folders:"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Automatic Import From Folders" Style="{StaticResource SectionTitle}"/>
+                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                    ToolTip="These folders will periodically be checked for files that have not yet been imported, and import them automatically."/>
+                            </StackPanel>
+                            <TextBlock Text="Folders to Check:"/>
                             <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0">
                                 <ScrollViewer MaxHeight="400">
                                     <StackPanel Margin="0,10,0,5">
@@ -176,6 +180,7 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </Border>
+                            
                             <TextBlock Text="Banished Files (will be excluded from automatic import):"
                                        Visibility="{Binding BanishedPaths.View.IsEmpty, Converter={StaticResource ToVisibilityConverter},ConverterParameter=true}"/>
                             <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0"
@@ -212,13 +217,19 @@
                         </Border.Resources>
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Link Folders and URL's to Tags" Style="{StaticResource SectionTitle}"/>
-                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6"
-                                                         ToolTip="When a folder/URL is linked to a tag, all future files that are imported from that folder/URL will automatically be assigned that tag."/>
+                                <TextBlock Text="Link Folders to Tags" Style="{StaticResource SectionTitle}"/>
+                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                                         ToolTip="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
                             </StackPanel>
-                            <Button Style="{StaticResource TextButton}" Content="Detect links based on imported files" HorizontalAlignment="Left"
-                                    ToolTip="If all files from a folder share a tag, the folder and tag will be linked."
-                                    Command="{Binding DetectFolderTagPairsCommand}"/>
+                            <Button Style="{StaticResource TextButton}" HorizontalAlignment="Left" Background="{StaticResource ButtonBackground}"
+                                    ToolTip="If all files from a folder share the same tag, the folder and tag will be linked."
+                                    Command="{Binding DetectFolderTagPairsCommand}" Margin="5">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Detect links based on imported files" Margin="0"/>
+                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="5,3,0,3" Foreground="{StaticResource TextMutedColor}"/>
+                                </StackPanel>
+                            </Button>
+                            <CheckBox Content="Treat tags and folders with the same name as linked" Margin="10,5" IsChecked="{Binding AutoLinkFolderTagSameName}"/>
                             <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0">
                                 <ScrollViewer MaxHeight="400">
                                     <StackPanel Margin="0,10,0,5">

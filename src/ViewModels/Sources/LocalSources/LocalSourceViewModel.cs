@@ -1,6 +1,7 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.Windows;
+using FuzzySharp;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
@@ -95,6 +96,18 @@ namespace COMPASS.ViewModels.Sources
                     codex.Tags.AddIfMissing(folderTagPair.Tag);
                 }
             }
+
+            if (Properties.Settings.Default.AutoLinkFolderTagSameName)
+            {
+                foreach (Tag tag in MainViewModel.CollectionVM.CurrentCollection.AllTags)
+                {
+                    if (Fuzz.PartialRatio(codex.Path.ToLowerInvariant(), tag.Content.ToLowerInvariant()) > 95)
+                    {
+                        codex.Tags.Add(tag);
+                    }
+                }
+            }
+
             return codex;
         }
 

@@ -168,7 +168,7 @@ namespace COMPASS.ViewModels
 
         #endregion
 
-        #region Link Folders/URL to Tag
+        #region Link Folders to Tag
 
         public CollectionViewSource FolderTagPairs
         {
@@ -233,6 +233,16 @@ namespace COMPASS.ViewModels
                 {
                     AddFolderTagPair(new FolderTagPair(folder, tag));
                 }
+            }
+        }
+
+        public bool AutoLinkFolderTagSameName
+        {
+            get => Properties.Settings.Default.AutoLinkFolderTagSameName;
+            set
+            {
+                Properties.Settings.Default.AutoLinkFolderTagSameName = value;
+                RaisePropertyChanged(nameof(AutoLinkFolderTagSameName));
             }
         }
         #endregion
