@@ -6,6 +6,7 @@ using COMPASS.ViewModels.Sources;
 using COMPASS.Windows;
 using ImageMagick;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -155,6 +156,10 @@ namespace COMPASS.ViewModels
 
         //check updates
         public ActionCommand CheckForUpdatesCommand => SettingsViewModel.GetInstance().CheckForUpdatesCommand;
+
+        private ActionCommand _navigateToLinkTree;
+        public ActionCommand NavigateToLinkTree => _navigateToLinkTree ??= new(()
+            => Process.Start(new ProcessStartInfo(@"https://linktr.ee/compassapp") { UseShellExecute = true }));
 
         //Change Layout
         private RelayCommand<LayoutViewModel.Layout> _changeLayoutCommand;
