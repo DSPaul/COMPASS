@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## COMPASS v1.4.0 (23 April 2023)
+
+### New Features
+  
+- You can now link folders to tags! During import, this will add any tags to files that have the linked folders in their filepath. Tags and folders with the same name will be treated as linked by default, but this can be disabled in the settings.
+This new feaures and related options can be found in the `import` tab of the settings. [#25](https://github.com/DSPaul/COMPASS/issues/25)
+
+### Improvements
+
+- You can now choose folders to automatically import, using a folder selection dialog.
+- All lists in the `sources` tab are now sorted alphabetically.
+- Clicking the version number in the bottom right will take you to the "about" section of the settings.
+- Added some info icons next to some features which show a better explanation of the feature on hover.  
+- Added "Report a Bug" button to settings dropdown which will bring you to the linktree with all the social channels where you can do so, including a new google form for completely anonymous and account free bug reporting.
+  
+### Fixes
+
+- Fixed the "Show in Explorer" button in "folders to auto import" not working.
+- Fixed inconsitent tooltip styling.
+- Fixed a crash when trying to open mutliple books at once.
+
+### Other Changes
+
+- Renamed the `sources` tab of the settings to `import`.
+- Added the subreddit and website to the `about` section.
+
 ## COMPASS v1.3.0 (01 April 2023)
 
 ### New Features
@@ -24,7 +50,7 @@
 - Fixed empty popup when importing 0 files
 - Fixed logo disappearing when opening the "about" tab of the settings
 
-## COMPASS v1.2 (21 March 2023)
+## COMPASS v1.2.0 (21 March 2023)
 
 ### New Features
 
