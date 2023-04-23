@@ -94,8 +94,8 @@ namespace COMPASS.ViewModels
         }
 
         //Open Multiple Files
-        private ReturningRelayCommand<IEnumerable<Codex>, bool> _openSelectedCodicesCommand;
-        public ReturningRelayCommand<IEnumerable<Codex>, bool> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(OpenSelectedCodices);
+        private ReturningRelayCommand<IList, bool> _openSelectedCodicesCommand;
+        public ReturningRelayCommand<IList, bool> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(l => OpenSelectedCodices(l.Cast<Codex>()));
         public static bool OpenSelectedCodices(IEnumerable<Codex> toOpen)
         {
             List<Codex> ToOpen = toOpen?.ToList();
