@@ -371,7 +371,7 @@
 
                 <StackPanel Orientation="Horizontal" Grid.Column="0" >
                     <TextBlock Margin="10,0" FontFamily="Segoe UI">
-                        Matching Filter:
+                        Items Shown:
                         <Run Text="{Binding BindableCollectionVM.FilterVM.FilteredCodices.Count, Mode=OneWay, FallbackValue=0}"/>
                         /
                         <Run Text="{Binding BindableCollectionVM.CurrentCollection.AllCodices.Count, Mode=OneWay, FallbackValue=0}"/>
