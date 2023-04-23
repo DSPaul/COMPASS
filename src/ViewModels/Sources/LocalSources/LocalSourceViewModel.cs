@@ -94,7 +94,7 @@ namespace COMPASS.ViewModels.Sources
             {
                 if (codex.Path.Contains(folderTagPair.Folder))
                 {
-                    codex.Tags.AddIfMissing(folderTagPair.Tag);
+                    Application.Current.Dispatcher.Invoke(() => codex.Tags.AddIfMissing(folderTagPair.Tag));
                 }
             }
 
@@ -102,9 +102,10 @@ namespace COMPASS.ViewModels.Sources
             {
                 foreach (Tag tag in MainViewModel.CollectionVM.CurrentCollection.AllTags)
                 {
-                    if (Fuzz.PartialRatio(codex.Path.ToLowerInvariant(), tag.Content.ToLowerInvariant()) > 95)
+                    var SplitFolders = codex.Path.Split("\\");
+                    if (SplitFolders.Any(folder => Fuzz.Ratio(folder.ToLowerInvariant(), tag.Content.ToLowerInvariant()) > 90))
                     {
-                        Application.Current.Dispatcher.Invoke(() => codex.Tags.Add(tag));
+                        Application.Current.Dispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
                     }
                 }
             }
