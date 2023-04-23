@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace COMPASS.ViewModels.Sources
 {
@@ -103,7 +104,7 @@ namespace COMPASS.ViewModels.Sources
                 {
                     if (Fuzz.PartialRatio(codex.Path.ToLowerInvariant(), tag.Content.ToLowerInvariant()) > 95)
                     {
-                        codex.Tags.Add(tag);
+                        Application.Current.Dispatcher.Invoke(() => codex.Tags.Add(tag));
                     }
                 }
             }
