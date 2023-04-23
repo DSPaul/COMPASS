@@ -1,4 +1,15 @@
 # CHANGELOG
+## COMPASS v1.4.2 (23 April 2023)
+
+### Fixes
+
+ - Fix another possible crash
+ - Fix fuzzy matching being too fuzzy
+## COMPASS v1.4.1 (23 April 2023)
+
+### Fixes
+
+ - Fix crash during import
 
 ## COMPASS v1.4.0 (23 April 2023)
 
