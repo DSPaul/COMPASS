@@ -466,33 +466,40 @@
                     <Border Style="{StaticResource SettingsContainer}">
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="Links" Style="{StaticResource SectionTitle}"/>
-                            <UniformGrid>
+                            <UniformGrid Columns="2">
                                 <TextBlock>
-                                Source Code:
+                                    Source Code:
                                     <Hyperlink NavigateUri="https://github.com/DSPAUL/COMPASS"
                                                 RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         github.com/DSPAUL/COMPASS
                                     </Hyperlink>
                                 </TextBlock>
                                 <TextBlock>
-                                Buy Me a Drink:
+                                    Buy Me a Drink:
                                     <Hyperlink NavigateUri="https://ko-fi.com/pauldesmul"
                                                 RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         ko-fi.com/pauldesmul
                                     </Hyperlink>
                                 </TextBlock>
                                 <TextBlock>
-                                Join the Discord:
+                                    Join the Discord:
                                     <Hyperlink NavigateUri="https://discord.gg/HawGMJgS9Y"
                                                 RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         discord.gg/HawGMJgS9Y
                                     </Hyperlink>
                                 </TextBlock>
                                 <TextBlock>
-                                Join the Subreddit:
+                                    Join the Subreddit:
                                     <Hyperlink NavigateUri="https://www.reddit.com/r/compassapp/"
                                                 RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         reddit.com/r/compassapp
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock>
+                                    Project Website:
+                                    <Hyperlink NavigateUri="https://www.compassapp.info"
+                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        compassapp.info
                                     </Hyperlink>
                                 </TextBlock>
                             </UniformGrid>
