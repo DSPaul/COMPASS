@@ -382,5 +382,17 @@ namespace COMPASS.Properties {
                 this["CompassDataPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoLinkFolderTagSameName {
+            get {
+                return ((bool)(this["AutoLinkFolderTagSameName"]));
+            }
+            set {
+                this["AutoLinkFolderTagSameName"] = value;
+            }
+        }
     }
 }

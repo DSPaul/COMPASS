@@ -255,6 +255,8 @@
                             <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}" Tools:AP.IconKind="Cog"/>
                             <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}" Tools:AP.IconKind="Autorenew"/>
                             <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New" Tools:AP.IconKind="AlertDecagram"/>
+                            <MenuItem Header="Report A Bug" Tools:AP.IconKind="Bug"/>
+                            
                             <!--<MenuItem Header="About" Command="{Binding OpenSettingsCommand}" CommandParameter="About"/>-->
                         </ContextMenu>
                     </Button.ContextMenu>
@@ -369,7 +371,7 @@
 
                 <StackPanel Orientation="Horizontal" Grid.Column="0" >
                     <TextBlock Margin="10,0" FontFamily="Segoe UI">
-                        Matching Filter:
+                        Items Shown:
                         <Run Text="{Binding BindableCollectionVM.FilterVM.FilteredCodices.Count, Mode=OneWay, FallbackValue=0}"/>
                         /
                         <Run Text="{Binding BindableCollectionVM.CurrentCollection.AllCodices.Count, Mode=OneWay, FallbackValue=0}"/>
@@ -399,9 +401,29 @@
                                          Foreground="{StaticResource OfflineFill}" ToolTip="No Internet Connection Found"
                                          Visibility="{Binding IsOnline, Converter={StaticResource ToVisibilityConverter}, 
                                             ConverterParameter=True}"/>
-                <TextBlock Text="{Binding Version, FallbackValue=v1.0.0}" Margin="10,0" Grid.Column="3" FontFamily="Segoe UI"
-                           Typography.Capitals="AllSmallCaps" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
-                
+                <Button Grid.Column="3" Command="{Binding OpenSettingsCommand}" CommandParameter="About" 
+                        Cursor="Hand" ToolTip="Go to 'About'">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <StackPanel Orientation="Horizontal" >
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource UIElementBackground}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <Rectangle Width="2" Fill="{StaticResource Separator}"/>
+                                <TextBlock Text="{Binding Version, FallbackValue=v1.0.0}" FontFamily="Segoe UI" Margin="10,0"
+                                  Typography.Capitals="AllSmallCaps" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
             </Grid>
 
             <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}"/>

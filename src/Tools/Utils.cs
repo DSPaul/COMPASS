@@ -1,7 +1,9 @@
 ﻿using COMPASS.Models;
 using Newtonsoft.Json.Linq;
+using Ookii.Dialogs.Wpf;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -157,6 +159,24 @@ namespace COMPASS.Tools
             };
 
             return imgExtensions.Contains(extension);
+        }
+
+        public static void ShowInExplorer(string path)
+        {
+            ProcessStartInfo startInfo = new()
+            {
+                Arguments = path,
+                FileName = "explorer.exe"
+            };
+            Process.Start(startInfo);
+        }
+
+        public static string PickFolder()
+        {
+            VistaFolderBrowserDialog openFolderDialog = new();
+            var dialogresult = openFolderDialog.ShowDialog();
+            if (dialogresult == false) return null;
+            return openFolderDialog.SelectedPath;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.Windows;
+using FuzzySharp;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
@@ -24,6 +25,8 @@ namespace COMPASS.ViewModels.Sources
             codex.Title = Path.GetFileNameWithoutExtension(codex.Path);
 
             string FileType = Path.GetExtension(codex.Path);
+
+            //Fill in metadata fields
             switch (FileType)
             {
                 case ".pdf":
@@ -80,6 +83,31 @@ namespace COMPASS.ViewModels.Sources
 
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
             MainViewModel.CollectionVM.FilterVM.ReFilter();
+            return codex;
+        }
+
+        public override Codex SetTags(Codex codex)
+        {
+            //Auto Add Tags
+            foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)
+            {
+                if (codex.Path.Contains(folderTagPair.Folder))
+                {
+                    codex.Tags.AddIfMissing(folderTagPair.Tag);
+                }
+            }
+
+            if (Properties.Settings.Default.AutoLinkFolderTagSameName)
+            {
+                foreach (Tag tag in MainViewModel.CollectionVM.CurrentCollection.AllTags)
+                {
+                    if (Fuzz.PartialRatio(codex.Path.ToLowerInvariant(), tag.Content.ToLowerInvariant()) > 95)
+                    {
+                        codex.Tags.Add(tag);
+                    }
+                }
+            }
+
             return codex;
         }
 

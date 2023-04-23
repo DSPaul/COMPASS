@@ -12,7 +12,7 @@
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d" Closing="Window_Closing"
         Title="Settings" Height="500" Width="1000"  FontSize="16" 
-        WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
+        WindowStartupLocation="CenterScreen" 
         Foreground="{StaticResource TextColor}" 
         Background="{StaticResource WindowBackground}">
     <Window.Resources>
@@ -103,17 +103,21 @@
                 </Border>
             </StackPanel>
         </TabItem>
-        <TabItem Header="Sources" Tools:AP.IconKind="FileImport">
+        <TabItem Header="Import" Tools:AP.IconKind="FileImport">
             <ScrollViewer>
                 <StackPanel Margin="20">
                     <Border x:Name="AutoImportSettings" Style="{StaticResource SettingsContainer}">
                         <StackPanel>
-                            <TextBlock Text="Automatic Import" Style="{StaticResource SectionTitle}"/>
-                            <TextBlock Text="From folders:"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Automatic Import From Folders" Style="{StaticResource SectionTitle}"/>
+                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                    ToolTip="These folders will periodically be checked for files that have not yet been imported, and import them automatically."/>
+                            </StackPanel>
+                            <TextBlock Text="Folders to Check:"/>
                             <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0">
                                 <ScrollViewer MaxHeight="400">
                                     <StackPanel Margin="0,10,0,5">
-                                        <ItemsControl ItemsSource="{Binding AutoImportDirectories}">
+                                        <ItemsControl ItemsSource="{Binding AutoImportDirectories.View}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <Border BorderBrush="{StaticResource AccentColorMuted}" BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
@@ -125,7 +129,10 @@
                                                             </Grid.ColumnDefinitions>
                                                             <TextBlock Text="{Binding}" Margin="0" TextWrapping="Wrap"/>
                                                             <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="FolderOpen" Width="20" 
-                                                                Margin="5,0" Grid.Column="1" ToolTip="Show In Explorer"/>
+                                                                Margin="5,0" Grid.Column="1" ToolTip="Show In Explorer"
+                                                                Command="{Binding DataContext.ShowInExplorerCommand,
+                                                                RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                                                CommandParameter="{Binding}"/>
                                                             <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="Delete" Width="20" 
                                                                 Command="{Binding DataContext.RemoveAutoImportDirectoryCommand, 
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
@@ -140,13 +147,17 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition Width="auto"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBox x:Name="NewAutoImportFolderTextBox" Tools:AP.PlaceHolderText="New Folder" Margin="0" BorderThickness="0"/>
                                             <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="Plus" Grid.Column="1" Margin="10,0,5,0" 
                                                 Background="{StaticResource AccentColorMuted}" Padding="3,2" 
                                                 IsDefault="{Binding ElementName=NewAutoImportFolderTextBox, Path= IsFocused}"
-                                                Command="{Binding AddAutoImportDirectoryCommand}" 
+                                                Command="{Binding AddAutoImportDirectoryCommand}" ToolTip="Add Folder"
                                                 CommandParameter="{Binding ElementName=NewAutoImportFolderTextBox, Path=Text}"/>
+                                            <Button Style="{StaticResource IconBtn}" ToolTip="Pick Folder To Add" Grid.Column="2"
+                                                    Background="{StaticResource AccentColorMuted}" Padding="3,2" Tools:AP.IconKind="FolderPlus"
+                                                    Command="{Binding PickAutoImportDirectoryCommand}"/>
                                         </Grid>
                                     </StackPanel>
                                 </ScrollViewer>
@@ -155,43 +166,27 @@
                                        Visibility="{Binding FiletypePreferences.Count, Converter={StaticResource ToVisibilityConverter}}"/>
                             <Border CornerRadius="5" Background="{StaticResource  WindowBackground}"  Margin="10,0"
                                     Visibility="{Binding FiletypePreferences.Count, Converter={StaticResource ToVisibilityConverter}}">
-                                <ListBox x:Name="FileTypeListBox" FocusVisualStyle="{x:Null}"
+                                <ItemsControl x:Name="FileTypeListBox" FocusVisualStyle="{x:Null}"
                                             ItemsSource="{Binding FiletypePreferences}" Background="{x:Null}" BorderBrush="{x:Null}">
-                                    <ListBox.Template>
-                                        <!--Simplify template to remove scroll https://stackoverflow.com/questions/1739216/how-to-disable-scrollviewer-in-listbox-->
-                                        <ControlTemplate>
-                                            <ItemsPresenter />
-                                        </ControlTemplate>
-                                    </ListBox.Template>
-                                    <ListBox.ItemContainerStyle>
-                                        <Style TargetType="{x:Type ListBoxItem}">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                                        <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </ListBox.ItemContainerStyle>
-                                    <ListBox.ItemsPanel>
+                                    <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel IsItemsHost="True" MaxWidth="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
                                         </ItemsPanelTemplate>
-                                    </ListBox.ItemsPanel>
-                                    <ListBox.ItemTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <CheckBox Content="{Binding Key}" IsChecked="{Binding Value, Mode=TwoWay}" Margin="15"/>
                                         </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                </ListBox>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Border>
+                            
                             <TextBlock Text="Banished Files (will be excluded from automatic import):"
-                                       Visibility="{Binding BanishedPaths.Count, Converter={StaticResource ToVisibilityConverter}}"/>
+                                       Visibility="{Binding BanishedPaths.View.IsEmpty, Converter={StaticResource ToVisibilityConverter},ConverterParameter=true}"/>
                             <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0"
-                                    Visibility="{Binding BanishedPaths.Count, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding BanishedPaths.View.IsEmpty, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}">
                                 <ScrollViewer MaxHeight="400">
-                                    <ItemsControl ItemsSource="{Binding BanishedPaths}" Margin="0,10">
+                                    <ItemsControl ItemsSource="{Binding BanishedPaths.View}" Margin="0,10">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Border BorderBrush="{StaticResource AccentColorMuted}" BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
@@ -212,6 +207,131 @@
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
+                                </ScrollViewer>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                    <Border x:Name="FolderTagMapping" Style="{StaticResource SettingsContainer}">
+                        <Border.Resources>
+                            <Converters:ToFolderTagPairConverter x:Key="ToFolderTagPairConverter"/>
+                        </Border.Resources>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Link Folders to Tags" Style="{StaticResource SectionTitle}"/>
+                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                                         ToolTip="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
+                            </StackPanel>
+                            <Button Style="{StaticResource TextButton}" HorizontalAlignment="Left" Background="{StaticResource ButtonBackground}"
+                                    ToolTip="If all files from a folder share the same tag, the folder and tag will be linked."
+                                    Command="{Binding DetectFolderTagPairsCommand}" Margin="5">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Detect links based on imported files" Margin="0"/>
+                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="5,3,0,3" Foreground="{StaticResource TextMutedColor}"/>
+                                </StackPanel>
+                            </Button>
+                            <CheckBox Content="Treat tags and folders with the same name as linked" Margin="10,5" IsChecked="{Binding AutoLinkFolderTagSameName}"/>
+                            <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0">
+                                <ScrollViewer MaxHeight="400">
+                                    <StackPanel Margin="0,10,0,5">
+                                        <ItemsControl ItemsSource="{Binding FolderTagPairs.View}"  Grid.IsSharedSizeScope="True">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border BorderBrush="{StaticResource AccentColorMuted}" BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="auto"/>
+                                                                <ColumnDefinition Width="auto" SharedSizeGroup="Tag"/>
+                                                                <ColumnDefinition Width="auto"/>
+                                                                <ColumnDefinition Width="auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Text="{Binding Folder}" Margin="0" TextWrapping="Wrap"/>
+                                                            <materialDesign:PackIcon Kind="Link" Grid.Column="1" Margin="10,0"/>
+                                                            <Border CornerRadius="5" Margin="10,0" Grid.Column="2" HorizontalAlignment="Left"
+                                                                    Background="{Binding Tag.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}">
+                                                                <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/>
+                                                            </Border>
+                                                            <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="FolderOpen" Width="20" 
+                                                                    Margin="5,0" Grid.Column="3" ToolTip="Show In Explorer" 
+                                                                    Command="{Binding DataContext.ShowInExplorerCommand,
+                                                                    RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                                                    CommandParameter="{Binding Folder}"/>
+                                                            <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="Delete" Width="20" 
+                                                                Command="{Binding DataContext.RemoveFolderTagPairCommand, 
+                                                                RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                                                CommandParameter="{Binding}" Margin="5,0" 
+                                                                Grid.Column="4" ToolTip="Remove From Auto Import"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Grid Margin="10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition Width="auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Background="{StaticResource DarkUIElementBackground}" CornerRadius="5">
+                                                <DockPanel>
+                                                    <Button  x:Name="SelectFolderForFolderTagPairButton" Style="{StaticResource IconBtn}" 
+                                                             ToolTip="Pick a Folder"  HorizontalAlignment="Right" Padding="3,2" 
+                                                             Tools:AP.IconKind="FolderOpen" Click="SelectFolderForFolderTagPairButton_Click" 
+                                                             DockPanel.Dock="Right" Margin="5,0" Height="20"/>    
+                                                    <TextBox x:Name="NewFolderTagPairTextBox" Tools:AP.PlaceHolderText="Folder to Link" 
+                                                             Margin="0" BorderThickness="0" HorizontalAlignment="Stretch"/>
+                                                </DockPanel>
+                                            </Border>
+                                            <materialDesign:PackIcon Kind="Link" Grid.Column="2" Margin="10,0"/>
+                                            <ComboBox x:Name="NewFolderTagPairComboBox" Grid.Column="3" ItemsSource="{Binding AllTags}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Border CornerRadius="5" Margin="0,3" Background="{Binding BackgroundColor, Converter={StaticResource ColorToBrushConverter}}"
+                                                                    Visibility="{Binding IsGroup, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}">
+                                                                <TextBlock Text="{Binding Content}" Margin="7,0" Foreground="White" FontSize="15" HorizontalAlignment="Center"/>
+                                                            </Border>
+                                                            <Border Margin="0,3" Background="{x:Null}" Visibility="{Binding IsGroup, Converter={StaticResource ToVisibilityConverter}}">
+                                                                <StackPanel>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <Rectangle Fill="{Binding BackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
+                                                                            Width="2" Height="10" Margin="3" VerticalAlignment="Bottom"/>
+                                                                        <TextBlock Text="{Binding Content}" Foreground="LightGray"
+                                                                            FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
+                                                                    </StackPanel>
+                                                                    <Rectangle Height="1" Fill="Gray" SnapsToDevicePixels="True"/>
+                                                                </StackPanel>
+                                                            </Border>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                            <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="LinkPlus" Grid.Column="4" Margin="10,0,5,0" 
+                                                Background="{StaticResource AccentColorMuted}" Padding="3,2" 
+                                                Command="{Binding AddFolderTagPairCommand}" >
+                                                <Button.CommandParameter>
+                                                    <MultiBinding Converter="{StaticResource ToFolderTagPairConverter}">
+                                                        <Binding Path="Text" ElementName="NewFolderTagPairTextBox"/>
+                                                        <Binding Path="SelectedItem" ElementName="NewFolderTagPairComboBox"/>
+                                                    </MultiBinding>
+                                                </Button.CommandParameter>
+                                            </Button>
+                                        </Grid>
+                                        <TextBlock Text="Tag cannot be a group" Foreground="Red">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SelectedItem.IsGroup, ElementName=NewFolderTagPairComboBox}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
                                 </ScrollViewer>
                             </Border>
                         </StackPanel>
@@ -346,28 +466,43 @@
                     <Border Style="{StaticResource SettingsContainer}">
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="Links" Style="{StaticResource SectionTitle}"/>
-
-                            <TextBlock>
-                                Source Code:
+                            <UniformGrid Columns="2">
+                                <TextBlock>
+                                    Source Code:
                                     <Hyperlink NavigateUri="https://github.com/DSPAUL/COMPASS"
                                                 RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         github.com/DSPAUL/COMPASS
                                     </Hyperlink>
-                            </TextBlock>
-                            <TextBlock>
-                                Buy Me a Drink:
+                                </TextBlock>
+                                <TextBlock>
+                                    Buy Me a Drink:
                                     <Hyperlink NavigateUri="https://ko-fi.com/pauldesmul"
                                                 RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         ko-fi.com/pauldesmul
                                     </Hyperlink>
-                            </TextBlock>
-                            <TextBlock>
-                                Join the Discord:
+                                </TextBlock>
+                                <TextBlock>
+                                    Join the Discord:
                                     <Hyperlink NavigateUri="https://discord.gg/HawGMJgS9Y"
                                                 RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         discord.gg/HawGMJgS9Y
                                     </Hyperlink>
-                            </TextBlock>
+                                </TextBlock>
+                                <TextBlock>
+                                    Join the Subreddit:
+                                    <Hyperlink NavigateUri="https://www.reddit.com/r/compassapp/"
+                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        reddit.com/r/compassapp
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock>
+                                    Project Website:
+                                    <Hyperlink NavigateUri="https://www.compassapp.info"
+                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        compassapp.info
+                                    </Hyperlink>
+                                </TextBlock>
+                            </UniformGrid>
                         </StackPanel>
                     </Border>
                     <Border Style="{StaticResource SettingsContainer}">

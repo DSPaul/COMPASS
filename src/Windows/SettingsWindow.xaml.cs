@@ -1,4 +1,5 @@
-﻿using COMPASS.ViewModels;
+﻿using COMPASS.Tools;
+using COMPASS.ViewModels;
 using Microsoft.Web.WebView2.Core;
 using System.Diagnostics;
 using System.Windows;
@@ -57,5 +58,7 @@ namespace COMPASS.Windows
             await ChangelogWebView.EnsureCoreWebView2Async(await CoreWebView2Environment.CreateAsync(userDataFolder: VM.WebViewDataDir));
             ChangelogWebView.NavigateToString(sHTML);
         }
+
+        private void SelectFolderForFolderTagPairButton_Click(object sender, RoutedEventArgs e) => NewFolderTagPairTextBox.Text = Utils.PickFolder();
     }
 }

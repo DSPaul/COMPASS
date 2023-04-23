@@ -31,6 +31,7 @@ COMPASS solves this problem by bringing all of your resources together in one pl
   - The setting such as *Forgotten realms* or *Eberron*.
   - The Genre such as *Horror*, *Fantasy* or *Sci-Fi*.
   - Whatever works for you, you can create tags for everything.
+- **Map** your existing folder structure onto your new tags to get organized quickly.
 - **Organize** your tags in groups to retain the advantages of folders, without the need for file duplication.
 - **Filter and Sort** all your books by metadata with support for separate sorting titles and negative filters.
 - **Visualize** your library with 4 different layouts to choose from: Home, List, Cards and Tiles (see screenshots).

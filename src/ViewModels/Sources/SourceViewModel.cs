@@ -45,10 +45,11 @@ namespace COMPASS.ViewModels.Sources
             LogEntry logEntry = new(LogEntry.MsgType.Info, $"Importing {Path.GetFileName(newCodex.HasOfflineSource() ? newCodex.Path : newCodex.SourceURL)}");
             ProgressChanged(logEntry);
 
-            //Get metadata from file
+            //Populate all the codex properties it can
             newCodex = await SetMetaData(newCodex);
+            newCodex = SetTags(newCodex);
 
-            //Get Cover from file
+            //Fetch cover
             bool succes = await FetchCover(newCodex);
             if (!succes)
             {
@@ -65,6 +66,8 @@ namespace COMPASS.ViewModels.Sources
         }
 
         public abstract Task<Codex> SetMetaData(Codex codex);
+
+        public abstract Codex SetTags(Codex codex);
 
         public abstract Task<bool> FetchCover(Codex codex);
         #endregion

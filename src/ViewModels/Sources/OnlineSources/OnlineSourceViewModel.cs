@@ -31,6 +31,7 @@ namespace COMPASS.ViewModels.Sources
 
             // Steps 1 & 2: Load Source and Scrape metadata
             newCodex = await SetMetaData(newCodex);
+            newCodex = SetTags(newCodex);
             ProgressCounter++;
             ProgressChanged(new(LogEntry.MsgType.Info, "Metadata loaded. Downloading cover art."));
 
@@ -59,6 +60,19 @@ namespace COMPASS.ViewModels.Sources
                     editWindow.ShowDialog();
                 });
             }
+        }
+
+        public override Codex SetTags(Codex codex)
+        {
+            //Based on URL
+            foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)
+            {
+                if (codex.SourceURL.Contains(folderTagPair.Folder))
+                {
+                    codex.Tags.AddIfMissing(folderTagPair.Tag);
+                }
+            }
+            return codex;
         }
         #endregion
 

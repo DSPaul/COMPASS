@@ -15,6 +15,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Xml;
 
 namespace COMPASS.ViewModels
@@ -100,7 +101,24 @@ namespace COMPASS.ViewModels
 
         #region Tab: Sources
 
-        public ObservableCollection<string> AutoImportDirectories => MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories;
+        //Open folder in explorer
+        private RelayCommand<string> _showInExplorerCommand;
+        public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(Utils.ShowInExplorer);
+
+        #region Auto import folders
+        public CollectionViewSource AutoImportDirectories
+        {
+            get
+            {
+                CollectionViewSource temp = new()
+                {
+                    Source = MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories,
+                    IsLiveSortingRequested = true,
+                };
+                temp.SortDescriptions.Add(new SortDescription());
+                return temp;
+            }
+        }
 
         //Remove a directory from auto import
         private RelayCommand<string> _removeAutoImportDirectoryCommand;
@@ -113,23 +131,121 @@ namespace COMPASS.ViewModels
 
         private void AddAutoImportDirectory(string dir)
         {
-            if (!String.IsNullOrEmpty(dir))
+            if (!String.IsNullOrWhiteSpace(dir))
             {
                 MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories.AddIfMissing(dir);
             }
         }
 
+        //Add a directory from auto import
+        private ActionCommand _pickAutoImportDirectoryCommand;
+        public ActionCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(() => AddAutoImportDirectory(Utils.PickFolder()));
+
+        //File types to import
         private List<ObservableKeyValuePair<string, bool>> _filetypePreferences;
         public List<ObservableKeyValuePair<string, bool>> FiletypePreferences
             => _filetypePreferences
             ??= MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences.Select(x => new ObservableKeyValuePair<string, bool>(x)).ToList();
 
-        public ObservableCollection<string> BanishedPaths => MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths;
+        public CollectionViewSource BanishedPaths
+        {
+            get
+            {
+                CollectionViewSource temp = new()
+                {
+                    Source = MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths,
+                    IsLiveSortingRequested = true,
+                };
+                temp.SortDescriptions.Add(new SortDescription());
+                return temp;
+            }
+        }
 
         //Remove a directory from auto import
         private RelayCommand<string> _removeBanishedPathCommand;
         public RelayCommand<string> RemoveBanishedPathCommand => _removeBanishedPathCommand ??= new(path =>
             MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.Remove(path));
+
+        #endregion
+
+        #region Link Folders to Tag
+
+        public CollectionViewSource FolderTagPairs
+        {
+            get
+            {
+                CollectionViewSource temp = new()
+                {
+                    Source = MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs,
+                    IsLiveSortingRequested = true,
+                };
+                temp.SortDescriptions.Add(new SortDescription("Folder", ListSortDirection.Ascending));
+                return temp;
+            }
+        }
+        public List<Tag> AllTags => MainViewModel.CollectionVM.CurrentCollection.AllTags;
+
+        //Remove a directory from auto import
+        private RelayCommand<FolderTagPair> _removeFolderTagPairCommand;
+        public RelayCommand<FolderTagPair> RemoveFolderTagPairCommand => _removeFolderTagPairCommand ??= new(pair =>
+            MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Remove(pair));
+
+        //Add a directory from auto import
+        private RelayCommand<FolderTagPair> _addFolderTagPairCommand;
+        public RelayCommand<FolderTagPair> AddFolderTagPairCommand => _addFolderTagPairCommand ??= new(AddFolderTagPair);
+        private void AddFolderTagPair(FolderTagPair pair)
+        {
+            if (String.IsNullOrWhiteSpace(pair.Folder) || pair.Tag is null || pair.Tag.IsGroup) return;
+            MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.AddIfMissing(pair);
+        }
+
+        private ActionCommand _detectFolderTagPairsCommand;
+        public ActionCommand DetectFolderTagPairsCommand => _detectFolderTagPairsCommand ??= new(DetectFolderTagPairs);
+        private void DetectFolderTagPairs()
+        {
+            var SplitFolders = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+                .Where(codex => codex.HasOfflineSource())
+                .Select(codex => codex.Path)
+                .SelectMany(path => path.Split("\\"))
+                .ToHashSet()
+                .Select(folder => @"\" + folder + @"\");
+            foreach (string folder in SplitFolders)
+            {
+                var CodicesInFolder = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+                    .Where(codex => codex.HasOfflineSource())
+                    .Where(codex => codex.Path.Contains(folder));
+
+                if (CodicesInFolder.Count() < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
+
+                var TagsToLink = CodicesInFolder
+                    .Select(codex => codex.Tags)
+                    .Aggregate<IEnumerable<Tag>>((prev, next) => prev.Intersect(next));
+
+                // if there are tags that aren't associated with any folder so far,
+                // do only those to try and avoid doubles
+                if (TagsToLink.Count() > 1)
+                {
+                    var strippedTagsToLink = TagsToLink.Except(MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Select(pair => pair.Tag));
+                    if (strippedTagsToLink.Any()) TagsToLink = strippedTagsToLink;
+                }
+
+                foreach (var tag in TagsToLink)
+                {
+                    AddFolderTagPair(new FolderTagPair(folder, tag));
+                }
+            }
+        }
+
+        public bool AutoLinkFolderTagSameName
+        {
+            get => Properties.Settings.Default.AutoLinkFolderTagSameName;
+            set
+            {
+                Properties.Settings.Default.AutoLinkFolderTagSameName = value;
+                RaisePropertyChanged(nameof(AutoLinkFolderTagSameName));
+            }
+        }
+        #endregion
 
         #endregion
 

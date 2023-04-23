@@ -140,6 +140,7 @@ namespace COMPASS.Models
                 try
                 {
                     Info = serializer.Deserialize(Reader) as CollectionInfo;
+                    Info.CompleteLoading(this);
                 }
                 catch (Exception ex)
                 {

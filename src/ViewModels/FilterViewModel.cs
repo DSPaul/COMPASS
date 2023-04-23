@@ -410,7 +410,6 @@ namespace COMPASS.ViewModels
             IncludedCodicesBySearch.UnionWith(_allCodices
                 .Where(f => f.Title.Contains(SearchTerm, StringComparison.InvariantCultureIgnoreCase)));
             //include spelling errors
-            //include acronyms
             IncludedCodicesBySearch.UnionWith(_allCodices
                 .Where(f => Fuzz.PartialRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
 
