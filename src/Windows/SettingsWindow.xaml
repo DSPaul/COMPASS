@@ -75,7 +75,9 @@
         <TabItem Header="Preferences"  Tools:AP.IconKind="TuneVariant">
             <StackPanel Orientation="Vertical" Margin="20">
                 <Border x:Name="FileSourcePreferences" Style="{StaticResource SettingsContainer}">
-                    <Grid>
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="Behaviour"/>
+                        <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
@@ -100,6 +102,46 @@
                             </ListBox>
                         </Border>
                     </Grid>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource SettingsContainer}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="Performance"/>
+                        
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding DoVirtualizationList}"/>
+                            <TextBlock Text="Virtualize List " Margin="0" MinWidth="110"/>
+                            <TextBlock Text="Layout for collections with more then " Margin="0"/>
+                            <TextBox PreviewTextInput="FilterOnlyNumbers" Padding="2,0"  Margin="2" MinWidth="50"
+                                     Text="{Binding VirtualizationThresholdList}"/>
+                            <TextBlock Text="items." Margin="5,0"/>
+                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                    ToolTip="Virtualized layouts only render items when they are scrolled into view, which greatly reduces load times for large collections. This will however cause stutter while scrolling.
+                                        The List layout loads reasonable fast so virtualization is only needed for big collections."/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding DoVirtualizationCard}"/>
+                            <TextBlock Text="Virtualize Card " Margin="0" MinWidth="110"/>
+                            <TextBlock Text="Layout for collections with more then " Margin="0"/>
+                            <TextBox PreviewTextInput="FilterOnlyNumbers" Padding="2,0"  Margin="2" MinWidth="50"
+                                     Text="{Binding VirtualizationThresholdCard}"/>
+                            <TextBlock Text="items." Margin="5,0"/>
+                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                    ToolTip="Virtualized layouts only render items when they are scrolled into view, which greatly reduces load times for large collections. This will however cause stutter while scrolling.
+                                        The card layout loads the slowest due to due to its complexity so virtualisation is recommended even for medium sized collections."/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding DoVirtualizationTile}"/>
+                            <TextBlock Text="Virtualize Grid " Margin="0" MinWidth="110"/>
+                            <TextBlock Text="Layout for collections with more then " Margin="0"/>
+                            <TextBox PreviewTextInput="FilterOnlyNumbers" Padding="2,0"  Margin="2" MinWidth="50"
+                                     Text="{Binding VirtualizationThresholdTile}"/>
+                            <TextBlock Text="items." Margin="5,0"/>
+                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                    ToolTip="Virtualized layouts only render items when they are scrolled into view, which greatly reduces load times for large collections. This will however cause stutter while scrolling.
+                                        The Grid layout loads reasonable fast so virtualization is only needed for big collections."/>
+                        </StackPanel>
+                    </StackPanel>
                 </Border>
             </StackPanel>
         </TabItem>
@@ -627,6 +669,13 @@
                                     <Hyperlink NavigateUri="https://github.com/SeleniumHQ/selenium"
                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         Selenium
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock Text="Virtualize WrapPanels:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/sbaeumlisberger/VirtualizingWrapPanel"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        VirtualizingWrapPanel
                                     </Hyperlink>
                                 </TextBlock>
                                 <TextBlock Text="Download Webdrivers:"/>

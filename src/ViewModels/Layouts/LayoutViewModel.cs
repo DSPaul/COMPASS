@@ -36,6 +36,8 @@ namespace COMPASS.ViewModels
             return newLayout;
         }
 
+        public void RaisePreferencesChanged() => RaisePropertyChanged(nameof(DoVirtualization));
+
         #region Properties
 
         public CodexViewModel CodexVM { get; init; } = new();
@@ -47,6 +49,8 @@ namespace COMPASS.ViewModels
             get => _selectedCodex;
             set => SetProperty(ref _selectedCodex, value);
         }
+
+        public virtual bool DoVirtualization { get; }
 
         //Set Type of view
         public Layout LayoutType { get; init; }

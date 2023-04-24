@@ -9,6 +9,8 @@ namespace COMPASS.ViewModels
             LayoutType = Layout.List;
         }
 
+        public override bool DoVirtualization => Properties.Settings.Default.DoVirtualizationList && MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdList;
+
         #region ViewOptions
 
         private bool _showTitle = true;

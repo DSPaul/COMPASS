@@ -29,6 +29,7 @@ namespace COMPASS.ViewModels
             CurrentLayout = LayoutViewModel.GetLayout();
             LeftDockVM = new(this);
             CodexInfoVM = new(this);
+            SettingsViewModel.GetInstance().MVM = this;
 
             //Update stuff
             WebDriverFactory.UpdateWebdriver();

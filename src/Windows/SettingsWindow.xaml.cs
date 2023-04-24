@@ -1,4 +1,5 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Models;
+using COMPASS.Tools;
 using COMPASS.ViewModels;
 using Microsoft.Web.WebView2.Core;
 using System.Diagnostics;
@@ -60,5 +61,7 @@ namespace COMPASS.Windows
         }
 
         private void SelectFolderForFolderTagPairButton_Click(object sender, RoutedEventArgs e) => NewFolderTagPairTextBox.Text = Utils.PickFolder();
+
+        private void FilterOnlyNumbers(object sender, System.Windows.Input.TextCompositionEventArgs e) => e.Handled = !Constants.RegexNumbersOnly().IsMatch(e.Text);
     }
 }

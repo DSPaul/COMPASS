@@ -591,7 +591,8 @@
                 <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="5" Content="{Binding CurrentLayout}"
                                  Visibility="{Binding CollectionVM.CurrentCollection.AllCodices.Count, 
                                                 Converter={StaticResource ToVisibilityConverter}, ConverterParameter=False}"
-                                dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CurrentLayout}"/>
+                                dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CurrentLayout}"
+                                MaxWidth="{Binding ActualWidth, ElementName=ViewsGrid}"/>
                 
                 <Border Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="20"
                         Visibility="{Binding CollectionVM.CurrentCollection.AllCodices.Count, 

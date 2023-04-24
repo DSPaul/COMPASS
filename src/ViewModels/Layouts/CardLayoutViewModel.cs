@@ -7,7 +7,9 @@
             LayoutType = Layout.Card;
         }
 
-        #region VOptions
+        public override bool DoVirtualization => Properties.Settings.Default.DoVirtualizationCard && MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdCard;
+
+        #region Options
 
         private bool _showTitle = true;
         public bool ShowTitle

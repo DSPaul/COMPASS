@@ -7,6 +7,8 @@
             LayoutType = Layout.Tile;
         }
 
+        public override bool DoVirtualization => Properties.Settings.Default.DoVirtualizationTile && MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdTile;
+
         public enum DataOption
         {
             Title,

@@ -19,5 +19,9 @@ namespace COMPASS.Models
 
         [GeneratedRegex("[0-9]+[-]+[0-9]+[-]+[0-9]+[-]+[0-9]+[-]+[0-9]+")]
         public static partial Regex RegexISBNNumberOnly();
+
+
+        [GeneratedRegex("[0-9]+")]
+        public static partial Regex RegexNumbersOnly();
     }
 }

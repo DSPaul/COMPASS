@@ -32,6 +32,8 @@ namespace COMPASS.ViewModels
         public static SettingsViewModel GetInstance() => _settingsVM ??= new SettingsViewModel();
         #endregion
 
+        public MainViewModel MVM { get; set; }
+
         #region Load and Save Settings
         public static string PreferencesFilePath => Path.Combine(CompassDataPath, "Preferences.xml");
         public static XmlWriterSettings XmlWriteSettings { get; private set; } = new() { Indent = true };
@@ -97,9 +99,72 @@ namespace COMPASS.ViewModels
         }
         #endregion
 
+        #region Virtualization Preferences
+
+        public bool DoVirtualizationList
+        {
+            get => Properties.Settings.Default.DoVirtualizationList;
+            set
+            {
+                Properties.Settings.Default.DoVirtualizationList = value;
+                MVM.CurrentLayout.RaisePreferencesChanged();
+            }
+        }
+
+        public bool DoVirtualizationCard
+        {
+            get => Properties.Settings.Default.DoVirtualizationCard;
+            set
+            {
+                Properties.Settings.Default.DoVirtualizationCard = value;
+                MVM.CurrentLayout.RaisePreferencesChanged();
+            }
+        }
+
+        public bool DoVirtualizationTile
+        {
+            get => Properties.Settings.Default.DoVirtualizationTile;
+            set
+            {
+                Properties.Settings.Default.DoVirtualizationTile = value;
+                MVM.CurrentLayout.RaisePreferencesChanged();
+            }
+        }
+
+        public int VirtualizationThresholdList
+        {
+            get => Properties.Settings.Default.VirtualizationThresholdList;
+            set
+            {
+                Properties.Settings.Default.VirtualizationThresholdList = value;
+                MVM.CurrentLayout.RaisePreferencesChanged();
+            }
+        }
+
+        public int VirtualizationThresholdCard
+        {
+            get => Properties.Settings.Default.VirtualizationThresholdCard;
+            set
+            {
+                Properties.Settings.Default.VirtualizationThresholdCard = value;
+                MVM.CurrentLayout.RaisePreferencesChanged();
+            }
+        }
+
+        public int VirtualizationThresholdTile
+        {
+            get => Properties.Settings.Default.VirtualizationThresholdTile;
+            set
+            {
+                Properties.Settings.Default.VirtualizationThresholdTile = value;
+                MVM.CurrentLayout.RaisePreferencesChanged();
+            }
+        }
         #endregion
 
-        #region Tab: Sources
+        #endregion
+
+        #region Tab: Import
 
         //Open folder in explorer
         private RelayCommand<string> _showInExplorerCommand;
