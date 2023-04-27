@@ -83,7 +83,7 @@
                         </Border.Effect>
                     </Border>
                     <Grid Grid.Row="1" Margin="0,5" 
-                          MaxWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                          Width="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
                           Visibility="{Binding DataContext.ShowExtraData, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource ToVisibilityConverter}}">
                         <Grid.Resources>
                             <Style TargetType="TextBlock">
