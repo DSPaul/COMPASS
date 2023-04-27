@@ -24,7 +24,7 @@
             VirtualizingPanel.IsVirtualizing="{Binding DoVirtualization}"
             VirtualizingPanel.IsVirtualizingWhenGrouping="{Binding DoVirtualization}"
             VirtualizingPanel.CacheLengthUnit="Item" VirtualizingPanel.CacheLength="20"
-            VirtualizingPanel.VirtualizationMode="Recycling">
+            VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel">
         <wpftk:GridView.ItemContainerStyle>
             <Style TargetType="{x:Type ListBoxItem}">
                 <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
