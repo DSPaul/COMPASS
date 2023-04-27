@@ -86,6 +86,7 @@ namespace COMPASS.ViewModels
                 new(Filter.FilterType.OfflineSource),
                 new(Filter.FilterType.OnlineSource),
                 new(Filter.FilterType.PhysicalSource),
+                new(Filter.FilterType.HasISBN),
                 new(Filter.FilterType.Favorite),
             };
 
@@ -146,6 +147,25 @@ namespace COMPASS.ViewModels
         {
             get => _fileTypeList;
             set => SetProperty(ref _fileTypeList, value);
+        }
+
+        public string SelectedDomain
+        {
+            get => null;
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                {
+                    Filter DomainFilter = new(Filter.FilterType.Domain, value);
+                    AddFilter(DomainFilter, Include);
+                }
+            }
+        }
+        private ObservableCollection<string> _domainList = new();
+        public ObservableCollection<string> DomainList
+        {
+            get => _domainList;
+            set => SetProperty(ref _domainList, value);
         }
 
         //Selected Start and Stop Release Dates
@@ -264,13 +284,20 @@ namespace COMPASS.ViewModels
             {
                 //Populate Author Collection
                 AuthorList = new(AuthorList.Union(c.Authors));
+
                 //Populate Publisher Collection
-                if (!String.IsNullOrEmpty(c.Publisher))
-                    PublisherList.AddIfMissing(c.Publisher);
+                if (!String.IsNullOrEmpty(c.Publisher)) PublisherList.AddIfMissing(c.Publisher);
+
                 //Populate FileType Collection
-                string fileType = c.GetFileType(); // to avoid the same function call 3 times
-                if (!String.IsNullOrEmpty(fileType))
-                    FileTypeList.AddIfMissing(fileType);
+                string fileType = c.GetFileType();
+                if (!String.IsNullOrEmpty(fileType)) FileTypeList.AddIfMissing(fileType);
+
+                //Populate Domain Collection
+                if (c.HasOnlineSource())
+                {
+                    string Domain = new Uri(c.SourceURL).Host;
+                    if (!String.IsNullOrEmpty(Domain)) DomainList.AddIfMissing(Domain);
+                }
             }
             AuthorList.Remove(""); //remove "" author because String.IsNullOrEmpty cannot be called during Union
 
@@ -278,6 +305,7 @@ namespace COMPASS.ViewModels
             AuthorList = new(AuthorList.Order());
             PublisherList = new(PublisherList.Order());
             FileTypeList = new(FileTypeList.Order());
+            DomainList = new(DomainList.Order());
         });
 
         //------------- Adding, Removing, ect ------------//

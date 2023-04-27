@@ -26,7 +26,9 @@ namespace COMPASS.Models
             PhysicalSource,
             Favorite,
             FileExtension,
-            HasBrokenPath
+            HasBrokenPath,
+            HasISBN,
+            Domain
         }
 
         public Func<Codex, bool> Method => Type switch
@@ -38,10 +40,12 @@ namespace COMPASS.Models
             FilterType.MinimumRating => new(codex => codex.Rating >= (int?)FilterValue),
             FilterType.OfflineSource => new(codex => codex.HasOfflineSource()),
             FilterType.OnlineSource => new(codex => codex.HasOnlineSource()),
+            FilterType.HasISBN => new(codex => !String.IsNullOrEmpty(codex.ISBN)),
             FilterType.PhysicalSource => new(codex => codex.Physically_Owned),
             FilterType.Favorite => new(codex => codex.Favorite),
             FilterType.FileExtension => new(codex => codex.GetFileType() == (string)FilterValue),
             FilterType.HasBrokenPath => new(codex => codex.HasOfflineSource() && !Path.Exists(codex.Path)),
+            FilterType.Domain => new(codex => codex.HasOnlineSource() && codex.SourceURL.Contains((string)FilterValue)),
             _ => new(_ => true)
         };
 
@@ -75,11 +79,13 @@ namespace COMPASS.Models
             FilterType.OfflineSource => Colors.DarkSeaGreen,
             FilterType.OnlineSource => Colors.DarkSeaGreen,
             FilterType.PhysicalSource => Colors.DarkSeaGreen,
+            FilterType.HasISBN => Colors.DarkSeaGreen,
             FilterType.Favorite => Colors.HotPink,
             FilterType.FileExtension => Colors.OrangeRed,
             FilterType.Search => Colors.Salmon,
             FilterType.Tag => ((ITag)FilterValue).BackgroundColor,
             FilterType.HasBrokenPath => Colors.Gold,
+            FilterType.Domain => Colors.MediumTurquoise,
             _ => throw new NotImplementedException(),
         };
 
@@ -100,6 +106,8 @@ namespace COMPASS.Models
             FilterType.FileExtension => "File Type:",
             FilterType.Search => "Search:",
             FilterType.HasBrokenPath => "Has Broken Path",
+            FilterType.HasISBN => "Has ISBN",
+            FilterType.Domain => "From:",
             _ => "",
         };
         public string Suffix => Type switch

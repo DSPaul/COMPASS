@@ -348,6 +348,12 @@
                                 <ComboBox ItemsSource="{Binding FileTypeList}" FontSize="15"
                                       SelectedValue="{Binding SelectedFileType, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
                             </Grid>
+                            <TextBlock Text="Source Website:" Margin="0,5"/>
+                            <Grid>
+                                <TextBlock Text="-- Select Website --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
+                                <ComboBox ItemsSource="{Binding DomainList}" FontSize="15"
+                                      SelectedValue="{Binding SelectedDomain, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
+                            </Grid>
                         </StackPanel>
                         <Button Content="Clear All" Grid.Row="4" Margin="10" Command="{Binding ClearFiltersCommand}"
                             Style="{StaticResource IconTextButton}" Tools:AP.IconKind="FilterRemove" Background="Red"/>
