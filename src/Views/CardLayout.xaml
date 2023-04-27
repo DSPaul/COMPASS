@@ -26,8 +26,9 @@
              dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CodexVM}"
              VirtualizingPanel.IsVirtualizing="{Binding DoVirtualization}"
              VirtualizingPanel.IsVirtualizingWhenGrouping="{Binding DoVirtualization}"
-             VirtualizingPanel.CacheLengthUnit="Item" VirtualizingPanel.CacheLength="20"
-             VirtualizingPanel.VirtualizationMode="Recycling">
+             VirtualizingPanel.CacheLengthUnit="Item" VirtualizingPanel.CacheLength="10"
+             VirtualizingPanel.VirtualizationMode="Recycling" 
+             VirtualizingPanel.ScrollUnit="Pixel">
         <wpftk:GridView.ItemContainerStyle>
             <Style TargetType="{x:Type ListBoxItem}">
                 <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
@@ -75,87 +76,102 @@
                         <DropShadowEffect BlurRadius="15" Direction="300"/>
                     </Border.Effect>
                     <StackPanel Orientation="Vertical">
-                        <Grid Height="160">
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" MaxWidth="200"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Image Source="{Binding Thumbnail, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png }" HorizontalAlignment="Center"/>
-                            <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
-                                        Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource ToVisibilityConverter}}">
+                            <Image Source="{Binding Thumbnail, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, 
+                                    Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png }" HorizontalAlignment="Center" 
+                                   MaxHeight="{Binding ActualHeight, ElementName=PropGrid}" Stretch="UniformToFill"/>
+                            <Border VerticalAlignment="Bottom" Height="25"
+                                    Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, 
+                                    Converter={StaticResource ToVisibilityConverter}}">
+                                <Border.Background>
+                                    <SolidColorBrush Color="Black" Opacity="0.3"/>
+                                </Border.Background>
+                                <Border.Effect>
+                                    <BlurEffect Radius="5" RenderingBias="Performance"/>
+                                </Border.Effect>
+                            </Border>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
+                                    Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, 
+                                    Converter={StaticResource ToVisibilityConverter}}">
                                 <Button Command="{Binding Path=Data.OpenCodexLocallyCommand, Source={StaticResource CodexProxy}}" ToolTip="Open Locally"
-                                CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FileOutline"/>
+                                        CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="File"/>
                                 <Button Command="{Binding Path=Data.OpenCodexOnlineCommand, Source={StaticResource CodexProxy}}" ToolTip="Open Online"
-                                CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>
-                                <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
-                            Converter={StaticResource ToVisibilityConverter}}"/>
+                                        CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>
+                                <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned, Converter={StaticResource ToVisibilityConverter}}"/>
                             </StackPanel>
-                            <Grid Margin="5 10" Grid.Column="1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.Resources>
-                                    <Style TargetType="TextBlock" x:Key="Type">
-                                        <Setter Property="FontSize" Value="14"/>
-                                        <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
-                                        <Setter Property="Margin" Value="3,2"/>
-                                        <Setter Property="TextWrapping" Value="Wrap"/>
-                                        <Setter Property="HorizontalAlignment" Value="Right"/>
-                                    </Style>
-                                    <Style TargetType="TextBlock" x:Key="Data">
-                                        <Setter Property="FontSize" Value="14"/>
-                                        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-                                        <Setter Property="Margin" Value="3,2"/>
-                                        <Setter Property="TextWrapping" Value="Wrap"/>
-                                    </Style>
-                                </Grid.Resources>
+                            <Border Grid.Column="1" x:Name="PropGrid" VerticalAlignment="Top" MinHeight="160">
+                                <Grid Margin="5 10" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.Resources>
+                                        <Style TargetType="TextBlock" x:Key="Type">
+                                            <Setter Property="FontSize" Value="14"/>
+                                            <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+                                            <Setter Property="Margin" Value="3,2"/>
+                                            <Setter Property="TextWrapping" Value="Wrap"/>
+                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        </Style>
+                                        <Style TargetType="TextBlock" x:Key="Data">
+                                            <Setter Property="FontSize" Value="14"/>
+                                            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                                            <Setter Property="Margin" Value="3,2"/>
+                                            <Setter Property="TextWrapping" Value="Wrap"/>
+                                        </Style>
+                                    </Grid.Resources>
 
-                                <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Type}" Text="Title:"/>
-                                <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Type}" Text="Authors:" 
-                                        Visibility="{Binding DataContext.ShowAuthor, RelativeSource={RelativeSource AncestorType=ListBox},
-                                        Converter={StaticResource ToVisibilityConverter}}"/>
-                                <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource Type}" Text="Publisher:" 
-                                        Visibility="{Binding DataContext.ShowPublisher, RelativeSource={RelativeSource AncestorType=ListBox},
-                                        Converter={StaticResource ToVisibilityConverter}}"/>
-                                <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource Type}" Text="Version:" 
-                                        Visibility="{Binding DataContext.ShowVersion, RelativeSource={RelativeSource AncestorType=ListBox},
-                                        Converter={StaticResource ToVisibilityConverter}}"/>
-                                <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource Type}" Text="Releasedate:" 
-                                        Visibility="{Binding DataContext.ShowReleaseDate, RelativeSource={RelativeSource AncestorType=ListBox},
-                                        Converter={StaticResource ToVisibilityConverter}}"/>
-                                <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource Type}" Text="Rating:" 
-                                        Visibility="{Binding DataContext.ShowRating, RelativeSource={RelativeSource AncestorType=ListBox},
-                                        Converter={StaticResource ToVisibilityConverter}}"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Type}" Text="Title:"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Type}" Text="Authors:" 
+                                            Visibility="{Binding DataContext.ShowAuthor, RelativeSource={RelativeSource AncestorType=ListBox},
+                                            Converter={StaticResource ToVisibilityConverter}}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource Type}" Text="Publisher:" 
+                                            Visibility="{Binding DataContext.ShowPublisher, RelativeSource={RelativeSource AncestorType=ListBox},
+                                            Converter={StaticResource ToVisibilityConverter}}"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource Type}" Text="Version:" 
+                                            Visibility="{Binding DataContext.ShowVersion, RelativeSource={RelativeSource AncestorType=ListBox},
+                                            Converter={StaticResource ToVisibilityConverter}}"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource Type}" Text="Released:" 
+                                            Visibility="{Binding DataContext.ShowReleaseDate, RelativeSource={RelativeSource AncestorType=ListBox},
+                                            Converter={StaticResource ToVisibilityConverter}}"/>
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource Type}" Text="Rating:" 
+                                            Visibility="{Binding DataContext.ShowRating, RelativeSource={RelativeSource AncestorType=ListBox},
+                                            Converter={StaticResource ToVisibilityConverter}}"/>
 
-                                <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Title}" />
-                                <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding AuthorsAsString}" 
-                                        Visibility="{Binding DataContext.ShowAuthor, RelativeSource={RelativeSource AncestorType=ListBox},
-                                        Converter={StaticResource ToVisibilityConverter}}"/>
-                                <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Publisher}" 
-                                        Visibility="{Binding DataContext.ShowPublisher, RelativeSource={RelativeSource AncestorType=ListBox},
-                                        Converter={StaticResource ToVisibilityConverter}}"/>
-                                <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Version}" 
-                                        Visibility="{Binding DataContext.ShowVersion, RelativeSource={RelativeSource AncestorType=ListBox},
-                                        Converter={StaticResource ToVisibilityConverter}}"/>
-                                <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource Data}" Text ="{Binding ReleaseDate, StringFormat=dd/MM/yyyy}"
-                                        Visibility="{Binding DataContext.ShowReleaseDate, RelativeSource={RelativeSource AncestorType=ListBox},
-                                        Converter={StaticResource ToVisibilityConverter}}"/>
-                                <materialDesign:RatingBar Grid.Row="5" Grid.Column="1" Value ="{Binding Rating}" Foreground="White"
-                                        Visibility="{Binding DataContext.ShowRating, RelativeSource={RelativeSource AncestorType=ListBox},
-                                        Converter={StaticResource ToVisibilityConverter}}"/>
-                            </Grid>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Title}" />
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding AuthorsAsString}" 
+                                            Visibility="{Binding DataContext.ShowAuthor, RelativeSource={RelativeSource AncestorType=ListBox},
+                                            Converter={StaticResource ToVisibilityConverter}}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Publisher}" 
+                                            Visibility="{Binding DataContext.ShowPublisher, RelativeSource={RelativeSource AncestorType=ListBox},
+                                            Converter={StaticResource ToVisibilityConverter}}"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource Data}" Text="{Binding Version}" 
+                                            Visibility="{Binding DataContext.ShowVersion, RelativeSource={RelativeSource AncestorType=ListBox},
+                                            Converter={StaticResource ToVisibilityConverter}}"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Style="{StaticResource Data}" Text ="{Binding ReleaseDate, StringFormat=dd/MM/yyyy}"
+                                            Visibility="{Binding DataContext.ShowReleaseDate, RelativeSource={RelativeSource AncestorType=ListBox},
+                                            Converter={StaticResource ToVisibilityConverter}}"/>
+                                    <materialDesign:RatingBar Grid.Row="5" Grid.Column="1" Value ="{Binding Rating}" Foreground="White"
+                                            Visibility="{Binding DataContext.ShowRating, RelativeSource={RelativeSource AncestorType=ListBox},
+                                            Converter={StaticResource ToVisibilityConverter}}"
+                                            IsEnabled="{Binding DataContext.ShowRating, RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                                </Grid>
+                            </Border>
                         </Grid>
                         <Rectangle Grid.Row="1" Fill="{StaticResource AccentColor}" Height="3"/>
-                        <ItemsControl Grid.Row="2" Grid.Column="0" Foreground="Black" VerticalAlignment="Center" Margin="10,3" HorizontalAlignment="Left"
+                        <ItemsControl Grid.Row="2" Grid.Column="0" Foreground="Black" Margin="10,3"
                                     ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
                                     Visibility="{Binding DataContext.ShowTags, RelativeSource={RelativeSource AncestorType=ListBox},
                                         Converter={StaticResource ToVisibilityConverter}}">
