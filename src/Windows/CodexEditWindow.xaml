@@ -269,6 +269,7 @@
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
@@ -276,22 +277,38 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
+                    <Grid.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource IconBtn}">
+                            <Setter Property="Background" Value="{StaticResource ButtonBackground}"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="Padding" Value="7"/>
+                            <Setter Property="Margin" Value="5"/>
+                        </Style>
+                    </Grid.Resources>
                     
                     <TextBlock Text="Path:" Grid.Column="0" VerticalAlignment="Center"/>
                     <TextBox Text="{Binding TempCodex.Path, Mode=TwoWay}" Grid.Column="1" 
                              TextWrapping="Wrap" Padding="3" Margin="10"/>
-                    <Button Grid.Column="2" Command="{Binding BrowsePathCommand}"  Content="Browse"
-                            Style="{StaticResource IconTextButton}" Tools:AP.IconKind="FolderOpen"/>
+                    <Button Grid.Column="2" Command="{Binding BrowsePathCommand}" 
+                            ToolTip="Show File in Explorer" Tools:AP.IconKind="FolderOpen"/>
+                    <Button Grid.Column="3" 
+                            ToolTip="Search File for MetaData" Tools:AP.IconKind="FileFind"/>
 
                     <TextBlock Text="Source URL:" Grid.Column="0" Grid.Row="1"/>
                     <TextBox Text="{Binding TempCodex.SourceURL, Mode=TwoWay}" Grid.Column="1" Grid.Row="1" 
-                             TextWrapping="Wrap" Padding="3"  Margin="10"/>
-                    <Button  Grid.Row="1" Grid.Column="2" Command="{Binding BrowseURLCommand}" Content="Browse" 
-                             Style="{StaticResource IconTextButton}" Tools:AP.IconKind="Compass"/>
+                             TextWrapping="Wrap" Padding="3"  Margin="10" />
+                    <Button Grid.Row="1" Grid.Column="2" Command="{Binding BrowseURLCommand}" 
+                            ToolTip="Open URL in Browser" Tools:AP.IconKind="Compass"/>
+                    <Button Grid.Row="1" Grid.Column="3"  
+                            ToolTip="Download MetaData" Tools:AP.IconKind="Download"/>
 
                     <TextBlock Text="ISBN:" Grid.Column="0" Grid.Row="2"/>
                     <TextBox Text="{Binding TempCodex.ISBN, Mode=TwoWay}" Grid.Column="1" Grid.Row="2"
                              TextWrapping="Wrap" Padding="3"  Margin="10"/>
+                    <Button  Grid.Row="2" Grid.Column="2" Command="{Binding }" 
+                             ToolTip="Show in Open Library"  Tools:AP.IconKind="Library"/>
+                    <Button Grid.Row="2" Grid.Column="3"  
+                            ToolTip="Get MetaData form Open Library" Tools:AP.IconKind="Download"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Advanced">
