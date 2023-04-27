@@ -7,6 +7,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -84,6 +85,14 @@ namespace COMPASS.ViewModels
         {
             if (CodexViewModel.CanOpenCodexOnline(TempCodex))
                 CodexViewModel.OpenCodexOnline(TempCodex);
+        }
+
+        private ActionCommand _browseISBNCommand;
+        public ActionCommand BrowseISBNCommand => _browseISBNCommand ??= new(BrowseISBN);
+        private void BrowseISBN()
+        {
+            string url = $"https://openlibrary.org/search?q={TempCodex.ISBN}&mode=everything";
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
 
         private ActionCommand _tagCheckCommand;

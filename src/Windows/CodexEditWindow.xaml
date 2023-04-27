@@ -290,7 +290,7 @@
                     <TextBox Text="{Binding TempCodex.Path, Mode=TwoWay}" Grid.Column="1" 
                              TextWrapping="Wrap" Padding="3" Margin="10"/>
                     <Button Grid.Column="2" Command="{Binding BrowsePathCommand}" 
-                            ToolTip="Show File in Explorer" Tools:AP.IconKind="FolderOpen"/>
+                            ToolTip="Choose a new Path" Tools:AP.IconKind="FolderOpen"/>
                     <Button Grid.Column="3" 
                             ToolTip="Search File for MetaData" Tools:AP.IconKind="FileFind"/>
 
@@ -305,7 +305,7 @@
                     <TextBlock Text="ISBN:" Grid.Column="0" Grid.Row="2"/>
                     <TextBox Text="{Binding TempCodex.ISBN, Mode=TwoWay}" Grid.Column="1" Grid.Row="2"
                              TextWrapping="Wrap" Padding="3"  Margin="10"/>
-                    <Button  Grid.Row="2" Grid.Column="2" Command="{Binding }" 
+                    <Button  Grid.Row="2" Grid.Column="2" Command="{Binding BrowseISBNCommand}" 
                              ToolTip="Show in Open Library"  Tools:AP.IconKind="Library"/>
                     <Button Grid.Row="2" Grid.Column="3"  
                             ToolTip="Get MetaData form Open Library" Tools:AP.IconKind="Download"/>
