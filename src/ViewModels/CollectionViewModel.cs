@@ -170,7 +170,7 @@ namespace COMPASS.ViewModels
 
             _currentCollection = collection;
             RaisePropertyChanged(nameof(CurrentCollection));
-            MainVM.CurrentLayout.RaisePreferencesChanged();
+            MainVM?.CurrentLayout?.RaisePreferencesChanged();
 
             //create new viewmodels
             FilterVM = new(collection.AllCodices);
