@@ -25,6 +25,7 @@ namespace COMPASS.ViewModels
         private SettingsViewModel()
         {
             LoadGlobalPreferences();
+            AllPreferences.Init();
         }
 
         #region singleton pattern
@@ -312,6 +313,10 @@ namespace COMPASS.ViewModels
         }
         #endregion
 
+        #endregion
+
+        #region Tab: Metadata
+        public List<MetaDataPreference> MetaDataPreferences => AllPreferences.MetaDataPreferences;
         #endregion
 
         #region Tab: Data

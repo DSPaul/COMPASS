@@ -8,7 +8,6 @@
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-        xmlns:behav ="clr-namespace:COMPASS.Resources.Behaviors"
         d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" xmlns:controls="clr-namespace:COMPASS.Resources.Controls"
         mc:Ignorable="d" Closing="Window_Closing"
@@ -364,7 +363,7 @@
             </ScrollViewer>
         </TabItem>
         <TabItem Header="Metadata" Tools:AP.IconKind="FileCode">
-            <ScrollViewer behav:TopMouseScrollPriorityBehavior.TopMouseScrollPriority="True">
+            <ScrollViewer>
                 <StackPanel Margin="20">
                     <Border x:Name="MetaDataActions" Style="{StaticResource SettingsContainer}">
                         <StackPanel>
@@ -381,32 +380,47 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Text="Property"/>
-                                <TextBlock Text="Source Priority" Grid.Column="1"/>
+                                <TextBlock Text="Source Priority" Grid.Column="1" Margin="20,0"/>
                                 <TextBlock Text="Overwrite current value" Grid.Column="2"/>
                                 
                                 <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3" Grid.Row="1"/>
 
-                                <TextBlock Text="Title" Grid.Row="2" VerticalAlignment="Top"/>
-                                <controls:PriorityControl Grid.Row="2" Grid.Column="1" 
-                                                          ItemsSource="{Binding OpenCodexPriority, Mode=TwoWay}"/>
-                                <StackPanel Grid.Row="2" Grid.Column="2"  Margin="10,0,20,0">
-                                    <RadioButton Content="Never"/>
-                                    <RadioButton Content="Only if empty"/>
-                                    <RadioButton Content="Ask every time"/>
-                                    <RadioButton Content="Always"/>
-                                </StackPanel>
+                                <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" ItemsSource="{Binding MetaDataPreferences}" Margin="10,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="2*"/>
+                                                    <ColumnDefinition Width="2*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="auto"/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Text="{Binding Label}" VerticalAlignment="Top"/>
+                                                <controls:PriorityControl Grid.Column="1" 
+                                                          ItemsSource="{Binding SourcePriorityNamed, Mode=TwoWay}"/>
+                                                <StackPanel Grid.Column="2"  Margin="10,0,20,0">
+                                                    <RadioButton Content="Never"/>
+                                                    <RadioButton Content="Only if empty"/>
+                                                    <RadioButton Content="Ask every time"/>
+                                                    <RadioButton Content="Always"/>
+                                                </StackPanel>
+                                                <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3" Grid.Row="1"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
                         </StackPanel>
                     </Border>
