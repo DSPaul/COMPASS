@@ -5,6 +5,7 @@ using Microsoft.Web.WebView2.Core;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace COMPASS.Windows
 {
@@ -62,6 +63,8 @@ namespace COMPASS.Windows
 
         private void SelectFolderForFolderTagPairButton_Click(object sender, RoutedEventArgs e) => NewFolderTagPairTextBox.Text = Utils.PickFolder();
 
-        private void FilterOnlyNumbers(object sender, System.Windows.Input.TextCompositionEventArgs e) => e.Handled = !Constants.RegexNumbersOnly().IsMatch(e.Text);
+        private void FilterOnlyNumbers(object sender, TextCompositionEventArgs e) => e.Handled = !Constants.RegexNumbersOnly().IsMatch(e.Text);
+
+
     }
 }
