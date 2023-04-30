@@ -13,6 +13,7 @@
              xmlns:views="clr-namespace:COMPASS.Views" 
              xmlns:Converters="clr-namespace:COMPASS.Converters"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:sysComponentModel="clr-namespace:System.ComponentModel;assembly=System"
              d:DataContext="{d:DesignInstance Type=viewmodels:LeftDockViewModel}"
              Background="{StaticResource ButtonBackground}"
              mc:Ignorable="d" FontSize="20"
@@ -47,7 +48,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Converters:RadioBtnToIntConverter x:Key="RadioBtnToIntConverter"/>
     </UserControl.Resources>
 
     <TabControl Background="{StaticResource TabFocus}" BorderThickness="0" TabStripPlacement="Left" Padding="0" 
@@ -488,14 +488,19 @@
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10">
+                            <StackPanel.Resources>
+                                <Converters:ObjectToBoolConverter x:Key="ObjectToBoolConverter"/>
+                            </StackPanel.Resources>
                             <RadioButton GroupName="SortDirection"
-                                     IsChecked="{Binding SortDirection, ConverterParameter=0, Converter={StaticResource RadioBtnToIntConverter}}">
+                                     IsChecked="{Binding SortDirection, Converter={StaticResource ObjectToBoolConverter},
+                                     ConverterParameter={x:Static sysComponentModel:ListSortDirection.Ascending}}">
                                 <Border CornerRadius="5,0,0,5" Style="{StaticResource RadioBtnContainer}">
                                     <TextBlock Text="Ascending" Style="{StaticResource RadioBtnTextbox}"/>
                                 </Border>
                             </RadioButton>
                             <RadioButton GroupName="SortDirection"
-                                     IsChecked="{Binding SortDirection, ConverterParameter=1, Converter={StaticResource RadioBtnToIntConverter}}">
+                                     IsChecked="{Binding SortDirection, Converter={StaticResource ObjectToBoolConverter},
+                                     ConverterParameter={x:Static sysComponentModel:ListSortDirection.Descending}}">
                                 <Border CornerRadius="0,5,5,0" Margin="-1,0,0,0" Style="{StaticResource RadioBtnContainer}">
                                     <TextBlock Text="Descending" Style="{StaticResource RadioBtnTextbox}"/>
                                 </Border>

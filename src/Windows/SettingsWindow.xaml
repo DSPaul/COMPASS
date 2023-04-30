@@ -8,6 +8,7 @@
         xmlns:dd="urn:gong-wpf-dragdrop"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+        xmlns:models="clr-namespace:COMPASS.Models" 
         d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" xmlns:controls="clr-namespace:COMPASS.Resources.Controls"
         mc:Ignorable="d" Closing="Window_Closing"
@@ -369,8 +370,9 @@
                         <StackPanel>
                             <TextBlock Text="Actions" Style="{StaticResource SectionTitle}"/>
                             <UniformGrid>
-                                <Button Content="Get for selected" Style="{StaticResource TextButton}"/>
+                                <Button Content="Get for filtered" Style="{StaticResource TextButton}"/>
                                 <Button Content="Get for All" Style="{StaticResource TextButton}"/>
+                                <Button Content="Reset to defaults" Style="{StaticResource TextButton}"/>
                             </UniformGrid>
                         </StackPanel>
                     </Border>
@@ -395,6 +397,9 @@
                                 <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3" Grid.Row="1"/>
 
                                 <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" ItemsSource="{Binding MetaDataPreferences}" Margin="10,0">
+                                    <ItemsControl.Resources>
+                                        <Converters:ObjectToBoolConverter x:Key="ObjectToBoolConverter" />
+                                    </ItemsControl.Resources>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
@@ -411,10 +416,18 @@
                                                 <controls:PriorityControl Grid.Column="1" 
                                                           ItemsSource="{Binding SourcePriorityNamed, Mode=TwoWay}"/>
                                                 <StackPanel Grid.Column="2"  Margin="10,0,20,0">
-                                                    <RadioButton Content="Never"/>
-                                                    <RadioButton Content="Only if empty"/>
-                                                    <RadioButton Content="Ask every time"/>
-                                                    <RadioButton Content="Always"/>
+                                                    <RadioButton Content="Never" 
+                                                                 IsChecked="{Binding OverwriteMode, Converter={StaticResource ObjectToBoolConverter}, 
+                                                                 ConverterParameter={x:Static models:MetaDataOverwriteMode.Never}}" />
+                                                    <RadioButton Content="Only if empty" 
+                                                                 IsChecked="{Binding OverwriteMode, Converter={StaticResource ObjectToBoolConverter}, 
+                                                                 ConverterParameter={x:Static models:MetaDataOverwriteMode.IfEmpty}}" />
+                                                    <RadioButton Content="Ask every time" 
+                                                                 IsChecked="{Binding OverwriteMode, Converter={StaticResource ObjectToBoolConverter}, 
+                                                                 ConverterParameter={x:Static models:MetaDataOverwriteMode.Ask}}" />
+                                                    <RadioButton Content="Always" 
+                                                                 IsChecked="{Binding OverwriteMode, Converter={StaticResource ObjectToBoolConverter}, 
+                                                                 ConverterParameter={x:Static models:MetaDataOverwriteMode.Always}}" />
                                                 </StackPanel>
                                                 <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3" Grid.Row="1"/>
                                             </Grid>

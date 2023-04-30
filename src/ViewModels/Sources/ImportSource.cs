@@ -22,6 +22,23 @@ namespace COMPASS.ViewModels.Sources
         GenericURL = 512
     }
 
+    public static class ImportSources
+    {
+        public static readonly ImportSource OnlineSources =
+            ImportSource.GmBinder |
+            ImportSource.Homebrewery |
+            ImportSource.DnDBeyond |
+            ImportSource.GoogleDrive |
+            ImportSource.Dropbox |
+            ImportSource.GenericURL;
+
+        public static readonly ImportSource OfflineSources =
+            ImportSource.File |
+            ImportSource.Folder;
+    }
+
+
+
     public class NamedImportSource : ITag
     {
         // Parameterless ctor for serialization

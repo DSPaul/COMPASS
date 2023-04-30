@@ -1,6 +1,6 @@
 ﻿namespace COMPASS.Models
 {
-    public enum MetaDataBehavior
+    public enum MetaDataOverwriteMode
     {
         Never,
         IfEmpty,

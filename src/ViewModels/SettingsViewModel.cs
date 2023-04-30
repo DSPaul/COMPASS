@@ -316,7 +316,7 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Tab: Metadata
-        public List<MetaDataPreference> MetaDataPreferences => AllPreferences.MetaDataPreferences;
+        public List<CodexProperty> MetaDataPreferences => AllPreferences.CodexProperties;
         #endregion
 
         #region Tab: Data

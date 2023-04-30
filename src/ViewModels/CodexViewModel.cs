@@ -1,6 +1,7 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
+using COMPASS.ViewModels.Sources;
 using COMPASS.Windows;
 using GongSolutions.Wpf.DragDrop;
 using System;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -307,6 +309,88 @@ namespace COMPASS.ViewModels
         {
             MainViewModel.CollectionVM.CurrentCollection.BanishCodices(toBanish);
             DeleteCodices(toBanish);
+        }
+
+        private RelayCommand<Codex> _getMetaDataCommand;
+        public RelayCommand<Codex> GetMetaDataCommand => _getMetaDataCommand ??= new(GetMetaData);
+
+        public static void GetMetaData(IList<Codex> codices) =>
+            Parallel.ForEach(codices, GetMetaData);
+
+        public static async void GetMetaData(Codex codex)
+        {
+            Codex MetaDatalessCodex = new()
+            {
+                Path = codex.Path,
+                SourceURL = codex.SourceURL,
+                ISBN = codex.ISBN
+            };
+
+            Codex LocalMetaData = new();
+            Codex OnlineMetaData = new();
+            Codex ISBNMetaData = new();
+
+            if (File.Exists(codex.Path))
+            {
+                FileSourceViewModel fileSourceVM = new();
+                LocalMetaData = await fileSourceVM.SetMetaData(new Codex() { Path = codex.Path });
+
+                //Update ISBN number that could have been found in pdf
+                codex.ISBN ??= LocalMetaData.ISBN;
+            }
+
+            if (codex.HasOnlineSource())
+            {
+                ImportSource onlineSource = (ImportSource)OnlineSourceViewModel.GetOnlineSource(codex.SourceURL);
+                OnlineSourceViewModel onlineSourceVM = (OnlineSourceViewModel)SourceViewModel.GetSource(onlineSource);
+                OnlineMetaData = await onlineSourceVM.SetMetaData(new Codex() { SourceURL = codex.SourceURL });
+            }
+
+            if (!String.IsNullOrWhiteSpace(codex.ISBN))
+            {
+                ISBNSourceViewModel ISBNSourceVM = new();
+                ISBNMetaData = await ISBNSourceVM.SetMetaData(new Codex() { ISBN = codex.ISBN });
+            }
+
+            //Use these 3 sources to set the actual metadata base on preferences
+            var properties = SettingsViewModel.GetInstance().MetaDataPreferences;
+
+            //Iterate over all the properties and set them
+            foreach (var prop in properties)
+            {
+                if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
+
+                //metaDataHolder will hold the prop from the top prefered sources
+                Codex propHolder = new();
+
+                //iterate over the sources in reverse because overwriting causes the last ones to remain
+                foreach (var source in prop.SourcePriority.AsEnumerable().Reverse())
+                {
+                    // Store the metadata for this source in oneSourceMetaDataHolder
+                    Codex oneSourceMetaDataHolder = null;
+                    if (ImportSources.OnlineSources.HasFlag(source))
+                        oneSourceMetaDataHolder = OnlineMetaData;
+                    else if (ImportSources.OfflineSources.HasFlag(source))
+                        oneSourceMetaDataHolder = LocalMetaData;
+                    else if (source == ImportSource.ISBN)
+                        oneSourceMetaDataHolder = ISBNMetaData;
+
+                    // Overwrite the prop from oneSourceMetaDataHolder into metaDataHolder
+                    // if the new value is not null/default/empty
+                    if (!prop.IsEmpty(oneSourceMetaDataHolder))
+                    {
+                        prop.SetProp(propHolder, oneSourceMetaDataHolder);
+                    }
+                }
+
+                // Now set the prop on the actual codex based on overwrite mode
+                if (prop.OverwriteMode == MetaDataOverwriteMode.Always ||
+                    (prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty
+                    && prop.IsEmpty(codex)))
+                {
+                    prop.SetProp(codex, propHolder);
+                }
+            }
         }
 
         public static void DataGridHandleKeyDown(object sender, KeyEventArgs e)

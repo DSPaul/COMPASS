@@ -14,6 +14,21 @@ namespace COMPASS.ViewModels.Sources
         public OnlineSourceViewModel() : base() { }
         public OnlineSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
 
+        public static ImportSource? GetOnlineSource(string URL)
+        {
+            if (String.IsNullOrEmpty(URL)) return null;
+
+            if (URL.Contains("dndbeyond.com"))
+                return ImportSource.DnDBeyond;
+            if (URL.Contains("gmbinder.com"))
+                return ImportSource.GmBinder;
+            if (URL.Contains("homebrewery.naturalcrit.com"))
+                return ImportSource.Homebrewery;
+            if (URL.Contains("drive.google.com"))
+                return ImportSource.GoogleDrive;
+            return ImportSource.GenericURL;
+        }
+
         #region Import logic
         public override void Import()
         {

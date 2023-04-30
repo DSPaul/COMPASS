@@ -1,7 +1,6 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.Windows;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,15 +18,15 @@ namespace COMPASS.ViewModels.Sources
         public static SourceViewModel GetSource(ImportSource source) => GetSource(MainViewModel.CollectionVM.CurrentCollection, source);
         public static SourceViewModel GetSource(CodexCollection targetCollection, ImportSource source) => source switch
         {
-            ImportSource.File => new FileSourceViewModel(),
-            ImportSource.Folder => new FolderSourceViewModel(),
-            ImportSource.Manual => new ManualSourceViewModel(),
-            ImportSource.ISBN => new ISBNSourceViewModel(),
-            ImportSource.GmBinder => new GmBinderSourceViewModel(),
-            ImportSource.Homebrewery => new HomebrewerySourceViewModel(),
-            ImportSource.GoogleDrive => new GoogleDriveSourceViewModel(),
-            ImportSource.GenericURL => new GenericOnlineSourceViewModel(),
-            _ => throw new NotSupportedException()
+            ImportSource.File => new FileSourceViewModel(targetCollection),
+            ImportSource.Folder => new FolderSourceViewModel(targetCollection),
+            ImportSource.Manual => new ManualSourceViewModel(targetCollection),
+            ImportSource.ISBN => new ISBNSourceViewModel(targetCollection),
+            ImportSource.GmBinder => new GmBinderSourceViewModel(targetCollection),
+            ImportSource.Homebrewery => new HomebrewerySourceViewModel(targetCollection),
+            ImportSource.GoogleDrive => new GoogleDriveSourceViewModel(targetCollection),
+            ImportSource.GenericURL => new GenericOnlineSourceViewModel(targetCollection),
+            _ => null
         };
 
         #region Import Logic

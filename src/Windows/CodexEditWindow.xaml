@@ -276,6 +276,7 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <Grid.Resources>
                         <Style TargetType="Button" BasedOn="{StaticResource IconBtn}">

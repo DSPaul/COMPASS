@@ -1,7 +1,9 @@
 ﻿using COMPASS.Tools;
+using COMPASS.ViewModels.Sources;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Xml.Serialization;
@@ -312,6 +314,95 @@ namespace COMPASS.Models
             }
         }
         #endregion 
+
+        public static readonly List<CodexProperty> Properties = new()
+        {
+            new( "Title",
+                codex => String.IsNullOrEmpty(codex.Title),
+                (codex,other) => codex.Title = other.Title,
+                new List<NamedImportSource>()
+                {
+                    new(ImportSource.File),
+                    new(ImportSource.GmBinder),
+                    new(ImportSource.Homebrewery),
+                    new(ImportSource.GoogleDrive),
+                    new(ImportSource.ISBN),
+                    new(ImportSource.GenericURL)
+                }),
+            new( "Authors",
+                codex => codex.Authors is null || !codex.Authors.Any(),
+                (codex,other) => codex.Authors = other.Authors,
+                new()
+                {
+                    new(ImportSource.File),
+                    new(ImportSource.GmBinder),
+                    new(ImportSource.Homebrewery),
+                    new(ImportSource.ISBN),
+                    new(ImportSource.GenericURL)
+                }),
+            new( "Publisher",
+                codex => String.IsNullOrEmpty(codex.Publisher),
+                (codex,other) => codex.Publisher = other.Publisher,
+                new()
+                {
+                    new(ImportSource.ISBN)
+                }),
+            new( "Version",
+                codex => String.IsNullOrEmpty(codex.Version),
+                (codex,other) => codex.Version = other.Version,
+                new()
+                {
+                    new(ImportSource.Homebrewery)
+                }),
+            new( "Pagecount",
+                codex => codex.PageCount == 0,
+                (codex, other) => codex.PageCount = other.PageCount,
+                new()
+                {
+                    new(ImportSource.File),
+                    new(ImportSource.GmBinder),
+                    new(ImportSource.Homebrewery),
+                    new(ImportSource.ISBN),
+                }),
+            new( "Cover Art",
+                codex => !File.Exists(codex.CoverArt),
+                (codex,other) => { }, //cover art is always the same, can't really be set, prop copy from temp here or something
+                new()
+                {
+                    new(ImportSource.File),
+                    new(ImportSource.GmBinder),
+                    new(ImportSource.Homebrewery),
+                    new(ImportSource.GoogleDrive),
+                    new(ImportSource.ISBN),
+                }),
+            new( "Tags",
+                codex => codex.Tags is null || !codex.Tags.Any(),
+                (codex,other) => {
+                    foreach (var tag in other.Tags)
+                        codex.Tags.AddIfMissing(tag);
+                },
+                new()
+                {
+                    new(ImportSource.Folder),
+                }),
+            new( "Description",
+                codex => String.IsNullOrEmpty(codex.Description),
+                (codex,other) => codex.Description = other.Description,
+                new()
+                {
+                    new(ImportSource.Homebrewery),
+                    new(ImportSource.ISBN),
+                    new(ImportSource.GenericURL),
+                }),
+            new( "Release Date",
+                codex => codex is null || codex.ReleaseDate == DateTime.MinValue,
+                (codex, other) => codex.ReleaseDate = other.ReleaseDate,
+                new()
+                {
+                    new(ImportSource.Homebrewery),
+                    new(ImportSource.ISBN),
+                })
+        };
     }
 }
 

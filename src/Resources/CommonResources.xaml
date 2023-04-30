@@ -548,6 +548,10 @@
                 </Style>
             </MenuItem.Style>
         </MenuItem>
+        <MenuItem Header="Get MetaData" Tools:AP.IconKind="FileCode"
+                  Command="{Binding Path=DataContext.CodexVM.GetMetaDataCommand, 
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
         <MenuItem Header="Show in Explorer" Tools:AP.IconKind="FolderEyeOutline"
                   Command="{Binding Path=DataContext.CodexVM.ShowInExplorerCommand, 
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
