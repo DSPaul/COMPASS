@@ -99,7 +99,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="DoVirtualizationTile" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="VirtualizationThresholdCard" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">50</Value>
@@ -108,7 +108,7 @@
       <Value Profile="(Default)">1000</Value>
     </Setting>
     <Setting Name="DoVirtualizationList" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="VirtualizationThresholdList" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1000</Value>

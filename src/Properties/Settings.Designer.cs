@@ -409,7 +409,7 @@ namespace COMPASS.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool DoVirtualizationTile {
             get {
                 return ((bool)(this["DoVirtualizationTile"]));
@@ -445,7 +445,7 @@ namespace COMPASS.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool DoVirtualizationList {
             get {
                 return ((bool)(this["DoVirtualizationList"]));
