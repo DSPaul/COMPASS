@@ -31,7 +31,6 @@ namespace COMPASS.Windows
             if (ProgBar.Value >= 100)
             {
                 Close();
-                MainViewModel.CollectionVM.Refresh();
             }
         }
 
