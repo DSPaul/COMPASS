@@ -113,7 +113,7 @@ namespace COMPASS.Models
                     }
                 }
 
-                AllCodices.CollectionChanged += (e, v) => SaveCodices();
+                //AllCodices.CollectionChanged += (e, v) => SaveCodices();
 
                 foreach (Codex c in AllCodices)
                 {
@@ -244,6 +244,7 @@ namespace COMPASS.Models
                     DeleteCodex(toDel);
                 }
             }
+            SaveCodices();
         }
 
         public void BanishCodices(IList toBanish)
