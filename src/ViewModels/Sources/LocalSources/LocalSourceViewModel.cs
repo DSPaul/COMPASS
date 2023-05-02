@@ -135,21 +135,39 @@ namespace COMPASS.ViewModels.Sources
 
             List<Codex> newCodices = new();
 
-            //make new codices first so they all have a valid ID
-            foreach (string path in paths)
-            {
-                Codex newCodex = new(TargetCollection) { Path = path };
-                newCodices.Add(newCodex);
-                TargetCollection.AllCodices.Add(newCodex);
-            }
-
             if (showProgressWindow)
             {
                 ProgressWindow window = GetProgressWindow();
                 window.Show();
             }
 
-            var result = await Task.Run(() => Parallel.ForEach(newCodices, ImportCodex));
+            await Task.Run(() =>
+            {
+                //make new codices synchonously so they all have a valid ID
+                foreach (string path in paths)
+                {
+                    Codex newCodex = new(TargetCollection) { Path = path };
+                    newCodices.Add(newCodex);
+                    TargetCollection.AllCodices.Add(newCodex);
+
+                    LogEntry logEntry = new(LogEntry.MsgType.Info, $"Importing {path}");
+                    ProgressCounter++;
+                    ProgressChanged(logEntry);
+                }
+                MainViewModel.CollectionVM.CurrentCollection.Save();
+            });
+
+
+            ProgressCounter = 0;
+            ProgressChanged();
+            if (showProgressWindow)
+            {
+                ProgressWindow window = GetProgressWindow();
+                window.Show();
+            }
+            await Task.Run(() => Parallel.ForEach(newCodices, ImportCodex));
+
+            MainViewModel.CollectionVM.CurrentCollection.Save();
         }
     }
 }
