@@ -10,7 +10,8 @@
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
         xmlns:models="clr-namespace:COMPASS.Models" 
         d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
-        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" xmlns:controls="clr-namespace:COMPASS.Resources.Controls"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" 
+        xmlns:controls="clr-namespace:COMPASS.Resources.Controls"
         mc:Ignorable="d" Closing="Window_Closing"
         Title="Settings" Height="500" Width="1000"  FontSize="16" 
         WindowStartupLocation="CenterScreen" 
@@ -62,7 +63,7 @@
             <Setter Property="Margin" Value="0,10"/>
         </Style>
         <Style TargetType="ScrollViewer" BasedOn="{StaticResource {x:Type ScrollViewer}}">
-            <Setter Property="Background" Value="Purple"/>
+            <EventSetter Event="PreviewMouseWheel" Handler="ScrollViewer_PreviewMouseWheel"/>
         </Style>
     </Window.Resources>
     <TabControl x:Name="SettingsTabControl" TabStripPlacement="Left"

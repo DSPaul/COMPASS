@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace COMPASS.Windows
 {
@@ -65,6 +66,25 @@ namespace COMPASS.Windows
 
         private void FilterOnlyNumbers(object sender, TextCompositionEventArgs e) => e.Handled = !Constants.RegexNumbersOnly().IsMatch(e.Text);
 
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var s = sender as ScrollViewer;
+            if (s.ComputedVerticalScrollBarVisibility == Visibility.Collapsed)
+            {
+                var ParentScrollViewer = FindParentScrollViewer(s);
+                if (ParentScrollViewer is null) return;
+                ParentScrollViewer.ScrollToVerticalOffset(ParentScrollViewer.VerticalOffset - e.Delta);
+            }
+        }
 
+        private ScrollViewer FindParentScrollViewer(DependencyObject child)
+        {
+            //get parent item
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+            //end of visual tree, no ScrollViewer Found
+            if (parentObject is null) return null;
+            //check if the parent is scrollviewer and return if so
+            return parentObject is ScrollViewer parent ? parent : FindParentScrollViewer(parentObject);
+        }
     }
 }
