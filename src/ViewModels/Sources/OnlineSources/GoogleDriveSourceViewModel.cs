@@ -19,18 +19,18 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
-            ProgressChanged(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
 
-            HtmlDocument doc = await ScrapeSite(InputURL);
+            HtmlDocument doc = await ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
             {
-                ProgressChanged(new(LogEntry.MsgType.Info, "File not found"));
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "File not found"));
                 return codex;
             }
 
-            ProgressChanged(new(LogEntry.MsgType.Info, "Fetching Metadata"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching Metadata"));
 
             //Scrape metadata
             codex = SetWebScrapeHeaderMetadata(codex, src);

@@ -9,10 +9,10 @@ namespace COMPASS.Windows
     /// </summary>
     public partial class ProgressWindow : Window
     {
-        public ProgressWindow(ProgressViewModel vm)
+        public ProgressWindow()
         {
             InitializeComponent();
-            DataContext = vm;
+            DataContext = ProgressViewModel.GetInstance();
             ((INotifyCollectionChanged)LogsControl.Items).CollectionChanged += Logs_CollectionChanged;
             Closing += OnClosing;
         }

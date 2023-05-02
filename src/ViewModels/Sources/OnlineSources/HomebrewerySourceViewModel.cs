@@ -24,9 +24,9 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
-            ProgressChanged(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
 
-            HtmlDocument doc = await ScrapeSite(InputURL);
+            HtmlDocument doc = await ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -34,7 +34,7 @@ namespace COMPASS.ViewModels.Sources
                 return codex;
             }
 
-            ProgressChanged(new(LogEntry.MsgType.Info, "Fetching metadata"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching metadata"));
 
             //Set known metadata
             codex.Publisher = "Homebrewery";

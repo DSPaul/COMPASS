@@ -112,6 +112,7 @@ namespace COMPASS.ViewModels
         private DispatcherTimer _checkConnectionTimer;
 
         public string Version => $"v{Assembly.GetExecutingAssembly().GetName().Version.ToString()[0..5]}";
+        public ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
 
         #endregion
 

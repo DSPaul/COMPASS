@@ -20,8 +20,8 @@ namespace COMPASS.ViewModels.Sources
         public override async Task<Codex> SetMetaData(Codex codex)
         {
             //Scrape metadata by going to storepage, get to storepage by using that /credits redirects there
-            ProgressChanged(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
-            HtmlDocument doc = await ScrapeSite(String.Concat(InputURL, "/credits"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
+            HtmlDocument doc = await ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -29,7 +29,7 @@ namespace COMPASS.ViewModels.Sources
                 return codex;
             }
 
-            ProgressChanged(new(LogEntry.MsgType.Info, "Fetching Metadata"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching Metadata"));
 
             //Scrape headers
             codex = SetWebScrapeHeaderMetadata(codex, src);

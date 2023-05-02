@@ -2,7 +2,6 @@
 using COMPASS.Tools;
 using COMPASS.Windows;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -32,7 +31,7 @@ namespace COMPASS.ViewModels.Sources
 
         #region Import Logic
 
-        public ProgressViewModel ProgressVM { get; set; } = new();
+        protected ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
 
         protected CodexCollection TargetCollection;
 
@@ -43,7 +42,7 @@ namespace COMPASS.ViewModels.Sources
         {
             //Start the Import
             LogEntry logEntry = new(LogEntry.MsgType.Info, $"Importing {Path.GetFileName(newCodex.HasOfflineSource() ? newCodex.Path : newCodex.SourceURL)}");
-            ProgressChanged(logEntry);
+            ProgressVM.AddLogEntry(logEntry);
 
             //Populate all the codex properties it can
             newCodex = await SetMetaData(newCodex);
@@ -54,15 +53,15 @@ namespace COMPASS.ViewModels.Sources
             if (!succes)
             {
                 logEntry = new(LogEntry.MsgType.Warning, $"Failed to generate thumbnail for {Path.GetFileName(newCodex.Title)}");
-                ProgressChanged(logEntry);
+                ProgressVM.AddLogEntry(logEntry);
             }
             newCodex.RefreshThumbnail();
 
             //Complete Import
             string logMsg = $"Imported {newCodex.Title}";
             Logger.Info(logMsg);
-            IncrementProgressCounter();
-            ProgressChanged(new LogEntry(LogEntry.MsgType.Info, logMsg));
+            ProgressVM.IncrementCounter();
+            ProgressVM.AddLogEntry(new LogEntry(LogEntry.MsgType.Info, logMsg));
         }
 
         public abstract Task<Codex> SetMetaData(Codex codex);
@@ -73,41 +72,13 @@ namespace COMPASS.ViewModels.Sources
         #endregion
 
         #region Progress window stuff
-        protected ProgressWindow GetProgressWindow() => new(ProgressVM)
+        protected ProgressWindow GetProgressWindow() => new()
         {
             Owner = Application.Current.MainWindow
         };
 
-        private Mutex progressMutex = new();
-
-        public void IncrementProgressCounter()
-        {
-            // use this instead of ProgressCounter++ to avoid race conditions
-            progressMutex.WaitOne();
-            ProgressCounter++;
-            progressMutex.ReleaseMutex();
-        }
-
-
-        public int ProgressCounter { get; protected set; } = 0;
-        public int ImportAmount { get; protected set; }
-
-        public virtual string ProgressText => $"Import in Progress: {ProgressCounter + 1} / {ImportAmount}";
-
         public bool IsImporting { get; set; } = false; //true on initial import, false otherwise
 
-        #endregion
-
-        #region Asynchronous worker stuff
-
-        protected void ProgressChanged(LogEntry logEntry = null) => Application.Current.Dispatcher.Invoke(() =>
-            {
-                //calculate current percentage for progressbar
-                ProgressVM.SetPercentage(ProgressCounter, ImportAmount);
-                ProgressVM.Text = ProgressText;
-                //write log entry if any
-                if (logEntry != null) ProgressVM.Log.Add(logEntry);
-            });
         #endregion
     }
 }

@@ -19,8 +19,6 @@ namespace COMPASS.ViewModels.Sources
         public LocalSourceViewModel() : base() { }
         public LocalSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
 
-        public override string ProgressText => $"Import in Progress: [{ProgressCounter} / {ImportAmount}]";
-
         public override async Task<Codex> SetMetaData(Codex codex)
         {
             codex.Title = Path.GetFileNameWithoutExtension(codex.Path);
@@ -72,7 +70,7 @@ namespace COMPASS.ViewModels.Sources
                         //in those cases: import the pdf without opening it
                         Logger.Error($"Failed to read metadata from {Path.GetFileName(codex.Path)}", ex);
                         LogEntry logEntry = new(LogEntry.MsgType.Warning, $"Failed to read metadata from {codex.Title}");
-                        ProgressChanged(logEntry);
+                        ProgressVM.AddLogEntry(logEntry);
                     }
 
                     finally { pdfDoc?.Close(); }
@@ -124,14 +122,11 @@ namespace COMPASS.ViewModels.Sources
                 .Except(TargetCollection.Info.BanishedPaths)
                 .ToList();
 
-            ProgressCounter = 0;
-            ImportAmount = paths.Count;
+            ProgressVM.TotalAmount = paths.Count;
+            ProgressVM.ResetCounter();
+            ProgressVM.Text = "Importing files";
 
-            if (paths.Count == 0)
-            {
-                ProgressVM.SetPercentage(ProgressCounter, ImportAmount);
-                return;
-            }
+            if (paths.Count == 0) return;
 
             List<Codex> newCodices = new();
 
@@ -151,15 +146,13 @@ namespace COMPASS.ViewModels.Sources
                     TargetCollection.AllCodices.Add(newCodex);
 
                     LogEntry logEntry = new(LogEntry.MsgType.Info, $"Importing {path}");
-                    ProgressCounter++;
-                    ProgressChanged(logEntry);
+                    ProgressVM.IncrementCounter();
+                    ProgressVM.AddLogEntry(logEntry);
                 }
                 MainViewModel.CollectionVM.CurrentCollection.Save();
             });
 
-
-            ProgressCounter = 0;
-            ProgressChanged();
+            ProgressVM.ResetCounter();
             if (showProgressWindow)
             {
                 ProgressWindow window = GetProgressWindow();
@@ -168,6 +161,7 @@ namespace COMPASS.ViewModels.Sources
             await Task.Run(() => Parallel.ForEach(newCodices, ImportCodex));
 
             MainViewModel.CollectionVM.CurrentCollection.Save();
+            MainViewModel.CollectionVM.FilterVM.ReFilter(true);
         }
     }
 }

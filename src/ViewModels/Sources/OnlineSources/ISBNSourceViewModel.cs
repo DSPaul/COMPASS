@@ -24,7 +24,7 @@ namespace COMPASS.ViewModels.Sources
             if (IsImporting)
             {
                 codex.ISBN = InputURL;
-                ProgressChanged(new LogEntry(LogEntry.MsgType.Info, "Fetching Data"));
+                ProgressVM.AddLogEntry(new LogEntry(LogEntry.MsgType.Info, "Fetching Data"));
             }
 
             string uri = $"http://openlibrary.org/api/books?bibkeys=ISBN:{codex.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
@@ -36,7 +36,7 @@ namespace COMPASS.ViewModels.Sources
                 string message = $"ISBN {codex.ISBN} was not found on openlibrary.org \n" +
                     $"You can contribute by submitting this book at \n" +
                     $"https://openlibrary.org/books/add";
-                if (IsImporting) ProgressChanged(new(LogEntry.MsgType.Error, message));
+                if (IsImporting) ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, message));
                 Logger.Warn($"Could not find ISBN {codex.ISBN} on openlibrary.org", new Exception());
                 return codex;
             }
@@ -44,8 +44,8 @@ namespace COMPASS.ViewModels.Sources
             if (IsImporting)
             {
                 //loading complete
-                ProgressCounter++;
-                ProgressChanged(new(LogEntry.MsgType.Info, "File loaded, parsing metadata"));
+                ProgressVM.IncrementCounter();
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "File loaded, parsing metadata"));
             }
 
             //Start parsing json

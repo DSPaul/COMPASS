@@ -511,21 +511,30 @@ namespace COMPASS.ViewModels
 
         public void DeleteDataLocation()
         {
-            Directory.Delete(CompassDataPath, true);
+            try
+            {
+                Directory.Delete(CompassDataPath, true);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("could not delete all data", ex);
+            }
             ChangeToNewDataPath();
         }
 
         public static async Task<bool> CopyData(string sourceDir, string destDir)
         {
-            ProgressViewModel progressVM = new();
-            ProgressWindow progressWindow = new(progressVM)
+            ProgressViewModel progressVM = ProgressViewModel.GetInstance();
+            ProgressWindow progressWindow = new()
             {
                 Owner = Application.Current.MainWindow,
             };
 
             var toCopy = Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories);
-            int totalToDo = toCopy.Length;
-            int counter = 0;
+
+            progressVM.TotalAmount = toCopy.Length;
+            progressVM.ResetCounter();
+            progressVM.Text = "Copying Files";
 
             progressWindow.Show();
 
@@ -542,15 +551,12 @@ namespace COMPASS.ViewModels
                 {
                     foreach (string sourcePath in toCopy)
                     {
-                        progressVM.Text = $"Files Copied: {counter} / {totalToDo}";
-
                         // don't copy log file, causes error because log file is open
                         if (Path.GetExtension(sourcePath) != ".log")
                         {
                             File.Copy(sourcePath, sourcePath.Replace(sourceDir, destDir), true);
                         }
-                        counter++;
-                        progressVM.SetPercentage(counter, totalToDo);
+                        progressVM.IncrementCounter();
                         Application.Current.Dispatcher.Invoke(() =>
                             progressVM.Log.Add(new LogEntry(LogEntry.MsgType.Info, $"Copied {sourcePath}")));
                     }

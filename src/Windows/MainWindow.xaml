@@ -379,21 +379,15 @@
                     <Rectangle Width="2" Fill="{StaticResource Separator}"/>
                 </StackPanel>
 
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" Grid.Column="1">
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ActiveSourceVM.ProgressVM.Percentage}" Value="100">
-                                    <Setter Property="Visibility" Value="Hidden"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
-                    <TextBlock Text="{Binding ActiveSourceVM.ProgressVM.Text, FallbackValue=Stuff in Progress}" Margin="20,0" 
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" Grid.Column="1"
+                            Visibility="{Binding ProgressVM.ShowProgressBar, Converter={StaticResource ToVisibilityConverter}}">
+                    <TextBlock Text="{Binding ProgressVM.FullText, FallbackValue=Stuff in Progress, Mode=OneWay}" Margin="20,0" 
                                FontFamily="Segoe UI"/>
-                    <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" Value="{Binding ActiveSourceVM.ProgressVM.Percentage, FallbackValue=100}" 
-                    Height="12" Width="200" Style="{StaticResource RoundedProgressBar}"
-                    Foreground="{StaticResource AccentColor}" Background="{StaticResource UIElementBackground}"/>
+                    <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" Height="12" Width="200"
+                                 Value="{Binding ProgressVM.Percentage, FallbackValue=100, Mode=OneWay}" 
+                                 Style="{StaticResource RoundedProgressBar}"
+                                 Foreground="{StaticResource AccentColor}" 
+                                 Background="{StaticResource UIElementBackground}"/>
                 </StackPanel>
                 
                 <!--Internet status indicator-->

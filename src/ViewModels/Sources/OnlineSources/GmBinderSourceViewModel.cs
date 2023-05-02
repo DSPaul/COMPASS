@@ -22,7 +22,7 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
-            HtmlDocument doc = await ScrapeSite(InputURL);
+            HtmlDocument doc = await ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -30,7 +30,7 @@ namespace COMPASS.ViewModels.Sources
                 return codex;
             }
 
-            ProgressChanged(new(LogEntry.MsgType.Info, "Fetching Metadata"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching Metadata"));
 
             //Scrape metadata
             codex = SetWebScrapeHeaderMetadata(codex, src);

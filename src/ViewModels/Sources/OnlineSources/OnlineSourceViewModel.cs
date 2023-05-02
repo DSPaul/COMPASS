@@ -47,12 +47,12 @@ namespace COMPASS.ViewModels.Sources
             // Steps 1 & 2: Load Source and Scrape metadata
             newCodex = await SetMetaData(newCodex);
             newCodex = SetTags(newCodex);
-            ProgressCounter++;
-            ProgressChanged(new(LogEntry.MsgType.Info, "Metadata loaded. Downloading cover art."));
+            ProgressVM.IncrementCounter();
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Metadata loaded. Downloading cover art."));
 
             // Step 3: Get Cover Art
             await FetchCover(newCodex);
-            ProgressCounter++;
+            ProgressVM.IncrementCounter();
 
             //Complete import
             MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
@@ -60,7 +60,7 @@ namespace COMPASS.ViewModels.Sources
 
             string logMsg = $"Imported {newCodex.Title}";
             Logger.Info(logMsg);
-            ProgressChanged(new LogEntry(LogEntry.MsgType.Info, logMsg));
+            ProgressVM.AddLogEntry(new LogEntry(LogEntry.MsgType.Info, logMsg));
 
 
             if (ShowEditWhenDone)
@@ -95,8 +95,6 @@ namespace COMPASS.ViewModels.Sources
         protected ImportURLWindow importURLwindow;
         public abstract string ImportTitle { get; }
         public abstract string ExampleURL { get; }
-
-        public override string ProgressText => $"Import in Progress: Step {ProgressCounter + 1} / {ImportAmount}";
 
         public virtual bool ShowValidateDisableCheckbox => false;
         public bool ValidateURL { get; set; } = true;
@@ -141,14 +139,13 @@ namespace COMPASS.ViewModels.Sources
             }
             importURLwindow.Close();
 
-            ProgressCounter = 0;
+            ProgressVM.ResetCounter();
+            ProgressVM.Text = "Importing, Step: ";
             //3 steps: 1. connect to site, 2. get metadata, 3. get Cover
-            ImportAmount = 3;
+            ProgressVM.TotalAmount = 3;
 
             ProgressWindow progressWindow = GetProgressWindow();
             progressWindow.Show();
-
-            ProgressChanged();
 
             Task.Run(ImportURL);
         }
@@ -167,24 +164,24 @@ namespace COMPASS.ViewModels.Sources
             catch (Exception ex)
             {
                 //fails if URL could not be loaded
-                ProgressChanged(new(LogEntry.MsgType.Error, ex.Message));
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, ex.Message));
                 Logger.Error($"Could not load {url}", ex);
                 return null;
             }
 
-            ProgressCounter++;
+            ProgressVM.IncrementCounter();
 
             if (doc.ParsedText is null || doc.DocumentNode is null)
             {
                 LogEntry entry = new(LogEntry.MsgType.Error, $"{InputURL} could not be reached");
-                ProgressChanged(entry);
+                ProgressVM.AddLogEntry(entry);
                 Logger.Error($"{url} does not have any content", new ArgumentNullException());
                 return null;
             }
             else
             {
                 LogEntry entry = new(LogEntry.MsgType.Info, "File loaded");
-                ProgressChanged(entry);
+                ProgressVM.AddLogEntry(entry);
                 return doc;
             }
         }

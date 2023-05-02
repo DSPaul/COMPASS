@@ -18,9 +18,9 @@ namespace COMPASS.ViewModels.Sources
         public override Task<bool> FetchCover(Codex codex) => Task.FromResult(false);
         public override async Task<Codex> SetMetaData(Codex codex)
         {
-            ProgressChanged(new(LogEntry.MsgType.Info, $"Connecting to {InputURL}"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to {codex.SourceURL}"));
 
-            HtmlDocument doc = await ScrapeSite(InputURL);
+            HtmlDocument doc = await ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -28,7 +28,7 @@ namespace COMPASS.ViewModels.Sources
                 return codex;
             }
 
-            ProgressChanged(new(LogEntry.MsgType.Info, "Fetching Metadata"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching Metadata"));
             //Scrape metadata
             codex = SetWebScrapeHeaderMetadata(codex, src);
 
