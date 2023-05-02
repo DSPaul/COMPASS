@@ -2,6 +2,7 @@
 using COMPASS.Tools;
 using COMPASS.Windows;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -60,7 +61,7 @@ namespace COMPASS.ViewModels.Sources
             //Complete Import
             string logMsg = $"Imported {newCodex.Title}";
             Logger.Info(logMsg);
-            ProgressCounter++;
+            IncrementProgressCounter();
             ProgressChanged(new LogEntry(LogEntry.MsgType.Info, logMsg));
         }
 
@@ -76,6 +77,17 @@ namespace COMPASS.ViewModels.Sources
         {
             Owner = Application.Current.MainWindow
         };
+
+        private Mutex progressMutex = new();
+
+        public void IncrementProgressCounter()
+        {
+            // use this instead of ProgressCounter++ to avoid race conditions
+            progressMutex.WaitOne();
+            ProgressCounter++;
+            progressMutex.ReleaseMutex();
+        }
+
 
         public int ProgressCounter { get; protected set; } = 0;
         public int ImportAmount { get; protected set; }
