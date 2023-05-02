@@ -395,7 +395,7 @@ namespace COMPASS.Models
                     new(ImportSource.GenericURL),
                 }),
             new( "Release Date",
-                codex => codex is null || codex.ReleaseDate == DateTime.MinValue,
+                codex => codex.ReleaseDate is null || codex.ReleaseDate == DateTime.MinValue,
                 (codex, other) => codex.ReleaseDate = other.ReleaseDate,
                 new()
                 {
