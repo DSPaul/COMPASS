@@ -23,15 +23,31 @@ namespace COMPASS.Models
 
         public string Label { get; init; }
 
+        private Func<Codex, bool> _isEmpty;
         [XmlIgnore]
-        public Func<Codex, bool> IsEmpty { get; init; }
+        public Func<Codex, bool> IsEmpty
+        {
+            get => _isEmpty ??= Codex.Properties.First(prop => prop.Label == Label).IsEmpty;
+            init => _isEmpty = value;
+        }
 
+        private Action<Codex, Codex> _setProp;
         [XmlIgnore]
-        public Action<Codex, Codex> SetProp { get; init; }
-
+        public Action<Codex, Codex> SetProp
+        {
+            get => _setProp ??= Codex.Properties.First(prop => prop.Label == Label).SetProp;
+            init => _setProp = value;
+        }
         #region Import Sources
 
-        protected List<NamedImportSource> DefaultSourcePriority { get; init; }
+
+        private List<NamedImportSource> _defaultSources;
+        [XmlIgnore]
+        protected List<NamedImportSource> DefaultSourcePriority
+        {
+            get => _defaultSources ??= Codex.Properties.First(prop => prop.Label == Label).DefaultSourcePriority;
+            init => _defaultSources = value;
+        }
 
         /// <summary>
         /// Ordered List of sources that can set this prop, named for databinding
