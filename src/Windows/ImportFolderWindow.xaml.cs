@@ -1,4 +1,4 @@
-﻿using COMPASS.ViewModels.Sources;
+﻿using COMPASS.ViewModels.Import;
 using System.Windows;
 
 
@@ -9,7 +9,7 @@ namespace COMPASS.Windows
     /// </summary>
     public partial class ImportFolderWindow : Window
     {
-        public ImportFolderWindow(FolderSourceViewModel vm)
+        public ImportFolderWindow(ImportFolderViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;

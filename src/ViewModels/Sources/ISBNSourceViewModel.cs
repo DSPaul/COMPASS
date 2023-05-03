@@ -1,7 +1,6 @@
-﻿using COMPASS.Commands;
-using COMPASS.Models;
+﻿using COMPASS.Models;
 using COMPASS.Tools;
-using COMPASS.Windows;
+using COMPASS.ViewModels.Import;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
@@ -10,20 +9,17 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
-    public class ISBNSourceViewModel : OnlineSourceViewModel
+    public class ISBNSourceViewModel : SourceViewModel
     {
         public ISBNSourceViewModel() : base() { }
         public ISBNSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
 
-        public override string ImportTitle => "ISBN";
-        public override string ExampleURL => "";
-        public override ImportSource Source => ImportSource.ISBN;
+        public override MetaDataSource Source => MetaDataSource.ISBN;
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
-            if (IsImporting)
+            if (!ImportViewModel.Stealth)
             {
-                codex.ISBN = InputURL;
                 ProgressVM.AddLogEntry(new LogEntry(LogEntry.MsgType.Info, "Fetching Data"));
             }
 
@@ -36,15 +32,14 @@ namespace COMPASS.ViewModels.Sources
                 string message = $"ISBN {codex.ISBN} was not found on openlibrary.org \n" +
                     $"You can contribute by submitting this book at \n" +
                     $"https://openlibrary.org/books/add";
-                if (IsImporting) ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, message));
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, message));
                 Logger.Warn($"Could not find ISBN {codex.ISBN} on openlibrary.org", new Exception());
                 return codex;
             }
 
-            if (IsImporting)
+            if (!ImportViewModel.Stealth)
             {
                 //loading complete
-                ProgressVM.IncrementCounter();
                 ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "File loaded, parsing metadata"));
             }
 
@@ -96,6 +91,7 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<bool> FetchCover(Codex codex)
         {
+            if (String.IsNullOrEmpty(codex.ISBN)) return false;
             try
             {
                 string uri = $"https://openlibrary.org/isbn/{codex.ISBN}.json";
@@ -112,17 +108,6 @@ namespace COMPASS.ViewModels.Sources
             }
         }
 
-        public override bool ShowScannerButton => true;
-
-        private ActionCommand _OpenBarcodeScannerCommand;
-        public ActionCommand OpenBarcodeScannerCommand => _OpenBarcodeScannerCommand ??= new(OpenBarcodeScanner);
-        public void OpenBarcodeScanner()
-        {
-            BarcodeScanWindow bcScanWindow = new();
-            if (bcScanWindow.ShowDialog() == true)
-            {
-                InputURL = bcScanWindow.DecodedString;
-            }
-        }
+        public override Codex SetTags(Codex codex) => throw new NotImplementedException();
     }
 }

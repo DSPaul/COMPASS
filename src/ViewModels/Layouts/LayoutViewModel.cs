@@ -1,5 +1,5 @@
 ﻿using COMPASS.Models;
-using COMPASS.ViewModels.Sources;
+using COMPASS.ViewModels.Import;
 using GongSolutions.Wpf.DragDrop;
 using System.IO;
 using System.Linq;
@@ -79,24 +79,20 @@ namespace COMPASS.ViewModels
                 var folders = paths.Cast<string>().ToList().Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory));
                 var files = paths.Cast<string>().ToList().Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory));
 
+                if (!folders.Any() && !files.Any()) return;
 
                 if (folders.Any())
                 {
-                    FolderSourceViewModel fsvm = new()
+                    ImportFolderViewModel folderImportVM = new()
                     {
                         FolderNames = folders.ToList(),
                         FileNames = files.ToList()
                     };
-                    fsvm.ImportFolders();
-                    return;
+                    files = folderImportVM.GetPathsFromFolders();
                 }
 
-                if (files.Any())
-                {
-                    FileSourceViewModel fsvm = new();
-                    fsvm.ImportFiles(files.ToList(), true);
-                    return;
-                }
+                ImportViewModel.Stealth = false;
+                ImportViewModel.ImportFiles(files.ToList());
             }
         }
     }

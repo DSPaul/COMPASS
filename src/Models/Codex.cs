@@ -320,60 +320,49 @@ namespace COMPASS.Models
             new( "Title",
                 codex => String.IsNullOrEmpty(codex.Title),
                 (codex,other) => codex.Title = other.Title,
-                new List<NamedImportSource>()
+                new List<NamedMetaDataSource>()
                 {
-                    new(ImportSource.File),
-                    new(ImportSource.GmBinder),
-                    new(ImportSource.Homebrewery),
-                    new(ImportSource.GoogleDrive),
-                    new(ImportSource.ISBN),
-                    new(ImportSource.GenericURL)
+                    new(MetaDataSource.File),
+                    new(MetaDataSource.GmBinder),
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.GoogleDrive),
+                    new(MetaDataSource.ISBN),
+                    new(MetaDataSource.GenericURL)
                 }),
             new( "Authors",
                 codex => codex.Authors is null || !codex.Authors.Any(),
                 (codex,other) => codex.Authors = other.Authors,
                 new()
                 {
-                    new(ImportSource.File),
-                    new(ImportSource.GmBinder),
-                    new(ImportSource.Homebrewery),
-                    new(ImportSource.ISBN),
-                    new(ImportSource.GenericURL)
+                    new(MetaDataSource.File),
+                    new(MetaDataSource.GmBinder),
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.ISBN),
+                    new(MetaDataSource.GenericURL)
                 }),
             new( "Publisher",
                 codex => String.IsNullOrEmpty(codex.Publisher),
                 (codex,other) => codex.Publisher = other.Publisher,
                 new()
                 {
-                    new(ImportSource.ISBN)
+                    new(MetaDataSource.ISBN)
                 }),
             new( "Version",
                 codex => String.IsNullOrEmpty(codex.Version),
                 (codex,other) => codex.Version = other.Version,
                 new()
                 {
-                    new(ImportSource.Homebrewery)
+                    new(MetaDataSource.Homebrewery)
                 }),
             new( "Pagecount",
                 codex => codex.PageCount == 0,
                 (codex, other) => codex.PageCount = other.PageCount,
                 new()
                 {
-                    new(ImportSource.File),
-                    new(ImportSource.GmBinder),
-                    new(ImportSource.Homebrewery),
-                    new(ImportSource.ISBN),
-                }),
-            new( "Cover Art",
-                codex => !File.Exists(codex.CoverArt),
-                (codex,other) => { }, //cover art is always the same, can't really be set, prop copy from temp here or something
-                new()
-                {
-                    new(ImportSource.File),
-                    new(ImportSource.GmBinder),
-                    new(ImportSource.Homebrewery),
-                    new(ImportSource.GoogleDrive),
-                    new(ImportSource.ISBN),
+                    new(MetaDataSource.File),
+                    new(MetaDataSource.GmBinder),
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.ISBN),
                 }),
             new( "Tags",
                 codex => codex.Tags is null || !codex.Tags.Any(),
@@ -383,25 +372,37 @@ namespace COMPASS.Models
                 },
                 new()
                 {
-                    new(ImportSource.Folder),
+                    new(MetaDataSource.File),
                 }),
             new( "Description",
                 codex => String.IsNullOrEmpty(codex.Description),
                 (codex,other) => codex.Description = other.Description,
                 new()
                 {
-                    new(ImportSource.Homebrewery),
-                    new(ImportSource.ISBN),
-                    new(ImportSource.GenericURL),
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.ISBN),
+                    new(MetaDataSource.GenericURL),
                 }),
             new( "Release Date",
                 codex => codex.ReleaseDate is null || codex.ReleaseDate == DateTime.MinValue,
                 (codex, other) => codex.ReleaseDate = other.ReleaseDate,
                 new()
                 {
-                    new(ImportSource.Homebrewery),
-                    new(ImportSource.ISBN),
-                })
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.ISBN),
+                }),
+            new( "Cover Art",
+                codex => !File.Exists(codex.CoverArt),
+                (codex,other) => { }, //cover art is always the same, can't really be set, prop copy from temp here or something
+                new()
+                {
+                    new(MetaDataSource.Image),
+                    new(MetaDataSource.PDF),
+                    new(MetaDataSource.GmBinder),
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.GoogleDrive),
+                    new(MetaDataSource.ISBN),
+                }),
         };
     }
 }

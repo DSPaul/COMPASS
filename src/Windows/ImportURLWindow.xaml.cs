@@ -1,4 +1,4 @@
-﻿using COMPASS.ViewModels.Sources;
+﻿using COMPASS.ViewModels.Import;
 using System.Windows;
 
 namespace COMPASS.Windows
@@ -8,7 +8,7 @@ namespace COMPASS.Windows
     /// </summary>
     public partial class ImportURLWindow : Window
     {
-        public ImportURLWindow(OnlineSourceViewModel vm)
+        public ImportURLWindow(ImportURLViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;

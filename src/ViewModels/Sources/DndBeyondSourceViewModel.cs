@@ -6,22 +6,17 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
-    public class DndBeyondSourceViewModel : OnlineSourceViewModel
+    public class DndBeyondSourceViewModel : SourceViewModel
     {
         public DndBeyondSourceViewModel() : base() { }
-        public DndBeyondSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
 
-        public override string ImportTitle => "D&D Beyond";
-
-        public override string ExampleURL => "https://www.dndbeyond.com/sources/";
-
-        public override ImportSource Source => ImportSource.DnDBeyond;
+        public override MetaDataSource Source => MetaDataSource.DnDBeyond;
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
             //Scrape metadata by going to storepage, get to storepage by using that /credits redirects there
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
-            HtmlDocument doc = await ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to DnD Beyond"));
+            HtmlDocument doc = await Utils.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -30,9 +25,6 @@ namespace COMPASS.ViewModels.Sources
             }
 
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching Metadata"));
-
-            //Scrape headers
-            codex = SetWebScrapeHeaderMetadata(codex, src);
 
             //Set known metadata
             codex.Publisher = "D&D Beyond";
@@ -46,10 +38,11 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<bool> FetchCover(Codex codex)
         {
+            if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument doc = await ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
+                HtmlDocument doc = await Utils.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
                 HtmlNode src = doc?.DocumentNode;
                 if (src is null) return false;
 
@@ -61,9 +54,11 @@ namespace COMPASS.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to get cover from {ImportTitle}", ex);
+                Logger.Error($"Failed to get cover from DnDBeyond", ex);
                 return false;
             }
         }
+
+        public override Codex SetTags(Codex codex) => throw new NotImplementedException();
     }
 }

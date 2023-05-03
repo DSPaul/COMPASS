@@ -9,24 +9,18 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
-    public class HomebrewerySourceViewModel : OnlineSourceViewModel
+    public class HomebrewerySourceViewModel : SourceViewModel
     {
         public HomebrewerySourceViewModel() : base() { }
         public HomebrewerySourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
 
-        public override string ImportTitle => "Homebrewery";
-
-        public override string ExampleURL => "https://homebrewery.naturalcrit.com/share/";
-
-        public override ImportSource Source => ImportSource.Homebrewery;
-
-        public override bool ShowValidateDisableCheckbox => true;
+        public override MetaDataSource Source => MetaDataSource.Homebrewery;
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to Homebrewery"));
 
-            HtmlDocument doc = await ScrapeSite(codex.SourceURL);
+            HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -61,6 +55,7 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<bool> FetchCover(Codex codex)
         {
+            if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
             OpenQA.Selenium.WebDriver driver = WebDriverFactory.GetWebDriver();
             try
             {
@@ -74,7 +69,7 @@ namespace COMPASS.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to get cover from {ImportTitle}", ex);
+                Logger.Error($"Failed to get cover from Homebrewery", ex);
                 return false;
             }
             finally
@@ -82,5 +77,7 @@ namespace COMPASS.ViewModels.Sources
                 driver.Quit();
             }
         }
+
+        public override Codex SetTags(Codex codex) => throw new NotImplementedException();
     }
 }

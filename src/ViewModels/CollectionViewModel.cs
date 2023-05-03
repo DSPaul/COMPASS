@@ -1,7 +1,7 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
-using COMPASS.ViewModels.Sources;
+using COMPASS.ViewModels.Import;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -182,13 +182,13 @@ namespace COMPASS.ViewModels
         public async Task AutoImport()
         {
             //Start Auto Imports
-            MainVM.ActiveSourceVM = new FolderSourceViewModel(CurrentCollection)
+            ImportFolderViewModel folderImportVM = new()
             {
                 FolderNames = CurrentCollection.Info.AutoImportDirectories.ToList(),
             };
-
             await Task.Delay(TimeSpan.FromSeconds(2));
-            ((FolderSourceViewModel)MainVM.ActiveSourceVM).ImportFolders(true);
+            var toImport = folderImportVM.GetPathsFromFolders();
+            ImportViewModel.ImportFiles(toImport);
         }
 
         public void Refresh()

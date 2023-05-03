@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.ViewModels;
 using COMPASS.ViewModels.Sources;
 using ImageMagick;
 using OpenQA.Selenium;
@@ -6,109 +7,51 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace COMPASS.Tools
 {
     public static class CoverFetcher
     {
-        public static bool GetCover(Codex codex)
+        public static async Task GetCover(Codex codex)
         {
-            bool success = PreferableFunction<Codex>.TryFunctions(GetCoverFunctions, codex);
-            if (!success) MessageBox.Show("Could not get Cover, please check local path or URL");
-            return success;
-        }
-
-        //list with possible functions to get Cover
-        private static readonly List<PreferableFunction<Codex>> GetCoverFunctions = new()
+            Codex MetaDatalessCodex = new()
             {
-                new PreferableFunction<Codex>("Local File", GetCoverFromFile,0),
-                new PreferableFunction<Codex>("Web Version", GetCoverFromURL,1),
-                new PreferableFunction<Codex>("ISBN", GetCoverFromISBN,2)
+                Path = codex.Path,
+                SourceURL = codex.SourceURL,
+                ISBN = codex.ISBN,
+                ID = codex.ID,
             };
 
-        //Save First page of PDF as png
-        public static bool GetCoverFromFile(Codex codex)
-        {
-            //return false if file doesn't exist
-            if (String.IsNullOrEmpty(codex.Path) || !File.Exists(codex.Path)) return false;
+            MetaDatalessCodex.SetImagePaths(MainViewModel.CollectionVM.CurrentCollection);
 
-            string FileType = Path.GetExtension(codex.Path);
-            switch (FileType)
+            CodexProperty coverProp = SettingsViewModel.GetInstance().MetaDataPreferences.First(prop => prop.Label == "Cover Art");
+
+            if (coverProp.OverwriteMode == MetaDataOverwriteMode.Never ||
+                (coverProp.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !coverProp.IsEmpty(codex)))
+                return;
+
+            bool getCoverSuccesfull = false;
+            foreach (var source in coverProp.SourcePriority)
             {
-                case ".pdf":
-                    var pdfReadDefines = new ImageMagick.Formats.PdfReadDefines()
-                    {
-                        HideAnnotations = true,
-                        UseCropBox = true,
-                    };
-
-                    MagickReadSettings settings = new()
-                    {
-                        Density = new Density(100, 100),
-                        FrameIndex = 0, // First page
-                        FrameCount = 1, // Number of pages
-                        Defines = pdfReadDefines,
-                    };
-
-                    try //image.Read can throw exception if file can not be opened/read
-                    {
-                        using MagickImage image = new();
-                        image.Read(codex.Path, settings);
-                        image.Format = MagickFormat.Png;
-                        image.BackgroundColor = new MagickColor("#000000"); //set background color as transparent
-                        image.Trim(); //cut off all transparancy
-
-                        image.Write(codex.CoverArt);
-                        CreateThumbnail(codex);
-                        return true;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error("Failed to extract Cover from pdf.", ex);
-                        return false;
-                    }
-                case ".jpg":
-                case ".jpeg":
-                case ".png":
-                case ".webp":
-                    GetCoverFromImage(codex.Path, codex);
-                    return true;
-
-                default:
-                    return false;
+                SourceViewModel sourceVM = SourceViewModel.GetSource(source);
+                getCoverSuccesfull = await sourceVM.FetchCover(MetaDatalessCodex);
+                if (getCoverSuccesfull) break;
             }
 
+            codex.RefreshThumbnail();
+            ProgressViewModel.GetInstance().IncrementCounter();
         }
 
-        //Get cover from URL
-        public static bool GetCoverFromURL(Codex codex)
+        public static async Task GetCover(List<Codex> codices)
         {
-            string URL = codex.SourceURL;
-            if (String.IsNullOrEmpty(URL)) return false;
+            var ProgressVM = ProgressViewModel.GetInstance();
+            ProgressVM.ResetCounter();
+            ProgressVM.TotalAmount = codices.Count;
+            ProgressVM.Text = "Getting Cover";
 
-            OnlineSourceViewModel sourceViewModel; ;
-            if (URL.Contains("dndbeyond.com")) sourceViewModel = new DndBeyondSourceViewModel();
-            else if (URL.Contains("gmbinder.com")) sourceViewModel = new GmBinderSourceViewModel();
-            else if (URL.Contains("homebrewery.naturalcrit.com")) sourceViewModel = new HomebrewerySourceViewModel();
-            else if (URL.Contains("drive.google.com")) sourceViewModel = new GoogleDriveSourceViewModel();
-            //if none of above, unsupported site
-            else
-            {
-                Uri tempUri = new(URL);
-                string message = tempUri.Host + " is not a supported source at the moment.";
-                MessageBox.Show(message, "Cover could not be found.", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-
-            return sourceViewModel.FetchCover(codex).Result;
-        }
-
-        public static bool GetCoverFromISBN(Codex codex)
-        {
-            if (string.IsNullOrEmpty(codex.ISBN)) return false;
-            return new ISBNSourceViewModel().FetchCover(codex).Result;
+            await Task.Run(() => Parallel.ForEach(codices, codex => GetCover(codex)));
         }
 
         public static void SaveCover(MagickImage image, Codex destCodex)
@@ -125,19 +68,31 @@ namespace COMPASS.Tools
             CreateThumbnail(destCodex);
         }
 
-        public static void GetCoverFromImage(string imagepath, Codex destfile)
+        public static bool GetCoverFromImage(string imagepath, Codex destfile)
         {
+            //check if it's a valid file
+            if (string.IsNullOrEmpty(imagepath) || !Path.Exists(imagepath)) return false;
+
+            //check if it's a valid image format
+            string ext = Path.GetExtension(imagepath);
+            if (ext != ".png" &&
+                ext != ".jpg" &&
+                ext != ".jpeg" &&
+                ext != ".webp") return false;
+
             try
             {
                 using MagickImage image = new(imagepath);
                 if (image.Width > 1000) image.Resize(1000, 0);
                 image.Write(destfile.CoverArt);
                 CreateThumbnail(destfile);
+                return true;
             }
             catch (Exception ex)
             {
                 //will fail if image is corrupt
                 Logger.Error($"Could not get cover from {imagepath}", ex);
+                return false;
             }
         }
 

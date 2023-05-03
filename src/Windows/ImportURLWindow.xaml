@@ -4,14 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Tools ="clr-namespace:COMPASS.Tools" 
-        xmlns:Sources="clr-namespace:COMPASS.ViewModels.Sources" 
-        d:DataContext="{d:DesignInstance Type=Sources:OnlineSourceViewModel}"
+        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+        xmlns:converters="clr-namespace:COMPASS.Converters" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:ImportURLViewModel}"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
         Background="{StaticResource WindowBackground}" SizeToContent="Height"
         FocusManager.FocusedElement="{Binding ElementName=inputField}" ResizeMode="NoResize"
         Title="Import URL" Height="190" Width="600" WindowStartupLocation="CenterScreen"
         x:Name="ImportWindow" MinWidth="{Binding ActualWidth, ElementName=ImportWindow}">
     <Grid>
+        <Grid.Resources>
+            <converters:NegateConverter x:Key="NegateConverter"/>
+        </Grid.Resources>
         <StackPanel Margin="15">
             <TextBlock Text="{Binding ImportTitle, FallbackValue= URL:}" Margin="5"/>
             <Grid>
@@ -28,7 +32,8 @@
                 <Button Grid.Column="2" Content="Import" Command="{Binding SubmitURLCommand}" IsDefault="True" Margin="5"
                         Style="{StaticResource TextButton}" Background="{StaticResource AccentColorMuted}"/>
             </Grid>
-            <CheckBox IsChecked="{Binding DontValidateURL}" Content="Disable URL validation (for self-hosted instances)" Margin="5"
+            <CheckBox IsChecked="{Binding ValidateURL, Converter={StaticResource NegateConverter}}" 
+                      Content="Disable URL validation (for self-hosted instances)" Margin="5"
                       Visibility="{Binding ShowValidateDisableCheckbox, Converter={StaticResource ToVisibilityConverter}}"/>
             <CheckBox IsChecked="{Binding ShowEditWhenDone}" Content="Open Edit Window when done" Margin="5"/>
             <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" Margin="5" TextWrapping="Wrap"/>

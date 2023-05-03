@@ -9,20 +9,16 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
-    public class GmBinderSourceViewModel : OnlineSourceViewModel
+    public class GmBinderSourceViewModel : SourceViewModel
     {
         public GmBinderSourceViewModel() : base() { }
         public GmBinderSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
 
-        public override string ImportTitle => "GM Binder";
-
-        public override string ExampleURL => "https://www.gmbinder.com/share/";
-
-        public override ImportSource Source => ImportSource.GmBinder;
+        public override MetaDataSource Source => MetaDataSource.GmBinder;
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
-            HtmlDocument doc = await ScrapeSite(codex.SourceURL);
+            HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -31,9 +27,6 @@ namespace COMPASS.ViewModels.Sources
             }
 
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching Metadata"));
-
-            //Scrape metadata
-            codex = SetWebScrapeHeaderMetadata(codex, src);
 
             //Set known metadata
             codex.Publisher = "GM Binder";
@@ -51,6 +44,7 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<bool> FetchCover(Codex codex)
         {
+            if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
             OpenQA.Selenium.WebDriver driver = WebDriverFactory.GetWebDriver();
             try
             {
@@ -63,7 +57,7 @@ namespace COMPASS.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to get cover from {ImportTitle}", ex);
+                Logger.Error($"Failed to get cover from GM Binder", ex);
                 return false;
             }
             finally
@@ -71,5 +65,7 @@ namespace COMPASS.ViewModels.Sources
                 driver.Quit();
             }
         }
+
+        public override Codex SetTags(Codex codex) => throw new NotImplementedException();
     }
 }

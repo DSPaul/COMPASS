@@ -1,4 +1,6 @@
 ﻿using COMPASS.Models;
+using COMPASS.ViewModels;
+using HtmlAgilityPack;
 using Newtonsoft.Json.Linq;
 using Ookii.Dialogs.Wpf;
 using System;
@@ -177,6 +179,43 @@ namespace COMPASS.Tools
             var dialogresult = openFolderDialog.ShowDialog();
             if (dialogresult == false) return null;
             return openFolderDialog.SelectedPath;
+        }
+
+        public static async Task<HtmlDocument> ScrapeSite(string url)
+        {
+            HtmlWeb web = new();
+            HtmlDocument doc;
+
+            var ProgressVM = ProgressViewModel.GetInstance();
+
+            try
+            {
+                doc = await Task.Run(() => web.Load(url));
+            }
+
+            catch (Exception ex)
+            {
+                //fails if URL could not be loaded
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, ex.Message));
+                Logger.Error($"Could not load {url}", ex);
+                return null;
+            }
+
+            ProgressVM.IncrementCounter();
+
+            if (doc.ParsedText is null || doc.DocumentNode is null)
+            {
+                LogEntry entry = new(LogEntry.MsgType.Error, $"{url} could not be reached");
+                ProgressVM.AddLogEntry(entry);
+                Logger.Error($"{url} does not have any content", new ArgumentNullException());
+                return null;
+            }
+            else
+            {
+                LogEntry entry = new(LogEntry.MsgType.Info, "File loaded");
+                ProgressVM.AddLogEntry(entry);
+                return doc;
+            }
         }
     }
 }

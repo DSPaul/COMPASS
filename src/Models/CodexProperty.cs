@@ -13,7 +13,7 @@ namespace COMPASS.Models
         //Empty ctor for serialization
         public CodexProperty() { }
 
-        public CodexProperty(string label, Func<Codex, bool> isEmpty, Action<Codex, Codex> setProp, List<NamedImportSource> defaultSources)
+        public CodexProperty(string label, Func<Codex, bool> isEmpty, Action<Codex, Codex> setProp, List<NamedMetaDataSource> defaultSources)
         {
             Label = label;
             IsEmpty = isEmpty;
@@ -41,9 +41,9 @@ namespace COMPASS.Models
         #region Import Sources
 
 
-        private List<NamedImportSource> _defaultSources;
+        private List<NamedMetaDataSource> _defaultSources;
         [XmlIgnore]
-        protected List<NamedImportSource> DefaultSourcePriority
+        protected List<NamedMetaDataSource> DefaultSourcePriority
         {
             get => _defaultSources ??= Codex.Properties.First(prop => prop.Label == Label).DefaultSourcePriority;
             init => _defaultSources = value;
@@ -52,8 +52,8 @@ namespace COMPASS.Models
         /// <summary>
         /// Ordered List of sources that can set this prop, named for databinding
         /// </summary>
-        private ObservableCollection<NamedImportSource> _sources = new();
-        public ObservableCollection<NamedImportSource> SourcePriorityNamed
+        private ObservableCollection<NamedMetaDataSource> _sources = new();
+        public ObservableCollection<NamedMetaDataSource> SourcePriorityNamed
         {
             get => _sources;
             set => SetProperty(ref _sources, value);
@@ -63,7 +63,7 @@ namespace COMPASS.Models
         /// Ordered List of sources that can set this prop, used for logic
         /// </summary>
         [XmlIgnore]
-        public List<ImportSource> SourcePriority => SourcePriorityNamed.Select(namedSource => namedSource.Source).ToList();
+        public List<MetaDataSource> SourcePriority => SourcePriorityNamed.Select(namedSource => namedSource.Source).ToList();
 
         private MetaDataOverwriteMode _overwriteMode = MetaDataOverwriteMode.IfEmpty;
         public MetaDataOverwriteMode? OverwriteMode
@@ -88,7 +88,7 @@ namespace COMPASS.Models
 
             //if a possible source was removed (due to a specific metadata fetch breaking
             // due to an api change or sometinng), remove it from the sources
-            List<NamedImportSource> toRemove = new();
+            List<NamedMetaDataSource> toRemove = new();
             foreach (var source in SourcePriorityNamed)
             {
                 if (!DefaultSourcePriority.Contains(source)) toRemove.Add(source);

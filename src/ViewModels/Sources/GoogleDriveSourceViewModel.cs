@@ -6,22 +6,17 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
-    public class GoogleDriveSourceViewModel : OnlineSourceViewModel
+    public class GoogleDriveSourceViewModel : SourceViewModel
     {
         public GoogleDriveSourceViewModel() : base() { }
-        public GoogleDriveSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
 
-        public override string ImportTitle => "Google Drive";
-
-        public override string ExampleURL => "https://drive.google.com/file/";
-
-        public override ImportSource Source => ImportSource.GoogleDrive;
+        public override MetaDataSource Source => MetaDataSource.GoogleDrive;
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to Google Drive"));
 
-            HtmlDocument doc = await ScrapeSite(codex.SourceURL);
+            HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -31,9 +26,6 @@ namespace COMPASS.ViewModels.Sources
             }
 
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching Metadata"));
-
-            //Scrape metadata
-            codex = SetWebScrapeHeaderMetadata(codex, src);
 
             //Set known metadata
             codex.Publisher = "Google Drive";
@@ -46,10 +38,11 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<bool> FetchCover(Codex codex)
         {
+            if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument doc = await ScrapeSite(codex.SourceURL);
+                HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
                 HtmlNode src = doc?.DocumentNode;
                 if (src is null) return false;
 
@@ -62,9 +55,11 @@ namespace COMPASS.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to get cover from {ImportTitle}", ex);
+                Logger.Error($"Failed to get cover from Google Drive", ex);
                 return false;
             }
         }
+
+        public override Codex SetTags(Codex codex) => throw new NotImplementedException();
     }
 }

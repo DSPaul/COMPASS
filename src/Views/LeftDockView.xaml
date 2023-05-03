@@ -8,7 +8,7 @@
              xmlns:Tools ="clr-namespace:COMPASS.Tools"
              xmlns:Models="clr-namespace:COMPASS.Models" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-             xmlns:Sources="clr-namespace:COMPASS.ViewModels.Sources" 
+             xmlns:Import="clr-namespace:COMPASS.ViewModels.Import" 
              xmlns:CustomControls="clr-namespace:COMPASS.Resources.Controls" 
              xmlns:views="clr-namespace:COMPASS.Views" 
              xmlns:Converters="clr-namespace:COMPASS.Converters"
@@ -557,25 +557,22 @@
                         
                         <TextBlock Text="Physical Books" Style="{StaticResource Categorizer}"/>
                         <Button Tools:AP.IconKind="BookPlusOutline" Style="{StaticResource HighlightedButton}" Content="Add Manually"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Sources:ImportSource.Manual}"/>
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.Manual}"/>
                         <Button Tools:AP.IconKind="Barcode" Style="{StaticResource HighlightedButton}" Content="From ISBN"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Sources:ImportSource.ISBN}"/>
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.ISBN}"/>
 
                         <TextBlock Text="Add Local Files" Style="{StaticResource Categorizer}"/>
                         <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource HighlightedButton}" Content="Import File(s)"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Sources:ImportSource.File}"/>
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.File}"/>
                         <Button Tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource HighlightedButton}" Content="Import Folder"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Sources:ImportSource.Folder}"/>
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.Folder}"/>
 
 
                         <TextBlock Text="Add Online Files" Style="{StaticResource Categorizer}"/>
                         <Button Tools:AP.IconKind="GoogleDrive" Style="{StaticResource HighlightedButton}" Content="Google Drive"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Sources:ImportSource.GoogleDrive}"/>
-                        <!-- Dropbox not done yet, needs API key-->
-                        <!--<Button Tools:AP.IconKind="Dropbox" Style="{StaticResource HighlightedButton}" Content="Dropbox"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Sources:ImportSource.Dropbox}"/>-->
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.GoogleDrive}"/>
                         <Button Style="{StaticResource HighlightedContentButton}" Margin="20,5"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Sources:ImportSource.Homebrewery}">
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.Homebrewery}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                 BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="7,2">
                                 <StackPanel Orientation="Horizontal">
@@ -584,26 +581,15 @@
                                 </StackPanel>
                             </Border>
                         </Button>
-                        <!--DND Beyond doesn't work yet, blocks scrapers, no public api-->
-                        <!--<Button Style="{StaticResource HighlightedContentButton}"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Sources:ImportSource.DnDBeyond}">
-                            <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
-                                BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch">
-                                <StackPanel Orientation="Horizontal">
-                                    <ContentControl Content="{StaticResource DnDBeyondLogo}"/>
-                                    <TextBlock Text="DnD Beyond"/>
-                                </StackPanel>
-                            </Border>
-                        </Button>-->
                         <Button Style="{StaticResource HighlightedContentButton}" Margin="20,5"
-                                Command="{Binding ImportCommand}" CommandParameter="{x:Static Sources:ImportSource.GmBinder}">
+                                Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.GmBinder}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                     BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="30,2">
                                 <ContentControl Content="{StaticResource GMBinderLogo}" HorizontalContentAlignment="Center"/>
                             </Border>
                         </Button>
                         <Button Tools:AP.IconKind="Web" Style="{StaticResource HighlightedButton}" Content="Other"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Sources:ImportSource.GenericURL}"/>
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.GenericURL}"/>
                     </StackPanel>
                 </ScrollViewer>
             </ContentControl>

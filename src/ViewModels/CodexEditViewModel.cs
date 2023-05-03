@@ -138,7 +138,7 @@ namespace COMPASS.ViewModels
         private async void FetchCover()
         {
             ShowLoading = true;
-            await Task.Factory.StartNew(() => CoverFetcher.GetCover(TempCodex));
+            await Task.Run(() => CoverFetcher.GetCover(TempCodex));
             ShowLoading = false;
             RefreshCover();
         }

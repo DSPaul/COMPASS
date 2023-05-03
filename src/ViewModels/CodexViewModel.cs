@@ -312,12 +312,17 @@ namespace COMPASS.ViewModels
         }
 
         private RelayCommand<Codex> _getMetaDataCommand;
-        public RelayCommand<Codex> GetMetaDataCommand => _getMetaDataCommand ??= new(GetMetaData);
+        public RelayCommand<Codex> GetMetaDataCommand => _getMetaDataCommand ??= new(async codex => await GetMetaData(codex));
 
-        public static void GetMetaData(IList<Codex> codices) =>
-            Parallel.ForEach(codices, GetMetaData);
+        public static async Task GetMetaData(IList<Codex> codices)
+        {
+            var ProgressVM = ProgressViewModel.GetInstance();
+            ProgressVM.ResetCounter();
+            ProgressVM.Text = "Getting MetaData";
+            await Task.Run(() => Parallel.ForEach(codices, async codex => await GetMetaData(codex)));
+        }
 
-        public static async void GetMetaData(Codex codex)
+        public static async Task GetMetaData(Codex codex)
         {
             Codex MetaDatalessCodex = new()
             {
@@ -341,8 +346,8 @@ namespace COMPASS.ViewModels
 
             if (codex.HasOnlineSource())
             {
-                ImportSource onlineSource = (ImportSource)OnlineSourceViewModel.GetOnlineSource(codex.SourceURL);
-                OnlineSourceViewModel onlineSourceVM = (OnlineSourceViewModel)SourceViewModel.GetSource(onlineSource);
+                MetaDataSource onlineSource = (MetaDataSource)SourceViewModel.GetOnlineSource(codex.SourceURL);
+                SourceViewModel onlineSourceVM = SourceViewModel.GetSource(onlineSource);
                 OnlineMetaData = await onlineSourceVM.SetMetaData(new Codex() { SourceURL = codex.SourceURL });
             }
 
@@ -368,11 +373,11 @@ namespace COMPASS.ViewModels
                 {
                     // Store the metadata for this source in oneSourceMetaDataHolder
                     Codex oneSourceMetaDataHolder = null;
-                    if (ImportSources.OnlineSources.HasFlag(source))
+                    if (MetaDataSources.OnlineSources.HasFlag(source))
                         oneSourceMetaDataHolder = OnlineMetaData;
-                    else if (ImportSources.OfflineSources.HasFlag(source))
+                    else if (MetaDataSources.OfflineSources.HasFlag(source))
                         oneSourceMetaDataHolder = LocalMetaData;
-                    else if (source == ImportSource.ISBN)
+                    else if (source == MetaDataSource.ISBN)
                         oneSourceMetaDataHolder = ISBNMetaData;
 
                     // Overwrite the prop from oneSourceMetaDataHolder into metaDataHolder
@@ -391,6 +396,12 @@ namespace COMPASS.ViewModels
                     prop.SetProp(codex, propHolder);
                 }
             }
+
+            ProgressViewModel.GetInstance().IncrementCounter();
+
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
+            MainViewModel.CollectionVM.CurrentCollection.Save();
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
 
         public static void DataGridHandleKeyDown(object sender, KeyEventArgs e)
