@@ -292,24 +292,18 @@
                              TextWrapping="Wrap" Padding="3" Margin="10"/>
                     <Button Grid.Column="2" Command="{Binding BrowsePathCommand}" 
                             ToolTip="Choose a new Path" Tools:AP.IconKind="FolderOpen"/>
-                    <Button Grid.Column="3" 
-                            ToolTip="Search File for MetaData" Tools:AP.IconKind="FileFind"/>
 
                     <TextBlock Text="Source URL:" Grid.Column="0" Grid.Row="1"/>
                     <TextBox Text="{Binding TempCodex.SourceURL, Mode=TwoWay}" Grid.Column="1" Grid.Row="1" 
                              TextWrapping="Wrap" Padding="3"  Margin="10" />
                     <Button Grid.Row="1" Grid.Column="2" Command="{Binding BrowseURLCommand}" 
                             ToolTip="Open URL in Browser" Tools:AP.IconKind="Compass"/>
-                    <Button Grid.Row="1" Grid.Column="3"  
-                            ToolTip="Download MetaData" Tools:AP.IconKind="Download"/>
 
                     <TextBlock Text="ISBN:" Grid.Column="0" Grid.Row="2"/>
                     <TextBox Text="{Binding TempCodex.ISBN, Mode=TwoWay}" Grid.Column="1" Grid.Row="2"
                              TextWrapping="Wrap" Padding="3"  Margin="10"/>
                     <Button  Grid.Row="2" Grid.Column="2" Command="{Binding BrowseISBNCommand}" 
                              ToolTip="Show in Open Library"  Tools:AP.IconKind="Library"/>
-                    <Button Grid.Row="2" Grid.Column="3"  
-                            ToolTip="Get MetaData form Open Library" Tools:AP.IconKind="Download"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Advanced">
