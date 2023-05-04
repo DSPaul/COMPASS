@@ -1,5 +1,6 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
+using COMPASS.ViewModels.Import;
 using HtmlAgilityPack;
 using ImageMagick;
 using System;
@@ -18,6 +19,9 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
+            // Work on a copy
+            codex = new Codex(codex);
+
             HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
@@ -67,5 +71,7 @@ namespace COMPASS.ViewModels.Sources
         }
 
         public override Codex SetTags(Codex codex) => throw new NotImplementedException();
+        public override bool IsValidSource(Codex codex) =>
+            codex.HasOnlineSource() && codex.SourceURL.Contains(new ImportURLViewModel(ImportSource.GmBinder).ExampleURL);
     }
 }

@@ -13,9 +13,13 @@ namespace COMPASS.ViewModels.Sources
         public override MetaDataSource Source => MetaDataSource.GenericURL;
 
         public override Task<bool> FetchCover(Codex codex) => throw new NotImplementedException();
+        public override bool IsValidSource(Codex codex) => codex.HasOnlineSource();
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
+            // Work on a copy
+            codex = new Codex(codex);
+
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to {codex.SourceURL}"));
 
             HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
@@ -45,6 +49,9 @@ namespace COMPASS.ViewModels.Sources
 
         public override Codex SetTags(Codex codex)
         {
+            // Work on a copy
+            codex = new Codex(codex);
+
             //Based on URL
             foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)
             {

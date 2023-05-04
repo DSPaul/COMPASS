@@ -18,6 +18,9 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
+            // Work on a copy
+            codex = new Codex(codex);
+
             if (!ImportViewModel.Stealth)
             {
                 ProgressVM.AddLogEntry(new LogEntry(LogEntry.MsgType.Info, "Fetching Data"));
@@ -109,5 +112,6 @@ namespace COMPASS.ViewModels.Sources
         }
 
         public override Codex SetTags(Codex codex) => throw new NotImplementedException();
+        public override bool IsValidSource(Codex codex) => !String.IsNullOrWhiteSpace(codex.ISBN);
     }
 }

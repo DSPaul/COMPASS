@@ -1,5 +1,4 @@
 ﻿using COMPASS.Models;
-using System;
 using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
@@ -12,7 +11,7 @@ namespace COMPASS.ViewModels.Sources
             TargetCollection = targetCollection;
         }
 
-        public static SourceViewModel GetSource(MetaDataSource source) => source switch
+        public static SourceViewModel GetSourceVM(MetaDataSource source) => source switch
         {
             MetaDataSource.File => new FileSourceViewModel(),
             MetaDataSource.PDF => new PdfSourceViewModel(),
@@ -25,21 +24,6 @@ namespace COMPASS.ViewModels.Sources
             _ => null
         };
 
-        public static MetaDataSource? GetOnlineSource(string URL)
-        {
-            if (String.IsNullOrEmpty(URL)) return null;
-
-            if (URL.Contains("dndbeyond.com"))
-                return MetaDataSource.DnDBeyond;
-            if (URL.Contains("gmbinder.com"))
-                return MetaDataSource.GmBinder;
-            if (URL.Contains("homebrewery.naturalcrit.com"))
-                return MetaDataSource.Homebrewery;
-            if (URL.Contains("drive.google.com"))
-                return MetaDataSource.GoogleDrive;
-            return MetaDataSource.GenericURL;
-        }
-
         #region Import Logic
 
         protected ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
@@ -47,6 +31,8 @@ namespace COMPASS.ViewModels.Sources
         protected CodexCollection TargetCollection;
 
         public abstract MetaDataSource Source { get; }
+
+        public abstract bool IsValidSource(Codex codex);
 
         public abstract Task<Codex> SetMetaData(Codex codex);
 

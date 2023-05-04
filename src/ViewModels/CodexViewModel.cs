@@ -331,33 +331,29 @@ namespace COMPASS.ViewModels
                 ISBN = codex.ISBN
             };
 
-            Codex LocalMetaData = new();
-            Codex OnlineMetaData = new();
-            Codex ISBNMetaData = new();
-
-            if (File.Exists(codex.Path))
+            //First try to get sources from other sources
+            PdfSourceViewModel pdfSourceVM = new();
+            if (pdfSourceVM.IsValidSource(codex))
             {
-                FileSourceViewModel fileSourceVM = new();
-                LocalMetaData = await fileSourceVM.SetMetaData(new Codex() { Path = codex.Path });
+                var c = await pdfSourceVM.SetMetaData(MetaDatalessCodex);
+                codex.ISBN ??= c.ISBN;
+                MetaDatalessCodex.ISBN ??= c.ISBN;
+            };
 
-                //Update ISBN number that could have been found in pdf
-                codex.ISBN ??= LocalMetaData.ISBN;
+            //Get metadata from all the sources
+            Dictionary<MetaDataSource, Codex> MetaDataFromSource = new();
+            foreach (MetaDataSource source in Enum.GetValues(typeof(MetaDataSource)))
+            {
+                SourceViewModel SourceVM = SourceViewModel.GetSourceVM(source);
+                if (SourceVM is null) continue;
+                if (SourceVM.IsValidSource(codex))
+                {
+                    var metaDataHolder = await Task.Run(() => SourceVM.SetMetaData(MetaDatalessCodex));
+                    MetaDataFromSource.Add(source, metaDataHolder);
+                }
             }
 
-            if (codex.HasOnlineSource())
-            {
-                MetaDataSource onlineSource = (MetaDataSource)SourceViewModel.GetOnlineSource(codex.SourceURL);
-                SourceViewModel onlineSourceVM = SourceViewModel.GetSource(onlineSource);
-                OnlineMetaData = await onlineSourceVM.SetMetaData(new Codex() { SourceURL = codex.SourceURL });
-            }
-
-            if (!String.IsNullOrWhiteSpace(codex.ISBN))
-            {
-                ISBNSourceViewModel ISBNSourceVM = new();
-                ISBNMetaData = await ISBNSourceVM.SetMetaData(new Codex() { ISBN = codex.ISBN });
-            }
-
-            //Use these 3 sources to set the actual metadata base on preferences
+            // Now use bits and pieces of the Codices in MetaDataFromSource to set the actual metadata based on preferences
             var properties = SettingsViewModel.GetInstance().MetaDataPreferences;
 
             //Iterate over all the properties and set them
@@ -365,30 +361,23 @@ namespace COMPASS.ViewModels
             {
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
 
-                //metaDataHolder will hold the prop from the top prefered sources
+                //propHolder will hold the property from the top prefered source
                 Codex propHolder = new();
 
                 //iterate over the sources in reverse because overwriting causes the last ones to remain
                 foreach (var source in prop.SourcePriority.AsEnumerable().Reverse())
                 {
-                    // Store the metadata for this source in oneSourceMetaDataHolder
-                    Codex oneSourceMetaDataHolder = null;
-                    if (MetaDataSources.OnlineSources.HasFlag(source))
-                        oneSourceMetaDataHolder = OnlineMetaData;
-                    else if (MetaDataSources.OfflineSources.HasFlag(source))
-                        oneSourceMetaDataHolder = LocalMetaData;
-                    else if (source == MetaDataSource.ISBN)
-                        oneSourceMetaDataHolder = ISBNMetaData;
-
-                    // Overwrite the prop from oneSourceMetaDataHolder into metaDataHolder
+                    // Check if there is metadata from this source to use
+                    if (!MetaDataFromSource.Keys.Contains(source)) continue;
+                    // Set the prop Data from this source in propHolder
                     // if the new value is not null/default/empty
-                    if (!prop.IsEmpty(oneSourceMetaDataHolder))
+                    if (!prop.IsEmpty(MetaDataFromSource[source]))
                     {
-                        prop.SetProp(propHolder, oneSourceMetaDataHolder);
+                        prop.SetProp(propHolder, MetaDataFromSource[source]);
                     }
                 }
 
-                // Now set the prop on the actual codex based on overwrite mode
+                // Now copy the prop from propHolder to the actual codex based on overwrite mode
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Always ||
                     (prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty
                     && prop.IsEmpty(codex)))

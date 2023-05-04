@@ -14,6 +14,9 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
+            // Work on a copy
+            codex = new Codex(codex);
+
             //Scrape metadata by going to storepage, get to storepage by using that /credits redirects there
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to DnD Beyond"));
             HtmlDocument doc = await Utils.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
@@ -60,5 +63,6 @@ namespace COMPASS.ViewModels.Sources
         }
 
         public override Codex SetTags(Codex codex) => throw new NotImplementedException();
+        public override bool IsValidSource(Codex codex) => false;
     }
 }

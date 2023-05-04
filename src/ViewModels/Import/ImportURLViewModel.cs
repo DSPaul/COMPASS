@@ -79,7 +79,7 @@ namespace COMPASS.ViewModels.Import
             }
             if (!Utils.PingURL())
             {
-                ImportError = "You need to be connected to the internet to import on online source.";
+                ImportError = "You need to be connected to the internet to import an online source.";
                 return;
             }
             importURLwindow.Close();

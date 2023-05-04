@@ -16,6 +16,8 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
+            // Work on a copy
+            codex = new Codex(codex);
 
             PdfDocument pdfDoc = null;
             try
@@ -108,5 +110,6 @@ namespace COMPASS.ViewModels.Sources
             }
         }
 
+        public override bool IsValidSource(Codex codex) => File.Exists(codex.Path) && Path.GetExtension(codex.Path) == ".pdf";
     }
 }

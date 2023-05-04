@@ -14,9 +14,13 @@ namespace COMPASS.ViewModels.Sources
         public override MetaDataSource Source => MetaDataSource.File;
 
         public override Task<bool> FetchCover(Codex codex) => throw new System.NotImplementedException();
+        public override bool IsValidSource(Codex codex) => File.Exists(codex.Path);
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
+            // Work on a copy
+            codex = new Codex(codex);
+
             codex.Title = Path.GetFileNameWithoutExtension(codex.Path);
             MainViewModel.CollectionVM.FilterVM.ReFilter();
             return codex;
@@ -24,6 +28,9 @@ namespace COMPASS.ViewModels.Sources
 
         public override Codex SetTags(Codex codex)
         {
+            // Work on a copy
+            codex = new Codex(codex);
+
             //Auto Add Tags based on file path
             foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)
             {

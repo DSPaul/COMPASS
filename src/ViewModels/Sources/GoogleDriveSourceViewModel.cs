@@ -1,5 +1,6 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
+using COMPASS.ViewModels.Import;
 using HtmlAgilityPack;
 using System;
 using System.Threading.Tasks;
@@ -14,6 +15,9 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<Codex> SetMetaData(Codex codex)
         {
+            // Work on a copy
+            codex = new Codex(codex);
+
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to Google Drive"));
 
             HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
@@ -61,5 +65,7 @@ namespace COMPASS.ViewModels.Sources
         }
 
         public override Codex SetTags(Codex codex) => throw new NotImplementedException();
+        public override bool IsValidSource(Codex codex) =>
+            codex.HasOnlineSource() && codex.SourceURL.Contains(new ImportURLViewModel(ImportSource.GoogleDrive).ExampleURL);
     }
 }

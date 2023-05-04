@@ -17,8 +17,7 @@
                             dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" ItemsSource="{TemplateBinding ItemsSource}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border CornerRadius="5" Margin="2,3" Background="{StaticResource AccentColorMuted}"
-                                                            Cursor="ScrollNS">
+                            <Border CornerRadius="5" Margin="2,3" Background="{StaticResource AccentColorMuted}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>

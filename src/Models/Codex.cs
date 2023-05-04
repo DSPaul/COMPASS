@@ -323,6 +323,7 @@ namespace COMPASS.Models
                 new List<NamedMetaDataSource>()
                 {
                     new(MetaDataSource.File),
+                    new(MetaDataSource.PDF),
                     new(MetaDataSource.GmBinder),
                     new(MetaDataSource.Homebrewery),
                     new(MetaDataSource.GoogleDrive),
@@ -334,7 +335,7 @@ namespace COMPASS.Models
                 (codex,other) => codex.Authors = other.Authors,
                 new()
                 {
-                    new(MetaDataSource.File),
+                    new(MetaDataSource.PDF),
                     new(MetaDataSource.GmBinder),
                     new(MetaDataSource.Homebrewery),
                     new(MetaDataSource.ISBN),
@@ -345,7 +346,10 @@ namespace COMPASS.Models
                 (codex,other) => codex.Publisher = other.Publisher,
                 new()
                 {
-                    new(MetaDataSource.ISBN)
+                    new(MetaDataSource.ISBN),
+                    new(MetaDataSource.GmBinder),
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.GoogleDrive),
                 }),
             new( "Version",
                 codex => String.IsNullOrEmpty(codex.Version),
@@ -359,7 +363,8 @@ namespace COMPASS.Models
                 (codex, other) => codex.PageCount = other.PageCount,
                 new()
                 {
-                    new(MetaDataSource.File),
+                    new(MetaDataSource.PDF),
+                    new(MetaDataSource.Image),
                     new(MetaDataSource.GmBinder),
                     new(MetaDataSource.Homebrewery),
                     new(MetaDataSource.ISBN),
@@ -373,6 +378,7 @@ namespace COMPASS.Models
                 new()
                 {
                     new(MetaDataSource.File),
+                    new(MetaDataSource.GenericURL),
                 }),
             new( "Description",
                 codex => String.IsNullOrEmpty(codex.Description),
