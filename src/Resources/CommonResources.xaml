@@ -598,6 +598,9 @@
         <MenuItem Header="Favorite" CommandParameter="{Binding}" Tools:AP.IconKind="Favorite" InputGestureText="Ctrl + F"
                   Command="{Binding Path=DataContext.CodexVM.FavoriteCodicesCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Get MetaData" Tools:AP.IconKind="FileCode" CommandParameter="{Binding}"
+                  Command="{Binding Path=DataContext.CodexVM.GetMetaDataBulkCommand, 
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
         <MenuItem Header="Move to Collection" Tools:AP.IconKind="FileMoveOutline"
                  ItemsSource="{Binding DataContext.MVM.CollectionVM.CollectionDirectories, 
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">

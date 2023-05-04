@@ -312,14 +312,20 @@ namespace COMPASS.ViewModels
         }
 
         private RelayCommand<Codex> _getMetaDataCommand;
-        public RelayCommand<Codex> GetMetaDataCommand => _getMetaDataCommand ??= new(async codex => await GetMetaData(codex));
+        public RelayCommand<Codex> GetMetaDataCommand => _getMetaDataCommand ??= new(codex => GetMetaData(new List<Codex>() { codex }));
 
-        public static async Task GetMetaData(IList<Codex> codices)
+        private RelayCommand<IList> _getMetaDataBulkCommand;
+        public RelayCommand<IList> GetMetaDataBulkCommand => _getMetaDataBulkCommand ??= new(codices => GetMetaData(codices.Cast<Codex>().ToList()));
+
+        public static void GetMetaData(IList<Codex> codices)
         {
             var ProgressVM = ProgressViewModel.GetInstance();
             ProgressVM.ResetCounter();
             ProgressVM.Text = "Getting MetaData";
-            await Task.Run(() => Parallel.ForEach(codices, async codex => await GetMetaData(codex)));
+            Parallel.ForEach(codices, async codex => await GetMetaData(codex));
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
+            MainViewModel.CollectionVM.CurrentCollection.Save();
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
 
         public static async Task GetMetaData(Codex codex)
@@ -348,7 +354,7 @@ namespace COMPASS.ViewModels
                 if (SourceVM is null) continue;
                 if (SourceVM.IsValidSource(codex))
                 {
-                    var metaDataHolder = await Task.Run(() => SourceVM.SetMetaData(MetaDatalessCodex));
+                    var metaDataHolder = await SourceVM.SetMetaData(MetaDatalessCodex);
                     MetaDataFromSource.Add(source, metaDataHolder);
                 }
             }
@@ -387,10 +393,6 @@ namespace COMPASS.ViewModels
             }
 
             ProgressViewModel.GetInstance().IncrementCounter();
-
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            MainViewModel.CollectionVM.CurrentCollection.Save();
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
 
         public static void DataGridHandleKeyDown(object sender, KeyEventArgs e)
