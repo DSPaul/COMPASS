@@ -34,9 +34,7 @@ namespace COMPASS.ViewModels.Sources
 
         public abstract bool IsValidSource(Codex codex);
 
-        public abstract Task<Codex> SetMetaData(Codex codex);
-
-        public abstract Codex SetTags(Codex codex);
+        public abstract Task<Codex> GetMetaData(Codex codex);
 
         public abstract Task<bool> FetchCover(Codex codex);
         #endregion

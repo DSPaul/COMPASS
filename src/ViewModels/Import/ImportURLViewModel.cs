@@ -125,6 +125,7 @@ namespace COMPASS.ViewModels.Import
 
             // Steps 1 & 2: Load Source and Scrape metadata
             await CodexViewModel.GetMetaData(newCodex);
+            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
 
             var ProgressVM = ProgressViewModel.GetInstance();
             ProgressVM.IncrementCounter();

@@ -17,7 +17,10 @@ namespace COMPASS.ViewModels.Sources
 
         public override MetaDataSource Source => MetaDataSource.GmBinder;
 
-        public override async Task<Codex> SetMetaData(Codex codex)
+        public override bool IsValidSource(Codex codex) =>
+            codex.HasOnlineSource() && codex.SourceURL.Contains(new ImportURLViewModel(ImportSource.GmBinder).ExampleURL);
+
+        public override async Task<Codex> GetMetaData(Codex codex)
         {
             // Work on a copy
             codex = new Codex(codex);
@@ -70,8 +73,5 @@ namespace COMPASS.ViewModels.Sources
             }
         }
 
-        public override Codex SetTags(Codex codex) => throw new NotImplementedException();
-        public override bool IsValidSource(Codex codex) =>
-            codex.HasOnlineSource() && codex.SourceURL.Contains(new ImportURLViewModel(ImportSource.GmBinder).ExampleURL);
     }
 }

@@ -311,18 +311,24 @@ namespace COMPASS.ViewModels
             DeleteCodices(toBanish);
         }
 
-        private RelayCommand<Codex> _getMetaDataCommand;
-        public RelayCommand<Codex> GetMetaDataCommand => _getMetaDataCommand ??= new(codex => GetMetaData(new List<Codex>() { codex }));
+        private ReturningRelayCommand<Codex, Task> _getMetaDataCommand;
+        public ReturningRelayCommand<Codex, Task> GetMetaDataCommand => _getMetaDataCommand ??= new(StartGetMetaDataProcess);
 
-        private RelayCommand<IList> _getMetaDataBulkCommand;
-        public RelayCommand<IList> GetMetaDataBulkCommand => _getMetaDataBulkCommand ??= new(codices => GetMetaData(codices.Cast<Codex>().ToList()));
+        private async Task StartGetMetaDataProcess(Codex codex) => await StartGetMetaDataProcess(new List<Codex>() { codex });
 
-        public static void GetMetaData(IList<Codex> codices)
+        private ReturningRelayCommand<IList, Task> _getMetaDataBulkCommand;
+        public ReturningRelayCommand<IList, Task> GetMetaDataBulkCommand => _getMetaDataBulkCommand ??= new(StartGetMetaDataProcessWithCast);
+        private async Task StartGetMetaDataProcessWithCast(IList codices) => await StartGetMetaDataProcess(codices.Cast<Codex>().ToList());
+
+        public static async Task StartGetMetaDataProcess(IList<Codex> codices)
         {
             var ProgressVM = ProgressViewModel.GetInstance();
             ProgressVM.ResetCounter();
             ProgressVM.Text = "Getting MetaData";
-            Parallel.ForEach(codices, async codex => await GetMetaData(codex));
+            ProgressVM.TotalAmount = codices.Count;
+
+            await Task.Run(() => Parallel.ForEach(codices, async codex => await GetMetaData(codex)));
+
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
             MainViewModel.CollectionVM.CurrentCollection.Save();
             MainViewModel.CollectionVM.FilterVM.ReFilter();
@@ -341,7 +347,7 @@ namespace COMPASS.ViewModels
             PdfSourceViewModel pdfSourceVM = new();
             if (pdfSourceVM.IsValidSource(codex))
             {
-                var c = await pdfSourceVM.SetMetaData(MetaDatalessCodex);
+                var c = await pdfSourceVM.GetMetaData(MetaDatalessCodex);
                 codex.ISBN ??= c.ISBN;
                 MetaDatalessCodex.ISBN ??= c.ISBN;
             };
@@ -354,7 +360,7 @@ namespace COMPASS.ViewModels
                 if (SourceVM is null) continue;
                 if (SourceVM.IsValidSource(codex))
                 {
-                    var metaDataHolder = await SourceVM.SetMetaData(MetaDatalessCodex);
+                    var metaDataHolder = await SourceVM.GetMetaData(MetaDatalessCodex);
                     MetaDataFromSource.Add(source, metaDataHolder);
                 }
             }

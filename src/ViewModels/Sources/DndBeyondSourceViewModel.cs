@@ -12,7 +12,7 @@ namespace COMPASS.ViewModels.Sources
 
         public override MetaDataSource Source => MetaDataSource.DnDBeyond;
 
-        public override async Task<Codex> SetMetaData(Codex codex)
+        public override async Task<Codex> GetMetaData(Codex codex)
         {
             // Work on a copy
             codex = new Codex(codex);
@@ -62,7 +62,6 @@ namespace COMPASS.ViewModels.Sources
             }
         }
 
-        public override Codex SetTags(Codex codex) => throw new NotImplementedException();
         public override bool IsValidSource(Codex codex) => false;
     }
 }

@@ -122,7 +122,7 @@ namespace COMPASS.ViewModels.Import
             var ProgressVM = ProgressViewModel.GetInstance();
             ProgressVM.TotalAmount = newCodices.Count;
 
-            await Task.Run(() => CodexViewModel.GetMetaData(newCodices));
+            await CodexViewModel.StartGetMetaDataProcess(newCodices);
 
             ProgressVM.ResetCounter();
             ProgressVM.Text = "Getting MetaData";

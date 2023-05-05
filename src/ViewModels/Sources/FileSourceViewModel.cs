@@ -16,22 +16,15 @@ namespace COMPASS.ViewModels.Sources
         public override Task<bool> FetchCover(Codex codex) => throw new System.NotImplementedException();
         public override bool IsValidSource(Codex codex) => File.Exists(codex.Path);
 
-        public override async Task<Codex> SetMetaData(Codex codex)
+        public override async Task<Codex> GetMetaData(Codex codex)
         {
             // Work on a copy
             codex = new Codex(codex);
 
+            // Title
             codex.Title = Path.GetFileNameWithoutExtension(codex.Path);
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
-            return codex;
-        }
 
-        public override Codex SetTags(Codex codex)
-        {
-            // Work on a copy
-            codex = new Codex(codex);
-
-            //Auto Add Tags based on file path
+            // Tags based on file path
             foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)
             {
                 if (codex.Path.Contains(folderTagPair.Folder))
@@ -52,6 +45,7 @@ namespace COMPASS.ViewModels.Sources
                 }
             }
 
+            MainViewModel.CollectionVM.FilterVM.ReFilter();
             return codex;
         }
     }

@@ -15,8 +15,9 @@ namespace COMPASS.ViewModels.Sources
         public ISBNSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
 
         public override MetaDataSource Source => MetaDataSource.ISBN;
+        public override bool IsValidSource(Codex codex) => !String.IsNullOrWhiteSpace(codex.ISBN);
 
-        public override async Task<Codex> SetMetaData(Codex codex)
+        public override async Task<Codex> GetMetaData(Codex codex)
         {
             // Work on a copy
             codex = new Codex(codex);
@@ -46,9 +47,9 @@ namespace COMPASS.ViewModels.Sources
                 ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "File loaded, parsing metadata"));
             }
 
-            //Start parsing json
+            // Start parsing json
             var details = metadata.First.First.SelectToken("details");
-            //Title
+            // Title
             if (!String.IsNullOrWhiteSpace((string)details.SelectToken("full_title")))
             {
                 codex.Title = (string)details.SelectToken("full_title");
@@ -111,7 +112,5 @@ namespace COMPASS.ViewModels.Sources
             }
         }
 
-        public override Codex SetTags(Codex codex) => throw new NotImplementedException();
-        public override bool IsValidSource(Codex codex) => !String.IsNullOrWhiteSpace(codex.ISBN);
     }
 }

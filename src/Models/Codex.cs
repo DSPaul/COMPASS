@@ -373,7 +373,9 @@ namespace COMPASS.Models
                 codex => codex.Tags is null || !codex.Tags.Any(),
                 (codex,other) => {
                     foreach (var tag in other.Tags)
-                        codex.Tags.AddIfMissing(tag);
+                    {
+                        Application.Current.Dispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
+                    }
                 },
                 new()
                 {
