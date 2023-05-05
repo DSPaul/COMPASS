@@ -520,8 +520,8 @@ namespace COMPASS.ViewModels
                 RaisePropertyChanged(nameof(RecentlyAddedCodices));
 
                 FilteredCodices.CollectionChanged += (e, v) => ApplySorting();
-                ApplySorting();
             }
+            ApplySorting();
         }
 
         public void ReFilter(bool force = false)

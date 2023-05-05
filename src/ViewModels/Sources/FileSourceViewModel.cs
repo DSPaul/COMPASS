@@ -14,7 +14,7 @@ namespace COMPASS.ViewModels.Sources
         public override MetaDataSource Source => MetaDataSource.File;
 
         public override Task<bool> FetchCover(Codex codex) => throw new System.NotImplementedException();
-        public override bool IsValidSource(Codex codex) => File.Exists(codex.Path);
+        public override bool IsValidSource(Codex codex) => codex.HasOfflineSource();
 
         public override async Task<Codex> GetMetaData(Codex codex)
         {

@@ -13,7 +13,7 @@ namespace COMPASS.ViewModels.Sources
     public class PdfSourceViewModel : SourceViewModel
     {
         public override MetaDataSource Source => MetaDataSource.PDF;
-        public override bool IsValidSource(Codex codex) => File.Exists(codex.Path) && Path.GetExtension(codex.Path) == ".pdf";
+        public override bool IsValidSource(Codex codex) => Path.GetExtension(codex.Path) == ".pdf";
 
         public override async Task<Codex> GetMetaData(Codex codex)
         {

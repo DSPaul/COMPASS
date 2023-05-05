@@ -327,7 +327,12 @@ namespace COMPASS.ViewModels
             ProgressVM.Text = "Getting MetaData";
             ProgressVM.TotalAmount = codices.Count;
 
-            await Task.Run(() => Parallel.ForEach(codices, async codex => await GetMetaData(codex)));
+            ParallelOptions parallelOptions = new()
+            {
+                MaxDegreeOfParallelism = 8
+            };
+
+            await Parallel.ForEachAsync(codices, parallelOptions, async (codex, token) => await GetMetaData(codex));
 
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
             MainViewModel.CollectionVM.CurrentCollection.Save();
@@ -336,6 +341,10 @@ namespace COMPASS.ViewModels
 
         private static async Task GetMetaData(Codex codex)
         {
+            // Lazy load metadata from all the sources, use dict to store
+            Dictionary<MetaDataSource, Codex> MetaDataFromSource = new();
+
+            //Make Codex with only sources which can be filled with new data
             Codex MetaDatalessCodex = new()
             {
                 Path = codex.Path,
@@ -344,16 +353,19 @@ namespace COMPASS.ViewModels
             };
 
             //First try to get sources from other sources
+            //Pdf can contain ISBN number
             PdfSourceViewModel pdfSourceVM = new();
-            if (pdfSourceVM.IsValidSource(codex))
+            if (pdfSourceVM.IsValidSource(codex) && String.IsNullOrEmpty(codex.ISBN))
             {
-                var c = await pdfSourceVM.GetMetaData(MetaDatalessCodex);
-                codex.ISBN ??= c.ISBN;
-                MetaDatalessCodex.ISBN ??= c.ISBN;
+                var pdfData = await pdfSourceVM.GetMetaData(MetaDatalessCodex);
+                codex.ISBN = pdfData.ISBN;
+                MetaDatalessCodex.ISBN = pdfData.ISBN;
+
+                //already store this so pdf doesn't need to be opened twice
+                MetaDataFromSource.Add(MetaDataSource.PDF, pdfData);
             };
 
-            // Lazy load metadata from all the sources, use dict to store
-            Dictionary<MetaDataSource, Codex> MetaDataFromSource = new();
+
 
             // Now use bits and pieces of the Codices in MetaDataFromSource to set the actual metadata based on preferences
             var properties = SettingsViewModel.GetInstance().MetaDataPreferences;
