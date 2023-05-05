@@ -36,6 +36,7 @@ namespace COMPASS.Tools
             foreach (var source in coverProp.SourcePriority)
             {
                 SourceViewModel sourceVM = SourceViewModel.GetSourceVM(source);
+                if (sourceVM == null || !sourceVM.IsValidSource(codex)) continue;
                 getCoverSuccesfull = await sourceVM.FetchCover(MetaDatalessCodex);
                 if (getCoverSuccesfull) break;
             }

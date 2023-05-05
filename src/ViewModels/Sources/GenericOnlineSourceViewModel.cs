@@ -20,7 +20,7 @@ namespace COMPASS.ViewModels.Sources
             // Work on a copy
             codex = new Codex(codex);
 
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to {codex.SourceURL}"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Extracting metadata from website header"));
 
             // Scrape metadata
             HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
@@ -28,10 +28,9 @@ namespace COMPASS.ViewModels.Sources
 
             if (src is null)
             {
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, $"Could not reach {codex.SourceURL}"));
                 return codex;
             }
-
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching Metadata"));
 
             // Title 
             codex.Title = src.SelectSingleNode("//meta[@property='og:title']")?.GetAttributeValue("content", null) ?? codex.Title;
@@ -54,10 +53,6 @@ namespace COMPASS.ViewModels.Sources
                     codex.Tags.AddIfMissing(folderTagPair.Tag);
                 }
             }
-
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
-
             return codex;
         }
     }

@@ -20,6 +20,12 @@ namespace COMPASS.Tools
         public static void Info(string message) =>
             Application.Current.Dispatcher.Invoke(()
                 => ActivityLog.Add(new(LogEntry.MsgType.Info, message)));
+        public static void Warn(string message)
+        {
+            Application.Current.Dispatcher.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Warning, message)));
+            FileLog.Warn(message);
+        }
+
         public static void Warn(string message, Exception ex)
         {
             Application.Current.Dispatcher.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Warning, message)));

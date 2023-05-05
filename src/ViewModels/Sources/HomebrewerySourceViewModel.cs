@@ -24,17 +24,16 @@ namespace COMPASS.ViewModels.Sources
             // Work on a copy
             codex = new Codex(codex);
 
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to Homebrewery"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading metadata from Homebrewery"));
 
             HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
             {
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, $"Could not reach {codex.SourceURL}"));
                 return codex;
             }
-
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching metadata"));
 
             //Set known metadata
             codex.Publisher = "Homebrewery";
@@ -47,14 +46,12 @@ namespace COMPASS.ViewModels.Sources
             JObject metadata = JObject.Parse(rawData);
 
             codex.Title = (string)metadata.SelectToken("brew.title");
-            codex.Authors = new(metadata.SelectToken("brew.authors")?.Values<string>());
+            var authors = metadata.SelectToken("brew.authors")?.Values<string>();
+            if (authors is not null) { codex.Authors = new(authors); }
             codex.Version = (string)metadata.SelectToken("brew.version");
             codex.PageCount = (int)metadata.SelectToken("brew.pageCount");
             codex.Description = (string)metadata.SelectToken("brew.description");
             codex.ReleaseDate = DateTime.Parse(((string)metadata.SelectToken("brew.createdAt"))?.Split('T')[0], CultureInfo.InvariantCulture);
-
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
 
             return codex;
         }
@@ -62,6 +59,7 @@ namespace COMPASS.ViewModels.Sources
         public override async Task<bool> FetchCover(Codex codex)
         {
             if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading cover from Homebrewery"));
             OpenQA.Selenium.WebDriver driver = WebDriverFactory.GetWebDriver();
             try
             {
@@ -75,7 +73,9 @@ namespace COMPASS.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to get cover from Homebrewery", ex);
+                string msg = $"Failed to get cover from {codex.SourceURL}";
+                Logger.Error(msg, ex);
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, msg));
                 return false;
             }
             finally

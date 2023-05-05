@@ -10,7 +10,7 @@
         mc:Ignorable="d" Foreground="{StaticResource TextColor}"
         d:DataContext="{d:DesignInstance Type=viewmodels:ProgressViewModel}"
         AllowsTransparency="True" Background="Transparent" WindowStyle="None"
-        Title="Progress Window" Height="150" Width="450" WindowStartupLocation="CenterOwner">
+        Title="Progress Window" Height="250" Width="450" WindowStartupLocation="CenterOwner">
     <Window.Style>
         <Style>
             <Setter Property="WindowChrome.WindowChrome">
@@ -41,7 +41,7 @@
                     Height="12" Width="400" ValueChanged="ProgressBar_ValueChanged" 
                     Foreground="{StaticResource AccentColor}" Background="{StaticResource UIElementBackground}" 
                     Margin="0,5" Style="{DynamicResource RoundedProgressBar}"/>
-                <Border Height="75" Width="400" Background="{StaticResource LogBackground}" 
+                <Border Height="175" Width="400" Background="{StaticResource LogBackground}" 
                         CornerRadius="5" BorderBrush="{StaticResource LogBorder}" BorderThickness="1" Margin="0,5">
                     <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto">
                         <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{Binding Log, Mode=OneWay}" Margin="10,5">

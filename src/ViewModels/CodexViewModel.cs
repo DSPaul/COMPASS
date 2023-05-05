@@ -314,12 +314,12 @@ namespace COMPASS.ViewModels
         private ReturningRelayCommand<Codex, Task> _getMetaDataCommand;
         public ReturningRelayCommand<Codex, Task> GetMetaDataCommand => _getMetaDataCommand ??= new(StartGetMetaDataProcess);
 
-        private async Task StartGetMetaDataProcess(Codex codex) => await StartGetMetaDataProcess(new List<Codex>() { codex });
 
         private ReturningRelayCommand<IList, Task> _getMetaDataBulkCommand;
         public ReturningRelayCommand<IList, Task> GetMetaDataBulkCommand => _getMetaDataBulkCommand ??= new(StartGetMetaDataProcessWithCast);
-        private async Task StartGetMetaDataProcessWithCast(IList codices) => await StartGetMetaDataProcess(codices.Cast<Codex>().ToList());
+        private static async Task StartGetMetaDataProcessWithCast(IList codices) => await StartGetMetaDataProcess(codices.Cast<Codex>().ToList());
 
+        public static async Task StartGetMetaDataProcess(Codex codex) => await StartGetMetaDataProcess(new List<Codex>() { codex });
         public static async Task StartGetMetaDataProcess(IList<Codex> codices)
         {
             var ProgressVM = ProgressViewModel.GetInstance();
@@ -334,7 +334,7 @@ namespace COMPASS.ViewModels
             MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
 
-        public static async Task GetMetaData(Codex codex)
+        private static async Task GetMetaData(Codex codex)
         {
             Codex MetaDatalessCodex = new()
             {
@@ -352,18 +352,8 @@ namespace COMPASS.ViewModels
                 MetaDatalessCodex.ISBN ??= c.ISBN;
             };
 
-            //Get metadata from all the sources
+            // Lazy load metadata from all the sources, use dict to store
             Dictionary<MetaDataSource, Codex> MetaDataFromSource = new();
-            foreach (MetaDataSource source in Enum.GetValues(typeof(MetaDataSource)))
-            {
-                SourceViewModel SourceVM = SourceViewModel.GetSourceVM(source);
-                if (SourceVM is null) continue;
-                if (SourceVM.IsValidSource(codex))
-                {
-                    var metaDataHolder = await SourceVM.GetMetaData(MetaDatalessCodex);
-                    MetaDataFromSource.Add(source, metaDataHolder);
-                }
-            }
 
             // Now use bits and pieces of the Codices in MetaDataFromSource to set the actual metadata based on preferences
             var properties = SettingsViewModel.GetInstance().MetaDataPreferences;
@@ -372,6 +362,8 @@ namespace COMPASS.ViewModels
             foreach (var prop in properties)
             {
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
+                if (prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(codex)) continue;
+                if (prop.Label == "Cover Art") continue; //Covers is done seperately
 
                 //propHolder will hold the property from the top prefered source
                 Codex propHolder = new();
@@ -380,7 +372,14 @@ namespace COMPASS.ViewModels
                 foreach (var source in prop.SourcePriority.AsEnumerable().Reverse())
                 {
                     // Check if there is metadata from this source to use
-                    if (!MetaDataFromSource.Keys.Contains(source)) continue;
+                    if (!MetaDataFromSource.Keys.Contains(source))
+                    {
+                        SourceViewModel SourceVM = SourceViewModel.GetSourceVM(source);
+                        if (SourceVM is null) continue;
+                        if (!SourceVM.IsValidSource(codex)) continue;
+                        var metaDataHolder = await SourceVM.GetMetaData(MetaDatalessCodex);
+                        MetaDataFromSource.Add(source, metaDataHolder);
+                    };
                     // Set the prop Data from this source in propHolder
                     // if the new value is not null/default/empty
                     if (!prop.IsEmpty(MetaDataFromSource[source]))
@@ -388,11 +387,7 @@ namespace COMPASS.ViewModels
                         prop.SetProp(propHolder, MetaDataFromSource[source]);
                     }
                 }
-
-                // Now copy the prop from propHolder to the actual codex based on overwrite mode
-                if (prop.OverwriteMode == MetaDataOverwriteMode.Always ||
-                    (prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty
-                    && prop.IsEmpty(codex)))
+                if (!prop.IsEmpty(propHolder))
                 {
                     prop.SetProp(codex, propHolder);
                 }

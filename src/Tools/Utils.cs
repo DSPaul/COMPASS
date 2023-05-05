@@ -201,19 +201,15 @@ namespace COMPASS.Tools
                 return null;
             }
 
-            ProgressVM.IncrementCounter();
-
             if (doc.ParsedText is null || doc.DocumentNode is null)
             {
-                LogEntry entry = new(LogEntry.MsgType.Error, $"{url} could not be reached");
+                LogEntry entry = new(LogEntry.MsgType.Error, $"Failed to reach {url}");
                 ProgressVM.AddLogEntry(entry);
                 Logger.Error($"{url} does not have any content", new ArgumentNullException());
                 return null;
             }
             else
             {
-                LogEntry entry = new(LogEntry.MsgType.Info, "File loaded");
-                ProgressVM.AddLogEntry(entry);
                 return doc;
             }
         }

@@ -64,6 +64,7 @@ namespace COMPASS.ViewModels.Import
         {
             ImportURLViewModel importVM = new(source);
             ImportURLWindow window = new(importVM);
+            importVM.Window = window;
             window.Show();
         }
 
@@ -90,7 +91,7 @@ namespace COMPASS.ViewModels.Import
 
             if (!Stealth)
             {
-                ProgressWindow window = new()
+                ProgressWindow window = new(3)
                 {
                     Owner = Application.Current.MainWindow
                 };

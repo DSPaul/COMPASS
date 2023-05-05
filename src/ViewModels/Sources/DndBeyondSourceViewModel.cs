@@ -27,14 +27,9 @@ namespace COMPASS.ViewModels.Sources
                 return codex;
             }
 
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching Metadata"));
-
             //Set known metadata
             codex.Publisher = "D&D Beyond";
             codex.Authors = new() { "Wizards of the Coast" };
-
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
 
             return codex;
         }

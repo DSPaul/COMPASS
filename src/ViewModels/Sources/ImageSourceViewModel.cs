@@ -9,8 +9,6 @@ namespace COMPASS.ViewModels.Sources
     {
         public override MetaDataSource Source => MetaDataSource.Image;
 
-        public override async Task<bool> FetchCover(Codex codex) =>
-            await Task.Run(() => CoverFetcher.GetCoverFromImage(codex.Path, codex));
         public override bool IsValidSource(Codex codex) => File.Exists(codex.Path) && Utils.IsImageFile(codex.Path);
 
         public override async Task<Codex> GetMetaData(Codex codex)
@@ -21,5 +19,7 @@ namespace COMPASS.ViewModels.Sources
             codex.PageCount = 1;
             return codex;
         }
+        public override async Task<bool> FetchCover(Codex codex) =>
+            await Task.Run(() => CoverFetcher.GetCoverFromImage(codex.Path, codex));
     }
 }

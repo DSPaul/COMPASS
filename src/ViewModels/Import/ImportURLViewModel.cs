@@ -40,7 +40,7 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        protected ImportURLWindow importURLwindow;
+        public ImportURLWindow Window;
 
         private ImportSource _importSource;
 
@@ -70,7 +70,7 @@ namespace COMPASS.ViewModels.Import
 
         private ActionCommand _submitUrlCommand;
         public ActionCommand SubmitURLCommand => _submitUrlCommand ??= new(SubmitURL);
-        public void SubmitURL()
+        public async void SubmitURL()
         {
             if (!InputURL.Contains(ExampleURL) && ValidateURL)
             {
@@ -82,22 +82,30 @@ namespace COMPASS.ViewModels.Import
                 ImportError = "You need to be connected to the internet to import an online source.";
                 return;
             }
-            importURLwindow.Close();
+            Window.Close();
 
             var ProgressVM = ProgressViewModel.GetInstance();
-
+            ProgressVM.Log.Clear();
             ProgressVM.ResetCounter();
-            ProgressVM.Text = "Importing, Step: ";
-            //3 steps: 1. connect to site, 2. get metadata, 3. get Cover
-            ProgressVM.TotalAmount = 3;
+            ProgressVM.TotalAmount = 1;
 
-            ProgressWindow progressWindow = new()
+            ProgressWindow progressWindow = new(3)
             {
                 Owner = Application.Current.MainWindow
             };
             progressWindow.Show();
 
-            Task.Run(ImportURL);
+            Codex newCodex = await Task.Run(ImportURL);
+
+            if (ShowEditWhenDone)
+            {
+                CodexEditWindow editWindow = new(new CodexEditViewModel(newCodex))
+                {
+                    Topmost = true,
+                    Owner = Application.Current.MainWindow
+                };
+                editWindow.ShowDialog();
+            }
         }
 
         private ActionCommand _OpenBarcodeScannerCommand;
@@ -111,8 +119,13 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        public async void ImportURL()
+        public async Task<Codex> ImportURL()
         {
+            var ProgressVM = ProgressViewModel.GetInstance();
+            ProgressVM.ResetCounter();
+
+            //Step 1: add codex
+            ProgressVM.Text = "Adding new item to Collection";
             Codex newCodex = new(MainViewModel.CollectionVM.CurrentCollection);
             if (_importSource == ImportSource.ISBN)
             {
@@ -122,39 +135,35 @@ namespace COMPASS.ViewModels.Import
             {
                 newCodex.SourceURL = InputURL;
             }
-
-            // Steps 1 & 2: Load Source and Scrape metadata
-            await CodexViewModel.GetMetaData(newCodex);
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-
-            var ProgressVM = ProgressViewModel.GetInstance();
+            MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
             ProgressVM.IncrementCounter();
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Metadata loaded. Downloading cover art."));
+            ProgressVM.ResetCounter();
+
+            // Steps 2: Scrape metadata
+            ProgressVM.Text = "Downloading Metadata";
+            await CodexViewModel.StartGetMetaDataProcess(newCodex)
+                .ContinueWith(_ =>
+                {
+                    ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Metadata loaded."));
+                    ProgressVM.ResetCounter();
+                });
 
             // Step 3: Get Cover Art
-            await CoverFetcher.GetCover(newCodex);
-            ProgressVM.IncrementCounter();
+
+            ProgressVM.Text = "Downloading Cover";
+            await CoverFetcher.GetCover(newCodex)
+                 .ContinueWith(_ =>
+                 {
+                     ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Cover loaded."));
+                     ProgressVM.ResetCounter();
+                 });
 
             //Complete import
-            MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
-
             string logMsg = $"Imported {newCodex.Title}";
             Logger.Info(logMsg);
             ProgressVM.AddLogEntry(new LogEntry(LogEntry.MsgType.Info, logMsg));
 
-            if (ShowEditWhenDone)
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    CodexEditWindow editWindow = new(new CodexEditViewModel(newCodex))
-                    {
-                        Topmost = true,
-                        Owner = Application.Current.MainWindow
-                    };
-                    editWindow.ShowDialog();
-                });
-            }
+            return newCodex;
         }
     }
 }

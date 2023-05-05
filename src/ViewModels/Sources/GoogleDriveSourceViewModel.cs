@@ -12,30 +12,15 @@ namespace COMPASS.ViewModels.Sources
         public GoogleDriveSourceViewModel() : base() { }
 
         public override MetaDataSource Source => MetaDataSource.GoogleDrive;
+        public override bool IsValidSource(Codex codex) =>
+            codex.HasOnlineSource() && codex.SourceURL.Contains(new ImportURLViewModel(ImportSource.GoogleDrive).ExampleURL);
 
         public override async Task<Codex> GetMetaData(Codex codex)
         {
             // Work on a copy
             codex = new Codex(codex);
 
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to Google Drive"));
-
-            HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
-            HtmlNode src = doc?.DocumentNode;
-
-            if (src is null)
-            {
-                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "File not found"));
-                return codex;
-            }
-
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching Metadata"));
-
-            //Set known metadata
             codex.Publisher = "Google Drive";
-
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
 
             return codex;
         }
@@ -43,6 +28,7 @@ namespace COMPASS.ViewModels.Sources
         public override async Task<bool> FetchCover(Codex codex)
         {
             if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading cover from Google Drive"));
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
@@ -53,18 +39,17 @@ namespace COMPASS.ViewModels.Sources
                 string imgURL = src.SelectSingleNode("//meta[@property='og:image']").GetAttributeValue("content", String.Empty);
                 //cut of "=W***-h***-p" from URL that crops the image if it is present
                 if (imgURL.Contains('=')) imgURL = imgURL.Split('=')[0];
-
                 CoverFetcher.SaveCover(imgURL, codex);
                 return true;
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to get cover from Google Drive", ex);
+                string msg = $"Failed to get cover from {codex.SourceURL}";
+                Logger.Error(msg, ex);
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, msg));
                 return false;
             }
         }
 
-        public override bool IsValidSource(Codex codex) =>
-            codex.HasOnlineSource() && codex.SourceURL.Contains(new ImportURLViewModel(ImportSource.GoogleDrive).ExampleURL);
     }
 }

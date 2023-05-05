@@ -70,7 +70,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public string FullText => $"{Text} [{Counter + 1} / {TotalAmount}]";
+        public string FullText => $"{Text} [{Counter} / {TotalAmount}]";
 
         public bool ShowProgressBar => TotalAmount > 0 && Counter < TotalAmount;
 

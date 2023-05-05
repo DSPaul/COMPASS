@@ -13,6 +13,7 @@ namespace COMPASS.ViewModels.Sources
     public class PdfSourceViewModel : SourceViewModel
     {
         public override MetaDataSource Source => MetaDataSource.PDF;
+        public override bool IsValidSource(Codex codex) => File.Exists(codex.Path) && Path.GetExtension(codex.Path) == ".pdf";
 
         public override async Task<Codex> GetMetaData(Codex codex)
         {
@@ -23,8 +24,7 @@ namespace COMPASS.ViewModels.Sources
             try
             {
                 PdfReader pdfReader = new(codex.Path);
-                pdfDoc = new(pdfReader); // This takes the most time but putting it on another thread doesnt seem to save much time
-                //pdfDoc = await Task.Run(() => new PdfDocument(pdfReader)); 
+                pdfDoc = await Task.Run(() => new PdfDocument(pdfReader));
                 var info = pdfDoc.GetDocumentInfo();
 
                 codex.Title = info.GetTitle();
@@ -103,11 +103,11 @@ namespace COMPASS.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                Logger.Error("Failed to extract Cover from pdf.", ex);
+                Logger.Error($"Failed to generate cover from {Path.GetFileName(codex.Path)}", ex);
+                LogEntry logEntry = new(LogEntry.MsgType.Warning, $"Failed to generate cover from {codex.Title}");
+                ProgressVM.AddLogEntry(logEntry);
                 return false;
             }
         }
-
-        public override bool IsValidSource(Codex codex) => File.Exists(codex.Path) && Path.GetExtension(codex.Path) == ".pdf";
     }
 }

@@ -9,13 +9,17 @@ namespace COMPASS.Windows
     /// </summary>
     public partial class ProgressWindow : Window
     {
-        public ProgressWindow()
+        public ProgressWindow(int bars = 1)
         {
             InitializeComponent();
             DataContext = ProgressViewModel.GetInstance();
             ((INotifyCollectionChanged)LogsControl.Items).CollectionChanged += Logs_CollectionChanged;
+            totalBars = bars;
             Closing += OnClosing;
         }
+
+        private int barsDone = 0;
+        private int totalBars = 1;
 
         private void Logs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -29,6 +33,11 @@ namespace COMPASS.Windows
         private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (ProgBar.Value >= 100)
+            {
+                Close();
+            }
+
+            if (barsDone >= totalBars)
             {
                 Close();
             }

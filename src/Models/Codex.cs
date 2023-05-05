@@ -318,7 +318,7 @@ namespace COMPASS.Models
         public static readonly List<CodexProperty> Properties = new()
         {
             new( "Title",
-                codex => String.IsNullOrEmpty(codex.Title),
+                codex => String.IsNullOrWhiteSpace(codex.Title),
                 (codex,other) => codex.Title = other.Title,
                 new List<NamedMetaDataSource>()
                 {

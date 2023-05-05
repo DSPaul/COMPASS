@@ -25,15 +25,15 @@ namespace COMPASS.ViewModels.Sources
             // Work on a copy
             codex = new Codex(codex);
 
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading metadata from GM Binder"));
             HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
             {
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, $"Could not reach {codex.SourceURL}"));
                 return codex;
             }
-
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Fetching Metadata"));
 
             //Set known metadata
             codex.Publisher = "GM Binder";
@@ -43,15 +43,13 @@ namespace COMPASS.ViewModels.Sources
             IEnumerable<HtmlNode> pages = previewDiv.ChildNodes.Where(node => node.Id.Contains('p'));
             codex.PageCount = pages.Count();
 
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
-
             return codex;
         }
 
         public override async Task<bool> FetchCover(Codex codex)
         {
             if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading cover from {codex.SourceURL}"));
             OpenQA.Selenium.WebDriver driver = WebDriverFactory.GetWebDriver();
             try
             {
@@ -64,7 +62,9 @@ namespace COMPASS.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to get cover from GM Binder", ex);
+                string msg = $"Failed to get cover from {codex.SourceURL}";
+                Logger.Error(msg, ex);
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, msg));
                 return false;
             }
             finally

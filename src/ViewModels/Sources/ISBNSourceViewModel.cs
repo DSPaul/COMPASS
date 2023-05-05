@@ -1,6 +1,5 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
-using COMPASS.ViewModels.Import;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
@@ -22,10 +21,7 @@ namespace COMPASS.ViewModels.Sources
             // Work on a copy
             codex = new Codex(codex);
 
-            if (!ImportViewModel.Stealth)
-            {
-                ProgressVM.AddLogEntry(new LogEntry(LogEntry.MsgType.Info, "Fetching Data"));
-            }
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading Metadata from openlibrary.org"));
 
             string uri = $"http://openlibrary.org/api/books?bibkeys=ISBN:{codex.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
 
@@ -36,41 +32,27 @@ namespace COMPASS.ViewModels.Sources
                 string message = $"ISBN {codex.ISBN} was not found on openlibrary.org \n" +
                     $"You can contribute by submitting this book at \n" +
                     $"https://openlibrary.org/books/add";
-                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, message));
-                Logger.Warn($"Could not find ISBN {codex.ISBN} on openlibrary.org", new Exception());
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Warning, message));
+                Logger.Warn($"Could not find ISBN {codex.ISBN} on openlibrary.org");
                 return codex;
-            }
-
-            if (!ImportViewModel.Stealth)
-            {
-                //loading complete
-                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "File loaded, parsing metadata"));
             }
 
             // Start parsing json
             var details = metadata.First.First.SelectToken("details");
+
             // Title
-            if (!String.IsNullOrWhiteSpace((string)details.SelectToken("full_title")))
-            {
-                codex.Title = (string)details.SelectToken("full_title");
-            }
-            else
-            {
-                codex.Title = (string)details.SelectToken("title") ?? codex.Title;
-                if (!String.IsNullOrWhiteSpace((string)details.SelectToken("subtitle")))
-                {
-                    codex.Title += " ";
-                    codex.Title += (string)details.SelectToken("subtitle");
-                }
-            }
+            string fullTitle = (string)details.SelectToken("full_title");
+            string title = (string)details.SelectToken("title") ?? "";
+            string subTitle = (string)details.SelectToken("subtitle") ?? "";
+            codex.Title = !String.IsNullOrWhiteSpace(fullTitle) ? fullTitle : $"{title} {subTitle}";
 
             //Authors
-            if (details.SelectToken("authors") != null)
+            if (details.SelectToken("authors") is not null)
             {
                 codex.Authors = new(details.SelectToken("authors").Select(item => item.SelectToken("name").ToString()));
             }
             //PageCount
-            if (details.SelectToken("pagination") != null)
+            if (details.SelectToken("pagination") is not null)
             {
                 codex.PageCount = Int32.Parse(Regex.Match(details.SelectToken("pagination").ToString(), @"\d+").Value);
             }
@@ -87,19 +69,28 @@ namespace COMPASS.ViewModels.Sources
             if (DateTime.TryParse((string)details.SelectToken("publish_date"), out tempDate))
                 codex.ReleaseDate = tempDate;
 
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
-
             return codex;
         }
 
         public override async Task<bool> FetchCover(Codex codex)
         {
             if (String.IsNullOrEmpty(codex.ISBN)) return false;
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading cover from openlibrary.org"));
             try
             {
                 string uri = $"https://openlibrary.org/isbn/{codex.ISBN}.json";
                 JObject metadata = await Utils.GetJsonAsync(uri);
+
+                if (!metadata.HasValues)
+                {
+                    string message = $"ISBN {codex.ISBN} was not found on openlibrary.org \n" +
+                        $"You can contribute by submitting this book at \n" +
+                        $"https://openlibrary.org/books/add";
+                    ProgressVM.AddLogEntry(new(LogEntry.MsgType.Warning, message));
+                    Logger.Warn($"Could not find ISBN {codex.ISBN} on openlibrary.org");
+                    return false;
+                }
+
                 string imgID = (string)metadata.SelectToken("covers[0]");
                 string imgURL = $"https://covers.openlibrary.org/b/id/{imgID}.jpg";
                 CoverFetcher.SaveCover(imgURL, codex);
@@ -107,7 +98,9 @@ namespace COMPASS.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to get cover from OpenLibrary", ex);
+                string msg = $"Failed to get cover from OpenLibrary for ISBN {codex.ISBN}";
+                Logger.Error(msg, ex);
+                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Warning, msg));
                 return false;
             }
         }
