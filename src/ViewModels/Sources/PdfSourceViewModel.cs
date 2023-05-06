@@ -45,8 +45,6 @@ namespace COMPASS.ViewModels.Sources
                     string ISBN = Constants.RegexISBN().Match(pageContent)?.Value;
                     if (!String.IsNullOrEmpty(ISBN))
                     {
-                        //Remove the "ISBN" so only number remains
-                        ISBN = Constants.RegexISBNNumberOnly().Match(pageContent).Value;
                         codex.ISBN = ISBN;
                         break;
                     }
