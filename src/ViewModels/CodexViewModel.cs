@@ -365,8 +365,6 @@ namespace COMPASS.ViewModels
                 MetaDataFromSource.Add(MetaDataSource.PDF, pdfData);
             };
 
-
-
             // Now use bits and pieces of the Codices in MetaDataFromSource to set the actual metadata based on preferences
             var properties = SettingsViewModel.GetInstance().MetaDataPreferences;
 

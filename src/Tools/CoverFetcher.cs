@@ -52,7 +52,12 @@ namespace COMPASS.Tools
             ProgressVM.TotalAmount = codices.Count;
             ProgressVM.Text = "Getting Cover";
 
-            await Task.Run(() => Parallel.ForEach(codices, codex => GetCover(codex)));
+            ParallelOptions parallelOptions = new()
+            {
+                MaxDegreeOfParallelism = 8
+            };
+
+            await Parallel.ForEachAsync(codices, parallelOptions, async (codex, token) => await GetCover(codex));
         }
 
         public static void SaveCover(MagickImage image, Codex destCodex)

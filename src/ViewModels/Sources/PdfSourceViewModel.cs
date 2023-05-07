@@ -1,6 +1,7 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
 using ImageMagick;
+using ImageMagick.Formats;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
@@ -24,7 +25,7 @@ namespace COMPASS.ViewModels.Sources
             try
             {
                 PdfReader pdfReader = new(codex.Path);
-                pdfDoc = await Task.Run(() => new PdfDocument(pdfReader));
+                pdfDoc = new PdfDocument(pdfReader);
                 var info = pdfDoc.GetDocumentInfo();
 
                 codex.Title = info.GetTitle();
@@ -33,6 +34,9 @@ namespace COMPASS.ViewModels.Sources
                     codex.Authors = new() { info.GetAuthor() };
                 }
                 codex.PageCount = pdfDoc.GetNumberOfPages();
+
+                // If it already has an ISBN, no need to check again
+                if (!String.IsNullOrEmpty(codex.ISBN)) return codex;
 
                 //Search for ISBN number in first 5 pages
                 for (int page = 1; page <= Math.Min(5, pdfDoc.GetNumberOfPages()); page++)
@@ -73,24 +77,10 @@ namespace COMPASS.ViewModels.Sources
                 Path.GetExtension(codex.Path) != ".pdf" ||
                 !File.Exists(codex.Path)) return false;
 
-            var pdfReadDefines = new ImageMagick.Formats.PdfReadDefines()
-            {
-                HideAnnotations = true,
-                UseCropBox = true,
-            };
-
-            MagickReadSettings settings = new()
-            {
-                Density = new Density(100, 100),
-                FrameIndex = 0, // First page
-                FrameCount = 1, // Number of pages
-                Defines = pdfReadDefines,
-            };
-
             try //image.Read can throw exception if file can not be opened/read
             {
                 using MagickImage image = new();
-                image.Read(codex.Path, settings);
+                image.Read(codex.Path, readSettings);
                 image.Format = MagickFormat.Png;
                 image.BackgroundColor = new MagickColor("#000000"); //set background color as transparent
                 image.Trim(); //cut off all transparancy
@@ -107,5 +97,21 @@ namespace COMPASS.ViewModels.Sources
                 return false;
             }
         }
+
+        private static PdfReadDefines pdfReadDefines = new()
+        {
+            HideAnnotations = true,
+            UseCropBox = true,
+        };
+
+        //Lazy load read Settings and make it static because takes a lot of time to construct according to profiler
+        private static MagickReadSettings _readSettings;
+        private static MagickReadSettings readSettings => _readSettings ??= new()
+        {
+            Density = new Density(100),
+            FrameIndex = 0, // First page
+            FrameCount = 1, // Number of pages
+            Defines = pdfReadDefines,
+        };
     }
 }
