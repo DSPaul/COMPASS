@@ -432,6 +432,8 @@
                                         <CheckBox Content="Show Publisher" IsChecked="{Binding ShowPublisher}"/>
                                         <CheckBox Content="Show Rating" IsChecked="{Binding ShowRating}"/>
                                         <CheckBox Content="Show Release Date" IsChecked="{Binding ShowReleaseDate}"/>
+                                        <CheckBox Content="Show Date Added" IsChecked="{Binding ShowDateAdded}"/>
+                                        <CheckBox Content="Show ISBN" IsChecked="{Binding ShowISBN}"/>
                                         <CheckBox Content="Show Tags" IsChecked="{Binding ShowTags}"/>
                                         <CheckBox Content="Show Version" IsChecked="{Binding ShowVersion}"/>
                                         <CheckBox Content="Show File Icons" IsChecked="{Binding ShowFileIcons}"/>

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace COMPASS.ViewModels
+﻿namespace COMPASS.ViewModels
 {
     public class ListLayoutViewModel : LayoutViewModel
     {
@@ -9,7 +7,9 @@ namespace COMPASS.ViewModels
             LayoutType = Layout.List;
         }
 
-        public override bool DoVirtualization => Properties.Settings.Default.DoVirtualizationList && MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdList;
+        public override bool DoVirtualization =>
+            Properties.Settings.Default.DoVirtualizationList &&
+            MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdList;
 
         #region ViewOptions
 
@@ -20,7 +20,6 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _showTitle, value);
         }
 
-        [DisplayName("Show Authors Display")]
         public bool ShowAuthor
         {
             get => Properties.Settings.Default.ListShowAuthor;
@@ -51,6 +50,16 @@ namespace COMPASS.ViewModels
             }
         }
 
+        public bool ShowDateAdded
+        {
+            get => Properties.Settings.Default.ListShowDateAdded;
+            set
+            {
+                Properties.Settings.Default.ListShowDateAdded = value;
+                RaisePropertyChanged(nameof(ShowDateAdded));
+            }
+        }
+
         public bool ShowVersion
         {
             get => Properties.Settings.Default.ListShowVersion;
@@ -68,6 +77,16 @@ namespace COMPASS.ViewModels
             {
                 Properties.Settings.Default.ListShowRating = value;
                 RaisePropertyChanged(nameof(ShowRating));
+            }
+        }
+
+        public bool ShowISBN
+        {
+            get => Properties.Settings.Default.ListShowISBN;
+            set
+            {
+                Properties.Settings.Default.ListShowISBN = value;
+                RaisePropertyChanged(nameof(ShowISBN));
             }
         }
 

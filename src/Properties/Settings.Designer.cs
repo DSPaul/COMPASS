@@ -466,5 +466,29 @@ namespace COMPASS.Properties {
                 this["VirtualizationThresholdList"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ListShowDateAdded {
+            get {
+                return ((bool)(this["ListShowDateAdded"]));
+            }
+            set {
+                this["ListShowDateAdded"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ListShowISBN {
+            get {
+                return ((bool)(this["ListShowISBN"]));
+            }
+            set {
+                this["ListShowISBN"] = value;
+            }
+        }
     }
 }
