@@ -138,7 +138,14 @@ namespace COMPASS.ViewModels
         private async void FetchCover()
         {
             ShowLoading = true;
+            //make it so cover always gets overwritten if this case, store old value first
+            CodexProperty CoverProp = SettingsViewModel.GetInstance().MetaDataPreferences.First(prop => prop.Label == "Cover Art");
+            MetaDataOverwriteMode curSetting = (MetaDataOverwriteMode)CoverProp.OverwriteMode;
+            CoverProp.OverwriteMode = MetaDataOverwriteMode.Always;
+            //get the cover
             await Task.Run(() => CoverFetcher.GetCover(TempCodex));
+            //Restore cover preference
+            CoverProp.OverwriteMode = curSetting;
             ShowLoading = false;
             RefreshCover();
         }
