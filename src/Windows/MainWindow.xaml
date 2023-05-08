@@ -168,7 +168,7 @@
                             <ColumnDefinition Width ="*"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" x:Name="Searchbox" Tools:AP.PlaceHolderText="Search" Margin="0"
+                        <TextBox Grid.Column="0" x:Name="Searchbox" Tools:AP.PlaceHolderText="Search (Ctrl+S)" Margin="0"
                              Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
                              Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"/>
                         <Button  Grid.Column="1" Style="{StaticResource IconBtn}" Margin="10,0" Tools:AP.IconKind="Search"
