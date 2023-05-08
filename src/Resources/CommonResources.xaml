@@ -548,15 +548,20 @@
                 </Style>
             </MenuItem.Style>
         </MenuItem>
-        <MenuItem Header="Get MetaData" Tools:AP.IconKind="FileCode"
+        <Separator Style="{StaticResource MarginlessSeparator}"/>
+        <MenuItem Header="Renew MetaData" Tools:AP.IconKind="FileRefreshOutline"
                   Command="{Binding Path=DataContext.CodexVM.GetMetaDataCommand, 
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
+        <MenuItem Header="Renew Cover" Tools:AP.IconKind="ImageRefreshOutline"
+                  Command="{Binding Path=DataContext.CodexVM.GetCoverCommand, 
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
+        <Separator Style="{StaticResource MarginlessSeparator}"/>
         <MenuItem Header="Show in Explorer" Tools:AP.IconKind="FolderEyeOutline"
                   Command="{Binding Path=DataContext.CodexVM.ShowInExplorerCommand, 
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
-        <Separator Style="{StaticResource MarginlessSeparator}"/>
         <MenuItem Header="Move to Collection" Tools:AP.IconKind="FolderMoveOutline"
                   ItemsSource="{Binding DataContext.MVM.CollectionVM.CollectionDirectories, 
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
@@ -598,9 +603,14 @@
         <MenuItem Header="Favorite" CommandParameter="{Binding}" Tools:AP.IconKind="Favorite" InputGestureText="Ctrl + F"
                   Command="{Binding Path=DataContext.CodexVM.FavoriteCodicesCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Get MetaData" Tools:AP.IconKind="FileCode" CommandParameter="{Binding}"
+        <Separator Style="{StaticResource MarginlessSeparator}"/>
+        <MenuItem Header="Renew MetaData" Tools:AP.IconKind="FileRefreshOutline" CommandParameter="{Binding}"
                   Command="{Binding Path=DataContext.CodexVM.GetMetaDataBulkCommand, 
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+        <MenuItem Header="Renew Cover" Tools:AP.IconKind="ImageRefreshOutline" CommandParameter="{Binding}"
+                  Command="{Binding Path=DataContext.CodexVM.GetCoverBulkCommand, 
+                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+        <Separator Style="{StaticResource MarginlessSeparator}"/>
         <MenuItem Header="Move to Collection" Tools:AP.IconKind="FileMoveOutline"
                  ItemsSource="{Binding DataContext.MVM.CollectionVM.CollectionDirectories, 
                                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
