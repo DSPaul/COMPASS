@@ -5,7 +5,6 @@ using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace COMPASS.ViewModels.Import
 {
@@ -89,14 +88,15 @@ namespace COMPASS.ViewModels.Import
 
             List<Codex> newCodices = new();
 
-            if (!Stealth)
-            {
-                ProgressWindow window = new(3)
-                {
-                    Owner = Application.Current.MainWindow
-                };
-                window.Show();
-            }
+            //Don't show progress window anymore, doesn't seem necessary anymore, mostly gets in the way
+            //if (!Stealth)
+            //{
+            //    ProgressWindow window = new(3)
+            //    {
+            //        Owner = Application.Current.MainWindow
+            //    };
+            //    window.Show();
+            //}
 
             await Task.Run(() =>
             {
