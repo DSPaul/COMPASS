@@ -519,19 +519,21 @@
                   Command="{Binding Path=DataContext.CodexVM.EditCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
-        <MenuItem Header="Favorite" Tools:AP.IconKind="Favorite" InputGestureText="Ctrl + F"
+        <MenuItem Tools:AP.IconKind="Favorite" InputGestureText="Ctrl + F"
                   Command="{Binding Path=DataContext.CodexVM.FavoriteCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=DataContext}">
-            <MenuItem.Resources>
-                <Style TargetType="materialDesign:PackIcon">
+            <MenuItem.Style>
+                <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="Header" Value="Favorite"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext.Favorite}" Value="True">
+                            <Setter Property="Header" Value="Unfavorite"/>
                             <Setter Property="Foreground" Value="IndianRed"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </MenuItem.Resources>
+            </MenuItem.Style>
         </MenuItem>
         <MenuItem Tools:AP.IconKind="BookInformationVariant" InputGestureText="Ctrl + I"
                   Command="{Binding DataContext.MVM.CodexInfoVM.ToggleCodexInfoCommand,
