@@ -150,8 +150,8 @@ namespace COMPASS.Tools
 
         public static bool IsImageFile(string path)
         {
-            if (string.IsNullOrEmpty(path)) { return false; }
-            string extension = Path.GetExtension(path);
+            if (String.IsNullOrEmpty(path)) { return false; }
+            string extension = Path.GetExtension(path).ToLower();
             List<string> imgExtensions = new()
             {
                 ".png",
@@ -161,6 +161,12 @@ namespace COMPASS.Tools
             };
 
             return imgExtensions.Contains(extension);
+        }
+
+        public static bool IsPDFFile(string path)
+        {
+            if (String.IsNullOrEmpty(path)) { return false; }
+            return Path.GetExtension(path).ToLower() != ".pdf";
         }
 
         public static void ShowInExplorer(string path)

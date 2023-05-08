@@ -14,7 +14,7 @@ namespace COMPASS.ViewModels.Sources
     public class PdfSourceViewModel : SourceViewModel
     {
         public override MetaDataSource Source => MetaDataSource.PDF;
-        public override bool IsValidSource(Codex codex) => Path.GetExtension(codex.Path) == ".pdf";
+        public override bool IsValidSource(Codex codex) => Utils.IsPDFFile(codex.Path);
 
         public override async Task<Codex> GetMetaData(Codex codex)
         {
@@ -73,8 +73,7 @@ namespace COMPASS.ViewModels.Sources
         public override async Task<bool> FetchCover(Codex codex)
         {
             //return false if file doesn't exist
-            if (String.IsNullOrEmpty(codex.Path) ||
-                Path.GetExtension(codex.Path) != ".pdf" ||
+            if (!Utils.IsPDFFile(codex.Path) ||
                 !File.Exists(codex.Path)) return false;
 
             try //image.Read can throw exception if file can not be opened/read
