@@ -16,7 +16,7 @@
         
         d:DataContext="{d:DesignInstance Type=viewmodels:CodexEditViewModel}"
         mc:Ignorable="d"
-        Title="Book Properties" Height="500" Width="1200" FontSize="16" 
+        Title="Item Properties" Height="500" Width="1200" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
         Foreground="{StaticResource TextColor}" Background="{StaticResource WindowBackground}" MouseDown="MainGrid_MouseDown">
     <Window.Resources>
@@ -72,8 +72,10 @@
             </HierarchicalDataTemplate>
             <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
         </Grid.Resources>
-
-        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" x:Name="CoverIm" Margin="10" Width="300"
+        <TextBlock Grid.Column="0" Grid.Row="1" Text="Cover/Preview:" HorizontalAlignment="Center"
+                   Foreground="{StaticResource TextMutedColor}" Typography.Capitals="AllSmallCaps"
+                   FontWeight="Light" FontSize="20"/>
+        <Image Grid.Column="0" Grid.Row="2" x:Name="CoverIm" Margin="10" Width="300"
                Visibility="{Binding ShowLoading, UpdateSourceTrigger=PropertyChanged, 
             Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"
                 dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}">
@@ -81,20 +83,22 @@
                 <Binding Path="TempCodex.CoverArt" Converter="{StaticResource UriToBitmapConverter}" 
                          TargetNullValue="Media\CoverPlaceholder.png">
                     <Binding.ConverterParameter>
-                        <sys:Boolean>true</sys:Boolean> <!-- parameter tells converter to return full res version -->
+                        <sys:Boolean>true</sys:Boolean>
+                        <!-- parameter tells converter to return full res version -->
                     </Binding.ConverterParameter>
                 </Binding>
             </Image.Source>
         </Image>
-        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Margin="10" Width="150" Height="150"
+        <Image Grid.Column="0" Grid.Row="2" Margin="10" Width="150" Height="150"
                gif:ImageBehavior.AnimatedSource="../Media/LoadingAnimation.gif" 
                Visibility="{Binding ShowLoading, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ToVisibilityConverter}}"/>
 
         <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-            <TextBlock Text="Cover:"/>
-            <Button Content="Fetch" Tools:AP.IconKind="ImageSyncOutline" Margin="5,0"
+            <Button Content="Renew" Tools:AP.IconKind="ImageSyncOutline" Margin="5,0" 
+                    ToolTip="Renews the preview for this item, overwriting the current preview."
                 Command="{Binding FetchCoverCommand}" Style="{StaticResource IconTextButton}" />
             <Button Content="Browse" Tools:AP.IconKind="BookImage" Margin="5,0"
+                    ToolTip="Choose an image to use as cover/preview for this item."
                 Command="{Binding ChooseCoverCommand}" Style="{StaticResource IconTextButton}"/>
         </StackPanel>
 
@@ -112,7 +116,7 @@
 
         <Rectangle Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" Fill="{StaticResource Separator}" Width="3" Margin="10,0"/>
         
-        <TabControl Grid.Column="2" Grid.Row="1" Background="{x:Null}" BorderThickness="0,1,0,0"
+        <TabControl Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Background="{x:Null}" BorderThickness="0,1,0,0"
                     Padding="0,5">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
