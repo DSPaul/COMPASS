@@ -166,7 +166,7 @@ namespace COMPASS.Tools
         public static bool IsPDFFile(string path)
         {
             if (String.IsNullOrEmpty(path)) { return false; }
-            return Path.GetExtension(path).ToLower() != ".pdf";
+            return Path.GetExtension(path).ToLower() == ".pdf";
         }
 
         public static void ShowInExplorer(string path)
