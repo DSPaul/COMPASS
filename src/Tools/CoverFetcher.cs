@@ -77,14 +77,9 @@ namespace COMPASS.Tools
         public static bool GetCoverFromImage(string imagepath, Codex destfile)
         {
             //check if it's a valid file
-            if (string.IsNullOrEmpty(imagepath) || !Path.Exists(imagepath)) return false;
-
-            //check if it's a valid image format
-            string ext = Path.GetExtension(imagepath);
-            if (ext != ".png" &&
-                ext != ".jpg" &&
-                ext != ".jpeg" &&
-                ext != ".webp") return false;
+            if (string.IsNullOrEmpty(imagepath) ||
+                !Path.Exists(imagepath) ||
+                !Utils.IsImageFile(imagepath)) return false;
 
             try
             {
@@ -97,7 +92,7 @@ namespace COMPASS.Tools
             catch (Exception ex)
             {
                 //will fail if image is corrupt
-                Logger.Error($"Could not get cover from {imagepath}", ex);
+                Logger.Error($"Failed to generate a thumbnail for {imagepath}", ex);
                 return false;
             }
         }
