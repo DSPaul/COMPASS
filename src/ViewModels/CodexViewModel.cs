@@ -332,14 +332,22 @@ namespace COMPASS.ViewModels
                 MaxDegreeOfParallelism = 8
             };
 
-            await Parallel.ForEachAsync(codices, parallelOptions, async (codex, token) => await GetMetaData(codex));
+            ChooseMetaDataViewModel ChooseMetaDataVM = new();
+
+            await Parallel.ForEachAsync(codices, parallelOptions, async (codex, token) => await GetMetaData(codex, ChooseMetaDataVM));
+
+            if (ChooseMetaDataVM.CodicesWithChoices.Any())
+            {
+                ChooseMetaDataWindow window = new(ChooseMetaDataVM);
+                window.Show();
+            }
 
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
             MainViewModel.CollectionVM.CurrentCollection.Save();
             MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
 
-        private static async Task GetMetaData(Codex codex)
+        private static async Task GetMetaData(Codex codex, ChooseMetaDataViewModel chooseMetaDataVM)
         {
             // Lazy load metadata from all the sources, use dict to store
             Dictionary<MetaDataSource, Codex> MetaDataFromSource = new();
@@ -367,6 +375,10 @@ namespace COMPASS.ViewModels
 
             // Now use bits and pieces of the Codices in MetaDataFromSource to set the actual metadata based on preferences
             var properties = SettingsViewModel.GetInstance().MetaDataPreferences;
+
+            //Codex with metadata that will be shown to the user, and asked if they want to use it
+            Codex ToAsk = new();
+            bool shouldAsk = false;
 
             //Iterate over all the properties and set them
             foreach (var prop in properties)
@@ -397,10 +409,25 @@ namespace COMPASS.ViewModels
                         prop.SetProp(propHolder, MetaDataFromSource[source]);
                     }
                 }
+
                 if (!prop.IsEmpty(propHolder))
                 {
-                    prop.SetProp(codex, propHolder);
+
+                    if (prop.OverwriteMode == MetaDataOverwriteMode.Always || prop.IsEmpty(codex))
+                    {
+                        prop.SetProp(codex, propHolder);
+                    }
+                    else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask && prop.GetProp(codex)?.ToString() != prop.GetProp(propHolder)?.ToString())
+                    {
+                        prop.SetProp(ToAsk, propHolder);
+                        shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked
+                    }
                 }
+            }
+
+            if (shouldAsk)
+            {
+                chooseMetaDataVM.AddCodexPair(codex, ToAsk);
             }
 
             ProgressViewModel.GetInstance().IncrementCounter();

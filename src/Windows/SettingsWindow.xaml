@@ -396,7 +396,7 @@
                                 </Grid.RowDefinitions>
                                 <TextBlock Text="Property"/>
                                 <TextBlock Text="Source Priority" Grid.Column="1" Margin="20,0"/>
-                                <TextBlock Text="Overwrite current value" Grid.Column="2"/>
+                                <TextBlock Text="Overwrite existing metadata" Grid.Column="2"/>
                                 
                                 <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3" Grid.Row="1"/>
 
@@ -423,7 +423,7 @@
                                                     <RadioButton Content="Never" 
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource ObjectToBoolConverter}, 
                                                                  ConverterParameter={x:Static models:MetaDataOverwriteMode.Never}}" />
-                                                    <RadioButton Content="Only if empty" 
+                                                    <RadioButton Content="If exisiting metadata is empty" 
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource ObjectToBoolConverter}, 
                                                                  ConverterParameter={x:Static models:MetaDataOverwriteMode.IfEmpty}}" />
                                                     <RadioButton Content="Ask every time" 

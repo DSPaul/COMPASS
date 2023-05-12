@@ -13,10 +13,11 @@ namespace COMPASS.Models
         //Empty ctor for serialization
         public CodexProperty() { }
 
-        public CodexProperty(string label, Func<Codex, bool> isEmpty, Action<Codex, Codex> setProp, List<NamedMetaDataSource> defaultSources)
+        public CodexProperty(string label, Func<Codex, bool> isEmpty, Func<Codex, object> getProp, Action<Codex, Codex> setProp, List<NamedMetaDataSource> defaultSources)
         {
             Label = label;
             IsEmpty = isEmpty;
+            GetProp = getProp;
             SetProp = setProp;
             DefaultSourcePriority = defaultSources;
         }
@@ -31,6 +32,14 @@ namespace COMPASS.Models
             init => _isEmpty = value;
         }
 
+        private Func<Codex, object> _getProp;
+        [XmlIgnore]
+        public Func<Codex, object> GetProp
+        {
+            get => _getProp ??= Codex.Properties.First(prop => prop.Label == Label).GetProp;
+            init => _getProp = value;
+        }
+
         private Action<Codex, Codex> _setProp;
         [XmlIgnore]
         public Action<Codex, Codex> SetProp
@@ -38,9 +47,8 @@ namespace COMPASS.Models
             get => _setProp ??= Codex.Properties.First(prop => prop.Label == Label).SetProp;
             init => _setProp = value;
         }
+
         #region Import Sources
-
-
         private List<NamedMetaDataSource> _defaultSources;
         [XmlIgnore]
         protected List<NamedMetaDataSource> DefaultSourcePriority

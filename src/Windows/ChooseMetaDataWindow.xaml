@@ -1,0 +1,159 @@
+﻿<Window x:Class="COMPASS.Windows.ChooseMetaDataWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:COMPASS.Windows" 
+        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+        xmlns:converters="clr-namespace:COMPASS.Converters" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:ChooseMetaDataViewModel}"
+        mc:Ignorable="d" Background="{StaticResource WindowBackground}"
+        Title="Choose MetaData" Height="450" Width="800">
+    <Grid>
+        <Grid.Resources>
+            <converters:PlusOneConverter x:Key="PlusOneConverter"/>
+            <converters:PropIsEmptyToVisibilityConverter x:Key="PropIsEmptyToVisibilityConverter"/>
+            <converters:ObjectToBoolConverter x:Key="ObjectToBoolConverter"/>
+            <converters:NegateConverter x:Key="NegateConverter"/>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <DockPanel Margin="40,10">
+                       
+            <TextBlock HorizontalAlignment="Right" FontSize="20" FontWeight="Light" DockPanel.Dock="Right">
+                <Run Text="{Binding Counter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"/>
+                / 
+                <Run Text="{Binding CodicesWithChoices.Count, Mode=OneTime}"/>
+            </TextBlock>
+            <TextBlock DockPanel.Dock="Bottom" FontSize="20" FontWeight="Light">
+                Current Item: 
+                <Run Text="{Binding CurrentPair.Item1.Title, Mode=OneWay}" Foreground="{StaticResource AccentColorMuted}"/>
+            </TextBlock>
+            <TextBlock FontSize="20" FontWeight="Light">
+                There are
+                <Run Text="{Binding CodicesWithChoices.Count, Mode=OneTime}"/>
+                items with conflicts to resolve.
+            </TextBlock>
+        </DockPanel>
+        <ProgressBar Grid.Row="1" Value="{Binding Counter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"
+                     Maximum="{Binding CodicesWithChoices.Count, Mode=OneTime}" Height="12" Margin="10,0"
+                     Foreground="{StaticResource AccentColor}" Background="{StaticResource UIElementBackground}" 
+                     Style="{DynamicResource RoundedProgressBar}"/>
+        <Border BorderBrush="{StaticResource DarkUIElementBackground}" Margin="10" BorderThickness="2"
+                Grid.Row="2" CornerRadius="5" Padding="10">
+            <Border.Resources>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="TextWrapping" Value="Wrap"/>
+                    <Setter Property="Margin" Value="20,5"/>
+                </Style>
+            </Border.Resources>
+            <ScrollViewer >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Rectangle Grid.Column="1" Fill="{StaticResource Separator}" Width="3" Margin="20,5" Grid.RowSpan="100"/>
+
+                    <TextBlock Text="Metadata Type"/>
+                    <TextBlock Text="Current Value" Grid.Column="2"/>
+                    <TextBlock Text="Newly Found Value" Grid.Column="3"/>
+
+                    <Rectangle Grid.Row="1" Fill="{StaticResource Separator}" Height="3" Margin="20,5" Grid.ColumnSpan="100"/>
+                    
+                    <TextBlock Text="Title:" Grid.Row="2"
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Title}"/>
+                    <RadioButton GroupName="Title" Grid.Column="2" Grid.Row="2" Style="{StaticResource WrappingRadioButton}"
+                                 Content="{Binding CurrentPair.Item1.Title}" IsChecked="{Binding ShouldUseNewValue[Title], Converter={StaticResource NegateConverter}}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Title}"/>
+                    <RadioButton GroupName="Title" Grid.Column="3" Grid.Row="2" Style="{StaticResource WrappingRadioButton}"
+                                 Content="{Binding CurrentPair.Item2.Title}" IsChecked="{Binding ShouldUseNewValue[Title]}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Title}"/>
+
+                    <TextBlock Text="Authors:" Grid.Row="3"
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Authors}"/>
+                    <RadioButton GroupName="Authors" Grid.Column="2" Grid.Row="3" Style="{StaticResource WrappingRadioButton}"
+                                 Content="{Binding CurrentPair.Item1.AuthorsAsString}" IsChecked="{Binding ShouldUseNewValue[Author], Converter={StaticResource NegateConverter}}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Authors}"/>
+                    <RadioButton GroupName="Authors" Grid.Column="3" Grid.Row="3" Style="{StaticResource WrappingRadioButton}"
+                                 Content="{Binding CurrentPair.Item2.AuthorsAsString}" IsChecked="{Binding ShouldUseNewValue[Authors]}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Authors}"/>
+
+                    <TextBlock Text="Publisher:" Grid.Row="4"
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Publisher}"/>
+                    <RadioButton GroupName="Publisher" Grid.Column="2" Grid.Row="4" Style="{StaticResource WrappingRadioButton}"
+                                 Content="{Binding CurrentPair.Item1.Publisher}" IsChecked="{Binding ShouldUseNewValue[Publisher], Converter={StaticResource NegateConverter}}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Publisher}"/>
+                    <RadioButton GroupName="Publisher" Grid.Column="3" Grid.Row="4" Style="{StaticResource WrappingRadioButton}"
+                                 Content="{Binding CurrentPair.Item2.Publisher}" IsChecked="{Binding ShouldUseNewValue[Publisher]}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Publisher}"/>
+
+                    <TextBlock Text="Version:" Grid.Row="5"
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Version}"/>
+                    <RadioButton GroupName="Version" Grid.Column="2" Grid.Row="5"
+                                 Content="{Binding CurrentPair.Item1.Version}" IsChecked="{Binding ShouldUseNewValue[Version], Converter={StaticResource NegateConverter}}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Version}"/>
+                    <RadioButton GroupName="Version" Grid.Column="3" Grid.Row="5" Content="{Binding CurrentPair.Item2.Version}" IsChecked="{Binding ShouldUseNewValue[Version]}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Version}"/>
+
+                    <TextBlock Text="PageCount:" Grid.Row="6"
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Pagecount}"/>
+                    <RadioButton GroupName="PageCount" Grid.Column="2" Grid.Row="6" Padding="-15,0"
+                                 Content="{Binding CurrentPair.Item1.PageCount}" IsChecked="{Binding ShouldUseNewValue[Pagecount], Converter={StaticResource NegateConverter}}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Pagecount}"/>
+                    <RadioButton GroupName="PageCount" Grid.Column="3" Grid.Row="6" Padding="-15,0"
+                                 Content="{Binding CurrentPair.Item2.PageCount}" IsChecked="{Binding ShouldUseNewValue[Pagecount]}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Pagecount}"/>
+
+                    <TextBlock Text="Description:" Grid.Row="7"
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Description}"/>
+                    <RadioButton GroupName="Description" Grid.Column="2" Grid.Row="7" Style="{StaticResource WrappingRadioButton}"
+                                 Content="{Binding CurrentPair.Item1.Description}" IsChecked="{Binding ShouldUseNewValue[Description], Converter={StaticResource NegateConverter}}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Description}"/>
+                    <RadioButton GroupName="Description" Grid.Column="3" Grid.Row="7" Style="{StaticResource WrappingRadioButton}"
+                                 Content="{Binding CurrentPair.Item2.Description}" IsChecked="{Binding ShouldUseNewValue[Description]}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Description}"/>
+
+                    <TextBlock Text="Release Date:" Grid.Row="8"
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Release Date}"/>
+                    <RadioButton GroupName="Release Date" Grid.Column="2" Grid.Row="8" Padding="-15,0" IsChecked="{Binding ShouldUseNewValue[Release Date], Converter={StaticResource NegateConverter}}"
+                                 Content="{Binding CurrentPair.Item1.ReleaseDate, StringFormat=dd/mm/yyyy}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Release Date}"/>
+                    <RadioButton GroupName="Release Date" Grid.Column="3" Grid.Row="8" Padding="-15,0" IsChecked="{Binding ShouldUseNewValue[Release Date]}"
+                                 Content="{Binding CurrentPair.Item2.ReleaseDate, StringFormat=dd/mm/yyyy}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Release Date}"/>
+                </Grid>
+            </ScrollViewer>
+        </Border>
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="3" Margin="10">
+            <Button Style="{StaticResource TextButton}" Content="Back" Command="{Binding BackCommand}"
+                    Visibility="{Binding ShowBackButton, Converter={StaticResource ToVisibilityConverter}}"/>
+            <Button Style="{StaticResource TextButton}" Content="Next" Command="{Binding NextCommand}"
+                    Visibility="{Binding ShowNextButton, Converter={StaticResource ToVisibilityConverter}}"/>
+            <Button Style="{StaticResource TextButton}" Content="Finish" Command="{Binding FinishCommand}"
+                    Background="{StaticResource AccentColor}"
+                    Visibility="{Binding ShowFinishButton, Converter={StaticResource ToVisibilityConverter}}"/>
+
+        </StackPanel>
+    </Grid>
+</Window>
