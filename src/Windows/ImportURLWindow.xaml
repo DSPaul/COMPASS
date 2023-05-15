@@ -3,13 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Tools ="clr-namespace:COMPASS.Tools" 
-        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+        xmlns:tools ="clr-namespace:COMPASS.Tools" 
         xmlns:converters="clr-namespace:COMPASS.Converters" 
-        d:DataContext="{d:DesignInstance Type=viewmodels:ImportURLViewModel}"
+        xmlns:import="clr-namespace:COMPASS.ViewModels.Import"
+        d:DataContext="{d:DesignInstance Type=import:ImportURLViewModel}"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
         Background="{StaticResource WindowBackground}" SizeToContent="Height"
-        FocusManager.FocusedElement="{Binding ElementName=inputField}" ResizeMode="NoResize"
+        FocusManager.FocusedElement="{Binding ElementName=InputField}" ResizeMode="NoResize"
         Title="Import URL" Height="190" Width="600" WindowStartupLocation="CenterScreen"
         x:Name="ImportWindow" MinWidth="{Binding ActualWidth, ElementName=ImportWindow}">
     <Grid>
@@ -24,9 +24,9 @@
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="inputField" Tools:AP.PlaceHolderText="{Binding ExampleURL}"
+                <TextBox x:Name="InputField" tools:AP.PlaceHolderText="{Binding ExampleURL}"
                          Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5"/>
-                <Button Style="{StaticResource IconBtn}" Grid.Column="1" Tools:AP.IconKind="BarcodeScan" Margin="5"  
+                <Button Style="{StaticResource IconBtn}" Grid.Column="1" tools:AP.IconKind="BarcodeScan" Margin="5"  
                          Visibility="{Binding ShowScannerButton, Converter={StaticResource ToVisibilityConverter}}"
                          Command="{Binding OpenBarcodeScannerCommand}" ToolTip="Scan Barcode With Webcam"/>
                 <Button Grid.Column="2" Content="Import" Command="{Binding SubmitURLCommand}" IsDefault="True" Margin="5"
