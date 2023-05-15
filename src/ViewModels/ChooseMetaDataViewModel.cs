@@ -89,6 +89,15 @@ namespace COMPASS.ViewModels
                 {
                     prop.SetProp(_codicesWithMadeChoices[Counter], CurrentPair.Item2);
                 }
+                else
+                {
+                    prop.SetProp(_codicesWithMadeChoices[Counter], CurrentPair.Item1);
+                    if (prop.Label == "Tags")
+                    {
+                        //Because Tags setProp adds instead of overwrites, have to do it different
+                        _codicesWithMadeChoices[Counter].Tags = new(CurrentPair.Item1.Tags);
+                    }
+                }
             }
         }
 
@@ -106,7 +115,11 @@ namespace COMPASS.ViewModels
                 Dictionary<string, bool> dict = new();
                 foreach (var prop in PropsToAsk)
                 {
-                    dict.Add(prop.Label, prop.GetProp(CurrentPair.Item1)?.ToString() != prop.GetProp(_codicesWithMadeChoices[Counter])?.ToString());
+                    bool useNew = prop.Label == "Tags" ?
+                     ((IList<Tag>)prop.GetProp(_codicesWithMadeChoices[Counter])).Count > ((IList<Tag>)prop.GetProp(CurrentPair.Item1)).Count
+                     : prop.GetProp(CurrentPair.Item1)?.ToString() != prop.GetProp(_codicesWithMadeChoices[Counter])?.ToString();
+
+                    dict.Add(prop.Label, useNew);
                 }
                 return dict;
             }

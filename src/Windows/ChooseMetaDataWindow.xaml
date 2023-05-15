@@ -15,6 +15,7 @@
             <converters:PropIsEmptyToVisibilityConverter x:Key="PropIsEmptyToVisibilityConverter"/>
             <converters:ObjectToBoolConverter x:Key="ObjectToBoolConverter"/>
             <converters:NegateConverter x:Key="NegateConverter"/>
+            <converters:CompositeCollectionConverter x:Key="CompositeCollectionConverter" />
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -142,6 +143,41 @@
                     <RadioButton GroupName="Release Date" Grid.Column="3" Grid.Row="8" Padding="-15,0" IsChecked="{Binding ShouldUseNewValue[Release Date]}"
                                  Content="{Binding CurrentPair.Item2.ReleaseDate, StringFormat=dd/mm/yyyy}"
                                  Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Release Date}"/>
+                    
+                    <TextBlock Text="Tags:" Grid.Row="8"
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Tags}"/>
+                    <RadioButton GroupName="Tags" Grid.Column="2" Grid.Row="8" IsChecked="{Binding ShouldUseNewValue[Tags], Converter={StaticResource NegateConverter}}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Tags}">
+                        <RadioButton.Content>
+                            <ItemsControl Grid.Row="2" Grid.Column="0" Foreground="Black" Margin="3"
+                                    ItemsSource="{Binding CurrentPair.Item1.Tags}" Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </RadioButton.Content>
+                    </RadioButton>
+                    <RadioButton GroupName="Tags" Grid.Column="3" Grid.Row="8" IsChecked="{Binding ShouldUseNewValue[Tags]}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Tags}">
+                        <RadioButton.Content>
+                            <ItemsControl Grid.Row="2" Grid.Column="0" Foreground="Black" Margin="3"
+                                    Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}">
+                                <ItemsControl.ItemsSource>
+                                    <MultiBinding Converter="{StaticResource CompositeCollectionConverter}">
+                                        <Binding Path="CurrentPair.Item1.Tags" />
+                                        <Binding Path="CurrentPair.Item2.Tags" />
+                                    </MultiBinding>
+                                </ItemsControl.ItemsSource>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </RadioButton.Content>
+                    </RadioButton>
                 </Grid>
             </ScrollViewer>
         </Border>

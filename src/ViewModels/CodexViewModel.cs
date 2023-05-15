@@ -417,10 +417,18 @@ namespace COMPASS.ViewModels
                     {
                         prop.SetProp(codex, propHolder);
                     }
-                    else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask && prop.GetProp(codex)?.ToString() != prop.GetProp(propHolder)?.ToString())
+                    else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask)
                     {
-                        prop.SetProp(ToAsk, propHolder);
-                        shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked
+                        bool isDifferent = false;
+                        //check if ToString() representations are different, doesn't work for tags
+                        isDifferent = isDifferent || (prop.Label != "Tags" && prop.GetProp(codex)?.ToString() != prop.GetProp(propHolder)?.ToString());
+                        // use For tags, check if source adds tags that aren't there yet
+                        isDifferent = isDifferent || (prop.Label == "Tags" && ((IList<Tag>)prop.GetProp(propHolder)).Except((IList<Tag>)prop.GetProp(codex)).Any());
+                        if (isDifferent)
+                        {
+                            prop.SetProp(ToAsk, propHolder);
+                            shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked
+                        }
                     }
                 }
             }
