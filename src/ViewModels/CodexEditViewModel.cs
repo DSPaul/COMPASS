@@ -19,12 +19,12 @@ namespace COMPASS.ViewModels
     {
         public CodexEditViewModel(Codex toEdit)
         {
-            EditedCodex = toEdit;
+            _editedCodex = toEdit;
             //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked
             TempCodex = new(MainViewModel.CollectionVM.CurrentCollection);
-            if (!CreateNewCodex) TempCodex.Copy(EditedCodex);
+            if (!CreateNewCodex) TempCodex.Copy(_editedCodex);
 
-            //Apply right checkboxes in Alltags
+            //Apply right checkboxes in AllTags
             foreach (TreeViewNode t in AllTreeViewNodes)
             {
                 t.Expanded = false;
@@ -35,14 +35,14 @@ namespace COMPASS.ViewModels
 
         #region Properties
 
-        readonly Codex EditedCodex;
+        readonly Codex _editedCodex;
 
         private ObservableCollection<TreeViewNode> _treeViewSource;
         public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
         private HashSet<TreeViewNode> AllTreeViewNodes => Utils.FlattenTree(TreeViewSource).ToHashSet();
 
-        private bool CreateNewCodex => EditedCodex == null;
+        private bool CreateNewCodex => _editedCodex == null;
 
         private Codex _tempCodex;
         public Codex TempCodex
@@ -71,7 +71,7 @@ namespace COMPASS.ViewModels
             OpenFileDialog openFileDialog = new()
             {
                 AddExtension = false,
-                InitialDirectory = Path.GetDirectoryName(TempCodex.Path)
+                InitialDirectory = Path.GetDirectoryName(TempCodex.Path) ?? String.Empty
             };
             if (openFileDialog.ShowDialog() == true)
             {
@@ -84,7 +84,9 @@ namespace COMPASS.ViewModels
         private void BrowseURL()
         {
             if (CodexViewModel.CanOpenCodexOnline(TempCodex))
+            {
                 CodexViewModel.OpenCodexOnline(TempCodex);
+            }
         }
 
         private ActionCommand _browseISBNCommand;
@@ -96,8 +98,8 @@ namespace COMPASS.ViewModels
         }
 
         private ActionCommand _tagCheckCommand;
-        public ActionCommand TagCheckCommand => _tagCheckCommand ??= new(Update_Taglist);
-        public void Update_Taglist()
+        public ActionCommand TagCheckCommand => _tagCheckCommand ??= new(UpdateTagList);
+        private void UpdateTagList()
         {
             TempCodex.Tags.Clear();
             foreach (TreeViewNode t in AllTreeViewNodes)
@@ -113,11 +115,13 @@ namespace COMPASS.ViewModels
         public ActionCommand QuickCreateTagCommand => _quickCreateTagCommand ??= new(QuickCreateTag);
         public void QuickCreateTag()
         {
-            TagPropWindow tpw = new(new TagEditViewModel(null, true));
-            tpw.Topmost = true;
+            TagPropWindow tpw = new(new TagEditViewModel(null, true))
+            {
+                Topmost = true
+            };
             _ = tpw.ShowDialog();
 
-            //recalc treeviewsource
+            //recalculate treeview source
             _treeViewSource = null;
             RaisePropertyChanged(nameof(TreeViewSource));
         }
@@ -128,7 +132,7 @@ namespace COMPASS.ViewModels
         {
             if (!CreateNewCodex)
             {
-                CodexViewModel.DeleteCodex(EditedCodex);
+                CodexViewModel.DeleteCodex(_editedCodex);
             }
             CloseAction();
         }
@@ -139,13 +143,14 @@ namespace COMPASS.ViewModels
         {
             ShowLoading = true;
             //make it so cover always gets overwritten if this case, store old value first
-            CodexProperty CoverProp = SettingsViewModel.GetInstance().MetaDataPreferences.First(prop => prop.Label == "Cover Art");
-            MetaDataOverwriteMode curSetting = (MetaDataOverwriteMode)CoverProp.OverwriteMode;
-            CoverProp.OverwriteMode = MetaDataOverwriteMode.Always;
+            CodexProperty coverProp = SettingsViewModel.GetInstance().MetaDataPreferences.First(prop => prop.Label == "Cover Art");
+            Debug.Assert(coverProp.OverwriteMode != null, "coverProp.OverwriteMode != null");
+            MetaDataOverwriteMode curSetting = (MetaDataOverwriteMode)coverProp.OverwriteMode;
+            coverProp.OverwriteMode = MetaDataOverwriteMode.Always;
             //get the cover
             await Task.Run(() => CoverFetcher.GetCover(TempCodex));
             //Restore cover preference
-            CoverProp.OverwriteMode = curSetting;
+            coverProp.OverwriteMode = curSetting;
             ShowLoading = false;
             RefreshCover();
         }
@@ -170,12 +175,12 @@ namespace COMPASS.ViewModels
         private void RefreshCover()
         {
             //force refresh because image is cached
-            string CovArt = TempCodex.CoverArt;
-            string Thumbn = TempCodex.Thumbnail;
+            string covArt = TempCodex.CoverArt;
+            string thumbnail = TempCodex.Thumbnail;
             TempCodex.CoverArt = null;
             TempCodex.Thumbnail = null;
-            TempCodex.CoverArt = CovArt;
-            TempCodex.Thumbnail = Thumbn;
+            TempCodex.CoverArt = covArt;
+            TempCodex.Thumbnail = thumbnail;
         }
 
         public Action CloseAction { get; set; }
@@ -187,13 +192,13 @@ namespace COMPASS.ViewModels
             //Copy changes into Codex
             if (!CreateNewCodex)
             {
-                EditedCodex.Copy(TempCodex);
+                _editedCodex.Copy(TempCodex);
             }
             else
             {
-                Codex ToAdd = new();
-                ToAdd.Copy(TempCodex);
-                MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(ToAdd);
+                Codex toAdd = new();
+                toAdd.Copy(TempCodex);
+                MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(toAdd);
             }
             //Add new Authors, Publishers, ect. to metadata lists
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();

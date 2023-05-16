@@ -74,19 +74,19 @@ namespace COMPASS.ViewModels
 
         public bool ShowProgressBar => TotalAmount > 0 && Counter < TotalAmount;
 
-        private Mutex progressMutex = new();
+        private readonly Mutex _progressMutex = new();
         public void IncrementCounter()
         {
-            progressMutex.WaitOne();
+            _progressMutex.WaitOne();
             Counter++;
-            progressMutex.ReleaseMutex();
+            _progressMutex.ReleaseMutex();
         }
 
         public void ResetCounter()
         {
-            progressMutex.WaitOne();
+            _progressMutex.WaitOne();
             Counter = 0;
-            progressMutex.ReleaseMutex();
+            _progressMutex.ReleaseMutex();
         }
 
         public void AddLogEntry(LogEntry entry) =>

@@ -1,4 +1,5 @@
-﻿using BlackPearl.Controls.Contract;
+﻿using System;
+using BlackPearl.Controls.Contract;
 
 namespace COMPASS.Tools
 {
@@ -11,24 +12,21 @@ namespace COMPASS.Tools
 
         public bool IsItemEqualToString(object sender, object item, string seachString)
         {
-            if (item is string)
-                return string.Compare(seachString.ToLowerInvariant().Trim(), (item as string).ToLowerInvariant().Trim(), System.StringComparison.InvariantCultureIgnoreCase) == 0;
-            else return false;
+            if (item is string str)
+            {
+                return String.Compare(seachString.ToLowerInvariant().Trim(), str.ToLowerInvariant().Trim(), StringComparison.InvariantCultureIgnoreCase) == 0;
+            }
+
+            return false;
         }
 
         public bool IsItemMatchingSearchString(object sender, object item, string searchString)
         {
-            if (item is not string)
+            if (item is not string str)
             {
                 return false;
             }
-
-            if (string.IsNullOrEmpty(searchString))
-            {
-                return true;
-            }
-
-            return ((string)item).ToLower().Trim().Contains(searchString.ToLower().Trim());
+            return String.IsNullOrEmpty(searchString) || str.ToLower().Trim().Contains(searchString.ToLower().Trim());
         }
     }
 }

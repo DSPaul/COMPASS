@@ -2,6 +2,7 @@
 using COMPASS.Tools;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,9 +11,6 @@ namespace COMPASS.ViewModels.Sources
 {
     public class ISBNSourceViewModel : SourceViewModel
     {
-        public ISBNSourceViewModel() : base() { }
-        public ISBNSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
-
         public override MetaDataSource Source => MetaDataSource.ISBN;
         public override bool IsValidSource(Codex codex) => !String.IsNullOrWhiteSpace(codex.ISBN);
 
@@ -22,7 +20,7 @@ namespace COMPASS.ViewModels.Sources
             codex = new Codex(codex);
 
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading Metadata from openlibrary.org"));
-
+            Debug.Assert(IsValidSource(codex), "Codex without ISBN was used in ISBN Source");
             string uri = $"http://openlibrary.org/api/books?bibkeys=ISBN:{codex.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
 
             JObject metadata = await Utils.GetJsonAsync(uri);
@@ -38,7 +36,12 @@ namespace COMPASS.ViewModels.Sources
             }
 
             // Start parsing json
-            var details = metadata.First.First.SelectToken("details");
+            var details = metadata.First?.First?.SelectToken("details");
+            if (details is null)
+            {
+                Logger.Warn("Unable to parse metadata from openlibrary");
+                return codex;
+            }
 
             // Title
             string fullTitle = (string)details.SelectToken("full_title");
@@ -49,12 +52,12 @@ namespace COMPASS.ViewModels.Sources
             //Authors
             if (details.SelectToken("authors") is not null)
             {
-                codex.Authors = new(details.SelectToken("authors").Select(item => item.SelectToken("name").ToString()));
+                codex.Authors = new(details.SelectToken("authors")!.Select(item => item.SelectToken("name")?.ToString()));
             }
             //PageCount
             if (details.SelectToken("pagination") is not null)
             {
-                codex.PageCount = Int32.Parse(Regex.Match(details.SelectToken("pagination").ToString(), @"\d+").Value);
+                codex.PageCount = Int32.Parse(Regex.Match(details.SelectToken("pagination")!.ToString(), @"\d+").Value);
             }
             codex.PageCount = (int?)details.SelectToken("number_of_pages") ?? codex.PageCount;
 
@@ -65,9 +68,10 @@ namespace COMPASS.ViewModels.Sources
             codex.Description = (string)details.SelectToken("description.value") ?? codex.Description;
 
             //Release Date
-            DateTime tempDate;
-            if (DateTime.TryParse((string)details.SelectToken("publish_date"), out tempDate))
+            if (DateTime.TryParse((string)details.SelectToken("publish_date"), out DateTime tempDate))
+            {
                 codex.ReleaseDate = tempDate;
+            }
 
             return codex;
         }

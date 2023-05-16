@@ -21,15 +21,15 @@ namespace COMPASS.Windows
 
         private async void StartScanning()
         {
-            cameraLoading.Visibility = Visibility.Visible;
-            webcamPreview.Visibility = Visibility.Hidden;
+            CameraLoading.Visibility = Visibility.Visible;
+            WebcamPreview.Visibility = Visibility.Hidden;
 
             var selectedCameraDeviceId = 0;
             if (_webcamStreaming == null || _webcamStreaming.CameraDeviceId != selectedCameraDeviceId)
             {
                 _webcamStreaming?.Dispose();
                 _webcamStreaming = new WebcamStreaming(
-                    imageControlForRendering: webcamPreview,
+                    imageControlForRendering: WebcamPreview,
                     frameWidth: 300,
                     frameHeight: 300,
                     cameraDeviceId: selectedCameraDeviceId);
@@ -45,26 +45,23 @@ namespace COMPASS.Windows
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
-            cameraLoading.Visibility = Visibility.Collapsed;
-            webcamPreview.Visibility = Visibility.Visible;
+            CameraLoading.Visibility = Visibility.Collapsed;
+            WebcamPreview.Visibility = Visibility.Visible;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => _webcamStreaming?.Dispose();
 
         private async void _webcamStreaming_OnQRCodeRead(object sender, EventArgs e)
         {
-            var qrCodeData = (e as QRCodeReadEventArgs).QRCodeData;
-            if (!string.IsNullOrWhiteSpace(qrCodeData) && IsValidISBN(qrCodeData))
+            var qrCodeData = (e as QRCodeReadEventArgs)?.QRCodeData;
+            if (String.IsNullOrWhiteSpace(qrCodeData) || !IsValidISBN(qrCodeData)) return;
+            DecodedString = qrCodeData;
+            await _webcamStreaming.Stop();
+            Dispatcher.Invoke(() =>
             {
-                DecodedString = qrCodeData;
-                await _webcamStreaming.Stop();
-                Dispatcher.Invoke(() =>
-                {
-                    DialogResult = true;
-                    Close();
-                });
-
-            }
+                DialogResult = true;
+                Close();
+            });
         }
 
         private static bool IsValidISBN(string isbn)

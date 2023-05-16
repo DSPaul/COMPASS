@@ -6,6 +6,7 @@ using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -21,6 +22,7 @@ namespace COMPASS.ViewModels.Sources
             // Work on a copy
             codex = new Codex(codex);
 
+            Debug.Assert(IsValidSource(codex), "Codex without pdf found in pdf source");
             PdfDocument pdfDoc = null;
             try
             {
@@ -46,10 +48,10 @@ namespace COMPASS.ViewModels.Sources
                     //strip text of spaces
                     pageContent = Constants.RegexWhitespace().Replace(pageContent, "");
                     //search ISBN
-                    string ISBN = Constants.RegexISBN().Match(pageContent)?.Value;
-                    if (!String.IsNullOrEmpty(ISBN))
+                    string isbn = Constants.RegexISBN().Match(pageContent).Value;
+                    if (!String.IsNullOrEmpty(isbn))
                     {
-                        codex.ISBN = ISBN;
+                        codex.ISBN = isbn;
                         break;
                     }
                 }
@@ -74,17 +76,20 @@ namespace COMPASS.ViewModels.Sources
         {
             //return false if file doesn't exist
             if (!Utils.IsPDFFile(codex.Path) ||
-                !File.Exists(codex.Path)) return false;
+                !File.Exists(codex.Path))
+            {
+                return false;
+            }
 
             try //image.Read can throw exception if file can not be opened/read
             {
                 using MagickImage image = new();
-                image.Read(codex.Path, readSettings);
+                await image.ReadAsync(codex.Path, ReadSettings);
                 image.Format = MagickFormat.Png;
                 image.BackgroundColor = new MagickColor("#000000"); //set background color as transparent
-                image.Trim(); //cut off all transparancy
+                image.Trim(); //cut off all transparency
 
-                image.Write(codex.CoverArt);
+                await image.WriteAsync(codex.CoverArt);
                 CoverFetcher.CreateThumbnail(codex);
                 return true;
             }
@@ -97,7 +102,7 @@ namespace COMPASS.ViewModels.Sources
             }
         }
 
-        private static PdfReadDefines pdfReadDefines = new()
+        private static readonly PdfReadDefines PDFReadDefines = new()
         {
             HideAnnotations = true,
             UseCropBox = true,
@@ -105,12 +110,12 @@ namespace COMPASS.ViewModels.Sources
 
         //Lazy load read Settings and make it static because takes a lot of time to construct according to profiler
         private static MagickReadSettings _readSettings;
-        private static MagickReadSettings readSettings => _readSettings ??= new()
+        private static MagickReadSettings ReadSettings => _readSettings ??= new()
         {
             Density = new Density(100),
             FrameIndex = 0, // First page
             FrameCount = 1, // Number of pages
-            Defines = pdfReadDefines,
+            Defines = PDFReadDefines,
         };
     }
 }

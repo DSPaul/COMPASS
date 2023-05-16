@@ -4,17 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
-             xmlns:local="clr-namespace:COMPASS.Views" 
-             xmlns:Converters="clr-namespace:COMPASS.Converters" 
-             xmlns:Tools="clr-namespace:COMPASS.Tools" 
-             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             d:DataContext="{d:DesignInstance Type=viewmodels:HomeLayoutViewModel}"
+             xmlns:converters="clr-namespace:COMPASS.Converters"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:layouts="clr-namespace:COMPASS.ViewModels.Layouts"
+             xmlns:models="clr-namespace:COMPASS.Models"
+             d:DataContext="{d:DesignInstance Type=layouts:HomeLayoutViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
-        <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
-        <Tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
+        <converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
         <Style TargetType="TextBlock" x:Key="HomeSectionTitle">
             <Setter Property="Margin" Value="10,0"/>
             <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
@@ -53,7 +51,7 @@
             <EventSetter Event="PreviewKeyDown" Handler="ListBox_PreviewKeyDown"/>
         </Style>
         <Style TargetType="{x:Type ListBoxItem}">
-            <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+            <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -87,7 +85,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        <DataTemplate x:Key="ListBoxItemCoverTemplate">
+        <DataTemplate x:Key="ListBoxItemCoverTemplate" DataType="models:Codex">
             <Grid VerticalAlignment="Top" Margin="0,10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
@@ -106,9 +104,9 @@
                     </Border.Effect>
                 </Border>
                 <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" 
-                                MaxWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"
-                                Visibility="{Binding DataContext.ShowTitle, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource ToVisibilityConverter}}"/>
+                        MaxWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"
+                        Visibility="{Binding DataContext.ShowTitle, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource ToVisibilityConverter}}"/>
             </Grid>
         </DataTemplate>
     </UserControl.Resources>
@@ -119,13 +117,13 @@
                 <materialDesign:PackIcon Kind="Heart" Height="28" Width="20" Foreground="IndianRed" VerticalAlignment="Bottom"/>
                 <TextBlock Text="Favorites" Style="{StaticResource HomeSectionTitle}"/>
             </StackPanel>
-            <ListBox x:Name="FavoritsListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.Favorites}" />
+            <ListBox ItemsSource="{Binding MVM.CollectionVM.FilterVM.Favorites}" />
 
             <StackPanel Orientation="Horizontal" Margin="30,0">
                 <materialDesign:PackIcon Kind="History" Height="28" Width="20" VerticalAlignment="Bottom"/>
                 <TextBlock Text="Recently Opened" Style="{StaticResource HomeSectionTitle}"/>
             </StackPanel>
-            <ListBox x:Name="RecOpendListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.RecentCodices}" />
+            <ListBox ItemsSource="{Binding MVM.CollectionVM.FilterVM.RecentCodices}" />
 
 
            
@@ -133,14 +131,14 @@
                 <materialDesign:PackIcon Kind="BookOpenBlankVariant" Height="28" Width="20" VerticalAlignment="Bottom"/>
                 <TextBlock Text="Most Opened" Style="{StaticResource HomeSectionTitle}"/>
             </StackPanel>
-            <ListBox x:Name="MostOpentListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.MostOpenedCodices}" />
+            <ListBox ItemsSource="{Binding MVM.CollectionVM.FilterVM.MostOpenedCodices}" />
 
             
             <StackPanel Orientation="Horizontal" Margin="30,0">
                 <materialDesign:PackIcon Kind="BookPlus" Height="28" Width="20" VerticalAlignment="Bottom"/>
                 <TextBlock Text="Recently Added" Style="{StaticResource HomeSectionTitle}"/>
             </StackPanel>
-            <ListBox x:Name="RecAddedListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.RecentlyAddedCodices}" />
+            <ListBox ItemsSource="{Binding MVM.CollectionVM.FilterVM.RecentlyAddedCodices}" />
             
         </StackPanel>
             

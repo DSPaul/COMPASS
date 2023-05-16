@@ -21,7 +21,7 @@ namespace COMPASS.ViewModels.Import
             _targetCollection = targetCollection;
         }
 
-        private CodexCollection _targetCollection;
+        private readonly CodexCollection _targetCollection;
 
         public List<string> FolderNames { get; set; } = new();
         public List<string> FileNames { get; set; } = new();
@@ -33,8 +33,8 @@ namespace COMPASS.ViewModels.Import
                 Multiselect = true,
             };
 
-            var dialogresult = openFolderDialog.ShowDialog();
-            if (dialogresult == false) return new();
+            var dialogResult = openFolderDialog.ShowDialog();
+            if (dialogResult == false) return new();
 
             FolderNames = openFolderDialog.SelectedPaths.ToList();
 
@@ -59,10 +59,10 @@ namespace COMPASS.ViewModels.Import
             ImportAmount = toImport.Count;
 
             //find how many files of each filetype
-            var toImport_grouped = toImport.GroupBy(Path.GetExtension);
+            var toImportGrouped = toImport.GroupBy(Path.GetExtension).ToList();
 
             //add new file extension to global file preferences
-            foreach (string extension in toImport_grouped.Select(x => x.Key))
+            foreach (string extension in toImportGrouped.Select(x => x.Key))
             {
                 _targetCollection.Info.FiletypePreferences.TryAdd(extension, true);
             }
@@ -70,7 +70,7 @@ namespace COMPASS.ViewModels.Import
             if (!ImportViewModel.Stealth)
             {
                 //init ToImportFileTypes with values from FileTypePreferences
-                ToImportFiletypes = toImport_grouped.Select(x => new FileTypeInfo(x.Key, _targetCollection.Info.FiletypePreferences[x.Key], x.Count())).ToList();
+                ToImportFiletypes = toImportGrouped.Select(x => new FileTypeInfo(x.Key, _targetCollection.Info.FiletypePreferences[x.Key], x.Count())).ToList();
 
                 //open window to let user choose which filetypes to import
                 ImportFolderWindow importFolderWindow = new(this)
@@ -78,8 +78,8 @@ namespace COMPASS.ViewModels.Import
                     Owner = Application.Current.MainWindow
                 };
 
-                var dialogresult = importFolderWindow.ShowDialog();
-                if (dialogresult == false) return new();
+                var dialogResult = importFolderWindow.ShowDialog();
+                if (dialogResult == false) return new();
 
                 //update the global file type preferences for the collection
                 foreach (var filetypeHelper in ToImportFiletypes)
@@ -104,14 +104,12 @@ namespace COMPASS.ViewModels.Import
 
         private RelayCommand<bool> _confirmImportCommand;
         public RelayCommand<bool> ConfirmImportCommand => _confirmImportCommand ??= new(ConfirmImport);
-        public void ConfirmImport(bool isChecked)
+        private void ConfirmImport(bool shouldAutoImport)
         {
-            if (isChecked)
+            if (!shouldAutoImport) return;
+            foreach (string dir in FolderNames)
             {
-                foreach (string dir in FolderNames)
-                {
-                    _targetCollection.Info.AutoImportDirectories.AddIfMissing(dir);
-                }
+                _targetCollection.Info.AutoImportDirectories.AddIfMissing(dir);
             }
         }
 

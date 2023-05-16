@@ -18,10 +18,10 @@ namespace COMPASS.Commands
             remove => CommandManager.RequerySuggested -= value;
         }
 
-        public RelayCommand(Action<T> Execute, Func<T, bool> CanExecute = null)
+        public RelayCommand(Action<T> execute, Func<T, bool> canExecute = null)
         {
-            _execute = Execute;
-            _canExecute = CanExecute;
+            _execute = execute;
+            _canExecute = canExecute;
         }
 
         public bool CanExecute(object parameter) => _canExecute == null || _canExecute((T)parameter);

@@ -78,11 +78,11 @@ namespace COMPASS.ViewModels.Import
                 .Except(targetCollection.Info.BanishedPaths)
                 .ToList();
 
-            var ProgressVM = ProgressViewModel.GetInstance();
+            var progressVM = ProgressViewModel.GetInstance();
 
-            ProgressVM.TotalAmount = paths.Count;
-            ProgressVM.ResetCounter();
-            ProgressVM.Text = "Importing files";
+            progressVM.TotalAmount = paths.Count;
+            progressVM.ResetCounter();
+            progressVM.Text = "Importing files";
 
             if (paths.Count == 0) return;
 
@@ -100,7 +100,7 @@ namespace COMPASS.ViewModels.Import
 
             await Task.Run(() =>
             {
-                //make new codices synchonously so they all have a valid ID
+                //make new codices synchronously so they all have a valid ID
                 foreach (string path in paths)
                 {
                     Codex newCodex = new(targetCollection) { Path = path };
@@ -108,8 +108,8 @@ namespace COMPASS.ViewModels.Import
                     targetCollection.AllCodices.Add(newCodex);
 
                     LogEntry logEntry = new(LogEntry.MsgType.Info, $"Importing {path}");
-                    ProgressVM.IncrementCounter();
-                    ProgressVM.AddLogEntry(logEntry);
+                    progressVM.IncrementCounter();
+                    progressVM.AddLogEntry(logEntry);
                 }
                 MainViewModel.CollectionVM.CurrentCollection.Save();
             });
@@ -120,13 +120,13 @@ namespace COMPASS.ViewModels.Import
 
         public static async Task FinishImport(List<Codex> newCodices)
         {
-            var ProgressVM = ProgressViewModel.GetInstance();
-            ProgressVM.TotalAmount = newCodices.Count;
+            var progressVM = ProgressViewModel.GetInstance();
+            progressVM.TotalAmount = newCodices.Count;
 
             await CodexViewModel.StartGetMetaDataProcess(newCodices);
 
-            ProgressVM.ResetCounter();
-            ProgressVM.Text = "Getting MetaData";
+            progressVM.ResetCounter();
+            progressVM.Text = "Getting MetaData";
             await CoverFetcher.GetCover(newCodices);
 
             foreach (Codex codex in newCodices) codex.RefreshThumbnail();

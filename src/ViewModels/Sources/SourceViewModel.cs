@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
-    abstract public class SourceViewModel : ObservableObject
+    public abstract class SourceViewModel : ObservableObject
     {
-        public SourceViewModel() : this(MainViewModel.CollectionVM.CurrentCollection) { }
-        public SourceViewModel(CodexCollection targetCollection)
+        protected SourceViewModel() : this(MainViewModel.CollectionVM.CurrentCollection) { }
+
+        protected SourceViewModel(CodexCollection targetCollection)
         {
             TargetCollection = targetCollection;
         }

@@ -3,14 +3,13 @@ using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
 using HtmlAgilityPack;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
     public class GoogleDriveSourceViewModel : SourceViewModel
     {
-        public GoogleDriveSourceViewModel() : base() { }
-
         public override MetaDataSource Source => MetaDataSource.GoogleDrive;
         public override bool IsValidSource(Codex codex) =>
             codex.HasOnlineSource() && codex.SourceURL.Contains(new ImportURLViewModel(ImportSource.GoogleDrive).ExampleURL);
@@ -19,7 +18,7 @@ namespace COMPASS.ViewModels.Sources
         {
             // Work on a copy
             codex = new Codex(codex);
-
+            Debug.Assert(IsValidSource(codex), "Invalid Codex was used in Google drive source");
             codex.Publisher = "Google Drive";
 
             return codex;

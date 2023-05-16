@@ -10,12 +10,15 @@ namespace COMPASS.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             //Parameter is true if inverted
-            bool Invert = System.Convert.ToBoolean(parameter);
+            bool invert = System.Convert.ToBoolean(parameter);
             bool visible;
 
-            if (value is string str_value)
-                visible = !string.IsNullOrEmpty(str_value);
+            if (value is string strValue)
+            {
+                visible = !String.IsNullOrEmpty(strValue);
+            }
             else
+            {
                 try
                 {
                     visible = System.Convert.ToBoolean(value);
@@ -24,12 +27,8 @@ namespace COMPASS.Converters
                 {
                     visible = value is not null;
                 }
-
-
-            if (visible ^ Invert)
-                return Visibility.Visible;
-            else
-                return Visibility.Collapsed;
+            }
+            return visible ^ invert ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

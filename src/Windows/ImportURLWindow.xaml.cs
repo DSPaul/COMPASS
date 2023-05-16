@@ -16,8 +16,8 @@ namespace COMPASS.Windows
 
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
-            this.Close();
+            DialogResult = true;
+            Close();
         }
     }
 }

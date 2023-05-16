@@ -24,13 +24,13 @@ namespace COMPASS.ViewModels
             // Load sorting from settings
             InitSortingProperties();
 
-            IncludedCodices = new(_allCodices);
-            ExcludedCodices = new();
+            _includedCodices = new(_allCodices);
+            _excludedCodices = new();
 
-            IncludedFilters.CollectionChanged += (e, v) => UpdateIncludedCodices();
-            ExcludedFilters.CollectionChanged += (e, v) => UpdateExcludedCodices();
+            IncludedFilters.CollectionChanged += (_, _) => UpdateIncludedCodices();
+            ExcludedFilters.CollectionChanged += (_, _) => UpdateExcludedCodices();
 
-            _allCodices.CollectionChanged += (e, v) => SubscribeToCodexProperties();
+            _allCodices.CollectionChanged += (_, _) => SubscribeToCodexProperties();
             SubscribeToCodexProperties();
 
             PopulateMetaDataCollections();
@@ -45,8 +45,8 @@ namespace COMPASS.ViewModels
         public int ItemsShown => Math.Min(_itemsShown, FilteredCodices.Count);
 
 
-        private HashSet<Codex> IncludedCodices;
-        private HashSet<Codex> ExcludedCodices;
+        private HashSet<Codex> _includedCodices;
+        private HashSet<Codex> _excludedCodices;
 
         #endregion
 
@@ -95,11 +95,9 @@ namespace COMPASS.ViewModels
             get => null;
             set
             {
-                if (!String.IsNullOrEmpty(value))
-                {
-                    Filter AuthorFilter = new(Filter.FilterType.Author, value);
-                    AddFilter(AuthorFilter, Include);
-                }
+                if (String.IsNullOrEmpty(value)) return;
+                Filter authorFilter = new(Filter.FilterType.Author, value);
+                AddFilter(authorFilter, Include);
             }
         }
 
@@ -115,11 +113,9 @@ namespace COMPASS.ViewModels
             get => null;
             set
             {
-                if (!String.IsNullOrEmpty(value))
-                {
-                    Filter PublisherFilter = new(Filter.FilterType.Publisher, value);
-                    AddFilter(PublisherFilter, Include);
-                }
+                if (String.IsNullOrEmpty(value)) return;
+                Filter publisherFilter = new(Filter.FilterType.Publisher, value);
+                AddFilter(publisherFilter, Include);
             }
         }
 
@@ -135,11 +131,9 @@ namespace COMPASS.ViewModels
             get => null;
             set
             {
-                if (!String.IsNullOrEmpty(value))
-                {
-                    Filter FileExtensionFilter = new(Filter.FilterType.FileExtension, value);
-                    AddFilter(FileExtensionFilter, Include);
-                }
+                if (String.IsNullOrEmpty(value)) return;
+                Filter fileExtensionFilter = new(Filter.FilterType.FileExtension, value);
+                AddFilter(fileExtensionFilter, Include);
             }
         }
         private ObservableCollection<string> _fileTypeList = new();
@@ -154,11 +148,9 @@ namespace COMPASS.ViewModels
             get => null;
             set
             {
-                if (!String.IsNullOrEmpty(value))
-                {
-                    Filter DomainFilter = new(Filter.FilterType.Domain, value);
-                    AddFilter(DomainFilter, Include);
-                }
+                if (String.IsNullOrEmpty(value)) return;
+                Filter domainFilter = new(Filter.FilterType.Domain, value);
+                AddFilter(domainFilter, Include);
             }
         }
         private ObservableCollection<string> _domainList = new();
@@ -178,11 +170,9 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref _startReleaseDate, value);
-                if (value != null)
-                {
-                    Filter startDateFilter = new(Filter.FilterType.StartReleaseDate, value);
-                    AddFilter(startDateFilter, Include);
-                }
+                if (value is null) return;
+                Filter startDateFilter = new(Filter.FilterType.StartReleaseDate, value);
+                AddFilter(startDateFilter, Include);
             }
         }
 
@@ -208,7 +198,7 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref _minRating, value);
-                if (value > 0 && value < 6)
+                if (value is > 0 and < 6)
                 {
                     Filter minRatFilter = new(Filter.FilterType.MinimumRating, value);
                     AddFilter(minRatFilter, Include);
@@ -224,7 +214,7 @@ namespace COMPASS.ViewModels
                 Settings.Default[nameof(SortDirection)] = (int)value;
                 Settings.Default.Save();
                 ApplySorting();
-                RaisePropertyChanged(nameof(SortDirection));
+                RaisePropertyChanged();
             }
         }
 
@@ -236,7 +226,7 @@ namespace COMPASS.ViewModels
                 Settings.Default[nameof(SortProperty)] = value;
                 Settings.Default.Save();
                 ApplySorting();
-                RaisePropertyChanged(nameof(SortProperty));
+                RaisePropertyChanged();
             }
         }
 
@@ -262,17 +252,17 @@ namespace COMPASS.ViewModels
             //cause derived lists to update when codex gets updated
             foreach (Codex c in _allCodices)
             {
-                c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(Favorites));
-                c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(RecentCodices));
-                c.PropertyChanged += (e, v) => RaisePropertyChanged(nameof(MostOpenedCodices));
+                c.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(Favorites));
+                c.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(RecentCodices));
+                c.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(MostOpenedCodices));
             }
         }
 
         private void InitSortingProperties()
         {
             //double check on typos by checking if all property names exist in codex class
-            var PossibleSortProptertyNames = typeof(Codex).GetProperties().Select(p => p.Name).ToList();
-            if (SortOptions.Select(pair => pair.Value).Except(PossibleSortProptertyNames).Any())
+            var possibleSortPropertyNames = typeof(Codex).GetProperties().Select(p => p.Name).ToList();
+            if (SortOptions.Select(pair => pair.Value).Except(possibleSortPropertyNames).Any())
             {
                 Logger.Warn("One of the sort property paths does not exist", new MissingMemberException());
             }
@@ -295,8 +285,8 @@ namespace COMPASS.ViewModels
                 //Populate Domain Collection
                 if (c.HasOnlineSource())
                 {
-                    string Domain = new Uri(c.SourceURL).Host;
-                    if (!String.IsNullOrEmpty(Domain)) DomainList.AddIfMissing(Domain);
+                    string domain = new Uri(c.SourceURL).Host;
+                    if (!String.IsNullOrEmpty(domain)) DomainList.AddIfMissing(domain);
                 }
             }
             AuthorList.Remove(""); //remove "" author because String.IsNullOrEmpty cannot be called during Union
@@ -335,30 +325,30 @@ namespace COMPASS.ViewModels
                 include = false;
             }
 
-            ObservableCollection<Filter> Target = include ? IncludedFilters : ExcludedFilters;
-            ObservableCollection<Filter> Other = !include ? IncludedFilters : ExcludedFilters;
+            ObservableCollection<Filter> target = include ? IncludedFilters : ExcludedFilters;
+            ObservableCollection<Filter> other = !include ? IncludedFilters : ExcludedFilters;
             //if Filter is unique, remove previous instance of that Filter before adding
             if (filter.Unique)
             {
-                Target.Remove(
-                    Target.SingleOrDefault(f => f.Type == filter.Type));
+                target.Remove(
+                    target.SingleOrDefault(f => f.Type == filter.Type));
             }
             //only add if not yet in Included Tags
-            if (!Target.Contains(filter))
+            if (!target.Contains(filter))
             {
-                Target.Add(filter);
-                Other.Remove(filter);
+                target.Add(filter);
+                other.Remove(filter);
             }
         }
 
         private RelayCommand<string> _searchCommand;
         public RelayCommand<string> SearchCommand => _searchCommand ??= new(SearchCommandHelper);
-        private void SearchCommandHelper(string Searchterm)
+        private void SearchCommandHelper(string searchTerm)
         {
-            Filter SearchFilter = new(Filter.FilterType.Search, Searchterm);
-            if (!String.IsNullOrEmpty(Searchterm))
+            Filter searchFilter = new(Filter.FilterType.Search, searchTerm);
+            if (!String.IsNullOrEmpty(searchTerm))
             {
-                AddFilter(SearchFilter);
+                AddFilter(searchFilter);
             }
             else
             {
@@ -384,21 +374,21 @@ namespace COMPASS.ViewModels
         //------------- Filter Logic ------------//
         private void UpdateIncludedCodices(bool apply = true)
         {
-            IncludedCodices = new(_allCodices);
+            _includedCodices = new(_allCodices);
             foreach (Filter.FilterType filterType in Enum.GetValues(typeof(Filter.FilterType)))
             {
                 // Included codices must match filters of all types so IntersectWith()
-                IncludedCodices.IntersectWith(GetFilteredCodicesByType(IncludedFilters, filterType, true));
+                _includedCodices.IntersectWith(GetFilteredCodicesByType(IncludedFilters, filterType, true));
             }
             if (apply) ApplyFilters();
         }
         private void UpdateExcludedCodices(bool apply = true)
         {
-            ExcludedCodices = new();
+            _excludedCodices = new();
             foreach (Filter.FilterType filterType in Enum.GetValues(typeof(Filter.FilterType)))
             {
                 // Codex is excluded as soon as it matches any excluded filter so UnionWith()
-                ExcludedCodices.UnionWith(GetFilteredCodicesByType(ExcludedFilters, filterType, false));
+                _excludedCodices.UnionWith(GetFilteredCodicesByType(ExcludedFilters, filterType, false));
             }
             if (apply) ApplyFilters();
         }
@@ -406,94 +396,92 @@ namespace COMPASS.ViewModels
         /// <summary>
         /// Get list of Codices that match filters of one filter type
         /// </summary>
-        /// <param name="Filters"></param>
-        /// <param name="filtertype"></param>
+        /// <param name="filters"></param>
+        /// <param name="filterType"></param>
         /// <param name="include"> Determines whether returned codices should be included or excluded </param>
         /// <returns></returns>
-        private IEnumerable<Codex> GetFilteredCodicesByType(IEnumerable<Filter> Filters, Filter.FilterType filtertype, bool include)
+        private IEnumerable<Codex> GetFilteredCodicesByType(IEnumerable<Filter> filters, Filter.FilterType filterType, bool include)
         {
-            List<Filter> RelevantFilters = new(Filters.Where(filter => filter.Type == filtertype));
+            List<Filter> relevantFilters = new(filters.Where(filter => filter.Type == filterType));
 
-            if (RelevantFilters.Count == 0) return include ? _allCodices : Enumerable.Empty<Codex>();
+            if (relevantFilters.Count == 0) return include ? _allCodices : Enumerable.Empty<Codex>();
 
-            return filtertype switch
+            return filterType switch
             {
-                Filter.FilterType.Search => GetFilteredCodicesBySearch(RelevantFilters.First()),
-                Filter.FilterType.Tag => GetFilteredCodicesByTags(RelevantFilters, include),
-                _ => _allCodices.Where(codex => RelevantFilters.Any(filter => filter.Method(codex)))
+                Filter.FilterType.Search => GetFilteredCodicesBySearch(relevantFilters.First()),
+                Filter.FilterType.Tag => GetFilteredCodicesByTags(relevantFilters, include),
+                _ => _allCodices.Where(codex => relevantFilters.Any(filter => filter.Method(codex)))
             };
         }
 
         private HashSet<Codex> GetFilteredCodicesBySearch(Filter searchFilter)
         {
-            string searchterm = (string)searchFilter.FilterValue;
+            string searchTerm = (string)searchFilter.FilterValue;
 
-            if (String.IsNullOrEmpty(searchterm)) return new(_allCodices);
+            if (String.IsNullOrEmpty(searchTerm)) return new(_allCodices);
 
-            HashSet<Codex> IncludedCodicesBySearch = new();
+            HashSet<Codex> includedCodicesBySearch = new();
             //include acronyms
-            IncludedCodicesBySearch.UnionWith(_allCodices
+            includedCodicesBySearch.UnionWith(_allCodices
                 .Where(f => Fuzz.TokenInitialismRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
             //include string fragments
-            IncludedCodicesBySearch.UnionWith(_allCodices
+            includedCodicesBySearch.UnionWith(_allCodices
                 .Where(f => f.Title.Contains(SearchTerm, StringComparison.InvariantCultureIgnoreCase)));
             //include spelling errors
-            IncludedCodicesBySearch.UnionWith(_allCodices
+            includedCodicesBySearch.UnionWith(_allCodices
                 .Where(f => Fuzz.PartialRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
 
-            return IncludedCodicesBySearch;
+            return includedCodicesBySearch;
         }
 
         private HashSet<Codex> GetFilteredCodicesByTags(IEnumerable<Filter> filters, bool include)
             => include ? GetIncludedCodicesByTags(filters) : GetExcludedCodicesByTags(filters);
         private HashSet<Codex> GetIncludedCodicesByTags(IEnumerable<Filter> filters)
         {
-            HashSet<Codex> IncludedCodices = new(_allCodices);
+            HashSet<Codex> includedCodices = new(_allCodices);
 
-            List<Tag> IncludedTags = filters
+            List<Tag> includedTags = filters
                 .Select(filter => (Tag)filter.FilterValue)
                 .ToList();
 
-            if (IncludedTags.Count > 0)
+            if (includedTags.Count > 0)
             {
-                HashSet<Tag> IncludedGroups = IncludedTags.Select(tag => tag.GetGroup()).ToHashSet();
-
-                //List of codices that match filters in one group
-                HashSet<Codex> SingleGroupFilteredCodices;
+                HashSet<Tag> includedGroups = includedTags.Select(tag => tag.GetGroup()).ToHashSet();
 
                 // Go over every group, tags within same group have OR relation, groups have AND relation
-                foreach (Tag Group in IncludedGroups)
+                foreach (Tag group in includedGroups)
                 {
-                    // Make list with all included tags in that group, including childeren
-                    List<Tag> SingleGroupTags = Utils.FlattenTree(IncludedTags.Where(tag => tag.GetGroup() == Group)).ToList();
-                    // Add parents of those tags, must come AFTER chileren, otherwise childeren of parents are included which is wrong
-                    for (int i = 0; i < SingleGroupTags.Count; i++)
+                    // Make list with all included tags in that group, including children
+                    List<Tag> singleGroupTags = Utils.FlattenTree(includedTags.Where(tag => tag.GetGroup() == group)).ToList();
+                    // Add parents of those tags, must come AFTER children, otherwise children of parents are included which is wrong
+                    for (int i = 0; i < singleGroupTags.Count; i++)
                     {
-                        Tag parentTag = SingleGroupTags[i].Parent;
-                        if (parentTag != null && !parentTag.IsGroup) SingleGroupTags.AddIfMissing(parentTag);
+                        Tag parentTag = singleGroupTags[i].Parent;
+                        if (parentTag != null && !parentTag.IsGroup) singleGroupTags.AddIfMissing(parentTag);
                     }
 
-                    SingleGroupFilteredCodices = new(_allCodices.Where(codex => SingleGroupTags.Intersect(codex.Tags).Any()));
+                    //List of codices that match filters in one group
+                    HashSet<Codex> singleGroupFilteredCodices = new(_allCodices.Where(codex => singleGroupTags.Intersect(codex.Tags).Any()));
 
-                    IncludedCodices = IncludedCodices.Intersect(SingleGroupFilteredCodices).ToHashSet();
+                    includedCodices = includedCodices.Intersect(singleGroupFilteredCodices).ToHashSet();
                 }
             }
-            return IncludedCodices;
+            return includedCodices;
         }
         private HashSet<Codex> GetExcludedCodicesByTags(IEnumerable<Filter> filters)
         {
-            HashSet<Codex> ExcludedCodices = new();
+            HashSet<Codex> excludedCodices = new();
 
-            var ExcludedTags = filters.Select(filter => (Tag)filter.FilterValue).ToList();
+            var excludedTags = filters.Select(filter => (Tag)filter.FilterValue).ToList();
 
-            if (ExcludedTags.Count > 0)
+            if (excludedTags.Count > 0)
             {
-                // If parent is excluded, so should all the childeren
-                ExcludedTags = Utils.FlattenTree(ExcludedTags).ToList();
-                ExcludedCodices = new(_allCodices.Where(f => ExcludedTags.Intersect(f.Tags).Any()));
+                // If parent is excluded, so should all the children
+                excludedTags = Utils.FlattenTree(excludedTags).ToList();
+                excludedCodices = new(_allCodices.Where(f => excludedTags.Intersect(f.Tags).Any()));
             }
 
-            return ExcludedCodices;
+            return excludedCodices;
         }
         //------------------------------------//
 
@@ -506,20 +494,21 @@ namespace COMPASS.ViewModels
         }
         private void ApplyFilters(bool force = false)
         {
-            IEnumerable<Codex> _filteredCodices = _allCodices
-                .Intersect(IncludedCodices)
-                .Except(ExcludedCodices);
+            IList<Codex> filteredCodices = _allCodices
+                .Intersect(_includedCodices)
+                .Except(_excludedCodices)
+                .ToList();
 
-            if (force || FilteredCodices is null || !FilteredCodices.SequenceEqual(_filteredCodices))
+            if (force || FilteredCodices is null || !FilteredCodices.SequenceEqual(filteredCodices))
             {
-                FilteredCodices = new(_filteredCodices);
+                FilteredCodices = new(filteredCodices);
                 //Also apply filtering to these lists
                 RaisePropertyChanged(nameof(Favorites));
                 RaisePropertyChanged(nameof(RecentCodices));
                 RaisePropertyChanged(nameof(MostOpenedCodices));
                 RaisePropertyChanged(nameof(RecentlyAddedCodices));
 
-                FilteredCodices.CollectionChanged += (e, v) => ApplySorting();
+                FilteredCodices.CollectionChanged += (_, _) => ApplySorting();
             }
             ApplySorting();
         }
@@ -532,7 +521,7 @@ namespace COMPASS.ViewModels
         }
         public void RemoveCodex(Codex c)
         {
-            ExcludedCodices.Remove(c);
+            _excludedCodices.Remove(c);
             FilteredCodices.Remove(c);
         }
 
@@ -546,8 +535,8 @@ namespace COMPASS.ViewModels
             switch (dropInfo.Data)
             {
                 //Move From Treeview
-                case TreeViewNode DraggedTVN:
-                    if (!DraggedTVN.Tag.IsGroup)
+                case TreeViewNode draggedTvnTreeViewNode:
+                    if (!draggedTvnTreeViewNode.Tag.IsGroup)
                     {
                         dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                         dropInfo.Effects = DragDropEffects.Copy;
@@ -567,20 +556,20 @@ namespace COMPASS.ViewModels
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
             //Included filter Listbox has extra empty collection to tell them apart
-            bool ToIncluded = ((CompositeCollection)dropInfo.TargetCollection).Count > 1;
+            bool toIncluded = ((CompositeCollection)dropInfo.TargetCollection).Count > 1;
 
             switch (dropInfo.Data)
             {
                 //Tree to Filter Box
-                case TreeViewNode DraggedTVN:
-                    AddFilter(new(Filter.FilterType.Tag, DraggedTVN.Tag), ToIncluded);
+                case TreeViewNode draggedTreeViewNode:
+                    AddFilter(new(Filter.FilterType.Tag, draggedTreeViewNode.Tag), toIncluded);
                     break;
-                //Between include and exlude
-                case Filter DraggedFilter:
-                    AddFilter(DraggedFilter, ToIncluded);
+                //Between include and exclude
+                case Filter draggedFilter:
+                    AddFilter(draggedFilter, toIncluded);
                     break;
-                case Tag DraggedTag:
-                    AddFilter(new(Filter.FilterType.Tag, DraggedTag), ToIncluded);
+                case Tag draggedTag:
+                    AddFilter(new(Filter.FilterType.Tag, draggedTag), toIncluded);
                     break;
             }
         }

@@ -2,14 +2,13 @@
 using COMPASS.Tools;
 using HtmlAgilityPack;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
     public class GenericOnlineSourceViewModel : SourceViewModel
     {
-        public GenericOnlineSourceViewModel() : base() { }
-
         public override MetaDataSource Source => MetaDataSource.GenericURL;
 
         public override Task<bool> FetchCover(Codex codex) => throw new NotImplementedException();
@@ -23,6 +22,7 @@ namespace COMPASS.ViewModels.Sources
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Extracting metadata from website header"));
 
             // Scrape metadata
+            Debug.Assert(IsValidSource(codex), "Codex without URL was used in Generic URL source");
             HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 

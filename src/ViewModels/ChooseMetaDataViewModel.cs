@@ -18,13 +18,13 @@ namespace COMPASS.ViewModels
             .Where(prop => prop.OverwriteMode == MetaDataOverwriteMode.Ask)
             .ToList();
 
-        private Mutex CodicesListMutex = new();
+        private readonly Mutex _codicesListMutex = new();
         public void AddCodexPair(Codex currentCodex, Codex proposedCodex)
         {
-            CodicesListMutex.WaitOne();
+            _codicesListMutex.WaitOne();
             CodicesWithChoices.AddIfMissing(new(currentCodex, proposedCodex));
             _codicesWithMadeChoices.AddIfMissing(new(currentCodex));
-            CodicesListMutex.ReleaseMutex();
+            _codicesListMutex.ReleaseMutex();
         }
 
         public Tuple<Codex, Codex> CurrentPair => CodicesWithChoices[Counter];
@@ -54,7 +54,7 @@ namespace COMPASS.ViewModels
             if (Counter + 1 == CodicesWithChoices.Count) return;
             Counter++;
             //reset choices
-            ShouldUseNewValue = _defaultShouldUseNewValue;
+            ShouldUseNewValue = DefaultShouldUseNewValue;
         }
 
         private ActionCommand _backCommand;
@@ -66,7 +66,7 @@ namespace COMPASS.ViewModels
             ApplyChoice();
             Counter--;
             //copy new codex to temp
-            ShouldUseNewValue = _defaultShouldUseNewValue;
+            ShouldUseNewValue = DefaultShouldUseNewValue;
         }
 
         private ActionCommand _finishCommand;
@@ -108,7 +108,7 @@ namespace COMPASS.ViewModels
         public bool ShowFinishButton => Counter == CodicesWithChoices.Count - 1;
 
         private Dictionary<string, bool> _shouldUseNewValue;
-        private Dictionary<string, bool> _defaultShouldUseNewValue
+        private Dictionary<string, bool> DefaultShouldUseNewValue
         {
             get
             {
@@ -127,7 +127,7 @@ namespace COMPASS.ViewModels
 
         public Dictionary<string, bool> ShouldUseNewValue
         {
-            get => _shouldUseNewValue ??= _defaultShouldUseNewValue;
+            get => _shouldUseNewValue ??= DefaultShouldUseNewValue;
             set => SetProperty(ref _shouldUseNewValue, value);
         }
     }

@@ -1,13 +1,14 @@
-﻿namespace COMPASS.ViewModels
+﻿namespace COMPASS.ViewModels.Layouts
 {
     public class TileLayoutViewModel : LayoutViewModel
     {
-        public TileLayoutViewModel() : base()
+        public TileLayoutViewModel()
         {
             LayoutType = Layout.Tile;
         }
 
-        public override bool DoVirtualization => Properties.Settings.Default.DoVirtualizationTile && MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdTile;
+        public override bool DoVirtualization => Properties.Settings.Default.DoVirtualizationTile 
+                                                 && MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdTile;
 
         public enum DataOption
         {
@@ -24,7 +25,7 @@
             set
             {
                 Properties.Settings.Default.TileCoverSize = value;
-                RaisePropertyChanged(nameof(TileWidth));
+                RaisePropertyChanged();
                 RaisePropertyChanged(nameof(TileHeight));
             }
         }
@@ -37,7 +38,7 @@
             set
             {
                 Properties.Settings.Default.TileShowExtraData = value;
-                RaisePropertyChanged(nameof(ShowExtraData));
+                RaisePropertyChanged();
             }
         }
 
@@ -47,7 +48,7 @@
             set
             {
                 Properties.Settings.Default.TileDisplayedData = (int)value;
-                RaisePropertyChanged(nameof(DisplayedData));
+                RaisePropertyChanged();
             }
         }
 

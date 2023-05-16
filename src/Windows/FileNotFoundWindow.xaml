@@ -3,11 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Tools ="clr-namespace:COMPASS.Tools"
-        xmlns:ViewModels ="clr-namespace:COMPASS.ViewModels"
-        xmlns:local="clr-namespace:COMPASS.Windows"
+        xmlns:tools ="clr-namespace:COMPASS.Tools"
+        xmlns:viewModels ="clr-namespace:COMPASS.ViewModels"
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
-        d:DataContext="{d:DesignInstance Type=ViewModels:FileNotFoundViewModel}"
+        d:DataContext="{d:DesignInstance Type=viewModels:FileNotFoundViewModel}"
         WindowStyle="ToolWindow" WindowStartupLocation="CenterOwner"
         Title="File Not Found" Height="350" Width="648">
     <Grid>
@@ -30,11 +29,11 @@
                 Preferences -> Manage Data -> Tools for Broken File References.)
             </TextBlock>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="20">
-                <Button Content="Find the file" Tools:AP.IconKind="Folder" Style="{StaticResource IconTextButton}" 
+                <Button Content="Find the file" tools:AP.IconKind="Folder" Style="{StaticResource IconTextButton}" 
                         Background="{StaticResource AccentColorMuted}" Command="{Binding FindFileCommand}"/>
-                <Button Content="Remove the path" Tools:AP.IconKind="FileDocumentRemoveOutline" 
+                <Button Content="Remove the path" tools:AP.IconKind="FileDocumentRemoveOutline" 
                         Style="{StaticResource IconTextButton}" Command="{Binding RemovePathCommand}"/>
-                <Button Content="Delete this book" Tools:AP.IconKind="Delete" Style="{StaticResource IconTextButton}"
+                <Button Content="Delete this book" tools:AP.IconKind="Delete" Style="{StaticResource IconTextButton}"
                         Background="Red" Command="{Binding DeleteCodexCommand}"/>
             </StackPanel>
         </StackPanel>

@@ -13,14 +13,7 @@ namespace COMPASS.Converters
         {
             CodexProperty prop = Codex.Properties.FirstOrDefault(prop => prop.Label == parameter.ToString());
             bool empty = prop.IsEmpty((Codex)value);
-            if (empty)
-            {
-                return Visibility.Collapsed;
-            }
-            else
-            {
-                return Visibility.Visible;
-            }
+            return empty ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();

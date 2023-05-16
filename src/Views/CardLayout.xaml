@@ -4,19 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
-             xmlns:Tools ="clr-namespace:COMPASS.Tools"
+             xmlns:tools ="clr-namespace:COMPASS.Tools"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
-             xmlns:Converters="clr-namespace:COMPASS.Converters" 
-             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-             d:DataContext="{d:DesignInstance Type=viewmodels:CardLayoutViewModel}"
+             xmlns:converters="clr-namespace:COMPASS.Converters"
+             xmlns:layouts="clr-namespace:COMPASS.ViewModels.Layouts"
+             d:DataContext="{d:DesignInstance Type=layouts:CardLayoutViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
-        <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
-        <Tools:BindingProxy x:Key="LayoutProxy" Data="{Binding}" />
-        <Tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
+        <converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+        <tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}"/>
     </UserControl.Resources>
         <!--#region CardView-->
     <wpftk:GridView x:Name="CardLayoutListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices, Mode=OneWay}" 
@@ -31,8 +29,7 @@
              VirtualizingPanel.ScrollUnit="Pixel">
         <wpftk:GridView.ItemContainerStyle>
             <Style TargetType="{x:Type ListBoxItem}">
-                <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
-                <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/>
+                <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
                 <Setter Property="BorderBrush" Value="Transparent"/>
@@ -84,7 +81,7 @@
                             <Image Source="{Binding Thumbnail, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, 
                                     Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png }" HorizontalAlignment="Center" 
                                    MaxHeight="{Binding ActualHeight, ElementName=PropGrid}" Stretch="UniformToFill"/>
-                            <Border VerticalAlignment="Bottom" Height="25"
+                            <Border Grid.Column="0" VerticalAlignment="Bottom" Height="25"
                                     Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, 
                                     Converter={StaticResource ToVisibilityConverter}}">
                                 <Border.Background>
@@ -94,14 +91,14 @@
                                     <BlurEffect Radius="5" RenderingBias="Performance"/>
                                 </Border.Effect>
                             </Border>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
-                                    Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, 
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
+                                        Visibility="{Binding DataContext.ShowFileIcons, RelativeSource={RelativeSource AncestorType=ListBox}, 
                                     Converter={StaticResource ToVisibilityConverter}}">
                                 <Button Command="{Binding Path=Data.OpenCodexLocallyCommand, Source={StaticResource CodexProxy}}" ToolTip="Open Locally"
-                                        CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="File"/>
+                                        CommandParameter="{Binding}" Style="{StaticResource IconBtn}" tools:AP.IconKind="File"/>
                                 <Button Command="{Binding Path=Data.OpenCodexOnlineCommand, Source={StaticResource CodexProxy}}" ToolTip="Open Online"
-                                        CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>
-                                <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned, Converter={StaticResource ToVisibilityConverter}}"/>
+                                        CommandParameter="{Binding}" Style="{StaticResource IconBtn}" tools:AP.IconKind="Web"/>
+                                <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=PhysicallyOwned, Converter={StaticResource ToVisibilityConverter}}"/>
                             </StackPanel>
                             <Border Grid.Column="1" x:Name="PropGrid" VerticalAlignment="Top" MinHeight="160">
                                 <Grid Margin="5 10" >
@@ -170,10 +167,10 @@
                                 </Grid>
                             </Border>
                         </Grid>
-                        <Rectangle Grid.Row="1" Fill="{StaticResource AccentColor}" Height="3"/>
-                        <ItemsControl Grid.Row="2" Grid.Column="0" Foreground="Black" Margin="10,3"
-                                    ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
-                                    Visibility="{Binding DataContext.ShowTags, RelativeSource={RelativeSource AncestorType=ListBox},
+                        <Rectangle Fill="{StaticResource AccentColor}" Height="3"/>
+                        <ItemsControl Foreground="Black" Margin="10,3"
+                                      ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
+                                      Visibility="{Binding DataContext.ShowTags, RelativeSource={RelativeSource AncestorType=ListBox},
                                         Converter={StaticResource ToVisibilityConverter}}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>

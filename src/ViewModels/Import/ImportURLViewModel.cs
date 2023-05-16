@@ -42,10 +42,10 @@ namespace COMPASS.ViewModels.Import
 
         public ImportURLWindow Window;
 
-        private ImportSource _importSource;
+        private readonly ImportSource _importSource;
 
         //configuration props
-        public string ImportTitle { get; init; } = "";
+        public string ImportTitle { get; } = "";
         public string ExampleURL { get; init; } = "";
         public bool ShowValidateDisableCheckbox { get; init; } = false;
         public bool ShowScannerButton { get; init; } = false;
@@ -84,10 +84,10 @@ namespace COMPASS.ViewModels.Import
             }
             Window.Close();
 
-            var ProgressVM = ProgressViewModel.GetInstance();
-            ProgressVM.Log.Clear();
-            ProgressVM.ResetCounter();
-            ProgressVM.TotalAmount = 1;
+            var progressVM = ProgressViewModel.GetInstance();
+            progressVM.Log.Clear();
+            progressVM.ResetCounter();
+            progressVM.TotalAmount = 1;
 
             ProgressWindow progressWindow = new(3)
             {
@@ -108,9 +108,9 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        private ActionCommand _OpenBarcodeScannerCommand;
-        public ActionCommand OpenBarcodeScannerCommand => _OpenBarcodeScannerCommand ??= new(OpenBarcodeScanner);
-        public void OpenBarcodeScanner()
+        private ActionCommand _openBarcodeScannerCommand;
+        public ActionCommand OpenBarcodeScannerCommand => _openBarcodeScannerCommand ??= new(OpenBarcodeScanner);
+        private void OpenBarcodeScanner()
         {
             BarcodeScanWindow bcScanWindow = new();
             if (bcScanWindow.ShowDialog() == true)
@@ -121,11 +121,11 @@ namespace COMPASS.ViewModels.Import
 
         public async Task<Codex> ImportURL()
         {
-            var ProgressVM = ProgressViewModel.GetInstance();
-            ProgressVM.ResetCounter();
+            var progressVM = ProgressViewModel.GetInstance();
+            progressVM.ResetCounter();
 
             //Step 1: add codex
-            ProgressVM.Text = "Adding new item to Collection";
+            progressVM.Text = "Adding new item to Collection";
             Codex newCodex = new(MainViewModel.CollectionVM.CurrentCollection);
             if (_importSource == ImportSource.ISBN)
             {
@@ -136,32 +136,31 @@ namespace COMPASS.ViewModels.Import
                 newCodex.SourceURL = InputURL;
             }
             MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
-            ProgressVM.IncrementCounter();
-            ProgressVM.ResetCounter();
+            progressVM.IncrementCounter();
+            progressVM.ResetCounter();
 
             // Steps 2: Scrape metadata
-            ProgressVM.Text = "Downloading Metadata";
+            progressVM.Text = "Downloading Metadata";
             await CodexViewModel.StartGetMetaDataProcess(newCodex)
                 .ContinueWith(_ =>
                 {
-                    ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Metadata loaded."));
-                    ProgressVM.ResetCounter();
+                    progressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Metadata loaded."));
+                    progressVM.ResetCounter();
                 });
 
             // Step 3: Get Cover Art
-
-            ProgressVM.Text = "Downloading Cover";
+            progressVM.Text = "Downloading Cover";
             await CoverFetcher.GetCover(newCodex)
                  .ContinueWith(_ =>
                  {
-                     ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Cover loaded."));
-                     ProgressVM.ResetCounter();
+                     progressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Cover loaded."));
+                     progressVM.ResetCounter();
                  });
 
             //Complete import
             string logMsg = $"Imported {newCodex.Title}";
             Logger.Info(logMsg);
-            ProgressVM.AddLogEntry(new LogEntry(LogEntry.MsgType.Info, logMsg));
+            progressVM.AddLogEntry(new LogEntry(LogEntry.MsgType.Info, logMsg));
 
             return newCodex;
         }

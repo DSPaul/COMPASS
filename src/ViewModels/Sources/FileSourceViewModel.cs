@@ -1,4 +1,5 @@
-﻿using COMPASS.Models;
+﻿using System.Diagnostics;
+using COMPASS.Models;
 using COMPASS.Tools;
 using FuzzySharp;
 using System.IO;
@@ -10,7 +11,6 @@ namespace COMPASS.ViewModels.Sources
 {
     public class FileSourceViewModel : SourceViewModel
     {
-        public FileSourceViewModel() : base() { }
         public override MetaDataSource Source => MetaDataSource.File;
 
         public override Task<bool> FetchCover(Codex codex) => throw new System.NotImplementedException();
@@ -27,7 +27,8 @@ namespace COMPASS.ViewModels.Sources
             // Tags based on file path
             foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)
             {
-                if (codex.Path.Contains(folderTagPair.Folder))
+                Debug.Assert(IsValidSource(codex), "Codex without path was referenced in file source");
+                if (codex.Path!.Contains(folderTagPair.Folder))
                 {
                     Application.Current.Dispatcher.Invoke(() => codex.Tags.AddIfMissing(folderTagPair.Tag));
                 }
@@ -37,8 +38,8 @@ namespace COMPASS.ViewModels.Sources
             {
                 foreach (Tag tag in MainViewModel.CollectionVM.CurrentCollection.AllTags)
                 {
-                    var SplitFolders = codex.Path.Split("\\");
-                    if (SplitFolders.Any(folder => Fuzz.Ratio(folder.ToLowerInvariant(), tag.Content.ToLowerInvariant()) > 90))
+                    var splitFolders = codex.Path!.Split("\\");
+                    if (splitFolders.Any(folder => Fuzz.Ratio(folder.ToLowerInvariant(), tag.Content.ToLowerInvariant()) > 90))
                     {
                         Application.Current.Dispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
                     }

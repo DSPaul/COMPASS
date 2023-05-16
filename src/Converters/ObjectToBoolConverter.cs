@@ -6,8 +6,8 @@ namespace COMPASS.Converters
 {
     /// <summary>
     /// Converts any type into a bool,
-    /// Convert: returns true if the param is equal to the binded prop
-    /// ConvertBack: Sets the binded prop to the parameter if checked
+    /// Convert: returns true if the param is equal to the bound prop
+    /// ConvertBack: Sets the bound prop to the parameter if checked
     /// </summary>
     public class ObjectToBoolConverter : IValueConverter
     {

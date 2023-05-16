@@ -17,10 +17,10 @@ namespace COMPASS.Commands
             remove => CommandManager.RequerySuggested -= value;
         }
 
-        public ActionCommand(Action Execute, Func<bool> CanExecute = null)
+        public ActionCommand(Action execute, Func<bool> canExecute = null)
         {
-            _execute = Execute;
-            _canExecute = CanExecute;
+            _execute = execute;
+            _canExecute = canExecute;
         }
 
         public bool CanExecute(object parameter) => _canExecute == null || _canExecute();

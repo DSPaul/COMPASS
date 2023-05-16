@@ -5,14 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:Controls="clr-namespace:COMPASS.Resources.Controls"
-             xmlns:Tools ="clr-namespace:COMPASS.Tools"
-             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-             d:DataContext="{d:DesignInstance Type=viewmodels:ListLayoutViewModel}"
+             xmlns:controls="clr-namespace:COMPASS.Resources.Controls"
+             xmlns:tools ="clr-namespace:COMPASS.Tools"
+             xmlns:layouts="clr-namespace:COMPASS.ViewModels.Layouts"
+             d:DataContext="{d:DesignInstance Type=layouts:ListLayoutViewModel}"
              mc:Ignorable="d"  x:Name="LastLayoutControl"
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <Controls:EnhancedDataGrid x:Name="ListLayoutGrid" MaxWidth="{Binding ActualWidth, ElementName=LastLayoutControl}"
+    <controls:EnhancedDataGrid x:Name="ListLayoutGrid" MaxWidth="{Binding ActualWidth, ElementName=LastLayoutControl}"
                 Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
                 ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices, IsAsync=True}" 
                 CanUserAddRows="False" SelectionMode="Extended" CanUserSortColumns="True" AutoGenerateColumns="False" 
@@ -26,8 +26,8 @@
                 TargetUpdated="FileView_TargetUpdated"  
                 dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CodexVM}">
         <DataGrid.Resources>
-            <Tools:BindingProxy x:Key="LayoutProxy" Data="{Binding}" />
-            <Tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
+            <tools:BindingProxy x:Key="LayoutProxy" Data="{Binding}" />
+            <tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
             <Style TargetType="{x:Type DataGridColumnHeader}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -113,10 +113,15 @@
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="0"/>
                                     </SelectiveScrollingGrid.RowDefinitions>
-                                    <DataGridCellsPresenter Grid.Column="1" ItemsPanel="{TemplateBinding ItemsPanel}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                    <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen, ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical}, 
-                                        Converter={x:Static DataGrid.RowDetailsScrollingConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Visibility="{TemplateBinding DetailsVisibility}"/>
-                                    <DataGridRowHeader Grid.RowSpan="2" SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Row}, 
+                                    <DataGridCellsPresenter Grid.Column="1" ItemsPanel="{TemplateBinding ItemsPanel}" 
+                                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                    <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1" 
+                                                              SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen, ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical}, 
+                                                                Converter={x:Static DataGrid.RowDetailsScrollingConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" 
+                                                              Visibility="{TemplateBinding DetailsVisibility}"/>
+                                    <DataGridRowHeader Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                                       SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" 
+                                                       Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Row}, 
                                         Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
                                 </SelectiveScrollingGrid>
                             </Border>
@@ -229,10 +234,10 @@
                     <DataTemplate>
                         <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Command="{Binding Path=Data.OpenCodexLocallyCommand, Source={StaticResource CodexProxy}}" ToolTip="Open Locally"
-                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FileOutline"/>
+                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" tools:AP.IconKind="FileOutline"/>
                             <Button Command="{Binding Path=Data.OpenCodexOnlineCommand, Source={StaticResource CodexProxy}}" ToolTip="Open Online"
-                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>
-                            <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
+                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" tools:AP.IconKind="Web"/>
+                            <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=PhysicallyOwned,
                                 Converter={StaticResource ToVisibilityConverter}}" Margin="5"  ToolTip="Physically Owned"/>
                         </StackPanel>
                     </DataTemplate>
@@ -249,6 +254,6 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
         </DataGrid.Columns>
-    </Controls:EnhancedDataGrid>
+    </controls:EnhancedDataGrid>
 
 </UserControl>

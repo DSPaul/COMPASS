@@ -3,8 +3,8 @@ using System.Windows.Input;
 
 namespace COMPASS.Commands
 {
-    //Relaycommand that works with functions that return bool
-    //to for example indicate succes of excecution
+    //Relay command that works with functions that return bool
+    //to for example indicate success of execution
     /// <summary>
     /// Command for methods that take one argument and return bool that indicates success
     /// </summary>
@@ -21,10 +21,10 @@ namespace COMPASS.Commands
             remove => CommandManager.RequerySuggested -= value;
         }
 
-        public ReturningRelayCommand(Func<T, R> Execute, Func<T, bool> CanExecute = null)
+        public ReturningRelayCommand(Func<T, R> execute, Func<T, bool> canExecute = null)
         {
-            _execute = Execute;
-            _canExecute = CanExecute;
+            _execute = execute;
+            _canExecute = canExecute;
         }
 
         public bool CanExecute(object parameter) => _canExecute == null || _canExecute((T)parameter);

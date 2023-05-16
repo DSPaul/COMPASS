@@ -154,8 +154,8 @@ namespace COMPASS.Windows
 
         private void Toggle_ContextMenu(object sender, RoutedEventArgs e)
         {
-            (sender as Button).ContextMenu.PlacementTarget = sender as Button;
-            (sender as Button).ContextMenu.IsOpen = !(sender as Button).ContextMenu.IsOpen;
+            ((Button)sender).ContextMenu!.PlacementTarget = (Button)sender;
+            ((Button)sender).ContextMenu!.IsOpen = !((Button)sender).ContextMenu!.IsOpen;
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -166,7 +166,7 @@ namespace COMPASS.Windows
                     // Ctrl + S to search
                     if (Keyboard.Modifiers == ModifierKeys.Control)
                     {
-                        Searchbox.Focus();
+                        Searchbar.Focus();
                         e.Handled = true;
                     }
                     break;

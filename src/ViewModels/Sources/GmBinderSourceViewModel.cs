@@ -5,6 +5,7 @@ using HtmlAgilityPack;
 using ImageMagick;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,9 +13,6 @@ namespace COMPASS.ViewModels.Sources
 {
     public class GmBinderSourceViewModel : SourceViewModel
     {
-        public GmBinderSourceViewModel() : base() { }
-        public GmBinderSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
-
         public override MetaDataSource Source => MetaDataSource.GmBinder;
 
         public override bool IsValidSource(Codex codex) =>
@@ -26,6 +24,7 @@ namespace COMPASS.ViewModels.Sources
             codex = new Codex(codex);
 
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading metadata from GM Binder"));
+            Debug.Assert(IsValidSource(codex), "Invalid Codex was used in GM Binder source");
             HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
@@ -54,9 +53,9 @@ namespace COMPASS.ViewModels.Sources
             try
             {
                 await Task.Run(() => driver.Navigate().GoToUrl(codex.SourceURL));
-                var Coverpage = driver.FindElement(OpenQA.Selenium.By.Id("p1"));
+                var coverpage = driver.FindElement(OpenQA.Selenium.By.Id("p1"));
                 //screenshot and download the image
-                MagickImage image = CoverFetcher.GetCroppedScreenShot(driver, Coverpage);
+                MagickImage image = CoverFetcher.GetCroppedScreenShot(driver, coverpage);
                 CoverFetcher.SaveCover(image, codex);
                 return true;
             }

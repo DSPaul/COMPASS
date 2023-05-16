@@ -3,9 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Tools ="clr-namespace:COMPASS.Tools"
-        xmlns:Converters ="clr-namespace:COMPASS.Converters"
-        xmlns:dd="urn:gong-wpf-dragdrop"
+        xmlns:tools ="clr-namespace:COMPASS.Tools"
+        xmlns:converters ="clr-namespace:COMPASS.Converters"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
         xmlns:models="clr-namespace:COMPASS.Models" 
@@ -28,7 +27,7 @@
                         <Border x:Name="TabBorder" BorderThickness="0" CornerRadius="5,0,0,5" Margin="0,0,-1,0" Padding="0,10">
                             <StackPanel Orientation="Horizontal" Margin="10,5">
                                 <materialDesign:PackIcon Height="20" Width="20"
-                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
+                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}"/>
                                 <ContentPresenter VerticalAlignment="Center" ContentSource="Header" Margin="10,0,5,0"/>
                             </StackPanel>
                         </Border>
@@ -77,7 +76,7 @@
                 <Setter Property="Margin" Value="10"/>
             </Style>
         </TabControl.Resources>
-        <TabItem Header="Preferences"  Tools:AP.IconKind="TuneVariant">
+        <TabItem Header="Preferences"  tools:AP.IconKind="TuneVariant">
             <StackPanel Orientation="Vertical" Margin="20">
                 <Border x:Name="FileSourcePreferences" Style="{StaticResource SettingsContainer}">
                     <StackPanel>
@@ -85,8 +84,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Try to open files in this order on double click:" 
                                        TextWrapping="Wrap" VerticalAlignment="Top"/>
-                            <controls:PriorityControl Grid.Row="1" Grid.Column="1" Grid.RowSpan="3" 
-                                                      ItemsSource="{Binding OpenCodexPriority}"/>
+                            <controls:PriorityControl ItemsSource="{Binding OpenCodexPriority}"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -131,7 +129,7 @@
                 </Border>
             </StackPanel>
         </TabItem>
-        <TabItem Header="Import" Tools:AP.IconKind="FileImport">
+        <TabItem Header="Import" tools:AP.IconKind="FileImport">
             <ScrollViewer>
                 <StackPanel Margin="20">
                     <Border x:Name="AutoImportSettings" Style="{StaticResource SettingsContainer}">
@@ -156,12 +154,12 @@
                                                                 <ColumnDefinition Width="auto"/>
                                                             </Grid.ColumnDefinitions>
                                                             <TextBlock Text="{Binding}" Margin="0" TextWrapping="Wrap"/>
-                                                            <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="FolderOpen" Width="20" 
+                                                            <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="FolderOpen" Width="20" 
                                                                 Margin="5,0" Grid.Column="1" ToolTip="Show In Explorer"
                                                                 Command="{Binding DataContext.ShowInExplorerCommand,
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                 CommandParameter="{Binding}"/>
-                                                            <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="Delete" Width="20" 
+                                                            <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Delete" Width="20" 
                                                                 Command="{Binding DataContext.RemoveAutoImportDirectoryCommand, 
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                 CommandParameter="{Binding}" Margin="5,0" 
@@ -177,14 +175,14 @@
                                                 <ColumnDefinition Width="auto"/>
                                                 <ColumnDefinition Width="auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBox x:Name="NewAutoImportFolderTextBox" Tools:AP.PlaceHolderText="New Folder" Margin="0" BorderThickness="0"/>
-                                            <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="Plus" Grid.Column="1" Margin="10,0,5,0" 
+                                            <TextBox x:Name="NewAutoImportFolderTextBox" tools:AP.PlaceHolderText="New Folder" Margin="0" BorderThickness="0"/>
+                                            <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Plus" Grid.Column="1" Margin="10,0,5,0" 
                                                 Background="{StaticResource AccentColorMuted}" Padding="3,2" 
                                                 IsDefault="{Binding ElementName=NewAutoImportFolderTextBox, Path= IsFocused}"
                                                 Command="{Binding AddAutoImportDirectoryCommand}" ToolTip="Add Folder"
                                                 CommandParameter="{Binding ElementName=NewAutoImportFolderTextBox, Path=Text}"/>
                                             <Button Style="{StaticResource IconBtn}" ToolTip="Pick Folder To Add" Grid.Column="2"
-                                                    Background="{StaticResource AccentColorMuted}" Padding="3,2" Tools:AP.IconKind="FolderPlus"
+                                                    Background="{StaticResource AccentColorMuted}" Padding="3,2" tools:AP.IconKind="FolderPlus"
                                                     Command="{Binding PickAutoImportDirectoryCommand}"/>
                                         </Grid>
                                     </StackPanel>
@@ -225,7 +223,7 @@
                                                             <ColumnDefinition Width="auto"/>
                                                         </Grid.ColumnDefinitions>
                                                         <TextBlock Text="{Binding}" Margin="0" TextWrapping="Wrap"/>
-                                                        <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="Delete" Width="20" 
+                                                        <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Delete" Width="20" 
                                                                 Command="{Binding DataContext.RemoveBanishedPathCommand, 
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                 CommandParameter="{Binding}" Margin="5,0" 
@@ -241,7 +239,7 @@
                     </Border>
                     <Border x:Name="FolderTagMapping" Style="{StaticResource SettingsContainer}">
                         <Border.Resources>
-                            <Converters:ToFolderTagPairConverter x:Key="ToFolderTagPairConverter"/>
+                            <converters:ToFolderTagPairConverter x:Key="ToFolderTagPairConverter"/>
                         </Border.Resources>
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
@@ -249,7 +247,7 @@
                                 <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
                                                          ToolTip="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
                             </StackPanel>
-                            <Button Style="{StaticResource TextButton}" HorizontalAlignment="Left" Background="{StaticResource ButtonBackground}"
+                            <Button Style="{StaticResource TextButton}" HorizontalAlignment="Left"
                                     ToolTip="If all files from a folder share the same tag, the folder and tag will be linked."
                                     Command="{Binding DetectFolderTagPairsCommand}" Margin="5">
                                 <StackPanel Orientation="Horizontal">
@@ -263,7 +261,7 @@
                                     <StackPanel Margin="0,10,0,5">
                                         <ItemsControl ItemsSource="{Binding FolderTagPairs.View}"  Grid.IsSharedSizeScope="True">
                                             <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
+                                                <DataTemplate DataType="{x:Type models:FolderTagPair}">
                                                     <Border BorderBrush="{StaticResource AccentColorMuted}" BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
                                                         <Grid>
                                                             <Grid.ColumnDefinitions>
@@ -279,12 +277,12 @@
                                                                     Background="{Binding Tag.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}">
                                                                 <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/>
                                                             </Border>
-                                                            <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="FolderOpen" Width="20" 
+                                                            <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="FolderOpen" Width="20" 
                                                                     Margin="5,0" Grid.Column="3" ToolTip="Show In Explorer" 
                                                                     Command="{Binding DataContext.ShowInExplorerCommand,
                                                                     RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                     CommandParameter="{Binding Folder}"/>
-                                                            <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="Delete" Width="20" 
+                                                            <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Delete" Width="20" 
                                                                 Command="{Binding DataContext.RemoveFolderTagPairCommand, 
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                 CommandParameter="{Binding}" Margin="5,0" 
@@ -306,9 +304,9 @@
                                                 <DockPanel>
                                                     <Button  x:Name="SelectFolderForFolderTagPairButton" Style="{StaticResource IconBtn}" 
                                                              ToolTip="Pick a Folder"  HorizontalAlignment="Right" Padding="3,2" 
-                                                             Tools:AP.IconKind="FolderOpen" Click="SelectFolderForFolderTagPairButton_Click" 
+                                                             tools:AP.IconKind="FolderOpen" Click="SelectFolderForFolderTagPairButton_Click" 
                                                              DockPanel.Dock="Right" Margin="5,0" Height="20"/>    
-                                                    <TextBox x:Name="NewFolderTagPairTextBox" Tools:AP.PlaceHolderText="Folder to Link" 
+                                                    <TextBox x:Name="NewFolderTagPairTextBox" tools:AP.PlaceHolderText="Folder to Link" 
                                                              Margin="0" BorderThickness="0" HorizontalAlignment="Stretch"/>
                                                 </DockPanel>
                                             </Border>
@@ -336,7 +334,7 @@
                                                     </DataTemplate>
                                                 </ComboBox.ItemTemplate>
                                             </ComboBox>
-                                            <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="LinkPlus" Grid.Column="4" Margin="10,0,5,0" 
+                                            <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="LinkPlus" Grid.Column="4" Margin="10,0,5,0" 
                                                 Background="{StaticResource AccentColorMuted}" Padding="3,2" 
                                                 Command="{Binding AddFolderTagPairCommand}" >
                                                 <Button.CommandParameter>
@@ -367,7 +365,7 @@
                 </StackPanel>
             </ScrollViewer>
         </TabItem>
-        <TabItem Header="Metadata" Tools:AP.IconKind="FileCode">
+        <TabItem Header="Metadata" tools:AP.IconKind="FileCode">
             <ScrollViewer>
                 <StackPanel Margin="20">
                     <Border x:Name="MetaDataActions" Style="{StaticResource SettingsContainer}">
@@ -395,14 +393,16 @@
                                     <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Text="Property"/>
-                                <TextBlock Text="Source Priority" Grid.Column="1" Margin="20,0"/>
-                                <TextBlock Text="Overwrite existing metadata" Grid.Column="2"/>
+                                <TextBlock Text="Source Priority" Grid.Row="0" Grid.Column="1" Margin="20,0"/>
+                                <TextBlock Text="Overwrite existing metadata" Grid.Row="0" Grid.Column="2"/>
                                 
-                                <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3" Grid.Row="1"/>
+                                <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3" Grid.Column="0"
+                                           Grid.Row="1"/>
 
-                                <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" ItemsSource="{Binding MetaDataPreferences}" Margin="10,0">
+                                <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
+                                              ItemsSource="{Binding MetaDataPreferences}" Margin="10,0">
                                     <ItemsControl.Resources>
-                                        <Converters:ObjectToBoolConverter x:Key="ObjectToBoolConverter" />
+                                        <converters:ObjectToBoolConverter x:Key="ObjectToBoolConverter" />
                                     </ItemsControl.Resources>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
@@ -417,13 +417,13 @@
                                                     <RowDefinition Height="auto"/>
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="{Binding Label}" VerticalAlignment="Top"/>
-                                                <controls:PriorityControl Grid.Column="1" 
-                                                          ItemsSource="{Binding SourcePriorityNamed, Mode=TwoWay}"/>
-                                                <StackPanel Grid.Column="2"  Margin="10,0,20,0">
+                                                <controls:PriorityControl Grid.Row="0" Grid.Column="1" 
+                                                                          ItemsSource="{Binding SourcePriorityNamed, Mode=TwoWay}"/>
+                                                <StackPanel Grid.Row="0" Grid.Column="2"  Margin="10,0,20,0">
                                                     <RadioButton Content="Never" 
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource ObjectToBoolConverter}, 
                                                                  ConverterParameter={x:Static models:MetaDataOverwriteMode.Never}}" />
-                                                    <RadioButton Content="If exisiting metadata is empty" 
+                                                    <RadioButton Content="If existing metadata is empty" 
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource ObjectToBoolConverter}, 
                                                                  ConverterParameter={x:Static models:MetaDataOverwriteMode.IfEmpty}}" />
                                                     <RadioButton Content="Ask every time" 
@@ -433,7 +433,8 @@
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource ObjectToBoolConverter}, 
                                                                  ConverterParameter={x:Static models:MetaDataOverwriteMode.Always}}" />
                                                 </StackPanel>
-                                                <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3" Grid.Row="1"/>
+                                                <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3"
+                                                           Grid.Column="0" Grid.Row="1"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -444,7 +445,7 @@
                 </StackPanel>
             </ScrollViewer>
         </TabItem>
-        <TabItem Header="Manage Data" Tools:AP.IconKind="DatabaseCog">
+        <TabItem Header="Manage Data" tools:AP.IconKind="DatabaseCog">
             <ScrollViewer>
                 <StackPanel Orientation="Vertical" Margin="20">
                     <Border x:Name="FixRenamedFolder"  Style="{StaticResource SettingsContainer}">
@@ -491,15 +492,15 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="OldPathTextBox" Tools:AP.PlaceHolderText="old\folder\path\" Grid.Column="0"/>
+                                <TextBox x:Name="OldPathTextBox" tools:AP.PlaceHolderText="old\folder\path\" Grid.Column="0"/>
                                 <TextBlock Text="To" Grid.Column="1"/>
-                                <TextBox x:Name="NewPathTextBox" Tools:AP.PlaceHolderText = "new\folder\path\" Grid.Column="2"/>
-                                <Button Content="Update References" Style="{StaticResource IconTextButton}" Tools:AP.IconKind="RenameBox" Grid.Column="3"
+                                <TextBox x:Name="NewPathTextBox" tools:AP.PlaceHolderText = "new\folder\path\" Grid.Column="2"/>
+                                <Button Content="Update References" Style="{StaticResource IconTextButton}" tools:AP.IconKind="RenameBox" Grid.Column="3"
                                         Command="{Binding RenameFolderRefCommand}" IsDefault="{Binding ElementName=NewPathTextBox, Path=IsFocused}">
                                     <Button.CommandParameter>
                                         <MultiBinding>
                                             <MultiBinding.Converter>
-                                                <Converters:MultiParamConverter/>
+                                                <converters:MultiParamConverter/>
                                             </MultiBinding.Converter>
                                             <Binding Path="Text" ElementName="OldPathTextBox"/>
                                             <Binding Path="Text" ElementName="NewPathTextBox"/>
@@ -511,11 +512,11 @@
                             <TextBlock Text="{Binding RenameCompleteMessage}" FontSize="14" Foreground="{StaticResource TextMutedColor}"
                                        Visibility="{Binding Path=AmountRenamed, Converter={StaticResource ToVisibilityConverter}}"/>
                             <TextBlock Text="Remove broken references:" Margin="10,5"/>
-                            <Button Style="{StaticResource IconTextButton}" Tools:AP.IconKind="FileDocumentRemoveOutline" 
+                            <Button Style="{StaticResource IconTextButton}" tools:AP.IconKind="FileDocumentRemoveOutline" 
                                     Content="Remove broken references from books." HorizontalAlignment="Left" 
                                         Command="{Binding RemoveBrokenRefsCommand}" />
 
-                            <Button Style="{StaticResource IconTextButton}" Tools:AP.IconKind="BookRemove" 
+                            <Button Style="{StaticResource IconTextButton}" tools:AP.IconKind="BookRemove" 
                                     Content="Delete books with broken references.   " HorizontalAlignment="Left"
                                         Command="{Binding DeleteCodicesWithBrokenRefsCommand}"/>
                         </StackPanel>
@@ -534,18 +535,18 @@
                                 <TextBox IsReadOnly="True" Grid.Column="1" TextWrapping="Wrap"
                                          Text="{Binding Source={x:Static viewmodels:SettingsViewModel.CompassDataPath}, Mode=OneWay}"/>
                                 <Button Style="{StaticResource IconTextButton}" Grid.Column="2" Content="Change" Margin="5"
-                                        ToolTip="Change Data Path" Tools:AP.IconKind="FolderEdit" Command="{Binding ChangeDataPathCommand}"/>
+                                        ToolTip="Change Data Path" tools:AP.IconKind="FolderEdit" Command="{Binding ChangeDataPathCommand}"/>
                                 <Button Style="{StaticResource IconTextButton}" Grid.Column="3" Content="Default" Margin="5"
-                                        ToolTip="Restore Default" Tools:AP.IconKind="FolderRefresh" Command="{Binding ResetDataPathCommand}"/>
+                                        ToolTip="Restore Default" tools:AP.IconKind="FolderRefresh" Command="{Binding ResetDataPathCommand}"/>
 
                             </Grid>
                             <UniformGrid Columns="3">
-                                <Button Content="Browse Local Files" Tools:AP.IconKind="FolderOpen"
+                                <Button Content="Browse Local Files" tools:AP.IconKind="FolderOpen"
                                         Command="{Binding BrowseLocalFilesCommand}" Style="{StaticResource IconTextButton}"/>
-                                <Button Content="Backup User Data" Tools:AP.IconKind="FolderZip"
+                                <Button Content="Backup User Data" tools:AP.IconKind="FolderZip"
                                         Command="{Binding BackupLocalFilesCommand}" Style="{StaticResource IconTextButton}" 
                                         ToolTip="Saves metadata, tags, thumbnails and preferences to zip"/>
-                                <Button Content="Restore Backup" Tools:AP.IconKind="BackupRestore"
+                                <Button Content="Restore Backup" tools:AP.IconKind="BackupRestore"
                                         Command="{Binding RestoreBackupCommand}" Style="{StaticResource IconTextButton}"/>
                             </UniformGrid>
                         </StackPanel>
@@ -553,10 +554,10 @@
                 </StackPanel>
             </ScrollViewer>
         </TabItem>
-        <TabItem Header="What's New"  Tools:AP.IconKind="Update">
+        <TabItem Header="What's New"  tools:AP.IconKind="Update">
             <wv2:WebView2 Name="ChangelogWebView" DefaultBackgroundColor=""/>
         </TabItem>
-        <TabItem Header="About"  Tools:AP.IconKind="InformationCircleOutline">
+        <TabItem Header="About"  tools:AP.IconKind="InformationCircleOutline">
             <ScrollViewer>
                 <StackPanel Orientation="Vertical">
                     <Border Style="{StaticResource SettingsContainer}">
@@ -564,7 +565,7 @@
                             <ContentControl Content="{StaticResource CompassLogo}" Margin="20"/>
                             <TextBlock Text="{Binding Version}"/>
                             <Button Content="Check for Updates" Command="{Binding CheckForUpdatesCommand}" 
-                                    Tools:AP.IconKind="Autorenew" Style="{StaticResource IconTextButton}"/>
+                                    tools:AP.IconKind="Autorenew" Style="{StaticResource IconTextButton}"/>
                             <TextBlock Text="Author: Paul De Smul"/>
                         </StackPanel>
                     </Border>
@@ -574,9 +575,9 @@
                             <UniformGrid Columns="2">
                                 <TextBlock>
                                     Source Code:
-                                    <Hyperlink NavigateUri="https://github.com/DSPAUL/COMPASS"
+                                    <Hyperlink NavigateUri="https://github.com/DSPaul/COMPASS"
                                                 RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
-                                        github.com/DSPAUL/COMPASS
+                                        github.com/DSPaul/COMPASS
                                     </Hyperlink>
                                 </TextBlock>
                                 <TextBlock>

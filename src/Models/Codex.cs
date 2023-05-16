@@ -15,7 +15,7 @@ namespace COMPASS.Models
         //empty constructor for serialization
         public Codex()
         {
-            Authors.CollectionChanged += (e, v) => RaisePropertyChanged(nameof(AuthorsAsString));
+            Authors.CollectionChanged += (_, _) => RaisePropertyChanged(nameof(AuthorsAsString));
         }
 
         public Codex(CodexCollection cc) : this()
@@ -49,7 +49,7 @@ namespace COMPASS.Models
             ID = c.ID;
             CoverArt = c.CoverArt;
             Thumbnail = c.Thumbnail;
-            Physically_Owned = c.Physically_Owned;
+            PhysicallyOwned = c.PhysicallyOwned;
             Description = c.Description;
             ReleaseDate = c.ReleaseDate;
             Rating = c.Rating;
@@ -122,7 +122,7 @@ namespace COMPASS.Models
             get => String.IsNullOrEmpty(_sortingTitle) ? _title : _sortingTitle;
             set => SetProperty(ref _sortingTitle, value);
         }
-        //seperate property needed for serialization or it will get _title and save that
+        //separate property needed for serialization or it will get _title and save that
         //instead of saving an empty and mirroring _title during runtime
         public string SerializableSortingTitle
         {
@@ -216,16 +216,16 @@ namespace COMPASS.Models
             }
         }
 
-        private bool _physically_Owned;
-        public bool Physically_Owned
+        private bool _physicallyOwned;
+        public bool PhysicallyOwned
         {
-            get => _physically_Owned;
-            set => SetProperty(ref _physically_Owned, value);
+            get => _physicallyOwned;
+            set => SetProperty(ref _physicallyOwned, value);
         }
 
         private ObservableCollection<Tag> _tags = new();
         //Don't save all the tags, only save ID's instead
-        [XmlIgnoreAttribute]
+        [XmlIgnore]
         public ObservableCollection<Tag> Tags
         {
             get
@@ -254,7 +254,7 @@ namespace COMPASS.Models
             }
         }
 
-        private DateTime? _releaseDate = null;
+        private DateTime? _releaseDate;
         public DateTime? ReleaseDate
         {
             get => _releaseDate;
@@ -289,7 +289,7 @@ namespace COMPASS.Models
             set => SetProperty(ref _lastOpened, value);
         }
 
-        private int _openedCount = 0;
+        private int _openedCount;
         public int OpenedCount
         {
             get => _openedCount;
@@ -303,14 +303,14 @@ namespace COMPASS.Models
             set => SetProperty(ref _favorite, value);
         }
 
-        private string _ISBN;
+        private string _isbn;
         public string ISBN
         {
-            get => _ISBN;
+            get => _isbn;
             set
             {
                 value = Utils.SanitizeXmlString(value);
-                SetProperty(ref _ISBN, value);
+                SetProperty(ref _isbn, value);
             }
         }
         #endregion 

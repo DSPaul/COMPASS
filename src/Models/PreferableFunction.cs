@@ -18,7 +18,7 @@ namespace COMPASS.Models
             Content = name;
             Function = func;
             ID = id;
-            BackgroundColor = (Color)ColorConverter.ConvertFromString("#16D68A");
+            BackgroundColor = (Color)ColorConverter.ConvertFromString("#16D68A")!;
         }
 
         //Implement ITag
@@ -28,9 +28,9 @@ namespace COMPASS.Models
         public int ID { get; set; }
 
         //Properties
-        public Func<T, bool> Function { get; init; }
+        public Func<T, bool> Function { get; }
 
-        //Try functions in order determined by list of preferablefunctions untill one succeeds
+        //Try functions in order determined by list of preferable functions until one succeeds
         public static bool TryFunctions<A>(IEnumerable<PreferableFunction<A>> toTry, A arg)
         {
             bool success = false;

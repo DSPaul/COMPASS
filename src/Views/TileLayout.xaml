@@ -4,15 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
-             xmlns:Converters="clr-namespace:COMPASS.Converters"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
-             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+             xmlns:converters="clr-namespace:COMPASS.Converters"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
-             d:DataContext="{d:DesignInstance Type=viewmodels:TileLayoutViewModel}"
+             xmlns:layouts="clr-namespace:COMPASS.ViewModels.Layouts"
+             d:DataContext="{d:DesignInstance Type=layouts:TileLayoutViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+        <converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
     </UserControl.Resources>
 
     <wpftk:GridView x:Name="TileLayoutListBox" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedCodex, Mode=TwoWay}"
@@ -27,8 +27,7 @@
             VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel">
         <wpftk:GridView.ItemContainerStyle>
             <Style TargetType="{x:Type ListBoxItem}">
-                <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
-                <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/>
+                <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderBrush" Value="Transparent"/>
                 <Setter Property="BorderThickness" Value="0"/>
@@ -100,7 +99,7 @@
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding DataContext.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}" 
-                                                     Value="{x:Static viewmodels:TileLayoutViewModel+DataOption.Title}">
+                                                     Value="{x:Static layouts:TileLayoutViewModel+DataOption.Title}">
                                             <Setter Property="Visibility" Value="Visible"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -112,7 +111,7 @@
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding DataContext.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}" 
-                                                     Value="{x:Static viewmodels:TileLayoutViewModel+DataOption.Author}">
+                                                     Value="{x:Static layouts:TileLayoutViewModel+DataOption.Author}">
                                             <Setter Property="Visibility" Value="Visible"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -124,7 +123,7 @@
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding DataContext.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}" 
-                                                     Value="{x:Static viewmodels:TileLayoutViewModel+DataOption.Publisher}">
+                                                     Value="{x:Static layouts:TileLayoutViewModel+DataOption.Publisher}">
                                             <Setter Property="Visibility" Value="Visible"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -137,7 +136,7 @@
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding DataContext.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}" 
-                                                     Value="{x:Static viewmodels:TileLayoutViewModel+DataOption.Rating}">
+                                                     Value="{x:Static layouts:TileLayoutViewModel+DataOption.Rating}">
                                             <Setter Property="Visibility" Value="Visible"/>
                                         </DataTrigger>
                                     </Style.Triggers>

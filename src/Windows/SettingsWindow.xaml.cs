@@ -24,8 +24,8 @@ namespace COMPASS.Windows
             LoadChangeLog();
 
             //jump to tab
-            var TabItems = SettingsTabControl.Items;
-            foreach (TabItem item in TabItems)
+            var tabItems = SettingsTabControl.Items;
+            foreach (TabItem item in tabItems)
             {
                 if ((string)item.Header == tab)
                 {
@@ -71,9 +71,9 @@ namespace COMPASS.Windows
             var s = sender as ScrollViewer;
             if (s.ComputedVerticalScrollBarVisibility == Visibility.Collapsed)
             {
-                var ParentScrollViewer = FindParentScrollViewer(s);
-                if (ParentScrollViewer is null) return;
-                ParentScrollViewer.ScrollToVerticalOffset(ParentScrollViewer.VerticalOffset - e.Delta);
+                var parentScrollViewer = FindParentScrollViewer(s);
+                if (parentScrollViewer is null) return;
+                parentScrollViewer.ScrollToVerticalOffset(parentScrollViewer.VerticalOffset - e.Delta);
             }
         }
 

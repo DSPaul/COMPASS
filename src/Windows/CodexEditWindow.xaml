@@ -4,23 +4,21 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:self="clr-namespace:COMPASS"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        xmlns:Models ="clr-namespace:COMPASS.Models"
-        xmlns:Converters ="clr-namespace:COMPASS.Converters"
-        xmlns:Tools ="clr-namespace:COMPASS.Tools" 
+        xmlns:models ="clr-namespace:COMPASS.Models"
+        xmlns:converters ="clr-namespace:COMPASS.Converters"
+        xmlns:tools ="clr-namespace:COMPASS.Tools" 
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-        xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary"
+        xmlns:blackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary"
         xmlns:dd="urn:gong-wpf-dragdrop"
-        
         d:DataContext="{d:DesignInstance Type=viewmodels:CodexEditViewModel}"
         mc:Ignorable="d"
         Title="Item Properties" Height="500" Width="1200" FontSize="16" 
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
         Foreground="{StaticResource TextColor}" Background="{StaticResource WindowBackground}" MouseDown="MainGrid_MouseDown">
     <Window.Resources>
-        <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+        <converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
     </Window.Resources>
 
     <Grid Name="MainGrid" Focusable="True" Margin="5,0">
@@ -58,7 +56,7 @@
             <Style TargetType="Button">
                 <Setter Property="Template" Value="{StaticResource  Btn}"/>
             </Style>
-            <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+            <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type models:TreeViewNode}" ItemsSource="{Binding Children}">
                 <Border CornerRadius="5" Margin="0,3">
                     <Border.Background>
                         <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
@@ -70,7 +68,7 @@
                                   Content="{Binding Tag.Content}" Foreground="{StaticResource TextColor}"/>
                 </Border>
             </HierarchicalDataTemplate>
-            <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
+            <tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
         </Grid.Resources>
         <TextBlock Grid.Column="0" Grid.Row="1" Text="Cover/Preview:" HorizontalAlignment="Center"
                    Foreground="{StaticResource TextMutedColor}" Typography.Capitals="AllSmallCaps"
@@ -94,16 +92,16 @@
                Visibility="{Binding ShowLoading, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ToVisibilityConverter}}"/>
 
         <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Content="Renew" Tools:AP.IconKind="ImageSyncOutline" Margin="5,0" 
+            <Button Content="Renew" tools:AP.IconKind="ImageSyncOutline" Margin="5,0" 
                     ToolTip="Renews the preview for this item, overwriting the current preview."
                 Command="{Binding FetchCoverCommand}" Style="{StaticResource IconTextButton}" />
-            <Button Content="Browse" Tools:AP.IconKind="BookImage" Margin="5,0"
+            <Button Content="Browse" tools:AP.IconKind="BookImage" Margin="5,0"
                     ToolTip="Choose an image to use as cover/preview for this item."
                 Command="{Binding ChooseCoverCommand}" Style="{StaticResource IconTextButton}"/>
         </StackPanel>
 
         <!--Invisible thumbnail here as well so it loads and changes if cover changes -->
-        <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="30" x:Name="ThumbnailIm" Margin="10,0" Width="0">
+        <Image Grid.Column="0" Grid.Row="1" Grid.RowSpan="4" x:Name="ThumbnailIm" Margin="10,0" Width="0">
             <Image.Source>
                 <Binding Path="TempCodex.Thumbnail" Converter="{StaticResource UriToBitmapConverter}" 
                          TargetNullValue="Media\CoverPlaceholder.png">
@@ -144,7 +142,7 @@
                 </Style>
             </TabControl.Resources>
             <TabItem Header="General">
-                <Grid Name="propertiesGrid">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="auto"/>
@@ -170,15 +168,15 @@
                         <TextBlock Text="Sorting Title:" Grid.Row="3" Margin="3,5,3,3"/>
                         <TextBox Text="{Binding TempCodex.SortingTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="4"/>
 
-                        <TextBlock Text="Authors: (seperate with ';')" Grid.Row="5" Margin="3,5,3,3"/>
-                        <BlackPearl:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
+                        <TextBlock Text="Authors: (separate with ';')" Grid.Row="5" Margin="3,5,3,3"/>
+                        <blackPearl:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
                                                     Grid.Row="6" ItemSeparator=";" LookUpContract="{Binding Contract}"
                                                     ItemSource="{Binding MVM.CollectionVM.FilterVM.AuthorList}" 
                                                     SelectedItems="{Binding TempCodex.Authors, Mode=TwoWay}"/>
 
                         <TextBlock Text="Publisher:" Grid.Row="7" Margin="3,5,3,3"/>
-                        <ComboBox Text="{Binding TempCodex.Publisher, Mode=TwoWay}" Grid.Row="8" Name="FilePublisherTB"
-                  IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" 
+                        <ComboBox Text="{Binding TempCodex.Publisher, Mode=TwoWay}" Grid.Row="8"
+                                  IsEditable="True" Background="{x:Null}" BorderBrush="{x:Null}" 
                                   ItemsSource="{Binding MVM.CollectionVM.FilterVM.PublisherList}"/>
 
                         <Grid Grid.Row="9" Margin="0,5">
@@ -206,22 +204,22 @@
                             <TextBox Text="{Binding TempCodex.PageCount, Mode=TwoWay}" MinWidth="30" Margin="5"  Grid.Column="1" Grid.Row="1"/>
 
                             <TextBlock Text="Hard Copy:" VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="2" Margin="3,0,3,0"/>
-                            <CheckBox Name="FileOwnedCB" IsChecked="{Binding TempCodex.Physically_Owned, Mode=TwoWay}" VerticalAlignment="Bottom"
-                                   Grid.Column="1" Grid.Row="2" Margin="2,0"/>
+                            <CheckBox IsChecked="{Binding TempCodex.PhysicallyOwned, Mode=TwoWay}" VerticalAlignment="Bottom"
+                                      Grid.Column="1" Grid.Row="2" Margin="2,0"/>
 
                             <TextBlock Text="Rating:"  Grid.Column="3" Grid.Row="1"/>
                             <materialDesign:RatingBar Value="{Binding TempCodex.Rating, Mode=TwoWay}" Margin="5"  Grid.Column="4" Grid.Row="1"/>
 
                             <TextBlock Text="Favorite:" VerticalAlignment="Stretch" Grid.Column="3" Grid.Row="2" Margin="3,0,3,0"/>
-                            <CheckBox Name="FileFavoriteCB" IsChecked="{Binding TempCodex.Favorite, Mode=TwoWay}" VerticalAlignment="Bottom"
-                                   Grid.Column="4" Grid.Row="2" Margin="2,0"/>
+                            <CheckBox IsChecked="{Binding TempCodex.Favorite, Mode=TwoWay}" VerticalAlignment="Bottom"
+                                      Grid.Column="4" Grid.Row="2" Margin="2,0"/>
 
                         </Grid>
 
                         <StackPanel Orientation="Horizontal" Grid.Row="10">
                             <TextBlock Text="Tags:"/>
                             <ItemsControl ItemsSource="{Binding TempCodex.Tags}" Background="{x:Null}" BorderBrush="{x:Null}" 
-                                Foreground="Black" FontSize="15" Grid.Column="1" VerticalAlignment="Center" 
+                                Foreground="Black" FontSize="15" VerticalAlignment="Center" 
                                 ItemTemplate="{StaticResource TagTemplate}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -245,7 +243,7 @@
                                     </Style>
                                 </TreeView.Resources>
                             </TreeView>
-                            <Button  Grid.Row="1" Command="{Binding QuickCreateTagCommand}" Cursor="Hand" Margin="20,5">
+                            <Button Command="{Binding QuickCreateTagCommand}" Cursor="Hand" Margin="20,5">
                                 <Button.Template>
                                     <ControlTemplate>
                                         <Border BorderBrush="{StaticResource Separator}"
@@ -292,22 +290,22 @@
                     </Grid.Resources>
                     
                     <TextBlock Text="Path:" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding TempCodex.Path, Mode=TwoWay}" Grid.Column="1" 
+                    <TextBox Text="{Binding TempCodex.Path, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" 
                              TextWrapping="Wrap" Padding="3" Margin="10"/>
-                    <Button Grid.Column="2" Command="{Binding BrowsePathCommand}" 
-                            ToolTip="Choose a new Path" Tools:AP.IconKind="FolderOpen"/>
+                    <Button Grid.Row="0" Grid.Column="2" Command="{Binding BrowsePathCommand}" 
+                            ToolTip="Choose a new Path" tools:AP.IconKind="FolderOpen"/>
 
                     <TextBlock Text="Source URL:" Grid.Column="0" Grid.Row="1"/>
                     <TextBox Text="{Binding TempCodex.SourceURL, Mode=TwoWay}" Grid.Column="1" Grid.Row="1" 
                              TextWrapping="Wrap" Padding="3"  Margin="10" />
                     <Button Grid.Row="1" Grid.Column="2" Command="{Binding BrowseURLCommand}" 
-                            ToolTip="Open URL in Browser" Tools:AP.IconKind="Compass"/>
+                            ToolTip="Open URL in Browser" tools:AP.IconKind="Compass"/>
 
                     <TextBlock Text="ISBN:" Grid.Column="0" Grid.Row="2"/>
                     <TextBox Text="{Binding TempCodex.ISBN, Mode=TwoWay}" Grid.Column="1" Grid.Row="2"
                              TextWrapping="Wrap" Padding="3"  Margin="10"/>
                     <Button  Grid.Row="2" Grid.Column="2" Command="{Binding BrowseISBNCommand}" 
-                             ToolTip="Show in Open Library"  Tools:AP.IconKind="Library"/>
+                             ToolTip="Show in Open Library"  tools:AP.IconKind="Library"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Advanced">
@@ -350,14 +348,14 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="Delete" Tools:AP.IconKind="Delete"
-                    Name="DeleteFileBtn" Command="{Binding DeleteCodexCommand}" Margin="5"
+            <Button Grid.Column="0" Content="Delete" tools:AP.IconKind="Delete"
+                    Command="{Binding DeleteCodexCommand}" Margin="5"
                     Background="{StaticResource CancelFill}" Style="{StaticResource IconTextButton}"/>
-            <Button Grid.Column="2" Content="OK" Tools:AP.IconKind="Check" IsDefault="True"
-                    Name="OKBtn" Command ="{Binding OKCommand}"  Margin="5"
+            <Button Grid.Column="2" Content="OK" tools:AP.IconKind="Check" IsDefault="True"
+                    Command ="{Binding OKCommand}"  Margin="5"
                     Background="{StaticResource AcceptFill}" Style="{StaticResource IconTextButton}"/>
-            <Button Grid.Column="3" Content="Cancel" Tools:AP.IconKind="WindowClose"
-                    Name="CancelBtn" Command="{Binding CancelCommand}" Margin="5"
+            <Button Grid.Column="3" Content="Cancel" tools:AP.IconKind="WindowClose"
+                    Command="{Binding CancelCommand}" Margin="5"
                     Background="{StaticResource CancelFill}" Style="{StaticResource IconTextButton}"/>
         </Grid>
         <!--#endregion-->

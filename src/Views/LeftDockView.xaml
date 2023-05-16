@@ -5,22 +5,23 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:Tools ="clr-namespace:COMPASS.Tools"
-             xmlns:Models="clr-namespace:COMPASS.Models" 
+             xmlns:tools ="clr-namespace:COMPASS.Tools"
+             xmlns:models="clr-namespace:COMPASS.Models" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-             xmlns:Import="clr-namespace:COMPASS.ViewModels.Import" 
-             xmlns:CustomControls="clr-namespace:COMPASS.Resources.Controls" 
+             xmlns:import="clr-namespace:COMPASS.ViewModels.Import" 
+             xmlns:customControls="clr-namespace:COMPASS.Resources.Controls" 
              xmlns:views="clr-namespace:COMPASS.Views" 
-             xmlns:Converters="clr-namespace:COMPASS.Converters"
+             xmlns:converters="clr-namespace:COMPASS.Converters"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:sysComponentModel="clr-namespace:System.ComponentModel;assembly=System"
+             xmlns:layouts="clr-namespace:COMPASS.ViewModels.Layouts"
              d:DataContext="{d:DesignInstance Type=viewmodels:LeftDockViewModel}"
              Background="{StaticResource ButtonBackground}"
              mc:Ignorable="d" FontSize="20"
              d:DesignHeight="650" d:DesignWidth="300">
     <UserControl.Resources>
-        <Converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
-        <Tools:BindingProxy x:Key="CollapsedProxy" Data="{Binding}"/>
+        <converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
+        <tools:BindingProxy x:Key="CollapsedProxy" Data="{Binding}"/>
         <Style TargetType="Border" x:Key="RadioBtnContainer">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="{StaticResource UIElementBackground}"/>
@@ -32,7 +33,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        <Style TargetType="TextBlock" x:Key="RadioBtnTextbox">
+        <Style TargetType="TextBlock" x:Key="RadioBtnTextBox">
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
@@ -62,7 +63,7 @@
                         <ControlTemplate TargetType="TabItem">
                             <Border x:Name="TabBorder" CornerRadius="5,0,0,5" MouseDown="TabItemClick">
                                 <materialDesign:PackIcon Height="35" Width="35" HorizontalAlignment="Center"
-                                         Margin="10" Kind="{TemplateBinding Tools:AP.IconKind}"/>
+                                         Margin="10" Kind="{TemplateBinding tools:AP.IconKind}"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsSelected" Value="True">
@@ -79,7 +80,7 @@
             <Style TargetType="ContentControl" x:Key="TabContentWrapper">
                 <Setter Property="Width" Value="250"/>
                 <Setter Property="Visibility" Value="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
-                <Setter Property="ItemsControl.Template">
+                <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate>
                             <Border BorderBrush="{StaticResource Separator}" BorderThickness="3">
@@ -89,14 +90,14 @@
                                         <RowDefinition Height="auto"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                                         <materialDesign:PackIcon Height="25" Width="25" HorizontalAlignment="Center"
-                                             Margin="5"  Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"/>
-                                        <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.Header)}" FontSize="20"/>
+                                             Margin="5"  Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}"/>
+                                        <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.Header)}" FontSize="20"/>
                                     </StackPanel>
-                                    <Rectangle Grid.Row="1" Grid.Column="1" Height="3" Fill="{StaticResource Separator}"/>
-                                    <ContentPresenter Grid.Row="2" Grid.Column="1" Cursor="Arrow" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"/>
-                                    <ToggleButton ToolTip="Collapse" IsChecked="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}}" 
+                                    <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource Separator}"/>
+                                    <ContentPresenter Grid.Row="2" Cursor="Arrow" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"/>
+                                    <ToggleButton Grid.Row="0" ToolTip="Collapse" IsChecked="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}}" 
                                                   Height="35" Width="35" HorizontalAlignment="Right">
                                         <ToggleButton.Template>
                                             <ControlTemplate>
@@ -126,16 +127,16 @@
             </Style>
         </TabControl.Resources>
         <TabItem Visibility="Collapsed" />
-        <TabItem Header="Tags" Tools:AP.IconKind="TagMultiple" ToolTip="Tags"
+        <TabItem Header="Tags" tools:AP.IconKind="TagMultiple" ToolTip="Tags"
                  DataContext="{Binding MainVM.CollectionVM.TagsVM}" >
             <TabItem.Resources>
-                <Tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
+                <tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
                 <ContextMenu x:Key="TagContextMenu">
-                    <MenuItem Header="New Tag" Tools:AP.IconKind="TagPlusOutline" Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateChildCommand}"/>
-                    <MenuItem Header="Edit" Tools:AP.IconKind="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
-                    <MenuItem Header="Delete" Tools:AP.IconKind="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
+                    <MenuItem Header="New Tag" tools:AP.IconKind="TagPlusOutline" Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateChildCommand}"/>
+                    <MenuItem Header="Edit" tools:AP.IconKind="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
+                    <MenuItem Header="Delete" tools:AP.IconKind="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
                 </ContextMenu>
-                <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+                <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type models:TreeViewNode}" ItemsSource="{Binding Children}">
                     <Button Cursor="Hand" Command="{Binding Source={StaticResource Proxy}, Path=Data.AddTagFilterCommand}">
                         <Button.CommandParameter>
                             <MultiBinding Converter="{StaticResource MultiParamConverter}">
@@ -155,10 +156,10 @@
                         </Button.Template>
                     </Button>
                 </HierarchicalDataTemplate>
-                <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
+                <tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
             </TabItem.Resources>
-            <ContentControl Tools:AP.Header="Tags" Tools:AP.IconKind="TagMultiple" Style="{StaticResource TabContentWrapper}">
-                <Grid Grid.IsSharedSizeScope="True"> <!-- Grid instead of stackpannel so height is capped and scrolling works -->
+            <ContentControl tools:AP.Header="Tags" tools:AP.IconKind="TagMultiple" Style="{StaticResource TabContentWrapper}">
+                <Grid Grid.IsSharedSizeScope="True"> <!-- Grid instead of stackpanel so height is capped and scrolling works -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
@@ -181,35 +182,35 @@
                         </StackPanel.Resources>
                         <RadioButton x:Name="IncludeRadioButton" GroupName="IncludeGroup" IsChecked="True">
                             <Border CornerRadius="5,0,0,5" Style="{StaticResource RadioBtnContainer}" Background="{StaticResource AcceptFill}">
-                                <TextBlock Text="Include" Style="{StaticResource RadioBtnTextbox}"/>
+                                <TextBlock Text="Include" Style="{StaticResource RadioBtnTextBox}"/>
                             </Border>
                         </RadioButton>
                         <RadioButton GroupName="IncludeGroup">
                             <Border CornerRadius="0,5,5,0" Style="{StaticResource RadioBtnContainer}" Background="IndianRed">
-                                <TextBlock Text="Exclude" Style="{StaticResource RadioBtnTextbox}"/>
+                                <TextBlock Text="Exclude" Style="{StaticResource RadioBtnTextBox}"/>
                             </Border>
                         </RadioButton>
                     </StackPanel>
                     
-                    <CustomControls:ExpandingButton Grid.Row="1" Margin="30,10,30,5">
-                        <CustomControls:ExpandingButton.Toggle>
-                            <Button Tools:AP.IconKind="TagPlusOutline" Style="{StaticResource HighlightedButton}"
+                    <customControls:ExpandingButton Grid.Row="1" Margin="30,10,30,5">
+                        <customControls:ExpandingButton.Toggle>
+                            <Button tools:AP.IconKind="TagPlusOutline" Style="{StaticResource HighlightedButton}"
                                 Content="New Tag" Command="{Binding AddTagCommand}" Margin="0"/>
-                        </CustomControls:ExpandingButton.Toggle>
-                        <CustomControls:ExpandingButton.HiddenContent>
+                        </customControls:ExpandingButton.Toggle>
+                        <customControls:ExpandingButton.HiddenContent>
                             <views:TagEditView DataContext="{Binding AddTagViewModel}"/>
-                        </CustomControls:ExpandingButton.HiddenContent>
-                    </CustomControls:ExpandingButton>
+                        </customControls:ExpandingButton.HiddenContent>
+                    </customControls:ExpandingButton>
                     
-                    <CustomControls:ExpandingButton Grid.Row="2" Margin="30,5,30,10">
-                        <CustomControls:ExpandingButton.Toggle>
-                            <Button Tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource HighlightedButton}" 
+                    <customControls:ExpandingButton Grid.Row="2" Margin="30,5,30,10">
+                        <customControls:ExpandingButton.Toggle>
+                            <Button tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource HighlightedButton}" 
                             Content="New Group" Command="{Binding AddGroupCommand}" Margin="0"/>
-                        </CustomControls:ExpandingButton.Toggle>
-                        <CustomControls:ExpandingButton.HiddenContent>
+                        </customControls:ExpandingButton.Toggle>
+                        <customControls:ExpandingButton.HiddenContent>
                             <views:TagEditView DataContext="{Binding AddGroupViewModel}"/>
-                        </CustomControls:ExpandingButton.HiddenContent>
-                    </CustomControls:ExpandingButton>
+                        </customControls:ExpandingButton.HiddenContent>
+                    </customControls:ExpandingButton>
                     
                     <Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="3"/>
                     <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"  Grid.Row="4"
@@ -231,8 +232,8 @@
                 </Grid>
             </ContentControl>
         </TabItem>
-        <TabItem Header="Filter" Tools:AP.IconKind="Filter" DataContext="{Binding MainVM.CollectionVM.FilterVM}" ToolTip="Apply Filters">
-            <ContentControl Tools:AP.Header="Filters" Tools:AP.IconKind="Filter" Style="{StaticResource TabContentWrapper}">
+        <TabItem Header="Filter" tools:AP.IconKind="Filter" DataContext="{Binding MainVM.CollectionVM.FilterVM}" ToolTip="Apply Filters">
+            <ContentControl tools:AP.Header="Filters" tools:AP.IconKind="Filter" Style="{StaticResource TabContentWrapper}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -257,12 +258,12 @@
                             </StackPanel.Resources>
                             <RadioButton GroupName="IncludeFilterGroup" IsChecked="{Binding Include}">
                                 <Border CornerRadius="5,0,0,5" Style="{StaticResource RadioBtnContainer}" Background="{StaticResource AcceptFill}">
-                                    <TextBlock Text="Include" Style="{StaticResource RadioBtnTextbox}"/>
+                                    <TextBlock Text="Include" Style="{StaticResource RadioBtnTextBox}"/>
                                 </Border>
                             </RadioButton>
                             <RadioButton GroupName="IncludeFilterGroup">
                                 <Border CornerRadius="0,5,5,0" Style="{StaticResource RadioBtnContainer}" Background="IndianRed">
-                                    <TextBlock Text="Exclude" Style="{StaticResource RadioBtnTextbox}"/>
+                                    <TextBlock Text="Exclude" Style="{StaticResource RadioBtnTextBox}"/>
                                 </Border>
                             </RadioButton>
                         </StackPanel>
@@ -274,7 +275,7 @@
                                         <Setter.Value>
                                             <ControlTemplate TargetType="{x:Type ComboBox}">
                                                 <Grid>
-                                                    <ToggleButton Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}" Grid.Column="2" 
+                                                    <ToggleButton Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}"
                                                                  IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"
                                                                   Focusable="false"  ClickMode="Press" Height="30">
                                                     </ToggleButton>
@@ -336,7 +337,7 @@
                                 <TextBlock Grid.Column="0" Grid.Row="0" Text="From:" Margin="5" VerticalAlignment="Top"/>
                                 <DatePicker Grid.Column="1" Grid.Row="0" SelectedDate="{Binding StartReleaseDate}" FontSize="18"/>
                                 <TextBlock Grid.Column="0" Grid.Row="1" Text="Until: " Margin="5" VerticalAlignment="Top"/>
-                                <DatePicker Grid.Column="2" Grid.Row="1" SelectedDate="{Binding StopReleaseDate}" FontSize="18"/>
+                                <DatePicker Grid.Column="1" Grid.Row="1" SelectedDate="{Binding StopReleaseDate}" FontSize="18"/>
                             </Grid>
 
                             <TextBlock Text="Minimum Rating:" Margin="0,10,0,0"/>
@@ -356,13 +357,13 @@
                             </Grid>
                         </StackPanel>
                         <Button Content="Clear All" Grid.Row="4" Margin="10" Command="{Binding ClearFiltersCommand}"
-                            Style="{StaticResource IconTextButton}" Tools:AP.IconKind="FilterRemove" Background="Red"/>
+                            Style="{StaticResource IconTextButton}" tools:AP.IconKind="FilterRemove" Background="Red"/>
                     </Grid>
                 </ScrollViewer>
             </ContentControl>
         </TabItem>
-        <TabItem Header="Layouts" Tools:AP.IconKind="ViewDashboardEdit" ToolTip="Edit Layout">
-            <ContentControl Tools:AP.Header="Layouts" Tools:AP.IconKind="ViewDashboardEdit" Style="{StaticResource TabContentWrapper}">
+        <TabItem Header="Layouts" tools:AP.IconKind="ViewDashboardEdit" ToolTip="Edit Layout">
+            <ContentControl tools:AP.Header="Layouts" tools:AP.IconKind="ViewDashboardEdit" Style="{StaticResource TabContentWrapper}">
                 <ContentControl.Resources>
                     <Style TargetType="Button">
                         <Setter Property="Background" Value="{StaticResource UIElementBackground}"/>
@@ -378,7 +379,7 @@
                                                 Height="{TemplateBinding Height}" Width="{TemplateBinding Width}">
                                         <StackPanel VerticalAlignment="Center">
                                             <materialDesign:PackIcon Foreground="{TemplateBinding Foreground}" Width="50" Height="50"
-                                                    Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}" 
+                                                    Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}" 
                                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                                             <TextBlock Text="{TemplateBinding Content}" HorizontalAlignment="Center" FontSize="20"
                                                            Foreground="{TemplateBinding Foreground}"/>
@@ -395,7 +396,7 @@
                                 <DataTrigger.Binding>
                                     <MultiBinding>
                                         <MultiBinding.Converter>
-                                            <Converters:EqualityConverter/>
+                                            <converters:EqualityConverter/>
                                         </MultiBinding.Converter>
                                         <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
                                         <Binding Path="MainVM.CurrentLayout.LayoutType" />
@@ -410,14 +411,14 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel>
                         <UniformGrid Rows="2" Columns="2" Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}" Margin="5">
-                            <Button Command="{Binding MainVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Home}" 
-                            Tools:AP.IconKind="Home" ToolTip="Home Layout" Content="Home"/>
-                            <Button Command="{Binding MainVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.List}" 
-                            Tools:AP.IconKind="ViewHeadline" ToolTip="List Layout" Content="List"/>
-                            <Button Command="{Binding MainVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Card}" 
-                            Tools:AP.IconKind="FormatListText" ToolTip="Card Layout" Content="Card"/>
-                            <Button Command="{Binding MainVM.ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Tile}" 
-                            Tools:AP.IconKind="ViewGrid" ToolTip="Tile Layout" Content="Grid"/>
+                            <Button Command="{Binding MainVM.ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.Home}" 
+                            tools:AP.IconKind="Home" ToolTip="Home Layout" Content="Home"/>
+                            <Button Command="{Binding MainVM.ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.List}" 
+                            tools:AP.IconKind="ViewHeadline" ToolTip="List Layout" Content="List"/>
+                            <Button Command="{Binding MainVM.ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.Card}" 
+                            tools:AP.IconKind="FormatListText" ToolTip="Card Layout" Content="Card"/>
+                            <Button Command="{Binding MainVM.ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.Tile}" 
+                            tools:AP.IconKind="ViewGrid" ToolTip="Tile Layout" Content="Grid"/>
                         </UniformGrid>
                         <Rectangle Height="3" Fill="{StaticResource Separator}"/>
                         <TextBlock Style="{StaticResource Categorizer}" Text="Customize layout"/>
@@ -426,7 +427,7 @@
                                 <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
                                     <Setter Property="Margin" Value="5"/>
                                 </Style>
-                                <DataTemplate DataType="{x:Type viewmodels:ListLayoutViewModel}">
+                                <DataTemplate DataType="{x:Type layouts:ListLayoutViewModel}">
                                     <StackPanel>
                                         <CheckBox Content="Show Author" IsChecked="{Binding ShowAuthor}"/>
                                         <CheckBox Content="Show Publisher" IsChecked="{Binding ShowPublisher}"/>
@@ -439,7 +440,7 @@
                                         <CheckBox Content="Show File Icons" IsChecked="{Binding ShowFileIcons}"/>
                                     </StackPanel>
                                 </DataTemplate>
-                                <DataTemplate DataType="{x:Type viewmodels:CardLayoutViewModel}">
+                                <DataTemplate DataType="{x:Type layouts:CardLayoutViewModel}">
                                     <StackPanel>
                                         <CheckBox Content="Show Authors" IsChecked="{Binding ShowAuthor}"/>
                                         <CheckBox Content="Show Publisher" IsChecked="{Binding ShowPublisher}"/>
@@ -449,13 +450,13 @@
                                         <CheckBox Content="Show Version" IsChecked="{Binding ShowVersion}"/>
                                     </StackPanel>
                                 </DataTemplate>
-                                <DataTemplate DataType="{x:Type viewmodels:TileLayoutViewModel}">
+                                <DataTemplate DataType="{x:Type layouts:TileLayoutViewModel}">
                                     <StackPanel Margin="10">
                                         <StackPanel.Resources>
                                             <ObjectDataProvider x:Key="DataOptionsFromEnum"
                                                     MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
                                                 <ObjectDataProvider.MethodParameters>
-                                                    <x:Type TypeName="viewmodels:TileLayoutViewModel+DataOption"/>
+                                                    <x:Type TypeName="layouts:TileLayoutViewModel+DataOption"/>
                                                 </ObjectDataProvider.MethodParameters>
                                             </ObjectDataProvider>
                                         </StackPanel.Resources>
@@ -466,7 +467,7 @@
                                                   ItemsSource="{Binding Source={StaticResource DataOptionsFromEnum}}" SelectedItem="{Binding DisplayedData, Mode=TwoWay}"/>
                                     </StackPanel>
                                 </DataTemplate>
-                                <DataTemplate DataType="{x:Type viewmodels:HomeLayoutViewModel}">
+                                <DataTemplate DataType="{x:Type layouts:HomeLayoutViewModel}">
                                     <StackPanel Margin="10">
                                         <CheckBox Content="Show Title" IsChecked="{Binding ShowTitle}"/>
                                         <TextBlock Text="Cover Size" Margin="5"/>
@@ -484,27 +485,27 @@
                 </ScrollViewer>
             </ContentControl>
         </TabItem>
-        <TabItem Header="Sorting" Tools:AP.IconKind="Sort" ToolTip="Sorting">
-            <UserControl Style="{StaticResource TabContentWrapper}" Tools:AP.Header="Sorting" Tools:AP.IconKind="Sort" 
+        <TabItem Header="Sorting" tools:AP.IconKind="Sort" ToolTip="Sorting">
+            <UserControl Style="{StaticResource TabContentWrapper}" tools:AP.Header="Sorting" tools:AP.IconKind="Sort" 
                          DataContext="{Binding MainVM.CollectionVM.FilterVM}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10">
                             <StackPanel.Resources>
-                                <Converters:ObjectToBoolConverter x:Key="ObjectToBoolConverter"/>
+                                <converters:ObjectToBoolConverter x:Key="ObjectToBoolConverter"/>
                             </StackPanel.Resources>
                             <RadioButton GroupName="SortDirection"
                                      IsChecked="{Binding SortDirection, Converter={StaticResource ObjectToBoolConverter},
                                      ConverterParameter={x:Static sysComponentModel:ListSortDirection.Ascending}}">
                                 <Border CornerRadius="5,0,0,5" Style="{StaticResource RadioBtnContainer}">
-                                    <TextBlock Text="Ascending" Style="{StaticResource RadioBtnTextbox}"/>
+                                    <TextBlock Text="Ascending" Style="{StaticResource RadioBtnTextBox}"/>
                                 </Border>
                             </RadioButton>
                             <RadioButton GroupName="SortDirection"
                                      IsChecked="{Binding SortDirection, Converter={StaticResource ObjectToBoolConverter},
                                      ConverterParameter={x:Static sysComponentModel:ListSortDirection.Descending}}">
                                 <Border CornerRadius="0,5,5,0" Margin="-1,0,0,0" Style="{StaticResource RadioBtnContainer}">
-                                    <TextBlock Text="Descending" Style="{StaticResource RadioBtnTextbox}"/>
+                                    <TextBlock Text="Descending" Style="{StaticResource RadioBtnTextBox}"/>
                                 </Border>
                             </RadioButton>
                         </StackPanel>
@@ -542,8 +543,8 @@
                 </ScrollViewer>
             </UserControl>
         </TabItem>
-        <TabItem Header="AddBooks" Tools:AP.IconKind="BookAdd" ToolTip="Add Books" Grid.IsSharedSizeScope="True">
-            <ContentControl Tools:AP.Header="Add Books" Tools:AP.IconKind="BookAdd" Style="{StaticResource TabContentWrapper}">
+        <TabItem Header="AddBooks" tools:AP.IconKind="BookAdd" ToolTip="Add Books" Grid.IsSharedSizeScope="True">
+            <ContentControl tools:AP.Header="Add Books" tools:AP.IconKind="BookAdd" Style="{StaticResource TabContentWrapper}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <StackPanel.Resources>
@@ -558,23 +559,23 @@
                         </StackPanel.Resources>
                         
                         <TextBlock Text="Physical Books" Style="{StaticResource Categorizer}"/>
-                        <Button Tools:AP.IconKind="BookPlusOutline" Style="{StaticResource HighlightedButton}" Content="Add Manually"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.Manual}"/>
-                        <Button Tools:AP.IconKind="Barcode" Style="{StaticResource HighlightedButton}" Content="From ISBN"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.ISBN}"/>
+                        <Button tools:AP.IconKind="BookPlusOutline" Style="{StaticResource HighlightedButton}" Content="Add Manually"
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.Manual}"/>
+                        <Button tools:AP.IconKind="Barcode" Style="{StaticResource HighlightedButton}" Content="From ISBN"
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.ISBN}"/>
 
                         <TextBlock Text="Add Local Files" Style="{StaticResource Categorizer}"/>
-                        <Button Tools:AP.IconKind="FilePlusOutline" Style="{StaticResource HighlightedButton}" Content="Import File(s)"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.File}"/>
-                        <Button Tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource HighlightedButton}" Content="Import Folder"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.Folder}"/>
+                        <Button tools:AP.IconKind="FilePlusOutline" Style="{StaticResource HighlightedButton}" Content="Import File(s)"
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.File}"/>
+                        <Button tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource HighlightedButton}" Content="Import Folder"
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.Folder}"/>
 
 
                         <TextBlock Text="Add Online Files" Style="{StaticResource Categorizer}"/>
-                        <Button Tools:AP.IconKind="GoogleDrive" Style="{StaticResource HighlightedButton}" Content="Google Drive"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.GoogleDrive}"/>
+                        <Button tools:AP.IconKind="GoogleDrive" Style="{StaticResource HighlightedButton}" Content="Google Drive"
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GoogleDrive}"/>
                         <Button Style="{StaticResource HighlightedContentButton}" Margin="20,5"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.Homebrewery}">
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.Homebrewery}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                 BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="7,2">
                                 <StackPanel Orientation="Horizontal">
@@ -584,19 +585,19 @@
                             </Border>
                         </Button>
                         <Button Style="{StaticResource HighlightedContentButton}" Margin="20,5"
-                                Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.GmBinder}">
+                                Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GmBinder}">
                             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}" 
                                     BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="30,2">
                                 <ContentControl Content="{StaticResource GMBinderLogo}" HorizontalContentAlignment="Center"/>
                             </Border>
                         </Button>
-                        <Button Tools:AP.IconKind="Web" Style="{StaticResource HighlightedButton}" Content="Other"
-                            Command="{Binding ImportCommand}" CommandParameter="{x:Static Import:ImportSource.GenericURL}"/>
+                        <Button tools:AP.IconKind="Web" Style="{StaticResource HighlightedButton}" Content="Other"
+                            Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GenericURL}"/>
                     </StackPanel>
                 </ScrollViewer>
             </ContentControl>
         </TabItem>
-        <TabItem x:Name="Logs" Header="Logs" Tools:AP.IconKind="TextLong" ToolTip="Activity Log" GotFocus="Logs_GotFocus">
+        <TabItem x:Name="Logs" Header="Logs" tools:AP.IconKind="TextLong" ToolTip="Activity Log" GotFocus="Logs_GotFocus">
             <TabItem.Template>
                 <ControlTemplate TargetType="TabItem">
                     <Border x:Name="TabBorder" CornerRadius="5,0,0,5" MouseDown="TabItemClick">
@@ -619,12 +620,12 @@
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </TabItem.Template>
-            <ContentControl Tools:AP.Header="Activity Log" Tools:AP.IconKind="TextLong" Style="{StaticResource TabContentWrapper}">
+            <ContentControl tools:AP.Header="Activity Log" tools:AP.IconKind="TextLong" Style="{StaticResource TabContentWrapper}">
                 <ContentControl.Resources>
-                    <Converters:MsgTypetoColorConverter x:Key="MsgTypetoColorConverter"/>
+                    <converters:MsgTypeToColorConverter x:Key="MsgTypeToColorConverter"/>
                 </ContentControl.Resources>
                 <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto" Background="{StaticResource LogBackground}">
-                    <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{x:Static Tools:Logger.ActivityLog}" Margin="10,5">
+                    <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{x:Static tools:Logger.ActivityLog}" Margin="10,5">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <VirtualizingStackPanel IsItemsHost="True"/>
@@ -633,7 +634,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Msg, FallbackValue=Message}" FontSize="12" TextWrapping="Wrap" Margin="0,3"
-                                               Foreground="{Binding Type, Mode=OneWay,Converter={StaticResource MsgTypetoColorConverter}}"/>
+                                               Foreground="{Binding Type, Mode=OneWay,Converter={StaticResource MsgTypeToColorConverter}}"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

@@ -12,8 +12,8 @@ namespace COMPASS.Windows
         {
             InitializeComponent();
             DataContext = fileNotFoundVM;
-            fileNotFoundVM.CloseAction = new(Close);
-            fileNotFoundVM.SetDialogResult = new(value => DialogResult = value);
+            fileNotFoundVM.CloseAction = Close;
+            fileNotFoundVM.SetDialogResult = value => DialogResult = value;
         }
     }
 }

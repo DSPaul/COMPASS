@@ -48,7 +48,7 @@ namespace COMPASS.Windows
             // Call activate explicitly because of bug 
             // https://stackoverflow.com/questions/3144004/wpf-app-loses-focus-completely-on-window-close
             Owner ??= Application.Current.MainWindow;
-            Owner.Activate();
+            Owner!.Activate();
         }
 
         private void Close_Click(object sender, RoutedEventArgs e) => Close();

@@ -17,8 +17,8 @@ namespace COMPASS.Tools
         public static void RemoveAll<T>(
         this ObservableCollection<T> collection, Func<T, bool> condition)
         {
-            var itemsToRemove = collection.Where(condition);
-            if (itemsToRemove.Count() == collection.Count)
+            var itemsToRemove = collection.Where(condition).ToList();
+            if (itemsToRemove.Count == collection.Count)
             {
                 collection.Clear();
             }

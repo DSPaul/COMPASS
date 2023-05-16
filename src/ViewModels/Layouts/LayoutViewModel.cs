@@ -1,16 +1,14 @@
-﻿using COMPASS.Models;
-using COMPASS.ViewModels.Import;
-using GongSolutions.Wpf.DragDrop;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Windows;
+using COMPASS.Models;
+using COMPASS.ViewModels.Import;
+using GongSolutions.Wpf.DragDrop;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.ViewModels.Layouts
 {
     public abstract class LayoutViewModel : ViewModelBase, IDropTarget
     {
-        protected LayoutViewModel() : base() { }
-
         public enum Layout
         {
             List,
@@ -19,7 +17,7 @@ namespace COMPASS.ViewModels
             Home
         }
 
-        // Should put this function seperate Factory class for propper factory pattern
+        // Should put this function separate Factory class for proper factory pattern
         // but I don't see the point, seems a lot of boilerplate without real advantages
         public static LayoutViewModel GetLayout(Layout? layout = null)
         {
@@ -76,8 +74,8 @@ namespace COMPASS.ViewModels
             {
                 var paths = data.GetFileDropList();
 
-                var folders = paths.Cast<string>().ToList().Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory));
-                var files = paths.Cast<string>().ToList().Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory));
+                var folders = paths.Cast<string>().Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
+                var files = paths.Cast<string>().Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
 
                 if (!folders.Any() && !files.Any()) return;
 

@@ -86,21 +86,12 @@ namespace COMPASS.ViewModels.Sources
         {
             if (lhs is null)
             {
-                if (rhs is null)
-                {
-                    return true;
-                }
-
-                // Only the left side is null.
-                return false;
+                return rhs is null;  //if lhs is null, only equal if rhs is also null
             }
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(NamedMetaDataSource lhs, NamedMetaDataSource rhs)
-        {
-            return !(lhs == rhs);
-        }
+        public static bool operator !=(NamedMetaDataSource lhs, NamedMetaDataSource rhs) => !(lhs == rhs);
 
         public override int GetHashCode() => Source.GetHashCode();
     }

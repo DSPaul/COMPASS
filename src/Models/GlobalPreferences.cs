@@ -16,13 +16,13 @@ namespace COMPASS.Models
 
         public void Init()
         {
-            foreach (var DefaultProp in Codex.Properties)
+            foreach (var defaultProp in Codex.Properties)
             {
-                CodexProperty prop = CodexProperties.FirstOrDefault(p => p.Label == DefaultProp.Label);
+                CodexProperty prop = CodexProperties.FirstOrDefault(p => p.Label == defaultProp.Label);
                 // Add Preferences from defaults if they weren't found on the loaded Preferences
                 if (prop is null)
                 {
-                    prop = DefaultProp;
+                    prop = defaultProp;
                     CodexProperties.Add(prop);
                 }
                 //Call init on every preference

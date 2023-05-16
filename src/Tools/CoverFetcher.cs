@@ -32,13 +32,12 @@ namespace COMPASS.Tools
                 (coverProp.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !coverProp.IsEmpty(codex)))
                 return;
 
-            bool getCoverSuccesfull = false;
             foreach (var source in coverProp.SourcePriority)
             {
                 SourceViewModel sourceVM = SourceViewModel.GetSourceVM(source);
                 if (sourceVM == null || !sourceVM.IsValidSource(codex)) continue;
-                getCoverSuccesfull = await sourceVM.FetchCover(MetaDatalessCodex);
-                if (getCoverSuccesfull) break;
+                bool getCoverSuccessful = await sourceVM.FetchCover(MetaDatalessCodex);
+                if (getCoverSuccessful) break;
             }
 
             codex.RefreshThumbnail();
@@ -47,10 +46,10 @@ namespace COMPASS.Tools
 
         public static async Task GetCover(List<Codex> codices)
         {
-            var ProgressVM = ProgressViewModel.GetInstance();
-            ProgressVM.ResetCounter();
-            ProgressVM.TotalAmount = codices.Count;
-            ProgressVM.Text = "Getting Cover";
+            var progressVM = ProgressViewModel.GetInstance();
+            progressVM.ResetCounter();
+            progressVM.TotalAmount = codices.Count;
+            progressVM.Text = "Getting Cover";
 
             ParallelOptions parallelOptions = new()
             {
@@ -74,39 +73,42 @@ namespace COMPASS.Tools
             CreateThumbnail(destCodex);
         }
 
-        public static bool GetCoverFromImage(string imagepath, Codex destfile)
+        public static bool GetCoverFromImage(string imagePath, Codex destFile)
         {
             //check if it's a valid file
-            if (string.IsNullOrEmpty(imagepath) ||
-                !Path.Exists(imagepath) ||
-                !Utils.IsImageFile(imagepath)) return false;
+            if (String.IsNullOrEmpty(imagePath) ||
+                !Path.Exists(imagePath) ||
+                !Utils.IsImageFile(imagePath))
+            {
+                return false;
+            }
 
             try
             {
-                using MagickImage image = new(imagepath);
+                using MagickImage image = new(imagePath);
                 if (image.Width > 1000) image.Resize(1000, 0);
-                image.Write(destfile.CoverArt);
-                CreateThumbnail(destfile);
+                image.Write(destFile.CoverArt);
+                CreateThumbnail(destFile);
                 return true;
             }
             catch (Exception ex)
             {
                 //will fail if image is corrupt
-                Logger.Error($"Failed to generate a thumbnail for {imagepath}", ex);
+                Logger.Error($"Failed to generate a thumbnail for {imagePath}", ex);
                 return false;
             }
         }
 
         public static void CreateThumbnail(Codex c)
         {
-            int newwidth = 200; //sets resolution of thumbnail in pixels
+            int newWidth = 200; //sets resolution of thumbnail in pixels
             using MagickImage image = new(c.CoverArt);
             //preserve aspect ratio
             int width = image.Width;
             int height = image.Height;
-            int newheight = newwidth / width * height;
+            int newHeight = newWidth / width * height;
             //create thumbnail
-            image.Thumbnail(newwidth, newheight);
+            image.Thumbnail(newWidth, newHeight);
             image.Write(c.Thumbnail);
             c.RefreshThumbnail();
         }
@@ -115,16 +117,15 @@ namespace COMPASS.Tools
         public static MagickImage GetCroppedScreenShot(IWebDriver driver, IWebElement webElement)
             => GetCroppedScreenShot(driver, webElement.Location, webElement.Size);
 
-        public static MagickImage GetCroppedScreenShot(IWebDriver driver, System.Drawing.Point location, System.Drawing.Size size)
+        private static MagickImage GetCroppedScreenShot(IWebDriver driver, System.Drawing.Point location, System.Drawing.Size size)
         {
             //take the screenshot
             Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();
             var img = Image.FromStream(new MemoryStream(ss.AsByteArray)) as Bitmap;
-
-            var imgcropped = img.Clone(new Rectangle(location, size), img.PixelFormat);
+            if (img == null) return new MagickImage();
+            var imgCropped = img.Clone(new Rectangle(location, size), img.PixelFormat);
             var mf = new MagickFactory();
-            MagickImage Magickimg = new(mf.Image.Create(imgcropped));
-            return Magickimg;
+            return new(mf.Image.Create(imgCropped));
         }
     }
 }

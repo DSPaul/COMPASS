@@ -8,29 +8,29 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:views="clr-namespace:COMPASS.Views"
     xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
-    xmlns:models="clr-namespace:COMPASS.Models"
-    xmlns:Tools ="clr-namespace:COMPASS.Tools"
-    xmlns:Converters ="clr-namespace:COMPASS.Converters"
+    xmlns:tools ="clr-namespace:COMPASS.Tools"
+    xmlns:converters ="clr-namespace:COMPASS.Converters"
+    xmlns:layouts="clr-namespace:COMPASS.ViewModels.Layouts"
     d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
     mc:Ignorable="d"
     Title="COMPASS" Height="540" Width="1156.8" FontSize="20"
-    Foreground="{StaticResource TextColor}"  Background="{StaticResource WindowBackground}"
+    Foreground="{StaticResource TextColor}"  
+    Background="{StaticResource WindowBackground}"
     Closing="Window_Closing" WindowState="Maximized" WindowStyle="None" 
     WindowStartupLocation="CenterScreen" MouseDown="Window_MouseDown"
     PreviewKeyDown="Window_PreviewKeyDown">
     <Window.Resources>
-        <Converters:WindowStatetoBoolConverter x:Key="IsMaximizedConverter"/>
-        <Converters:UriToBitmapConverter x:Key="UriToBitmapConverterr"/>
-        <DataTemplate DataType="{x:Type viewmodels:ListLayoutViewModel}">
+        <converters:WindowStateToBoolConverter x:Key="IsMaximizedConverter"/>
+        <DataTemplate DataType="{x:Type layouts:ListLayoutViewModel}">
             <views:ListLayout DataContext="{Binding}"/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type viewmodels:CardLayoutViewModel}">
+        <DataTemplate DataType="{x:Type layouts:CardLayoutViewModel}">
             <views:CardLayout DataContext="{Binding}"/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type viewmodels:TileLayoutViewModel}">
+        <DataTemplate DataType="{x:Type layouts:TileLayoutViewModel}">
             <views:TileLayout DataContext="{Binding}"/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type viewmodels:HomeLayoutViewModel}">
+        <DataTemplate DataType="{x:Type layouts:HomeLayoutViewModel}">
             <views:HomeLayout DataContext="{Binding}"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewmodels:LeftDockViewModel}">
@@ -67,8 +67,8 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid.Resources>
-                    <!--#region Dropdownbox Style-->
-                    <ControlTemplate x:Key="RPGArrow" TargetType="{x:Type ToggleButton}">
+                    <!--#region DropdownBox Style-->
+                    <ControlTemplate x:Key="RpgArrow" TargetType="{x:Type ToggleButton}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -93,7 +93,7 @@
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
 
-                    <Style x:Key="RPGDropdownStyle" TargetType="{x:Type ComboBox}">
+                    <Style x:Key="RpgDropdownStyle" TargetType="{x:Type ComboBox}">
                         <Setter Property="SnapsToDevicePixels" Value="true"/>
                         <Setter Property="OverridesDefaultStyle" Value="true"/>
                         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
@@ -106,7 +106,7 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type ComboBox}">
                                     <Grid>
-                                        <ToggleButton Template="{StaticResource RPGArrow}" Focusable="false" ClickMode="Press" Style="{x:Null}"
+                                        <ToggleButton Template="{StaticResource RpgArrow}" Focusable="false" ClickMode="Press" Style="{x:Null}"
                                                     IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"/>
                                         <ContentPresenter Name="ContentSite" IsHitTestVisible="False"  Content="{TemplateBinding SelectionBoxItem}"
                                             ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
@@ -168,12 +168,12 @@
                             <ColumnDefinition Width ="*"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" x:Name="Searchbox" Tools:AP.PlaceHolderText="Search (Ctrl+S)" Margin="0"
+                        <TextBox Grid.Column="0" x:Name="Searchbar" tools:AP.PlaceHolderText="Search (Ctrl+S)" Margin="0"
                              Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
                              Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"/>
-                        <Button  Grid.Column="1" Style="{StaticResource IconBtn}" Margin="10,0" Tools:AP.IconKind="Search"
-                        Command="{Binding SearchCommand}" CommandParameter="{Binding Text, ElementName=Searchbox}" 
-                                 IsDefault="{Binding ElementName=Searchbox, Path=IsKeyboardFocused}" ToolTip="Search"/>
+                        <Button  Grid.Column="1" Style="{StaticResource IconBtn}" Margin="10,0" tools:AP.IconKind="Search"
+                        Command="{Binding SearchCommand}" CommandParameter="{Binding Text, ElementName=Searchbar}" 
+                                 IsDefault="{Binding ElementName=Searchbar, Path=IsKeyboardFocused}" ToolTip="Search"/>
                     </Grid>
                 </Border>
 
@@ -181,15 +181,15 @@
                 <Border Background="{StaticResource UIElementBackground}" CornerRadius="4" Grid.Column="3" Margin="0,5" Height="35"
                         WindowChrome.IsHitTestVisibleInChrome="True" DataContext="{Binding CollectionVM}">
                     <StackPanel Orientation="Horizontal">
-                        <ComboBox Style="{StaticResource RPGDropdownStyle}" SelectedItem="{Binding CurrentCollection, Mode=TwoWay}" 
+                        <ComboBox Style="{StaticResource RpgDropdownStyle}" SelectedItem="{Binding CurrentCollection, Mode=TwoWay}" 
                                   DisplayMemberPath="DirectoryName" ItemsSource="{Binding AllCodexCollections}"/>
                         <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
-                        <Button Style="{StaticResource IconBtn}" Tools:AP.IconKind="FolderPlus" Foreground="{StaticResource CollectionIconFill}" ToolTip="Create New Collection"
+                        <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="FolderPlus" Foreground="{StaticResource CollectionIconFill}" ToolTip="Create New Collection"
                                             Visibility="{Binding CreateCollectionVisibility,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"
                                         Command="{Binding ToggleCreateCollectionCommand}"/>
                         <StackPanel Orientation="Horizontal" x:Name="CollectionCreation"
                                         Visibility="{Binding CreateCollectionVisibility, Converter={StaticResource ToVisibilityConverter}, FallbackValue=Collapsed}">
-                            <TextBox x:Name="NewCollectionName" Tools:AP.PlaceHolderText="New Collection" FontSize="16" VerticalAlignment="Center" 
+                            <TextBox x:Name="NewCollectionName" tools:AP.PlaceHolderText="New Collection" FontSize="16" VerticalAlignment="Center" 
                                              Background="{StaticResource TransparentBlack}" BorderBrush="{StaticResource DarkUIElementBackground}" MaxLength="50"
                                             Foreground="{StaticResource TextColor}" Margin="0" BorderThickness="0" MinWidth="80">
                                 <TextBox.Style>
@@ -205,15 +205,15 @@
                                     </Style>
                                 </TextBox.Style>
                             </TextBox>
-                            <Button Tools:AP.IconKind="Check" Foreground="{StaticResource AcceptFill}" Style="{StaticResource IconBtn}" 
+                            <Button tools:AP.IconKind="Check" Foreground="{StaticResource AcceptFill}" Style="{StaticResource IconBtn}" 
                                             IsDefault="{Binding ElementName=NewCollectionName, Path=IsFocused}"
                                             Command="{Binding CreateCollectionCommand}" CommandParameter="{Binding ElementName=NewCollectionName, Path=Text}">
                             </Button>
-                            <Button Tools:AP.IconKind="Close" Foreground="{StaticResource CancelFill}" Command="{Binding ToggleCreateCollectionCommand}"
+                            <Button tools:AP.IconKind="Close" Foreground="{StaticResource CancelFill}" Command="{Binding ToggleCreateCollectionCommand}"
                                             Style="{StaticResource IconBtn}"/>
                         </StackPanel>
                         <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
-                        <Button Tools:AP.IconKind="FolderEdit" Foreground="{StaticResource CollectionIconFill}" 
+                        <Button tools:AP.IconKind="FolderEdit" Foreground="{StaticResource CollectionIconFill}" 
                                     Style="{StaticResource IconBtn}" ToolTip="Rename Collection" Command="{Binding ToggleEditCollectionCommand}"
                                     Visibility="{Binding EditCollectionVisibility,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"/>
                         <StackPanel Orientation="Horizontal" x:Name="CollectionEditing"
@@ -231,31 +231,28 @@
                                     </Style>
                                 </TextBox.Style>
                             </TextBox>
-                            <Button Tools:AP.IconKind="Check" Foreground="{StaticResource AcceptFill}" Style="{StaticResource IconBtn}" 
+                            <Button tools:AP.IconKind="Check" Foreground="{StaticResource AcceptFill}" Style="{StaticResource IconBtn}" 
                                         IsDefault="{Binding ElementName=EditCollectionName, Path=IsFocused}"
                                         Command="{Binding EditCollectionNameCommand}" CommandParameter="{Binding ElementName=EditCollectionName, Path=Text}">
                             </Button>
-                            <Button Tools:AP.IconKind="Close" Foreground="{StaticResource CancelFill}" 
+                            <Button tools:AP.IconKind="Close" Foreground="{StaticResource CancelFill}" 
                                         Command="{Binding ToggleEditCollectionCommand}" Style="{StaticResource IconBtn}"/>
                         </StackPanel>
                         <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
-                        <Button Tools:AP.IconKind="FolderRemove" Foreground="{StaticResource CollectionIconFill}" 
+                        <Button tools:AP.IconKind="FolderRemove" Foreground="{StaticResource CollectionIconFill}" 
                                 Style="{StaticResource IconBtn}" Command="{Binding DeleteCollectionCommand}" ToolTip="Delete This Collection"/>
                     </StackPanel>
                 </Border>
                 
                 <!--Settings button-->
-                <Button Click="Toggle_ContextMenu" Grid.Column="5" Tools:AP.IconKind="Settings" Height="25" Margin="15,0"
+                <Button Click="Toggle_ContextMenu" Grid.Column="5" tools:AP.IconKind="Settings" Height="25" Margin="15,0"
                          WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Settings">
                     <Button.ContextMenu>
                         <ContextMenu Placement="Bottom">
-                            <ContextMenu.Resources>
-                                <Converters:MultiParamConverter x:Key="MultiParamConverter"/>
-                            </ContextMenu.Resources>
-                            <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}" Tools:AP.IconKind="Cog"/>
-                            <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}" Tools:AP.IconKind="Autorenew"/>
-                            <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New" Tools:AP.IconKind="AlertDecagram"/>
-                            <MenuItem Header="Report A Bug" Tools:AP.IconKind="Bug"/>
+                            <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}" tools:AP.IconKind="Cog"/>
+                            <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}" tools:AP.IconKind="Autorenew"/>
+                            <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New" tools:AP.IconKind="AlertDecagram"/>
+                            <MenuItem Header="Report A Bug" tools:AP.IconKind="Bug"/>
                             
                             <!--<MenuItem Header="About" Command="{Binding OpenSettingsCommand}" CommandParameter="About"/>-->
                         </ContextMenu>
@@ -269,7 +266,7 @@
                                 <Setter.Value>
                                     <ControlTemplate TargetType="Button">
                                         <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Foreground="{TemplateBinding Foreground}"
-                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"
+                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}"
                                         Background="{TemplateBinding Background}"/>
                                     </ControlTemplate>
                                 </Setter.Value>
@@ -336,10 +333,10 @@
                             IsChecked="{Binding WindowState, RelativeSource={RelativeSource FindAncestor,
             AncestorType=Window}, Converter={StaticResource IsMaximizedConverter}, Mode=OneWay}">
                         <Grid>
-                            <materialDesign:PackIcon Kind="WindowMaximize"  x:Name="Maximizeimage" Width="15"
+                            <materialDesign:PackIcon Kind="WindowMaximize" Width="15"
                 Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
                 AncestorType={x:Type ToggleButton}}, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"/>
-                            <materialDesign:PackIcon Kind="WindowRestore"  x:Name="NotMaximizeimage" Width="15"
+                            <materialDesign:PackIcon Kind="WindowRestore" Width="15"
                 Visibility="{Binding IsChecked, RelativeSource={RelativeSource FindAncestor,
                 AncestorType={x:Type ToggleButton}}, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=false}"/>
                         </Grid>
@@ -504,7 +501,7 @@
                         </ItemsControl>
                     </Grid>
                 </Border>
-                <Button Command="{Binding CollectionVM.FilterVM.ClearFiltersCommand}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FilterRemove" 
+                <Button Command="{Binding CollectionVM.FilterVM.ClearFiltersCommand}" Style="{StaticResource IconBtn}" tools:AP.IconKind="FilterRemove" 
                         Grid.Column="3" Grid.Row ="1" Width="30" Margin="0" ToolTip="Clear Filters"/>
                 <!--#endregion-->
 
@@ -520,7 +517,7 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
                                             <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Foreground="{TemplateBinding Foreground}"
-                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Tools:AP.IconKind)}"
+                                        Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}"
                                         Background="{TemplateBinding Background}"/>
                                         </ControlTemplate>
                                     </Setter.Value>
@@ -533,7 +530,7 @@
                                         <DataTrigger.Binding>
                                             <MultiBinding>
                                                 <MultiBinding.Converter>
-                                                    <Converters:EqualityConverter/>
+                                                    <converters:EqualityConverter/>
                                                 </MultiBinding.Converter>
                                                 <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
                                                 <Binding Path="CurrentLayout.LayoutType" />
@@ -546,18 +543,18 @@
                             </Style>
                         </StackPanel.Resources>
                         <Rectangle Width="3" Fill="Gray" Margin="3,0"/>
-                        <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Home}" 
-                            Tools:AP.IconKind="Home" Height="30" ToolTip="Home Layout"/>
-                        <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.List}" 
-                            Tools:AP.IconKind="ViewHeadline" Height="40" ToolTip="List Layout"/>
-                        <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Card}" 
-                            Tools:AP.IconKind="ViewCompact" Height="40" RenderTransformOrigin="0.5 0.5" ToolTip="Card Layout">
+                        <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.Home}" 
+                            tools:AP.IconKind="Home" Height="30" ToolTip="Home Layout"/>
+                        <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.List}" 
+                            tools:AP.IconKind="ViewHeadline" Height="40" ToolTip="List Layout"/>
+                        <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.Card}" 
+                            tools:AP.IconKind="ViewCompact" Height="40" RenderTransformOrigin="0.5 0.5" ToolTip="Card Layout">
                             <Button.RenderTransform>
                                 <ScaleTransform ScaleY="-1"/>
                             </Button.RenderTransform>
                         </Button>
-                        <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static viewmodels:LayoutViewModel+Layout.Tile}" 
-                            Tools:AP.IconKind="ViewModule" Height="43" ToolTip="Tile Layout"/>
+                        <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.Tile}" 
+                            tools:AP.IconKind="ViewModule" Height="43" ToolTip="Tile Layout"/>
                         <Rectangle Width="3" Fill="Gray" Margin="3,0"
                                    Visibility="{Binding CodexInfoVM.ShowInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
                         <ToggleButton ToolTip="Show Book Info" IsChecked="{Binding CodexInfoVM.ShowCodexInfo, Mode=TwoWay}" Cursor="Hand"

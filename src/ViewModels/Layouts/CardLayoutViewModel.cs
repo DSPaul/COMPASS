@@ -1,4 +1,4 @@
-﻿namespace COMPASS.ViewModels
+﻿namespace COMPASS.ViewModels.Layouts
 {
     public class CardLayoutViewModel : LayoutViewModel
     {
@@ -7,7 +7,8 @@
             LayoutType = Layout.Card;
         }
 
-        public override bool DoVirtualization => Properties.Settings.Default.DoVirtualizationCard && MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdCard;
+        public override bool DoVirtualization => Properties.Settings.Default.DoVirtualizationCard 
+                                                 && MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdCard;
 
         #region Options
 
@@ -24,7 +25,7 @@
             set
             {
                 Properties.Settings.Default.CardShowAuthor = value;
-                RaisePropertyChanged(nameof(ShowAuthor));
+                RaisePropertyChanged();
             }
         }
 
@@ -34,7 +35,7 @@
             set
             {
                 Properties.Settings.Default.CardShowPublisher = value;
-                RaisePropertyChanged(nameof(ShowPublisher));
+                RaisePropertyChanged();
             }
         }
 
@@ -44,7 +45,7 @@
             set
             {
                 Properties.Settings.Default.CardShowRelease = value;
-                RaisePropertyChanged(nameof(ShowReleaseDate));
+                RaisePropertyChanged();
             }
         }
 
@@ -54,7 +55,7 @@
             set
             {
                 Properties.Settings.Default.CardShowVersion = value;
-                RaisePropertyChanged(nameof(ShowVersion));
+                RaisePropertyChanged();
             }
         }
 
@@ -64,7 +65,7 @@
             set
             {
                 Properties.Settings.Default.CardShowRating = value;
-                RaisePropertyChanged(nameof(ShowRating));
+                RaisePropertyChanged();
             }
         }
 
@@ -74,7 +75,7 @@
             set
             {
                 Properties.Settings.Default.CardShowTags = value;
-                RaisePropertyChanged(nameof(ShowTags));
+                RaisePropertyChanged();
             }
         }
 
@@ -84,7 +85,7 @@
             set
             {
                 Properties.Settings.Default.CardShowFileIcons = value;
-                RaisePropertyChanged(nameof(ShowFileIcons));
+                RaisePropertyChanged();
             }
         }
 

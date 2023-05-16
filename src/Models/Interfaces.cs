@@ -8,7 +8,7 @@ namespace COMPASS.Models
         public int ID { get; set; }
     }
 
-    public interface IHasChilderen<T> where T : IHasChilderen<T>
+    public interface IHasChildren<T> where T : IHasChildren<T>
     {
         public ObservableCollection<T> Children { get; set; }
     }

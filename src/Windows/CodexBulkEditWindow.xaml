@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        xmlns:Models ="clr-namespace:COMPASS.Models"
-        xmlns:Converters ="clr-namespace:COMPASS.Converters"
-        xmlns:Tools ="clr-namespace:COMPASS.Tools" 
-        xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary" 
+        xmlns:models ="clr-namespace:COMPASS.Models"
+        xmlns:converters ="clr-namespace:COMPASS.Converters"
+        xmlns:tools ="clr-namespace:COMPASS.Tools" 
+        xmlns:blackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary" 
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
         d:DataContext="{d:DesignInstance Type=viewmodels:CodexBulkEditViewModel}"
         mc:Ignorable="d"
@@ -16,7 +16,7 @@
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
         Foreground="{StaticResource TextColor}" Background="{StaticResource WindowBackground}" MouseDown="MainGrid_MouseDown">
     <Window.Resources>
-        <Converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
+        <converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
         <sys:Boolean x:Key="True">True</sys:Boolean>
         <sys:Boolean x:Key="False">False</sys:Boolean>
     </Window.Resources>
@@ -43,7 +43,7 @@
             <Style TargetType="Button">
                 <Setter Property="Template" Value="{StaticResource  Btn}"/>
             </Style>
-            <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type Models:TreeViewNode}" ItemsSource="{Binding Children}">
+            <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type models:TreeViewNode}" ItemsSource="{Binding Children}">
                 <Border CornerRadius="5" Margin="0,3">
                     <Border.Background>
                         <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/>
@@ -75,7 +75,7 @@
 
                 </Border>
             </HierarchicalDataTemplate>
-            <Tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
+            <tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height ="auto"/>
@@ -96,35 +96,35 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="Authors:" Margin="0,10"/>
-        <BlackPearl:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
-                                                    Grid.ColumnSpan="2" Grid.Row="1" ItemSeparator=";" 
+        <blackPearl:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
+                                                    Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1" ItemSeparator=";" 
                                                     LookUpContract="{Binding Contract}"
                                                     ItemSource="{Binding MVM.CollectionVM.FilterVM.AuthorList}" 
                                                     SelectedItems="{Binding TempCodex.Authors, Mode=TwoWay}"/>
 
-        <TextBlock Text="Publisher:" Grid.Row="2" Margin="0,10"/>
-        <ComboBox Text="{Binding TempCodex.Publisher, Mode=TwoWay}" Grid.Row="4" Grid.ColumnSpan="2" Name="FilePublisherTB"
-                  IsEditable="True" Background="{StaticResource TransparentBlack}" BorderBrush="{x:Null}" 
-                      ItemsSource="{Binding MVM.CollectionVM.FilterVM.PublisherList}"/>
+        <TextBlock Text="Publisher:" Grid.Row="2" Grid.Column="0" Margin="0,10"/>
+        <ComboBox Text="{Binding TempCodex.Publisher, Mode=TwoWay}" Grid.Row="4" Grid.ColumnSpan="2"
+                  Grid.Column="0" IsEditable="True" Background="{StaticResource TransparentBlack}" BorderBrush="{x:Null}" 
+                  ItemsSource="{Binding MVM.CollectionVM.FilterVM.PublisherList}"/>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="5" Margin="0,10">
+        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="0" Margin="0,10">
             <TextBlock Text="Version:"/>
-            <TextBox Text="{Binding TempCodex.Version, Mode=TwoWay}" MinWidth="100" Name="FileVersionTB" Margin="5,0"/>
+            <TextBox Text="{Binding TempCodex.Version, Mode=TwoWay}" MinWidth="100" Margin="5,0"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Margin="0,10">
             <TextBlock Text="Release Date:"/>
             <DatePicker SelectedDate="{Binding TempCodex.ReleaseDate, TargetNullValue={x:Null}, FallbackValue={x:Null}}"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="6" Margin="0,10">
+        <StackPanel Orientation="Horizontal" Grid.Row="6" Grid.Column="0" Margin="0,10">
             <TextBlock Text="Hard Copy:" Margin="3,1,3,0" VerticalAlignment="Top"/>
-            <CheckBox Name="FileOwnedCB" IsChecked="{Binding TempCodex.Physically_Owned, Mode=TwoWay}" VerticalAlignment="Center"/>
+            <CheckBox IsChecked="{Binding TempCodex.PhysicallyOwned, Mode=TwoWay}" VerticalAlignment="Center"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="6" Grid.Column="1">
             <TextBlock Text="Rating:"/>
             <materialDesign:RatingBar Value="{Binding TempCodex.Rating, Mode=TwoWay}" Margin="50,0,0,0"/>
         </StackPanel>
 
-        <Grid Grid.Row="7" Grid.ColumnSpan="2">
+        <Grid Grid.Row="7" Grid.ColumnSpan="2" Grid.Column="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
@@ -135,7 +135,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Text="Tags To Add:"/>
-            <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="2" CornerRadius="5" Padding="10,3" Margin="5">
+            <Border Grid.Row="0" Grid.Column="1" BorderBrush="Gray" BorderThickness="2" CornerRadius="5" Padding="10,3" Margin="5">
                 <ItemsControl ItemsSource="{Binding TagsToAdd}" VerticalAlignment="Center" MinHeight="20"
                           ItemTemplate="{StaticResource TagDeletableTemplate}">
                     <ItemsControl.ItemsPanel>
@@ -147,7 +147,7 @@
             </Border>
 
 
-            <TextBlock Grid.Row="1" Text="Tags To Remove:"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Tags To Remove:"/>
             <Border  Grid.Row="1"  Grid.Column="1" BorderBrush="Gray" BorderThickness="2" 
                          CornerRadius="5" Padding="10,3" Margin="5">
                 <ItemsControl ItemsSource="{Binding TagsToRemove}" VerticalAlignment="Center" MinHeight="20"
@@ -161,10 +161,10 @@
             </Border>
         </Grid>
 
-        <StackPanel Grid.Row="8" Orientation="Horizontal" Grid.ColumnSpan="2">
-            <Button Style="{StaticResource IconTextButton}" Tools:AP.IconKind="Check" Content="OK" Margin="5"
+        <StackPanel Grid.Row="8" Orientation="Horizontal" Grid.ColumnSpan="2" Grid.Column="0">
+            <Button Style="{StaticResource IconTextButton}" tools:AP.IconKind="Check" Content="OK" Margin="5"
                         Command ="{Binding OKCommand}"  Background="{StaticResource AcceptFill}" IsDefault="True"/>
-            <Button Grid.Column="1"  Style="{StaticResource IconTextButton}" Tools:AP.IconKind="Close" Margin="5"
+            <Button Style="{StaticResource IconTextButton}" tools:AP.IconKind="Close" Margin="5"
                         Command="{Binding CancelCommand}" Background="{StaticResource CancelFill}" Content="Cancel"/>
         </StackPanel>
 

@@ -1,4 +1,5 @@
-﻿using COMPASS.Models;
+﻿using System.Diagnostics;
+using COMPASS.Models;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -8,15 +9,16 @@ namespace COMPASS.Tools
     {
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            FrameworkElement elemnt = container as FrameworkElement;
+            FrameworkElement element = container as FrameworkElement;
             TreeViewNode node = item as TreeViewNode;
+            Debug.Assert(node != null, nameof(node) + " != null");
             if (node.Tag.IsGroup)
             {
-                return elemnt.FindResource("GroupTag") as HierarchicalDataTemplate;
+                return element?.FindResource("GroupTag") as HierarchicalDataTemplate;
             }
             else
             {
-                return elemnt.FindResource("RegularTag") as HierarchicalDataTemplate;
+                return element?.FindResource("RegularTag") as HierarchicalDataTemplate;
             }
         }
     }

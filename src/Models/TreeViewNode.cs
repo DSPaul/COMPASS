@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace COMPASS.Models
 {
-    public class TreeViewNode : ObservableObject, IHasChilderen<TreeViewNode>
+    public class TreeViewNode : ObservableObject, IHasChildren<TreeViewNode>
     {
         public TreeViewNode(Tag tag)
         {
@@ -42,13 +42,13 @@ namespace COMPASS.Models
 
         public Tag ToTag()
         {
-            //add childeren according to treeview
-            Tag.Children = new(Children.Select(childnode => childnode.ToTag()));
+            //add children according to treeview
+            Tag.Children = new(Children.Select(childNode => childNode.ToTag()));
 
-            //set partentID for all the childeren
-            foreach (Tag childtag in Tag.Children)
+            //set parentID for all the children
+            foreach (Tag childTag in Tag.Children)
             {
-                childtag.Parent = Tag;
+                childTag.Parent = Tag;
             }
 
             return Tag;

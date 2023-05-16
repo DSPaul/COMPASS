@@ -6,9 +6,9 @@ namespace COMPASS.Models
 {
     public sealed class Filter : ITag, IEquatable<Filter>
     {
-        public Filter(FilterType filtertype, object filterValue = null)
+        public Filter(FilterType filterType, object filterValue = null)
         {
-            Type = filtertype;
+            Type = filterType;
             FilterValue = filterValue;
         }
 
@@ -33,20 +33,20 @@ namespace COMPASS.Models
 
         public Func<Codex, bool> Method => Type switch
         {
-            FilterType.Author => new(codex => codex.Authors.Contains((string)FilterValue)),
-            FilterType.Publisher => new(codex => codex.Publisher == (string)FilterValue),
-            FilterType.StartReleaseDate => new(codex => codex.ReleaseDate >= (DateTime?)FilterValue),
-            FilterType.StopReleaseDate => new(codex => codex.ReleaseDate < (DateTime?)FilterValue),
-            FilterType.MinimumRating => new(codex => codex.Rating >= (int?)FilterValue),
-            FilterType.OfflineSource => new(codex => codex.HasOfflineSource()),
-            FilterType.OnlineSource => new(codex => codex.HasOnlineSource()),
-            FilterType.HasISBN => new(codex => !String.IsNullOrEmpty(codex.ISBN)),
-            FilterType.PhysicalSource => new(codex => codex.Physically_Owned),
-            FilterType.Favorite => new(codex => codex.Favorite),
-            FilterType.FileExtension => new(codex => codex.GetFileType() == (string)FilterValue),
-            FilterType.HasBrokenPath => new(codex => codex.HasOfflineSource() && !Path.Exists(codex.Path)),
-            FilterType.Domain => new(codex => codex.HasOnlineSource() && codex.SourceURL.Contains((string)FilterValue)),
-            _ => new(_ => true)
+            FilterType.Author => codex => codex.Authors.Contains((string)FilterValue),
+            FilterType.Publisher => codex => codex.Publisher == (string)FilterValue,
+            FilterType.StartReleaseDate => codex => codex.ReleaseDate >= (DateTime?)FilterValue,
+            FilterType.StopReleaseDate => codex => codex.ReleaseDate < (DateTime?)FilterValue,
+            FilterType.MinimumRating => codex => codex.Rating >= (int?)FilterValue,
+            FilterType.OfflineSource => codex => codex.HasOfflineSource(),
+            FilterType.OnlineSource => codex => codex.HasOnlineSource(),
+            FilterType.HasISBN => codex => !String.IsNullOrEmpty(codex.ISBN),
+            FilterType.PhysicalSource => codex => codex.PhysicallyOwned,
+            FilterType.Favorite => codex => codex.Favorite,
+            FilterType.FileExtension => codex => codex.GetFileType() == (string)FilterValue,
+            FilterType.HasBrokenPath => codex => codex.HasOfflineSource() && !Path.Exists(codex.Path),
+            FilterType.Domain => codex => codex.HasOnlineSource() && codex.SourceURL.Contains((string)FilterValue),
+            _ => _ => true
         };
 
         //Implement ITag interface
@@ -54,18 +54,14 @@ namespace COMPASS.Models
         {
             get
             {
-                if (FilterValue is null)
-                {
-                    return Label;
-                }
-
-                string formatedFilterValue = FilterValue switch
+                if (FilterValue is null) return Label;
+                string formattedFilterValue = FilterValue switch
                 {
                     DateTime date => date.ToShortDateString(),
                     ITag tag => tag.Content,
                     _ => FilterValue.ToString()
                 };
-                return $"{Label} {formatedFilterValue} {Suffix}".Trim();
+                return $"{Label} {formattedFilterValue} {Suffix}".Trim();
             }
         }
 
@@ -142,21 +138,12 @@ namespace COMPASS.Models
         {
             if (lhs is null)
             {
-                if (rhs is null)
-                {
-                    return true;
-                }
-
-                // Only the left side is null.
-                return false;
+                return rhs is null; //if lhs is null, only equal if rhs is also null
             }
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(Filter lhs, Filter rhs)
-        {
-            return !(lhs == rhs);
-        }
+        public static bool operator !=(Filter lhs, Filter rhs) => !(lhs == rhs);
 
         public override int GetHashCode() => Content.GetHashCode();
     }

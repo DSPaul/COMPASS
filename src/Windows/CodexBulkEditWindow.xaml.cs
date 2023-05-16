@@ -15,7 +15,7 @@ namespace COMPASS.Windows
         {
             DataContext = vm;
             InitializeComponent();
-            ((CodexBulkEditViewModel)DataContext).CloseAction = new Action(this.Close);
+            ((CodexBulkEditViewModel)DataContext).CloseAction = Close;
         }
 
         private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e) => MainGrid.Focus();

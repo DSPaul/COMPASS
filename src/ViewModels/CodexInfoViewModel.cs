@@ -11,7 +11,7 @@ namespace COMPASS.ViewModels
             MVM = mvm;
         }
 
-        public MainViewModel MVM { get; init; }
+        public MainViewModel MVM { get; }
 
         //whether or not the codex info panel is active
         public bool ShowCodexInfo
@@ -21,11 +21,11 @@ namespace COMPASS.ViewModels
             {
                 Properties.Settings.Default.ShowCodexInfo = value;
                 RaisePropertyChanged(nameof(ShowInfo));
-                RaisePropertyChanged(nameof(ShowCodexInfo));
+                RaisePropertyChanged();
             }
         }
 
-        //what the visiblity is actually bound to
+        //what the visibility is actually bound to
         public bool ShowInfo => AutoHide ? ShowCodexInfo && MVM.CurrentLayout.SelectedCodex is not null : ShowCodexInfo;
         public void SelectedItemChanged() => RaisePropertyChanged(nameof(ShowInfo));
 
@@ -35,7 +35,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.AutoHideCodexInfo = value;
-                RaisePropertyChanged(nameof(AutoHide));
+                RaisePropertyChanged();
                 RaisePropertyChanged(nameof(ShowInfo));
             }
         }

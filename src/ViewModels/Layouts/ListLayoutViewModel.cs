@@ -1,8 +1,8 @@
-﻿namespace COMPASS.ViewModels
+﻿namespace COMPASS.ViewModels.Layouts
 {
     public class ListLayoutViewModel : LayoutViewModel
     {
-        public ListLayoutViewModel() : base()
+        public ListLayoutViewModel()
         {
             LayoutType = Layout.List;
         }
@@ -26,7 +26,7 @@
             set
             {
                 Properties.Settings.Default.ListShowAuthor = value;
-                RaisePropertyChanged(nameof(ShowAuthor));
+                RaisePropertyChanged();
             }
         }
 
@@ -36,7 +36,7 @@
             set
             {
                 Properties.Settings.Default.ListShowPublisher = value;
-                RaisePropertyChanged(nameof(ShowPublisher));
+                RaisePropertyChanged();
             }
         }
 
@@ -46,7 +46,7 @@
             set
             {
                 Properties.Settings.Default.ListShowRelease = value;
-                RaisePropertyChanged(nameof(ShowReleaseDate));
+                RaisePropertyChanged();
             }
         }
 
@@ -56,7 +56,7 @@
             set
             {
                 Properties.Settings.Default.ListShowDateAdded = value;
-                RaisePropertyChanged(nameof(ShowDateAdded));
+                RaisePropertyChanged();
             }
         }
 
@@ -66,7 +66,7 @@
             set
             {
                 Properties.Settings.Default.ListShowVersion = value;
-                RaisePropertyChanged(nameof(ShowVersion));
+                RaisePropertyChanged();
             }
         }
 
@@ -76,7 +76,7 @@
             set
             {
                 Properties.Settings.Default.ListShowRating = value;
-                RaisePropertyChanged(nameof(ShowRating));
+                RaisePropertyChanged();
             }
         }
 
@@ -86,7 +86,7 @@
             set
             {
                 Properties.Settings.Default.ListShowISBN = value;
-                RaisePropertyChanged(nameof(ShowISBN));
+                RaisePropertyChanged();
             }
         }
 
@@ -96,7 +96,7 @@
             set
             {
                 Properties.Settings.Default.ListShowTags = value;
-                RaisePropertyChanged(nameof(ShowTags));
+                RaisePropertyChanged();
             }
         }
 
@@ -106,7 +106,7 @@
             set
             {
                 Properties.Settings.Default.ListShowFileIcons = value;
-                RaisePropertyChanged(nameof(ShowFileIcons));
+                RaisePropertyChanged();
             }
         }
 
@@ -116,7 +116,7 @@
             set
             {
                 Properties.Settings.Default.ListShowEditIcon = value;
-                RaisePropertyChanged(nameof(ShowEditIcon));
+                RaisePropertyChanged();
             }
         }
 
