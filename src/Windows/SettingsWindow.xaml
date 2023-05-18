@@ -206,7 +206,7 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </Border>
-                            
+
                             <TextBlock Text="Banished Files (will be excluded from automatic import):"
                                        Visibility="{Binding BanishedPaths.View.IsEmpty, Converter={StaticResource ToVisibilityConverter},ConverterParameter=true}"/>
                             <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0"
@@ -237,6 +237,12 @@
                             </Border>
                         </StackPanel>
                     </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Metadata" tools:AP.IconKind="FileCode">
+            <ScrollViewer>
+                <StackPanel Margin="20">
                     <Border x:Name="FolderTagMapping" Style="{StaticResource SettingsContainer}">
                         <Border.Resources>
                             <converters:ToFolderTagPairConverter x:Key="ToFolderTagPairConverter"/>
@@ -305,7 +311,7 @@
                                                     <Button  x:Name="SelectFolderForFolderTagPairButton" Style="{StaticResource IconBtn}" 
                                                              ToolTip="Pick a Folder"  HorizontalAlignment="Right" Padding="3,2" 
                                                              tools:AP.IconKind="FolderOpen" Click="SelectFolderForFolderTagPairButton_Click" 
-                                                             DockPanel.Dock="Right" Margin="5,0" Height="20"/>    
+                                                             DockPanel.Dock="Right" Margin="5,0" Height="20"/>
                                                     <TextBox x:Name="NewFolderTagPairTextBox" tools:AP.PlaceHolderText="Folder to Link" 
                                                              Margin="0" BorderThickness="0" HorizontalAlignment="Stretch"/>
                                                 </DockPanel>
@@ -362,25 +368,10 @@
                             </Border>
                         </StackPanel>
                     </Border>
-                </StackPanel>
-            </ScrollViewer>
-        </TabItem>
-        <TabItem Header="Metadata" tools:AP.IconKind="FileCode">
-            <ScrollViewer>
-                <StackPanel Margin="20">
-                    <Border x:Name="MetaDataActions" Style="{StaticResource SettingsContainer}">
-                        <StackPanel>
-                            <TextBlock Text="Actions" Style="{StaticResource SectionTitle}"/>
-                            <UniformGrid>
-                                <Button Content="Get for filtered" Style="{StaticResource TextButton}"/>
-                                <Button Content="Get for All" Style="{StaticResource TextButton}"/>
-                                <Button Content="Reset to defaults" Style="{StaticResource TextButton}"/>
-                            </UniformGrid>
-                        </StackPanel>
-                    </Border>
+                    
                     <Border x:Name="MetaDataSettings" Style="{StaticResource SettingsContainer}">
                         <StackPanel>
-                            <TextBlock Text="Preferences" Style="{StaticResource SectionTitle}"/>
+                            <TextBlock Text="Source Priority Preferences" Style="{StaticResource SectionTitle}"/>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -393,7 +384,11 @@
                                     <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Text="Property"/>
-                                <TextBlock Text="Source Priority" Grid.Row="0" Grid.Column="1" Margin="20,0"/>
+                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Margin="20,0">
+                                    <TextBlock Text="Source Priority" />
+                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                                         ToolTip="If mutliple sources provide metadata for a given property, the value from the topmost source will be used."/>
+                                </StackPanel>
                                 <TextBlock Text="Overwrite existing metadata" Grid.Row="0" Grid.Column="2"/>
                                 
                                 <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3" Grid.Column="0"
