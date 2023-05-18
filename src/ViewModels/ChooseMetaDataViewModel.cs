@@ -3,6 +3,7 @@ using COMPASS.Models;
 using COMPASS.Tools;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -74,11 +75,29 @@ namespace COMPASS.ViewModels
         private void Finish()
         {
             ApplyChoice();
+            CloseAction.Invoke();
+
             for (var i = 0; i < CodicesWithChoices.Count; i++)
             {
+                //cover art needs to copy the file, rather than path
+                if (_codicesWithMadeChoices[i].CoverArt != CodicesWithChoices[i].Item1.CoverArt)
+                {
+                    File.Copy(_codicesWithMadeChoices[i].CoverArt, CodicesWithChoices[i].Item1.CoverArt, true);
+                    CoverFetcher.CreateThumbnail(CodicesWithChoices[i].Item1);
+                    CodicesWithChoices[i].Item1.RefreshThumbnail();
+                }
+                //delete temp cover if it exists
+                if (CodicesWithChoices[i].Item2.CoverArt.EndsWith(".tmp.png"))
+                    File.Delete(CodicesWithChoices[i].Item2.CoverArt);
+                if (CodicesWithChoices[i].Item2.Thumbnail.EndsWith(".tmp.png"))
+                    File.Delete(CodicesWithChoices[i].Item2.Thumbnail);
+
+                //Set image paths back so that copy operataion after this doesn't change them to the temp files
+                _codicesWithMadeChoices[i].SetImagePaths(MainViewModel.CollectionVM.CurrentCollection);
+
+                //copy metadata data over
                 CodicesWithChoices[i].Item1.Copy(_codicesWithMadeChoices[i]);
             }
-            CloseAction.Invoke();
         }
 
         private void ApplyChoice()
@@ -116,7 +135,9 @@ namespace COMPASS.ViewModels
                 foreach (var prop in PropsToAsk)
                 {
                     bool useNew = prop.Label == "Tags" ?
+                     //for tags, new value was chosesn when there are more tags in the list
                      ((IList<Tag>)prop.GetProp(_codicesWithMadeChoices[Counter])).Count > ((IList<Tag>)prop.GetProp(CurrentPair.Item1)).Count
+                     // for all the other, do a string compare to see if the new options was chosen
                      : prop.GetProp(CurrentPair.Item1)?.ToString() != prop.GetProp(_codicesWithMadeChoices[Counter])?.ToString();
 
                     dict.Add(prop.Label, useNew);

@@ -1,10 +1,12 @@
 ﻿using COMPASS.Models;
 using COMPASS.ViewModels;
 using COMPASS.ViewModels.Sources;
+using COMPASS.Windows;
 using ImageMagick;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -14,7 +16,7 @@ namespace COMPASS.Tools
 {
     public static class CoverFetcher
     {
-        public static async Task GetCover(Codex codex)
+        public static async Task GetCover(Codex codex, ChooseMetaDataViewModel chooseMetaDataViewModel = null)
         {
             Codex MetaDatalessCodex = new()
             {
@@ -24,23 +26,50 @@ namespace COMPASS.Tools
                 ID = codex.ID,
             };
 
-            MetaDatalessCodex.SetImagePaths(MainViewModel.CollectionVM.CurrentCollection);
-
             CodexProperty coverProp = SettingsViewModel.GetInstance().MetaDataPreferences.First(prop => prop.Label == "Cover Art");
+
+            if (coverProp.OverwriteMode == MetaDataOverwriteMode.Ask)
+            {
+                Debug.Assert(chooseMetaDataViewModel is not null, "choose MetaData ViewModel cannot be null if overwrite mode is ask");
+            }
 
             if (coverProp.OverwriteMode == MetaDataOverwriteMode.Never ||
                 (coverProp.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !coverProp.IsEmpty(codex)))
                 return;
 
+            //copy img paths over this way
+            MetaDatalessCodex.SetImagePaths(MainViewModel.CollectionVM.CurrentCollection);
+
+            bool shouldAsk = coverProp.OverwriteMode == MetaDataOverwriteMode.Ask && !coverProp.IsEmpty(codex);
+            if (shouldAsk)
+            {
+                //set img paths to temp path
+                MetaDatalessCodex.CoverArt = codex.CoverArt.Insert(codex.CoverArt.Length - 4, ".tmp");
+                MetaDatalessCodex.Thumbnail = codex.Thumbnail.Insert(codex.Thumbnail.Length - 4, ".tmp");
+            }
+
+            bool getCoverSuccessful = false;
             foreach (var source in coverProp.SourcePriority)
             {
                 SourceViewModel sourceVM = SourceViewModel.GetSourceVM(source);
                 if (sourceVM == null || !sourceVM.IsValidSource(codex)) continue;
-                bool getCoverSuccessful = await sourceVM.FetchCover(MetaDatalessCodex);
+                getCoverSuccessful = await sourceVM.FetchCover(MetaDatalessCodex);
                 if (getCoverSuccessful) break;
             }
 
-            codex.RefreshThumbnail();
+            if (shouldAsk)
+            {
+                //check if the image is different from the existing one
+                using MagickImage origCover = new(codex.CoverArt);
+                using MagickImage newCover = new(MetaDatalessCodex.CoverArt);
+                var isEqual = origCover.Compare(newCover).MeanErrorPerPixel == 0;
+                if (!isEqual)
+                {
+                    chooseMetaDataViewModel?.AddCodexPair(codex, MetaDatalessCodex);
+                }
+            }
+
+            if (getCoverSuccessful) codex.RefreshThumbnail();
             ProgressViewModel.GetInstance().IncrementCounter();
         }
 
@@ -51,12 +80,20 @@ namespace COMPASS.Tools
             progressVM.TotalAmount = codices.Count;
             progressVM.Text = "Getting Cover";
 
+            ChooseMetaDataViewModel chooseMetaDataVM = new();
+
             ParallelOptions parallelOptions = new()
             {
                 MaxDegreeOfParallelism = 8
             };
 
-            await Parallel.ForEachAsync(codices, parallelOptions, async (codex, token) => await GetCover(codex));
+            await Parallel.ForEachAsync(codices, parallelOptions, async (codex, token) => await GetCover(codex, chooseMetaDataVM));
+
+            if (chooseMetaDataVM.CodicesWithChoices.Any())
+            {
+                ChooseMetaDataWindow window = new(chooseMetaDataVM);
+                window.Show();
+            }
         }
 
         public static void SaveCover(MagickImage image, Codex destCodex)

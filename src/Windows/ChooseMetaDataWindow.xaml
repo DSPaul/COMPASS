@@ -14,6 +14,7 @@
             <converters:PropIsEmptyToVisibilityConverter x:Key="PropIsEmptyToVisibilityConverter"/>
             <converters:NegateConverter x:Key="NegateConverter"/>
             <converters:CompositeCollectionConverter x:Key="CompositeCollectionConverter" />
+            <converters:UriToBitmapConverter x:Key="UriToBitmapConverter"/>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -126,7 +127,7 @@
                                  Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Pagecount}"/>
 
                     <TextBlock Text="Description:" Grid.Row="7" Grid.Column="0"
-                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Description}"/>
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Description}" Margin="20,0,20,5" VerticalAlignment="Bottom"/>
                     <RadioButton GroupName="Description" Grid.Column="2" Grid.Row="7" Style="{StaticResource WrappingRadioButton}"
                                  Content="{Binding CurrentPair.Item1.Description}" IsChecked="{Binding ShouldUseNewValue[Description], Converter={StaticResource NegateConverter}}"
                                  Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Description}"/>
@@ -175,6 +176,21 @@
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                             </ItemsControl>
+                        </RadioButton.Content>
+                    </RadioButton>
+
+                    <TextBlock Text="Cover/Thumbnail:" Grid.Row="8" Grid.Column="0"
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Cover Art}"/>
+                    <RadioButton GroupName="Tags" Grid.Column="2" Grid.Row="8" IsChecked="{Binding ShouldUseNewValue[Cover Art], Converter={StaticResource NegateConverter}}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Cover Art}">
+                        <RadioButton.Content>
+                            <Image Source="{Binding CurrentPair.Item1.CoverArt, Converter={StaticResource UriToBitmapConverter}}" Width="200"/>
+                        </RadioButton.Content>
+                    </RadioButton>
+                    <RadioButton GroupName="Tags" Grid.Column="3" Grid.Row="8" IsChecked="{Binding ShouldUseNewValue[Cover Art]}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Cover Art}">
+                        <RadioButton.Content>
+                            <Image Source="{Binding CurrentPair.Item2.CoverArt, Converter={StaticResource UriToBitmapConverter}}" Width="200"/>
                         </RadioButton.Content>
                     </RadioButton>
                 </Grid>

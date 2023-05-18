@@ -323,8 +323,8 @@ namespace COMPASS.Models
                 (codex,other) => codex.Title = other.Title,
                 new List<NamedMetaDataSource>()
                 {
-                    new(MetaDataSource.File),
                     new(MetaDataSource.PDF),
+                    new(MetaDataSource.File),
                     new(MetaDataSource.GmBinder),
                     new(MetaDataSource.Homebrewery),
                     new(MetaDataSource.GoogleDrive),
@@ -410,7 +410,11 @@ namespace COMPASS.Models
             new( "Cover Art",
                 codex => !File.Exists(codex.CoverArt),
                 codex => codex.CoverArt,
-                (codex,other) => { }, //cover art is always the same, can't really be set, prop copy from temp here or something
+                (codex,other) =>
+                {
+                    codex.CoverArt = other.CoverArt;
+                    codex.Thumbnail = other.Thumbnail;
+                },
                 new()
                 {
                     new(MetaDataSource.Image),
