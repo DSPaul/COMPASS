@@ -14,14 +14,14 @@ namespace COMPASS.ViewModels.Sources
         public override bool IsValidSource(Codex codex) =>
             codex.HasOnlineSource() && codex.SourceURL.Contains(new ImportURLViewModel(ImportSource.GoogleDrive).ExampleURL);
 
-        public override async Task<Codex> GetMetaData(Codex codex)
+        public override Task<Codex> GetMetaData(Codex codex)
         {
             // Work on a copy
             codex = new Codex(codex);
             Debug.Assert(IsValidSource(codex), "Invalid Codex was used in Google drive source");
             codex.Publisher = "Google Drive";
 
-            return codex;
+            return Task.FromResult(codex);
         }
 
         public override async Task<bool> FetchCover(Codex codex)

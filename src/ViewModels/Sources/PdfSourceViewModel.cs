@@ -26,9 +26,12 @@ namespace COMPASS.ViewModels.Sources
             PdfDocument pdfDoc = null;
             try
             {
-                PdfReader pdfReader = new(codex.Path);
-                pdfDoc = new PdfDocument(pdfReader);
-                var info = pdfDoc.GetDocumentInfo();
+                var info = await Task.Run(() =>
+                {
+                    PdfReader pdfReader = new(codex.Path);
+                    pdfDoc = new PdfDocument(pdfReader);
+                    return pdfDoc.GetDocumentInfo();
+                });
 
                 codex.Title = info.GetTitle();
                 if (info.GetAuthor() is not null)

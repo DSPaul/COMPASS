@@ -406,25 +406,24 @@ namespace COMPASS.ViewModels
                     }
                 }
 
-                if (!prop.IsEmpty(propHolder))
-                {
+                //if no value was found for this prop, do nothing
+                if (prop.IsEmpty(propHolder)) continue;
 
-                    if (prop.OverwriteMode == MetaDataOverwriteMode.Always || prop.IsEmpty(codex))
+                if (prop.OverwriteMode == MetaDataOverwriteMode.Always || prop.IsEmpty(codex))
+                {
+                    prop.SetProp(codex, propHolder);
+                }
+                else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask)
+                {
+                    bool isDifferent = prop.Label == "Tags" ?
+                    // in case of tags, check if source adds tags that aren't there yet
+                    ((IList<Tag>)prop.GetProp(propHolder)).Except((IList<Tag>)prop.GetProp(codex)).Any()
+                    //check if ToString() representations are different, doesn't work for tags
+                    : prop.GetProp(codex)?.ToString() != prop.GetProp(propHolder)?.ToString();
+                    if (isDifferent)
                     {
-                        prop.SetProp(codex, propHolder);
-                    }
-                    else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask)
-                    {
-                        bool isDifferent = false;
-                        //check if ToString() representations are different, doesn't work for tags
-                        isDifferent = isDifferent || (prop.Label != "Tags" && prop.GetProp(codex)?.ToString() != prop.GetProp(propHolder)?.ToString());
-                        // use For tags, check if source adds tags that aren't there yet
-                        isDifferent = isDifferent || (prop.Label == "Tags" && ((IList<Tag>)prop.GetProp(propHolder)).Except((IList<Tag>)prop.GetProp(codex)).Any());
-                        if (isDifferent)
-                        {
-                            prop.SetProp(toAsk, propHolder);
-                            shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked
-                        }
+                        prop.SetProp(toAsk, propHolder);
+                        shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked
                     }
                 }
             }
@@ -509,7 +508,7 @@ namespace COMPASS.ViewModels
         {
             Codex targetCodex = (Codex)dropInfo.TargetItem;
             if (targetCodex is null) return;
-            
+
             Tag toAdd = dropInfo.Data switch
             {
                 TreeViewNode node => node.Tag,

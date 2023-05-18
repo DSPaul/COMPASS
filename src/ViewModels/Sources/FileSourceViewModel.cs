@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-using COMPASS.Models;
+﻿using COMPASS.Models;
 using COMPASS.Tools;
 using FuzzySharp;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ namespace COMPASS.ViewModels.Sources
         public override Task<bool> FetchCover(Codex codex) => throw new System.NotImplementedException();
         public override bool IsValidSource(Codex codex) => codex.HasOfflineSource();
 
-        public override async Task<Codex> GetMetaData(Codex codex)
+        public override Task<Codex> GetMetaData(Codex codex)
         {
             // Work on a copy
             codex = new Codex(codex);
@@ -47,7 +47,7 @@ namespace COMPASS.ViewModels.Sources
             }
 
             MainViewModel.CollectionVM.FilterVM.ReFilter();
-            return codex;
+            return Task.FromResult(codex);
         }
     }
 }

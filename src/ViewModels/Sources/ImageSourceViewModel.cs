@@ -11,13 +11,13 @@ namespace COMPASS.ViewModels.Sources
 
         public override bool IsValidSource(Codex codex) => File.Exists(codex.Path) && Utils.IsImageFile(codex.Path);
 
-        public override async Task<Codex> GetMetaData(Codex codex)
+        public override Task<Codex> GetMetaData(Codex codex)
         {
             // Work on a copy
             codex = new Codex(codex);
 
             codex.PageCount = 1;
-            return codex;
+            return Task.FromResult(codex);
         }
         public override async Task<bool> FetchCover(Codex codex) =>
             await Task.Run(() => CoverFetcher.GetCoverFromImage(codex.Path, codex));
