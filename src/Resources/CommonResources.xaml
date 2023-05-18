@@ -881,18 +881,17 @@
     </ControlTemplate>
     <!--SimpleStyles: ComboBoxItem-->
     <Style x:Key="{x:Type ComboBoxItem}" TargetType="{x:Type ComboBoxItem}">
-        <Setter Property="SnapsToDevicePixels" Value="true"/>
-        <Setter Property="Foreground" Value="White"/>
         <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="Padding" Value="10,2"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                    <Border Name="Border" Padding="2" SnapsToDevicePixels="true">
+                    <Border Name="Border" Padding="{TemplateBinding Padding}">
                         <ContentPresenter />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsHighlighted" Value="true">
-                            <Setter TargetName="Border" Property="Background" Value="#FF4F4F4F"/>
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource TitlebarElementHoverBackground}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
