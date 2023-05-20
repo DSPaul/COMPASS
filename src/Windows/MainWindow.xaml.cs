@@ -157,9 +157,12 @@ namespace COMPASS.Windows
             if (progressVM.ImportInProgress)
             {
                 progressVM.CancelBackgroundTask();
-                while (progressVM.ImportInProgress)
+                int totalDelay = 0;
+                while (progressVM.ImportInProgress && totalDelay < 5000)
                 {
-                    await Task.Delay(100);
+                    int delay = 100;
+                    await Task.Delay(delay);
+                    totalDelay += delay;
                 }
             }
             Application.Current.Shutdown();
