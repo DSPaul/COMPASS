@@ -14,7 +14,9 @@
                                             Grid.Row="2" Grid.Column="1" Margin="10,0,20,0">
                 <ItemsControl x:Name="InnerItemsControl" BorderBrush="{x:Null}" Background="{x:Null}"
                             HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="5"
-                            dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" ItemsSource="{TemplateBinding ItemsSource}">
+                            dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" 
+                              dd:DragDrop.DragDropContext="{Binding Key, ElementName=Root}"
+                              ItemsSource="{TemplateBinding ItemsSource}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border CornerRadius="5" Margin="2,3" Background="{StaticResource AccentColorMuted}">

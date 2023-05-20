@@ -1,5 +1,6 @@
 ﻿using COMPASS.Models;
 using System.Collections;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace COMPASS.Resources.Controls
@@ -12,9 +13,10 @@ namespace COMPASS.Resources.Controls
         public PriorityControl()
         {
             InitializeComponent();
+            Key++;
         }
 
-        private void MoveUp(object sender, System.Windows.RoutedEventArgs e)
+        private void MoveUp(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             ITag toMove = btn.CommandParameter as ITag;
@@ -33,7 +35,7 @@ namespace COMPASS.Resources.Controls
             }
         }
 
-        private void MoveDown(object sender, System.Windows.RoutedEventArgs e)
+        private void MoveDown(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             ITag toMove = btn.CommandParameter as ITag;
@@ -51,5 +53,8 @@ namespace COMPASS.Resources.Controls
                 ((IList)Root.ItemsSource).Insert(i + 1, toMove);
             }
         }
+
+        //key to uniquely identify control so drag drop only works within the same control
+        public static int Key { get; set; } = 0;
     }
 }
