@@ -6,7 +6,7 @@ using System.Windows.Media;
 
 namespace COMPASS.Converters
 {
-    class MsgTypetoColorConverter : IValueConverter
+    class MsgTypeToColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

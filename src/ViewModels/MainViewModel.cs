@@ -2,6 +2,7 @@
 using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
+using COMPASS.ViewModels.Layouts;
 using COMPASS.ViewModels.Sources;
 using COMPASS.Windows;
 using ImageMagick;
@@ -29,6 +30,7 @@ namespace COMPASS.ViewModels
             CurrentLayout = LayoutViewModel.GetLayout();
             LeftDockVM = new(this);
             CodexInfoVM = new(this);
+            SettingsViewModel.GetInstance().MVM = this;
 
             //Update stuff
             WebDriverFactory.UpdateWebdriver();
@@ -90,7 +92,7 @@ namespace COMPASS.ViewModels
         {
             //Start internet checkup timer
             _checkConnectionTimer = new();
-            _checkConnectionTimer.Tick += (s, e) => Task.Run(() => IsOnline = Utils.PingURL());
+            _checkConnectionTimer.Tick += (_, _) => Task.Run(() => IsOnline = Utils.PingURL());
             _checkConnectionTimer.Interval = new TimeSpan(0, 0, 10);
             _checkConnectionTimer.Start();
             //to check right away on startup
@@ -110,7 +112,8 @@ namespace COMPASS.ViewModels
 
         private DispatcherTimer _checkConnectionTimer;
 
-        public string Version => $"v{Assembly.GetExecutingAssembly().GetName().Version.ToString()[0..5]}";
+        public string Version => $"v{Assembly.GetExecutingAssembly().GetName().Version?.ToString()[0..5]}";
+        public ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
 
         #endregion
 
@@ -147,11 +150,11 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> OpenSettingsCommand => _openSettingsCommand ??= new(OpenSettings);
         public void OpenSettings(string tab = null)
         {
-            var settingswindow = new SettingsWindow(SettingsViewModel.GetInstance(), tab)
+            var settingsWindow = new SettingsWindow(SettingsViewModel.GetInstance(), tab)
             {
                 Owner = Application.Current.MainWindow
             };
-            settingswindow.Show();
+            settingsWindow.Show();
         }
 
         //check updates

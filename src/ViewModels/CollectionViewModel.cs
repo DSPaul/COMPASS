@@ -1,13 +1,14 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
-using COMPASS.ViewModels.Sources;
+using COMPASS.ViewModels.Import;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using COMPASS.Properties;
 
 namespace COMPASS.ViewModels
 {
@@ -27,11 +28,9 @@ namespace COMPASS.ViewModels
             get => _currentCollection;
             set
             {
-                if (value != null)
-                {
-                    LoadCollection(value);
-                    RaisePropertyChanged(nameof(CurrentCollection));
-                }
+                if (value == null) return;
+                LoadCollection(value);
+                RaisePropertyChanged();
             }
         }
 
@@ -96,28 +95,27 @@ namespace COMPASS.ViewModels
                     // if default collection already exists but is corrupted
                     // keep generating new collection names until a new one is found
                     bool created = false;
-                    int i = 0;
+                    int attempt = 0;
                     string name = "Default Collection";
-                    while (!created && i < 10) //only try 10 times as safefail if there is a bug to prevent infinite loop
+                    while (!created && attempt < 10) //only try 10 times to prevent infinite loop
                     {
                         if (!Path.Exists(Path.Combine(CodexCollection.CollectionsPath, name)))
                         {
                             CreateCollection(name);
                             created = true;
-                            return; //not needed but extra safety because while loops are dangerous
                         }
                         else
                         {
-                            name = $"Default Collection {i}";
-                            i++;
+                            name = $"Default Collection {attempt}";
+                            attempt++;
                         }
                     }
                 }
 
                 //in case startup collection no longer exists, pick first one that does exists
-                else if (!AllCodexCollections.Any(collection => collection.DirectoryName == Properties.Settings.Default.StartupCollection))
+                else if (AllCodexCollections.All(collection => collection.DirectoryName != Settings.Default.StartupCollection))
                 {
-                    Logger.Warn($"The collection {Properties.Settings.Default.StartupCollection} could not be found.", new DirectoryNotFoundException());
+                    Logger.Warn($"The collection {Settings.Default.StartupCollection} could not be found.", new DirectoryNotFoundException());
                     CurrentCollection = AllCodexCollections.First();
                     if (CurrentCollection is null)
                     {
@@ -129,11 +127,11 @@ namespace COMPASS.ViewModels
                 //otherwise, open startup collection
                 else
                 {
-                    CurrentCollection = AllCodexCollections.First(collection => collection.DirectoryName == Properties.Settings.Default.StartupCollection);
+                    CurrentCollection = AllCodexCollections.First(collection => collection.DirectoryName == Settings.Default.StartupCollection);
                     if (CurrentCollection is null)
                     {
                         // if it is null -> loading failed -> remove it from the pool and try again
-                        AllCodexCollections.Remove(AllCodexCollections.First(collection => collection.DirectoryName == Properties.Settings.Default.StartupCollection));
+                        AllCodexCollections.Remove(AllCodexCollections.First(collection => collection.DirectoryName == Settings.Default.StartupCollection));
                     }
                 }
             }
@@ -144,7 +142,7 @@ namespace COMPASS.ViewModels
             bool legal =
                 dirName.IndexOfAny(Path.GetInvalidPathChars()) < 0
                 && dirName.IndexOfAny(Path.GetInvalidFileNameChars()) < 0
-                && !AllCodexCollections.Any(collection => collection.DirectoryName == dirName)
+                && AllCodexCollections.All(collection => collection.DirectoryName != dirName) 
                 && !String.IsNullOrWhiteSpace(dirName)
                 && dirName.Length < 100;
             return legal;
@@ -170,6 +168,7 @@ namespace COMPASS.ViewModels
 
             _currentCollection = collection;
             RaisePropertyChanged(nameof(CurrentCollection));
+            MainVM?.CurrentLayout?.RaisePreferencesChanged();
 
             //create new viewmodels
             FilterVM = new(collection.AllCodices);
@@ -181,13 +180,13 @@ namespace COMPASS.ViewModels
         public async Task AutoImport()
         {
             //Start Auto Imports
-            MainVM.ActiveSourceVM = new FolderSourceViewModel(CurrentCollection)
+            ImportFolderViewModel folderImportVM = new()
             {
                 FolderNames = CurrentCollection.Info.AutoImportDirectories.ToList(),
             };
-
             await Task.Delay(TimeSpan.FromSeconds(2));
-            ((FolderSourceViewModel)MainVM.ActiveSourceVM).ImportFolders(true);
+            var toImport = folderImportVM.GetPathsFromFolders();
+            ImportViewModel.ImportFiles(toImport);
         }
 
         public void Refresh()
@@ -239,10 +238,10 @@ namespace COMPASS.ViewModels
                 //MessageBox "Are you Sure?"
                 string sCaption = "Are you Sure?";
 
-                string MessageSingle = "There is still one file in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
-                string MessageMultiple = $"There are still {CurrentCollection.AllCodices.Count} files in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
+                const string messageSingle = "There is still one file in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
+                string messageMultiple = $"There are still {CurrentCollection.AllCodices.Count} files in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
 
-                string sMessageBoxText = CurrentCollection.AllCodices.Count == 1 ? MessageSingle : MessageMultiple;
+                string sMessageBoxText = CurrentCollection.AllCodices.Count == 1 ? messageSingle : messageMultiple;
 
                 MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
                 MessageBoxImage imgMessageBox = MessageBoxImage.Warning;

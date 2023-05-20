@@ -23,11 +23,11 @@ namespace COMPASS.ViewModels
         public Tag ContextTag { get; set; }
 
         //TreeViewSource with hierarchy
-        private ObservableCollection<TreeViewNode> _treeviewsource;
+        private ObservableCollection<TreeViewNode> _treeViewSource;
         public ObservableCollection<TreeViewNode> TreeViewSource
         {
-            get => _treeviewsource;
-            set => SetProperty(ref _treeviewsource, value);
+            get => _treeViewSource;
+            set => SetProperty(ref _treeViewSource, value);
         }
 
         public void BuildTagTreeView()
@@ -61,7 +61,7 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _addGroupViewModel, value);
         }
 
-        //Add Tag Btns
+        //Add Tag Buttons
 
         private ActionCommand _addTagCommand;
         public ActionCommand AddTagCommand => _addTagCommand ??= new(AddTag);
@@ -83,7 +83,7 @@ namespace COMPASS.ViewModels
         public RelayCommand<object[]> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
         public void AddTagFilterHelper(object[] par)
         {
-            //needed because relaycommand only takes functions with one arg
+            //needed because relay command only takes functions with one arg
             Tag tag = (Tag)par[0];
             bool include = (bool)par[1];
             _collectionVM.FilterVM.AddFilter(new(Filter.FilterType.Tag, tag), include);
@@ -96,9 +96,9 @@ namespace COMPASS.ViewModels
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
             DragDrop.DefaultDropHandler.Drop(dropInfo);
-            // Drag & Drop will modify the Collection of Treeviewnodes that the treeview is bound to
+            // Drag & Drop will modify the Collection of Treeview nodes that the treeview is bound to
             // We need to convert that back to the collection of Tags so that the changes are saved
-            var newRootTags = TreeViewSource.Select(node => node.ToTag());
+            var newRootTags = TreeViewSource.Select(node => node.ToTag()).ToList();
 
             foreach (Tag t in newRootTags)
             {

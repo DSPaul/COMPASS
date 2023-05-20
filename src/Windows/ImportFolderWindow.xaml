@@ -3,9 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:COMPASS.Windows"
-        xmlns:Sources="clr-namespace:COMPASS.ViewModels.Sources" 
-        d:DataContext="{d:DesignInstance Type=Sources:FolderSourceViewModel}"
+        xmlns:import="clr-namespace:COMPASS.ViewModels.Import"
+        d:DataContext="{d:DesignInstance Type=import:ImportFolderViewModel}"
         mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
         Background="{StaticResource WindowBackground}" SizeToContent="WidthAndHeight"
         Title="Import Folder" Height="300" Width="600" WindowStartupLocation="CenterScreen">

@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -55,26 +56,26 @@ namespace COMPASS.Models
             bool loadedTags = LoadTags();
             bool loadedCodices = LoadCodices();
             bool loadedInfo = LoadInfo();
-            if (!loadedTags) { result -= 1; };
-            if (!loadedCodices) { result -= 2; };
-            if (!loadedInfo) { result -= 4; };
+            if (!loadedTags) { result -= 1; }
+            if (!loadedCodices) { result -= 2; }
+            if (!loadedInfo) { result -= 4; }
             Properties.Settings.Default.StartupCollection = DirectoryName;
             Logger.Info($"Loaded {DirectoryName}");
             return result;
         }
 
-        //Loads the RootTags from a file and constructs the Alltags list from it
+        //Loads the RootTags from a file and constructs the AllTags list from it
         public bool LoadTags()
         {
             if (File.Exists(TagsDataFilePath))
             {
                 //loading root tags          
-                using (var Reader = new StreamReader(TagsDataFilePath))
+                using (var reader = new StreamReader(TagsDataFilePath))
                 {
                     System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Tag>));
                     try
                     {
-                        RootTags = serializer.Deserialize(Reader) as List<Tag>;
+                        RootTags = serializer.Deserialize(reader) as List<Tag>;
                     }
                     catch (Exception ex)
                     {
@@ -99,12 +100,12 @@ namespace COMPASS.Models
         {
             if (File.Exists(CodicesDataFilePath))
             {
-                using (var Reader = new StreamReader(CodicesDataFilePath))
+                using (var reader = new StreamReader(CodicesDataFilePath))
                 {
                     System.Xml.Serialization.XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
                     try
                     {
-                        AllCodices = serializer.Deserialize(Reader) as ObservableCollection<Codex>;
+                        AllCodices = serializer.Deserialize(reader) as ObservableCollection<Codex>;
                     }
                     catch (Exception ex)
                     {
@@ -113,8 +114,9 @@ namespace COMPASS.Models
                     }
                 }
 
-                AllCodices.CollectionChanged += (e, v) => SaveCodices();
+                //AllCodices.CollectionChanged += (e, v) => SaveCodices();
 
+                Debug.Assert(AllCodices != null, nameof(AllCodices) + " != null");
                 foreach (Codex c in AllCodices)
                 {
                     //reconstruct tags from ID's
@@ -135,11 +137,11 @@ namespace COMPASS.Models
         {
             if (File.Exists(CollectionInfoFilePath))
             {
-                using var Reader = new StreamReader(CollectionInfoFilePath);
+                using var reader = new StreamReader(CollectionInfoFilePath);
                 System.Xml.Serialization.XmlSerializer serializer = new(typeof(CollectionInfo));
                 try
                 {
-                    Info = serializer.Deserialize(Reader) as CollectionInfo;
+                    Info = serializer.Deserialize(reader) as CollectionInfo;
                     Info.CompleteLoading(this);
                 }
                 catch (Exception ex)
@@ -223,34 +225,34 @@ namespace COMPASS.Models
             //Delete file from all lists
             AllCodices.Remove(toDelete);
 
-            //Delete Coverart & Thumbnail
+            //Delete CoverArt & Thumbnail
             File.Delete(toDelete.CoverArt);
             File.Delete(toDelete.Thumbnail);
             Logger.Info($"Deleted {toDelete.Title} from {DirectoryName}");
         }
 
-        public void DeleteCodices(IList toDelete)
+        public void DeleteCodices(IList<Codex> toDelete)
         {
-            List<Codex> toDeleteList = toDelete?.Cast<Codex>().ToList();
-            int count = toDeleteList.Count;
+            int count = toDelete.Count;
             string message = $"You are about to delete {count} file{(count > 1 ? @"s" : @"")}. " +
                            $"This cannot be undone. " +
                            $"Are you sure you want to continue?";
             var result = MessageBox.Show(message, "Delete", MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.OK)
             {
-                foreach (Codex toDel in toDeleteList)
+                foreach (Codex toDel in toDelete)
                 {
                     DeleteCodex(toDel);
                 }
             }
+            SaveCodices();
         }
 
-        public void BanishCodices(IList toBanish)
+        public void BanishCodices(IList<Codex> toBanish)
         {
-            IEnumerable<Codex> toBanishList = toBanish?.Cast<Codex>();
-            IEnumerable<string> toBanishPaths = toBanishList.Select(codex => codex.Path);
-            IEnumerable<string> toBanishURLs = toBanishList.Select(codex => codex.SourceURL);
+            if (toBanish is null) return;
+            IEnumerable<string> toBanishPaths = toBanish.Select(codex => codex.Path);
+            IEnumerable<string> toBanishURLs = toBanish.Select(codex => codex.SourceURL);
             IEnumerable<string> toBanishStrings = toBanishPaths
                 .Concat(toBanishURLs)
                 .Where(s => !String.IsNullOrWhiteSpace(s))
@@ -259,40 +261,46 @@ namespace COMPASS.Models
             Info.BanishedPaths.AddRange(toBanishStrings);
         }
 
-        public void DeleteTag(Tag todel)
+        public void DeleteTag(Tag toDelete)
         {
-            //Recursive loop to delete all childeren
-            if (todel.Children.Count > 0)
+            //Recursive loop to delete all children
+            if (toDelete.Children.Count > 0)
             {
-                DeleteTag(todel.Children[0]);
-                DeleteTag(todel);
+                DeleteTag(toDelete.Children[0]);
+                DeleteTag(toDelete);
             }
-            AllTags.Remove(todel);
+            AllTags.Remove(toDelete);
             //remove from parent items list
-            if (todel.Parent is null) RootTags.Remove(todel);
-            else todel.Parent.Children.Remove(todel);
+            if (toDelete.Parent is null)
+            {
+                RootTags.Remove(toDelete);
+            }
+            else
+            {
+                toDelete.Parent.Children.Remove(toDelete);
+            }
 
             SaveTags();
         }
 
-        public void RenameCollection(string NewCollectionName)
+        public void RenameCollection(string newCollectionName)
         {
             foreach (Codex codex in AllCodices)
             {
                 //Replace folder names in image paths
-                codex.SetImagePaths(NewCollectionName);
+                codex.SetImagePaths(newCollectionName);
             }
             try
             {
-                Directory.Move(Path.Combine(CollectionsPath, DirectoryName), Path.Combine(CollectionsPath, NewCollectionName));
+                Directory.Move(Path.Combine(CollectionsPath, DirectoryName), Path.Combine(CollectionsPath, newCollectionName));
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to move data files from {DirectoryName} to {NewCollectionName}", ex);
+                Logger.Error($"Failed to move data files from {DirectoryName} to {newCollectionName}", ex);
             }
 
-            DirectoryName = NewCollectionName;
-            Logger.Info($"Renamed  {DirectoryName} to {NewCollectionName}");
+            DirectoryName = newCollectionName;
+            Logger.Info($"Renamed  {DirectoryName} to {newCollectionName}");
         }
     }
 }

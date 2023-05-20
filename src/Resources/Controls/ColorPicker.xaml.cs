@@ -14,15 +14,15 @@ namespace COMPASS.Resources.Controls
             InitializeComponent();
         }
 
-        public System.Windows.Media.Color SelectedColor
+        public Color SelectedColor
         {
-            get => (System.Windows.Media.Color)GetValue(SelectedColorProperty);
+            get => (Color)GetValue(SelectedColorProperty);
             set => SetValue(SelectedColorProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for SelectedColor.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedColorProperty =
-            DependencyProperty.Register("SelectedColor", typeof(System.Windows.Media.Color), typeof(ColorPicker), new PropertyMetadata(Colors.Red));
+            DependencyProperty.Register("SelectedColor", typeof(Color), typeof(ColorPicker), new PropertyMetadata(Colors.Red));
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

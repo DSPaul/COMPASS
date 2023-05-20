@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -30,6 +31,7 @@ namespace COMPASS.Windows
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            ProgressViewModel.GetInstance().CancelBackgroundTask();
             MainViewModel.CollectionVM.CurrentCollection.Save();
             Properties.Settings.Default.Save();
         }
@@ -149,13 +151,28 @@ namespace COMPASS.Windows
             }
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+        private async void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            var progressVM = ProgressViewModel.GetInstance();
+            if (progressVM.ImportInProgress)
+            {
+                progressVM.CancelBackgroundTask();
+                int totalDelay = 0;
+                while (progressVM.ImportInProgress && totalDelay < 5000)
+                {
+                    int delay = 100;
+                    await Task.Delay(delay);
+                    totalDelay += delay;
+                }
+            }
+            Application.Current.Shutdown();
+        }
         #endregion
 
         private void Toggle_ContextMenu(object sender, RoutedEventArgs e)
         {
-            (sender as Button).ContextMenu.PlacementTarget = sender as Button;
-            (sender as Button).ContextMenu.IsOpen = !(sender as Button).ContextMenu.IsOpen;
+            ((Button)sender).ContextMenu!.PlacementTarget = (Button)sender;
+            ((Button)sender).ContextMenu!.IsOpen = !((Button)sender).ContextMenu!.IsOpen;
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -166,7 +183,7 @@ namespace COMPASS.Windows
                     // Ctrl + S to search
                     if (Keyboard.Modifiers == ModifierKeys.Control)
                     {
-                        Searchbox.Focus();
+                        Searchbar.Focus();
                         e.Handled = true;
                     }
                     break;

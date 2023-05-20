@@ -1,13 +1,15 @@
-﻿using System.ComponentModel;
-
-namespace COMPASS.ViewModels
+﻿namespace COMPASS.ViewModels.Layouts
 {
     public class ListLayoutViewModel : LayoutViewModel
     {
-        public ListLayoutViewModel() : base()
+        public ListLayoutViewModel()
         {
             LayoutType = Layout.List;
         }
+
+        public override bool DoVirtualization =>
+            Properties.Settings.Default.DoVirtualizationList &&
+            MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdList;
 
         #region ViewOptions
 
@@ -18,14 +20,13 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _showTitle, value);
         }
 
-        [DisplayName("Show Authors Display")]
         public bool ShowAuthor
         {
             get => Properties.Settings.Default.ListShowAuthor;
             set
             {
                 Properties.Settings.Default.ListShowAuthor = value;
-                RaisePropertyChanged(nameof(ShowAuthor));
+                RaisePropertyChanged();
             }
         }
 
@@ -35,7 +36,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.ListShowPublisher = value;
-                RaisePropertyChanged(nameof(ShowPublisher));
+                RaisePropertyChanged();
             }
         }
 
@@ -45,7 +46,17 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.ListShowRelease = value;
-                RaisePropertyChanged(nameof(ShowReleaseDate));
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool ShowDateAdded
+        {
+            get => Properties.Settings.Default.ListShowDateAdded;
+            set
+            {
+                Properties.Settings.Default.ListShowDateAdded = value;
+                RaisePropertyChanged();
             }
         }
 
@@ -55,7 +66,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.ListShowVersion = value;
-                RaisePropertyChanged(nameof(ShowVersion));
+                RaisePropertyChanged();
             }
         }
 
@@ -65,7 +76,17 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.ListShowRating = value;
-                RaisePropertyChanged(nameof(ShowRating));
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool ShowISBN
+        {
+            get => Properties.Settings.Default.ListShowISBN;
+            set
+            {
+                Properties.Settings.Default.ListShowISBN = value;
+                RaisePropertyChanged();
             }
         }
 
@@ -75,7 +96,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.ListShowTags = value;
-                RaisePropertyChanged(nameof(ShowTags));
+                RaisePropertyChanged();
             }
         }
 
@@ -85,7 +106,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.ListShowFileIcons = value;
-                RaisePropertyChanged(nameof(ShowFileIcons));
+                RaisePropertyChanged();
             }
         }
 
@@ -95,7 +116,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.ListShowEditIcon = value;
-                RaisePropertyChanged(nameof(ShowEditIcon));
+                RaisePropertyChanged();
             }
         }
 

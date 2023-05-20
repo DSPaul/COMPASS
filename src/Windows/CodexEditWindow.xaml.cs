@@ -17,7 +17,7 @@ namespace COMPASS.Windows
         {
             DataContext = vm;
             InitializeComponent();
-            ((CodexEditViewModel)DataContext).CloseAction = new Action(this.Close);
+            ((CodexEditViewModel)DataContext).CloseAction = Close;
 
             AuthorsComboBox.ApplyTemplate();
         }
@@ -27,15 +27,15 @@ namespace COMPASS.Windows
         // https://serialseb.com/blog/2007/09/03/wpf-tips-6-preventing-scrollviewer-from/
         private void treeView_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (sender is TreeView && !e.Handled)
+            if (sender is not TreeView treeView || e.Handled) return;
+            e.Handled = true;
+            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
             {
-                e.Handled = true;
-                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-                eventArg.RoutedEvent = UIElement.MouseWheelEvent;
-                eventArg.Source = sender;
-                var parent = ((Control)sender).Parent as UIElement;
-                parent.RaiseEvent(eventArg);
-            }
+                RoutedEvent = MouseWheelEvent,
+                Source = treeView
+            };
+            var parent = treeView.Parent as UIElement;
+            parent?.RaiseEvent(eventArg);
         }
     }
 }

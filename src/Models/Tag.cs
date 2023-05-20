@@ -8,9 +8,9 @@ using System.Xml.Serialization;
 
 namespace COMPASS.Models
 {
-    public sealed class Tag : ObservableObject, ITag, IHasID, IHasChilderen<Tag>, IEquatable<Tag>
+    public sealed class Tag : ObservableObject, ITag, IHasID, IHasChildren<Tag>, IEquatable<Tag>
     {
-        //Emtpy Contructor needed for serialization
+        //Empty Constructor needed for serialization
         public Tag() { }
 
         public Tag(Tag tag)
@@ -18,18 +18,18 @@ namespace COMPASS.Models
             Copy(tag);
         }
 
-        public Tag(List<Tag> alltags)
+        public Tag(List<Tag> allTags)
         {
-            AllTags = alltags;
-            ID = Utils.GetAvailableID(alltags.ToList<IHasID>());
+            AllTags = allTags;
+            ID = Utils.GetAvailableID(allTags.ToList<IHasID>());
         }
 
-        //Implement IHasChilderen
-        private ObservableCollection<Tag> _childeren = new();
+        //Implement IHasChildren
+        private ObservableCollection<Tag> _children = new();
         public ObservableCollection<Tag> Children
         {
-            get => _childeren;
-            set => SetProperty(ref _childeren, value);
+            get => _children;
+            set => SetProperty(ref _children, value);
         }
 
         //implement ITag
@@ -69,26 +69,16 @@ namespace COMPASS.Models
         // can't save parent itself, would cause infinite loop when serializing
         // so save ID instead
         public int ParentID { get; set; } = -1;
-        [XmlIgnoreAttribute]
+        [XmlIgnore]
         public Tag Parent
         {
-            get
-            {
-                if (ParentID == -1) return null;
-                return AllTags.First(tag => tag.ID == ParentID);
-            }
-
-            set
-            {
-                if (value is null) ParentID = -1;
-                else ParentID = value.ID;
-            }
+            get => ParentID == -1 ? null : AllTags.First(tag => tag.ID == ParentID);
+            set => ParentID = value?.ID ?? -1;
         }
 
-        [XmlIgnoreAttribute]
+        [XmlIgnore]
         public List<Tag> AllTags { get; set; } //needed to get parent tag from parent ID
-
-
+        
         // Group tags are important for filtering
         // when filtering, Tags in same group get OR relation
         // Tags across groups get AND relation
@@ -145,21 +135,12 @@ namespace COMPASS.Models
         {
             if (lhs is null)
             {
-                if (rhs is null)
-                {
-                    return true;
-                }
-
-                // Only the left side is null.
-                return false;
+                return rhs is null; //if lhs is null, only equal if rhs is also null
             }
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(Tag lhs, Tag rhs)
-        {
-            return !(lhs == rhs);
-        }
+        public static bool operator !=(Tag lhs, Tag rhs) => !(lhs == rhs);
 
         public override int GetHashCode() => ID.GetHashCode();
         #endregion

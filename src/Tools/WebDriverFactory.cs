@@ -15,7 +15,7 @@ namespace COMPASS.Tools
     public static class WebDriverFactory
     {
         private static readonly string WebDriverDirectoryPath = Path.Combine(SettingsViewModel.CompassDataPath, "WebDrivers");
-        private static Browser browser;
+        private static Browser _browser;
         public enum Browser
         {
             Chrome,
@@ -27,7 +27,7 @@ namespace COMPASS.Tools
         private static WebDriver _webDriver;
         public static WebDriver GetWebDriver()
         {
-            string driverName = browser switch
+            string driverName = _browser switch
             {
                 Browser.Chrome => "chromedriver.exe",
                 Browser.Firefox => "geckodriver.exe",
@@ -36,7 +36,7 @@ namespace COMPASS.Tools
 
             string driverPath = FindFileDirectory(driverName, WebDriverDirectoryPath);
 
-            DriverService driverService = browser switch
+            DriverService driverService = _browser switch
             {
                 Browser.Chrome => ChromeDriverService.CreateDefaultService(driverPath),
                 Browser.Firefox => FirefoxDriverService.CreateDefaultService(driverPath),
@@ -45,7 +45,7 @@ namespace COMPASS.Tools
 
             driverService.HideCommandPromptWindow = true;
 
-            List<string> DriverArguments = new()
+            List<string> driverArguments = new()
                 {
                     "--headless",
                     "--window-size=3000,3000",
@@ -53,24 +53,24 @@ namespace COMPASS.Tools
                     "--height=3000"
                 };
 
-            switch (browser)
+            switch (_browser)
             {
                 case Browser.Chrome:
-                    ChromeOptions CO = new();
-                    CO.AddArguments(DriverArguments);
-                    _webDriver = new ChromeDriver((ChromeDriverService)driverService, CO);
+                    ChromeOptions co = new();
+                    co.AddArguments(driverArguments);
+                    _webDriver = new ChromeDriver((ChromeDriverService)driverService, co);
                     break;
 
                 case Browser.Firefox:
-                    FirefoxOptions FO = new();
-                    FO.AddArguments(DriverArguments);
-                    _webDriver = new FirefoxDriver((FirefoxDriverService)driverService, FO);
+                    FirefoxOptions fo = new();
+                    fo.AddArguments(driverArguments);
+                    _webDriver = new FirefoxDriver((FirefoxDriverService)driverService, fo);
                     break;
-
+                
                 default:
-                    EdgeOptions EO = new();
-                    EO.AddArguments(DriverArguments);
-                    _webDriver = new EdgeDriver((EdgeDriverService)driverService, EO);
+                    EdgeOptions eo = new();
+                    eo.AddArguments(driverArguments);
+                    _webDriver = new EdgeDriver((EdgeDriverService)driverService, eo);
                     break;
             }
             return _webDriver;
@@ -83,7 +83,7 @@ namespace COMPASS.Tools
 
             if (IsInstalled("chrome.exe"))
             {
-                browser = Browser.Chrome;
+                _browser = Browser.Chrome;
                 try
                 {
                     driverManager.SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
@@ -96,7 +96,7 @@ namespace COMPASS.Tools
 
             else if (IsInstalled("firefox.exe"))
             {
-                browser = Browser.Firefox;
+                _browser = Browser.Firefox;
                 try
                 {
                     driverManager.SetUpDriver(new FirefoxConfig());
@@ -109,7 +109,7 @@ namespace COMPASS.Tools
 
             else
             {
-                browser = Browser.Edge;
+                _browser = Browser.Edge;
                 try
                 {
                     driverManager.SetUpDriver(new EdgeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
@@ -131,17 +131,13 @@ namespace COMPASS.Tools
         //helper function to check if certain browsers are installed
         private static bool IsInstalled(string name)
         {
-            string currentUserRegistryPathPattern = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\";
-            string localMachineRegistryPathPattern = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\";
+            const string currentUserRegistryPathPattern = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\";
+            const string localMachineRegistryPathPattern = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\";
 
             var currentUserPath = Microsoft.Win32.Registry.GetValue(currentUserRegistryPathPattern + name, "", null);
             var localMachinePath = Microsoft.Win32.Registry.GetValue(localMachineRegistryPathPattern + name, "", null);
 
-            if (currentUserPath != null || localMachinePath != null)
-            {
-                return true;
-            }
-            return false;
+            return currentUserPath != null || localMachinePath != null;
         }
     }
 }

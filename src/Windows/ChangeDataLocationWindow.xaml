@@ -3,12 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Tools ="clr-namespace:COMPASS.Tools"
-        xmlns:ViewModels ="clr-namespace:COMPASS.ViewModels"
-        xmlns:local="clr-namespace:COMPASS.Windows"
+        xmlns:tools ="clr-namespace:COMPASS.Tools"
+        xmlns:viewModels ="clr-namespace:COMPASS.ViewModels"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
-        d:DataContext="{d:DesignInstance Type=ViewModels:SettingsViewModel}"
+        d:DataContext="{d:DesignInstance Type=viewModels:SettingsViewModel}"
         WindowStyle="ToolWindow" WindowStartupLocation="CenterOwner"
         Title="Change Data Location" Height="400" Width="700">
     <Grid>
@@ -38,11 +37,11 @@
             </TextBlock>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="20">
-                <Button Content="Move" Tools:AP.IconKind="FileDocumentArrowRight" Style="{StaticResource IconTextButton}"
+                <Button Content="Move" tools:AP.IconKind="FileDocumentArrowRight" Style="{StaticResource IconTextButton}"
                         Command="{Binding MoveToNewDataPathCommand}" Click="Button_Click"/>
-                <Button Content="Copy" Tools:AP.IconKind="FileDocumentMultiple"  Click="Button_Click"
+                <Button Content="Copy" tools:AP.IconKind="FileDocumentMultiple"  Click="Button_Click"
                         Style="{StaticResource IconTextButton}" Command="{Binding CopyToNewDataPathCommand}" />
-                <Button Content="Leave" Tools:AP.IconKind="FileDocumentRemove" Style="{StaticResource IconTextButton}"
+                <Button Content="Leave" tools:AP.IconKind="FileDocumentRemove" Style="{StaticResource IconTextButton}"
                         Command="{Binding ChangeToNewDataPathCommand}" Click="Button_Click"/>
                 <ToggleButton x:Name="DeleteToggle" Visibility="{Binding RelativeSource={RelativeSource Mode=Self},
                     Path=IsChecked, Converter={StaticResource ToVisibilityConverter}}" IsChecked="True" Content="Delete" >
@@ -57,7 +56,7 @@
                         </ControlTemplate>
                     </ToggleButton.Template>
                 </ToggleButton>
-                <Button Content="Confirm Delete?" Tools:AP.IconKind="Delete" Style="{StaticResource IconTextButton}"
+                <Button Content="Confirm Delete?" tools:AP.IconKind="Delete" Style="{StaticResource IconTextButton}"
                         Background="Red" Click="Button_Click" Command="{Binding DeleteDataCommand}" 
                         Visibility="{Binding ElementName=DeleteToggle, Path=IsChecked, 
                         Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>

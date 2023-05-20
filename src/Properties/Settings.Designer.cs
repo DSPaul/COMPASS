@@ -394,5 +394,101 @@ namespace COMPASS.Properties {
                 this["AutoLinkFolderTagSameName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DoVirtualizationCard {
+            get {
+                return ((bool)(this["DoVirtualizationCard"]));
+            }
+            set {
+                this["DoVirtualizationCard"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DoVirtualizationTile {
+            get {
+                return ((bool)(this["DoVirtualizationTile"]));
+            }
+            set {
+                this["DoVirtualizationTile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int VirtualizationThresholdCard {
+            get {
+                return ((int)(this["VirtualizationThresholdCard"]));
+            }
+            set {
+                this["VirtualizationThresholdCard"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public int VirtualizationThresholdTile {
+            get {
+                return ((int)(this["VirtualizationThresholdTile"]));
+            }
+            set {
+                this["VirtualizationThresholdTile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DoVirtualizationList {
+            get {
+                return ((bool)(this["DoVirtualizationList"]));
+            }
+            set {
+                this["DoVirtualizationList"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public int VirtualizationThresholdList {
+            get {
+                return ((int)(this["VirtualizationThresholdList"]));
+            }
+            set {
+                this["VirtualizationThresholdList"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ListShowDateAdded {
+            get {
+                return ((bool)(this["ListShowDateAdded"]));
+            }
+            set {
+                this["ListShowDateAdded"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ListShowISBN {
+            get {
+                return ((bool)(this["ListShowISBN"]));
+            }
+            set {
+                this["ListShowISBN"] = value;
+            }
+        }
     }
 }

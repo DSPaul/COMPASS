@@ -91,3 +91,4 @@ src/GlobalSuppressions.cs
 AnalysisReport.sarif
 upgrade-assistant.clef
 TagTrees/
+.idea

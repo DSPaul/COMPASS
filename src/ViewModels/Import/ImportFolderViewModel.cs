@@ -8,35 +8,41 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 
-namespace COMPASS.ViewModels.Sources
+namespace COMPASS.ViewModels.Import
 {
-    public class FolderSourceViewModel : LocalSourceViewModel
+    public class ImportFolderViewModel : ObservableObject
     {
-        public FolderSourceViewModel() : base() { }
-        public FolderSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
+        public ImportFolderViewModel()
+        {
+            _targetCollection = MainViewModel.CollectionVM.CurrentCollection;
+        }
+        public ImportFolderViewModel(CodexCollection targetCollection)
+        {
+            _targetCollection = targetCollection;
+        }
 
-        public override ImportSource Source => ImportSource.Folder;
+        private readonly CodexCollection _targetCollection;
+
         public List<string> FolderNames { get; set; } = new();
         public List<string> FileNames { get; set; } = new();
 
-        public override void Import()
+        public List<string> ChooseFolders()
         {
-            IsImporting = true;
-
             VistaFolderBrowserDialog openFolderDialog = new()
             {
                 Multiselect = true,
             };
 
-            var dialogresult = openFolderDialog.ShowDialog();
-            if (dialogresult == false) return;
+            var dialogResult = openFolderDialog.ShowDialog();
+            if (dialogResult == false) return new();
 
             FolderNames = openFolderDialog.SelectedPaths.ToList();
 
-            ImportFolders();
+            ImportViewModel.Stealth = false;
+            return GetPathsFromFolders();
         }
 
-        public void ImportFolders(bool hidden = false)
+        public List<string> GetPathsFromFolders()
         {
             //find files in folder, including subfolder
             List<string> toSearch = new(FolderNames); //list with folders to search
@@ -50,44 +56,45 @@ namespace COMPASS.ViewModels.Sources
                 toSearch.Remove(currentFolder);
             }
 
+            ImportAmount = toImport.Count;
+
             //find how many files of each filetype
-            var toImport_grouped = toImport.GroupBy(Path.GetExtension);
+            var toImportGrouped = toImport.GroupBy(Path.GetExtension).ToList();
 
             //add new file extension to global file preferences
-            foreach (string extension in toImport_grouped.Select(x => x.Key))
+            foreach (string extension in toImportGrouped.Select(x => x.Key))
             {
-                TargetCollection.Info.FiletypePreferences.TryAdd(extension, true);
+                _targetCollection.Info.FiletypePreferences.TryAdd(extension, true);
             }
 
-            if (!hidden)
+            if (!ImportViewModel.Stealth)
             {
                 //init ToImportFileTypes with values from FileTypePreferences
-                ToImportFiletypes = toImport_grouped.Select(x => new FileTypeInfo(x.Key, TargetCollection.Info.FiletypePreferences[x.Key], x.Count())).ToList();
+                ToImportFiletypes = toImportGrouped.Select(x => new FileTypeInfo(x.Key, _targetCollection.Info.FiletypePreferences[x.Key], x.Count())).ToList();
 
                 //open window to let user choose which filetypes to import
-                ImportFolderWindow importFolderWindow;
-
-                importFolderWindow = new(this)
+                ImportFolderWindow importFolderWindow = new(this)
                 {
                     Owner = Application.Current.MainWindow
                 };
 
-                var dialogresult = importFolderWindow.ShowDialog();
-                if (dialogresult == false) return;
+                var dialogResult = importFolderWindow.ShowDialog();
+                if (dialogResult == false) return new();
 
                 //update the global file type preferences for the collection
                 foreach (var filetypeHelper in ToImportFiletypes)
                 {
-                    TargetCollection.Info.FiletypePreferences[filetypeHelper.FileExtension] = filetypeHelper.ShouldImport;
+                    _targetCollection.Info.FiletypePreferences[filetypeHelper.FileExtension] = filetypeHelper.ShouldImport;
                 }
             }
 
-            //Make new toImport with only selected Filetypes
-            toImport = toImport.Where(path => TargetCollection.Info.FiletypePreferences[Path.GetExtension(path)]).ToList();
-            ImportFiles(toImport, !hidden);
+            //return toImport with only selected Filetypes
+            return toImport.Where(path => _targetCollection.Info.FiletypePreferences[Path.GetExtension(path)]).ToList();
         }
 
         #region File Type Selection Window stuff
+        public int ImportAmount { get; set; }
+
         private IEnumerable<FileTypeInfo> _toImportFiletypes;
         public IEnumerable<FileTypeInfo> ToImportFiletypes
         {
@@ -97,14 +104,12 @@ namespace COMPASS.ViewModels.Sources
 
         private RelayCommand<bool> _confirmImportCommand;
         public RelayCommand<bool> ConfirmImportCommand => _confirmImportCommand ??= new(ConfirmImport);
-        public void ConfirmImport(bool isChecked)
+        private void ConfirmImport(bool shouldAutoImport)
         {
-            if (isChecked)
+            if (!shouldAutoImport) return;
+            foreach (string dir in FolderNames)
             {
-                foreach (string dir in FolderNames)
-                {
-                    TargetCollection.Info.AutoImportDirectories.AddIfMissing(dir);
-                }
+                _targetCollection.Info.AutoImportDirectories.AddIfMissing(dir);
             }
         }
 

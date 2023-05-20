@@ -12,24 +12,24 @@ namespace COMPASS.ViewModels
     {
         public CodexBulkEditViewModel(List<Codex> toEdit)
         {
-            EditedCodices = toEdit;
+            _editedCodices = toEdit;
             TempCodex = new();
 
             //set common metadata
-            _commonAuthors = EditedCodices.Select(f => f.Authors.ToList()).Aggregate((xs, ys) => xs.Intersect(ys).ToList());
+            _commonAuthors = _editedCodices.Select(f => f.Authors.ToList()).Aggregate((xs, ys) => xs.Intersect(ys).ToList());
             TempCodex.Authors = new(_commonAuthors);
-            if (EditedCodices.All(f => f.Publisher == EditedCodices[0].Publisher))
-                TempCodex.Publisher = EditedCodices[0].Publisher;
-            if (EditedCodices.All(f => f.Rating == EditedCodices[0].Rating))
-                TempCodex.Rating = EditedCodices[0].Rating;
-            if (EditedCodices.All(f => f.Physically_Owned == EditedCodices[0].Physically_Owned))
-                TempCodex.Physically_Owned = EditedCodices[0].Physically_Owned;
-            if (EditedCodices.All(f => f.ReleaseDate == EditedCodices[0].ReleaseDate))
-                TempCodex.ReleaseDate = EditedCodices[0].ReleaseDate;
+            if (_editedCodices.All(f => f.Publisher == _editedCodices[0].Publisher))
+                TempCodex.Publisher = _editedCodices[0].Publisher;
+            if (_editedCodices.All(f => f.Rating == _editedCodices[0].Rating))
+                TempCodex.Rating = _editedCodices[0].Rating;
+            if (_editedCodices.All(f => f.PhysicallyOwned == _editedCodices[0].PhysicallyOwned))
+                TempCodex.PhysicallyOwned = _editedCodices[0].PhysicallyOwned;
+            if (_editedCodices.All(f => f.ReleaseDate == _editedCodices[0].ReleaseDate))
+                TempCodex.ReleaseDate = _editedCodices[0].ReleaseDate;
         }
 
-        readonly List<Codex> EditedCodices;
-        private List<string> _commonAuthors;
+        private readonly List<Codex> _editedCodices;
+        private readonly List<string> _commonAuthors;
 
         #region Properties
 
@@ -103,40 +103,40 @@ namespace COMPASS.ViewModels
 
         public Action CloseAction { get; set; }
 
-        public ActionCommand _oKCommand;
-        public ActionCommand OKCommand => _oKCommand ??= new(OKBtn);
+        private ActionCommand _okCommand;
+        public ActionCommand OKCommand => _okCommand ??= new(OKBtn);
         public void OKBtn()
         {
             //Copy changes into each Codex
 
             //find added and removed authors
-            var deletedAuthors = _commonAuthors.Except(TempCodex.Authors);
-            var addedAuthors = TempCodex.Authors.Except(_commonAuthors);
+            var deletedAuthors = _commonAuthors.Except(TempCodex.Authors).ToList();
+            var addedAuthors = TempCodex.Authors.Except(_commonAuthors).ToList();
 
-            foreach (Codex f in EditedCodices)
+            foreach (Codex f in _editedCodices)
             {
                 f.Authors = new(f.Authors.Union(addedAuthors).Except(deletedAuthors));
             }
 
-            if (TempCodex.Publisher != "" && TempCodex.Publisher != null)
+            if (!String.IsNullOrEmpty(TempCodex.Publisher))
             {
-                foreach (Codex f in EditedCodices)
+                foreach (Codex f in _editedCodices)
                 {
                     f.Publisher = TempCodex.Publisher;
                 }
             }
 
-            if (TempCodex.Physically_Owned)
+            if (TempCodex.PhysicallyOwned)
             {
-                foreach (Codex f in EditedCodices)
+                foreach (Codex f in _editedCodices)
                 {
-                    f.Physically_Owned = true;
+                    f.PhysicallyOwned = true;
                 }
             }
 
             if (TempCodex.Rating > 0)
             {
-                foreach (Codex f in EditedCodices)
+                foreach (Codex f in _editedCodices)
                 {
                     f.Rating = TempCodex.Rating;
                 }
@@ -144,7 +144,7 @@ namespace COMPASS.ViewModels
 
             if (TempCodex.Version != null)
             {
-                foreach (Codex f in EditedCodices)
+                foreach (Codex f in _editedCodices)
                 {
                     f.Version = TempCodex.Version;
                 }
@@ -152,7 +152,7 @@ namespace COMPASS.ViewModels
 
             if (TempCodex.ReleaseDate != null)
             {
-                foreach (Codex f in EditedCodices)
+                foreach (Codex f in _editedCodices)
                 {
                     f.ReleaseDate = TempCodex.ReleaseDate;
                 }
@@ -162,21 +162,20 @@ namespace COMPASS.ViewModels
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
 
             //Add and remove Tags
-            foreach (Codex f in EditedCodices)
+            foreach (Codex f in _editedCodices)
             {
                 if (TagsToAdd.Count > 0)
                 {
                     //add all tags from TagsToAdd
                     foreach (Tag t in TagsToAdd) f.Tags.Add(t);
-                    //remove duplacates
-                    f.Tags = new ObservableCollection<Tag>(f.Tags.Distinct());
+                    //remove duplicates
+                    f.Tags = new(f.Tags.Distinct());
                 }
                 if (TagsToRemove.Count > 0)
                 {
                     //remove Tags from TagsToRemove
                     foreach (Tag t in TagsToRemove) f.Tags.Remove(t);
                 }
-
             }
             CloseAction();
         }

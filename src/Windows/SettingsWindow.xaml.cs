@@ -1,9 +1,12 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Models;
+using COMPASS.Tools;
 using COMPASS.ViewModels;
 using Microsoft.Web.WebView2.Core;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace COMPASS.Windows
 {
@@ -21,8 +24,8 @@ namespace COMPASS.Windows
             LoadChangeLog();
 
             //jump to tab
-            var TabItems = SettingsTabControl.Items;
-            foreach (TabItem item in TabItems)
+            var tabItems = SettingsTabControl.Items;
+            foreach (TabItem item in tabItems)
             {
                 if ((string)item.Header == tab)
                 {
@@ -51,7 +54,7 @@ namespace COMPASS.Windows
                "<title>Changelog</title>" +
            "</head>" +
            "<body>" +
-               "<script src=\"https://emgithub.com/embed-v2.js?target=https%3A%2F%2Fgithub.com%2FDSPaul%2FCOMPASS%2Fblob%2Fmaster%2FChangelog.md&style=default&type=markdown&showFullPath=on\"></script>" +
+               "<script src=\"https://emgithub.com/embed-v2.js?target=https%3A%2F%2Fgithub.com%2FDSPaul%2FCOMPASS%2Fblob%2Fmaster%2FChangelog.md&style=a11y-dark&type=markdown&showFullPath=on\"></script>" +
            "</body>" +
            "</html>";
 
@@ -60,5 +63,28 @@ namespace COMPASS.Windows
         }
 
         private void SelectFolderForFolderTagPairButton_Click(object sender, RoutedEventArgs e) => NewFolderTagPairTextBox.Text = Utils.PickFolder();
+
+        private void FilterOnlyNumbers(object sender, TextCompositionEventArgs e) => e.Handled = !Constants.RegexNumbersOnly().IsMatch(e.Text);
+
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var s = sender as ScrollViewer;
+            if (s.ComputedVerticalScrollBarVisibility == Visibility.Collapsed)
+            {
+                var parentScrollViewer = FindParentScrollViewer(s);
+                if (parentScrollViewer is null) return;
+                parentScrollViewer.ScrollToVerticalOffset(parentScrollViewer.VerticalOffset - e.Delta);
+            }
+        }
+
+        private ScrollViewer FindParentScrollViewer(DependencyObject child)
+        {
+            //get parent item
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+            //end of visual tree, no ScrollViewer Found
+            if (parentObject is null) return null;
+            //check if the parent is scrollviewer and return if so
+            return parentObject is ScrollViewer parent ? parent : FindParentScrollViewer(parentObject);
+        }
     }
 }

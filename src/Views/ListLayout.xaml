@@ -5,27 +5,29 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:Controls="clr-namespace:COMPASS.Resources.Controls"
-             xmlns:Tools ="clr-namespace:COMPASS.Tools"
-             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-             d:DataContext="{d:DesignInstance Type=viewmodels:ListLayoutViewModel}"
+             xmlns:controls="clr-namespace:COMPASS.Resources.Controls"
+             xmlns:tools ="clr-namespace:COMPASS.Tools"
+             xmlns:layouts="clr-namespace:COMPASS.ViewModels.Layouts"
+             d:DataContext="{d:DesignInstance Type=layouts:ListLayoutViewModel}"
              mc:Ignorable="d"  x:Name="LastLayoutControl"
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <Controls:EnhancedDataGrid x:Name="ListLayoutGrid" MaxWidth="{Binding ActualWidth, ElementName=LastLayoutControl}"
+    <controls:EnhancedDataGrid x:Name="ListLayoutGrid" MaxWidth="{Binding ActualWidth, ElementName=LastLayoutControl}"
                 Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
                 ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices, IsAsync=True}" 
                 CanUserAddRows="False" SelectionMode="Extended" CanUserSortColumns="True" AutoGenerateColumns="False" 
                 RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
                 SelectedItem="{Binding SelectedCodex, Mode=TwoWay}" VerticalGridLinesBrush="#FF484848"
-                ClipToBounds="True" VirtualizingPanel.IsVirtualizing ="True" PreviewKeyDown="ListLayoutGrid_PreviewKeyDown"
+                ClipToBounds="True" PreviewKeyDown="ListLayoutGrid_PreviewKeyDown"
+                VirtualizingPanel.IsVirtualizing ="{Binding DoVirtualization}" 
+                VirtualizingPanel.IsVirtualizingWhenGrouping="{Binding DoVirtualization}"
                 VirtualizingStackPanel.VirtualizationMode = "Recycling" MaxHeight="4000"
                 SelectionChanged="FileView_SelectionChanged" DataContextChanged="FileView_DataContextChanged" 
                 TargetUpdated="FileView_TargetUpdated"  
                 dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CodexVM}">
         <DataGrid.Resources>
-            <Tools:BindingProxy x:Key="LayoutProxy" Data="{Binding}" />
-            <Tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
+            <tools:BindingProxy x:Key="LayoutProxy" Data="{Binding}" />
+            <tools:BindingProxy x:Key="CodexProxy" Data="{Binding CodexVM}" />
             <Style TargetType="{x:Type DataGridColumnHeader}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -68,6 +70,8 @@
                             <MenuItem Header="Publisher"    IsCheckable="True" IsChecked="{Binding Data.ShowPublisher,  Source={StaticResource LayoutProxy}}"/>
                             <MenuItem Header="Rating"       IsCheckable="True" IsChecked="{Binding Data.ShowRating,     Source={StaticResource LayoutProxy}}"/>
                             <MenuItem Header="Release Date" IsCheckable="True" IsChecked="{Binding Data.ShowReleaseDate,Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Date Added"   IsCheckable="True" IsChecked="{Binding Data.ShowDateAdded,  Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="ISBN"         IsCheckable="True" IsChecked="{Binding Data.ShowISBN,       Source={StaticResource LayoutProxy}}"/>
                             <MenuItem Header="Tags"         IsCheckable="True" IsChecked="{Binding Data.ShowTags,       Source={StaticResource LayoutProxy}}"/>
                             <MenuItem Header="Version"      IsCheckable="True" IsChecked="{Binding Data.ShowVersion,    Source={StaticResource LayoutProxy}}"/>
                             <MenuItem Header="File Icons"   IsCheckable="True" IsChecked="{Binding Data.ShowFileIcons,  Source={StaticResource LayoutProxy}}"/>
@@ -109,10 +113,15 @@
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="0"/>
                                     </SelectiveScrollingGrid.RowDefinitions>
-                                    <DataGridCellsPresenter Grid.Column="1" ItemsPanel="{TemplateBinding ItemsPanel}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                    <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1" SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen, ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical}, 
-                                        Converter={x:Static DataGrid.RowDetailsScrollingConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Visibility="{TemplateBinding DetailsVisibility}"/>
-                                    <DataGridRowHeader Grid.RowSpan="2" SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Row}, 
+                                    <DataGridCellsPresenter Grid.Column="1" ItemsPanel="{TemplateBinding ItemsPanel}" 
+                                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                    <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1" 
+                                                              SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen, ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical}, 
+                                                                Converter={x:Static DataGrid.RowDetailsScrollingConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" 
+                                                              Visibility="{TemplateBinding DetailsVisibility}"/>
+                                    <DataGridRowHeader Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                                       SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" 
+                                                       Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Row}, 
                                         Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
                                 </SelectiveScrollingGrid>
                             </Border>
@@ -165,6 +174,14 @@
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="DATE ADDED" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="DateAdded"
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowDateAdded, Converter={StaticResource ToVisibilityConverter}}">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text ="{Binding DateAdded, StringFormat=dd/MM/yyyy}" Style="{StaticResource default}"/>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="VERSION" Width="*" MinWidth="20"
                                     Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowVersion, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
@@ -184,6 +201,14 @@
                                 </TransformGroup>
                             </materialDesign:RatingBar.RenderTransform>
                         </materialDesign:RatingBar>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="ISBN" Width="*" MinWidth="150"
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowISBN, Converter={StaticResource ToVisibilityConverter}}">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text ="{Binding ISBN}" Style="{StaticResource default}"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
@@ -209,10 +234,10 @@
                     <DataTemplate>
                         <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Command="{Binding Path=Data.OpenCodexLocallyCommand, Source={StaticResource CodexProxy}}" ToolTip="Open Locally"
-                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="FileOutline"/>
+                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" tools:AP.IconKind="FileOutline"/>
                             <Button Command="{Binding Path=Data.OpenCodexOnlineCommand, Source={StaticResource CodexProxy}}" ToolTip="Open Online"
-                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" Tools:AP.IconKind="Web"/>
-                            <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=Physically_Owned,
+                                    CommandParameter="{Binding}" Style="{StaticResource IconBtn}" tools:AP.IconKind="Web"/>
+                            <materialDesign:PackIcon Kind="Bookshelf" Visibility="{Binding Path=PhysicallyOwned,
                                 Converter={StaticResource ToVisibilityConverter}}" Margin="5"  ToolTip="Physically Owned"/>
                         </StackPanel>
                     </DataTemplate>
@@ -229,6 +254,6 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
         </DataGrid.Columns>
-    </Controls:EnhancedDataGrid>
+    </controls:EnhancedDataGrid>
 
 </UserControl>

@@ -1,4 +1,4 @@
-﻿using COMPASS.ViewModels.Sources;
+﻿using COMPASS.ViewModels.Import;
 using System.Windows;
 
 namespace COMPASS.Windows
@@ -8,7 +8,7 @@ namespace COMPASS.Windows
     /// </summary>
     public partial class ImportURLWindow : Window
     {
-        public ImportURLWindow(OnlineSourceViewModel vm)
+        public ImportURLWindow(ImportURLViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
@@ -16,8 +16,8 @@ namespace COMPASS.Windows
 
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
-            this.Close();
+            DialogResult = true;
+            Close();
         }
     }
 }

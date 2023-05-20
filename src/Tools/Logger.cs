@@ -9,7 +9,7 @@ namespace COMPASS.Tools
 {
     public static class Logger
     {
-        public static void Init() => FileLog = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public static void Init() => FileLog = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         // Log To file
         public static log4net.ILog FileLog;
@@ -20,6 +20,12 @@ namespace COMPASS.Tools
         public static void Info(string message) =>
             Application.Current.Dispatcher.Invoke(()
                 => ActivityLog.Add(new(LogEntry.MsgType.Info, message)));
+        public static void Warn(string message)
+        {
+            Application.Current.Dispatcher.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Warning, message)));
+            FileLog.Warn(message);
+        }
+
         public static void Warn(string message, Exception ex)
         {
             Application.Current.Dispatcher.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Warning, message)));

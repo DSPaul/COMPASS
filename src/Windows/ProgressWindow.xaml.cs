@@ -9,13 +9,17 @@ namespace COMPASS.Windows
     /// </summary>
     public partial class ProgressWindow : Window
     {
-        public ProgressWindow(ProgressViewModel vm)
+        public ProgressWindow(int bars = 1)
         {
             InitializeComponent();
-            DataContext = vm;
+            DataContext = ProgressViewModel.GetInstance();
             ((INotifyCollectionChanged)LogsControl.Items).CollectionChanged += Logs_CollectionChanged;
+            totalBars = bars;
             Closing += OnClosing;
         }
+
+        private int barsDone = 0;
+        private int totalBars = 1;
 
         private void Logs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -31,7 +35,11 @@ namespace COMPASS.Windows
             if (ProgBar.Value >= 100)
             {
                 Close();
-                MainViewModel.CollectionVM.Refresh();
+            }
+
+            if (barsDone >= totalBars)
+            {
+                Close();
             }
         }
 
@@ -40,7 +48,7 @@ namespace COMPASS.Windows
             // Call activate explicitly because of bug 
             // https://stackoverflow.com/questions/3144004/wpf-app-loses-focus-completely-on-window-close
             Owner ??= Application.Current.MainWindow;
-            Owner.Activate();
+            Owner!.Activate();
         }
 
         private void Close_Click(object sender, RoutedEventArgs e) => Close();

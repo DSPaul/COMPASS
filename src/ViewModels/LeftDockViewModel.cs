@@ -1,6 +1,6 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
-using COMPASS.ViewModels.Sources;
+using COMPASS.ViewModels.Import;
 
 namespace COMPASS.ViewModels
 {
@@ -15,7 +15,7 @@ namespace COMPASS.ViewModels
         public MainViewModel MainVM
         {
             get => _mainVM;
-            set => SetProperty(ref _mainVM, value);
+            init => SetProperty(ref _mainVM, value);
         }
 
         public int SelectedTab
@@ -24,7 +24,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.SelectedTab = value;
-                RaisePropertyChanged(nameof(SelectedTab));
+                RaisePropertyChanged();
                 if (value > 0) Collapsed = false;
             }
         }
@@ -36,18 +36,17 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref _collapsed, value);
-                if (value == true) SelectedTab = 0;
+                if (value) SelectedTab = 0;
             }
         }
 
         #region Add Books Tab
         private RelayCommand<ImportSource> _importCommand;
-        public RelayCommand<ImportSource> ImportCommand => _importCommand ??= new(ImportFromSource);
-        public void ImportFromSource(ImportSource source)
+        public RelayCommand<ImportSource> ImportCommand => _importCommand ??= new(source =>
         {
-            MainVM.ActiveSourceVM = SourceViewModel.GetSource(source);
-            MainVM.ActiveSourceVM.Import();
-        }
+            ImportViewModel.Stealth = false;
+            ImportViewModel.Import(source);
+        });
         #endregion
 
     }

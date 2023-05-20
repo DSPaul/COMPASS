@@ -2,12 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-            xmlns:Converters="clr-namespace:COMPASS.Converters"
-            xmlns:Tools="clr-namespace:COMPASS.Tools"
-            xmlns:Models="clr-namespace:COMPASS.Models"
-            xmlns:CustomControls ="clr-namespace:COMPASS.Resources.Controls"
-            xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:tools="clr-namespace:COMPASS.Tools"
+             xmlns:customControls ="clr-namespace:COMPASS.Resources.Controls"
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
              d:DataContext="{d:DesignInstance Type=viewmodels:TagEditViewModel}"
              mc:Ignorable="d"
@@ -38,7 +35,6 @@
                 <Setter Property="TextWrapping" Value="Wrap"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
-            <Tools:TagTemplateSelector x:Key="TagDataTemplateSelector"/>
         </Grid.Resources>
         <Grid  x:Name="InfoGrid" Visibility="{Binding ShowInfoGrid, Converter={StaticResource ToVisibilityConverter}}" 
                Grid.Column ="0" Margin="10,0" Width="150">
@@ -83,7 +79,7 @@
             </WrapPanel>
             <UniformGrid Grid.Row="5" Margin="5" Rows="1" Columns="2">
                 <Button Command="{Binding OKCommand}" Visibility="Visible"
-                        Tools:AP.IconKind="Check" Margin="5" Height="25" IsDefault="True">
+                        tools:AP.IconKind="Check" Margin="5" Height="25" IsDefault="True">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource IconBtn}">
                             <Setter Property="Background" Value="{StaticResource AcceptFill}"/>
@@ -97,15 +93,15 @@
                     </Button.Style>
                 </Button>
                 <Button Style="{StaticResource IconBtn}" Background="{StaticResource CancelFill}" Command="{Binding CancelCommand}"
-                        Tools:AP.IconKind="WindowClose" Margin="5" Height="25"/>
+                        tools:AP.IconKind="WindowClose" Margin="5" Height="25"/>
             </UniformGrid>
         </Grid>
         <StackPanel x:Name="ColorSelection" Grid.Column="2" 
                     Visibility="{Binding ShowColorSelection, Converter= {StaticResource ToVisibilityConverter}}">
-            <CustomControls:ColorPicker Height="135" Width="166" 
+            <customControls:ColorPicker Height="135" Width="166" 
                                         SelectedColor="{Binding TempTag.SerializableBackgroundColor, Mode=TwoWay, TargetNullValue=Black}"/>
             <Button Style="{StaticResource IconTextButton}" Background="{StaticResource AcceptFill}" Margin="10,0"
-                    Command="{Binding CloseColorSelectionCommand}" Content="Select Color" Tools:AP.IconKind="Check"/>
+                    Command="{Binding CloseColorSelectionCommand}" Content="Select Color" tools:AP.IconKind="Check"/>
             <Button Style="{StaticResource TextButton}" Content="Same as Parent" BorderBrush="{StaticResource DarkUIElementBackground}" BorderThickness="2"
                     Command="{Binding ColorSameAsParentCommand}"/>
         </StackPanel>

@@ -25,6 +25,7 @@ namespace COMPASS.ViewModels
         private SettingsViewModel()
         {
             LoadGlobalPreferences();
+            _allPreferences.Init();
         }
 
         #region singleton pattern
@@ -32,18 +33,20 @@ namespace COMPASS.ViewModels
         public static SettingsViewModel GetInstance() => _settingsVM ??= new SettingsViewModel();
         #endregion
 
+        public MainViewModel MVM { get; set; }
+
         #region Load and Save Settings
         public static string PreferencesFilePath => Path.Combine(CompassDataPath, "Preferences.xml");
         public static XmlWriterSettings XmlWriteSettings { get; private set; } = new() { Indent = true };
-        private static GlobalPreferences AllPreferences = new();
+        private static GlobalPreferences _allPreferences = new();
         public void SavePreferences()
         {
             //Prep OpenCodexPriority for save
-            AllPreferences.OpenFilePriorityIDs = OpenCodexPriority.Select(pf => pf.ID).ToList();
+            _allPreferences.OpenFilePriorityIDs = OpenCodexPriority.Select(pf => pf.ID).ToList();
 
             using var writer = XmlWriter.Create(PreferencesFilePath, XmlWriteSettings);
             System.Xml.Serialization.XmlSerializer serializer = new(typeof(GlobalPreferences));
-            serializer.Serialize(writer, AllPreferences);
+            serializer.Serialize(writer, _allPreferences);
 
             //Convert list back to dict because dict does not support two way binding
             MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences = FiletypePreferences.ToDictionary(x => x.Key, x => x.Value);
@@ -53,14 +56,14 @@ namespace COMPASS.ViewModels
         {
             if (File.Exists(PreferencesFilePath))
             {
-                using (var Reader = new StreamReader(PreferencesFilePath))
+                using (var reader = new StreamReader(PreferencesFilePath))
                 {
                     System.Xml.Serialization.XmlSerializer serializer = new(typeof(GlobalPreferences));
-                    AllPreferences = serializer.Deserialize(Reader) as GlobalPreferences;
-                    Reader.Close();
+                    _allPreferences = serializer.Deserialize(reader) as GlobalPreferences;
+                    reader.Close();
                 }
                 //put openFilePriority in right order
-                OpenCodexPriority = new(OpenCodexFunctions.OrderBy(pf => AllPreferences.OpenFilePriorityIDs.IndexOf(pf.ID)));
+                OpenCodexPriority = new(_openCodexFunctions.OrderBy(pf => _allPreferences.OpenFilePriorityIDs.IndexOf(pf.ID)));
             }
             else
             {
@@ -76,14 +79,14 @@ namespace COMPASS.ViewModels
             RaisePropertyChanged(nameof(FiletypePreferences));
         }
 
-        public void CreateDefaultPreferences() => OpenCodexPriority = new(OpenCodexFunctions);
+        public void CreateDefaultPreferences() => OpenCodexPriority = new(_openCodexFunctions);
         #endregion
 
         #region Tab: Preferences
 
         #region File Source Preference
         //list with possible functions to open a file
-        private readonly List<PreferableFunction<Codex>> OpenCodexFunctions = new()
+        private readonly List<PreferableFunction<Codex>> _openCodexFunctions = new()
             {
                 new PreferableFunction<Codex>("Web Version", CodexViewModel.OpenCodexOnline,0),
                 new PreferableFunction<Codex>("Local File", CodexViewModel.OpenCodexLocally,1)
@@ -97,9 +100,72 @@ namespace COMPASS.ViewModels
         }
         #endregion
 
+        #region Virtualization Preferences
+
+        public bool DoVirtualizationList
+        {
+            get => Properties.Settings.Default.DoVirtualizationList;
+            set
+            {
+                Properties.Settings.Default.DoVirtualizationList = value;
+                MVM.CurrentLayout.RaisePreferencesChanged();
+            }
+        }
+
+        public bool DoVirtualizationCard
+        {
+            get => Properties.Settings.Default.DoVirtualizationCard;
+            set
+            {
+                Properties.Settings.Default.DoVirtualizationCard = value;
+                MVM.CurrentLayout.RaisePreferencesChanged();
+            }
+        }
+
+        public bool DoVirtualizationTile
+        {
+            get => Properties.Settings.Default.DoVirtualizationTile;
+            set
+            {
+                Properties.Settings.Default.DoVirtualizationTile = value;
+                MVM.CurrentLayout.RaisePreferencesChanged();
+            }
+        }
+
+        public int VirtualizationThresholdList
+        {
+            get => Properties.Settings.Default.VirtualizationThresholdList;
+            set
+            {
+                Properties.Settings.Default.VirtualizationThresholdList = value;
+                MVM.CurrentLayout.RaisePreferencesChanged();
+            }
+        }
+
+        public int VirtualizationThresholdCard
+        {
+            get => Properties.Settings.Default.VirtualizationThresholdCard;
+            set
+            {
+                Properties.Settings.Default.VirtualizationThresholdCard = value;
+                MVM.CurrentLayout.RaisePreferencesChanged();
+            }
+        }
+
+        public int VirtualizationThresholdTile
+        {
+            get => Properties.Settings.Default.VirtualizationThresholdTile;
+            set
+            {
+                Properties.Settings.Default.VirtualizationThresholdTile = value;
+                MVM.CurrentLayout.RaisePreferencesChanged();
+            }
+        }
         #endregion
 
-        #region Tab: Sources
+        #endregion
+
+        #region Tab: Import
 
         //Open folder in explorer
         private RelayCommand<string> _showInExplorerCommand;
@@ -203,33 +269,37 @@ namespace COMPASS.ViewModels
         public ActionCommand DetectFolderTagPairsCommand => _detectFolderTagPairsCommand ??= new(DetectFolderTagPairs);
         private void DetectFolderTagPairs()
         {
-            var SplitFolders = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+            var splitFolders = MainViewModel.CollectionVM.CurrentCollection.AllCodices
                 .Where(codex => codex.HasOfflineSource())
                 .Select(codex => codex.Path)
                 .SelectMany(path => path.Split("\\"))
                 .ToHashSet()
                 .Select(folder => @"\" + folder + @"\");
-            foreach (string folder in SplitFolders)
+            foreach (string folder in splitFolders)
             {
-                var CodicesInFolder = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+                var codicesInFolder = MainViewModel.CollectionVM.CurrentCollection.AllCodices
                     .Where(codex => codex.HasOfflineSource())
-                    .Where(codex => codex.Path.Contains(folder));
+                    .Where(codex => codex.Path.Contains(folder))
+                    .ToList();
 
-                if (CodicesInFolder.Count() < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
+                if (codicesInFolder.Count() < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
 
-                var TagsToLink = CodicesInFolder
+                var tagsToLink = codicesInFolder
                     .Select(codex => codex.Tags)
-                    .Aggregate<IEnumerable<Tag>>((prev, next) => prev.Intersect(next));
+                    .Aggregate<IEnumerable<Tag>>((prev, next) => prev.Intersect(next))
+                    .ToList();
 
                 // if there are tags that aren't associated with any folder so far,
                 // do only those to try and avoid doubles
-                if (TagsToLink.Count() > 1)
+                if (tagsToLink.Count() > 1)
                 {
-                    var strippedTagsToLink = TagsToLink.Except(MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Select(pair => pair.Tag));
-                    if (strippedTagsToLink.Any()) TagsToLink = strippedTagsToLink;
+                    var strippedTagsToLink = tagsToLink
+                        .Except(MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Select(pair => pair.Tag))
+                        .ToList();
+                    if (strippedTagsToLink.Any()) tagsToLink = strippedTagsToLink;
                 }
 
-                foreach (var tag in TagsToLink)
+                foreach (var tag in tagsToLink)
                 {
                     AddFolderTagPair(new FolderTagPair(folder, tag));
                 }
@@ -242,11 +312,15 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.AutoLinkFolderTagSameName = value;
-                RaisePropertyChanged(nameof(AutoLinkFolderTagSameName));
+                RaisePropertyChanged();
             }
         }
         #endregion
 
+        #endregion
+
+        #region Tab: Metadata
+        public List<CodexProperty> MetaDataPreferences => _allPreferences.CodexProperties;
         #endregion
 
         #region Tab: Data
@@ -271,7 +345,7 @@ namespace COMPASS.ViewModels
         private void ShowBrokenCodices()
         {
             MainViewModel.CollectionVM.FilterVM.AddFilter(new(Filter.FilterType.HasBrokenPath));
-            System.Windows.Application.Current.MainWindow.Activate();
+            Application.Current.MainWindow!.Activate();
         }
 
         //Rename the refs
@@ -375,7 +449,7 @@ namespace COMPASS.ViewModels
             {
                 string newPath = folderBrowserDialog.SelectedPath;
                 SetNewDataPath(newPath);
-            };
+            }
         }
 
         private ActionCommand _resetDataPathCommand;
@@ -406,7 +480,17 @@ namespace COMPASS.ViewModels
         public ActionCommand MoveToNewDataPathCommand => _moveToNewDataPathCommand ??= new(MoveToNewDataPath);
         public async void MoveToNewDataPath()
         {
-            bool success = await CopyData(CompassDataPath, NewDataPath);
+            bool success;
+            try
+            {
+                success = await CopyData(CompassDataPath, NewDataPath);
+            }
+            catch (OperationCanceledException ex)
+            {
+                Logger.Warn("File copy has been cancelled", ex);
+                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+                return;
+            }
             if (success)
             {
                 DeleteDataLocation();
@@ -417,7 +501,17 @@ namespace COMPASS.ViewModels
         public ActionCommand CopyToNewDataPathCommand => _copyToNewDataPathCommand ??=
             new(async () =>
             {
-                await CopyData(CompassDataPath, NewDataPath);
+                try
+                {
+                    await CopyData(CompassDataPath, NewDataPath);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    Logger.Warn("File copy has been cancelled", ex);
+                    await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+                    return;
+                }
+
                 ChangeToNewDataPath();
             });
 
@@ -432,7 +526,7 @@ namespace COMPASS.ViewModels
             //Restart COMPASS
             var currentExecutablePath = Environment.ProcessPath;
             var args = Environment.GetCommandLineArgs();
-            Process.Start(currentExecutablePath, args);
+            if (currentExecutablePath != null) Process.Start(currentExecutablePath, args);
             Application.Current.Shutdown();
         }
 
@@ -441,21 +535,30 @@ namespace COMPASS.ViewModels
 
         public void DeleteDataLocation()
         {
-            Directory.Delete(CompassDataPath, true);
+            try
+            {
+                Directory.Delete(CompassDataPath, true);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("could not delete all data", ex);
+            }
             ChangeToNewDataPath();
         }
 
         public static async Task<bool> CopyData(string sourceDir, string destDir)
         {
-            ProgressViewModel progressVM = new();
-            ProgressWindow progressWindow = new(progressVM)
+            ProgressViewModel progressVM = ProgressViewModel.GetInstance();
+            ProgressWindow progressWindow = new()
             {
                 Owner = Application.Current.MainWindow,
             };
 
             var toCopy = Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories);
-            int totalToDo = toCopy.Length;
-            int counter = 0;
+
+            progressVM.TotalAmount = toCopy.Length;
+            progressVM.ResetCounter();
+            progressVM.Text = "Copying Files";
 
             progressWindow.Show();
 
@@ -472,15 +575,14 @@ namespace COMPASS.ViewModels
                 {
                     foreach (string sourcePath in toCopy)
                     {
-                        progressVM.Text = $"Files Copied: {counter} / {totalToDo}";
+                        ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                         // don't copy log file, causes error because log file is open
                         if (Path.GetExtension(sourcePath) != ".log")
                         {
                             File.Copy(sourcePath, sourcePath.Replace(sourceDir, destDir), true);
                         }
-                        counter++;
-                        progressVM.SetPercentage(counter, totalToDo);
+                        progressVM.IncrementCounter();
                         Application.Current.Dispatcher.Invoke(() =>
                             progressVM.Log.Add(new LogEntry(LogEntry.MsgType.Info, $"Copied {sourcePath}")));
                     }
@@ -507,9 +609,9 @@ namespace COMPASS.ViewModels
             Process.Start(startInfo);
         }
 
-        private readonly BackgroundWorker createZipWorker = new();
-        private readonly BackgroundWorker extractZipWorker = new();
-        private LoadingWindow lw;
+        private readonly BackgroundWorker _createZipWorker = new();
+        private readonly BackgroundWorker _extractZipWorker = new();
+        private LoadingWindow _lw;
 
         private ActionCommand _backupLocalFilesCommand;
         public ActionCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
@@ -523,17 +625,17 @@ namespace COMPASS.ViewModels
             if (saveFileDialog.ShowDialog() == true)
             {
                 string targetPath = saveFileDialog.FileName;
-                lw = new("Compressing to Zip File");
-                lw.Show();
+                _lw = new("Compressing to Zip File");
+                _lw.Show();
 
                 //save first
                 MainViewModel.CollectionVM.CurrentCollection.Save();
                 SavePreferences();
 
-                createZipWorker.DoWork += CreateZip;
-                createZipWorker.RunWorkerCompleted += CreateZipDone;
+                _createZipWorker.DoWork += CreateZip;
+                _createZipWorker.RunWorkerCompleted += CreateZipDone;
 
-                createZipWorker.RunWorkerAsync(targetPath);
+                _createZipWorker.RunWorkerAsync(targetPath);
             }
         }
 
@@ -549,13 +651,13 @@ namespace COMPASS.ViewModels
             if (openFileDialog.ShowDialog() == true)
             {
                 string targetPath = openFileDialog.FileName;
-                lw = new("Restoring Backup");
-                lw.Show();
+                _lw = new("Restoring Backup");
+                _lw.Show();
 
-                extractZipWorker.DoWork += ExtractZip;
-                extractZipWorker.RunWorkerCompleted += ExtractZipDone;
+                _extractZipWorker.DoWork += ExtractZip;
+                _extractZipWorker.RunWorkerCompleted += ExtractZipDone;
 
-                extractZipWorker.RunWorkerAsync(targetPath);
+                _extractZipWorker.RunWorkerAsync(targetPath);
             }
         }
 
@@ -575,13 +677,13 @@ namespace COMPASS.ViewModels
             zip.ExtractAll(CompassDataPath, ExtractExistingFileAction.OverwriteSilently);
         }
 
-        private void CreateZipDone(object sender, RunWorkerCompletedEventArgs e) => lw.Close();
+        private void CreateZipDone(object sender, RunWorkerCompletedEventArgs e) => _lw.Close();
 
         private void ExtractZipDone(object sender, RunWorkerCompletedEventArgs e)
         {
             //restore collection that was open
             MainViewModel.CollectionVM.CurrentCollection = new(Properties.Settings.Default.StartupCollection);
-            lw.Close();
+            _lw.Close();
         }
         #endregion
 
@@ -599,12 +701,12 @@ namespace COMPASS.ViewModels
 
         #region Tab: What's New
 
-        public string WebViewDataDir = Path.Combine(CompassDataPath, "WebViewData");
+        public readonly string WebViewDataDir = Path.Combine(CompassDataPath, "WebViewData");
 
         #endregion
 
         #region Tab: About
-        public string Version => "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString()[0..5];
+        public string Version => "Version: " + Assembly.GetExecutingAssembly().GetName().Version?.ToString()[0..5];
 
         private ActionCommand _checkForUpdatesCommand;
         public ActionCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);

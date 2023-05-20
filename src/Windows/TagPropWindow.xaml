@@ -3,16 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:COMPASS"
-        xmlns:Views="clr-namespace:COMPASS.Views"
-        xmlns:ViewModels="clr-namespace:COMPASS.ViewModels"
+        xmlns:views="clr-namespace:COMPASS.Views"
+        xmlns:viewModels="clr-namespace:COMPASS.ViewModels"
         mc:Ignorable="d"
         Title="Tag Properties" FontSize="16" MaxHeight="600"
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" 
         Foreground="{StaticResource TextColor}" Background="{StaticResource WindowBackground}" SizeToContent="WidthAndHeight">
     <Window.Resources>
-        <DataTemplate DataType="{x:Type ViewModels:TagEditViewModel}">
-            <Views:TagEditView DataContext="{Binding}"/>
+        <DataTemplate DataType="{x:Type viewModels:TagEditViewModel}">
+            <views:TagEditView DataContext="{Binding}"/>
         </DataTemplate>
     </Window.Resources>
     <ContentControl Content="{Binding}" Margin="10"/>

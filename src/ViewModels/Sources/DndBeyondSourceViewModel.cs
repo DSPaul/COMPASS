@@ -6,22 +6,20 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
 {
-    public class DndBeyondSourceViewModel : OnlineSourceViewModel
+    public class DndBeyondSourceViewModel : SourceViewModel
     {
         public DndBeyondSourceViewModel() : base() { }
-        public DndBeyondSourceViewModel(CodexCollection targetCollection) : base(targetCollection) { }
 
-        public override string ImportTitle => "D&D Beyond";
+        public override MetaDataSource Source => MetaDataSource.DnDBeyond;
 
-        public override string ExampleURL => "https://www.dndbeyond.com/sources/";
-
-        public override ImportSource Source => ImportSource.DnDBeyond;
-
-        public override async Task<Codex> SetMetaData(Codex codex)
+        public override async Task<Codex> GetMetaData(Codex codex)
         {
+            // Work on a copy
+            codex = new Codex(codex);
+
             //Scrape metadata by going to storepage, get to storepage by using that /credits redirects there
-            ProgressChanged(new(LogEntry.MsgType.Info, $"Connecting to {ImportTitle}"));
-            HtmlDocument doc = await ScrapeSite(String.Concat(InputURL, "/credits"));
+            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to DnD Beyond"));
+            HtmlDocument doc = await Utils.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)
@@ -29,41 +27,36 @@ namespace COMPASS.ViewModels.Sources
                 return codex;
             }
 
-            ProgressChanged(new(LogEntry.MsgType.Info, "Fetching Metadata"));
-
-            //Scrape headers
-            codex = SetWebScrapeHeaderMetadata(codex, src);
-
             //Set known metadata
             codex.Publisher = "D&D Beyond";
             codex.Authors = new() { "Wizards of the Coast" };
-
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
 
             return codex;
         }
 
         public override async Task<bool> FetchCover(Codex codex)
         {
+            if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument doc = await ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
+                HtmlDocument doc = await Utils.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
                 HtmlNode src = doc?.DocumentNode;
                 if (src is null) return false;
 
                 string imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);
 
                 //download the file
-                CoverFetcher.SaveCover(imgURL, codex);
+                await CoverFetcher.SaveCover(imgURL, codex);
                 return true;
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to get cover from {ImportTitle}", ex);
+                Logger.Error($"Failed to get cover from DnDBeyond", ex);
                 return false;
             }
         }
+
+        public override bool IsValidSource(Codex codex) => false;
     }
 }

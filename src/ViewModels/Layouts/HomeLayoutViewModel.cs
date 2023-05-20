@@ -1,4 +1,4 @@
-﻿namespace COMPASS.ViewModels
+﻿namespace COMPASS.ViewModels.Layouts
 {
     internal class HomeLayoutViewModel : LayoutViewModel
     {
@@ -12,7 +12,7 @@
             set
             {
                 Properties.Settings.Default.HomeCoverSize = value;
-                RaisePropertyChanged(nameof(TileWidth));
+                RaisePropertyChanged();
                 RaisePropertyChanged(nameof(TileHeight));
             }
         }
@@ -25,7 +25,7 @@
             set
             {
                 Properties.Settings.Default.HomeShowTitle = value;
-                RaisePropertyChanged(nameof(ShowTitle));
+                RaisePropertyChanged();
             }
         }
     }

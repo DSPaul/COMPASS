@@ -1,7 +1,9 @@
 ﻿using COMPASS.Tools;
+using COMPASS.ViewModels.Sources;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Xml.Serialization;
@@ -13,7 +15,7 @@ namespace COMPASS.Models
         //empty constructor for serialization
         public Codex()
         {
-            Authors.CollectionChanged += (e, v) => RaisePropertyChanged(nameof(AuthorsAsString));
+            Authors.CollectionChanged += (_, _) => RaisePropertyChanged(nameof(AuthorsAsString));
         }
 
         public Codex(CodexCollection cc) : this()
@@ -47,7 +49,7 @@ namespace COMPASS.Models
             ID = c.ID;
             CoverArt = c.CoverArt;
             Thumbnail = c.Thumbnail;
-            Physically_Owned = c.Physically_Owned;
+            PhysicallyOwned = c.PhysicallyOwned;
             Description = c.Description;
             ReleaseDate = c.ReleaseDate;
             Rating = c.Rating;
@@ -120,7 +122,7 @@ namespace COMPASS.Models
             get => String.IsNullOrEmpty(_sortingTitle) ? _title : _sortingTitle;
             set => SetProperty(ref _sortingTitle, value);
         }
-        //seperate property needed for serialization or it will get _title and save that
+        //separate property needed for serialization or it will get _title and save that
         //instead of saving an empty and mirroring _title during runtime
         public string SerializableSortingTitle
         {
@@ -214,16 +216,16 @@ namespace COMPASS.Models
             }
         }
 
-        private bool _physically_Owned;
-        public bool Physically_Owned
+        private bool _physicallyOwned;
+        public bool PhysicallyOwned
         {
-            get => _physically_Owned;
-            set => SetProperty(ref _physically_Owned, value);
+            get => _physicallyOwned;
+            set => SetProperty(ref _physicallyOwned, value);
         }
 
         private ObservableCollection<Tag> _tags = new();
         //Don't save all the tags, only save ID's instead
-        [XmlIgnoreAttribute]
+        [XmlIgnore]
         public ObservableCollection<Tag> Tags
         {
             get
@@ -252,7 +254,7 @@ namespace COMPASS.Models
             }
         }
 
-        private DateTime? _releaseDate = null;
+        private DateTime? _releaseDate;
         public DateTime? ReleaseDate
         {
             get => _releaseDate;
@@ -287,7 +289,7 @@ namespace COMPASS.Models
             set => SetProperty(ref _lastOpened, value);
         }
 
-        private int _openedCount = 0;
+        private int _openedCount;
         public int OpenedCount
         {
             get => _openedCount;
@@ -301,17 +303,128 @@ namespace COMPASS.Models
             set => SetProperty(ref _favorite, value);
         }
 
-        private string _ISBN;
+        private string _isbn;
         public string ISBN
         {
-            get => _ISBN;
+            get => _isbn;
             set
             {
                 value = Utils.SanitizeXmlString(value);
-                SetProperty(ref _ISBN, value);
+                SetProperty(ref _isbn, value);
             }
         }
         #endregion 
+
+        public static readonly List<CodexProperty> Properties = new()
+        {
+            new( "Title",
+                codex => String.IsNullOrWhiteSpace(codex.Title),
+                codex => codex.Title,
+                (codex,other) => codex.Title = other.Title,
+                new List<NamedMetaDataSource>()
+                {
+                    new(MetaDataSource.PDF),
+                    new(MetaDataSource.File),
+                    new(MetaDataSource.GmBinder),
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.GoogleDrive),
+                    new(MetaDataSource.ISBN),
+                    new(MetaDataSource.GenericURL)
+                }),
+            new( "Authors",
+                codex => codex.Authors is null || !codex.Authors.Any(),
+                codex => codex.Authors,
+                (codex,other) => codex.Authors = other.Authors,
+                new()
+                {
+                    new(MetaDataSource.PDF),
+                    new(MetaDataSource.GmBinder),
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.ISBN),
+                    new(MetaDataSource.GenericURL)
+                }),
+            new( "Publisher",
+                codex => String.IsNullOrEmpty(codex.Publisher),
+                codex => codex.Publisher,
+                (codex,other) => codex.Publisher = other.Publisher,
+                new()
+                {
+                    new(MetaDataSource.ISBN),
+                    new(MetaDataSource.GmBinder),
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.GoogleDrive),
+                }),
+            new( "Version",
+                codex => String.IsNullOrEmpty(codex.Version),
+                codex => codex.Version,
+                (codex,other) => codex.Version = other.Version,
+                new()
+                {
+                    new(MetaDataSource.Homebrewery)
+                }),
+            new( "Pagecount",
+                codex => codex.PageCount == 0,
+                codex => codex.PageCount,
+                (codex, other) => codex.PageCount = other.PageCount,
+                new()
+                {
+                    new(MetaDataSource.PDF),
+                    new(MetaDataSource.Image),
+                    new(MetaDataSource.GmBinder),
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.ISBN),
+                }),
+            new( "Tags",
+                codex => codex.Tags is null || !codex.Tags.Any(),
+                codex => codex.Tags,
+                (codex,other) => {
+                    foreach (var tag in other.Tags)
+                    {
+                        Application.Current.Dispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
+                    }
+                },
+                new()
+                {
+                    new(MetaDataSource.File),
+                    new(MetaDataSource.GenericURL),
+                }),
+            new( "Description",
+                codex => String.IsNullOrEmpty(codex.Description),
+                codex => codex.Description,
+                (codex,other) => codex.Description = other.Description,
+                new()
+                {
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.ISBN),
+                    new(MetaDataSource.GenericURL),
+                }),
+            new( "Release Date",
+                codex => codex.ReleaseDate is null || codex.ReleaseDate == DateTime.MinValue,
+                codex => codex.ReleaseDate,
+                (codex, other) => codex.ReleaseDate = other.ReleaseDate,
+                new()
+                {
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.ISBN),
+                }),
+            new( "Cover Art",
+                codex => !File.Exists(codex.CoverArt),
+                codex => codex.CoverArt,
+                (codex,other) =>
+                {
+                    codex.CoverArt = other.CoverArt;
+                    codex.Thumbnail = other.Thumbnail;
+                },
+                new()
+                {
+                    new(MetaDataSource.Image),
+                    new(MetaDataSource.PDF),
+                    new(MetaDataSource.GmBinder),
+                    new(MetaDataSource.Homebrewery),
+                    new(MetaDataSource.GoogleDrive),
+                    new(MetaDataSource.ISBN),
+                }),
+        };
     }
 }
 
