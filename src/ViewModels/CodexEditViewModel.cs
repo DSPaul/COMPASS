@@ -217,16 +217,13 @@ namespace COMPASS.ViewModels
                 && data.GetFileDropList().Count == 1
                 && Utils.IsImageFile(data.GetFileDropList().Cast<string>().First()))
             {
-
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
             }
             else
             {
                 dropInfo.Effects = DragDropEffects.None;
-
             }
-
         }
 
         public void Drop(IDropInfo dropInfo)

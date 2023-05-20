@@ -1,9 +1,9 @@
-﻿using System.IO;
-using System.Linq;
-using System.Windows;
-using COMPASS.Models;
+﻿using COMPASS.Models;
 using COMPASS.ViewModels.Import;
 using GongSolutions.Wpf.DragDrop;
+using System.IO;
+using System.Linq;
+using System.Windows;
 
 namespace COMPASS.ViewModels.Layouts
 {
@@ -65,7 +65,6 @@ namespace COMPASS.ViewModels.Layouts
             {
                 dropInfo.NotHandled = true;
             }
-
         }
 
         public void Drop(IDropInfo dropInfo)
