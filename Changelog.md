@@ -1,5 +1,40 @@
 # CHANGELOG
-## COMPASS v1.4.2 (23 April 2023)
+## COMPASS v1.5.0 (20 May 2023)
+
+### New Features
+
+- Added a priority system for metadata sources so you can choose which metadata values should be used when multiple sources can provide data for a certain field. This also applies to the thumbnail and cover of books. You can configure the priority in the new `Metadata` tab in the settings. [#52](https://github.com/DSPaul/COMPASS/issues/52)
+- Added the option to renew metadata for items in your collections. This way you can get metadata for files already in your collections making use of all the new features, metadata fields and sources that may not have existed when the file was initially imported. The new system will search for metadata in all of the item's sources (a local file, a URL and ISBN number) and combine them using the previously added priority order and overwrite the old value with the new one according to your preferences which you can also configure in the new `Metadata` tab in the settings.
+- Added "Has ISBN" filter.
+- Added "Website" filter.
+- Added "Show in Open Library" button next to the ISBN number.
+- Added a new entry in the context menu (right click) to renew the cover, to complement the one to renew metadata. [#54](https://github.com/DSPaul/COMPASS/issues/54)
+- Add "Date Added" & "ISBN" column to List Layout. [#55](https://github.com/DSPaul/COMPASS/issues/55)
+- Added the options to cancel background tasks. 
+  
+### Improvements
+
+- Added virtualization for large collections which massively improves load times at the cost of some small stutters while scrolling. Because of this trade-off, the collection's size at which virtualization is enabled can be configured in the `Preferences` tab of the settings. [#22](https://github.com/DSPaul/COMPASS/issues/22)
+- Various improvements to the `Card Layout` including faster rendering, more responsive resizing and clearer icons.
+There is a know issue where the bottom of a card might get cut off if it has many tags, this will get fixed when the [Virtualizing WrapPanel](https://github.com/sbaeumlisberger/VirtualizingWrapPanel) dependecy updates to 2.0.
+- The progressbar at the bottom is now used for more things, giving better insight into what COMPASS is doing in the background.
+- The import procedure has been split up in three steps: adding all the files, getting metadata for those files, and finally getting the cover for them. This is in constrast to previous versions where these three steps would be done for one file, before moving on to the next one. The new method significantly speeds up import for large imports and makes is less likely to lose your data if the import is interupted.
+- The "Fetch Cover" button in the edit window has been renamed to "renew" and will now look for covers in the order specified by the new priority system.
+
+### Fixes
+
+- UI elements that can become scrollable will no longer prevent scrolling when they are not scrollable yet themselves.
+- COMPASS no longer freezes when reading in files during import.
+- Fixed COMPASS using empty covers form openlibrary.org.
+- Fixed broken ISBN detection in pdf's in some cases.
+- Files with capitalized file extensions will now be handled properly.
+- Fix progress counter having the wrong value.
+- Various other small fixes.
+
+### Other changes
+
+- Moved Folder - Tag linking from `import` tab to the new `metadata` tab.
+## COMPASS v1.4.2 (23 April 2023)
 
 ### Fixes
 
