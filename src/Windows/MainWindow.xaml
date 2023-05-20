@@ -232,7 +232,7 @@
                             <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}" tools:AP.IconKind="Cog"/>
                             <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}" tools:AP.IconKind="Autorenew"/>
                             <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New" tools:AP.IconKind="AlertDecagram"/>
-                            <MenuItem Header="Report A Bug" tools:AP.IconKind="Bug"/>
+                            <MenuItem Header="Report A Bug" tools:AP.IconKind="Bug" Command="{Binding NavigateToLinkTree}"/>
                             
                             <!--<MenuItem Header="About" Command="{Binding OpenSettingsCommand}" CommandParameter="About"/>-->
                         </ContextMenu>
