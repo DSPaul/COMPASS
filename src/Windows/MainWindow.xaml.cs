@@ -29,7 +29,7 @@ namespace COMPASS.Windows
         //Deselects when you click away
         private void Window_MouseDown(object sender, MouseButtonEventArgs e) => MainGrid.Focus();
 
-        private async void Window_Closing(object sender, CancelEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
             ProgressViewModel.GetInstance().CancelBackgroundTask();
             MainViewModel.CollectionVM.CurrentCollection.Save();
