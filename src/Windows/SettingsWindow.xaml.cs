@@ -54,7 +54,7 @@ namespace COMPASS.Windows
                "<title>Changelog</title>" +
            "</head>" +
            "<body>" +
-               "<script src=\"https://emgithub.com/embed-v2.js?target=https%3A%2F%2Fgithub.com%2FDSPaul%2FCOMPASS%2Fblob%2Fmaster%2FChangelog.md&style=default&type=markdown&showFullPath=on\"></script>" +
+               "<script src=\"https://emgithub.com/embed-v2.js?target=https%3A%2F%2Fgithub.com%2FDSPaul%2FCOMPASS%2Fblob%2Fmaster%2FChangelog.md&style=a11y-dark&type=markdown&showFullPath=on\"></script>" +
            "</body>" +
            "</html>";
 
