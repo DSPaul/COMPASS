@@ -480,7 +480,17 @@ namespace COMPASS.ViewModels
         public ActionCommand MoveToNewDataPathCommand => _moveToNewDataPathCommand ??= new(MoveToNewDataPath);
         public async void MoveToNewDataPath()
         {
-            bool success = await CopyData(CompassDataPath, NewDataPath);
+            bool success;
+            try
+            {
+                success = await CopyData(CompassDataPath, NewDataPath);
+            }
+            catch (OperationCanceledException ex)
+            {
+                Logger.Warn("File copy has been cancelled", ex);
+                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+                return;
+            }
             if (success)
             {
                 DeleteDataLocation();
@@ -491,7 +501,17 @@ namespace COMPASS.ViewModels
         public ActionCommand CopyToNewDataPathCommand => _copyToNewDataPathCommand ??=
             new(async () =>
             {
-                await CopyData(CompassDataPath, NewDataPath);
+                try
+                {
+                    await CopyData(CompassDataPath, NewDataPath);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    Logger.Warn("File copy has been cancelled", ex);
+                    await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+                    return;
+                }
+
                 ChangeToNewDataPath();
             });
 
@@ -555,6 +575,8 @@ namespace COMPASS.ViewModels
                 {
                     foreach (string sourcePath in toCopy)
                     {
+                        ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
                         // don't copy log file, causes error because log file is open
                         if (Path.GetExtension(sourcePath) != ".log")
                         {

@@ -2,6 +2,7 @@
 using COMPASS.Tools;
 using COMPASS.Windows;
 using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -103,6 +104,8 @@ namespace COMPASS.ViewModels.Import
                 //make new codices synchronously so they all have a valid ID
                 foreach (string path in paths)
                 {
+                    ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
                     Codex newCodex = new(targetCollection) { Path = path };
                     newCodices.Add(newCodex);
                     targetCollection.AllCodices.Add(newCodex);
@@ -120,14 +123,17 @@ namespace COMPASS.ViewModels.Import
 
         public static async Task FinishImport(List<Codex> newCodices)
         {
-            var progressVM = ProgressViewModel.GetInstance();
-            progressVM.TotalAmount = newCodices.Count;
-
-            await CodexViewModel.StartGetMetaDataProcess(newCodices);
-
-            progressVM.ResetCounter();
-            progressVM.Text = "Getting MetaData";
-            await CoverFetcher.GetCover(newCodices);
+            try
+            {
+                await CodexViewModel.StartGetMetaDataProcess(newCodices);
+                await CoverFetcher.GetCover(newCodices);
+            }
+            catch (OperationCanceledException ex)
+            {
+                Logger.Warn("Import has been cancelled", ex);
+                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+                return;
+            }
 
             foreach (Codex codex in newCodices) codex.RefreshThumbnail();
         }

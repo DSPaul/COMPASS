@@ -2,6 +2,7 @@
 using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.Windows;
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -95,7 +96,7 @@ namespace COMPASS.ViewModels.Import
             };
             progressWindow.Show();
 
-            Codex newCodex = await Task.Run(ImportURL);
+            Codex newCodex = await ImportURL();
 
             if (ShowEditWhenDone)
             {
@@ -141,21 +142,40 @@ namespace COMPASS.ViewModels.Import
 
             // Steps 2: Scrape metadata
             progressVM.Text = "Downloading Metadata";
-            await CodexViewModel.StartGetMetaDataProcess(newCodex)
+
+            try
+            {
+                await CodexViewModel.StartGetMetaDataProcess(newCodex)
                 .ContinueWith(_ =>
                 {
                     progressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Metadata loaded."));
                     progressVM.ResetCounter();
                 });
+            }
+            catch (OperationCanceledException ex)
+            {
+                Logger.Warn("Getting Metadata has been cancelled", ex);
+                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+                return newCodex;
+            }
 
             // Step 3: Get Cover Art
             progressVM.Text = "Downloading Cover";
-            await CoverFetcher.GetCover(newCodex)
+            try
+            {
+                await CoverFetcher.GetCover(newCodex)
                  .ContinueWith(_ =>
                  {
                      progressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Cover loaded."));
                      progressVM.ResetCounter();
                  });
+            }
+            catch (OperationCanceledException ex)
+            {
+                Logger.Warn("Getting covers/thumbnails has been cancelled", ex);
+                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+                return newCodex;
+            }
 
             //Complete import
             string logMsg = $"Imported {newCodex.Title}";

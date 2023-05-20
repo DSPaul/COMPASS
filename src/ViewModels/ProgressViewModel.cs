@@ -1,4 +1,5 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Windows;
@@ -33,7 +34,7 @@ namespace COMPASS.ViewModels
                 SetProperty(ref _counter, value);
                 RaisePropertyChanged(nameof(Percentage));
                 RaisePropertyChanged(nameof(FullText));
-                RaisePropertyChanged(nameof(ShowProgressBar));
+                RaisePropertyChanged(nameof(ImportInProgress));
             }
         }
 
@@ -46,7 +47,7 @@ namespace COMPASS.ViewModels
                 SetProperty(ref _totalAmount, value);
                 RaisePropertyChanged(nameof(Percentage));
                 RaisePropertyChanged(nameof(FullText));
-                RaisePropertyChanged(nameof(ShowProgressBar));
+                RaisePropertyChanged(nameof(ImportInProgress));
             }
         }
 
@@ -70,9 +71,9 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public string FullText => $"{Text} [{Counter} / {TotalAmount}]";
+        public string FullText => Cancelling ? $"Cancelling {Text}..." : $"{Text} [{Counter} / {TotalAmount}]";
 
-        public bool ShowProgressBar => TotalAmount > 0 && Counter < TotalAmount;
+        public bool ImportInProgress => TotalAmount > 0 && Counter < TotalAmount;
 
         private readonly Mutex _progressMutex = new();
         public void IncrementCounter()
@@ -93,5 +94,29 @@ namespace COMPASS.ViewModels
             Application.Current.Dispatcher.Invoke(() =>
             Log.Add(entry)
         );
+
+        public bool Cancelling { get; set; } = false;
+        public static CancellationTokenSource GlobalCancellationTokenSource { get; private set; } = new();
+        public void ConfirmCancellation()
+        {
+            //Reset any progress
+            Counter = 0;
+            TotalAmount = 0;
+            //create a new tokensource
+            GlobalCancellationTokenSource = new();
+            //force refresh the command so that it grabs the right cancel function
+            _cancelTasksCommand = null;
+            RaisePropertyChanged(nameof(CancelTasksCommand));
+            Cancelling = false;
+        }
+
+        private ActionCommand _cancelTasksCommand;
+        public ActionCommand CancelTasksCommand => _cancelTasksCommand ??= new(CancelBackgroundTask);
+        public void CancelBackgroundTask()
+        {
+            GlobalCancellationTokenSource.Cancel();
+            Cancelling = true;
+            RaisePropertyChanged(nameof(FullText));
+        }
     }
 }

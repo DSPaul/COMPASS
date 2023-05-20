@@ -312,10 +312,34 @@ namespace COMPASS.ViewModels
 
 
         private ReturningRelayCommand<IList, Task> _getMetaDataBulkCommand;
-        public ReturningRelayCommand<IList, Task> GetMetaDataBulkCommand => _getMetaDataBulkCommand ??= new(StartGetMetaDataProcessWithCast);
-        private static async Task StartGetMetaDataProcessWithCast(IList codices) => await StartGetMetaDataProcess(codices.Cast<Codex>().ToList());
+        public ReturningRelayCommand<IList, Task> GetMetaDataBulkCommand => _getMetaDataBulkCommand ??= new(
+            async (IList codices) =>
+            {
+                try
+                {
+                    await StartGetMetaDataProcess(codices.Cast<Codex>().ToList());
+                }
+                catch (OperationCanceledException ex)
+                {
+                    Logger.Warn("Renewing metadata has been cancelled", ex);
+                    await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+                }
+            }
+        );
 
-        public static async Task StartGetMetaDataProcess(Codex codex) => await StartGetMetaDataProcess(new List<Codex>() { codex });
+        public static async Task StartGetMetaDataProcess(Codex codex)
+        {
+            try
+            {
+                await StartGetMetaDataProcess(new List<Codex>() { codex });
+            }
+            catch (OperationCanceledException ex)
+            {
+                Logger.Warn("Renewing metadata has been cancelled", ex);
+                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+            }
+        }
+
         public static async Task StartGetMetaDataProcess(IList<Codex> codices)
         {
             var progressVM = ProgressViewModel.GetInstance();
@@ -325,7 +349,7 @@ namespace COMPASS.ViewModels
 
             ParallelOptions parallelOptions = new()
             {
-                MaxDegreeOfParallelism = 8
+                MaxDegreeOfParallelism = Environment.ProcessorCount / 2
             };
 
             ChooseMetaDataViewModel chooseMetaDataVM = new();
@@ -379,6 +403,7 @@ namespace COMPASS.ViewModels
             //Iterate over all the properties and set them
             foreach (var prop in properties)
             {
+
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
                 if (prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(codex)) continue;
                 if (prop.Label == "Cover Art") continue; //Covers is done separately
@@ -389,6 +414,8 @@ namespace COMPASS.ViewModels
                 //iterate over the sources in reverse because overwriting causes the last ones to remain
                 foreach (var source in prop.SourcePriority.AsEnumerable().Reverse())
                 {
+                    ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
                     // Check if there is metadata from this source to use
                     if (!metaDataFromSource.Keys.Contains(source))
                     {

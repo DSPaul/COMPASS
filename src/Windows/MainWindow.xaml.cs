@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -28,8 +29,9 @@ namespace COMPASS.Windows
         //Deselects when you click away
         private void Window_MouseDown(object sender, MouseButtonEventArgs e) => MainGrid.Focus();
 
-        private void Window_Closing(object sender, CancelEventArgs e)
+        private async void Window_Closing(object sender, CancelEventArgs e)
         {
+            ProgressViewModel.GetInstance().CancelBackgroundTask();
             MainViewModel.CollectionVM.CurrentCollection.Save();
             Properties.Settings.Default.Save();
         }
@@ -149,7 +151,19 @@ namespace COMPASS.Windows
             }
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+        private async void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            var progressVM = ProgressViewModel.GetInstance();
+            if (progressVM.ImportInProgress)
+            {
+                progressVM.CancelBackgroundTask();
+                while (progressVM.ImportInProgress)
+                {
+                    await Task.Delay(100);
+                }
+            }
+            Application.Current.Shutdown();
+        }
         #endregion
 
         private void Toggle_ContextMenu(object sender, RoutedEventArgs e)

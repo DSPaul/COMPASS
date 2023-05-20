@@ -51,6 +51,8 @@ namespace COMPASS.Tools
             bool getCoverSuccessful = false;
             foreach (var source in coverProp.SourcePriority)
             {
+                ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
                 SourceViewModel sourceVM = SourceViewModel.GetSourceVM(source);
                 if (sourceVM == null || !sourceVM.IsValidSource(codex)) continue;
                 getCoverSuccessful = await sourceVM.FetchCover(MetaDatalessCodex);
@@ -84,10 +86,18 @@ namespace COMPASS.Tools
 
             ParallelOptions parallelOptions = new()
             {
-                MaxDegreeOfParallelism = 8
+                MaxDegreeOfParallelism = Environment.ProcessorCount / 2
             };
 
-            await Parallel.ForEachAsync(codices, parallelOptions, async (codex, token) => await GetCover(codex, chooseMetaDataVM));
+            try
+            {
+                await Parallel.ForEachAsync(codices, parallelOptions, async (codex, token) => await GetCover(codex, chooseMetaDataVM));
+            }
+            catch (OperationCanceledException ex)
+            {
+                Logger.Warn("Renewing covers has been cancelled", ex);
+                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+            }
 
             if (chooseMetaDataVM.CodicesWithChoices.Any())
             {
@@ -103,9 +113,9 @@ namespace COMPASS.Tools
             CreateThumbnail(destCodex);
         }
 
-        public static void SaveCover(string imgURL, Codex destCodex)
+        public static async Task SaveCover(string imgURL, Codex destCodex)
         {
-            var imgBytes = Task.Run(async () => await Utils.DownloadFileAsync(imgURL)).Result;
+            var imgBytes = await Utils.DownloadFileAsync(imgURL);
             File.WriteAllBytes(destCodex.CoverArt, imgBytes);
             CreateThumbnail(destCodex);
         }
