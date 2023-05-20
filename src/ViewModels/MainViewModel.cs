@@ -2,6 +2,7 @@
 using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
+using COMPASS.ViewModels.Layouts;
 using COMPASS.ViewModels.Sources;
 using COMPASS.Windows;
 using ImageMagick;
@@ -12,7 +13,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using COMPASS.ViewModels.Layouts;
 
 namespace COMPASS.ViewModels
 {
