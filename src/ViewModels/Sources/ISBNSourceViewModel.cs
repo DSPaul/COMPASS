@@ -98,7 +98,7 @@ namespace COMPASS.ViewModels.Sources
                 string imgID = (string)metadata.SelectToken("covers[0]");
                 if (imgID is null) return false;
                 string imgURL = $"https://covers.openlibrary.org/b/id/{imgID}.jpg";
-                CoverFetcher.SaveCover(imgURL, codex);
+                await CoverFetcher.SaveCover(imgURL, codex);
                 return true;
             }
             catch (Exception ex)

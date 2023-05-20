@@ -47,7 +47,7 @@ namespace COMPASS.ViewModels.Sources
                 string imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);
 
                 //download the file
-                CoverFetcher.SaveCover(imgURL, codex);
+                await CoverFetcher.SaveCover(imgURL, codex);
                 return true;
             }
             catch (Exception ex)
