@@ -32,7 +32,7 @@
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <DockPanel>
                     <TextBlock Text="{Binding FullText, Mode=OneWay, FallbackValue=Stuff in Progress}" 
-                               FontSize="20" FontFamily="Segoe UI Light" DockPanel.Dock="Left"/>
+                               FontSize="20" FontFamily="Segoe UI" FontWeight="Light" DockPanel.Dock="Left"/>
                     <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Close" Background="{StaticResource CancelFill}"
                             DockPanel.Dock="Left" HorizontalAlignment="Right" Click="Close_Click" Width="20" Height="20"/>
                 </DockPanel>

@@ -7,10 +7,9 @@ namespace COMPASS.Converters
 {
     public class ToVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, object shouldInvert, CultureInfo culture)
         {
-            //Parameter is true if inverted
-            bool invert = System.Convert.ToBoolean(parameter);
+            bool invert = System.Convert.ToBoolean(shouldInvert);
             bool visible;
 
             if (value is string strValue)

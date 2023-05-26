@@ -1,7 +1,6 @@
 ﻿using COMPASS.Tools;
 using COMPASS.ViewModels;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -33,11 +32,8 @@ namespace COMPASS.Models
             set => SetProperty(ref _directoryName, value);
         }
 
-        //Tag Lists
         public List<Tag> AllTags { get; private set; } = new();
         public List<Tag> RootTags { get; set; }
-
-        //File Lists
         public ObservableCollection<Codex> AllCodices { get; private set; } = new();
 
         public CollectionInfo Info { get; private set; } = new();

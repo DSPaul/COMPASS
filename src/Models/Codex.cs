@@ -12,7 +12,6 @@ namespace COMPASS.Models
 {
     public class Codex : ObservableObject, IHasID
     {
-        //empty constructor for serialization
         public Codex()
         {
             Authors.CollectionChanged += (_, _) => RaisePropertyChanged(nameof(AuthorsAsString));
