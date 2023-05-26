@@ -1,14 +1,17 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Properties;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
+using COMPASS.Windows;
+using Ionic.Zip;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using COMPASS.Properties;
 
 namespace COMPASS.ViewModels
 {
@@ -34,7 +37,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ObservableCollection<CodexCollection> _allCodexCollections;
+        private ObservableCollection<CodexCollection> _allCodexCollections = new();
         public ObservableCollection<CodexCollection> AllCodexCollections
         {
             get => _allCodexCollections;
@@ -74,6 +77,8 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _editCollectionVisibility, value);
         }
 
+        public bool IncludeFilesInExport { get; set; } = false;
+
         #endregion
 
         #region Methods and Commands
@@ -85,6 +90,7 @@ namespace COMPASS.ViewModels
             AllCodexCollections = new(Directory
                 .GetDirectories(CodexCollection.CollectionsPath)
                 .Select(Path.GetFileName)
+                .Where(IsLegalCollectionName)
                 .Select(dir => new CodexCollection(dir)));
 
             while (CurrentCollection is null)
@@ -101,7 +107,7 @@ namespace COMPASS.ViewModels
                     {
                         if (!Path.Exists(Path.Combine(CodexCollection.CollectionsPath, name)))
                         {
-                            CreateCollection(name);
+                            CreateAndLoadCollection(name);
                             created = true;
                         }
                         else
@@ -137,14 +143,15 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private bool _isLegalCollectionName(string dirName)
+        private bool IsLegalCollectionName(string dirName)
         {
             bool legal =
                 dirName.IndexOfAny(Path.GetInvalidPathChars()) < 0
                 && dirName.IndexOfAny(Path.GetInvalidFileNameChars()) < 0
-                && AllCodexCollections.All(collection => collection.DirectoryName != dirName) 
+                && AllCodexCollections.All(collection => collection.DirectoryName != dirName)
                 && !String.IsNullOrWhiteSpace(dirName)
-                && dirName.Length < 100;
+                && dirName.Length < 100
+                && dirName[..2] != "__"; //reserved for protected folders
             return legal;
         }
 
@@ -205,23 +212,27 @@ namespace COMPASS.ViewModels
 
         // Create CodexCollection
         private RelayCommand<string> _createCollectionCommand;
-        public RelayCommand<string> CreateCollectionCommand => _createCollectionCommand ??= new(CreateCollection, _isLegalCollectionName);
-        public void CreateCollection(string dirName)
+        public RelayCommand<string> CreateCollectionCommand => _createCollectionCommand ??= new(CreateAndLoadCollection, IsLegalCollectionName);
+        public void CreateAndLoadCollection(string dirName)
         {
-            if (string.IsNullOrEmpty(dirName)) return;
+            var newCollection = CreateCollection(dirName);
+            CurrentCollection = newCollection;
+            CreateCollectionVisibility = false;
+        }
 
+        public CodexCollection CreateCollection(string dirName)
+        {
+            if (string.IsNullOrEmpty(dirName)) return null;
             CodexCollection newCollection = new(dirName);
             Directory.CreateDirectory(Path.Combine(newCollection.FullDataPath, "CoverArt"));
             Directory.CreateDirectory(Path.Combine(newCollection.FullDataPath, "Thumbnails"));
             AllCodexCollections.Add(newCollection);
-            CurrentCollection = newCollection;
-
-            CreateCollectionVisibility = false;
+            return newCollection;
         }
 
         // Rename Collection
         private RelayCommand<string> _editCollectionNameCommand;
-        public RelayCommand<string> EditCollectionNameCommand => _editCollectionNameCommand ??= new(EditCollectionName, _isLegalCollectionName);
+        public RelayCommand<string> EditCollectionNameCommand => _editCollectionNameCommand ??= new(EditCollectionName, IsLegalCollectionName);
         public void EditCollectionName(string newName)
         {
             CurrentCollection.RenameCollection(newName);
@@ -266,6 +277,122 @@ namespace COMPASS.ViewModels
             //if Dir name of toDelete is empty, it will delete the entire collections folder
             if (String.IsNullOrEmpty(toDelete.DirectoryName)) return;
             Directory.Delete(toDelete.FullDataPath, true);
+        }
+
+        private ActionCommand _exportCommand;
+        public ActionCommand ExportCommand => _exportCommand ??= new(async () => await Export());
+        public async Task Export()
+        {
+            SaveFileDialog saveFileDialog = new()
+            {
+                Filter = $"COMPASS File (*{Constants.COMPASSFileExtension})|*{Constants.COMPASSFileExtension}",
+                FileName = CurrentCollection.DirectoryName,
+                DefaultExt = Constants.COMPASSFileExtension
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                //make sure to save first
+                MainViewModel.CollectionVM.CurrentCollection.Save();
+
+                string targetPath = saveFileDialog.FileName;
+                using ZipFile zip = new();
+                zip.AddDirectory(CurrentCollection.FullDataPath);
+
+                //copy everything to temp because codex paths it will be modified
+                string tmpCollectionPath = Path.Combine(CodexCollection.CollectionsPath, $"__{CurrentCollection.DirectoryName}");
+                Directory.CreateDirectory(tmpCollectionPath);
+                string filesPath = Path.Combine(tmpCollectionPath, "Files");
+                CodexCollection tmpCollection = new($"__{CurrentCollection.DirectoryName}");
+
+                File.Copy(CurrentCollection.CodicesDataFilePath, tmpCollection.CodicesDataFilePath, true);
+                tmpCollection.Load();
+
+                var itemsWithOfflineSource = tmpCollection.AllCodices.Where(codex => codex.HasOfflineSource());
+                string commonFolder = Utils.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Path).ToList());
+                foreach (Codex codex in itemsWithOfflineSource)
+                {
+                    string relativePath = codex.Path[commonFolder.Length..];
+                    if (IncludeFilesInExport && File.Exists(codex.Path))
+                    {
+                        zip.AddFile(codex.Path, Path.Combine("Files", relativePath));
+                    }
+                    //strip longest common path so relative paths stay, given that full paths will break anyway
+                    codex.Path = relativePath;
+                }
+
+
+
+                tmpCollection.SaveCodices();
+                zip.UpdateFile(tmpCollection.CodicesDataFilePath, "");
+
+                //Progress reporting
+                var ProgressVM = ProgressViewModel.GetInstance();
+                ProgressVM.Text = "Exporting Collection";
+                ProgressVM.ShowCount = false;
+                ProgressVM.ResetCounter();
+                zip.SaveProgress += (object _, SaveProgressEventArgs args) =>
+                {
+                    ProgressVM.TotalAmount = Math.Max(ProgressVM.TotalAmount, args.EntriesTotal);
+                    if (args.EventType == ZipProgressEventType.Saving_AfterWriteEntry)
+                    {
+                        ProgressVM.IncrementCounter();
+                    }
+                };
+
+                //Export
+                await Task.Run(() =>
+                    {
+                        zip.Save(targetPath);
+                        if (IncludeFilesInExport) Directory.Delete(tmpCollectionPath, true);
+                        ProgressVM.ShowCount = false;
+                    });
+                Logger.Info($"Exported {CurrentCollection.DirectoryName} to {targetPath}");
+            }
+        }
+
+        private ActionCommand _exportTagsCommand;
+        public ActionCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags);
+        public void ExportTags()
+        {
+            SaveFileDialog saveFileDialog = new()
+            {
+                Filter = $"COMPASS File (*{Constants.COMPASSFileExtension})|*{Constants.COMPASSFileExtension}",
+                FileName = $"{CurrentCollection.DirectoryName}_Tags",
+                DefaultExt = Constants.COMPASSFileExtension
+            };
+
+            if (saveFileDialog.ShowDialog() != true) return;
+
+            //make sure to save first
+            CurrentCollection.SaveTags();
+
+            string targetPath = saveFileDialog.FileName;
+            using ZipFile zip = new();
+            zip.AddFile(CurrentCollection.TagsDataFilePath, "");
+
+            //Export
+            zip.Save(targetPath);
+            Logger.Info($"Exported Tags from {CurrentCollection.DirectoryName} to {targetPath}");
+        }
+
+        private ActionCommand _importCommand;
+        public ActionCommand ImportCommand => _importCommand ??= new(Import);
+        public void Import()
+        {
+            OpenFileDialog openFileDialog = new()
+            {
+                Filter = $"COMPASS File (*{Constants.COMPASSFileExtension})|*{Constants.COMPASSFileExtension}",
+                CheckFileExists = true,
+                Multiselect = false,
+                Title = "Choose a COMPASS file to import",
+            };
+
+            if (openFileDialog.ShowDialog() != true) return;
+
+            ImportCollectionViewModel ImportCollectionVM = new(MainVM, openFileDialog.FileName);
+            ImportCollectionWizard wizard = new(ImportCollectionVM);
+            wizard.Show();
         }
         #endregion
     }

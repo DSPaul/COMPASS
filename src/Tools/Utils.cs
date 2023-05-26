@@ -37,24 +37,24 @@ namespace COMPASS.Tools
             {
                 //Breadth first search
                 case "bfs":
-                {
-                    for (int i = 0; i < result.Count; i++)
                     {
-                        T parent = result[i];
-                        result.AddRange(parent.Children);
+                        for (int i = 0; i < result.Count; i++)
+                        {
+                            T parent = result[i];
+                            result.AddRange(parent.Children);
+                        }
+                        break;
                     }
-                    break;
-                }
                 //Depth first search (pre-order)
                 case "dfs":
-                {
-                    for (int i = 0; i < result.Count; i++)
                     {
-                        T parent = result[i];
-                        result.InsertRange(i + 1, parent.Children);
+                        for (int i = 0; i < result.Count; i++)
+                        {
+                            T parent = result[i];
+                            result.InsertRange(i + 1, parent.Children);
+                        }
+                        break;
                     }
-                    break;
-                }
             }
 
             return result;
@@ -186,6 +186,25 @@ namespace COMPASS.Tools
             var dialogResult = openFolderDialog.ShowDialog();
             if (dialogResult == false) return null;
             return openFolderDialog.SelectedPath;
+        }
+
+        public static string GetCommonFolder(List<string> paths)
+        {
+            if (paths is null) throw new ArgumentNullException(nameof(paths));
+
+            string reference = paths.First();
+            string[] folders = reference.Split(Path.DirectorySeparatorChar);
+            string commonFolder = "";
+            foreach (string folder in folders)
+            {
+                string nextFolderToTest = Path.Combine(commonFolder, folder);
+                if (paths.All(path => path.StartsWith(nextFolderToTest)))
+                {
+                    commonFolder = nextFolderToTest;
+                }
+                else break;
+            }
+            return commonFolder;
         }
 
         public static async Task<HtmlDocument> ScrapeSite(string url)

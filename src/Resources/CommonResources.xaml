@@ -906,14 +906,34 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
-                    <Border>
-                        <Border.Background>
-                            <SolidColorBrush Color="Black" Opacity="0"/>
-                        </Border.Background>
+                    <Border Background="Transparent">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon x:Name="checkboxIcon" Kind="CheckboxBlankOutline"/>
                             <ContentPresenter Margin="5,0"/>
                         </StackPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckboxMarkedOutline"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type CheckBox}" x:Key="WrappingCheckBox">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <Border Background="Transparent">
+                        <DockPanel>
+                            <materialDesign:PackIcon DockPanel.Dock="Left" x:Name="checkboxIcon" Margin="5,2"
+                                Kind="CheckboxBlankOutline" VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
+                            <TextBlock Text="{TemplateBinding Content}" TextWrapping="Wrap"
+                                       VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
+                        </DockPanel>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
