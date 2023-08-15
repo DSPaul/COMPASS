@@ -43,10 +43,10 @@ namespace COMPASS.Models
         #region Load Data From File
 
         /// <summary>
-        /// Loads the collection and sets it as the new default to load on startup
+        /// Loads the collection and unless hidden, sets it as the new default to load on startup
         /// </summary>
         /// <returns>int that gives status: 0 for success, -1 for failed tags, -2 for failed codices, -4 for failed info, or combination of those</returns>
-        public int Load()
+        public int Load(bool hidden = false)
         {
             int result = 0;
             bool loadedTags = LoadTags();
@@ -55,8 +55,11 @@ namespace COMPASS.Models
             if (!loadedTags) { result -= 1; }
             if (!loadedCodices) { result -= 2; }
             if (!loadedInfo) { result -= 4; }
-            Properties.Settings.Default.StartupCollection = DirectoryName;
-            Logger.Info($"Loaded {DirectoryName}");
+            if (!hidden)
+            {
+                Properties.Settings.Default.StartupCollection = DirectoryName;
+                Logger.Info($"Loaded {DirectoryName}");
+            }
             return result;
         }
 

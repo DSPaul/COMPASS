@@ -151,7 +151,7 @@ namespace COMPASS.ViewModels
                 && AllCodexCollections.All(collection => collection.DirectoryName != dirName)
                 && !String.IsNullOrWhiteSpace(dirName)
                 && dirName.Length < 100
-                && dirName[..2] != "__"; //reserved for protected folders
+                && (dirName.Length < 2 || dirName[..2] != "__"); //reserved for protected folders
             return legal;
         }
 
@@ -306,22 +306,21 @@ namespace COMPASS.ViewModels
                 CodexCollection tmpCollection = new($"__{CurrentCollection.DirectoryName}");
 
                 File.Copy(CurrentCollection.CodicesDataFilePath, tmpCollection.CodicesDataFilePath, true);
-                tmpCollection.Load();
+                tmpCollection.Load(true);
 
                 var itemsWithOfflineSource = tmpCollection.AllCodices.Where(codex => codex.HasOfflineSource());
                 string commonFolder = Utils.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Path).ToList());
                 foreach (Codex codex in itemsWithOfflineSource)
                 {
-                    string relativePath = codex.Path[commonFolder.Length..];
+                    string relativePath = codex.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
                     if (IncludeFilesInExport && File.Exists(codex.Path))
                     {
-                        zip.AddFile(codex.Path, Path.Combine("Files", relativePath));
+                        int index_start_filename = relativePath.Length - Path.GetFileName(codex.Path).Length;
+                        zip.AddFile(codex.Path, Path.Combine("Files", relativePath[0..index_start_filename]));
                     }
                     //strip longest common path so relative paths stay, given that full paths will break anyway
                     codex.Path = relativePath;
                 }
-
-
 
                 tmpCollection.SaveCodices();
                 zip.UpdateFile(tmpCollection.CodicesDataFilePath, "");
@@ -344,7 +343,7 @@ namespace COMPASS.ViewModels
                 await Task.Run(() =>
                     {
                         zip.Save(targetPath);
-                        if (IncludeFilesInExport) Directory.Delete(tmpCollectionPath, true);
+                        Directory.Delete(tmpCollectionPath, true);
                         ProgressVM.ShowCount = false;
                     });
                 Logger.Info($"Exported {CurrentCollection.DirectoryName} to {targetPath}");

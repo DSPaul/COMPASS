@@ -239,5 +239,17 @@ namespace COMPASS.Tools
                 return doc;
             }
         }
+
+        public static void ClearTmpData(string tempPath = null)
+        {
+            if (tempPath == null)
+            {
+                //TODO: find all paths with __ which are temp and delete them
+            }
+            if (Directory.Exists(tempPath))
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
     }
 }

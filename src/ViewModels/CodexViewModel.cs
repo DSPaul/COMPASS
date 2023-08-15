@@ -211,13 +211,6 @@ namespace COMPASS.ViewModels
             CodexCollection targetCollection = new((string)par[0]);
             List<Codex> toMoveList = new();
 
-            //Check if target Collection is valid
-            if (targetCollection.DirectoryName == MainViewModel.CollectionVM.CurrentCollection.DirectoryName)
-            {
-                Logger.Warn($"Target Collection {targetCollection.DirectoryName} is invalid");
-                return;
-            }
-
             //extract Codex parameter
             if (par[1] is Codex codex)
             {
@@ -226,6 +219,17 @@ namespace COMPASS.ViewModels
             else
             {
                 if (par[1] as IList is { } list) toMoveList = list.Cast<Codex>().ToList();
+            }
+
+            MoveToCollection(targetCollection, toMoveList);
+        }
+        public static void MoveToCollection(CodexCollection targetCollection, List<Codex> toMoveList)
+        {
+            //Check if target Collection is valid
+            if (targetCollection.DirectoryName == MainViewModel.CollectionVM.CurrentCollection.DirectoryName)
+            {
+                Logger.Warn($"Target Collection {targetCollection.DirectoryName} is invalid");
+                return;
             }
 
             //MessageBox "Are you Sure?"
