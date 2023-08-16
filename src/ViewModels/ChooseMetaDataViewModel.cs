@@ -64,9 +64,9 @@ namespace COMPASS.ViewModels
                     CodicesWithChoices[i].Item1.RefreshThumbnail();
                 }
                 //delete temp cover if it exists
-                if (CodicesWithChoices[i].Item2.CoverArt.EndsWith(".tmp.png"))
+                if (CodicesWithChoices[i].Item2.CoverArt?.EndsWith(".tmp.png") == true)
                     File.Delete(CodicesWithChoices[i].Item2.CoverArt);
-                if (CodicesWithChoices[i].Item2.Thumbnail.EndsWith(".tmp.png"))
+                if (CodicesWithChoices[i].Item2.Thumbnail?.EndsWith(".tmp.png") == true)
                     File.Delete(CodicesWithChoices[i].Item2.Thumbnail);
 
                 //Set image paths back so that copy operataion after this doesn't change them to the temp files
