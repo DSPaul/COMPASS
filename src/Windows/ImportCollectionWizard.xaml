@@ -50,13 +50,15 @@
         </Border>
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="3" Margin="10">
             <Button Style="{StaticResource TextButton}" Content="Back" Command="{Binding PrevStepCommand}"
-                Visibility="{Binding ShowBackButton, Converter={StaticResource ToVisibilityConverter}}"/>
+            Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, 
+                Converter={StaticResource ToVisibilityConverter}}"/>
             <Button Style="{StaticResource TextButton}" Content="Next" Command="{Binding NextStepCommand}"
-                Visibility="{Binding ShowNextButton, Converter={StaticResource ToVisibilityConverter}}"/>
+            Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, 
+                Converter={StaticResource ToVisibilityConverter}}"/>
             <Button Style="{StaticResource TextButton}" Content="Finish" Command="{Binding FinishCommand}"
-                Background="{StaticResource AccentColor}"
-                Visibility="{Binding ShowFinishButton, Converter={StaticResource ToVisibilityConverter}}"/>
-
+            Background="{StaticResource AccentColor}"
+            Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, 
+                Converter={StaticResource ToVisibilityConverter}}"/>
         </StackPanel>
     </Grid>
 </Window>

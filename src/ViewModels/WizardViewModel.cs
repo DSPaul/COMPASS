@@ -8,7 +8,7 @@ namespace COMPASS.ViewModels
     public abstract class WizardViewModel : ObservableObject
     {
         private ObservableCollection<string> _steps = new();
-        public ObservableCollection<string> Steps
+        public virtual ObservableCollection<string> Steps
         {
             get => _steps;
             set
@@ -37,20 +37,19 @@ namespace COMPASS.ViewModels
         public string CurrentStep => Steps[StepCounter];
 
         private ActionCommand _nextStepCommand;
-        public ActionCommand NextStepCommand => _nextStepCommand ??= new(NextStep);
+        public ActionCommand NextStepCommand => _nextStepCommand ??= new(NextStep, ShowNextButton);
         public virtual void NextStep() => StepCounter++;
+        public bool ShowNextButton() => StepCounter < Steps.Count - 1;
 
         private ActionCommand _prevStepCommand;
-        public ActionCommand PrevStepCommand => _prevStepCommand ??= new(PrevStep);
+        public ActionCommand PrevStepCommand => _prevStepCommand ??= new(PrevStep, ShowBackButton);
         public virtual void PrevStep() => StepCounter--;
+        public bool ShowBackButton() => StepCounter > 0;
 
         private ActionCommand _finishCommand;
-        public ActionCommand FinishCommand => _finishCommand ??= new(Finish);
+        public ActionCommand FinishCommand => _finishCommand ??= new(Finish, ShowFinishButton);
         public abstract void Finish();
-
-        public bool ShowBackButton => StepCounter > 0;
-        public bool ShowNextButton => StepCounter < Steps.Count - 1;
-        public bool ShowFinishButton => StepCounter == Steps.Count - 1;
+        public bool ShowFinishButton() => StepCounter == Steps.Count - 1;
 
         public Action CloseAction;
     }
