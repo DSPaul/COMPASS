@@ -211,13 +211,15 @@ namespace COMPASS.ViewModels
         private void ToggleEditCollection() => EditCollectionVisibility = !EditCollectionVisibility;
 
         // Create CodexCollection
-        private RelayCommand<string> _createCollectionCommand;
-        public RelayCommand<string> CreateCollectionCommand => _createCollectionCommand ??= new(CreateAndLoadCollection, IsLegalCollectionName);
-        public void CreateAndLoadCollection(string dirName)
+        private ReturningRelayCommand<string, CodexCollection> _createCollectionCommand;
+        public ReturningRelayCommand<string, CodexCollection> CreateCollectionCommand =>
+            _createCollectionCommand ??= new(CreateAndLoadCollection, IsLegalCollectionName);
+        public CodexCollection CreateAndLoadCollection(string dirName)
         {
             var newCollection = CreateCollection(dirName);
             CurrentCollection = newCollection;
             CreateCollectionVisibility = false;
+            return newCollection;
         }
 
         public CodexCollection CreateCollection(string dirName)

@@ -4,16 +4,59 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMPASS.Windows"
-        xmlns:import="clr-namespace:COMPASS.ViewModels.Import"
+        xmlns:import="clr-namespace:COMPASS.ViewModels.Import" 
+        xmlns:converters="clr-namespace:COMPASS.Converters"
         d:DataContext="{d:DesignInstance Type=import:ImportCollectionViewModel}"
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
         Title="Import Wizard" Height="450" Width="800"
         >
     <Grid>
+        <Grid.Resources>
+            <converters:PlusOneConverter x:Key="PlusOneConverter"/>
+            <converters:UriToBitmapConverter x:Key="UriToBitmapConverter"/>
+        </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Importing "/>
+        <DockPanel Margin="40,10">
+
+            <TextBlock Text="{Binding CurrentStep, Mode=OneWay}" DockPanel.Dock="Left" FontSize="20" FontWeight="Light">
+                Choose which
+            <Run Text="{Binding CurrentStep, Mode=OneWay}" Foreground="{StaticResource AccentColor}"/>
+                to import.
+            </TextBlock>
+            <TextBlock HorizontalAlignment="Right" FontSize="20" FontWeight="Light" DockPanel.Dock="Right">
+            <Run Text="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"/>
+            / 
+            <Run Text="{Binding Steps.Count, Mode=OneTime}"/>
+            </TextBlock>
+        </DockPanel>
+        <ProgressBar Grid.Row="1" Value="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"
+                 Maximum="{Binding Steps.Count, Mode=OneTime}" Height="12" Margin="10,0"
+                 Foreground="{StaticResource AccentColor}" Background="{StaticResource UIElementBackground}" 
+                 Style="{DynamicResource RoundedProgressBar}"/>
+        <Border BorderBrush="{StaticResource DarkUIElementBackground}" Margin="10" BorderThickness="2"
+            Grid.Row="2" CornerRadius="5" Padding="10">
+            <Border.Resources>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="TextWrapping" Value="Wrap"/>
+                    <Setter Property="Margin" Value="20,5"/>
+                </Style>
+            </Border.Resources>
+            
+        </Border>
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="3" Margin="10">
+            <Button Style="{StaticResource TextButton}" Content="Back" Command="{Binding PrevStepCommand}"
+                Visibility="{Binding ShowBackButton, Converter={StaticResource ToVisibilityConverter}}"/>
+            <Button Style="{StaticResource TextButton}" Content="Next" Command="{Binding NextStepCommand}"
+                Visibility="{Binding ShowNextButton, Converter={StaticResource ToVisibilityConverter}}"/>
+            <Button Style="{StaticResource TextButton}" Content="Finish" Command="{Binding FinishCommand}"
+                Background="{StaticResource AccentColor}"
+                Visibility="{Binding ShowFinishButton, Converter={StaticResource ToVisibilityConverter}}"/>
+
+        </StackPanel>
     </Grid>
 </Window>

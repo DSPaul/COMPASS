@@ -10,6 +10,16 @@ namespace COMPASS.Models
     /// </summary>
     public class CollectionInfo
     {
+        /// <summary>
+        /// Checks if the collections has settings that differ from the default settings
+        /// </summary>
+        /// <returns>True if settings were moddified, false if they are default</returns>
+        public bool ContainsSettings() =>
+            AutoImportDirectories.Count > 0 ||
+            BanishedPaths.Count > 0 ||
+            FiletypePreferences.Count > 0 ||
+            FolderTagPairs.Count > 0;
+
         #region Folders to Auto Import
         //Folders to check for new files
         public ObservableCollection<string> AutoImportDirectories { get; set; } = new();
