@@ -92,7 +92,7 @@ namespace COMPASS.Models
 
         #region Properties
 
-        private string _path;
+        private string _path = "";
         public string Path
         {
             get => _path;
@@ -103,7 +103,7 @@ namespace COMPASS.Models
             }
         }
 
-        private string _title;
+        private string _title = "";
         public string Title
         {
             get => _title;
@@ -159,7 +159,7 @@ namespace COMPASS.Models
             }
         }
 
-        private string _publisher;
+        private string _publisher = "";
         public string Publisher
         {
             get => _publisher;
@@ -170,7 +170,7 @@ namespace COMPASS.Models
             }
         }
 
-        private string _version;
+        private string _version = "";
         public string Version
         {
             get => _version;
@@ -181,7 +181,7 @@ namespace COMPASS.Models
             }
         }
 
-        private string _sourceURL;
+        private string _sourceURL = "";
         public string SourceURL
         {
             get => _sourceURL;
@@ -194,7 +194,7 @@ namespace COMPASS.Models
 
         public int ID { get; set; }
 
-        private string _coverArt;
+        private string _coverArt = "";
         public string CoverArt
         {
             get => _coverArt;
@@ -205,7 +205,7 @@ namespace COMPASS.Models
             }
         }
 
-        private string _thumbnail;
+        private string _thumbnail = "";
         public string Thumbnail
         {
             get => _thumbnail;
@@ -243,7 +243,7 @@ namespace COMPASS.Models
         }
         public List<int> TagIDs { get; set; }
 
-        private string _description;
+        private string _description = "";
         public string Description
         {
             get => _description;
@@ -303,7 +303,7 @@ namespace COMPASS.Models
             set => SetProperty(ref _favorite, value);
         }
 
-        private string _isbn;
+        private string _isbn = "";
         public string ISBN
         {
             get => _isbn;
