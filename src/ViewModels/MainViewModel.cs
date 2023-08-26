@@ -60,6 +60,9 @@ namespace COMPASS.ViewModels
             AutoUpdater.AppCastURL = Constants.AutoUpdateXMLPath;
             //Disable skip
             AutoUpdater.ShowSkipButton = false;
+            //Set Icon
+            string runningExePath = new System.Uri(Assembly.GetExecutingAssembly().Location).AbsolutePath;
+            AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath).ToBitmap();
             //AutoUpdater.InstalledVersion = new("0.2.0"); //for testing only
             //set remind later time so users can go back to the app in one click
             AutoUpdater.LetUserSelectRemindLater = false;
