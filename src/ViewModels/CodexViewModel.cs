@@ -223,6 +223,12 @@ namespace COMPASS.ViewModels
 
             MoveToCollection(targetCollection, toMoveList);
         }
+
+        /// <summary>
+        /// Moves all codices from the toMoveList to the targetCollection
+        /// </summary>
+        /// <param name="targetCollection"></param>
+        /// <param name="toMoveList"></param>
         public static void MoveToCollection(CodexCollection targetCollection, List<Codex> toMoveList)
         {
             //Check if target Collection is valid

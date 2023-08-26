@@ -15,33 +15,35 @@ namespace COMPASS.ViewModels.Import
 
             //unzip and load collection to import
             _unzipLocation = UnZipCollection(toImport);
-            CollectionToImport = new CodexCollection(_unzipLocation);
-            CollectionToImport.Load(true);
+            RawCollectionToImport = new CodexCollection(Path.GetFileName(_unzipLocation));
+            RawCollectionToImport.Load(true);
+            ReviewedCollectionToImport = new(RawCollectionToImport.DirectoryName + "__Reviewed");
 
             //Checks which steps need to be included in wizard
-            if (CollectionToImport.AllCodices.Count > 0)
+            Steps.Add("TargetCollection");
+            if (RawCollectionToImport.AllCodices.Any())
             {
                 Steps.Add("Codices");
             }
-            if (CollectionToImport.AllTags.Count > 0)
+            if (RawCollectionToImport.AllTags.Any())
             {
                 Steps.Add("Tags");
             }
-            if (CollectionToImport.Info.ContainsSettings())
+            if (RawCollectionToImport.Info.ContainsSettings())
             {
                 Steps.Add("Settings");
             }
 
             //Put codices in dictionary so they can be labeled true/false for import
-            foreach (Codex codex in CollectionToImport.AllCodices)
+            foreach (Codex codex in RawCollectionToImport.AllCodices)
             {
-                CodexToImportDict.Add(codex, true);
+                CodexToImportDict.Add(new(codex, true));
             }
 
             //if files were included in compass file, set paths of codices to those files
             if (Directory.Exists(Path.Combine(_unzipLocation, "Files")))
             {
-                foreach (Codex codex in CollectionToImport.AllCodices)
+                foreach (Codex codex in RawCollectionToImport.AllCodices)
                 {
                     string includedFilePath = Path.Combine(_unzipLocation, "Files", Path.GetFileName(codex.Path));
                     if (File.Exists(includedFilePath))
@@ -56,11 +58,12 @@ namespace COMPASS.ViewModels.Import
         private string _unzipLocation;
 
         public CodexCollection TargetCollection { get; set; } = null; //null means new collection should be made
-        public CodexCollection CollectionToImport { get; set; } = null; //null means new collection should be made
+        public CodexCollection RawCollectionToImport { get; set; } = null; //collection that was in the cmpss file
+        CodexCollection ReviewedCollectionToImport { get; set; } //collection that should actually be merged into targetCollection
         public string CollectionName;
 
         // CODICES STEP
-        public Dictionary<Codex, bool> CodexToImportDict { get; set; } = new();
+        public List<ObservableKeyValuePair<Codex, bool>> CodexToImportDict { get; set; } = new();
 
         private string UnZipCollection(string path)
         {
@@ -76,12 +79,26 @@ namespace COMPASS.ViewModels.Import
 
         public override void Finish()
         {
+            //add selected Codices to tmp collection
+            ReviewedCollectionToImport.AllCodices
+                .AddRange(CodexToImportDict
+                    .Where(KVPair => KVPair.Value)
+                    .Select(KVPair => KVPair.Key));
+            //add selected Tags to tmp collection
+            //TODO
+            //Add selected Settings to tmp collection
+            //TODO
+
             TargetCollection ??= MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
+            TargetCollection.MergeWith(ReviewedCollectionToImport);
 
-            CodexViewModel.MoveToCollection(TargetCollection, CodexToImportDict.Keys.Where(codex => CodexToImportDict[codex]).ToList());
-
-            Utils.ClearTmpData(_unzipLocation);
             CloseAction.Invoke();
+        }
+
+        public void Cleanup()
+        {
+            MainViewModel.CollectionVM.DeleteCollection(RawCollectionToImport);
+            MainViewModel.CollectionVM.DeleteCollection(ReviewedCollectionToImport);
         }
     }
 }

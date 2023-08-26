@@ -273,12 +273,18 @@ namespace COMPASS.ViewModels
         }
         public void DeleteCollection(CodexCollection toDelete)
         {
-            AllCodexCollections.Remove(CurrentCollection);
-            CurrentCollection = AllCodexCollections.FirstOrDefault();
+            AllCodexCollections.Remove(toDelete);
+            if (CurrentCollection == toDelete)
+            {
+                CurrentCollection = AllCodexCollections.FirstOrDefault();
+            }
 
             //if Dir name of toDelete is empty, it will delete the entire collections folder
             if (String.IsNullOrEmpty(toDelete.DirectoryName)) return;
-            Directory.Delete(toDelete.FullDataPath, true);
+            if (Directory.Exists(toDelete.FullDataPath)) //does not exist if collection was never saved
+            {
+                Directory.Delete(toDelete.FullDataPath, true);
+            }
         }
 
         private ActionCommand _exportCommand;

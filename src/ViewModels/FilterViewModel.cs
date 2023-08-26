@@ -279,8 +279,7 @@ namespace COMPASS.ViewModels
                 if (!String.IsNullOrEmpty(c.Publisher)) PublisherList.AddIfMissing(c.Publisher);
 
                 //Populate FileType Collection
-                string fileType = c.GetFileType();
-                if (!String.IsNullOrEmpty(fileType)) FileTypeList.AddIfMissing(fileType);
+                if (!String.IsNullOrEmpty(c.FileType)) FileTypeList.AddIfMissing(c.FileType);
 
                 //Populate Domain Collection
                 if (c.HasOnlineSource())

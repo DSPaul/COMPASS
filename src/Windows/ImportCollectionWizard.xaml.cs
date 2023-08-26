@@ -14,5 +14,7 @@ namespace COMPASS.Windows
             DataContext = viewModel;
             viewModel.CloseAction = Close;
         }
+
+        private void Window_Closed(object sender, System.EventArgs e) => ((ImportCollectionViewModel)DataContext).Cleanup();
     }
 }

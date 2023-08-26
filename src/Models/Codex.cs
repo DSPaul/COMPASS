@@ -65,27 +65,31 @@ namespace COMPASS.Models
 
         public bool HasOnlineSource() => !String.IsNullOrWhiteSpace(SourceURL);
 
-        public string GetFileType()
+        public string FileType
         {
-            if (HasOfflineSource())
+            get
             {
-                return System.IO.Path.GetExtension(Path);
-            }
+                if (HasOfflineSource())
+                {
+                    return System.IO.Path.GetExtension(Path);
+                }
 
-            else if (HasOnlineSource())
-            {
-                // online sources can also also point to file 
-                // either hosted on cloud service like Google drive 
-                // or services like homebrewery are always .pdf
-                // skip this for now though
-                return "webpage";
-            }
+                else if (HasOnlineSource())
+                {
+                    // online sources can also also point to file 
+                    // either hosted on cloud service like Google drive 
+                    // or services like homebrewery are always .pdf
+                    // skip this for now though
+                    return "webpage";
+                }
 
-            else
-            {
-                return null;
+                else
+                {
+                    return null;
+                }
             }
         }
+        public string FileName => System.IO.Path.GetFileName(Path);
 
         public void RefreshThumbnail() => RaisePropertyChanged(nameof(Thumbnail));
 

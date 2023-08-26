@@ -219,6 +219,15 @@ namespace COMPASS.Models
 
         #endregion    
 
+        /// <summary>
+        /// Will merge all the data from toMerge into this collection
+        /// </summary>
+        /// <param name="toMerge"></param>
+        public void MergeWith(CodexCollection toMerge)
+        {
+            //TODO
+        }
+
         public void DeleteCodex(Codex toDelete)
         {
             //Delete file from all lists

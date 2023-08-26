@@ -43,7 +43,7 @@ namespace COMPASS.Models
             FilterType.HasISBN => codex => !String.IsNullOrEmpty(codex.ISBN),
             FilterType.PhysicalSource => codex => codex.PhysicallyOwned,
             FilterType.Favorite => codex => codex.Favorite,
-            FilterType.FileExtension => codex => codex.GetFileType() == (string)FilterValue,
+            FilterType.FileExtension => codex => codex.FileType == (string)FilterValue,
             FilterType.HasBrokenPath => codex => codex.HasOfflineSource() && !Path.Exists(codex.Path),
             FilterType.Domain => codex => codex.HasOnlineSource() && codex.SourceURL.Contains((string)FilterValue),
             _ => _ => true
@@ -143,7 +143,10 @@ namespace COMPASS.Models
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(Filter lhs, Filter rhs) => !(lhs == rhs);
+        public static bool operator !=(Filter lhs, Filter rhs)
+        {
+            return !(lhs == rhs);
+        }
 
         public override int GetHashCode() => Content.GetHashCode();
     }

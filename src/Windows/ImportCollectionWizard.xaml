@@ -5,15 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMPASS.Windows"
         xmlns:import="clr-namespace:COMPASS.ViewModels.Import" 
-        xmlns:converters="clr-namespace:COMPASS.Converters"
+        xmlns:converters="clr-namespace:COMPASS.Converters" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         d:DataContext="{d:DesignInstance Type=import:ImportCollectionViewModel}"
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
-        Title="Import Wizard" Height="450" Width="800"
+        Title="Import Wizard" Height="650" Width="1200" Closed="Window_Closed"
         >
     <Grid>
         <Grid.Resources>
             <converters:PlusOneConverter x:Key="PlusOneConverter"/>
             <converters:UriToBitmapConverter x:Key="UriToBitmapConverter"/>
+            <converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
+            <converters:EqualityToVisibilityConverter x:Key="ShowInStepConverter"/>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -23,7 +25,12 @@
         </Grid.RowDefinitions>
         <DockPanel Margin="40,10">
 
-            <TextBlock Text="{Binding CurrentStep, Mode=OneWay}" DockPanel.Dock="Left" FontSize="20" FontWeight="Light">
+            <!--Only show this on step 0 -->
+            <TextBlock Text="Choose a Target Collection" DockPanel.Dock="Left" FontSize="20" FontWeight="Light" 
+            Visibility="{Binding StepCounter, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
+            <!--Only show this after step 0 -->
+            <TextBlock DockPanel.Dock="Left" FontSize="20" FontWeight="Light" 
+                       Visibility="{Binding StepCounter, Converter={StaticResource ToVisibilityConverter}}">
                 Choose which
             <Run Text="{Binding CurrentStep, Mode=OneWay}" Foreground="{StaticResource AccentColor}"/>
                 to import.
@@ -34,10 +41,12 @@
             <Run Text="{Binding Steps.Count, Mode=OneTime}"/>
             </TextBlock>
         </DockPanel>
+
         <ProgressBar Grid.Row="1" Value="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"
                  Maximum="{Binding Steps.Count, Mode=OneTime}" Height="12" Margin="10,0"
                  Foreground="{StaticResource AccentColor}" Background="{StaticResource UIElementBackground}" 
                  Style="{DynamicResource RoundedProgressBar}"/>
+
         <Border BorderBrush="{StaticResource DarkUIElementBackground}" Margin="10" BorderThickness="2"
             Grid.Row="2" CornerRadius="5" Padding="10">
             <Border.Resources>
@@ -46,8 +55,205 @@
                     <Setter Property="Margin" Value="20,5"/>
                 </Style>
             </Border.Resources>
-            
+            <Grid>
+                <Grid Visibility="{Binding CurrentStep, ConverterParameter=Codices, Converter={StaticResource ShowInStepConverter}}">
+                    <DataGrid x:Name="ListLayoutGrid" MaxWidth="{Binding ActualWidth, ElementName=ContentBorder}"
+                        Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
+                        ItemsSource="{Binding CodexToImportDict, IsAsync=True}"
+                        CanUserAddRows="False" SelectionMode="Single" CanUserSortColumns="True" AutoGenerateColumns="False" 
+                        RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
+                        VerticalGridLinesBrush="#FF484848" HorizontalGridLinesBrush="#FF484848" ClipToBounds="True">
+                        <DataGrid.Resources>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+                                            <DockPanel Margin="0,8">
+                                                <DockPanel.Background>
+                                                    <SolidColorBrush Color="Black" Opacity="0"/>
+                                                </DockPanel.Background>
+                                                <TextBlock Text="{TemplateBinding Content}" Margin="5,0" DockPanel.Dock="Left"
+                                                    Width="{TemplateBinding Width}" TextAlignment="Left" 
+                                                    FontSize="14" FontWeight="Bold" Foreground="#808080"/>
+                                                <Path x:Name="SortArrow" VerticalAlignment="Center" Width="8" Height="6" Margin="2,0,5,0" 
+                                                    Stretch="Fill" Opacity="0.5" Fill="White" RenderTransformOrigin="0.5,0.4" DockPanel.Dock="Left"
+                                                    Visibility="Collapsed" Data="M0,0 L1,0 0.5,1 z" />
+                                                <Thumb x:Name="PART_RightHeaderGripper" HorizontalAlignment="Right"
+                                                    Width="2" BorderThickness="1" DockPanel.Dock="Right"
+                                                    BorderBrush="{Binding VerticalGridLinesBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"
+                                                    Cursor="SizeWE"/>
+                                            </DockPanel>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="SortDirection" Value="Ascending">
+                                                    <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                                                    <Setter TargetName="SortArrow" Property="RenderTransform">
+                                                        <Setter.Value>
+                                                            <RotateTransform Angle="180" />
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Trigger>
+                                                <Trigger Property="SortDirection" Value="Descending">
+                                                    <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                            <Style TargetType="{x:Type DataGridCell}">
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Background" Value="{x:Null}"/>
+                            </Style>
+                            <Style TargetType="{x:Type TextBlock}" x:Key="default">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                                <Setter Property="FontSize" Value="16"/>
+                                <Setter Property="Margin" Value="0,0,10,0"/>
+                            </Style>
+                        </DataGrid.Resources>
+                        <DataGrid.ItemContainerStyle>
+                            <Style TargetType="{x:Type DataGridRow}">
+                                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            </Style>
+                        </DataGrid.ItemContainerStyle>
+                        <DataGrid.RowStyle>
+                            <Style TargetType="{x:Type DataGridRow}">
+                                <Setter Property="Background" Value="{x:Null}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type DataGridRow}">
+                                            <Border x:Name="DGR_Border" BorderThickness="0" SnapsToDevicePixels="True" 
+                                                    CornerRadius="5" Background="{TemplateBinding Background}">
+                                                <SelectiveScrollingGrid>
+                                                    <SelectiveScrollingGrid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </SelectiveScrollingGrid.ColumnDefinitions>
+                                                    <SelectiveScrollingGrid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="0"/>
+                                                    </SelectiveScrollingGrid.RowDefinitions>
+                                                    <DataGridCellsPresenter Grid.Column="1" ItemsPanel="{TemplateBinding ItemsPanel}" 
+                                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                                    <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1" 
+                                                  SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen, ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical}, 
+                                                    Converter={x:Static DataGrid.RowDetailsScrollingConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" 
+                                                  Visibility="{TemplateBinding DetailsVisibility}"/>
+                                                    <DataGridRowHeader Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                           SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" 
+                                           Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Row}, 
+                                            Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
+                                                </SelectiveScrollingGrid>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource ListHover}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="IMPORT" Width="*" MinWidth="70">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding Value}" HorizontalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="TITLE" Width="3*" MinWidth="100" CanUserSort="True" SortMemberPath="SortingTitle">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text ="{Binding Key.Title}" Style="{StaticResource default}" Margin="5,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="AUTHORS" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="AuthorsAsString">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text ="{Binding Key.AuthorsAsString}" Style="{StaticResource default}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <!--<DataGridTemplateColumn Header="PUBLISHER" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="Publisher">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text ="{Binding Key.Publisher}" Style="{StaticResource default}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>-->
+                            <DataGridTemplateColumn Header="FILE" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="AuthorsAsString">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text ="{Binding Key.FileName}" Style="{StaticResource default}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="URL" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="AuthorsAsString">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text ="{Binding Key.SourceURL}" Style="{StaticResource default}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="RELEASE DATE" Width="*" MinWidth="120" CanUserSort="True" SortMemberPath="ReleaseDate">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text ="{Binding Key.ReleaseDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource default}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="VERSION" Width="*" MinWidth="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text ="{Binding Key.Version}" Style="{StaticResource default}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <!--<DataGridTemplateColumn Header="RATING" Width="*" CanUserSort="True" SortMemberPath="Rating" MinWidth="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <materialDesign:RatingBar Value ="{Binding Rating,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RenderTransformOrigin="0.5,0.5">
+                                            <materialDesign:RatingBar.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
+                                                </TransformGroup>
+                                            </materialDesign:RatingBar.RenderTransform>
+                                        </materialDesign:RatingBar>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>-->
+                            <!--<DataGridTemplateColumn Header="ISBN" Width="*" MinWidth="150">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text ="{Binding ISBN}" Style="{StaticResource default}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>-->
+                            <!--<DataGridTemplateColumn Header="TAGS" Width="5*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ItemsControl ItemsSource="{Binding Key.Tags}" Background="Transparent" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
+                                            Foreground="Black" FontSize="14" VerticalAlignment="Center">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                        </ItemsControl>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>-->
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+
+                <TextBlock Text="Select which Collection to import" Visibility="{Binding CurrentStep, ConverterParameter=TargetCollection, Converter={StaticResource ShowInStepConverter}}"/>
+                <TextBlock Text="Select which Tags to import" Visibility="{Binding CurrentStep, ConverterParameter=Tags, Converter={StaticResource ShowInStepConverter}}"/>
+            </Grid>
         </Border>
+        
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="3" Margin="10">
             <Button Style="{StaticResource TextButton}" Content="Back" Command="{Binding PrevStepCommand}"
             Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, 
