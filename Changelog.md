@@ -1,5 +1,15 @@
 # CHANGELOG
-## COMPASS v1.5.0 (20 May 2023)
+## COMPASS v1.5.1 (20 August 2023)
+
+### Fixes
+
+- Fixed a crash when finishing the "choose metadata wizard"
+- Fixed a crash during search when there are items with empty titles
+
+### Other
+
+- Updated Dependencies
+## COMPASS v1.5.0 (20 May 2023)
 
 ### New Features
 
