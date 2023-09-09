@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMPASS.Windows"
         xmlns:import="clr-namespace:COMPASS.ViewModels.Import" 
-        xmlns:converters="clr-namespace:COMPASS.Converters" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:converters="clr-namespace:COMPASS.Converters"
+        xmlns:tools="clr-namespace:COMPASS.Tools"
         d:DataContext="{d:DesignInstance Type=import:ImportCollectionViewModel}"
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
         Title="Import Wizard" Height="650" Width="1200" Closed="Window_Closed"
@@ -56,10 +57,59 @@
                 </Style>
             </Border.Resources>
             <Grid>
+                <Grid Visibility="{Binding CurrentStep, ConverterParameter=TargetCollection, Converter={StaticResource ShowInStepConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <RadioButton GroupName="TargetCollection" Content="Merge into current collection" HorizontalAlignment="Stretch"
+                                 HorizontalContentAlignment="Center" IsChecked="{Binding MergeIntoCollection}"
+                                 VerticalAlignment="Stretch" Background="{StaticResource CardBackground}">
+                        <RadioButton.Template>
+                            <ControlTemplate TargetType="RadioButton">
+                                <Border x:Name="Border" HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                        Background="{TemplateBinding Background}" Margin="20" CornerRadius="10" 
+                                        BorderBrush="{StaticResource AccentColorMuted}">
+                                    <TextBlock Text="{TemplateBinding Content}" 
+                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
+                                    </TextBlock>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsChecked" Value="true">
+                                        <Setter TargetName="Border" Property="BorderThickness" Value="4"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </RadioButton.Template>
+                    </RadioButton>
+                    <RadioButton GroupName="TargetCollection" Grid.Column="1" Content="Create new collection:" 
+                                 HorizontalContentAlignment="Center" VerticalAlignment="Stretch" 
+                                 Background="{StaticResource CardBackground}">
+                        <RadioButton.Template>
+                            <ControlTemplate TargetType="RadioButton">
+                                <Border x:Name="Border" HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                    Background="{TemplateBinding Background}" Margin="20" CornerRadius="10" 
+                                    BorderBrush="{StaticResource AccentColorMuted}">
+                                    <StackPanel VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
+                                        <TextBlock Text="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                                        <TextBox Text="{Binding CollectionName}" MinWidth="200" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                                    </StackPanel>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsChecked" Value="true">
+                                        <Setter TargetName="Border" Property="BorderThickness" Value="4"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </RadioButton.Template>
+                    </RadioButton>
+                </Grid>
                 <Grid Visibility="{Binding CurrentStep, ConverterParameter=Codices, Converter={StaticResource ShowInStepConverter}}">
-                    <DataGrid x:Name="ListLayoutGrid" MaxWidth="{Binding ActualWidth, ElementName=ContentBorder}"
+                    <DataGrid x:Name="ListLayoutGrid" ItemsSource="{Binding CodexToImportDict, IsAsync=True}"
                         Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
-                        ItemsSource="{Binding CodexToImportDict, IsAsync=True}"
+                        
                         CanUserAddRows="False" SelectionMode="Single" CanUserSortColumns="True" AutoGenerateColumns="False" 
                         RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
                         VerticalGridLinesBrush="#FF484848" HorizontalGridLinesBrush="#FF484848" ClipToBounds="True">
@@ -248,9 +298,42 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
+                <Grid Visibility="{Binding CurrentStep, ConverterParameter=Tags, Converter={StaticResource ShowInStepConverter}}">
+                    <Grid.Resources>
+                        <tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
+                        <HierarchicalDataTemplate x:Key="RegularTag" ItemsSource="{Binding Children}">
+                            <Border CornerRadius="5" Margin="0,3">
+                                <Border.Background>
+                                    <SolidColorBrush Color="{Binding Item.BackgroundColor}"/>
+                                </Border.Background>
+                                <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsChecked, Mode=TwoWay}" 
+                                    Content="{Binding Item.Content}" Foreground="{StaticResource TextColor}"/>
+                            </Border>
+                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate x:Key="GroupTag" ItemsSource="{Binding Children}">
+                            <Border Margin="0,3" Background="{x:Null}" >
+                                <StackPanel Orientation="Horizontal" >
+                                    <Rectangle Fill="{Binding Item.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
+                                   Width="2" Height="16" Margin="3" VerticalAlignment="Bottom" />
+                                    <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                              Content="{Binding Item.Content}" Foreground="LightGray"
+                                              FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
+                                </StackPanel>
+                            </Border>
+                        </HierarchicalDataTemplate>
+                    </Grid.Resources>
+                    <TreeView ItemsSource="{Binding TagsToImport}" Background="Transparent" 
+                              HorizontalAlignment="Stretch" BorderThickness="0" ItemTemplateSelector="{StaticResource TagTemplateSelector}">
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="Focusable" Value="False" />
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                    </TreeView>
+                </Grid>
 
-                <TextBlock Text="Select which Collection to import" Visibility="{Binding CurrentStep, ConverterParameter=TargetCollection, Converter={StaticResource ShowInStepConverter}}"/>
-                <TextBlock Text="Select which Tags to import" Visibility="{Binding CurrentStep, ConverterParameter=Tags, Converter={StaticResource ShowInStepConverter}}"/>
+                <!--<TextBlock Text="Select which Collection to import" Visibility="{Binding CurrentStep, ConverterParameter=TargetCollection, Converter={StaticResource ShowInStepConverter}}"/>-->
+                <!--<TextBlock Text="Select which Tags to import" Visibility="{Binding CurrentStep, ConverterParameter=Tags, Converter={StaticResource ShowInStepConverter}}"/>-->
             </Grid>
         </Border>
         

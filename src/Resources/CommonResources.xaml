@@ -115,7 +115,8 @@
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"
                             CornerRadius="7" HorizontalAlignment="Stretch" Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
+                        <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -915,6 +916,9 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckboxMarkedOutline"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="{x:Null}">
+                            <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckBoxIntermediateVariant"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

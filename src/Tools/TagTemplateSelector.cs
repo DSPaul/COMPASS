@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using COMPASS.Models;
+﻿using COMPASS.Models;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -11,8 +10,18 @@ namespace COMPASS.Tools
         {
             FrameworkElement element = container as FrameworkElement;
             TreeViewNode node = item as TreeViewNode;
-            Debug.Assert(node != null, nameof(node) + " != null");
-            if (node.Tag.IsGroup)
+            bool isGroup = false;
+            if (node != null)
+            {
+                isGroup = node.Tag.IsGroup;
+            }
+            else
+            {
+                CheckableTreeNode<Tag> checknode = item as CheckableTreeNode<Tag>;
+                isGroup = checknode.Item.IsGroup;
+            }
+
+            if (isGroup)
             {
                 return element?.FindResource("GroupTag") as HierarchicalDataTemplate;
             }

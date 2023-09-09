@@ -34,6 +34,9 @@ namespace COMPASS.ViewModels.Import
                 Steps.Add("Settings");
             }
 
+            //Put Tags in Checkable Wrapper
+            TagsToImport = RawCollectionToImport.RootTags.Select(t => new CheckableTreeNode<Tag>(t)).ToList();
+
             //Put codices in dictionary so they can be labeled true/false for import
             foreach (Codex codex in RawCollectionToImport.AllCodices)
             {
@@ -59,8 +62,15 @@ namespace COMPASS.ViewModels.Import
 
         public CodexCollection TargetCollection { get; set; } = null; //null means new collection should be made
         public CodexCollection RawCollectionToImport { get; set; } = null; //collection that was in the cmpss file
-        CodexCollection ReviewedCollectionToImport { get; set; } //collection that should actually be merged into targetCollection
-        public string CollectionName;
+        public CodexCollection ReviewedCollectionToImport { get; set; } //collection that should actually be merged into targetCollection
+
+
+        //Target Collection STEP
+        public bool MergeIntoCollection { get; set; } = true;
+        public string CollectionName { get; set; } = "Unnamed Collection";
+
+        //TAGS STEP
+        public List<CheckableTreeNode<Tag>> TagsToImport { get; set; }
 
         // CODICES STEP
         public List<ObservableKeyValuePair<Codex, bool>> CodexToImportDict { get; set; } = new();
@@ -79,17 +89,17 @@ namespace COMPASS.ViewModels.Import
 
         public override void Finish()
         {
+            //add selected Tags to tmp collection
+            ReviewedCollectionToImport.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(TagsToImport).ToList();
             //add selected Codices to tmp collection
             ReviewedCollectionToImport.AllCodices
                 .AddRange(CodexToImportDict
                     .Where(KVPair => KVPair.Value)
                     .Select(KVPair => KVPair.Key));
-            //add selected Tags to tmp collection
-            //TODO
             //Add selected Settings to tmp collection
             //TODO
 
-            TargetCollection ??= MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
+            TargetCollection = MergeIntoCollection ? MainViewModel.CollectionVM.CurrentCollection : MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
             TargetCollection.MergeWith(ReviewedCollectionToImport);
 
             CloseAction.Invoke();
