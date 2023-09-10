@@ -17,6 +17,7 @@
             <converters:UriToBitmapConverter x:Key="UriToBitmapConverter"/>
             <converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
             <converters:EqualityToVisibilityConverter x:Key="ShowInStepConverter"/>
+            <converters:NegateConverter x:Key="NegateConverter"/>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -27,7 +28,7 @@
         <DockPanel Margin="40,10">
 
             <!--Only show this on step 0 -->
-            <TextBlock Text="Choose a Target Collection" DockPanel.Dock="Left" FontSize="20" FontWeight="Light" 
+            <TextBlock Text="Overview" DockPanel.Dock="Left" FontSize="20" FontWeight="Light" 
             Visibility="{Binding StepCounter, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
             <!--Only show this after step 0 -->
             <TextBlock DockPanel.Dock="Left" FontSize="20" FontWeight="Light" 
@@ -39,12 +40,12 @@
             <TextBlock HorizontalAlignment="Right" FontSize="20" FontWeight="Light" DockPanel.Dock="Right">
             <Run Text="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"/>
             / 
-            <Run Text="{Binding Steps.Count, Mode=OneTime}"/>
+            <Run Text="{Binding Steps.Count, Mode=OneWay}"/>
             </TextBlock>
         </DockPanel>
 
         <ProgressBar Grid.Row="1" Value="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"
-                 Maximum="{Binding Steps.Count, Mode=OneTime}" Height="12" Margin="10,0"
+                 Maximum="{Binding Steps.Count, Mode=OneWay}" Height="12" Margin="10,0"
                  Foreground="{StaticResource AccentColor}" Background="{StaticResource UIElementBackground}" 
                  Style="{DynamicResource RoundedProgressBar}"/>
 
@@ -57,53 +58,91 @@
                 </Style>
             </Border.Resources>
             <Grid>
-                <Grid Visibility="{Binding CurrentStep, ConverterParameter=TargetCollection, Converter={StaticResource ShowInStepConverter}}">
+                <Grid Visibility="{Binding CurrentStep, ConverterParameter=Overview, Converter={StaticResource ShowInStepConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <RadioButton GroupName="TargetCollection" Content="Merge into current collection" HorizontalAlignment="Stretch"
-                                 HorizontalContentAlignment="Center" IsChecked="{Binding MergeIntoCollection}"
-                                 VerticalAlignment="Stretch" Background="{StaticResource CardBackground}">
-                        <RadioButton.Template>
-                            <ControlTemplate TargetType="RadioButton">
-                                <Border x:Name="Border" HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                                        Background="{TemplateBinding Background}" Margin="20" CornerRadius="10" 
-                                        BorderBrush="{StaticResource AccentColorMuted}">
-                                    <TextBlock Text="{TemplateBinding Content}" 
-                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
-                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
-                                    </TextBlock>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsChecked" Value="true">
-                                        <Setter TargetName="Border" Property="BorderThickness" Value="4"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </RadioButton.Template>
-                    </RadioButton>
-                    <RadioButton GroupName="TargetCollection" Grid.Column="1" Content="Create new collection:" 
-                                 HorizontalContentAlignment="Center" VerticalAlignment="Stretch" 
-                                 Background="{StaticResource CardBackground}">
-                        <RadioButton.Template>
-                            <ControlTemplate TargetType="RadioButton">
-                                <Border x:Name="Border" HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                                    Background="{TemplateBinding Background}" Margin="20" CornerRadius="10" 
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.Resources>
+                        <ControlTemplate TargetType="RadioButton" x:Key="RadioTemplate">
+                            <Border x:Name="Border" HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                Background="{StaticResource CardBackground}" Margin="20" CornerRadius="10" 
                                     BorderBrush="{StaticResource AccentColorMuted}">
-                                    <StackPanel VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
-                                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
-                                        <TextBlock Text="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
-                                        <TextBox Text="{Binding CollectionName}" MinWidth="200" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"/>
-                                    </StackPanel>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsChecked" Value="true">
-                                        <Setter TargetName="Border" Property="BorderThickness" Value="4"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </RadioButton.Template>
+                                <ContentPresenter Content="{TemplateBinding Content}" 
+                                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="true">
+                                    <Setter TargetName="Border" Property="BorderThickness" Value="4"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Grid.Resources>
+                    <RadioButton GroupName="TargetCollection" HorizontalAlignment="Stretch"
+                                 HorizontalContentAlignment="Center" IsChecked="{Binding MergeIntoCollection}"
+                                 VerticalAlignment="Stretch" Template="{StaticResource RadioTemplate}">
+                        <TextBlock Text="Merge into current collection" FontSize="20"/>
+                    </RadioButton>
+                    <RadioButton GroupName="TargetCollection" Grid.Row="1"
+                                 HorizontalContentAlignment="Center" VerticalAlignment="Stretch" 
+                                 Template="{StaticResource RadioTemplate}">
+                        <StackPanel>
+                            <TextBlock Text="Create new collection" HorizontalAlignment="Center" FontSize="20"/>
+                            <TextBox Text="{Binding CollectionName}" MinWidth="200" HorizontalContentAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+                    <Rectangle Fill="{StaticResource Separator}" Grid.Column="1" Width="5" Grid.RowSpan="2" 
+                               VerticalAlignment="Stretch"/>
+                    <RadioButton GroupName="Advanced" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"
+                                 Grid.Column="2" Template="{StaticResource RadioTemplate}" 
+                                 IsChecked="{Binding AdvancedImport, Converter={StaticResource NegateConverter}}">
+                        <StackPanel>
+                            <TextBlock Text="Quick Import" TextAlignment="Center" FontSize="20" Margin="20"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <StackPanel.Resources>
+                                    <ControlTemplate TargetType="CheckBox" x:Key="BorderedCheckbox">
+                                        <Grid>
+                                            <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent"
+                                                       Panel.ZIndex="1"/> 
+                                            <!-- Rect in front so only templated checkbox can be clicked, because templatebinding is not two way-->
+                                            <Border x:Name="Border" CornerRadius="5" Margin="5" Panel.ZIndex="0">
+                                                <CheckBox Content="{TemplateBinding Content}" IsChecked="{TemplateBinding IsChecked}" Margin="10"
+                                                          Focusable="False"/>
+                                            </Border>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="true">
+                                                <Setter TargetName="Border" Property="Background" Value="{StaticResource AccentColorMuted}"/>
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="false">
+                                                <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackground}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </StackPanel.Resources>
+                                <CheckBox Content="All Tags" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllTags}"
+                                          Visibility="{Binding HasTags, Converter={StaticResource ToVisibilityConverter}}"/>
+                                <CheckBox Content="All Books/Items" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllCodices}"
+                                          Visibility="{Binding HasCodices, Converter={StaticResource ToVisibilityConverter}}"/>
+                                <CheckBox Content="All Settings" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllSettings}"
+                                          Visibility="{Binding HasSettings, Converter={StaticResource ToVisibilityConverter}}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton GroupName="Advanced" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"
+                        Grid.Column="2" Grid.Row="2" Template="{StaticResource RadioTemplate}" 
+                                 IsChecked="{Binding AdvancedImport}">
+                        <StackPanel>
+                            <TextBlock Text="Advanced Import" TextAlignment="Center" FontSize="20"/>
+                            <TextBlock Text="Pick And Choose" Foreground="{StaticResource TextMutedColor}"
+                                TextAlignment="Center"/>
+                        </StackPanel>
                     </RadioButton>
                 </Grid>
                 <Grid Visibility="{Binding CurrentStep, ConverterParameter=Codices, Converter={StaticResource ShowInStepConverter}}">

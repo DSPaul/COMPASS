@@ -20,19 +20,10 @@ namespace COMPASS.ViewModels.Import
             ReviewedCollectionToImport = new(RawCollectionToImport.DirectoryName + "__Reviewed");
 
             //Checks which steps need to be included in wizard
-            Steps.Add("TargetCollection");
-            if (RawCollectionToImport.AllCodices.Any())
-            {
-                Steps.Add("Codices");
-            }
-            if (RawCollectionToImport.AllTags.Any())
-            {
-                Steps.Add("Tags");
-            }
-            if (RawCollectionToImport.Info.ContainsSettings())
-            {
-                Steps.Add("Settings");
-            }
+            HasCodices = RawCollectionToImport.AllCodices.Any();
+            HasTags = RawCollectionToImport.AllTags.Any();
+            HasSettings = RawCollectionToImport.Info.ContainsSettings();
+            UpdateSteps();
 
             //Put Tags in Checkable Wrapper
             TagsToImport = RawCollectionToImport.RootTags.Select(t => new CheckableTreeNode<Tag>(t)).ToList();
@@ -64,10 +55,28 @@ namespace COMPASS.ViewModels.Import
         public CodexCollection RawCollectionToImport { get; set; } = null; //collection that was in the cmpss file
         public CodexCollection ReviewedCollectionToImport { get; set; } //collection that should actually be merged into targetCollection
 
-
-        //Target Collection STEP
+        //Overview STEP
         public bool MergeIntoCollection { get; set; } = true;
         public string CollectionName { get; set; } = "Unnamed Collection";
+
+        public bool HasTags { get; set; }
+        public bool HasCodices { get; set; }
+        public bool HasSettings { get; set; }
+
+        public bool ImportAllTags { get; set; } = true;
+        public bool ImportAllCodices { get; set; } = true;
+        public bool ImportAllSettings { get; set; } = true;
+
+        private bool _advancedImport = false;
+        public bool AdvancedImport
+        {
+            get => _advancedImport;
+            set
+            {
+                SetProperty(ref _advancedImport, value);
+                UpdateSteps();
+            }
+        }
 
         //TAGS STEP
         public List<CheckableTreeNode<Tag>> TagsToImport { get; set; }
@@ -89,20 +98,54 @@ namespace COMPASS.ViewModels.Import
 
         public override void Finish()
         {
+            TargetCollection = MergeIntoCollection ?
+                MainViewModel.CollectionVM.CurrentCollection :
+                MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
+
             //add selected Tags to tmp collection
-            ReviewedCollectionToImport.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(TagsToImport).ToList();
+            if (AdvancedImport || ImportAllTags)
+            {
+                ReviewedCollectionToImport.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(TagsToImport).ToList();
+            }
+
             //add selected Codices to tmp collection
-            ReviewedCollectionToImport.AllCodices
+            if (AdvancedImport || ImportAllCodices)
+            {
+                ReviewedCollectionToImport.AllCodices
                 .AddRange(CodexToImportDict
                     .Where(KVPair => KVPair.Value)
                     .Select(KVPair => KVPair.Key));
+            }
+
             //Add selected Settings to tmp collection
             //TODO
 
-            TargetCollection = MergeIntoCollection ? MainViewModel.CollectionVM.CurrentCollection : MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
             TargetCollection.MergeWith(ReviewedCollectionToImport);
 
             CloseAction.Invoke();
+        }
+
+        public void UpdateSteps()
+        {
+            //Checks which steps need to be included in wizard
+            Steps.Clear();
+            Steps.Add("Overview");
+            if (AdvancedImport)
+            {
+                if (HasTags)
+                {
+                    Steps.Add("Tags");
+                }
+                if (HasCodices)
+                {
+                    Steps.Add("Codices");
+                }
+                if (HasSettings)
+                {
+                    Steps.Add("Settings");
+                }
+            }
+            RaisePropertyChanged(nameof(Steps));
         }
 
         public void Cleanup()

@@ -314,8 +314,10 @@ namespace COMPASS.ViewModels
                 CodexCollection tmpCollection = new($"__{CurrentCollection.DirectoryName}");
 
                 File.Copy(CurrentCollection.CodicesDataFilePath, tmpCollection.CodicesDataFilePath, true);
+                File.Copy(CurrentCollection.TagsDataFilePath, tmpCollection.TagsDataFilePath, true); //tags should also be copied otherwise Loaded codices will be tagless
                 tmpCollection.Load(true);
 
+                //Change Codex Path to relative and add those files if the options is set
                 var itemsWithOfflineSource = tmpCollection.AllCodices.Where(codex => codex.HasOfflineSource());
                 string commonFolder = Utils.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Path).ToList());
                 foreach (Codex codex in itemsWithOfflineSource)
