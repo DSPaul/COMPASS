@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using COMPASS.Tools;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Serialization;
@@ -53,6 +54,16 @@ namespace COMPASS.Models
             {
                 pair.InitTag(owner);
             }
+        }
+
+        public void MergeWith(CollectionInfo other)
+        {
+            AutoImportDirectories.AddRange(other.AutoImportDirectories);
+            BanishedPaths.AddRange(other.BanishedPaths);
+            SerializableFiletypePreferences.AddRange(other.SerializableFiletypePreferences);
+            FiletypePreferences = null; //reset lazy loading
+            FolderTagPairs.AddRange(other.FolderTagPairs);
+
         }
         #endregion
     }

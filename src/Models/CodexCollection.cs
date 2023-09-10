@@ -225,7 +225,22 @@ namespace COMPASS.Models
         /// <param name="toMerge"></param>
         public void MergeWith(CodexCollection toMerge)
         {
-            //TODO
+            ImportTags(toMerge.RootTags);
+            AllCodices.AddRange(toMerge.AllCodices);
+            Info.MergeWith(toMerge.Info);
+        }
+
+        public void ImportTags(IEnumerable<Tag> tags)
+        {
+            // change ID's of Tags so there aren't any duplicates
+            var tagsToImport = Utils.FlattenTree(tags);
+            foreach (Tag tag in tagsToImport)
+            {
+                tag.ID = Utils.GetAvailableID(AllTags);
+                AllTags.Add(tag);
+            }
+            RootTags.AddRange(tags);
+            MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
         }
 
         public void DeleteCodex(Codex toDelete)
