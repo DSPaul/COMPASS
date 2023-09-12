@@ -1,11 +1,12 @@
-﻿using System;
+﻿using COMPASS.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace COMPASS.Tools
 {
-    public static class ExtensionMethods
+    public static partial class ExtensionMethods
     {
         #region ObservableCollection Extensions
         /// <summary>
@@ -62,6 +63,14 @@ namespace COMPASS.Tools
                 return true;
             }
             return false;
+        }
+        #endregion
+
+        #region String Extensions
+        public static string PadNumbers(this string input, int totalWidth = 8)
+        {
+            if (String.IsNullOrEmpty(input)) return input;
+            return Constants.RegexNumbersOnly().Replace(input, match => match.Value.PadLeft(totalWidth, '0'));
         }
         #endregion
     }

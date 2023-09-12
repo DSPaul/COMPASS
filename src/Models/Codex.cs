@@ -122,7 +122,7 @@ namespace COMPASS.Models
         [XmlIgnore]
         public string SortingTitle
         {
-            get => String.IsNullOrEmpty(_sortingTitle) ? _title : _sortingTitle;
+            get => (String.IsNullOrEmpty(_sortingTitle) ? _title : _sortingTitle).PadNumbers();
             set => SetProperty(ref _sortingTitle, value);
         }
         //separate property needed for serialization or it will get _title and save that
