@@ -217,7 +217,7 @@
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <ItemsControl ItemsSource="{Binding Tags}" Background="Transparent" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
-                                                        Foreground="Black" FontSize="14" VerticalAlignment="Center">
+                                        Foreground="Black" FontSize="14" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalAlignment="Stretch">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel/>
