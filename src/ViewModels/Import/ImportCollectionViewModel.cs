@@ -34,6 +34,9 @@ namespace COMPASS.ViewModels.Import
                 CodexToImportDict.Add(new(codex, true));
             }
 
+            //prep settings data for selection
+            AutoImportFolders = RawCollectionToImport.Info.AutoImportDirectories.Select(folder => new AutoImportFolderHelper(folder)).ToList();
+
             //if files were included in compass file, set paths of codices to those files
             if (Directory.Exists(Path.Combine(_unzipLocation, "Files")))
             {
@@ -55,7 +58,7 @@ namespace COMPASS.ViewModels.Import
         public CodexCollection RawCollectionToImport { get; set; } = null; //collection that was in the cmpss file
         public CodexCollection ReviewedCollectionToImport { get; set; } //collection that should actually be merged into targetCollection
 
-        //Overview STEP
+        //OVERVIEW STEP
         public bool MergeIntoCollection { get; set; } = true;
         public string CollectionName { get; set; } = "Unnamed Collection";
 
@@ -83,6 +86,32 @@ namespace COMPASS.ViewModels.Import
 
         // CODICES STEP
         public List<ObservableKeyValuePair<Codex, bool>> CodexToImportDict { get; set; } = new();
+
+        //SETTINGS STEP
+        private bool _importAutoImportFolders = false;
+        public bool ImportAutoImportFolders
+        {
+            get => _importAutoImportFolders;
+            set => SetProperty(ref _importAutoImportFolders, value);
+        }
+
+        public List<AutoImportFolderHelper> AutoImportFolders { get; set; }
+
+        public class AutoImportFolderHelper
+        {
+            public AutoImportFolderHelper(string folder)
+            {
+                FolderPath = folder;
+                ShouldImport = PathExits;
+            }
+            public bool ShouldImport { get; set; }
+
+            public string FolderPath { get; set; }
+
+            public bool PathExits => !Path.IsPathRooted(FolderPath) || Path.Exists(FolderPath);
+
+        }
+
 
         private string UnZipCollection(string path)
         {
@@ -118,7 +147,7 @@ namespace COMPASS.ViewModels.Import
             }
 
             //Add selected Settings to tmp collection
-            //TODO
+            ReviewedCollectionToImport.Info.AutoImportDirectories = new(AutoImportFolders.Where(x => x.ShouldImport).Select(x => x.FolderPath));
 
             TargetCollection.MergeWith(ReviewedCollectionToImport);
 

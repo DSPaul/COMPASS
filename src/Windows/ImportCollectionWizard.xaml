@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
         xmlns:local="clr-namespace:COMPASS.Windows"
         xmlns:import="clr-namespace:COMPASS.ViewModels.Import" 
         xmlns:converters="clr-namespace:COMPASS.Converters"
@@ -58,6 +59,27 @@
                 </Style>
             </Border.Resources>
             <Grid>
+                <Grid.Resources>
+                    <ControlTemplate TargetType="CheckBox" x:Key="BorderedCheckbox">
+                        <Grid>
+                            <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent"
+                                    Panel.ZIndex="1"/>
+                            <!-- Rect in front so only templated checkbox can be clicked, because templatebinding is not two way-->
+                            <Border x:Name="Border" CornerRadius="5" Panel.ZIndex="0">
+                                <CheckBox Content="{TemplateBinding Content}" IsChecked="{TemplateBinding IsChecked}" Margin="10"
+                                    Focusable="False"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="true">
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource AccentColorMuted}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="false">
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackground}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Grid.Resources>
                 <Grid Visibility="{Binding CurrentStep, ConverterParameter=Overview, Converter={StaticResource ShowInStepConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -105,33 +127,12 @@
                         <StackPanel>
                             <TextBlock Text="Quick Import" TextAlignment="Center" FontSize="20" Margin="20"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <StackPanel.Resources>
-                                    <ControlTemplate TargetType="CheckBox" x:Key="BorderedCheckbox">
-                                        <Grid>
-                                            <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent"
-                                                       Panel.ZIndex="1"/> 
-                                            <!-- Rect in front so only templated checkbox can be clicked, because templatebinding is not two way-->
-                                            <Border x:Name="Border" CornerRadius="5" Margin="5" Panel.ZIndex="0">
-                                                <CheckBox Content="{TemplateBinding Content}" IsChecked="{TemplateBinding IsChecked}" Margin="10"
-                                                          Focusable="False"/>
-                                            </Border>
-                                        </Grid>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsChecked" Value="true">
-                                                <Setter TargetName="Border" Property="Background" Value="{StaticResource AccentColorMuted}"/>
-                                            </Trigger>
-                                            <Trigger Property="IsChecked" Value="false">
-                                                <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackground}"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </StackPanel.Resources>
                                 <CheckBox Content="All Tags" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllTags}"
-                                          Visibility="{Binding HasTags, Converter={StaticResource ToVisibilityConverter}}"/>
+                                          Visibility="{Binding HasTags, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
                                 <CheckBox Content="All Books/Items" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllCodices}"
-                                          Visibility="{Binding HasCodices, Converter={StaticResource ToVisibilityConverter}}"/>
+                                          Visibility="{Binding HasCodices, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
                                 <CheckBox Content="All Settings" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllSettings}"
-                                          Visibility="{Binding HasSettings, Converter={StaticResource ToVisibilityConverter}}"/>
+                                          Visibility="{Binding HasSettings, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
                             </StackPanel>
                         </StackPanel>
                     </RadioButton>
@@ -370,9 +371,107 @@
                         </TreeView.ItemContainerStyle>
                     </TreeView>
                 </Grid>
+                <Grid Visibility="{Binding CurrentStep, ConverterParameter=Settings, Converter={StaticResource ShowInStepConverter}}">
+                    <ScrollViewer>
 
-                <!--<TextBlock Text="Select which Collection to import" Visibility="{Binding CurrentStep, ConverterParameter=TargetCollection, Converter={StaticResource ShowInStepConverter}}"/>-->
-                <!--<TextBlock Text="Select which Tags to import" Visibility="{Binding CurrentStep, ConverterParameter=Tags, Converter={StaticResource ShowInStepConverter}}"/>-->
+                        <StackPanel>
+                            <StackPanel.Resources>
+                                <Style TargetType="Border" x:Key="SettingsBorder">
+                                    <Setter Property="BorderBrush" Value="{StaticResource ButtonBackground}"/>
+                                    <Setter Property="BorderThickness" Value="2"/>
+                                    <Setter Property="CornerRadius" Value="5"/>
+                                    <Setter Property="Margin" Value="5"/>
+                                </Style>
+                                <ControlTemplate TargetType="CheckBox" x:Key="BorderedTitleCheckbox">
+                                    <Grid>
+                                        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent"
+                                            Panel.ZIndex="1"/>
+                                        <!-- Rect in front so only templated checkbox can be clicked, because templatebinding is not two way-->
+                                        <Border x:Name="Border" CornerRadius="5,5,0,0" Panel.ZIndex="0">
+                                            <CheckBox Content="{TemplateBinding Content}" IsChecked="{TemplateBinding IsChecked}" Margin="10"
+                                                Focusable="False"/>
+                                        </Border>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsChecked" Value="true">
+                                            <Setter TargetName="Border" Property="Background" Value="{StaticResource AccentColorMuted}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsChecked" Value="false">
+                                            <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackground}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </StackPanel.Resources>
+                            <Border>
+                                <Border.Style>
+                                    <Style TargetType="Border" BasedOn="{StaticResource SettingsBorder}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ImportAutoImportFolders}" Value="true">
+                                                <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <StackPanel>
+                                    <CheckBox Content="Directories to Auto Import from." Margin="-1" IsChecked="{Binding ImportAutoImportFolders}"
+                                              Template="{StaticResource BorderedTitleCheckbox}" x:Name="AutoImportCheckBox"/>
+                                    <Border>
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ImportAutoImportFolders}" Value="false">
+                                                        <Setter Property="Opacity" Value="0.5"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ImportAutoImportFolders}" Value="true">
+                                                        <Setter  Property="Opacity" Value="1"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <ItemsControl ItemsSource="{Binding AutoImportFolders}"
+                                                      Margin="5" IsEnabled="{Binding ImportAutoImportFolders}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border BorderBrush="{StaticResource AccentColorMuted}"
+                                                            BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
+                                                        <CheckBox IsChecked="{Binding ShouldImport}" HorizontalContentAlignment="Stretch">
+                                                            <Grid HorizontalAlignment="Stretch">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="auto"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Text="{Binding FolderPath}" Margin="0" TextWrapping="Wrap"/>
+                                                                <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource Warning}" Grid.Column="1"
+                                                                                         ToolTip="This path could not be found"
+                                                                                         Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"/>
+                                                            </Grid>
+                                                        </CheckBox>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                            <Border>
+                                <Border.Style>
+                                    <Style TargetType="Border" BasedOn="{StaticResource SettingsBorder}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ImportAutoImportFolders}" Value="true">
+                                                <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <StackPanel>
+                                    <CheckBox Content="Banished Paths." Margin="-1" IsChecked="{Binding ImportAutoImportFolders}"
+                                        Template="{StaticResource BorderedTitleCheckbox}" x:Name="BanishedPathsCheckBox"/>
+                                    <StackPanel Height="200"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
             </Grid>
         </Border>
         

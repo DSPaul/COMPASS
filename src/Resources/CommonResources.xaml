@@ -908,10 +908,14 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
                     <Border Background="Transparent">
-                        <StackPanel Orientation="Horizontal">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
                             <materialDesign:PackIcon x:Name="checkboxIcon" Kind="CheckboxBlankOutline"/>
-                            <ContentPresenter Margin="5,0"/>
-                        </StackPanel>
+                            <ContentPresenter Margin="5,0" Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
