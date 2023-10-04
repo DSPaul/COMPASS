@@ -292,8 +292,11 @@ namespace COMPASS.Models
                 DeleteTag(toDelete.Children[0]);
                 DeleteTag(toDelete);
             }
+
+            //Remove the tag from all Tags
             AllTags.Remove(toDelete);
-            //remove from parent items list
+
+            //Remove the tags from parent's children list
             if (toDelete.Parent is null)
             {
                 RootTags.Remove(toDelete);
@@ -302,6 +305,9 @@ namespace COMPASS.Models
             {
                 toDelete.Parent.Children.Remove(toDelete);
             }
+
+            //Remove folder-tag links that contain this tag
+            Info.FolderTagPairs.RemoveAll(pair => pair.Tag == toDelete);
 
             SaveTags();
         }
