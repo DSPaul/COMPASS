@@ -25,7 +25,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="4" 
+                    <Border Background="{TemplateBinding Background}" CornerRadius="3" 
                             BorderThickness="{TemplateBinding BorderThickness}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}"

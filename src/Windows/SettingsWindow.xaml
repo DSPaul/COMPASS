@@ -292,7 +292,7 @@
                                                                 Command="{Binding DataContext.RemoveFolderTagPairCommand, 
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                 CommandParameter="{Binding}" Margin="5,0" 
-                                                                Grid.Column="4" ToolTip="Remove From Auto Import"/>
+                                                                Grid.Column="4" ToolTip="Remove Link"/>
                                                         </Grid>
                                                     </Border>
                                                 </DataTemplate>
@@ -306,7 +306,7 @@
                                                 <ColumnDefinition Width="auto"/>
                                                 <ColumnDefinition Width="auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <Border Background="{StaticResource DarkUIElementBackground}" CornerRadius="5">
+                                            <Border Background="{StaticResource DarkUIElementBackground}" CornerRadius="3">
                                                 <DockPanel>
                                                     <Button  x:Name="SelectFolderForFolderTagPairButton" Style="{StaticResource IconBtn}" 
                                                              ToolTip="Pick a Folder"  HorizontalAlignment="Right" Padding="3,2" 
