@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="COMPASS.Resources.Controls.CheckableContainer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:COMPASS.Resources.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ControlTemplate TargetType="CheckBox" x:Key="BorderedTitleCheckbox">
+            <Grid>
+                <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent"
+            Panel.ZIndex="1"/>
+                <!-- Rect in front so only templated checkbox can be clicked, because templatebinding is not two way-->
+                <Border x:Name="Border" CornerRadius="5,5,0,0" Panel.ZIndex="0">
+                    <CheckBox Content="{TemplateBinding Content}" IsChecked="{TemplateBinding IsChecked}" Margin="10"
+                Focusable="False"/>
+                </Border>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="true">
+                    <Setter TargetName="Border" Property="Background" Value="{StaticResource AccentColorMuted}"/>
+                </Trigger>
+                <Trigger Property="IsChecked" Value="false">
+                    <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackground}"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </UserControl.Resources>
+    <UserControl.Template>
+        <ControlTemplate>
+            <Border>
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="BorderBrush" Value="{StaticResource ButtonBackground}"/>
+                        <Setter Property="BorderThickness" Value="2"/>
+                        <Setter Property="CornerRadius" Value="5"/>
+                        <Setter Property="Margin" Value="5"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=local:CheckableContainer}}" Value="true">
+                                <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <StackPanel>
+                    <CheckBox Content="{Binding CheckText, 
+                            RelativeSource={RelativeSource AncestorType=local:CheckableContainer}}" 
+                          Margin="-1" IsChecked="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=local:CheckableContainer}}"
+                          Template="{StaticResource BorderedTitleCheckbox}" x:Name="AutoImportCheckBox"/>
+                    <Border>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=local:CheckableContainer}}" Value="false">
+                                        <Setter Property="Opacity" Value="0.5"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=local:CheckableContainer}}" Value="true">
+                                        <Setter  Property="Opacity" Value="1"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <ContentPresenter Content="{Binding Content, RelativeSource={RelativeSource AncestorType=local:CheckableContainer}}"
+                                          IsEnabled="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=local:CheckableContainer}}"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </ControlTemplate>
+    </UserControl.Template>
+</UserControl>
