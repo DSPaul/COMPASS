@@ -42,6 +42,7 @@ namespace COMPASS.Tools
                         {
                             T parent = result[i];
                             result.AddRange(parent.Children);
+                            yield return parent;
                         }
                         break;
                     }
@@ -52,12 +53,11 @@ namespace COMPASS.Tools
                         {
                             T parent = result[i];
                             result.InsertRange(i + 1, parent.Children);
+                            yield return parent;
                         }
                         break;
                     }
             }
-
-            return result;
         }
 
         //check internet connection
