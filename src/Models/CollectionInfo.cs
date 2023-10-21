@@ -60,7 +60,19 @@ namespace COMPASS.Models
         {
             AutoImportDirectories.AddRange(other.AutoImportDirectories);
             BanishedPaths.AddRange(other.BanishedPaths);
-            SerializableFiletypePreferences.AddRange(other.SerializableFiletypePreferences);
+            //For file type prefs, overwrite if already in dict, add otherwise
+            foreach (var pref in other.SerializableFiletypePreferences)
+            {
+                var existing = SerializableFiletypePreferences.FirstOrDefault(x => x.Key == pref.Key);
+                if (existing != default)
+                {
+                    existing.Value = pref.Value;
+                }
+                else
+                {
+                    SerializableFiletypePreferences.Add(pref);
+                }
+            }
             FiletypePreferences = null; //reset lazy loading
             FolderTagPairs.AddRange(other.FolderTagPairs);
 
