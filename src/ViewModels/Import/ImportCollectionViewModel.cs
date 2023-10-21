@@ -2,16 +2,17 @@
 using COMPASS.Tools;
 using Ionic.Zip;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Windows.Data;
 
 namespace COMPASS.ViewModels.Import
 {
     public class ImportCollectionViewModel : WizardViewModel
     {
-        public ImportCollectionViewModel(MainViewModel mainViewModel, string toImport)
+        public ImportCollectionViewModel(string toImport)
         {
-            _mainVM = mainViewModel;
 
             //unzip and load collection to import
             _unzipLocation = UnZipCollection(toImport);
@@ -41,6 +42,9 @@ namespace COMPASS.ViewModels.Import
                                                             .Select(x => new ObservableKeyValuePair<string, bool>(x))
                                                             .OrderByDescending(x => x.Value)
                                                             .ToList();
+            FolderTagLinks = RawCollectionToImport.Info.FolderTagPairs
+                .Select(link => new ImportFolderTagLinkHelper(link.Folder, link.Tag, Utils.FlattenTree(CheckableTreeNode<Tag>.GetCheckedItems(TagsToImport))))
+                .ToList();
 
             //if files were included in compass file, set paths of codices to those files
             if (Directory.Exists(Path.Combine(_unzipLocation, "Files")))
@@ -56,7 +60,6 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        private MainViewModel _mainVM { get; }
         private string _unzipLocation;
 
         public CodexCollection TargetCollection { get; set; } = null; //null means new collection should be made
@@ -119,8 +122,29 @@ namespace COMPASS.ViewModels.Import
             get => _importFileTypePrefs;
             set => SetProperty(ref _importFileTypePrefs, value);
         }
-
         public List<ObservableKeyValuePair<string, bool>> FileTypePrefs { get; init; }
+
+        //Tag-Folder links
+        private bool _importFolderTagLinks = false;
+        public bool ImportFolderTagLinks
+        {
+            get => _importFolderTagLinks;
+            set => SetProperty(ref _importFolderTagLinks, value);
+        }
+        public List<ImportFolderTagLinkHelper> FolderTagLinks { get; init; }
+
+        public CollectionViewSource FolderTagLinksVS
+        {
+            get
+            {
+                CollectionViewSource temp = new()
+                {
+                    Source = FolderTagLinks,
+                };
+                temp.SortDescriptions.Add(new SortDescription("Folder", ListSortDirection.Ascending));
+                return temp;
+            }
+        }
 
         //helper class
         public class ImportPathHelper
@@ -134,9 +158,21 @@ namespace COMPASS.ViewModels.Import
 
             public string Path { get; set; }
 
-            public bool PathExits => !System.IO.Path.IsPathRooted(Path) || System.IO.Path.Exists(Path);
+            public bool PathExits => !System.IO.Path.IsPathFullyQualified(Path) || System.IO.Path.Exists(Path);
         }
 
+        public class ImportFolderTagLinkHelper : ImportPathHelper
+        {
+            public ImportFolderTagLinkHelper(string path) : base(path) { }
+            public ImportFolderTagLinkHelper(string path, Tag t, IEnumerable<Tag> existingTags) : this(path)
+            {
+                Tag = t;
+                _existingTags = existingTags;
+            }
+            private IEnumerable<Tag> _existingTags;
+            public Tag Tag { get; }
+            public bool TagExists => _existingTags.Contains(Tag);
+        }
 
         private string UnZipCollection(string path)
         {
@@ -183,7 +219,12 @@ namespace COMPASS.ViewModels.Import
             if (ImportFileTypePrefs)
             {
                 //for file types, import all or nothing because checking whether to import a checkbox becomes ridiculous
-                ReviewedCollectionToImport.Info.FiletypePreferences = RawCollectionToImport.Info.FiletypePreferences;
+                ReviewedCollectionToImport.Info.FiletypePreferences = new(RawCollectionToImport.Info.FiletypePreferences);
+            }
+            if (ImportFolderTagLinks)
+            {
+                ReviewedCollectionToImport.Info.FolderTagPairs = new(FolderTagLinks.Where(linkHelper => linkHelper.ShouldImport && linkHelper.TagExists)
+                                                                                   .Select(linkHelper => new FolderTagPair(linkHelper.Path, linkHelper.Tag)));
             }
 
             TargetCollection.MergeWith(ReviewedCollectionToImport);

@@ -59,16 +59,16 @@
                     <Setter Property="Margin" Value="20,5"/>
                 </Style>
             </Border.Resources>
-            <Grid>
-                <Grid.Resources>
+            <ContentControl>
+                <ContentControl.Resources>
                     <ControlTemplate TargetType="CheckBox" x:Key="BorderedCheckbox">
                         <Grid>
                             <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent"
-                                    Panel.ZIndex="1"/>
+                    Panel.ZIndex="1"/>
                             <!-- Rect in front so only templated checkbox can be clicked, because templatebinding is not two way-->
                             <Border x:Name="Border" CornerRadius="5" Panel.ZIndex="0">
                                 <CheckBox Content="{TemplateBinding Content}" IsChecked="{TemplateBinding IsChecked}" Margin="10"
-                                    Focusable="False"/>
+                    Focusable="False"/>
                             </Border>
                         </Grid>
                         <ControlTemplate.Triggers>
@@ -80,229 +80,241 @@
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
-                </Grid.Resources>
-                <Grid Visibility="{Binding CurrentStep, ConverterParameter=Overview, Converter={StaticResource ShowInStepConverter}}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.Resources>
-                        <ControlTemplate TargetType="RadioButton" x:Key="RadioTemplate">
-                            <Border x:Name="Border" HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                                Background="{StaticResource CardBackground}" Margin="20" CornerRadius="10" 
-                                    BorderBrush="{StaticResource AccentColorMuted}">
-                                <ContentPresenter Content="{TemplateBinding Content}" 
-                                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsChecked" Value="true">
-                                    <Setter TargetName="Border" Property="BorderThickness" Value="4"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Grid.Resources>
-                    <RadioButton GroupName="TargetCollection" HorizontalAlignment="Stretch"
-                                 HorizontalContentAlignment="Center" IsChecked="{Binding MergeIntoCollection}"
-                                 VerticalAlignment="Stretch" Template="{StaticResource RadioTemplate}">
-                        <TextBlock Text="Merge into current collection" FontSize="20"/>
-                    </RadioButton>
-                    <RadioButton GroupName="TargetCollection" Grid.Row="1"
-                                 HorizontalContentAlignment="Center" VerticalAlignment="Stretch" 
-                                 Template="{StaticResource RadioTemplate}">
-                        <StackPanel>
-                            <TextBlock Text="Create new collection" HorizontalAlignment="Center" FontSize="20"/>
-                            <TextBox Text="{Binding CollectionName}" MinWidth="200" HorizontalContentAlignment="Center"/>
-                        </StackPanel>
-                    </RadioButton>
-                    <Rectangle Fill="{StaticResource Separator}" Grid.Column="1" Width="5" Grid.RowSpan="2" 
-                               VerticalAlignment="Stretch"/>
-                    <RadioButton GroupName="Advanced" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"
-                                 Grid.Column="2" Template="{StaticResource RadioTemplate}" 
-                                 IsChecked="{Binding AdvancedImport, Converter={StaticResource NegateConverter}}">
-                        <StackPanel>
-                            <TextBlock Text="Quick Import" TextAlignment="Center" FontSize="20" Margin="20"/>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <CheckBox Content="All Tags" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllTags}"
-                                          Visibility="{Binding HasTags, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
-                                <CheckBox Content="All Books/Items" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllCodices}"
-                                          Visibility="{Binding HasCodices, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
-                                <CheckBox Content="All Settings" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllSettings}"
-                                          Visibility="{Binding HasSettings, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </RadioButton>
-                    <RadioButton GroupName="Advanced" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"
-                        Grid.Column="2" Grid.Row="2" Template="{StaticResource RadioTemplate}" 
-                                 IsChecked="{Binding AdvancedImport}">
-                        <StackPanel>
-                            <TextBlock Text="Advanced Import" TextAlignment="Center" FontSize="20"/>
-                            <TextBlock Text="Pick And Choose" Foreground="{StaticResource TextMutedColor}"
-                                TextAlignment="Center"/>
-                        </StackPanel>
-                    </RadioButton>
-                </Grid>
-                <Grid Visibility="{Binding CurrentStep, ConverterParameter=Codices, Converter={StaticResource ShowInStepConverter}}">
-                    <DataGrid x:Name="ListLayoutGrid" ItemsSource="{Binding CodexToImportDict, IsAsync=True}"
+                </ContentControl.Resources>
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CurrentStep}" Value="Overview">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <Grid Visibility="{Binding CurrentStep, ConverterParameter=Overview, Converter={StaticResource ShowInStepConverter}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.Resources>
+                                                <ControlTemplate TargetType="RadioButton" x:Key="RadioTemplate">
+                                                    <Border x:Name="Border" HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                Background="{StaticResource CardBackground}" Margin="20" CornerRadius="10" 
+                    BorderBrush="{StaticResource AccentColorMuted}">
+                                                        <ContentPresenter Content="{TemplateBinding Content}" 
+                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsChecked" Value="true">
+                                                            <Setter TargetName="Border" Property="BorderThickness" Value="4"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Grid.Resources>
+                                            <RadioButton GroupName="TargetCollection" HorizontalAlignment="Stretch"
+                 HorizontalContentAlignment="Center" IsChecked="{Binding MergeIntoCollection}"
+                 VerticalAlignment="Stretch" Template="{StaticResource RadioTemplate}">
+                                                <TextBlock Text="Merge into current collection" FontSize="20"/>
+                                            </RadioButton>
+                                            <RadioButton GroupName="TargetCollection" Grid.Row="1"
+                 HorizontalContentAlignment="Center" VerticalAlignment="Stretch" 
+                 Template="{StaticResource RadioTemplate}">
+                                                <StackPanel>
+                                                    <TextBlock Text="Create new collection" HorizontalAlignment="Center" FontSize="20"/>
+                                                    <TextBox Text="{Binding CollectionName}" MinWidth="200" HorizontalContentAlignment="Center"/>
+                                                </StackPanel>
+                                            </RadioButton>
+                                            <Rectangle Fill="{StaticResource Separator}" Grid.Column="1" Width="5" Grid.RowSpan="2" 
+               VerticalAlignment="Stretch"/>
+                                            <RadioButton GroupName="Advanced" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"
+                 Grid.Column="2" Template="{StaticResource RadioTemplate}" 
+                 IsChecked="{Binding AdvancedImport, Converter={StaticResource NegateConverter}}">
+                                                <StackPanel>
+                                                    <TextBlock Text="Quick Import" TextAlignment="Center" FontSize="20" Margin="20"/>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <CheckBox Content="All Tags" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllTags}"
+                          Visibility="{Binding HasTags, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
+                                                        <CheckBox Content="All Books/Items" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllCodices}"
+                          Visibility="{Binding HasCodices, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
+                                                        <CheckBox Content="All Settings" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllSettings}"
+                          Visibility="{Binding HasSettings, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </RadioButton>
+                                            <RadioButton GroupName="Advanced" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"
+        Grid.Column="2" Grid.Row="2" Template="{StaticResource RadioTemplate}" 
+                 IsChecked="{Binding AdvancedImport}">
+                                                <StackPanel>
+                                                    <TextBlock Text="Advanced Import" TextAlignment="Center" FontSize="20"/>
+                                                    <TextBlock Text="Pick And Choose" Foreground="{StaticResource TextMutedColor}"
+                TextAlignment="Center"/>
+                                                </StackPanel>
+                                            </RadioButton>
+                                        </Grid>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding CurrentStep}" Value="Codices">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <Grid Visibility="{Binding CurrentStep, ConverterParameter=Codices, Converter={StaticResource ShowInStepConverter}}">
+                                            <DataGrid x:Name="ListLayoutGrid" ItemsSource="{Binding CodexToImportDict, IsAsync=True}"
                         Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
                         
                         CanUserAddRows="False" SelectionMode="Single" CanUserSortColumns="True" AutoGenerateColumns="False" 
                         RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True"
                         VerticalGridLinesBrush="#FF484848" HorizontalGridLinesBrush="#FF484848" ClipToBounds="True">
-                        <DataGrid.Resources>
-                            <Style TargetType="{x:Type DataGridColumnHeader}">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
-                                            <DockPanel Margin="0,8">
-                                                <DockPanel.Background>
-                                                    <SolidColorBrush Color="Black" Opacity="0"/>
-                                                </DockPanel.Background>
-                                                <TextBlock Text="{TemplateBinding Content}" Margin="5,0" DockPanel.Dock="Left"
+                                                <DataGrid.Resources>
+                                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+                                                                    <DockPanel Margin="0,8">
+                                                                        <DockPanel.Background>
+                                                                            <SolidColorBrush Color="Black" Opacity="0"/>
+                                                                        </DockPanel.Background>
+                                                                        <TextBlock Text="{TemplateBinding Content}" Margin="5,0" DockPanel.Dock="Left"
                                                     Width="{TemplateBinding Width}" TextAlignment="Left" 
                                                     FontSize="14" FontWeight="Bold" Foreground="#808080"/>
-                                                <Path x:Name="SortArrow" VerticalAlignment="Center" Width="8" Height="6" Margin="2,0,5,0" 
+                                                                        <Path x:Name="SortArrow" VerticalAlignment="Center" Width="8" Height="6" Margin="2,0,5,0" 
                                                     Stretch="Fill" Opacity="0.5" Fill="White" RenderTransformOrigin="0.5,0.4" DockPanel.Dock="Left"
                                                     Visibility="Collapsed" Data="M0,0 L1,0 0.5,1 z" />
-                                                <Thumb x:Name="PART_RightHeaderGripper" HorizontalAlignment="Right"
+                                                                        <Thumb x:Name="PART_RightHeaderGripper" HorizontalAlignment="Right"
                                                     Width="2" BorderThickness="1" DockPanel.Dock="Right"
                                                     BorderBrush="{Binding VerticalGridLinesBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"
                                                     Cursor="SizeWE"/>
-                                            </DockPanel>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="SortDirection" Value="Ascending">
-                                                    <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
-                                                    <Setter TargetName="SortArrow" Property="RenderTransform">
-                                                        <Setter.Value>
-                                                            <RotateTransform Angle="180" />
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                </Trigger>
-                                                <Trigger Property="SortDirection" Value="Descending">
-                                                    <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                            <Style TargetType="{x:Type DataGridCell}">
-                                <Setter Property="BorderThickness" Value="0"/>
-                                <Setter Property="Background" Value="{x:Null}"/>
-                            </Style>
-                            <Style TargetType="{x:Type TextBlock}" x:Key="default">
-                                <Setter Property="TextWrapping" Value="Wrap"/>
-                                <Setter Property="FontSize" Value="16"/>
-                                <Setter Property="Margin" Value="0,0,10,0"/>
-                            </Style>
-                        </DataGrid.Resources>
-                        <DataGrid.ItemContainerStyle>
-                            <Style TargetType="{x:Type DataGridRow}">
-                                <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                            </Style>
-                        </DataGrid.ItemContainerStyle>
-                        <DataGrid.RowStyle>
-                            <Style TargetType="{x:Type DataGridRow}">
-                                <Setter Property="Background" Value="{x:Null}"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type DataGridRow}">
-                                            <Border x:Name="DGR_Border" BorderThickness="0" SnapsToDevicePixels="True" 
+                                                                    </DockPanel>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="SortDirection" Value="Ascending">
+                                                                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                                                                            <Setter TargetName="SortArrow" Property="RenderTransform">
+                                                                                <Setter.Value>
+                                                                                    <RotateTransform Angle="180" />
+                                                                                </Setter.Value>
+                                                                            </Setter>
+                                                                        </Trigger>
+                                                                        <Trigger Property="SortDirection" Value="Descending">
+                                                                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                    <Style TargetType="{x:Type DataGridCell}">
+                                                        <Setter Property="BorderThickness" Value="0"/>
+                                                        <Setter Property="Background" Value="{x:Null}"/>
+                                                    </Style>
+                                                    <Style TargetType="{x:Type TextBlock}" x:Key="default">
+                                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                                        <Setter Property="FontSize" Value="16"/>
+                                                        <Setter Property="Margin" Value="0,0,10,0"/>
+                                                    </Style>
+                                                </DataGrid.Resources>
+                                                <DataGrid.ItemContainerStyle>
+                                                    <Style TargetType="{x:Type DataGridRow}">
+                                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                                    </Style>
+                                                </DataGrid.ItemContainerStyle>
+                                                <DataGrid.RowStyle>
+                                                    <Style TargetType="{x:Type DataGridRow}">
+                                                        <Setter Property="Background" Value="{x:Null}"/>
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="{x:Type DataGridRow}">
+                                                                    <Border x:Name="DGR_Border" BorderThickness="0" SnapsToDevicePixels="True" 
                                                     CornerRadius="5" Background="{TemplateBinding Background}">
-                                                <SelectiveScrollingGrid>
-                                                    <SelectiveScrollingGrid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </SelectiveScrollingGrid.ColumnDefinitions>
-                                                    <SelectiveScrollingGrid.RowDefinitions>
-                                                        <RowDefinition Height="*"/>
-                                                        <RowDefinition Height="0"/>
-                                                    </SelectiveScrollingGrid.RowDefinitions>
-                                                    <DataGridCellsPresenter Grid.Column="1" ItemsPanel="{TemplateBinding ItemsPanel}" 
+                                                                        <SelectiveScrollingGrid>
+                                                                            <SelectiveScrollingGrid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="Auto"/>
+                                                                                <ColumnDefinition Width="*"/>
+                                                                            </SelectiveScrollingGrid.ColumnDefinitions>
+                                                                            <SelectiveScrollingGrid.RowDefinitions>
+                                                                                <RowDefinition Height="*"/>
+                                                                                <RowDefinition Height="0"/>
+                                                                            </SelectiveScrollingGrid.RowDefinitions>
+                                                                            <DataGridCellsPresenter Grid.Column="1" ItemsPanel="{TemplateBinding ItemsPanel}" 
                                                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                                    <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1" 
+                                                                            <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1" 
                                                   SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen, ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical}, 
                                                     Converter={x:Static DataGrid.RowDetailsScrollingConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" 
                                                   Visibility="{TemplateBinding DetailsVisibility}"/>
-                                                    <DataGridRowHeader Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                                                            <DataGridRowHeader Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
                                            SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical" 
                                            Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Row}, 
                                             Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/>
-                                                </SelectiveScrollingGrid>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource ListHover}"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGrid.RowStyle>
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="IMPORT" Width="*" MinWidth="70">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox IsChecked="{Binding Value}" HorizontalAlignment="Center"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="TITLE" Width="3*" MinWidth="100" CanUserSort="True" SortMemberPath="SortingTitle">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text ="{Binding Key.Title}" Style="{StaticResource default}" Margin="5,0"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="AUTHORS" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="AuthorsAsString">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text ="{Binding Key.AuthorsAsString}" Style="{StaticResource default}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <!--<DataGridTemplateColumn Header="PUBLISHER" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="Publisher">
+                                                                        </SelectiveScrollingGrid>
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="{StaticResource ListHover}"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DataGrid.RowStyle>
+                                                <DataGrid.Columns>
+                                                    <DataGridTemplateColumn Header="IMPORT" Width="*" MinWidth="70">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <CheckBox IsChecked="{Binding Value}" HorizontalAlignment="Center"/>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="TITLE" Width="3*" MinWidth="100" CanUserSort="True" SortMemberPath="SortingTitle">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text ="{Binding Key.Title}" Style="{StaticResource default}" Margin="5,0"/>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="AUTHORS" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="AuthorsAsString">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text ="{Binding Key.AuthorsAsString}" Style="{StaticResource default}"/>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <!--<DataGridTemplateColumn Header="PUBLISHER" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="Publisher">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text ="{Binding Key.Publisher}" Style="{StaticResource default}"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>-->
-                            <DataGridTemplateColumn Header="FILE" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="AuthorsAsString">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text ="{Binding Key.FileName}" Style="{StaticResource default}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="URL" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="AuthorsAsString">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text ="{Binding Key.SourceURL}" Style="{StaticResource default}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="RELEASE DATE" Width="*" MinWidth="120" CanUserSort="True" SortMemberPath="ReleaseDate">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text ="{Binding Key.ReleaseDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource default}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="VERSION" Width="*" MinWidth="80">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text ="{Binding Key.Version}" Style="{StaticResource default}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <!--<DataGridTemplateColumn Header="RATING" Width="*" CanUserSort="True" SortMemberPath="Rating" MinWidth="120">
+                                                    <DataGridTemplateColumn Header="FILE" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="AuthorsAsString">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text ="{Binding Key.FileName}" Style="{StaticResource default}"/>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="URL" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="AuthorsAsString">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text ="{Binding Key.SourceURL}" Style="{StaticResource default}"/>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="RELEASE DATE" Width="*" MinWidth="120" CanUserSort="True" SortMemberPath="ReleaseDate">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text ="{Binding Key.ReleaseDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource default}"/>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="VERSION" Width="*" MinWidth="80">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text ="{Binding Key.Version}" Style="{StaticResource default}"/>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <!--<DataGridTemplateColumn Header="RATING" Width="*" CanUserSort="True" SortMemberPath="Rating" MinWidth="120">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <materialDesign:RatingBar Value ="{Binding Rating,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RenderTransformOrigin="0.5,0.5">
@@ -315,14 +327,14 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>-->
-                            <!--<DataGridTemplateColumn Header="ISBN" Width="*" MinWidth="150">
+                                                    <!--<DataGridTemplateColumn Header="ISBN" Width="*" MinWidth="150">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text ="{Binding ISBN}" Style="{StaticResource default}"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>-->
-                            <!--<DataGridTemplateColumn Header="TAGS" Width="5*">
+                                                    <!--<DataGridTemplateColumn Header="TAGS" Width="5*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ItemsControl ItemsSource="{Binding Key.Tags}" Background="Transparent" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
@@ -336,94 +348,148 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>-->
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-                <Grid Visibility="{Binding CurrentStep, ConverterParameter=Tags, Converter={StaticResource ShowInStepConverter}}">
-                    <Grid.Resources>
-                        <tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
-                        <HierarchicalDataTemplate x:Key="RegularTag" ItemsSource="{Binding Children}">
-                            <Border CornerRadius="5" Margin="0,3">
-                                <Border.Background>
-                                    <SolidColorBrush Color="{Binding Item.BackgroundColor}"/>
-                                </Border.Background>
-                                <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsChecked, Mode=TwoWay}" 
-                                    Content="{Binding Item.Content}" Foreground="{StaticResource TextColor}"/>
-                            </Border>
-                        </HierarchicalDataTemplate>
-                        <HierarchicalDataTemplate x:Key="GroupTag" ItemsSource="{Binding Children}">
-                            <Border Margin="0,3" Background="{x:Null}" >
-                                <StackPanel Orientation="Horizontal" >
-                                    <Rectangle Fill="{Binding Item.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
-                                   Width="2" Height="16" Margin="3" VerticalAlignment="Bottom" />
-                                    <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
-                                              Content="{Binding Item.Content}" Foreground="LightGray"
-                                              FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
-                                </StackPanel>
-                            </Border>
-                        </HierarchicalDataTemplate>
-                    </Grid.Resources>
-                    <TreeView ItemsSource="{Binding TagsToImport}" Background="Transparent" 
-                              HorizontalAlignment="Stretch" BorderThickness="0" ItemTemplateSelector="{StaticResource TagTemplateSelector}">
-                        <TreeView.ItemContainerStyle>
-                            <Style TargetType="TreeViewItem">
-                                <Setter Property="Focusable" Value="False" />
-                            </Style>
-                        </TreeView.ItemContainerStyle>
-                    </TreeView>
-                </Grid>
-                <Grid Visibility="{Binding CurrentStep, ConverterParameter=Settings, Converter={StaticResource ShowInStepConverter}}">
-                    <ScrollViewer>
-                        <StackPanel>
-                            <StackPanel.Resources>
-                                <DataTemplate x:Key="PathTemplate">
-                                    <Border BorderBrush="{StaticResource AccentColorMuted}"
-                                            BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
-                                        <CheckBox IsChecked="{Binding ShouldImport}" HorizontalContentAlignment="Stretch">
-                                            <Grid HorizontalAlignment="Stretch">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding Path}" Margin="0" TextWrapping="Wrap"/>
-                                                <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource Warning}" Grid.Column="1"
-                                                    Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
-                                                        ToolTip="This path could not be found"/>
-                                            </Grid>
-                                        </CheckBox>
-                                    </Border>
-                                </DataTemplate>
-                            </StackPanel.Resources>
-                            <controls:CheckableContainer CheckText="Directories to Auto Import from." 
-                                                         Visibility="{Binding AutoImportFolders.Count, Converter={StaticResource ToVisibilityConverter}}"
-                                                         IsChecked="{Binding ImportAutoImportFolders}">
-                                <ItemsControl ItemsSource="{Binding AutoImportFolders}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/>
-                            </controls:CheckableContainer>
-                            <controls:CheckableContainer CheckText="Banished files (Files to Exclude from future imports)" 
-                                                         Visibility="{Binding BanishedPaths.Count, Converter={StaticResource ToVisibilityConverter}}"
-                                                         IsChecked="{Binding ImportBanishedFiles}">
-                                <ItemsControl ItemsSource="{Binding BanishedPaths}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/>
-                            </controls:CheckableContainer>
-                            <controls:CheckableContainer CheckText="File types to include in imports (these will expand and overwrite your current filet type preferences)" 
-                                                        Visibility="{Binding FileTypePrefs.Count, Converter={StaticResource ToVisibilityConverter}}"
-                                                        IsChecked="{Binding ImportFileTypePrefs}">
-                                <ItemsControl ItemsSource="{Binding FileTypePrefs}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <WrapPanel IsItemsHost="True" MaxWidth="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <CheckBox Content="{Binding Key}" IsChecked="{Binding Value, Mode=OneTime}" IsHitTestVisible="False" Focusable="False" Margin="15"/>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </controls:CheckableContainer>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
-            </Grid>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </Grid>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding CurrentStep}" Value="Tags">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <Grid Visibility="{Binding CurrentStep, ConverterParameter=Tags, Converter={StaticResource ShowInStepConverter}}">
+                                            <Grid.Resources>
+                                                <tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
+                                                <HierarchicalDataTemplate x:Key="RegularTag" ItemsSource="{Binding Children}">
+                                                    <Border CornerRadius="5" Margin="0,3">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="{Binding Item.BackgroundColor}"/>
+                                                        </Border.Background>
+                                                        <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsChecked, Mode=TwoWay}" 
+                                                                  Content="{Binding Item.Content}" Foreground="{StaticResource TextColor}"/>
+                                                    </Border>
+                                                </HierarchicalDataTemplate>
+                                                <HierarchicalDataTemplate x:Key="GroupTag" ItemsSource="{Binding Children}">
+                                                    <Border Margin="0,3" Background="{x:Null}" >
+                                                        <StackPanel Orientation="Horizontal" >
+                                                            <Rectangle Fill="{Binding Item.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
+                                                                       Width="2" Height="16" Margin="3" VerticalAlignment="Bottom" />
+                                                            <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                                                      Content="{Binding Item.Content}" Foreground="LightGray"
+                                                                      FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </HierarchicalDataTemplate>
+                                            </Grid.Resources>
+                                            <TreeView ItemsSource="{Binding TagsToImport}" Background="Transparent" 
+                                                      HorizontalAlignment="Stretch" BorderThickness="0" 
+                                                      ItemTemplateSelector="{StaticResource TagTemplateSelector}">
+                                                <TreeView.ItemContainerStyle>
+                                                    <Style TargetType="TreeViewItem">
+                                                        <Setter Property="Focusable" Value="False" />
+                                                    </Style>
+                                                </TreeView.ItemContainerStyle>
+                                            </TreeView>
+                                        </Grid>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding CurrentStep}" Value="Settings">
+                                <Setter Property="Content">
+                                    <Setter.Value>
+                                        <Grid Visibility="{Binding CurrentStep, ConverterParameter=Settings, Converter={StaticResource ShowInStepConverter}}">
+                                            <ScrollViewer>
+                                                <StackPanel>
+                                                    <StackPanel.Resources>
+                                                        <DataTemplate x:Key="PathTemplate">
+                                                            <Border BorderBrush="{StaticResource AccentColorMuted}"
+                                                                                BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
+                                                                <CheckBox IsChecked="{Binding ShouldImport}" HorizontalContentAlignment="Stretch">
+                                                                    <Grid HorizontalAlignment="Stretch">
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="*"/>
+                                                                            <ColumnDefinition Width="auto"/>
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <TextBlock Text="{Binding Path}" Margin="0" TextWrapping="Wrap"/>
+                                                                        <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource Warning}" Grid.Column="1"
+                                                                                        Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
+                                                                                        ToolTip="This path could not be found"/>
+                                                                    </Grid>
+                                                                </CheckBox>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </StackPanel.Resources>
+                                                    <controls:CheckableContainer CheckText="Directories to Auto Import from." 
+                                                                                Visibility="{Binding AutoImportFolders.Count, Converter={StaticResource ToVisibilityConverter}}"
+                                                                                IsChecked="{Binding ImportAutoImportFolders}">
+                                                        <ItemsControl ItemsSource="{Binding AutoImportFolders}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/>
+                                                    </controls:CheckableContainer>
+                                                    <controls:CheckableContainer CheckText="Banished files (Files to Exclude from future imports)" 
+                                                                                Visibility="{Binding BanishedPaths.Count, Converter={StaticResource ToVisibilityConverter}}"
+                                                                                IsChecked="{Binding ImportBanishedFiles}">
+                                                        <ItemsControl ItemsSource="{Binding BanishedPaths}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/>
+                                                    </controls:CheckableContainer>
+                                                    <controls:CheckableContainer CheckText="File types to include in imports (these will expand and overwrite your current file type preferences)" 
+                                                                                Visibility="{Binding FileTypePrefs.Count, Converter={StaticResource ToVisibilityConverter}}"
+                                                                                IsChecked="{Binding ImportFileTypePrefs}">
+                                                        <ItemsControl ItemsSource="{Binding FileTypePrefs}">
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <WrapPanel IsItemsHost="True" MaxWidth="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <CheckBox Content="{Binding Key}" IsChecked="{Binding Value, Mode=OneTime}" IsHitTestVisible="False" Focusable="False" Margin="15"/>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </controls:CheckableContainer>
+                                                    <controls:CheckableContainer CheckText="Folder-Tag Links" 
+                                                                            Visibility="{Binding FolderTagLinks.Count, Converter={StaticResource ToVisibilityConverter}}"
+                                                                            IsChecked="{Binding ImportFolderTagLinks}">
+                                                        <ItemsControl ItemsSource="{Binding FolderTagLinksVS.View}"  Grid.IsSharedSizeScope="True">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Border BorderBrush="{StaticResource AccentColorMuted}" BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
+                                                                        <CheckBox IsChecked="{Binding ShouldImport}" HorizontalAlignment="Stretch">
+                                                                            <Grid >
+                                                                                <Grid.ColumnDefinitions>
+                                                                                    <ColumnDefinition Width="auto"/>
+                                                                                    <ColumnDefinition Width="auto"/>
+                                                                                    <ColumnDefinition Width="auto"/>
+                                                                                    <ColumnDefinition Width="auto"/>
+                                                                                    <ColumnDefinition Width="auto"/>
+                                                                                </Grid.ColumnDefinitions>
+                                                                                <TextBlock Text="{Binding Path}" Margin="0" TextWrapping="Wrap"/>
+                                                                                <materialDesign:PackIcon Kind="Link" Grid.Column="1" Margin="10,0"/>
+                                                                                <Border CornerRadius="5" Margin="10,0" Grid.Column="2" HorizontalAlignment="Left"
+                                                                                                    Background="{Binding Tag.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}">
+                                                                                    <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/>
+                                                                                </Border>
+                                                                                <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource Warning}" Grid.Column="3"
+                                                                                                                    Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
+                                                                                                                    ToolTip="This path could not be found"/>
+                                                                                <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource Warning}" Grid.Column="4"
+                                                                                                                    Visibility="{Binding TagExists, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
+                                                                                                                    ToolTip="This Tag could not be found or was not selected for import"/>
+                                                                            </Grid>
+                                                                        </CheckBox>
+                                                                    </Border>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </controls:CheckableContainer>
+                                                </StackPanel>
+                                            </ScrollViewer>
+                                        </Grid>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
         </Border>
         
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="3" Margin="10">

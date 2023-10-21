@@ -399,7 +399,7 @@ namespace COMPASS.ViewModels
 
             if (openFileDialog.ShowDialog() != true) return;
 
-            ImportCollectionViewModel ImportCollectionVM = new(MainVM, openFileDialog.FileName);
+            ImportCollectionViewModel ImportCollectionVM = new(openFileDialog.FileName);
             ImportCollectionWizard wizard = new(ImportCollectionVM);
             wizard.Show();
         }
