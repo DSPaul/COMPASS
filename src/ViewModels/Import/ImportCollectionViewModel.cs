@@ -35,7 +35,12 @@ namespace COMPASS.ViewModels.Import
             }
 
             //prep settings data for selection
-            AutoImportFolders = RawCollectionToImport.Info.AutoImportDirectories.Select(folder => new AutoImportFolderHelper(folder)).ToList();
+            AutoImportFolders = RawCollectionToImport.Info.AutoImportDirectories.Select(folder => new ImportPathHelper(folder)).ToList();
+            BanishedPaths = RawCollectionToImport.Info.BanishedPaths.Select(path => new ImportPathHelper(path)).ToList();
+            FileTypePrefs = RawCollectionToImport.Info.FiletypePreferences
+                                                            .Select(x => new ObservableKeyValuePair<string, bool>(x))
+                                                            .OrderByDescending(x => x.Value)
+                                                            .ToList();
 
             //if files were included in compass file, set paths of codices to those files
             if (Directory.Exists(Path.Combine(_unzipLocation, "Files")))
@@ -88,28 +93,48 @@ namespace COMPASS.ViewModels.Import
         public List<ObservableKeyValuePair<Codex, bool>> CodexToImportDict { get; set; } = new();
 
         //SETTINGS STEP
+
+        //Auto Import Folders
         private bool _importAutoImportFolders = false;
         public bool ImportAutoImportFolders
         {
             get => _importAutoImportFolders;
             set => SetProperty(ref _importAutoImportFolders, value);
         }
+        public List<ImportPathHelper> AutoImportFolders { get; init; }
 
-        public List<AutoImportFolderHelper> AutoImportFolders { get; set; }
-
-        public class AutoImportFolderHelper
+        //Banished paths
+        private bool _importBanishedFiles = false;
+        public bool ImportBanishedFiles
         {
-            public AutoImportFolderHelper(string folder)
+            get => _importBanishedFiles;
+            set => SetProperty(ref _importBanishedFiles, value);
+        }
+        public List<ImportPathHelper> BanishedPaths { get; init; }
+
+        //File type preferences
+        private bool _importFileTypePrefs = false;
+        public bool ImportFileTypePrefs
+        {
+            get => _importFileTypePrefs;
+            set => SetProperty(ref _importFileTypePrefs, value);
+        }
+
+        public List<ObservableKeyValuePair<string, bool>> FileTypePrefs { get; init; }
+
+        //helper class
+        public class ImportPathHelper
+        {
+            public ImportPathHelper(string path)
             {
-                FolderPath = folder;
+                Path = path;
                 ShouldImport = PathExits;
             }
             public bool ShouldImport { get; set; }
 
-            public string FolderPath { get; set; }
+            public string Path { get; set; }
 
-            public bool PathExits => !Path.IsPathRooted(FolderPath) || Path.Exists(FolderPath);
-
+            public bool PathExits => !System.IO.Path.IsPathRooted(Path) || System.IO.Path.Exists(Path);
         }
 
 
@@ -147,7 +172,19 @@ namespace COMPASS.ViewModels.Import
             }
 
             //Add selected Settings to tmp collection
-            ReviewedCollectionToImport.Info.AutoImportDirectories = new(AutoImportFolders.Where(x => x.ShouldImport).Select(x => x.FolderPath));
+            if (ImportAutoImportFolders)
+            {
+                ReviewedCollectionToImport.Info.AutoImportDirectories = new(AutoImportFolders.Where(x => x.ShouldImport).Select(x => x.Path));
+            }
+            if (ImportBanishedFiles)
+            {
+                ReviewedCollectionToImport.Info.BanishedPaths = new(BanishedPaths.Where(x => x.ShouldImport).Select(x => x.Path));
+            }
+            if (ImportFileTypePrefs)
+            {
+                //for file types, import all or nothing because checking whether to import a checkbox becomes ridiculous
+                ReviewedCollectionToImport.Info.FiletypePreferences = RawCollectionToImport.Info.FiletypePreferences;
+            }
 
             TargetCollection.MergeWith(ReviewedCollectionToImport);
 

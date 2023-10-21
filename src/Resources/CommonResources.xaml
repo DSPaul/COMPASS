@@ -918,9 +918,44 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckboxMarkedOutline"/>
-                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True"/>
+                                <Condition Property="IsHitTestVisible" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="checkboxIcon" Property="Kind" Value="Check"/>
+                                <Setter TargetName="checkboxIcon" Property="Foreground" Value="Green"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True"/>
+                                <Condition Property="IsHitTestVisible" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckboxMarkedOutline"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="False"/>
+                                <Condition Property="IsHitTestVisible" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="checkboxIcon" Property="Kind" Value="Close"/>
+                                <Setter TargetName="checkboxIcon" Property="Foreground" Value="Red"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="False"/>
+                                <Condition Property="IsHitTestVisible" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckboxBlankOutline"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
                         <Trigger Property="IsChecked" Value="{x:Null}">
                             <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckBoxIntermediateVariant"/>
                         </Trigger>

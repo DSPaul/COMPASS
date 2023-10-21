@@ -375,27 +375,47 @@
                 <Grid Visibility="{Binding CurrentStep, ConverterParameter=Settings, Converter={StaticResource ShowInStepConverter}}">
                     <ScrollViewer>
                         <StackPanel>
+                            <StackPanel.Resources>
+                                <DataTemplate x:Key="PathTemplate">
+                                    <Border BorderBrush="{StaticResource AccentColorMuted}"
+                                            BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
+                                        <CheckBox IsChecked="{Binding ShouldImport}" HorizontalContentAlignment="Stretch">
+                                            <Grid HorizontalAlignment="Stretch">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Path}" Margin="0" TextWrapping="Wrap"/>
+                                                <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource Warning}" Grid.Column="1"
+                                                    Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
+                                                        ToolTip="This path could not be found"/>
+                                            </Grid>
+                                        </CheckBox>
+                                    </Border>
+                                </DataTemplate>
+                            </StackPanel.Resources>
                             <controls:CheckableContainer CheckText="Directories to Auto Import from." 
+                                                         Visibility="{Binding AutoImportFolders.Count, Converter={StaticResource ToVisibilityConverter}}"
                                                          IsChecked="{Binding ImportAutoImportFolders}">
-                                <ItemsControl ItemsSource="{Binding AutoImportFolders}"
-                                                      Margin="5">
+                                <ItemsControl ItemsSource="{Binding AutoImportFolders}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/>
+                            </controls:CheckableContainer>
+                            <controls:CheckableContainer CheckText="Banished files (Files to Exclude from future imports)" 
+                                                         Visibility="{Binding BanishedPaths.Count, Converter={StaticResource ToVisibilityConverter}}"
+                                                         IsChecked="{Binding ImportBanishedFiles}">
+                                <ItemsControl ItemsSource="{Binding BanishedPaths}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/>
+                            </controls:CheckableContainer>
+                            <controls:CheckableContainer CheckText="File types to include in imports (these will expand and overwrite your current filet type preferences)" 
+                                                        Visibility="{Binding FileTypePrefs.Count, Converter={StaticResource ToVisibilityConverter}}"
+                                                        IsChecked="{Binding ImportFileTypePrefs}">
+                                <ItemsControl ItemsSource="{Binding FileTypePrefs}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel IsItemsHost="True" MaxWidth="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Border BorderBrush="{StaticResource AccentColorMuted}"
-                                                            BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
-                                                <CheckBox IsChecked="{Binding ShouldImport}" HorizontalContentAlignment="Stretch">
-                                                    <Grid HorizontalAlignment="Stretch">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="*"/>
-                                                            <ColumnDefinition Width="auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Text="{Binding FolderPath}" Margin="0" TextWrapping="Wrap"/>
-                                                        <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource Warning}" Grid.Column="1"
-                                                                Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
-                                                                ToolTip="This path could not be found"/>
-                                                    </Grid>
-                                                </CheckBox>
-                                            </Border>
+                                            <CheckBox Content="{Binding Key}" IsChecked="{Binding Value, Mode=OneTime}" IsHitTestVisible="False" Focusable="False" Margin="15"/>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
