@@ -2,7 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 
 namespace COMPASS.Tools
 {
@@ -71,6 +74,44 @@ namespace COMPASS.Tools
         {
             if (String.IsNullOrEmpty(input)) return input;
             return Constants.RegexNumbersOnly().Replace(input, match => match.Value.PadLeft(totalWidth, '0'));
+        }
+
+        public static string RemoveDiacritics(this string text) =>
+            //"héllo" becomes "he<acute>llo", which in turn becomes "hello".
+            string.Concat(text.Normalize(NormalizationForm.FormD).Where(ch => CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark)).Normalize(NormalizationForm.FormC);
+        #endregion
+
+        #region ReflectionExtentions
+        //From BlackPearl
+        public static object GetPropertyValue(this object obj, string path)
+        {
+            if (string.IsNullOrEmpty(path) || obj == null)
+            {
+                return obj;
+            }
+
+            int dotIndex = path.IndexOf('.');
+            if (dotIndex < 0)
+            {
+                return GetValue(obj, path);
+            }
+
+            obj = GetValue(obj, path.Substring(0, dotIndex + 1));
+            path = path.Remove(0, dotIndex);
+
+            return obj.GetPropertyValue(path);
+        }
+
+        //From BlackPearl
+        private static object GetValue(object obj, string propertyName)
+        {
+            PropertyInfo propInfo = obj.GetType().GetProperty(propertyName);
+            if (propInfo == null)
+            {
+                return null;
+            }
+
+            return propInfo.GetValue(obj);
         }
         #endregion
     }

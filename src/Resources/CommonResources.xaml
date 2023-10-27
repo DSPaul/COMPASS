@@ -4,7 +4,7 @@
                     xmlns:converters ="clr-namespace:COMPASS.Converters"
                     xmlns:models ="clr-namespace:COMPASS.Models"
                     xmlns:tools="clr-namespace:COMPASS.Tools"
-                    xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary">
+                    xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Themes/DarkTheme.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -851,32 +851,25 @@
     <ControlTemplate TargetType="BlackPearl:MultiSelectCombobox" x:Key="Default">
         <Grid>
             <ToggleButton Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}"
-                Focusable="false" IsChecked="{Binding Path=IsOpen,Mode=TwoWay,ElementName=popup}"
+                Focusable="false" IsChecked="{Binding Path=IsOpen,Mode=OneWayToSource,ElementName=popup}"
                 ClickMode="Press">
             </ToggleButton>
             <!--Rich TextBox bound to document-->
+            <TextBlock Name="placeholderText" Text="ex: Author the First, Author the second, ..." Grid.Row="6" Margin="10,0"
+                       Foreground="{StaticResource TextMutedColor}" IsHitTestVisible="False" Focusable="False"
+                       Visibility="{Binding ElementName=rtxt, Path=IsKeyboardFocused, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"/>
             <RichTextBox x:Name="rtxt" IsDocumentEnabled="False" AcceptsReturn="False" VerticalContentAlignment="Center"
                         FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,30,5" Focusable="True" 
                         Background="{StaticResource TransparentBlack}" Foreground="{StaticResource TextColor}"
                             BorderThickness="0"/>
-            <!--Suggestion Drop-Down -->
-            <Popup Name="popup" Placement="Bottom"
-                    IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            <!--Suggestion Drop-Down-->
+            <Popup Name="popup" Placement="Bottom" PlacementTarget="{Binding ElementName=rtxt}"
                     StaysOpen="False" PopupAnimation="Slide" SnapsToDevicePixels="True"
-                    Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}">
+                    Width="{Binding ActualWidth, ElementName=rtxt}">
                 <Border BorderBrush="Black" BorderThickness="1">
-                    <ScrollViewer MaxHeight="300" HorizontalScrollBarVisibility="Disabled"
-                        VerticalScrollBarVisibility="Auto">
-                        <ListBox Name="lstSuggestion" Background="{StaticResource DarkUIElementBackground}"
-                                SelectionMode="Multiple" HorizontalContentAlignment="Stretch"
-                                DisplayMemberPath="{Binding DisplayMemberPath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
-                            <ListBox.ItemsSource>
-                                <CompositeCollection>
-                                    <CollectionContainer Collection="{Binding SuggestionItemsSource, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                </CompositeCollection>
-                            </ListBox.ItemsSource>
-                        </ListBox>
-                    </ScrollViewer>
+                    <ListBox Name="lstSuggestion" Background="{StaticResource DarkUIElementBackground}"
+                            SelectionMode="Multiple" HorizontalContentAlignment="Stretch" MaxHeight="300"
+                             ItemsSource="{Binding SuggestionItemsSource}"/>
                 </Border>
             </Popup>
         </Grid>
