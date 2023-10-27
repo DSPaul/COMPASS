@@ -585,6 +585,7 @@
             </MenuItem.ItemContainerStyle>
         </MenuItem>
         <MenuItem Header="Delete" tools:AP.IconKind="Delete" InputGestureText="Delete"
+                  ToolTip="Removes the item from COMPASS"
                   Command="{Binding Path=DataContext.CodexVM.DeleteCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
@@ -592,7 +593,7 @@
                   Command="{Binding Path=DataContext.CodexVM.BanishCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"
-                  ToolTip="Deletes the file and excludes it from future imports."/>
+                  ToolTip="Removes the item from COMPASS and excludes it from future imports."/>
     </ContextMenu>
 
     <ContextMenu x:Key="MultiCodexContextMenu" x:Shared="False"
