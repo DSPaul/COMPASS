@@ -38,7 +38,7 @@
     <SolidColorBrush x:Key="CancelFill" Color="Red"/>
     <SolidColorBrush x:Key="OnlineFill" Color="{StaticResource OnlineGreen}"/>
     <SolidColorBrush x:Key="OfflineFill" Color="Red"/>
-    <SolidColorBrush x:Key="Warning" Color="Goldenrod"/>
+    <SolidColorBrush x:Key="WarningFill" Color="Goldenrod"/>
 
     <SolidColorBrush x:Key="TextColor" Color="White"/>
     <SolidColorBrush x:Key="TextMutedColor" Color="LightGray"/>
