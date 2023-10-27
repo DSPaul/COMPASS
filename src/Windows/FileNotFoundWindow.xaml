@@ -33,7 +33,7 @@
                         Background="{StaticResource AccentColorMuted}" Command="{Binding FindFileCommand}"/>
                 <Button Content="Remove the path" tools:AP.IconKind="FileDocumentRemoveOutline" 
                         Style="{StaticResource IconTextButton}" Command="{Binding RemovePathCommand}"/>
-                <Button Content="Delete this book" tools:AP.IconKind="Delete" Style="{StaticResource IconTextButton}"
+                <Button Content="Remove this item" tools:AP.IconKind="Delete" Style="{StaticResource IconTextButton}"
                         Background="Red" Command="{Binding DeleteCodexCommand}"/>
             </StackPanel>
         </StackPanel>

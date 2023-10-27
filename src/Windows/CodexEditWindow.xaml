@@ -95,7 +95,7 @@
             <Button Content="Renew" tools:AP.IconKind="ImageSyncOutline" Margin="5,0" 
                     ToolTip="Renews the preview for this item, overwriting the current preview."
                 Command="{Binding FetchCoverCommand}" Style="{StaticResource IconTextButton}" />
-            <Button Content="Browse" tools:AP.IconKind="BookImage" Margin="5,0"
+            <Button Content="Browse..." tools:AP.IconKind="BookImage" Margin="5,0"
                     ToolTip="Choose an image to use as cover/preview for this item."
                 Command="{Binding ChooseCoverCommand}" Style="{StaticResource IconTextButton}"/>
         </StackPanel>
@@ -252,7 +252,7 @@
                                                 BorderThickness="1" CornerRadius="3">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <materialDesign:PackIcon Kind="TagAdd" Height="15"/>
-                                                <TextBlock Text="Quick Create Tag" Margin="5" FontSize="14"/>
+                                                <TextBlock Text="Quick New Tag..." Margin="5" FontSize="14"/>
                                             </StackPanel>
                                         </Border>
                                     </ControlTemplate>
@@ -295,7 +295,7 @@
                     <TextBox Text="{Binding TempCodex.Path, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" 
                              TextWrapping="Wrap" Padding="3" Margin="10"/>
                     <Button Grid.Row="0" Grid.Column="2" Command="{Binding BrowsePathCommand}" 
-                            ToolTip="Choose a new Path" tools:AP.IconKind="FolderOpen"/>
+                            ToolTip="Choose a new Path..." tools:AP.IconKind="FolderOpen"/>
 
                     <TextBlock Text="Source URL:" Grid.Column="0" Grid.Row="1"/>
                     <TextBox Text="{Binding TempCodex.SourceURL, Mode=TwoWay}" Grid.Column="1" Grid.Row="1" 
@@ -350,8 +350,9 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="Delete" tools:AP.IconKind="Delete"
+            <Button Grid.Column="0" Content="Remove" tools:AP.IconKind="Delete"
                     Command="{Binding DeleteCodexCommand}" Margin="5"
+                    ToolTip="Removes this item from COMPASS"
                     Background="{StaticResource CancelFill}" Style="{StaticResource IconTextButton}"/>
             <Button Grid.Column="2" Content="OK" tools:AP.IconKind="Check" IsDefault="True"
                     Command ="{Binding OKCommand}"  Margin="5"

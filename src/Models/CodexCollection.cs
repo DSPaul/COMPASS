@@ -245,7 +245,7 @@ namespace COMPASS.Models
 
         public void DeleteCodex(Codex toDelete)
         {
-            //Delete file from all lists
+            //Delete codex from all lists
             AllCodices.Remove(toDelete);
 
             //Delete CoverArt & Thumbnail

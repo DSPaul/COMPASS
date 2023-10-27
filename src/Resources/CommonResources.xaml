@@ -516,7 +516,7 @@
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
         <Separator Style="{StaticResource MarginlessSeparator}"/>
-        <MenuItem Header="Edit" tools:AP.IconKind="Edit" InputGestureText="Ctrl + E"
+        <MenuItem Header="Edit..." tools:AP.IconKind="Edit" InputGestureText="Ctrl + E"
                   Command="{Binding Path=DataContext.CodexVM.EditCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
@@ -584,12 +584,12 @@
                 </Style>
             </MenuItem.ItemContainerStyle>
         </MenuItem>
-        <MenuItem Header="Delete" tools:AP.IconKind="Delete" InputGestureText="Delete"
+        <MenuItem Header="Remove" tools:AP.IconKind="Delete" InputGestureText="Delete"
                   ToolTip="Removes the item from COMPASS"
                   Command="{Binding Path=DataContext.CodexVM.DeleteCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
-        <MenuItem Header="Delete Forever" tools:AP.IconKind="DeleteForever" InputGestureText="Alt+Delete"
+        <MenuItem Header="Remove Forever" tools:AP.IconKind="DeleteForever" InputGestureText="Alt+Delete"
                   Command="{Binding Path=DataContext.CodexVM.BanishCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"
@@ -601,7 +601,7 @@
         <MenuItem Header="Open Selection" tools:AP.IconKind="FileMultipleOutline" CommandParameter="{Binding}" InputGestureText="Enter"
                   Command="{Binding Path=DataContext.CodexVM.OpenSelectedCodicesCommand, 
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Bulk Edit Selection" CommandParameter="{Binding}" tools:AP.IconKind="Edit" InputGestureText="Ctrl + E"
+        <MenuItem Header="Bulk Edit Selection..." CommandParameter="{Binding}" tools:AP.IconKind="Edit" InputGestureText="Ctrl + E"
                   Command="{Binding Path=DataContext.CodexVM.EditCodicesCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
         <MenuItem Header="Favorite" CommandParameter="{Binding}" tools:AP.IconKind="Favorite" InputGestureText="Ctrl + F"
@@ -633,13 +633,14 @@
                 </Style>
             </MenuItem.ItemContainerStyle>
         </MenuItem>
-        <MenuItem Header="Delete" tools:AP.IconKind="Delete" CommandParameter="{Binding}" InputGestureText="Delete"
+        <MenuItem Header="Remove" tools:AP.IconKind="Delete" CommandParameter="{Binding}" InputGestureText="Delete"
                   Command="{Binding Path=DataContext.CodexVM.DeleteCodicesCommand, 
-                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Delete Forever" tools:AP.IconKind="DeleteForever" CommandParameter="{Binding}" InputGestureText="Alt+Delete"
+                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  ToolTip="Removes the items from COMPASS."/>
+        <MenuItem Header="Remove Forever" tools:AP.IconKind="DeleteForever" CommandParameter="{Binding}" InputGestureText="Alt+Delete"
                   Command="{Binding Path=DataContext.CodexVM.BanishCodicesCommand, 
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
-                  ToolTip="Deletes the files and excludes them from future imports."/>
+                  ToolTip="Removes the items from COMPASS and excludes them from future imports."/>
     </ContextMenu>
     <!--#endregion-->
 

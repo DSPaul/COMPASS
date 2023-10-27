@@ -184,7 +184,7 @@
                                                 Command="{Binding AddAutoImportDirectoryCommand}" ToolTip="Add Folder"
                                                 CommandParameter="{Binding ElementName=NewAutoImportFolderTextBox, Path=Text}"/>
                                             <Label Content="OR" Grid.Column="2" VerticalAlignment="Center" Margin="5"/>
-                                            <Button Style="{StaticResource IconTextButton}" Content="Select a Folder" 
+                                            <Button Style="{StaticResource IconTextButton}" Content="Select a Folder..." 
                                                     ToolTip="Select Folder To Add" Grid.Column="3" Padding="3" Margin="5,0"
                                                     Background="{StaticResource AccentColorMuted}" tools:AP.IconKind="FolderPlus"
                                                     Command="{Binding PickAutoImportDirectoryCommand}"/>
@@ -542,10 +542,10 @@
                             <UniformGrid Columns="3">
                                 <Button Content="Browse Local Files" tools:AP.IconKind="FolderOpen"
                                         Command="{Binding BrowseLocalFilesCommand}" Style="{StaticResource IconTextButton}"/>
-                                <Button Content="Backup User Data" tools:AP.IconKind="FolderZip"
+                                <Button Content="Backup User Data..." tools:AP.IconKind="FolderZip"
                                         Command="{Binding BackupLocalFilesCommand}" Style="{StaticResource IconTextButton}" 
                                         ToolTip="Saves metadata, tags, thumbnails and preferences to zip"/>
-                                <Button Content="Restore Backup" tools:AP.IconKind="BackupRestore"
+                                <Button Content="Restore Backup..." tools:AP.IconKind="BackupRestore"
                                         Command="{Binding RestoreBackupCommand}" Style="{StaticResource IconTextButton}"/>
                             </UniformGrid>
                         </StackPanel>
