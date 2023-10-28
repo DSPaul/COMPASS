@@ -1,6 +1,7 @@
 ﻿using COMPASS.Models;
 using COMPASS.ViewModels;
 using HtmlAgilityPack;
+using Ionic.Zip;
 using Newtonsoft.Json.Linq;
 using Ookii.Dialogs.Wpf;
 using System;
@@ -117,6 +118,28 @@ namespace COMPASS.Tools
                 json = JObject.Parse(data.Result);
             }
             return json;
+        }
+
+        /// <summary>
+        /// Unzips a collection stored in a .cmpss file
+        /// </summary>
+        /// <param name="path">Path to the .cmpss file</param>
+        /// <returns>Path to unziped folder</returns>
+        public static async Task<string> UnZipCollection(string path)
+        {
+            string fileName = Path.GetFileName(path);
+            string tmpCollectionPath = Path.Combine(CodexCollection.CollectionsPath, $"__{fileName}");
+            //make sure any previous temp data is gone
+            Utils.ClearTmpData(tmpCollectionPath);
+            //unzip the file to tmp folder
+            ZipFile zip = ZipFile.Read(path);
+            var progressVM = ProgressViewModel.GetInstance();
+            progressVM.Text = $"Reading {path}";
+            progressVM.ResetCounter();
+            progressVM.TotalAmount = 1;
+            await Task.Run(() => zip.ExtractAll(tmpCollectionPath));
+            progressVM.IncrementCounter();
+            return tmpCollectionPath;
         }
 
         //based on https://seattlesoftware.wordpress.com/2008/09/11/hexadecimal-value-0-is-an-invalid-character/

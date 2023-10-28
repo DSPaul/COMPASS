@@ -226,8 +226,11 @@ namespace COMPASS.ViewModels
         {
             if (string.IsNullOrEmpty(dirName)) return null;
             CodexCollection newCollection = new(dirName);
-            Directory.CreateDirectory(Path.Combine(newCollection.FullDataPath, "CoverArt"));
-            Directory.CreateDirectory(Path.Combine(newCollection.FullDataPath, "Thumbnails"));
+
+            Directory.CreateDirectory(newCollection.CoverArtPath);
+            Directory.CreateDirectory(newCollection.ThumbnailsPath);
+            Directory.CreateDirectory(newCollection.UserFilesPath);
+
             AllCodexCollections.Add(newCollection);
             return newCollection;
         }
@@ -386,9 +389,10 @@ namespace COMPASS.ViewModels
         }
 
         private ActionCommand _importCommand;
-        public ActionCommand ImportCommand => _importCommand ??= new(Import);
-        public void Import()
+        public ActionCommand ImportCommand => _importCommand ??= new(async () => await Import());
+        public async Task Import()
         {
+            //ask for cmpss file using fileDialog
             OpenFileDialog openFileDialog = new()
             {
                 Filter = $"COMPASS File (*{Constants.COMPASSFileExtension})|*{Constants.COMPASSFileExtension}",
@@ -399,7 +403,12 @@ namespace COMPASS.ViewModels
 
             if (openFileDialog.ShowDialog() != true) return;
 
-            ImportCollectionViewModel ImportCollectionVM = new(openFileDialog.FileName);
+            //unzip the file
+            string unzipLocation = await Utils.UnZipCollection(openFileDialog.FileName);
+            var collectionToImport = new CodexCollection(Path.GetFileName(unzipLocation));
+
+            //open wizard
+            ImportCollectionViewModel ImportCollectionVM = new(collectionToImport);
             ImportCollectionWizard wizard = new(ImportCollectionVM);
             wizard.Show();
         }

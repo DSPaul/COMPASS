@@ -28,12 +28,10 @@ namespace COMPASS.Models
             Copy(codex);
         }
 
-        public void SetImagePaths(CodexCollection collection) => SetImagePaths(collection.DirectoryName);
-
-        public void SetImagePaths(string collectionName)
+        public void SetImagePaths(CodexCollection collection)
         {
-            CoverArt = System.IO.Path.Combine(CodexCollection.CollectionsPath, collectionName, "CoverArt", $"{ID}.png");
-            Thumbnail = System.IO.Path.Combine(CodexCollection.CollectionsPath, collectionName, "Thumbnails", $"{ID}.png");
+            CoverArt = System.IO.Path.Combine(collection.CoverArtPath, $"{ID}.png");
+            Thumbnail = System.IO.Path.Combine(collection.ThumbnailsPath, $"{ID}.png");
         }
 
         public void Copy(Codex c)
