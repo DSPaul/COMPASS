@@ -411,7 +411,7 @@
                                                                             <ColumnDefinition Width="auto"/>
                                                                         </Grid.ColumnDefinitions>
                                                                         <TextBlock Text="{Binding Path}" Margin="0" TextWrapping="Wrap"/>
-                                                                        <materialDesign:PackIcon Kind="WarningFill" Foreground="{StaticResource Warning}" Grid.Column="1"
+                                                                        <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" Grid.Column="1"
                                                                                         Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
                                                                                         ToolTip="This path could not be found"/>
                                                                     </Grid>
@@ -467,10 +467,10 @@
                                                                                                     Background="{Binding Tag.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}">
                                                                                     <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/>
                                                                                 </Border>
-                                                                                <materialDesign:PackIcon Kind="WarningFill" Foreground="{StaticResource Warning}" Grid.Column="3"
+                                                                                <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" Grid.Column="3"
                                                                                                                     Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
                                                                                                                     ToolTip="This path could not be found"/>
-                                                                                <materialDesign:PackIcon Kind="WarningFill" Foreground="{StaticResource Warning}" Grid.Column="4"
+                                                                                <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" Grid.Column="4"
                                                                                                                     Visibility="{Binding TagExists, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
                                                                                                                     ToolTip="This Tag could not be found or was not selected for import"/>
                                                                             </Grid>
