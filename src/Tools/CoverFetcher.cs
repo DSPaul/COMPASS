@@ -35,7 +35,10 @@ namespace COMPASS.Tools
 
             if (coverProp.OverwriteMode == MetaDataOverwriteMode.Never ||
                 (coverProp.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !coverProp.IsEmpty(codex)))
+            {
+                ProgressViewModel.GetInstance().IncrementCounter();
                 return;
+            }
 
             //copy img paths over this way
             MetaDatalessCodex.SetImagePaths(MainViewModel.CollectionVM.CurrentCollection);
@@ -149,6 +152,7 @@ namespace COMPASS.Tools
         public static void CreateThumbnail(Codex c)
         {
             int newWidth = 200; //sets resolution of thumbnail in pixels
+            if (!Path.Exists(c.CoverArt)) return;
             using MagickImage image = new(c.CoverArt);
             //preserve aspect ratio
             int width = image.Width;
