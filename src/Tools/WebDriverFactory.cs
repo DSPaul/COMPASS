@@ -66,7 +66,7 @@ namespace COMPASS.Tools
                     fo.AddArguments(driverArguments);
                     _webDriver = new FirefoxDriver((FirefoxDriverService)driverService, fo);
                     break;
-                
+
                 default:
                     EdgeOptions eo = new();
                     eo.AddArguments(driverArguments);
@@ -81,43 +81,61 @@ namespace COMPASS.Tools
             Directory.CreateDirectory(WebDriverDirectoryPath);
             DriverManager driverManager = new(WebDriverDirectoryPath);
 
+            bool success = false;
+            Exception exception = null;
+
             if (IsInstalled("chrome.exe"))
             {
                 _browser = Browser.Chrome;
                 try
                 {
                     driverManager.SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
+                    success = true;
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Chrome webdriver could not be initialised", ex);
+                    exception = ex;
+                    Logger.Warn("Chrome webdriver could not be initialised", ex);
                 }
             }
 
-            else if (IsInstalled("firefox.exe"))
+            if (!success && IsInstalled("firefox.exe"))
             {
                 _browser = Browser.Firefox;
                 try
                 {
                     driverManager.SetUpDriver(new FirefoxConfig());
+                    success = true;
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Firefox webdriver could not be initialised", ex);
+                    exception = ex;
+                    Logger.Warn("Firefox webdriver could not be initialised", ex);
                 }
             }
 
-            else
+            if (!success && IsInstalled("msedge.exe"))
             {
                 _browser = Browser.Edge;
                 try
                 {
                     driverManager.SetUpDriver(new EdgeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
+                    success = true;
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Firefox webdriver could not be initialised", ex);
+                    exception = ex;
+                    Logger.Warn("Edge webdriver could not be initialised", ex);
                 }
+            }
+
+            if (!success)
+            {
+                Logger.Error("No webdriver could be initialised", exception);
+            }
+            else
+            {
+                Logger.Info($"Successfully initialised {_browser} webdriver");
             }
         }
 
@@ -134,10 +152,11 @@ namespace COMPASS.Tools
             const string currentUserRegistryPathPattern = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\";
             const string localMachineRegistryPathPattern = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\";
 
-            var currentUserPath = Microsoft.Win32.Registry.GetValue(currentUserRegistryPathPattern + name, "", null);
-            var localMachinePath = Microsoft.Win32.Registry.GetValue(localMachineRegistryPathPattern + name, "", null);
+            var currentUserPath = Microsoft.Win32.Registry.GetValue(currentUserRegistryPathPattern + name, "", null)?.ToString();
+            var localMachinePath = Microsoft.Win32.Registry.GetValue(localMachineRegistryPathPattern + name, "", null)?.ToString();
 
-            return currentUserPath != null || localMachinePath != null;
+            return currentUserPath != null && Path.Exists(currentUserPath) ||
+                  localMachinePath != null && Path.Exists(localMachinePath);
         }
     }
 }
