@@ -533,7 +533,7 @@
                                 <TextBlock Text="Data Path:" Grid.Column="0"/>
                                 <TextBox IsReadOnly="True" Grid.Column="1" TextWrapping="Wrap"
                                          Text="{Binding Source={x:Static viewmodels:SettingsViewModel.CompassDataPath}, Mode=OneWay}"/>
-                                <Button Style="{StaticResource IconTextButton}" Grid.Column="2" Content="Change" Margin="5"
+                                <Button Style="{StaticResource IconTextButton}" Grid.Column="2" Content="Change..." Margin="5"
                                         ToolTip="Change Data Path" tools:AP.IconKind="FolderEdit" Command="{Binding ChangeDataPathCommand}"/>
                                 <Button Style="{StaticResource IconTextButton}" Grid.Column="3" Content="Default" Margin="5"
                                         ToolTip="Restore Default" tools:AP.IconKind="FolderRefresh" Command="{Binding ResetDataPathCommand}"/>
