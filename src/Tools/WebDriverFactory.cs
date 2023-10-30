@@ -36,6 +36,8 @@ namespace COMPASS.Tools
 
             string driverPath = FindFileDirectory(driverName, WebDriverDirectoryPath);
 
+            if (driverPath == null) return null;
+
             DriverService driverService = _browser switch
             {
                 Browser.Chrome => ChromeDriverService.CreateDefaultService(driverPath),
@@ -141,9 +143,9 @@ namespace COMPASS.Tools
 
         private static string FindFileDirectory(string fileName, string rootDirectory)
         {
-            string filePath = Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories).Last();
-            string parentDirectory = Path.GetDirectoryName(filePath);
-            return parentDirectory;
+            IEnumerable<string> filePaths = Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories);
+            if (filePaths.Any()) return Path.GetDirectoryName(filePaths.Last());
+            return null;
         }
 
         //helper function to check if certain browsers are installed
@@ -155,8 +157,8 @@ namespace COMPASS.Tools
             var currentUserPath = Microsoft.Win32.Registry.GetValue(currentUserRegistryPathPattern + name, "", null)?.ToString();
             var localMachinePath = Microsoft.Win32.Registry.GetValue(localMachineRegistryPathPattern + name, "", null)?.ToString();
 
-            return currentUserPath != null && Path.Exists(currentUserPath) ||
-                  localMachinePath != null && Path.Exists(localMachinePath);
+            return (currentUserPath != null && Path.Exists(currentUserPath)) ||
+                  (localMachinePath != null && Path.Exists(localMachinePath));
         }
     }
 }
