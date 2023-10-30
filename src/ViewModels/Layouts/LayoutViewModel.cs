@@ -78,6 +78,14 @@ namespace COMPASS.ViewModels.Layouts
 
                 if (!folders.Any() && !files.Any()) return;
 
+                //Check if its a cmpss file, do import if so
+                if (!folders.Any() && files.Count == 1 && files.First().EndsWith(Constants.COMPASSFileExtension))
+                {
+                    _ = MainViewModel.CollectionVM.Import(files.First());
+                    return;
+                }
+
+                //else check for folder import
                 if (folders.Any())
                 {
                     ImportFolderViewModel folderImportVM = new()
