@@ -403,8 +403,13 @@ namespace COMPASS.ViewModels
 
             if (openFileDialog.ShowDialog() != true) return;
 
+            await Import(openFileDialog.FileName);
+        }
+
+        public async Task Import(string path)
+        {
             //unzip the file
-            string unzipLocation = await Utils.UnZipCollection(openFileDialog.FileName);
+            string unzipLocation = await Utils.UnZipCollection(path);
             var collectionToImport = new CodexCollection(Path.GetFileName(unzipLocation));
 
             //open wizard

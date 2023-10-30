@@ -52,8 +52,6 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        private string _unzipLocation;
-
         public CodexCollection TargetCollection { get; set; } = null; //null means new collection should be made
         public CodexCollection CollectionToImport { get; set; } = null; //collection that was in the cmpss file
 
