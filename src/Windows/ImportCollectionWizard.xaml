@@ -11,7 +11,7 @@
         xmlns:tools="clr-namespace:COMPASS.Tools"
         d:DataContext="{d:DesignInstance Type=import:ImportCollectionViewModel}"
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
-        Title="Import Wizard" Height="650" Width="1200" Closed="Window_Closed"
+        Title="{Binding CollectionToImport.DirectoryName, StringFormat=Importing {0:}}" Height="650" Width="1200" Closed="Window_Closed"
         >
     <Grid>
         <Grid.Resources>
