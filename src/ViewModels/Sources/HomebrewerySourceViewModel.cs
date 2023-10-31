@@ -57,7 +57,7 @@ namespace COMPASS.ViewModels.Sources
         {
             if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading cover from Homebrewery"));
-            OpenQA.Selenium.WebDriver driver = WebDriverFactory.GetWebDriver();
+            OpenQA.Selenium.WebDriver driver = await WebDriverFactory.GetWebDriver();
             try
             {
                 string url = codex.SourceURL.Replace("/share/", "/print/"); //use print API to only show doc itself

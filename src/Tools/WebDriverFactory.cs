@@ -1,20 +1,15 @@
-﻿using COMPASS.ViewModels;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using WebDriverManager;
-using WebDriverManager.DriverConfigs.Impl;
+using System.Threading.Tasks;
 
 namespace COMPASS.Tools
 {
     public static class WebDriverFactory
     {
-        private static readonly string WebDriverDirectoryPath = Path.Combine(SettingsViewModel.CompassDataPath, "WebDrivers");
         private static Browser _browser;
         public enum Browser
         {
@@ -25,26 +20,15 @@ namespace COMPASS.Tools
 
         //Get an initialised webdriver with right browser
         private static WebDriver _webDriver;
-        public static WebDriver GetWebDriver()
+        public static async Task<WebDriver> GetWebDriver()
         {
-            string driverName = _browser switch
-            {
-                Browser.Chrome => "chromedriver.exe",
-                Browser.Firefox => "geckodriver.exe",
-                _ => "msedgedriver.exe"
-            };
-
-            string driverPath = FindFileDirectory(driverName, WebDriverDirectoryPath);
-
-            if (driverPath == null) return null;
-
             DriverService driverService = _browser switch
             {
-                Browser.Chrome => ChromeDriverService.CreateDefaultService(driverPath),
-                Browser.Firefox => FirefoxDriverService.CreateDefaultService(driverPath),
-                _ => EdgeDriverService.CreateDefaultService(driverPath)
+                Browser.Chrome => ChromeDriverService.CreateDefaultService(),
+                Browser.Firefox => FirefoxDriverService.CreateDefaultService(),
+                Browser.Edge => EdgeDriverService.CreateDefaultService(),
+                _ => throw new System.NotImplementedException()
             };
-
             driverService.HideCommandPromptWindow = true;
 
             List<string> driverArguments = new()
@@ -60,92 +44,38 @@ namespace COMPASS.Tools
                 case Browser.Chrome:
                     ChromeOptions co = new();
                     co.AddArguments(driverArguments);
-                    _webDriver = new ChromeDriver((ChromeDriverService)driverService, co);
+                    _webDriver = await Task.Run(() => new ChromeDriver((ChromeDriverService)driverService, co));
                     break;
 
                 case Browser.Firefox:
                     FirefoxOptions fo = new();
                     fo.AddArguments(driverArguments);
-                    _webDriver = new FirefoxDriver((FirefoxDriverService)driverService, fo);
+                    _webDriver = await Task.Run(() => new FirefoxDriver((FirefoxDriverService)driverService, fo));
                     break;
 
                 default:
                     EdgeOptions eo = new();
                     eo.AddArguments(driverArguments);
-                    _webDriver = new EdgeDriver((EdgeDriverService)driverService, eo);
+                    _webDriver = await Task.Run(() => new EdgeDriver((EdgeDriverService)driverService, eo));
                     break;
             }
             return _webDriver;
         }
 
-        public static void UpdateWebdriver()
+        public static void InitWebdriver()
         {
-            Directory.CreateDirectory(WebDriverDirectoryPath);
-            DriverManager driverManager = new(WebDriverDirectoryPath);
-
-            bool success = false;
-            Exception exception = null;
-
             if (IsInstalled("chrome.exe"))
             {
                 _browser = Browser.Chrome;
-                try
-                {
-                    driverManager.SetUpDriver(new ChromeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
-                    success = true;
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                    Logger.Warn("Chrome webdriver could not be initialised", ex);
-                }
             }
-
-            if (!success && IsInstalled("firefox.exe"))
+            else if (IsInstalled("firefox.exe"))
             {
                 _browser = Browser.Firefox;
-                try
-                {
-                    driverManager.SetUpDriver(new FirefoxConfig());
-                    success = true;
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                    Logger.Warn("Firefox webdriver could not be initialised", ex);
-                }
             }
-
-            if (!success && IsInstalled("msedge.exe"))
+            else if (IsInstalled("msedge.exe"))
             {
                 _browser = Browser.Edge;
-                try
-                {
-                    driverManager.SetUpDriver(new EdgeConfig(), WebDriverManager.Helpers.VersionResolveStrategy.MatchingBrowser);
-                    success = true;
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                    Logger.Warn("Edge webdriver could not be initialised", ex);
-                }
             }
-
-            if (!success)
-            {
-                Logger.Error("No webdriver could be initialised", exception);
-            }
-            else
-            {
-                Logger.Info($"Successfully initialised {_browser} webdriver");
-            }
-        }
-
-        private static string FindFileDirectory(string fileName, string rootDirectory)
-        {
-            IEnumerable<string> filePaths = Directory.GetFiles(rootDirectory, fileName, SearchOption.AllDirectories);
-            if (filePaths.Any()) return Path.GetDirectoryName(filePaths.Last());
-            return null;
         }
 
         //helper function to check if certain browsers are installed

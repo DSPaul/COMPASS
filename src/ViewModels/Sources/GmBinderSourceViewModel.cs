@@ -49,7 +49,7 @@ namespace COMPASS.ViewModels.Sources
         {
             if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading cover from {codex.SourceURL}"));
-            OpenQA.Selenium.WebDriver driver = WebDriverFactory.GetWebDriver();
+            OpenQA.Selenium.WebDriver driver = await WebDriverFactory.GetWebDriver();
             try
             {
                 await Task.Run(() => driver.Navigate().GoToUrl(codex.SourceURL));

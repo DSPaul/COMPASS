@@ -668,7 +668,7 @@
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/itext/itext7-dotnet"
                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
-                                        iText 7
+                                        iText
                                     </Hyperlink>
                                 </TextBlock>
                                 <TextBlock Text="Logging:"/>
@@ -741,13 +741,13 @@
                                         VirtualizingWrapPanel
                                     </Hyperlink>
                                 </TextBlock>
-                                <TextBlock Text="Download Webdrivers:"/>
+                                <!--<TextBlock Text="Download Webdrivers:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/rosolko/WebDriverManager.Net"
                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         WebDriverManager.Net
                                     </Hyperlink>
-                                </TextBlock>
+                                </TextBlock>-->
                                 <TextBlock Text="Decode Barcodes:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/micjahn/ZXing.Net"
