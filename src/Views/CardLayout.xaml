@@ -168,7 +168,7 @@
                             </Border>
                         </Grid>
                         <Rectangle Fill="{StaticResource AccentColor}" Height="3"/>
-                        <ItemsControl Foreground="Black" Margin="10,3"
+                        <ItemsControl Foreground="Black" Margin="10,3" MinHeight="20"
                                       ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
                                       Visibility="{Binding DataContext.ShowTags, RelativeSource={RelativeSource AncestorType=ListBox},
                                         Converter={StaticResource ToVisibilityConverter}}">
