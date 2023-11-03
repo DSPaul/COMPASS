@@ -51,7 +51,7 @@
         </Style>
     </UserControl.Resources>
 
-    <TabControl Background="{StaticResource TabFocus}" BorderThickness="0" TabStripPlacement="Left" Padding="0" 
+    <TabControl Background="{StaticResource Layer3}" BorderThickness="0" TabStripPlacement="Left" Padding="0" 
                 SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
         <TabControl.Resources>
             <Style TargetType="TabItem">
@@ -79,7 +79,8 @@
             </Style>
             <Style TargetType="ContentControl" x:Key="TabContentWrapper">
                 <Setter Property="Width" Value="250"/>
-                <Setter Property="Visibility" Value="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
+                <Setter Property="Visibility" Value="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}, 
+                    Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate>
@@ -167,7 +168,111 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,5">
+
+                    <TabControl Grid.Row="0" Margin="30,10,30,5" Background="Transparent" 
+                                BorderThickness="0" Padding="2,0,2,0" 
+                                SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
+                        <TabControl.Resources>
+                            <tools:BindingProxy x:Key="TagsTabsCollapsedProxy" Data="{Binding}"/>
+                            <Style TargetType="TabItem">
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Margin" Value="0"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="TabItem">
+                                            <Border x:Name="TabBorder" MouseDown="TabItemClick" Width="60">
+                                                <Border Background="Transparent" RenderTransformOrigin="0.5,0.5">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="RenderTransform">
+                                                                        <Setter.Value>
+                                                                            <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
+                                                                        </Setter.Value>
+                                                                    </Setter>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <materialDesign:PackIcon Height="20" Width="20" Name="TabIcon" Margin="10,10,10,5"
+                                                                             HorizontalAlignment="Center" Kind="{TemplateBinding tools:AP.IconKind}"/>
+                                                </Border>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource Layer6}"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="False">
+                                                    <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource Layer5}"/>
+                                                </Trigger>
+                                                <Trigger Property="Header" Value="New Tag">
+                                                    <Setter TargetName="TabBorder" Property="CornerRadius" Value="5,0,0,0"/>
+                                                </Trigger>
+                                                <Trigger Property="Header" Value="Import Tags">
+                                                    <Setter TargetName="TabBorder" Property="CornerRadius" Value="0,5,0,0"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                            <Style TargetType="ContentControl" x:Key="TagsTabContentWrapper">
+                                <Setter Property="Visibility" Value="{Binding Data.Collapsed, Source={StaticResource TagsTabsCollapsedProxy}, 
+                                    Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Border CornerRadius="0,0,5,5" Background="{StaticResource Layer6}">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="auto"/>
+                                                        <RowDefinition Height="auto"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                        <materialDesign:PackIcon Height="20" Width="20" HorizontalAlignment="Center"
+                                                                Margin="5"  Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}"/>
+                                                        <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.Header)}" FontSize="16"/>
+                                                    </StackPanel>
+                                                    <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource Separator}"/>
+                                                    <ContentPresenter Grid.Row="2" Cursor="Arrow" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"/>
+                                                </Grid>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </TabControl.Resources>
+                        <TabItem Visibility="Collapsed">
+                            <Border CornerRadius="0,0,5,5" Margin="0,-1,0,0" Height="5" Background="{StaticResource Layer5}"/>
+                        </TabItem>
+                        <TabItem Header="New Tag" tools:AP.IconKind="TagPlusOutline" ToolTip="Create a New Tag">
+                            <ContentControl tools:AP.Header="New Tag" tools:AP.IconKind="TagPlusOutline" 
+                                            Style="{StaticResource TagsTabContentWrapper}">
+                                <views:TagEditView DataContext="{Binding AddTagViewModel}"/>
+                            </ContentControl>
+                        </TabItem>
+                        <TabItem Header="New Group" tools:AP.IconKind="FolderPlusOutline" ToolTip="Create a New Tag Group">
+                            <ContentControl tools:AP.Header="New Group" tools:AP.IconKind="FolderPlusOutline" 
+                                Style="{StaticResource TagsTabContentWrapper}">
+                                <views:TagEditView DataContext="{Binding AddGroupViewModel}"/>
+                            </ContentControl>
+                        </TabItem>
+                        <TabItem Header="Import Tags" tools:AP.IconKind="TagArrowDownOutline" ToolTip="Import Tags">
+                            <ContentControl tools:AP.Header="Import Tags" tools:AP.IconKind="TagArrowDownOutline" 
+                                    Style="{StaticResource TagsTabContentWrapper}">
+                                <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}"
+                                        Command="{Binding ImportTagsCommand}">
+                                    <TextBlock Text="From another collection..." TextWrapping="Wrap"/>
+                                </Button>
+                            </ContentControl>
+                        </TabItem>
+                    </TabControl>
+                    <Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="2"/>
+                    
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,5">
                         <StackPanel.Resources>
                             <Style TargetType="Border" x:Key="RadioBtnContainer">
                                 <Setter Property="Opacity" Value="0.3"/>
@@ -192,27 +297,6 @@
                         </RadioButton>
                     </StackPanel>
                     
-                    <customControls:ExpandingButton Grid.Row="1" Margin="30,10,30,5">
-                        <customControls:ExpandingButton.Toggle>
-                            <Button tools:AP.IconKind="TagPlusOutline" Style="{StaticResource HighlightedButton}"
-                                Content="New Tag" Command="{Binding AddTagCommand}" Margin="0"/>
-                        </customControls:ExpandingButton.Toggle>
-                        <customControls:ExpandingButton.HiddenContent>
-                            <views:TagEditView DataContext="{Binding AddTagViewModel}"/>
-                        </customControls:ExpandingButton.HiddenContent>
-                    </customControls:ExpandingButton>
-                    
-                    <customControls:ExpandingButton Grid.Row="2" Margin="30,5,30,10">
-                        <customControls:ExpandingButton.Toggle>
-                            <Button tools:AP.IconKind="FolderPlusOutline" Style="{StaticResource HighlightedButton}" 
-                            Content="New Group" Command="{Binding AddGroupCommand}" Margin="0"/>
-                        </customControls:ExpandingButton.Toggle>
-                        <customControls:ExpandingButton.HiddenContent>
-                            <views:TagEditView DataContext="{Binding AddGroupViewModel}"/>
-                        </customControls:ExpandingButton.HiddenContent>
-                    </customControls:ExpandingButton>
-                    
-                    <Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="3"/>
                     <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"  Grid.Row="4"
                         ItemsSource="{Binding Path=TreeViewSource,Mode=TwoWay}"  Margin="5" Cursor="Arrow"
                         dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}"
@@ -600,7 +684,7 @@
                 </ScrollViewer>
             </ContentControl>
         </TabItem>
-        <TabItem Header="Share" tools:AP.IconKind="Share" ToolTip="Share" Grid.IsSharedSizeScope="True" DataContext="{x:Static viewmodels:MainViewModel.CollectionVM}">
+        <!--<TabItem Header="Share" tools:AP.IconKind="Share" ToolTip="Share" Grid.IsSharedSizeScope="True" DataContext="{x:Static viewmodels:MainViewModel.CollectionVM}">
             <ContentControl tools:AP.Header="Share" tools:AP.IconKind="Share" Style="{StaticResource TabContentWrapper}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
@@ -618,7 +702,7 @@
                     </StackPanel>
                 </ScrollViewer>
             </ContentControl>
-        </TabItem>
+        </TabItem>-->
         <TabItem x:Name="Logs" Header="Logs" tools:AP.IconKind="TextLong" ToolTip="Activity Log" GotFocus="Logs_GotFocus">
             <TabItem.Template>
                 <ControlTemplate TargetType="TabItem">

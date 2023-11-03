@@ -19,6 +19,15 @@
     <!--Like transparent but bacause it is black, cursor on this transparant background will be white-->
     <SolidColorBrush x:Key="TransparentBlack" Color="Black" Opacity="0"/>
 
+    <SolidColorBrush x:Key="Layer0" Color="{StaticResource ReallyDarkGray}"/>
+    <SolidColorBrush x:Key="Layer1" Color="{StaticResource DarkestGray}"/>
+    <SolidColorBrush x:Key="Layer2" Color="{StaticResource DarkererGray}"/>
+    <SolidColorBrush x:Key="Layer3" Color="{StaticResource DarkerGray}"/>
+    <SolidColorBrush x:Key="Layer4" Color="{StaticResource DarkGray}"/>
+    <SolidColorBrush x:Key="Layer5" Color="{StaticResource KindaDarkGray}"/>
+    <SolidColorBrush x:Key="Layer6" Color="Gray"/>
+    <SolidColorBrush x:Key="Layer7" Color="{StaticResource LightGray}"/>
+
     <SolidColorBrush x:Key="WindowBackground" Color="{StaticResource DarkestGray}"/>
     <SolidColorBrush x:Key="LeftDockBackground" Color="{StaticResource DarkestGray}"/>
     <SolidColorBrush x:Key="FiltersBackground" Color="{StaticResource DarkerGray}"/>

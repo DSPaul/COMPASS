@@ -1,6 +1,7 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
+using COMPASS.ViewModels.Import;
 using COMPASS.Windows;
 using GongSolutions.Wpf.DragDrop;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Linq;
 
 namespace COMPASS.ViewModels
 {
-    public class TagsViewModel : ObservableObject, IDropTarget
+    public class TagsViewModel : ObservableObject, IDropTarget, IDealsWithTabControl
     {
         public TagsViewModel(CollectionViewModel collectionVM)
         {
@@ -21,6 +22,40 @@ namespace COMPASS.ViewModels
 
         //Tag for Context Menu
         public Tag ContextTag { get; set; }
+
+        //Selected tab from tabcontroll with options to add tags
+        private int _selectedTab = 0;
+        public int SelectedTab
+        {
+            get => _selectedTab;
+            set
+            {
+                if (value > 0) Collapsed = false;
+                switch (value)
+                {
+                    case 1:
+                        AddTag();
+                        break;
+                    case 2:
+                        AddGroup();
+                        break;
+                    default:
+                        break;
+                }
+                SetProperty(ref _selectedTab, value);
+            }
+        }
+
+        private bool _collapsed = false;
+        public bool Collapsed
+        {
+            get => _collapsed;
+            set
+            {
+                SetProperty(ref _collapsed, value);
+                if (value) SelectedTab = 0;
+            }
+        }
 
         //TreeViewSource with hierarchy
         private ObservableCollection<TreeViewNode> _treeViewSource;
@@ -53,7 +88,7 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _addTagViewModel, value);
         }
 
-        //Tag Creation ViewModel
+        //Group Creation ViewModel
         private IEditViewModel _addGroupViewModel;
         public IEditViewModel AddGroupViewModel
         {
@@ -89,6 +124,14 @@ namespace COMPASS.ViewModels
             _collectionVM.FilterVM.AddFilter(new(Filter.FilterType.Tag, tag), include);
         }
 
+        private ActionCommand _importTagsCommand;
+        public ActionCommand ImportTagsCommand => _importTagsCommand ??= new(ImportTags);
+        public void ImportTags()
+        {
+            var vm = new ImportTagsViewModel(MainViewModel.CollectionVM.AllCodexCollections.ToList());
+            var w = new ImportTagsWindow(vm);
+            w.Show();
+        }
 
         #region Drag & Drop Tags Treeview
         //Drop on Treeview Behaviour
@@ -144,6 +187,7 @@ namespace COMPASS.ViewModels
 
         private ActionCommand _deleteTagCommand;
         public ActionCommand DeleteTagCommand => _deleteTagCommand ??= new(DeleteTag);
+
         public void DeleteTag()
         {
             //tag to delete is context, because DeleteTag is called from context menu

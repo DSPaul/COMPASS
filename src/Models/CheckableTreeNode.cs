@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -86,7 +87,13 @@ namespace COMPASS.Models
             {
                 IsChecked = null;
             }
+            if (Updated != null)
+            {
+                Updated(IsChecked);
+            }
         }
+
+        public event Action<bool?> Updated;
 
         private bool _expanded = true;
         public bool Expanded

@@ -19,4 +19,10 @@ namespace COMPASS.Models
         public string Content { get; }
         public Color BackgroundColor { get; }
     }
+
+    public interface IDealsWithTabControl
+    {
+        public int SelectedTab { get; set; }
+        public bool Collapsed { get; set; }
+    }
 }
