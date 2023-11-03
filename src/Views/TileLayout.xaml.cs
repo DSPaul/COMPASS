@@ -21,15 +21,9 @@ namespace COMPASS.Views
             CodexViewModel.OpenCodex(toOpen);
         }
 
-        //Make sure selected Item is always in view
-        private void FileView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (sender is ListBox lb && e.AddedItems != null && e.AddedItems.Count > 0)
-            {
-                lb.ScrollIntoView(e.AddedItems[0]);
-            }
-        }
-
         private void TileLayoutListBox_PreviewKeyDown(object sender, KeyEventArgs e) => CodexViewModel.ListBoxHandleKeyDown(sender, e);
+
+        //Disabled scroll into view as it seems bugged, scrollregion that the object is scrolled into keeps going up
+        private void ListBoxItem_RequestBringIntoView(object sender, System.Windows.RequestBringIntoViewEventArgs e) => e.Handled = true;
     }
 }

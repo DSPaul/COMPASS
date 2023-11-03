@@ -20,7 +20,7 @@
     <wpftk:GridView x:Name="CardLayoutListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices, Mode=OneWay}" 
              BorderBrush="{x:Null}" SelectedItem="{Binding SelectedCodex, Mode=TwoWay}" SelectionMode="Extended"
              ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="10,0" Background="{x:Null}"
-             SelectionChanged="FileView_SelectionChanged" PreviewKeyDown="CardLayoutListBox_PreviewKeyDown"
+             PreviewKeyDown="CardLayoutListBox_PreviewKeyDown"
              dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CodexVM}"
              VirtualizingPanel.IsVirtualizing="{Binding DoVirtualization}"
              VirtualizingPanel.IsVirtualizingWhenGrouping="{Binding DoVirtualization}"
@@ -30,6 +30,7 @@
         <wpftk:GridView.ItemContainerStyle>
             <Style TargetType="{x:Type ListBoxItem}">
                 <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
+                <EventSetter Event="RequestBringIntoView" Handler="ListBoxItem_RequestBringIntoView"/>
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
                 <Setter Property="BorderBrush" Value="Transparent"/>

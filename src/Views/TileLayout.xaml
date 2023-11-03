@@ -15,11 +15,12 @@
         <converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
     </UserControl.Resources>
 
-    <wpftk:GridView x:Name="TileLayoutListBox" FocusVisualStyle="{x:Null}" SelectedItem="{Binding SelectedCodex, Mode=TwoWay}"
+    <wpftk:GridView x:Name="TileLayoutListBox" FocusVisualStyle="{x:Null}" 
             ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}"  
             Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Top" 
             ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="10,0" SelectionMode="Extended"
-            SelectionChanged="FileView_SelectionChanged" PreviewKeyDown="TileLayoutListBox_PreviewKeyDown"
+            SelectedItem="{Binding SelectedCodex, Mode=TwoWay}"
+            PreviewKeyDown="TileLayoutListBox_PreviewKeyDown"
             dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CodexVM}"
             VirtualizingPanel.IsVirtualizing="{Binding DoVirtualization}"
             VirtualizingPanel.IsVirtualizingWhenGrouping="{Binding DoVirtualization}"
@@ -28,6 +29,7 @@
         <wpftk:GridView.ItemContainerStyle>
             <Style TargetType="{x:Type ListBoxItem}">
                 <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
+                <EventSetter Event="RequestBringIntoView" Handler="ListBoxItem_RequestBringIntoView"/>
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderBrush" Value="Transparent"/>
                 <Setter Property="BorderThickness" Value="0"/>
