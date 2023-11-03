@@ -22,8 +22,5 @@ namespace COMPASS.Views
         }
 
         private void CardLayoutListBox_PreviewKeyDown(object sender, KeyEventArgs e) => CodexViewModel.ListBoxHandleKeyDown(sender, e);
-
-        //Disabled scroll into view as it seems bugged, scrollregion that the object is scrolled into keeps going up
-        private void ListBoxItem_RequestBringIntoView(object sender, System.Windows.RequestBringIntoViewEventArgs e) => e.Handled = true;
     }
 }
