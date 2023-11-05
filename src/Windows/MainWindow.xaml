@@ -192,10 +192,10 @@
                             <Button tools:AP.IconKind="Close" Foreground="{StaticResource CancelFill}" Command="{Binding ToggleCreateCollectionCommand}"
                                             Style="{StaticResource IconBtn}"/>
                         </StackPanel>
-                        <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
-                        <Button tools:AP.IconKind="FolderArrowDown" Foreground="{StaticResource CollectionIconFill}" 
+                        <!--<Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>-->
+                        <!--<Button tools:AP.IconKind="FolderArrowDown" Foreground="{StaticResource CollectionIconFill}" 
                                     Style="{StaticResource IconBtn}" ToolTip="Import Collection" Command="{Binding ImportCommand}"
-                                    Visibility="{Binding EditCollectionVisibility,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"/>
+                                    Visibility="{Binding EditCollectionVisibility,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"/>-->
                         <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
                         <Button tools:AP.IconKind="FolderEdit" Foreground="{StaticResource CollectionIconFill}" 
                                     Style="{StaticResource IconBtn}" ToolTip="Rename Collection" Command="{Binding ToggleEditCollectionCommand}"
