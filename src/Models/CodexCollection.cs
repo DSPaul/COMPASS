@@ -300,16 +300,16 @@ namespace COMPASS.Models
             //Delete CoverArt & Thumbnail
             File.Delete(toDelete.CoverArt);
             File.Delete(toDelete.Thumbnail);
-            Logger.Info($"Deleted {toDelete.Title} from {DirectoryName}");
+            Logger.Info($"Removed {toDelete.Title} from {DirectoryName}");
         }
 
         public void DeleteCodices(IList<Codex> toDelete)
         {
             int count = toDelete.Count;
-            string message = $"You are about to delete {count} file{(count > 1 ? @"s" : @"")}. " +
+            string message = $"You are about to remove {count} file{(count > 1 ? @"s" : @"")}. " +
                            $"This cannot be undone. " +
                            $"Are you sure you want to continue?";
-            var result = MessageBox.Show(message, "Delete", MessageBoxButton.OKCancel);
+            var result = MessageBox.Show(message, "Remove", MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.OK)
             {
                 foreach (Codex toDel in toDelete)
