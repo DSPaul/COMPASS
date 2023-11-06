@@ -29,6 +29,13 @@
 - Fixed selecting an item causing a scroll jump. [#61](https://github.com/DSPaul/COMPASS/issues/61)
 - Various smaller fixes.
 
+## COMPASS v1.5.1 (20 August 2023)
+
+### Fixes
+
+- Fixed a crash when finishing the "choose metadata wizard"
+- Fixed a crash during search when there are items with empty titles
+
 ## COMPASS v1.5.0 (20 May 2023)
 
 ### New Features
@@ -64,6 +71,7 @@ There is a know issue where the bottom of a card might get cut off if it has man
 ### Other changes
 
 - Moved Folder - Tag linking from `import` tab to the new `metadata` tab.
+
 ## COMPASS v1.4.2 (23 April 2023)
 
 ### Fixes
