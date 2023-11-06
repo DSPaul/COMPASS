@@ -61,9 +61,11 @@ namespace COMPASS.ViewModels
             //Disable skip
             AutoUpdater.ShowSkipButton = false;
             //Set Icon
-            string runningExePath = new System.Uri(Assembly.GetExecutingAssembly().Location).AbsolutePath;
+            string runningExePath = Process.GetCurrentProcess().MainModule.FileName;
             AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath).ToBitmap();
+#if DEBUG
             //AutoUpdater.InstalledVersion = new("0.2.0"); //for testing only
+#endif
             //set remind later time so users can go back to the app in one click
             AutoUpdater.LetUserSelectRemindLater = false;
             AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
