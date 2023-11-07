@@ -4,6 +4,8 @@
 <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/dspaul/compass/total?color=%2316d68a&logo=github">
 <img alt="GitHub" src="https://img.shields.io/github/license/dspaul/compass">
  <a href="https://discord.gg/HawGMJgS9Y"><img alt="Discord" src="https://img.shields.io/badge/discord-chat-5865f2?logo=discord&logoColor=f5f5f5" /></a>
+ <img alt="GitHub Release Version" src="https://img.shields.io/github/v/release/dspaul/compass">
+ <img alt="GitHub Release Date" src="https://img.shields.io/github/release-date/dspaul/compass">
 </p>
 
 
