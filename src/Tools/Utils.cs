@@ -1,6 +1,7 @@
 ﻿using COMPASS.Models;
 using COMPASS.ViewModels;
 using HtmlAgilityPack;
+using Ionic.Zip;
 using Newtonsoft.Json.Linq;
 using Ookii.Dialogs.Wpf;
 using System;
@@ -37,27 +38,27 @@ namespace COMPASS.Tools
             {
                 //Breadth first search
                 case "bfs":
-                {
-                    for (int i = 0; i < result.Count; i++)
                     {
-                        T parent = result[i];
-                        result.AddRange(parent.Children);
+                        for (int i = 0; i < result.Count; i++)
+                        {
+                            T parent = result[i];
+                            result.AddRange(parent.Children);
+                            yield return parent;
+                        }
+                        break;
                     }
-                    break;
-                }
                 //Depth first search (pre-order)
                 case "dfs":
-                {
-                    for (int i = 0; i < result.Count; i++)
                     {
-                        T parent = result[i];
-                        result.InsertRange(i + 1, parent.Children);
+                        for (int i = 0; i < result.Count; i++)
+                        {
+                            T parent = result[i];
+                            result.InsertRange(i + 1, parent.Children);
+                            yield return parent;
+                        }
+                        break;
                     }
-                    break;
-                }
             }
-
-            return result;
         }
 
         //check internet connection
@@ -117,6 +118,28 @@ namespace COMPASS.Tools
                 json = JObject.Parse(data.Result);
             }
             return json;
+        }
+
+        /// <summary>
+        /// Unzips a collection stored in a .cmpss file
+        /// </summary>
+        /// <param name="path">Path to the .cmpss file</param>
+        /// <returns>Path to unziped folder</returns>
+        public static async Task<string> UnZipCollection(string path)
+        {
+            string fileName = Path.GetFileName(path);
+            string tmpCollectionPath = Path.Combine(CodexCollection.CollectionsPath, $"__{fileName}");
+            //make sure any previous temp data is gone
+            Utils.ClearTmpData(tmpCollectionPath);
+            //unzip the file to tmp folder
+            ZipFile zip = ZipFile.Read(path);
+            var progressVM = ProgressViewModel.GetInstance();
+            progressVM.Text = $"Reading {path}";
+            progressVM.ResetCounter();
+            progressVM.TotalAmount = 1;
+            await Task.Run(() => zip.ExtractAll(tmpCollectionPath));
+            progressVM.IncrementCounter();
+            return tmpCollectionPath;
         }
 
         //based on https://seattlesoftware.wordpress.com/2008/09/11/hexadecimal-value-0-is-an-invalid-character/
@@ -188,6 +211,25 @@ namespace COMPASS.Tools
             return openFolderDialog.SelectedPath;
         }
 
+        public static string GetCommonFolder(List<string> paths)
+        {
+            if (paths is null) throw new ArgumentNullException(nameof(paths));
+
+            string reference = paths.First();
+            string[] folders = reference.Split(Path.DirectorySeparatorChar);
+            string commonFolder = "";
+            foreach (string folder in folders)
+            {
+                string nextFolderToTest = Path.Combine(commonFolder, folder);
+                if (paths.All(path => path.StartsWith(nextFolderToTest)))
+                {
+                    commonFolder = nextFolderToTest;
+                }
+                else break;
+            }
+            return commonFolder;
+        }
+
         public static async Task<HtmlDocument> ScrapeSite(string url)
         {
             HtmlWeb web = new();
@@ -218,6 +260,18 @@ namespace COMPASS.Tools
             else
             {
                 return doc;
+            }
+        }
+
+        public static void ClearTmpData(string tempPath = null)
+        {
+            if (tempPath == null)
+            {
+                //TODO: find all paths with __ which are temp and delete them
+            }
+            if (Directory.Exists(tempPath))
+            {
+                Directory.Delete(tempPath, true);
             }
         }
     }

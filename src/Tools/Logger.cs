@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.Reflection;
@@ -44,7 +45,7 @@ namespace COMPASS.Tools
             //prompt user to submit logs and open an issue
             string message = $"Its seems COMPASS has run into a critical error ({e.Exception.Message}).\n" +
                 $"You can help improve COMPASS by opening an issue on {Constants.RepoURL} with the error message. \n" +
-                @"Please include the log file located at %appdata%\COMPASS\logs.";
+                $"Please include the log file located at {SettingsViewModel.CompassDataPath}\\logs.";
             if (Task.Run(() => MessageBox.Show(message, $"COMPASS ran into a critical error.", MessageBoxButton.OK, MessageBoxImage.Error)).Result == MessageBoxResult.OK)
             {
                 e.Handled = true;

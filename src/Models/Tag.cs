@@ -64,7 +64,19 @@ namespace COMPASS.Models
         }
 
         //Implement IHasID
-        public int ID { get; set; }
+        public int _ID;
+        public int ID
+        {
+            get => _ID;
+            set
+            {
+                SetProperty(ref _ID, value);
+                foreach (var child in Children)
+                {
+                    child.ParentID = value;
+                }
+            }
+        }
 
         // can't save parent itself, would cause infinite loop when serializing
         // so save ID instead
@@ -72,13 +84,13 @@ namespace COMPASS.Models
         [XmlIgnore]
         public Tag Parent
         {
-            get => ParentID == -1 ? null : AllTags.First(tag => tag.ID == ParentID);
+            get => ParentID == -1 ? null : AllTags.FirstOrDefault(tag => tag.ID == ParentID);
             set => ParentID = value?.ID ?? -1;
         }
 
         [XmlIgnore]
         public List<Tag> AllTags { get; set; } //needed to get parent tag from parent ID
-        
+
         // Group tags are important for filtering
         // when filtering, Tags in same group get OR relation
         // Tags across groups get AND relation
@@ -140,7 +152,10 @@ namespace COMPASS.Models
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(Tag lhs, Tag rhs) => !(lhs == rhs);
+        public static bool operator !=(Tag lhs, Tag rhs)
+        {
+            return !(lhs == rhs);
+        }
 
         public override int GetHashCode() => ID.GetHashCode();
         #endregion

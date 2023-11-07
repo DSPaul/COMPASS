@@ -7,11 +7,10 @@ namespace COMPASS.Converters
 {
     class UriToBitmapConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object getFullRes, System.Globalization.CultureInfo culture)
         {
             if (!File.Exists((string)value)) return null;
-            //Parameter is true if instant refresh is needed for Edit View, false for mass view
-            bool fullRes = System.Convert.ToBoolean(parameter);
+            bool fullRes = System.Convert.ToBoolean(getFullRes);
             BitmapImage bi = new();
             bi.BeginInit();
 

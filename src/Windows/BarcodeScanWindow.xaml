@@ -14,11 +14,17 @@
         <StackPanel x:Name="CameraLoading" HorizontalAlignment="Center"
                 VerticalAlignment="Center" Orientation="Vertical">
             <Image gif:ImageBehavior.AnimatedSource="../Media/LoadingAnimation.gif" 
-                   Width="100" Height="100"/>
+                   Width="100" Height="100">
+                
+            </Image>
             <TextBlock Text="Webcam loading..." />
 
         </StackPanel>
-        <Image x:Name="WebcamPreview" />
+        <Image x:Name="WebcamPreview" RenderTransformOrigin="0.5 0.5">
+            <Image.RenderTransform>
+                <ScaleTransform ScaleX="-1"/>
+            </Image.RenderTransform>
+        </Image>
     </Grid>
 
 </Window>

@@ -33,7 +33,7 @@ namespace COMPASS.ViewModels
             SettingsViewModel.GetInstance().MVM = this;
 
             //Update stuff
-            WebDriverFactory.UpdateWebdriver();
+            WebDriverFactory.InitWebdriver();
             InitAutoUpdates();
 
             //Start timer that periodically checks if there is an internet connection
@@ -60,7 +60,12 @@ namespace COMPASS.ViewModels
             AutoUpdater.AppCastURL = Constants.AutoUpdateXMLPath;
             //Disable skip
             AutoUpdater.ShowSkipButton = false;
+            //Set Icon
+            string runningExePath = Process.GetCurrentProcess().MainModule.FileName;
+            AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath).ToBitmap();
+#if DEBUG
             //AutoUpdater.InstalledVersion = new("0.2.0"); //for testing only
+#endif
             //set remind later time so users can go back to the app in one click
             AutoUpdater.LetUserSelectRemindLater = false;
             AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;

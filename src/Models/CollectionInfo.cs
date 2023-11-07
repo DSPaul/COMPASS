@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using COMPASS.Tools;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Serialization;
@@ -10,6 +11,16 @@ namespace COMPASS.Models
     /// </summary>
     public class CollectionInfo
     {
+        /// <summary>
+        /// Checks if the collections has settings that differ from the default settings
+        /// </summary>
+        /// <returns>True if settings were moddified, false if they are default</returns>
+        public bool ContainsSettings() =>
+            AutoImportDirectories.Count > 0 ||
+            BanishedPaths.Count > 0 ||
+            FiletypePreferences.Count > 0 ||
+            FolderTagPairs.Count > 0;
+
         #region Folders to Auto Import
         //Folders to check for new files
         public ObservableCollection<string> AutoImportDirectories { get; set; } = new();
@@ -43,6 +54,28 @@ namespace COMPASS.Models
             {
                 pair.InitTag(owner);
             }
+        }
+
+        public void MergeWith(CollectionInfo other)
+        {
+            AutoImportDirectories.AddRange(other.AutoImportDirectories);
+            BanishedPaths.AddRange(other.BanishedPaths);
+            //For file type prefs, overwrite if already in dict, add otherwise
+            foreach (var pref in other.SerializableFiletypePreferences)
+            {
+                var existing = SerializableFiletypePreferences.FirstOrDefault(x => x.Key == pref.Key);
+                if (existing != default)
+                {
+                    existing.Value = pref.Value;
+                }
+                else
+                {
+                    SerializableFiletypePreferences.Add(pref);
+                }
+            }
+            FiletypePreferences = null; //reset lazy loading
+            FolderTagPairs.AddRange(other.FolderTagPairs);
+
         }
         #endregion
     }

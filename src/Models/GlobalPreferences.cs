@@ -25,7 +25,6 @@ namespace COMPASS.Models
                     prop = defaultProp;
                     CodexProperties.Add(prop);
                 }
-                //Call init on every preference
                 prop.UpdateSources();
             }
         }

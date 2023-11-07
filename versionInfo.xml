@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
-  <version>1.5.1</version>
-  <url>https://github.com/DSPAUL/COMPASS/releases/download/v1.5.1/COMPASS_Setup_1.5.1.exe</url>
-  <changelog>https://github.com/DSPAUL/COMPASS/blob/master/Changelog.md#compass-v151-20-august-2023</changelog>
+  <version>1.6.0</version>
+  <url>https://github.com/DSPAUL/COMPASS/releases/download/v1.6.0/COMPASS_Setup_1.6.0.exe</url>
+  <changelog>https://www.compassapp.info/changelog</changelog>
   <mandatory>false</mandatory>
 </item>

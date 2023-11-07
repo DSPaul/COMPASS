@@ -25,7 +25,7 @@
         <DockPanel Margin="40,10">
                        
             <TextBlock HorizontalAlignment="Right" FontSize="20" FontWeight="Light" DockPanel.Dock="Right">
-                <Run Text="{Binding Counter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"/>
+                <Run Text="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"/>
                 / 
                 <Run Text="{Binding CodicesWithChoices.Count, Mode=OneTime}"/>
             </TextBlock>
@@ -39,7 +39,7 @@
                 items with conflicts to resolve.
             </TextBlock>
         </DockPanel>
-        <ProgressBar Grid.Row="1" Value="{Binding Counter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"
+        <ProgressBar Grid.Row="1" Value="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"
                      Maximum="{Binding CodicesWithChoices.Count, Mode=OneTime}" Height="12" Margin="10,0"
                      Foreground="{StaticResource AccentColor}" Background="{StaticResource UIElementBackground}" 
                      Style="{DynamicResource RoundedProgressBar}"/>
@@ -197,14 +197,16 @@
             </ScrollViewer>
         </Border>
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="3" Margin="10">
-            <Button Style="{StaticResource TextButton}" Content="Back" Command="{Binding BackCommand}"
-                    Visibility="{Binding ShowBackButton, Converter={StaticResource ToVisibilityConverter}}"/>
-            <Button Style="{StaticResource TextButton}" Content="Next" Command="{Binding NextCommand}"
-                    Visibility="{Binding ShowNextButton, Converter={StaticResource ToVisibilityConverter}}"/>
+            <Button Style="{StaticResource TextButton}" Content="Back" Command="{Binding PrevStepCommand}"
+                    Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, 
+                        Converter={StaticResource ToVisibilityConverter}}"/>
+            <Button Style="{StaticResource TextButton}" Content="Next" Command="{Binding NextStepCommand}"
+                    Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, 
+                        Converter={StaticResource ToVisibilityConverter}}"/>
             <Button Style="{StaticResource TextButton}" Content="Finish" Command="{Binding FinishCommand}"
                     Background="{StaticResource AccentColor}"
-                    Visibility="{Binding ShowFinishButton, Converter={StaticResource ToVisibilityConverter}}"/>
-
+                    Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, 
+                        Converter={StaticResource ToVisibilityConverter}}"/>
         </StackPanel>
     </Grid>
 </Window>

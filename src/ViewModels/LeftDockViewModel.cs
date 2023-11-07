@@ -4,7 +4,7 @@ using COMPASS.ViewModels.Import;
 
 namespace COMPASS.ViewModels
 {
-    public class LeftDockViewModel : ObservableObject
+    public class LeftDockViewModel : ObservableObject, IDealsWithTabControl
     {
         public LeftDockViewModel(MainViewModel mainViewModel)
         {

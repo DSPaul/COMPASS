@@ -85,7 +85,7 @@ namespace COMPASS.ViewModels.Sources
                 string uri = $"https://openlibrary.org/isbn/{codex.ISBN}.json";
                 JObject metadata = await Utils.GetJsonAsync(uri);
 
-                if (!metadata.HasValues)
+                if (metadata == null || !metadata.HasValues)
                 {
                     string message = $"ISBN {codex.ISBN} was not found on openlibrary.org \n" +
                         $"You can contribute by submitting this book at \n" +

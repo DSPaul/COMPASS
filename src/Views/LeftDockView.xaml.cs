@@ -76,10 +76,10 @@ namespace COMPASS.Views
             var border = sender as Border;
             var tabItem = border.TemplatedParent as TabItem;
             var tabControl = tabItem.Parent as TabControl;
-            var LeftDockVM = tabControl.DataContext as LeftDockViewModel;
+            var vm = tabControl.DataContext as IDealsWithTabControl;
             if (tabItem.IsSelected)
             {
-                LeftDockVM.SelectedTab = 0;
+                vm.SelectedTab = 0;
                 e.Handled = true;
             }
 

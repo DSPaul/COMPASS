@@ -12,7 +12,6 @@ namespace COMPASS.Models
 {
     public class Codex : ObservableObject, IHasID
     {
-        //empty constructor for serialization
         public Codex()
         {
             Authors.CollectionChanged += (_, _) => RaisePropertyChanged(nameof(AuthorsAsString));
@@ -29,12 +28,10 @@ namespace COMPASS.Models
             Copy(codex);
         }
 
-        public void SetImagePaths(CodexCollection collection) => SetImagePaths(collection.DirectoryName);
-
-        public void SetImagePaths(string collectionName)
+        public void SetImagePaths(CodexCollection collection)
         {
-            CoverArt = System.IO.Path.Combine(CodexCollection.CollectionsPath, collectionName, "CoverArt", $"{ID}.png");
-            Thumbnail = System.IO.Path.Combine(CodexCollection.CollectionsPath, collectionName, "Thumbnails", $"{ID}.png");
+            CoverArt = System.IO.Path.Combine(collection.CoverArtPath, $"{ID}.png");
+            Thumbnail = System.IO.Path.Combine(collection.ThumbnailsPath, $"{ID}.png");
         }
 
         public void Copy(Codex c)
@@ -66,27 +63,31 @@ namespace COMPASS.Models
 
         public bool HasOnlineSource() => !String.IsNullOrWhiteSpace(SourceURL);
 
-        public string GetFileType()
+        public string FileType
         {
-            if (HasOfflineSource())
+            get
             {
-                return System.IO.Path.GetExtension(Path);
-            }
+                if (HasOfflineSource())
+                {
+                    return System.IO.Path.GetExtension(Path);
+                }
 
-            else if (HasOnlineSource())
-            {
-                // online sources can also also point to file 
-                // either hosted on cloud service like Google drive 
-                // or services like homebrewery are always .pdf
-                // skip this for now though
-                return "webpage";
-            }
+                else if (HasOnlineSource())
+                {
+                    // online sources can also also point to file 
+                    // either hosted on cloud service like Google drive 
+                    // or services like homebrewery are always .pdf
+                    // skip this for now though
+                    return "webpage";
+                }
 
-            else
-            {
-                return null;
+                else
+                {
+                    return null;
+                }
             }
         }
+        public string FileName => System.IO.Path.GetFileName(Path);
 
         public void RefreshThumbnail() => RaisePropertyChanged(nameof(Thumbnail));
 
@@ -119,7 +120,7 @@ namespace COMPASS.Models
         [XmlIgnore]
         public string SortingTitle
         {
-            get => String.IsNullOrEmpty(_sortingTitle) ? _title : _sortingTitle;
+            get => (String.IsNullOrEmpty(_sortingTitle) ? _title : _sortingTitle).PadNumbers();
             set => SetProperty(ref _sortingTitle, value);
         }
         //separate property needed for serialization or it will get _title and save that

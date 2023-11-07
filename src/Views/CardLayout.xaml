@@ -20,7 +20,7 @@
     <wpftk:GridView x:Name="CardLayoutListBox" ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices, Mode=OneWay}" 
              BorderBrush="{x:Null}" SelectedItem="{Binding SelectedCodex, Mode=TwoWay}" SelectionMode="Extended"
              ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="10,0" Background="{x:Null}"
-             SelectionChanged="FileView_SelectionChanged" PreviewKeyDown="CardLayoutListBox_PreviewKeyDown"
+             PreviewKeyDown="CardLayoutListBox_PreviewKeyDown"
              dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding CodexVM}"
              VirtualizingPanel.IsVirtualizing="{Binding DoVirtualization}"
              VirtualizingPanel.IsVirtualizingWhenGrouping="{Binding DoVirtualization}"
@@ -31,7 +31,6 @@
             <Style TargetType="{x:Type ListBoxItem}">
                 <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
                 <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
                 <Setter Property="BorderBrush" Value="Transparent"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="ContextMenu" Value="{DynamicResource MultiCodexContextMenu}"/>
@@ -46,15 +45,6 @@
                     </Setter.Value>
                 </Setter>
                 <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="true">
-                        <Setter Property="RenderTransform">
-                            <Setter.Value>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleY="1.05" ScaleX="1.05"/>
-                                </TransformGroup>
-                            </Setter.Value>
-                        </Setter>
-                    </Trigger>
                     <Trigger Property="IsSelected" Value="True">
                         <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
                     </Trigger>
@@ -68,7 +58,23 @@
         <wpftk:GridView.ItemTemplate>
             <DataTemplate>
                 <Border CornerRadius="5" Margin="5" Width="400" Background="{StaticResource CardBackground}" SnapsToDevicePixels="True"
-                        BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" BorderThickness="3">
+                        BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" BorderThickness="3"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter Property="RenderTransform">
+                                        <Setter.Value>
+                                            <TransformGroup>
+                                                <ScaleTransform ScaleY="1.05" ScaleX="1.05"/>
+                                            </TransformGroup>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="15" Direction="300"/>
                     </Border.Effect>
@@ -168,7 +174,7 @@
                             </Border>
                         </Grid>
                         <Rectangle Fill="{StaticResource AccentColor}" Height="3"/>
-                        <ItemsControl Foreground="Black" Margin="10,3"
+                        <ItemsControl Foreground="Black" Margin="10,3" MinHeight="20"
                                       ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
                                       Visibility="{Binding DataContext.ShowTags, RelativeSource={RelativeSource AncestorType=ListBox},
                                         Converter={StaticResource ToVisibilityConverter}}">

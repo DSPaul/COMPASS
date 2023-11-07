@@ -1,7 +1,6 @@
 ﻿using COMPASS.Tools;
 using COMPASS.ViewModels;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -25,6 +24,10 @@ namespace COMPASS.Models
         public string TagsDataFilePath => Path.Combine(FullDataPath, "Tags.xml");
         public string CollectionInfoFilePath => Path.Combine(FullDataPath, "CollectionInfo.xml");
 
+        public string CoverArtPath => Path.Combine(FullDataPath, "CoverArt");
+        public string ThumbnailsPath => Path.Combine(FullDataPath, "Thumbnails");
+        public string UserFilesPath => Path.Combine(FullDataPath, "Files");
+
         #region Properties
         private string _directoryName;
         public string DirectoryName
@@ -33,11 +36,8 @@ namespace COMPASS.Models
             set => SetProperty(ref _directoryName, value);
         }
 
-        //Tag Lists
         public List<Tag> AllTags { get; private set; } = new();
         public List<Tag> RootTags { get; set; }
-
-        //File Lists
         public ObservableCollection<Codex> AllCodices { get; private set; } = new();
 
         public CollectionInfo Info { get; private set; } = new();
@@ -47,10 +47,10 @@ namespace COMPASS.Models
         #region Load Data From File
 
         /// <summary>
-        /// Loads the collection and sets it as the new default to load on startup
+        /// Loads the collection and unless hidden, sets it as the new default to load on startup
         /// </summary>
         /// <returns>int that gives status: 0 for success, -1 for failed tags, -2 for failed codices, -4 for failed info, or combination of those</returns>
-        public int Load()
+        public int Load(bool hidden = false)
         {
             int result = 0;
             bool loadedTags = LoadTags();
@@ -59,8 +59,11 @@ namespace COMPASS.Models
             if (!loadedTags) { result -= 1; }
             if (!loadedCodices) { result -= 2; }
             if (!loadedInfo) { result -= 4; }
-            Properties.Settings.Default.StartupCollection = DirectoryName;
-            Logger.Info($"Loaded {DirectoryName}");
+            if (!hidden)
+            {
+                Properties.Settings.Default.StartupCollection = DirectoryName;
+                Logger.Info($"Loaded {DirectoryName}");
+            }
             return result;
         }
 
@@ -220,24 +223,93 @@ namespace COMPASS.Models
 
         #endregion    
 
+        /// <summary>
+        /// Will merge all the data from toMerge into this collection
+        /// </summary>
+        /// <param name="toMerge"></param>
+        public void MergeWith(CodexCollection toMerge)
+        {
+            ImportTags(toMerge.RootTags);
+            ImportCodicesFrom(toMerge);
+            Info.MergeWith(toMerge.Info);
+            MainViewModel.CollectionVM.Refresh();
+        }
+
+        public void ImportTags(IEnumerable<Tag> tags)
+        {
+            // change ID's of Tags so there aren't any duplicates
+            var tagsToImport = Utils.FlattenTree(tags);
+            foreach (Tag tag in tagsToImport)
+            {
+                tag.ID = Utils.GetAvailableID(AllTags);
+                tag.AllTags = AllTags;
+                AllTags.Add(tag);
+            }
+            RootTags.AddRange(tags);
+            MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
+        }
+
+        public void ImportCodicesFrom(CodexCollection source)
+        {
+            //if import includes files, make sure directory exists to copy files into
+            if (Path.Exists(source.UserFilesPath))
+            {
+                Directory.CreateDirectory(UserFilesPath);
+            }
+
+            foreach (var codex in source.AllCodices)
+            {
+                //Give it a new id that is unique to this collection
+                codex.ID = Utils.GetAvailableID(AllCodices);
+
+                //Move Cover file
+                if (File.Exists(codex.CoverArt))
+                {
+                    File.Move(codex.CoverArt, Path.Combine(CoverArtPath, $"{codex.ID}.png"), true);
+                }
+
+                //Move or Generate Thumbnail file
+                if (File.Exists(codex.Thumbnail))
+                {
+                    File.Move(codex.Thumbnail, Path.Combine(ThumbnailsPath, $"{codex.ID}.png"), true);
+                }
+                else
+                {
+                    CoverFetcher.CreateThumbnail(codex);
+                }
+
+                //update img path to these new files
+                codex.SetImagePaths(this);
+
+                //move user files included in import
+                if (codex.Path.StartsWith(source.UserFilesPath) && File.Exists(codex.Path))
+                {
+                    string newPath = codex.Path.Replace(source.UserFilesPath, UserFilesPath);
+                    File.Move(codex.Path, newPath, true);
+                    codex.Path = newPath;
+                }
+                AllCodices.Add(codex);
+            }
+        }
+
         public void DeleteCodex(Codex toDelete)
         {
-            //Delete file from all lists
+            //Delete codex from all lists
             AllCodices.Remove(toDelete);
 
             //Delete CoverArt & Thumbnail
             File.Delete(toDelete.CoverArt);
             File.Delete(toDelete.Thumbnail);
-            Logger.Info($"Deleted {toDelete.Title} from {DirectoryName}");
+            Logger.Info($"Removed {toDelete.Title} from {DirectoryName}");
         }
 
         public void DeleteCodices(IList<Codex> toDelete)
         {
             int count = toDelete.Count;
-            string message = $"You are about to delete {count} file{(count > 1 ? @"s" : @"")}. " +
+            string message = $"You are about to remove {count} file{(count > 1 ? @"s" : @"")}. " +
                            $"This cannot be undone. " +
                            $"Are you sure you want to continue?";
-            var result = MessageBox.Show(message, "Delete", MessageBoxButton.OKCancel);
+            var result = MessageBox.Show(message, "Remove", MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.OK)
             {
                 foreach (Codex toDel in toDelete)
@@ -269,8 +341,11 @@ namespace COMPASS.Models
                 DeleteTag(toDelete.Children[0]);
                 DeleteTag(toDelete);
             }
+
+            //Remove the tag from all Tags
             AllTags.Remove(toDelete);
-            //remove from parent items list
+
+            //Remove the tags from parent's children list
             if (toDelete.Parent is null)
             {
                 RootTags.Remove(toDelete);
@@ -280,27 +355,32 @@ namespace COMPASS.Models
                 toDelete.Parent.Children.Remove(toDelete);
             }
 
+            //Remove folder-tag links that contain this tag
+            Info.FolderTagPairs.RemoveAll(pair => pair.Tag == toDelete);
+
             SaveTags();
         }
 
         public void RenameCollection(string newCollectionName)
         {
+            string oldName = DirectoryName;
+            DirectoryName = newCollectionName;
+
             foreach (Codex codex in AllCodices)
             {
                 //Replace folder names in image paths
-                codex.SetImagePaths(newCollectionName);
+                codex.SetImagePaths(this);
             }
             try
             {
-                Directory.Move(Path.Combine(CollectionsPath, DirectoryName), Path.Combine(CollectionsPath, newCollectionName));
+                Directory.Move(Path.Combine(CollectionsPath, oldName), Path.Combine(CollectionsPath, newCollectionName));
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to move data files from {DirectoryName} to {newCollectionName}", ex);
+                Logger.Error($"Failed to move data files from {oldName} to {newCollectionName}", ex);
             }
 
-            DirectoryName = newCollectionName;
-            Logger.Info($"Renamed  {DirectoryName} to {newCollectionName}");
+            Logger.Info($"Renamed  {oldName} to {newCollectionName}");
         }
     }
 }

@@ -8,6 +8,8 @@ namespace COMPASS.Models
     {
         public const string RepoURL = "https://github.com/DSPAUL/COMPASS";
 
+        public const string COMPASSFileExtension = ".cmpss";
+
         public static string InstallersPath => Path.Combine(SettingsViewModel.CompassDataPath, "Installers");
         public const string AutoUpdateXMLPath = "https://raw.githubusercontent.com/DSPAUL/COMPASS/master/versionInfo.xml";
 

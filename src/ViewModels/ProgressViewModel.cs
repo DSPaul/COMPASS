@@ -44,6 +44,7 @@ namespace COMPASS.ViewModels
             get => _totalAmount;
             set
             {
+                if (value == _totalAmount) return;
                 SetProperty(ref _totalAmount, value);
                 RaisePropertyChanged(nameof(Percentage));
                 RaisePropertyChanged(nameof(FullText));
@@ -60,6 +61,8 @@ namespace COMPASS.ViewModels
             }
         }
 
+        public bool ShowCount { get; set; } = true;
+
         private string _text;
         public string Text
         {
@@ -71,7 +74,16 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public string FullText => Cancelling ? $"Cancelling {Text}..." : $"{Text} [{Counter} / {TotalAmount}]";
+        public string FullText
+        {
+            get
+            {
+                if (Cancelling) return $"Cancelling {Text}...";
+                string result = $"{Text}";
+                if (ShowCount) result += $" [{Counter} / {TotalAmount}]";
+                return result;
+            }
+        }
 
         public bool ImportInProgress => TotalAmount > 0 && Counter < TotalAmount;
 

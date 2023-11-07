@@ -152,6 +152,7 @@
                                                                 <ColumnDefinition Width="*"/>
                                                                 <ColumnDefinition Width="auto"/>
                                                                 <ColumnDefinition Width="auto"/>
+                                                                <ColumnDefinition Width="auto"/>
                                                             </Grid.ColumnDefinitions>
                                                             <TextBlock Text="{Binding}" Margin="0" TextWrapping="Wrap"/>
                                                             <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="FolderOpen" Width="20" 
@@ -174,15 +175,18 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="auto"/>
                                                 <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBox x:Name="NewAutoImportFolderTextBox" tools:AP.PlaceHolderText="New Folder" Margin="0" BorderThickness="0"/>
-                                            <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Plus" Grid.Column="1" Margin="10,0,5,0" 
+                                            <TextBox x:Name="NewAutoImportFolderTextBox" tools:AP.PlaceHolderText="Path/to/folder/to/add" Margin="0" BorderThickness="0"/>
+                                            <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Plus" Grid.Column="1" Margin="10,0" 
                                                 Background="{StaticResource AccentColorMuted}" Padding="3,2" 
                                                 IsDefault="{Binding ElementName=NewAutoImportFolderTextBox, Path= IsFocused}"
                                                 Command="{Binding AddAutoImportDirectoryCommand}" ToolTip="Add Folder"
                                                 CommandParameter="{Binding ElementName=NewAutoImportFolderTextBox, Path=Text}"/>
-                                            <Button Style="{StaticResource IconBtn}" ToolTip="Pick Folder To Add" Grid.Column="2"
-                                                    Background="{StaticResource AccentColorMuted}" Padding="3,2" tools:AP.IconKind="FolderPlus"
+                                            <Label Content="OR" Grid.Column="2" VerticalAlignment="Center" Margin="5"/>
+                                            <Button Style="{StaticResource IconTextButton}" Content="Select a Folder..." 
+                                                    ToolTip="Select Folder To Add" Grid.Column="3" Padding="3" Margin="5,0"
+                                                    Background="{StaticResource AccentColorMuted}" tools:AP.IconKind="FolderPlus"
                                                     Command="{Binding PickAutoImportDirectoryCommand}"/>
                                         </Grid>
                                     </StackPanel>
@@ -292,7 +296,7 @@
                                                                 Command="{Binding DataContext.RemoveFolderTagPairCommand, 
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                 CommandParameter="{Binding}" Margin="5,0" 
-                                                                Grid.Column="4" ToolTip="Remove From Auto Import"/>
+                                                                Grid.Column="4" ToolTip="Remove Link"/>
                                                         </Grid>
                                                     </Border>
                                                 </DataTemplate>
@@ -306,7 +310,7 @@
                                                 <ColumnDefinition Width="auto"/>
                                                 <ColumnDefinition Width="auto"/>
                                             </Grid.ColumnDefinitions>
-                                            <Border Background="{StaticResource DarkUIElementBackground}" CornerRadius="5">
+                                            <Border Background="{StaticResource DarkUIElementBackground}" CornerRadius="3">
                                                 <DockPanel>
                                                     <Button  x:Name="SelectFolderForFolderTagPairButton" Style="{StaticResource IconBtn}" 
                                                              ToolTip="Pick a Folder"  HorizontalAlignment="Right" Padding="3,2" 
@@ -529,7 +533,7 @@
                                 <TextBlock Text="Data Path:" Grid.Column="0"/>
                                 <TextBox IsReadOnly="True" Grid.Column="1" TextWrapping="Wrap"
                                          Text="{Binding Source={x:Static viewmodels:SettingsViewModel.CompassDataPath}, Mode=OneWay}"/>
-                                <Button Style="{StaticResource IconTextButton}" Grid.Column="2" Content="Change" Margin="5"
+                                <Button Style="{StaticResource IconTextButton}" Grid.Column="2" Content="Change..." Margin="5"
                                         ToolTip="Change Data Path" tools:AP.IconKind="FolderEdit" Command="{Binding ChangeDataPathCommand}"/>
                                 <Button Style="{StaticResource IconTextButton}" Grid.Column="3" Content="Default" Margin="5"
                                         ToolTip="Restore Default" tools:AP.IconKind="FolderRefresh" Command="{Binding ResetDataPathCommand}"/>
@@ -538,10 +542,10 @@
                             <UniformGrid Columns="3">
                                 <Button Content="Browse Local Files" tools:AP.IconKind="FolderOpen"
                                         Command="{Binding BrowseLocalFilesCommand}" Style="{StaticResource IconTextButton}"/>
-                                <Button Content="Backup User Data" tools:AP.IconKind="FolderZip"
+                                <Button Content="Backup User Data..." tools:AP.IconKind="FolderZip"
                                         Command="{Binding BackupLocalFilesCommand}" Style="{StaticResource IconTextButton}" 
                                         ToolTip="Saves metadata, tags, thumbnails and preferences to zip"/>
-                                <Button Content="Restore Backup" tools:AP.IconKind="BackupRestore"
+                                <Button Content="Restore Backup..." tools:AP.IconKind="BackupRestore"
                                         Command="{Binding RestoreBackupCommand}" Style="{StaticResource IconTextButton}"/>
                             </UniformGrid>
                         </StackPanel>
@@ -664,7 +668,7 @@
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/itext/itext7-dotnet"
                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
-                                        iText 7
+                                        iText
                                     </Hyperlink>
                                 </TextBlock>
                                 <TextBlock Text="Logging:"/>
@@ -737,13 +741,13 @@
                                         VirtualizingWrapPanel
                                     </Hyperlink>
                                 </TextBlock>
-                                <TextBlock Text="Download Webdrivers:"/>
+                                <!--<TextBlock Text="Download Webdrivers:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/rosolko/WebDriverManager.Net"
                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         WebDriverManager.Net
                                     </Hyperlink>
-                                </TextBlock>
+                                </TextBlock>-->
                                 <TextBlock Text="Decode Barcodes:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/micjahn/ZXing.Net"

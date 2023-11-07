@@ -4,7 +4,7 @@
                     xmlns:converters ="clr-namespace:COMPASS.Converters"
                     xmlns:models ="clr-namespace:COMPASS.Models"
                     xmlns:tools="clr-namespace:COMPASS.Tools"
-                    xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary;assembly=BlackPearl.Controls.CoreLibrary">
+                    xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Themes/DarkTheme.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -25,7 +25,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="4" 
+                    <Border Background="{TemplateBinding Background}" CornerRadius="3" 
                             BorderThickness="{TemplateBinding BorderThickness}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}"
@@ -115,7 +115,8 @@
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"
                             CornerRadius="7" HorizontalAlignment="Stretch" Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
+                        <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -515,7 +516,7 @@
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
         <Separator Style="{StaticResource MarginlessSeparator}"/>
-        <MenuItem Header="Edit" tools:AP.IconKind="Edit" InputGestureText="Ctrl + E"
+        <MenuItem Header="Edit..." tools:AP.IconKind="Edit" InputGestureText="Ctrl + E"
                   Command="{Binding Path=DataContext.CodexVM.EditCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
@@ -583,15 +584,16 @@
                 </Style>
             </MenuItem.ItemContainerStyle>
         </MenuItem>
-        <MenuItem Header="Delete" tools:AP.IconKind="Delete" InputGestureText="Delete"
+        <MenuItem Header="Remove" tools:AP.IconKind="Delete" InputGestureText="Delete"
+                  ToolTip="Removes the item from COMPASS"
                   Command="{Binding Path=DataContext.CodexVM.DeleteCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"/>
-        <MenuItem Header="Delete Forever" tools:AP.IconKind="DeleteForever" InputGestureText="Alt+Delete"
+        <MenuItem Header="Remove Forever" tools:AP.IconKind="DeleteForever" InputGestureText="Alt+Delete"
                   Command="{Binding Path=DataContext.CodexVM.BanishCodexCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent.DataContext}"
-                  ToolTip="Deletes the file and excludes it from future imports."/>
+                  ToolTip="Removes the item from COMPASS and excludes it from future imports."/>
     </ContextMenu>
 
     <ContextMenu x:Key="MultiCodexContextMenu" x:Shared="False"
@@ -599,7 +601,7 @@
         <MenuItem Header="Open Selection" tools:AP.IconKind="FileMultipleOutline" CommandParameter="{Binding}" InputGestureText="Enter"
                   Command="{Binding Path=DataContext.CodexVM.OpenSelectedCodicesCommand, 
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Bulk Edit Selection" CommandParameter="{Binding}" tools:AP.IconKind="Edit" InputGestureText="Ctrl + E"
+        <MenuItem Header="Bulk Edit Selection..." CommandParameter="{Binding}" tools:AP.IconKind="Edit" InputGestureText="Ctrl + E"
                   Command="{Binding Path=DataContext.CodexVM.EditCodicesCommand,
                             RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
         <MenuItem Header="Favorite" CommandParameter="{Binding}" tools:AP.IconKind="Favorite" InputGestureText="Ctrl + F"
@@ -631,13 +633,14 @@
                 </Style>
             </MenuItem.ItemContainerStyle>
         </MenuItem>
-        <MenuItem Header="Delete" tools:AP.IconKind="Delete" CommandParameter="{Binding}" InputGestureText="Delete"
+        <MenuItem Header="Remove" tools:AP.IconKind="Delete" CommandParameter="{Binding}" InputGestureText="Delete"
                   Command="{Binding Path=DataContext.CodexVM.DeleteCodicesCommand, 
-                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-        <MenuItem Header="Delete Forever" tools:AP.IconKind="DeleteForever" CommandParameter="{Binding}" InputGestureText="Alt+Delete"
+                    RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                  ToolTip="Removes the items from COMPASS."/>
+        <MenuItem Header="Remove Forever" tools:AP.IconKind="DeleteForever" CommandParameter="{Binding}" InputGestureText="Alt+Delete"
                   Command="{Binding Path=DataContext.CodexVM.BanishCodicesCommand, 
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
-                  ToolTip="Deletes the files and excludes them from future imports."/>
+                  ToolTip="Removes the items from COMPASS and excludes them from future imports."/>
     </ContextMenu>
     <!--#endregion-->
 
@@ -849,32 +852,25 @@
     <ControlTemplate TargetType="BlackPearl:MultiSelectCombobox" x:Key="Default">
         <Grid>
             <ToggleButton Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}"
-                Focusable="false" IsChecked="{Binding Path=IsOpen,Mode=TwoWay,ElementName=popup}"
+                Focusable="false" IsChecked="{Binding Path=IsOpen,Mode=OneWayToSource,ElementName=popup}"
                 ClickMode="Press">
             </ToggleButton>
             <!--Rich TextBox bound to document-->
+            <TextBlock Name="placeholderText" Text="ex: Author the First, Author the second, ..." Grid.Row="6" Margin="10,0"
+                       Foreground="{StaticResource TextMutedColor}" IsHitTestVisible="False" Focusable="False"
+                       Visibility="{Binding ElementName=rtxt, Path=IsKeyboardFocused, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"/>
             <RichTextBox x:Name="rtxt" IsDocumentEnabled="False" AcceptsReturn="False" VerticalContentAlignment="Center"
                         FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,5,30,5" Focusable="True" 
                         Background="{StaticResource TransparentBlack}" Foreground="{StaticResource TextColor}"
                             BorderThickness="0"/>
-            <!--Suggestion Drop-Down -->
-            <Popup Name="popup" Placement="Bottom"
-                    IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            <!--Suggestion Drop-Down-->
+            <Popup Name="popup" Placement="Bottom" PlacementTarget="{Binding ElementName=rtxt}"
                     StaysOpen="False" PopupAnimation="Slide" SnapsToDevicePixels="True"
-                    Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}">
+                    Width="{Binding ActualWidth, ElementName=rtxt}">
                 <Border BorderBrush="Black" BorderThickness="1">
-                    <ScrollViewer MaxHeight="300" HorizontalScrollBarVisibility="Disabled"
-                        VerticalScrollBarVisibility="Auto">
-                        <ListBox Name="lstSuggestion" Background="{StaticResource DarkUIElementBackground}"
-                                SelectionMode="Multiple" HorizontalContentAlignment="Stretch"
-                                DisplayMemberPath="{Binding DisplayMemberPath, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
-                            <ListBox.ItemsSource>
-                                <CompositeCollection>
-                                    <CollectionContainer Collection="{Binding SuggestionItemsSource, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                </CompositeCollection>
-                            </ListBox.ItemsSource>
-                        </ListBox>
-                    </ScrollViewer>
+                    <ListBox Name="lstSuggestion" Background="{StaticResource DarkUIElementBackground}"
+                            SelectionMode="Multiple" HorizontalContentAlignment="Stretch" MaxHeight="300"
+                             ItemsSource="{Binding SuggestionItemsSource}"/>
                 </Border>
             </Popup>
         </Grid>
@@ -906,14 +902,76 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
-                    <Border>
-                        <Border.Background>
-                            <SolidColorBrush Color="Black" Opacity="0"/>
-                        </Border.Background>
-                        <StackPanel Orientation="Horizontal">
+                    <Border Background="Transparent">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
                             <materialDesign:PackIcon x:Name="checkboxIcon" Kind="CheckboxBlankOutline"/>
-                            <ContentPresenter Margin="5,0"/>
-                        </StackPanel>
+                            <ContentPresenter Margin="5,0" Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True"/>
+                                <Condition Property="IsHitTestVisible" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="checkboxIcon" Property="Kind" Value="Check"/>
+                                <Setter TargetName="checkboxIcon" Property="Foreground" Value="Green"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True"/>
+                                <Condition Property="IsHitTestVisible" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckboxMarkedOutline"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="False"/>
+                                <Condition Property="IsHitTestVisible" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="checkboxIcon" Property="Kind" Value="Close"/>
+                                <Setter TargetName="checkboxIcon" Property="Foreground" Value="Red"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="False"/>
+                                <Condition Property="IsHitTestVisible" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckboxBlankOutline"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <Trigger Property="IsChecked" Value="{x:Null}">
+                            <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckBoxIntermediateVariant"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type CheckBox}" x:Key="WrappingCheckBox">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <Border Background="Transparent">
+                        <DockPanel>
+                            <materialDesign:PackIcon DockPanel.Dock="Left" x:Name="checkboxIcon" Margin="5,2"
+                                Kind="CheckboxBlankOutline" VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
+                            <TextBlock Text="{TemplateBinding Content}" TextWrapping="Wrap"
+                                       VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
+                        </DockPanel>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
@@ -1211,6 +1269,48 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+    <!--#endregion-->
+    
+    <!--#region DataGrid styles-->
+    <Style TargetType="{x:Type DataGridColumnHeader}" x:Key="BasicDataGridColumnHeaderStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+                    <DockPanel Margin="0,8">
+                        <DockPanel.Background>
+                            <SolidColorBrush Color="Black" Opacity="0"/>
+                        </DockPanel.Background>
+                        <TextBlock Text="{TemplateBinding Content}" Margin="5,0" DockPanel.Dock="Left"
+                                    Width="{TemplateBinding Width}" TextAlignment="Left" 
+                                    FontSize="14" FontWeight="Bold" Foreground="#808080"/>
+                        <Path x:Name="SortArrow" VerticalAlignment="Center" Width="8" Height="6" Margin="2,0,5,0" 
+                            Stretch="Fill" Opacity="0.5" Fill="White" RenderTransformOrigin="0.5,0.4" DockPanel.Dock="Left"
+                            Visibility="Collapsed" Data="M0,0 L1,0 0.5,1 z" />
+                        <Thumb x:Name="PART_RightHeaderGripper" HorizontalAlignment="Right"
+                            Width="2" BorderThickness="1" DockPanel.Dock="Right" Cursor="SizeWE"
+                            BorderBrush="{Binding VerticalGridLinesBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"/>
+                    </DockPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="SortDirection" Value="Ascending">
+                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="SortArrow" Property="RenderTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="180" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="SortDirection" Value="Descending">
+                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="{x:Type DataGridCell}">
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="{StaticResource TransparentBlack}"/>
     </Style>
     <!--#endregion-->
 </ResourceDictionary>

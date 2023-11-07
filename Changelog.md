@@ -1,14 +1,41 @@
 # CHANGELOG
-## COMPASS v1.5.1 (20 August 2023)
+
+## COMPASS v1.6.0 (6 November 2023)
+
+### Features
+
+- You can now import Tags from other collections [#51](https://github.com/DSPaul/COMPASS/issues/51). This new way of adding tags to a collection can be found in the slightly redesigned Tags Tab, next to creating new tags and tag groups. 
+
+### Improvements
+
+- The "Update Found" window now displays the COMPASS logo rather than the AutoUpdater.NET logo.
+- Flipped the webcam preview when scanning IBAN barcodes so it mirrors your movements making it much easier to align.
+- Titles that contain numbers will now sort as expected ("book-1","book-2","book-10" instead of "book-1","book-10","book-2").
+- Improved changelog display when update is found.
+- Make the UI to add a folder to check for auto import more intuitive.
+- Various improvements to author selection, including [#46](https://github.com/DSPaul/COMPASS/issues/46)
+- Renamed "Delete" To "Remove" to clarify that items are removed from COMPASS and no user files are deleted in the process.
+- Mark buttons that open additional dialogs with "..." in correspondence with industry conventions.
+
+### Fixes
+
+- Fixed a crash when finishing choosing metadata.
+- Fixed an issue where rows without tags could not be selected.
+- Folder-Tag are now deleted when the associated tag is deleted.
+- Fixed wrong tooltip text on remove Folder-Tag link button.
+- Fixed unable to scroll through authors.
+- Fixed missing warning icon in some dialogs.
+- Fixed webdriver initialisation failing and related crash. [#60](https://github.com/DSPaul/COMPASS/issues/60)
+- Fixed selecting an item causing a scroll jump. [#61](https://github.com/DSPaul/COMPASS/issues/61)
+- Various smaller fixes.
+
+## COMPASS v1.5.1 (20 August 2023)
 
 ### Fixes
 
 - Fixed a crash when finishing the "choose metadata wizard"
 - Fixed a crash during search when there are items with empty titles
 
-### Other
-
-- Updated Dependencies
 ## COMPASS v1.5.0 (20 May 2023)
 
 ### New Features
@@ -44,6 +71,7 @@ There is a know issue where the bottom of a card might get cut off if it has man
 ### Other changes
 
 - Moved Folder - Tag linking from `import` tab to the new `metadata` tab.
+
 ## COMPASS v1.4.2 (23 April 2023)
 
 ### Fixes
