@@ -115,15 +115,35 @@ namespace COMPASS.ViewModels
         public ActionCommand QuickCreateTagCommand => _quickCreateTagCommand ??= new(QuickCreateTag);
         public void QuickCreateTag()
         {
-            TagPropWindow tpw = new(new TagEditViewModel(null, true))
+            //keep track of count to check of tags were created
+            int tagCount = MainViewModel.CollectionVM.CurrentCollection.RootTags.Count;
+
+            TagEditViewModel tagEditVM = new(null, createNew: true);
+            TagPropWindow tpw = new(tagEditVM)
             {
                 Topmost = true
             };
             _ = tpw.ShowDialog();
 
-            //recalculate treeview source
-            _treeViewSource = null;
-            RaisePropertyChanged(nameof(TreeViewSource));
+            if (MainViewModel.CollectionVM.CurrentCollection.RootTags.Count > tagCount) //new tag was created
+            {
+                //recalculate treeview source
+                _treeViewSource = null;
+                RaisePropertyChanged(nameof(TreeViewSource));
+
+                //Apply right checkboxes in AllTags
+                foreach (TreeViewNode t in AllTreeViewNodes)
+                {
+                    t.Expanded = false;
+                    t.Selected = TempCodex.Tags.Contains(t.Tag);
+                    if (t.Children.Any(node => TempCodex.Tags.Contains(node.Tag))) t.Expanded = true;
+                }
+
+                //check the newly created tag
+                TreeViewSource.Last().Selected = true;
+
+                UpdateTagList();
+            }
         }
 
         private ActionCommand _deleteCodexCommand;
