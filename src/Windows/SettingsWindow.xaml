@@ -82,7 +82,7 @@
                     <StackPanel>
                         <TextBlock Style="{StaticResource SectionTitle}" Text="Behaviour"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Try to open files in this order on double click:" 
+                            <TextBlock Text="Try to open items in this order on double click:" 
                                        TextWrapping="Wrap" VerticalAlignment="Top"/>
                             <controls:PriorityControl ItemsSource="{Binding OpenCodexPriority}"/>
                         </StackPanel>
@@ -474,7 +474,7 @@
                                 <materialDesign:PackIcon Kind="InfoCircleOutline">
                                     <materialDesign:PackIcon.ToolTip>
                                         <TextBlock>
-                                                Only files with broken references will be updated and only if the updated path points to a file that exists.
+                                                Only items with broken references will be updated and only if the updated path points to a file that exists.
                                                 <LineBreak/>
                                                 If you moved half of your files out of a folder, you can safely use this tool to rename the folder reference.
                                                 <LineBreak/>

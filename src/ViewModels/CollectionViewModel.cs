@@ -164,12 +164,12 @@ namespace COMPASS.ViewModels
             {
                 string msg = success switch
                 {
-                    -1 => "The Tag data seems to be corrupted and could not be read.",
-                    -2 => "The Codex data seems to be corrupted and could not be read.",
-                    -3 => "Both the Tag and Codex data seems to be corrupted and could not be read.",
+                    -1 => "The save file for the Tags seems to be corrupted and could not be read.",
+                    -2 => "The save file with all items seems to be corrupted and could not be read.",
+                    -3 => "Both the save file with tags and items seems to be corrupted and could not be read.",
                     _ => ""
                 };
-                _ = MessageBox.Show($"Could not load {collection.DirectoryName}. \n" + msg, "Fail to Load Collection", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show($"Could not load {collection.DirectoryName}. \n" + msg, "Failed to Load Collection", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -254,8 +254,8 @@ namespace COMPASS.ViewModels
                 //MessageBox "Are you Sure?"
                 string sCaption = "Are you Sure?";
 
-                const string messageSingle = "There is still one file in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
-                string messageMultiple = $"There are still {CurrentCollection.AllCodices.Count} files in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
+                const string messageSingle = "There is still one item in this collection, if you don't want to remove it from COMPASS, move it to another collection first. Are you sure you want to continue?";
+                string messageMultiple = $"There are still {CurrentCollection.AllCodices.Count} items in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
 
                 string sMessageBoxText = CurrentCollection.AllCodices.Count == 1 ? messageSingle : messageMultiple;
 

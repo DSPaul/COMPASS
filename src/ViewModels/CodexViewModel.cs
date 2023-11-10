@@ -25,11 +25,11 @@ namespace COMPASS.ViewModels
         public static bool OpenCodex(Codex codex)
         {
             bool success = PreferableFunction<Codex>.TryFunctions(SettingsViewModel.GetInstance().OpenCodexPriority, codex);
-            if (!success) MessageBox.Show("Could not open codex, please check local path or URL");
+            if (!success) MessageBox.Show("Could not open item, please check local path or URL");
             return success;
         }
 
-        //Open File Offline
+        //Open codex Offline
         private ReturningRelayCommand<Codex, bool> _openCodexLocallyCommand;
         public ReturningRelayCommand<Codex, bool> OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(OpenCodexLocally, CanOpenCodexLocally);
         public static bool OpenCodexLocally(Codex toOpen)
@@ -62,7 +62,7 @@ namespace COMPASS.ViewModels
             return toOpen.HasOfflineSource();
         }
 
-        //Open File Online
+        //Open codex Online
         private ReturningRelayCommand<Codex, bool> _openCodexOnlineCommand;
         public ReturningRelayCommand<Codex, bool> OpenCodexOnlineCommand => _openCodexOnlineCommand ??= new(OpenCodexOnline, CanOpenCodexOnline);
         public static bool OpenCodexOnline(Codex toOpen)
@@ -80,7 +80,7 @@ namespace COMPASS.ViewModels
             {
                 Logger.Error($"Failed to open {toOpen.SourceURL}", ex);
                 //fails if no internet, pinging 8.8.8.8 DNS instead of server because some sites like gmbinder block ping
-                if (!Utils.PingURL()) Logger.Warn($"Cannot open online files when not connected to the internet", ex);
+                if (!Utils.PingURL()) Logger.Warn($"Cannot open this item online when not connected to the internet", ex);
                 return false;
             }
 
@@ -105,7 +105,7 @@ namespace COMPASS.ViewModels
             }
 
             //MessageBox "Are you Sure?"
-            string messageBoxText = "You are about to open " + toOpen.Count + " Files. Are you sure you wish to continue?";
+            string messageBoxText = "You are about to open " + toOpen.Count + " items. Are you sure you wish to continue?";
             const string caption = "Are you Sure?";
 
             const MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
@@ -239,8 +239,8 @@ namespace COMPASS.ViewModels
             }
 
             //MessageBox "Are you Sure?"
-            string messageSingle = $"Moving  {toMoveList[0].Title} to {targetCollection.DirectoryName} will remove all tags from the Codex, are you sure you wish to continue?";
-            string messageMultiple = $"Moving these {toMoveList.Count} files to {targetCollection.DirectoryName} will remove all tags from the Codices, are you sure you wish to continue?";
+            string messageSingle = $"Moving  {toMoveList[0].Title} to {targetCollection.DirectoryName} will remove all tags from the item, are you sure you wish to continue?";
+            string messageMultiple = $"Moving these {toMoveList.Count} items to {targetCollection.DirectoryName} will remove all tags from these items, are you sure you wish to continue?";
 
             string sCaption = "Are you Sure?";
             string sMessageBoxText = toMoveList.Count == 1 ? messageSingle : messageMultiple;
@@ -255,13 +255,12 @@ namespace COMPASS.ViewModels
                 bool success = targetCollection.LoadCodices();
                 if (!success)
                 {
-                    MessageBox.Show($"Could not move books to {targetCollection.DirectoryName}", "Target collection could not be loaded.", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Could not move items to {targetCollection.DirectoryName}", "Target collection could not be loaded.", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 foreach (Codex toMove in toMoveList)
                 {
                     toMove.Tags.Clear();
-                    // Give file new ID and move it to other folder
                     toMove.ID = Utils.GetAvailableID(targetCollection.AllCodices);
 
                     //Add Codex to target CodexCollection
@@ -276,7 +275,7 @@ namespace COMPASS.ViewModels
                     if (Path.Exists(toMove.CoverArt))
                         File.Copy(toMove.Thumbnail, tempCodex.Thumbnail);
 
-                    //Delete file in original folder
+                    //Delete codex in original collection
                     MainViewModel.CollectionVM.CurrentCollection.DeleteCodex(toMove);
                     MainViewModel.CollectionVM.FilterVM.RemoveCodex(toMove);
 

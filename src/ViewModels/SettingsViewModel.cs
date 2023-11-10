@@ -361,7 +361,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public string RenameCompleteMessage => $"Renamed Path Reference in {AmountRenamed} Files.";
+        public string RenameCompleteMessage => $"Renamed Path Reference in {AmountRenamed} items.";
 
         private RelayCommand<object[]> _renameFolderRefCommand;
         public RelayCommand<object[]> RenameFolderRefCommand => _renameFolderRefCommand ??= new(RenameFolderReferences);

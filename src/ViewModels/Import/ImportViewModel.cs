@@ -72,7 +72,7 @@ namespace COMPASS.ViewModels.Import
         {
             targetCollection ??= MainViewModel.CollectionVM.CurrentCollection;
 
-            //filter out files already in collection & banned paths
+            //filter out codices already in collection & banned paths
             IEnumerable<string> existingPaths = targetCollection.AllCodices.Select(codex => codex.Path);
             paths = paths
                 .Except(existingPaths)
