@@ -172,6 +172,37 @@ namespace COMPASS.ViewModels
             }
         }
 
+        private ActionCommand _sortChildrenCommand;
+        public ActionCommand SortChildrenCommand => _sortChildrenCommand ??= new(SortChildren, CanSortChildren);
+        public void SortChildren()
+        {
+            SortChildren(ContextTag);
+            BuildTagTreeView();
+        }
+        public void SortChildren(Tag tag)
+        {
+            if (tag == null) return;
+            tag.Children = new(tag.Children.OrderBy(t => t.Content));
+            foreach (Tag child in tag.Children)
+            {
+                SortChildren(child);
+            }
+        }
+        public bool CanSortChildren() => CanSortChildren(ContextTag);
+        public bool CanSortChildren(Tag tag) => tag?.Children.Any() == true;
+
+        private ActionCommand _sortAllTagsCommand;
+        public ActionCommand SortAllTagsCommand => _sortAllTagsCommand ??= new(SortAllTags);
+        public void SortAllTags()
+        {
+            Tag t = new()
+            {
+                Children = new(MainViewModel.CollectionVM.CurrentCollection.RootTags)
+            };
+            SortChildren(t);
+            MainViewModel.CollectionVM.CurrentCollection.RootTags = t.Children.ToList();
+            BuildTagTreeView();
+        }
 
         private ActionCommand _editTagCommand;
         public ActionCommand EditTagCommand => _editTagCommand ??= new(EditTag);
@@ -187,7 +218,6 @@ namespace COMPASS.ViewModels
 
         private ActionCommand _deleteTagCommand;
         public ActionCommand DeleteTagCommand => _deleteTagCommand ??= new(DeleteTag);
-
         public void DeleteTag()
         {
             //tag to delete is context, because DeleteTag is called from context menu

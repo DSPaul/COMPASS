@@ -20,6 +20,7 @@
              mc:Ignorable="d" FontSize="20"
              d:DesignHeight="650" d:DesignWidth="300">
     <UserControl.Resources>
+        
         <converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
         <tools:BindingProxy x:Key="CollapsedProxy" Data="{Binding}"/>
         <Style TargetType="Border" x:Key="RadioBtnContainer">
@@ -54,6 +55,7 @@
     <TabControl Background="{StaticResource Layer3}" BorderThickness="0" TabStripPlacement="Left" Padding="0" 
                 SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
         <TabControl.Resources>
+            <tools:BindingProxy x:Key="TagsVMProxy" Data="{Binding MainVM.CollectionVM.TagsVM}" />
             <Style TargetType="TabItem">
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Margin" Value="0"/>
@@ -131,14 +133,28 @@
         <TabItem Header="Tags" tools:AP.IconKind="TagMultiple" ToolTip="Tags"
                  DataContext="{Binding MainVM.CollectionVM.TagsVM}" >
             <TabItem.Resources>
-                <tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
                 <ContextMenu x:Key="TagContextMenu">
-                    <MenuItem Header="New Tag" tools:AP.IconKind="TagPlusOutline" Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateChildCommand}"/>
-                    <MenuItem Header="Edit" tools:AP.IconKind="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
-                    <MenuItem Header="Delete" tools:AP.IconKind="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
+                    <MenuItem Header="New Tag" tools:AP.IconKind="TagPlusOutline" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.CreateChildCommand}"/>
+                    <MenuItem Header="Edit" tools:AP.IconKind="Edit" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.EditTagCommand}"/>
+                    <MenuItem Header="Delete" tools:AP.IconKind="Delete" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.DeleteTagCommand}"/>
+                    <Separator>
+                        <Separator.Style>
+                            <Style TargetType="Separator" BasedOn="{StaticResource MarginlessSeparator}">
+                                <!--Tranlate down 3 pixels to hide it when there is no content under it-->
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <TranslateTransform Y="3"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Separator.Style>
+                    </Separator>
+                    <MenuItem Header="Sort Children" tools:AP.IconKind="TagMultipleOutline" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortChildrenCommand}"
+                              Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self},
+                              Converter={StaticResource ToVisibilityConverter}}"/>
                 </ContextMenu>
                 <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type models:TreeViewNode}" ItemsSource="{Binding Children}">
-                    <Button Cursor="Hand" Command="{Binding Source={StaticResource Proxy}, Path=Data.AddTagFilterCommand}">
+                    <Button Cursor="Hand" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.AddTagFilterCommand}">
                         <Button.CommandParameter>
                             <MultiBinding Converter="{StaticResource MultiParamConverter}">
                                 <Binding Path="Tag"/>
@@ -167,6 +183,7 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
                     <TabControl Grid.Row="0" Margin="30,10,30,10" Background="Transparent" 
@@ -313,6 +330,8 @@
                             <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black" />
                         </TreeView.Resources>
                     </TreeView>
+                    <Button Style="{StaticResource IconTextButton}" tools:AP.IconKind="TagMultipleOutline" Grid.Row="5"
+                            Content="Sort All Tags" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortAllTagsCommand}"/>
                 </Grid>
             </ContentControl>
         </TabItem>
