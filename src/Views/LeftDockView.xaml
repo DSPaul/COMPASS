@@ -149,7 +149,8 @@
                             </Style>
                         </Separator.Style>
                     </Separator>
-                    <MenuItem Header="Sort Children" tools:AP.IconKind="TagMultipleOutline" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortChildrenCommand}"
+                    <MenuItem Header="Sort Children" tools:AP.IconKind="TagMultipleOutline" ToolTip="Sorts its children A->Z"
+                              Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortChildrenCommand}"
                               Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self},
                               Converter={StaticResource ToVisibilityConverter}}"/>
                 </ContextMenu>
@@ -319,7 +320,8 @@
                         ItemTemplateSelector="{StaticResource TagTemplateSelector}" MouseRightButtonDown="TagTree_MouseRightButtonDown">
                         <TreeView.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Sort All Tags" tools:AP.IconKind="TagMultipleOutline" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortAllTagsCommand}"/>
+                                <MenuItem Header="Sort All Tags" tools:AP.IconKind="TagMultipleOutline" ToolTip="Sorts all the Tags and Tag Groups A->Z"
+                                          Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortAllTagsCommand}"/>
                             </ContextMenu>
                         </TreeView.ContextMenu>
                         <TreeView.Resources>
