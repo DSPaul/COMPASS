@@ -306,7 +306,7 @@ namespace COMPASS.Models
         public void DeleteCodices(IList<Codex> toDelete)
         {
             int count = toDelete.Count;
-            string message = $"You are about to remove {count} file{(count > 1 ? @"s" : @"")}. " +
+            string message = $"You are about to remove {count} item{(count > 1 ? @"s" : @"")}. " +
                            $"This cannot be undone. " +
                            $"Are you sure you want to continue?";
             var result = MessageBox.Show(message, "Remove", MessageBoxButton.OKCancel);
