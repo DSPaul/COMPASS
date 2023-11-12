@@ -183,7 +183,6 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
                     <TabControl Grid.Row="0" Margin="30,10,30,10" Background="Transparent" 
@@ -313,11 +312,16 @@
                             </Border>
                         </RadioButton>
                     </StackPanel>
-                    
+
                     <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"  Grid.Row="4"
                         ItemsSource="{Binding Path=TreeViewSource,Mode=TwoWay}"  Margin="5" Cursor="Arrow"
                         dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}"
                         ItemTemplateSelector="{StaticResource TagTemplateSelector}" MouseRightButtonDown="TagTree_MouseRightButtonDown">
+                        <TreeView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Sort All Tags" tools:AP.IconKind="TagMultipleOutline" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortAllTagsCommand}"/>
+                            </ContextMenu>
+                        </TreeView.ContextMenu>
                         <TreeView.Resources>
                             <Style TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
@@ -330,8 +334,6 @@
                             <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black" />
                         </TreeView.Resources>
                     </TreeView>
-                    <Button Style="{StaticResource IconTextButton}" tools:AP.IconKind="TagMultipleOutline" Grid.Row="5"
-                            Content="Sort All Tags" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortAllTagsCommand}"/>
                 </Grid>
             </ContentControl>
         </TabItem>
