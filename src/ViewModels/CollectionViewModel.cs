@@ -143,12 +143,12 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private bool IsLegalCollectionName(string dirName)
+        public static bool IsLegalCollectionName(string dirName)
         {
             bool legal =
                 dirName.IndexOfAny(Path.GetInvalidPathChars()) < 0
                 && dirName.IndexOfAny(Path.GetInvalidFileNameChars()) < 0
-                && AllCodexCollections.All(collection => collection.DirectoryName != dirName)
+                && MainViewModel.CollectionVM.AllCodexCollections.All(collection => collection.DirectoryName != dirName)
                 && !String.IsNullOrWhiteSpace(dirName)
                 && dirName.Length < 100
                 && (dirName.Length < 2 || dirName[..2] != "__"); //reserved for protected folders

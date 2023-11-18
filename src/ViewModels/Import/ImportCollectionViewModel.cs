@@ -59,7 +59,18 @@ namespace COMPASS.ViewModels.Import
 
         //OVERVIEW STEP
         public bool MergeIntoCollection { get; set; } = true;
-        public string CollectionName { get; set; } = "Unnamed Collection";
+
+        private string _collectionName = "Unnamed Collection";
+        public string CollectionName
+        {
+            get => _collectionName;
+            set
+            {
+                SetProperty(ref _collectionName, value);
+                RaisePropertyChanged(nameof(IsCollectionNameLegal));
+            }
+        }
+        public bool IsCollectionNameLegal => CollectionViewModel.IsLegalCollectionName(CollectionName);
 
         public bool HasTags { get; set; }
         public bool HasCodices { get; set; }
@@ -185,10 +196,14 @@ namespace COMPASS.ViewModels.Import
                 items.Cast<ImportCodexHelper>()
                      .ToList()
                      .ForEach(helper => helper.ShouldImport = ShouldImport));
-
-
         }
         #endregion
+
+        //Don't show on overview tab if new collection is chosen with illegal name
+        public override bool ShowNextButton() => base.ShowNextButton() &&
+            !(CurrentStep == "Overview" && !MergeIntoCollection && !IsCollectionNameLegal);
+        public override bool ShowFinishButton() => base.ShowFinishButton() &&
+            !(CurrentStep == "Overview" && !MergeIntoCollection && !IsCollectionNameLegal);
 
         public override void Finish()
         {
@@ -283,7 +298,7 @@ namespace COMPASS.ViewModels.Import
                 }
                 if (HasCodices)
                 {
-                    Steps.Add("Codices");
+                    Steps.Add("Items");
                 }
                 if (HasSettings)
                 {

@@ -123,7 +123,20 @@
                                                         Template="{StaticResource RadioTemplate}">
                                                 <StackPanel>
                                                     <TextBlock Text="Create new collection" HorizontalAlignment="Center" FontSize="20"/>
-                                                    <TextBox Text="{Binding CollectionName}" MinWidth="200" HorizontalContentAlignment="Center"/>
+                                                    <TextBox Text="{Binding CollectionName, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" HorizontalContentAlignment="Center">
+                                                        <TextBox.Style>
+                                                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsCollectionNameLegal}" Value="False">
+                                                                        <Setter Property="BorderBrush" Value="{StaticResource CancelFill}"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBox.Style>
+                                                    </TextBox>
+                                                    <TextBlock Text="Invalid Collection Name" Foreground="{StaticResource CancelFill}"
+                                                               Visibility="{Binding IsCollectionNameLegal, Converter={StaticResource ToVisibilityConverter}, 
+                                                                ConverterParameter=True}"/>
                                                 </StackPanel>
                                             </RadioButton>
                                             <Rectangle Fill="{StaticResource Separator}" Grid.Column="1" Width="5" 
@@ -156,10 +169,10 @@
                                     </Setter.Value>
                                 </Setter>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding CurrentStep}" Value="Codices">
+                            <DataTrigger Binding="{Binding CurrentStep}" Value="Items">
                                 <Setter Property="Content">
                                     <Setter.Value>
-                                        <Grid Visibility="{Binding CurrentStep, ConverterParameter=Codices, Converter={StaticResource ShowInStepConverter}}">
+                                        <Grid Visibility="{Binding CurrentStep, ConverterParameter=Items, Converter={StaticResource ShowInStepConverter}}">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="auto"/>
                                                 <RowDefinition Height="auto"/>
