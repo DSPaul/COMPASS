@@ -512,11 +512,11 @@
                                        Visibility="{Binding Path=AmountRenamed, Converter={StaticResource ToVisibilityConverter}}"/>
                             <TextBlock Text="Remove broken references:" Margin="10,5"/>
                             <Button Style="{StaticResource IconTextButton}" tools:AP.IconKind="FileDocumentRemoveOutline" 
-                                    Content="Remove broken references from books." HorizontalAlignment="Left" 
+                                    Content="Remove broken references from items." HorizontalAlignment="Left" 
                                         Command="{Binding RemoveBrokenRefsCommand}" />
 
                             <Button Style="{StaticResource IconTextButton}" tools:AP.IconKind="BookRemove" 
-                                    Content="Delete books with broken references.   " HorizontalAlignment="Left"
+                                    Content="Remove items with broken references.   " HorizontalAlignment="Left"
                                         Command="{Binding DeleteCodicesWithBrokenRefsCommand}"/>
                         </StackPanel>
                     </Border>
