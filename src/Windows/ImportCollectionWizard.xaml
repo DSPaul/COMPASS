@@ -239,7 +239,9 @@
                                                     <DataGridTemplateColumn Header="IMPORT" Width="auto" MinWidth="70">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
-                                                                <CheckBox IsChecked="{Binding ShouldImport, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                                                                <CheckBox IsChecked="{Binding ShouldImport, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"
+                                                                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=SelectedItems}"
+                                                                          Command="{Binding ItemCheckedCommand}" />
                                                             </DataTemplate>
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>

@@ -1,5 +1,7 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
 using COMPASS.Tools;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -177,6 +179,14 @@ namespace COMPASS.ViewModels.Import
                 Codex = codex;
             }
             public Codex Codex { get; }
+
+            private RelayCommand<IList> _itemCheckedCommand;
+            public RelayCommand<IList> ItemCheckedCommand => _itemCheckedCommand ??= new((items) =>
+                items.Cast<ImportCodexHelper>()
+                     .ToList()
+                     .ForEach(helper => helper.ShouldImport = ShouldImport));
+
+
         }
         #endregion
 
