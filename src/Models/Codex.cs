@@ -59,37 +59,17 @@ namespace COMPASS.Models
             ISBN = c.ISBN;
         }
 
-        public bool HasOfflineSource() => !String.IsNullOrWhiteSpace(Path);
-
-        public bool HasOnlineSource() => !String.IsNullOrWhiteSpace(SourceURL);
-
-        public string FileType
-        {
-            get
-            {
-                if (HasOfflineSource())
-                {
-                    return System.IO.Path.GetExtension(Path);
-                }
-
-                else if (HasOnlineSource())
-                {
-                    // online sources can also also point to file 
-                    // either hosted on cloud service like Google drive 
-                    // or services like homebrewery are always .pdf
-                    // skip this for now though
-                    return "webpage";
-                }
-
-                else
-                {
-                    return null;
-                }
-            }
-        }
-        public string FileName => System.IO.Path.GetFileName(Path);
-
         public void RefreshThumbnail() => RaisePropertyChanged(nameof(Thumbnail));
+
+        public void ClearPersonalData()
+        {
+            Favorite = false;
+            PhysicallyOwned = false;
+            DateAdded = DateTime.Now;
+            OpenedCount = 0;
+            LastOpened = default;
+            Rating = 0;
+        }
 
         #region Properties
 
@@ -314,6 +294,36 @@ namespace COMPASS.Models
                 SetProperty(ref _isbn, value);
             }
         }
+
+        public bool HasOfflineSource() => !String.IsNullOrWhiteSpace(Path);
+
+        public bool HasOnlineSource() => !String.IsNullOrWhiteSpace(SourceURL);
+
+        public string FileType
+        {
+            get
+            {
+                if (HasOfflineSource())
+                {
+                    return System.IO.Path.GetExtension(Path);
+                }
+
+                else if (HasOnlineSource())
+                {
+                    // online sources can also also point to file 
+                    // either hosted on cloud service like Google drive 
+                    // or services like homebrewery are always .pdf
+                    // skip this for now though
+                    return "webpage";
+                }
+
+                else
+                {
+                    return null;
+                }
+            }
+        }
+        public string FileName => System.IO.Path.GetFileName(Path);
         #endregion 
 
         public static readonly List<CodexProperty> Properties = new()

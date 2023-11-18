@@ -84,6 +84,8 @@ namespace COMPASS.ViewModels.Import
         // CODICES STEP
         public List<ImportCodexHelper> CodicesToImport { get; set; }
 
+        public bool RemovePersonalData { get; set; } = true;
+
         //SETTINGS STEP
 
         //Auto Import Folders
@@ -214,6 +216,11 @@ namespace COMPASS.ViewModels.Import
             }
 
             //add selected Codices to tmp collection
+            if (RemovePersonalData)
+            {
+                CodicesToImport.ForEach(c => c.Codex.ClearPersonalData());
+            }
+
             CollectionToImport.AllCodices.Clear();
             if (AdvancedImport)
             {
