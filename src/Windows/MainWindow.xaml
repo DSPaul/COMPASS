@@ -161,9 +161,11 @@
                 <Border Background="{StaticResource UIElementBackground}" CornerRadius="4" Grid.Column="3" Margin="0,5" Height="35"
                         WindowChrome.IsHitTestVisibleInChrome="True" DataContext="{Binding CollectionVM}">
                     <StackPanel Orientation="Horizontal">
+                        <!--Collection Dropdown-->
                         <ComboBox Style="{StaticResource RpgDropdownStyle}" SelectedItem="{Binding CurrentCollection, Mode=TwoWay}" 
                                   DisplayMemberPath="DirectoryName" ItemsSource="{Binding AllCodexCollections}"/>
                         <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
+                        <!--Create Collection-->
                         <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="FolderPlus" Foreground="{StaticResource CollectionIconFill}" ToolTip="Create New Collection"
                                             Visibility="{Binding CreateCollectionVisibility,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"
                                         Command="{Binding ToggleCreateCollectionCommand}"/>
@@ -192,11 +194,8 @@
                             <Button tools:AP.IconKind="Close" Foreground="{StaticResource CancelFill}" Command="{Binding ToggleCreateCollectionCommand}"
                                             Style="{StaticResource IconBtn}"/>
                         </StackPanel>
-                        <!--<Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>-->
-                        <!--<Button tools:AP.IconKind="FolderArrowDown" Foreground="{StaticResource CollectionIconFill}" 
-                                    Style="{StaticResource IconBtn}" ToolTip="Import Collection" Command="{Binding ImportCommand}"
-                                    Visibility="{Binding EditCollectionVisibility,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"/>-->
                         <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
+                        <!--Edit Collection-->
                         <Button tools:AP.IconKind="FolderEdit" Foreground="{StaticResource CollectionIconFill}" 
                                     Style="{StaticResource IconBtn}" ToolTip="Rename Collection" Command="{Binding ToggleEditCollectionCommand}"
                                     Visibility="{Binding EditCollectionVisibility,Converter={StaticResource ToVisibilityConverter},ConverterParameter=True}"/>
@@ -223,8 +222,26 @@
                                         Command="{Binding ToggleEditCollectionCommand}" Style="{StaticResource IconBtn}"/>
                         </StackPanel>
                         <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
-                        <Button tools:AP.IconKind="FolderRemove" Foreground="{StaticResource CollectionIconFill}" 
-                                Style="{StaticResource IconBtn}" Command="{Binding DeleteCollectionCommand}" ToolTip="Delete This Collection"/>
+                        <!--More Options Collection-->
+                        <Button tools:AP.IconKind="DotsVertical" Foreground="{StaticResource CollectionIconFill}" Margin="-2,0"
+                                Style="{StaticResource IconBtn}" ToolTip="More Actions" Width="25" Click="Toggle_ContextMenu">
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Import..." ToolTip="Import a Collection" tools:AP.IconKind="FolderDownload" Command="{Binding ImportCommand}"/>
+                                    <MenuItem Header="Export..." ToolTip="Share this Collection with other COMPASS users" tools:AP.IconKind="FolderUpload" Command="{Binding ExportCommand}"/>
+                                    <MenuItem Header="Merge into " tools:AP.IconKind="FolderMove" ItemsSource="{Binding CollectionDirectories}">
+                                        <MenuItem.ItemContainerStyle>
+                                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.MergeCollectionIntoCommand,
+                                                        RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type MenuItem}}}"/>
+                                                <Setter Property="MenuItem.CommandParameter" Value="{Binding Header, RelativeSource={RelativeSource self}}"/>
+                                            </Style>
+                                        </MenuItem.ItemContainerStyle>
+                                    </MenuItem>
+                                    <MenuItem Header="Delete" ToolTip="Delete this Collection" tools:AP.IconKind="Delete" Command="{Binding DeleteCollectionCommand}"/>
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                        </Button>
                     </StackPanel>
                 </Border>
                 

@@ -15,7 +15,7 @@ namespace COMPASS.ViewModels.Import
         public ImportCollectionViewModel(CodexCollection collectionToImport)
         {
             CollectionToImport = collectionToImport;
-            CollectionToImport.Load(true);
+            CollectionToImport.Load(hidden: true);
 
             //Checks which steps need to be included in wizard
             HasCodices = CollectionToImport.AllCodices.Any();

@@ -290,6 +290,7 @@ namespace COMPASS.ViewModels
             }
         }
 
+        //Export Collection
         private ActionCommand _exportCommand;
         public ActionCommand ExportCommand => _exportCommand ??= new(async () => await Export());
         public async Task Export()
@@ -318,7 +319,7 @@ namespace COMPASS.ViewModels
 
                 File.Copy(CurrentCollection.CodicesDataFilePath, tmpCollection.CodicesDataFilePath, true);
                 File.Copy(CurrentCollection.TagsDataFilePath, tmpCollection.TagsDataFilePath, true); //tags should also be copied otherwise Loaded codices will be tagless
-                tmpCollection.Load(true);
+                tmpCollection.Load(hidden: true);
 
                 //Change Codex Path to relative and add those files if the options is set
                 var itemsWithOfflineSource = tmpCollection.AllCodices.Where(codex => codex.HasOfflineSource());
@@ -388,6 +389,7 @@ namespace COMPASS.ViewModels
             Logger.Info($"Exported Tags from {CurrentCollection.DirectoryName} to {targetPath}");
         }
 
+        //Import Collection
         private ActionCommand _importCommand;
         public ActionCommand ImportCommand => _importCommand ??= new(async () => await Import());
         public async Task Import()
@@ -416,6 +418,27 @@ namespace COMPASS.ViewModels
             ImportCollectionViewModel ImportCollectionVM = new(collectionToImport);
             ImportCollectionWizard wizard = new(ImportCollectionVM);
             wizard.Show();
+        }
+
+        //Merge Collection into another
+        private RelayCommand<string> _mergeCollectionIntoCommand;
+        public RelayCommand<string> MergeCollectionIntoCommand => _mergeCollectionIntoCommand ??= new(MergeIntoCollection);
+        public void MergeIntoCollection(string collectionToMergeInto)
+        {
+            //Show some kind of are you sure?
+            string message = $"You are about to merge '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'. \n" +
+                           $"This will copy all items, tags and preferences to the chosen collection. \n" +
+                           $"Are you sure you want to continue?";
+            var result = MessageBox.Show(message, "Confirm merge", MessageBoxButton.OKCancel);
+            if (result != MessageBoxResult.OK) return;
+
+            CodexCollection targetCollection = new(collectionToMergeInto);
+
+            targetCollection.Load(hidden: true);
+            targetCollection.MergeWith(CurrentCollection);
+
+            message = $"Succesfully merged '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'";
+            MessageBox.Show(message, "Merge Success");
         }
         #endregion
     }
