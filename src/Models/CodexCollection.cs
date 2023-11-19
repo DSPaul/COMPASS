@@ -232,7 +232,14 @@ namespace COMPASS.Models
             ImportTags(toMerge.RootTags);
             ImportCodicesFrom(toMerge);
             Info.MergeWith(toMerge.Info);
-            MainViewModel.CollectionVM.Refresh();
+            if (MainViewModel.CollectionVM.CurrentCollection == this)
+            {
+                MainViewModel.CollectionVM.Refresh();
+            }
+            else
+            {
+                Save();
+            }
         }
 
         public void ImportTags(IEnumerable<Tag> tags)
@@ -265,13 +272,27 @@ namespace COMPASS.Models
                 //Move Cover file
                 if (File.Exists(codex.CoverArt))
                 {
-                    File.Move(codex.CoverArt, Path.Combine(CoverArtPath, $"{codex.ID}.png"), true);
+                    try
+                    {
+                        File.Copy(codex.CoverArt, Path.Combine(CoverArtPath, $"{codex.ID}.png"), true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Warn($"Failed to copy cover of {codex.Title}", ex);
+                    }
                 }
 
                 //Move or Generate Thumbnail file
                 if (File.Exists(codex.Thumbnail))
                 {
-                    File.Move(codex.Thumbnail, Path.Combine(ThumbnailsPath, $"{codex.ID}.png"), true);
+                    try
+                    {
+                        File.Copy(codex.Thumbnail, Path.Combine(ThumbnailsPath, $"{codex.ID}.png"), true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Warn($"Failed to copy thumbnail of {codex.Title}", ex);
+                    }
                 }
                 else
                 {
@@ -284,9 +305,16 @@ namespace COMPASS.Models
                 //move user files included in import
                 if (codex.Path.StartsWith(source.UserFilesPath) && File.Exists(codex.Path))
                 {
-                    string newPath = codex.Path.Replace(source.UserFilesPath, UserFilesPath);
-                    File.Move(codex.Path, newPath, true);
-                    codex.Path = newPath;
+                    try
+                    {
+                        string newPath = codex.Path.Replace(source.UserFilesPath, UserFilesPath);
+                        File.Copy(codex.Path, newPath, true);
+                        codex.Path = newPath;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Warn($"Failed to copy file associated with {codex.Title}", ex);
+                    }
                 }
                 AllCodices.Add(codex);
             }
