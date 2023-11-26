@@ -235,9 +235,11 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public override void Finish()
+        /// <summary>
+        /// Builds the curated collection based on the selection
+        /// </summary>
+        public override void ApplyAll()
         {
-
             ApplySelectedTags();
             ApplySelectedCodices();
             ApplySelectedPreferences();

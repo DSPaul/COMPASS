@@ -70,37 +70,32 @@ namespace COMPASS.ViewModels.Import
         public override bool ShowFinishButton() => base.ShowFinishButton() &&
             !(CurrentStep == "Overview" && !MergeIntoCollection && !IsCollectionNameLegal);
 
-        public override void Finish()
+        public override void ApplyAll()
         {
-            //add selected Tags
+            //if we do a quick import, set all the things in the contentSelector have the right value
             if (!AdvancedImport)
             {
+                //Set it on tags
                 foreach (var selectableTag in ContentSelectorVM.SelectableTags)
                 {
                     selectableTag.IsChecked = ImportAllTags;
                 }
-            }
-            ContentSelectorVM.ApplySelectedTags();
 
-            //Add codices
-            if (!AdvancedImport)
-            {
+                //Set it on codices
                 foreach (var selectableCodex in ContentSelectorVM.SelectableCodices)
                 {
                     selectableCodex.Selected = ImportAllCodices;
                 }
-            }
-            ContentSelectorVM.ApplySelectedCodices();
 
-            //Add preferences
-            if (!AdvancedImport)
-            {
+                //Set it on all the settings
                 ContentSelectorVM.SelectAutoImportFolders = ImportAllSettings;
                 ContentSelectorVM.SelectBanishedFiles = ImportAllSettings;
                 ContentSelectorVM.SelectFileTypePrefs = ImportAllSettings;
                 ContentSelectorVM.SelectFolderTagLinks = ImportAllSettings;
             }
-            ContentSelectorVM.ApplySelectedPreferences();
+
+            //Apply the selection
+            ContentSelectorVM.ApplyAll();
 
             //Save the changes to a permanent collection
             var targetCollection = MergeIntoCollection ?

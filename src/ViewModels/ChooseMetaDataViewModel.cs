@@ -49,7 +49,7 @@ namespace COMPASS.ViewModels
             ShouldUseNewValue = DefaultShouldUseNewValue;
         }
 
-        public override void Finish()
+        public override void ApplyAll()
         {
             ApplyChoice();
             CloseAction.Invoke();
