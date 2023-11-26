@@ -61,6 +61,7 @@ namespace COMPASS.Models
             AutoImportDirectories.AddRange(other.AutoImportDirectories);
             BanishedPaths.AddRange(other.BanishedPaths);
             //For file type prefs, overwrite if already in dict, add otherwise
+            other.PrepareSave(); // make sure serializable prefs are in sync in prefs in other
             foreach (var pref in other.SerializableFiletypePreferences)
             {
                 var existing = SerializableFiletypePreferences.FirstOrDefault(x => x.Key == pref.Key);

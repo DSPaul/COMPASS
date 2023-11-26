@@ -11,7 +11,7 @@
         xmlns:tools="clr-namespace:COMPASS.Tools"
         d:DataContext="{d:DesignInstance Type=import:ImportCollectionViewModel}"
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
-        Title="{Binding CollectionToImport.DirectoryName, StringFormat=Importing {0:}}" 
+        Title="{Binding CollectionName, StringFormat=Importing {0:}}" 
         Height="650" Width="1200" Closed="Window_Closed">
     <Grid>
         <Grid.Resources>
@@ -113,14 +113,10 @@
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
                                             </Grid.Resources>
-                                            <RadioButton GroupName="TargetCollection" HorizontalAlignment="Stretch"
-                                                        HorizontalContentAlignment="Center" IsChecked="{Binding MergeIntoCollection}"
-                                                        VerticalAlignment="Stretch" Template="{StaticResource RadioTemplate}">
-                                                <TextBlock Text="Merge into current collection" FontSize="20"/>
-                                            </RadioButton>
-                                            <RadioButton GroupName="TargetCollection" Grid.Row="1"
-                                                        HorizontalContentAlignment="Center" VerticalAlignment="Stretch" 
-                                                        Template="{StaticResource RadioTemplate}">
+                                            <RadioButton GroupName="TargetCollection" Grid.Row="0" 
+                                                         IsChecked="{Binding MergeIntoCollection, Converter={StaticResource NegateConverter}}"
+                                                         HorizontalContentAlignment="Center" VerticalAlignment="Stretch" 
+                                                         Template="{StaticResource RadioTemplate}">
                                                 <StackPanel>
                                                     <TextBlock Text="Create new collection" HorizontalAlignment="Center" FontSize="20"/>
                                                     <TextBox Text="{Binding CollectionName, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" HorizontalContentAlignment="Center">
@@ -139,6 +135,11 @@
                                                                 ConverterParameter=True}"/>
                                                 </StackPanel>
                                             </RadioButton>
+                                            <RadioButton GroupName="TargetCollection" HorizontalAlignment="Stretch" Grid.Row="1"
+                                                        HorizontalContentAlignment="Center" IsChecked="{Binding MergeIntoCollection}"
+                                                        VerticalAlignment="Stretch" Template="{StaticResource RadioTemplate}">
+                                                <TextBlock Text="Merge into current collection" FontSize="20"/>
+                                            </RadioButton>
                                             <Rectangle Fill="{StaticResource Separator}" Grid.Column="1" Width="5" 
                                                        Grid.RowSpan="2" VerticalAlignment="Stretch"/>
                                             <RadioButton GroupName="Advanced" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"
@@ -148,11 +149,11 @@
                                                     <TextBlock Text="Quick Import" TextAlignment="Center" FontSize="20" Margin="20"/>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                         <CheckBox Content="All Tags" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllTags}"
-                                                                    Visibility="{Binding HasTags, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
+                                                                    Visibility="{Binding ContentSelectorVM.HasTags, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
                                                         <CheckBox Content="All Books/Items" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllCodices}"
-                                                                    Visibility="{Binding HasCodices, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
+                                                                    Visibility="{Binding ContentSelectorVM.HasCodices, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
                                                         <CheckBox Content="All Settings" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllSettings}"
-                                                                    Visibility="{Binding HasSettings, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
+                                                                    Visibility="{Binding ContentSelectorVM.HasSettings, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </RadioButton>
@@ -179,12 +180,12 @@
                                                 <RowDefinition Height="*"/>
                                             </Grid.RowDefinitions>
                                             <StackPanel Orientation="Horizontal" Margin="20,0">
-                                                <CheckBox Content="Reset personal data on all items" IsChecked="{Binding RemovePersonalData}"/>
+                                                <CheckBox Content="Reset personal data on all items" IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/>
                                                 <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
-                                                        ToolTip="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last openened &#x0a; - Times opened &#x0a; - Date added &#x0a;"/>
+                                                        ToolTip="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last openened &#x0a; - Times opened &#x0a; - Date added"/>
                                             </StackPanel>
                                             <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/>
-                                            <DataGrid x:Name="ListLayoutGrid" ItemsSource="{Binding CodicesToImport, IsAsync=True}"
+                                            <DataGrid x:Name="ListLayoutGrid" ItemsSource="{Binding ContentSelectorVM.SelectableCodices, IsAsync=True}"
                                                     Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
                                                     CanUserAddRows="False" SelectionMode="Extended" AutoGenerateColumns="False" Grid.Row="2"
                                                     RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True" ColumnHeaderStyle="{StaticResource BasicDataGridColumnHeaderStyle}"
@@ -317,9 +318,9 @@
                                                     </Border>
                                                 </HierarchicalDataTemplate>
                                             </Grid.Resources>
-                                            <TreeView ItemsSource="{Binding TagsToImport}" Background="Transparent" 
-                                                      HorizontalAlignment="Stretch" BorderThickness="0" 
-                                                      ItemTemplateSelector="{StaticResource TagTemplateSelector}">
+                                            <TreeView ItemsSource="{Binding ContentSelectorVM.SelectableTags}" Background="Transparent" 
+                                                          HorizontalAlignment="Stretch" BorderThickness="0" 
+                                                          ItemTemplateSelector="{StaticResource TagTemplateSelector}">
                                                 <TreeView.ItemContainerStyle>
                                                     <Style TargetType="TreeViewItem">
                                                         <Setter Property="Focusable" Value="False" />
@@ -334,7 +335,7 @@
                                 <Setter Property="Content">
                                     <Setter.Value>
                                         <Grid Visibility="{Binding CurrentStep, ConverterParameter=Settings, Converter={StaticResource ShowInStepConverter}}">
-                                            <ScrollViewer>
+                                            <ScrollViewer DataContext="{Binding ContentSelectorVM}">
                                                 <StackPanel>
                                                     <StackPanel.Resources>
                                                         <DataTemplate x:Key="PathTemplate">
