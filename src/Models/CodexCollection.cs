@@ -163,8 +163,19 @@ namespace COMPASS.Models
 
         #region Save Data To XML File
 
+        public void CreateDirectories()
+        {
+            //top folder
+            Directory.CreateDirectory(FullDataPath);
+            //subfolders
+            Directory.CreateDirectory(CoverArtPath);
+            Directory.CreateDirectory(ThumbnailsPath);
+            Directory.CreateDirectory(UserFilesPath);
+        }
+
         public void Save()
         {
+            Directory.CreateDirectory(UserFilesPath);
             SaveTags();
             SaveCodices();
             SaveInfo();
