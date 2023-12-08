@@ -214,6 +214,7 @@ namespace COMPASS.Tools
         public static string GetCommonFolder(List<string> paths)
         {
             if (paths is null) throw new ArgumentNullException(nameof(paths));
+            if (paths.Count == 0) return string.Empty;
 
             string reference = paths.First();
             string[] folders = reference.Split(Path.DirectorySeparatorChar);
