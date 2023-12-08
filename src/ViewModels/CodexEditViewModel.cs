@@ -220,6 +220,9 @@ namespace COMPASS.ViewModels
                 toAdd.Copy(TempCodex);
                 MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(toAdd);
             }
+
+            MainViewModel.CollectionVM.CurrentCollection.Save();
+
             //Add new Authors, Publishers, ect. to metadata lists
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
             MainViewModel.CollectionVM.FilterVM.ReFilter();

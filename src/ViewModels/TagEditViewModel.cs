@@ -61,6 +61,8 @@ namespace COMPASS.ViewModels
                 MainViewModel.CollectionVM.CurrentCollection.AllTags.Add(_editedTag);
             }
 
+            MainViewModel.CollectionVM.CurrentCollection.SaveTags();
+
             MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
 
             //reset fields
