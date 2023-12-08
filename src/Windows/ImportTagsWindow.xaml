@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:COMPASS.Windows" 
         xmlns:views="clr-namespace:COMPASS.Views" 
-        xmlns:import="clr-namespace:COMPASS.ViewModels.Import" d:DataContext="{d:DesignInstance Type=import:ImportTagsViewModel}"
+        xmlns:import="clr-namespace:COMPASS.ViewModels.Import" 
+        d:DataContext="{d:DesignInstance Type=import:ImportTagsViewModel}"
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
         Title="ImportTagsWindow" Height="450" Width="800">
     <Grid>
@@ -14,11 +15,11 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <views:ImportTagsView />
+        <views:TagsSelectorView DataContext="{Binding TagsSelectorVM}" />
         <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/>
         <Button Style="{StaticResource TextButton}"
                 Content="Import" Margin="5" Grid.Row="2"
                 Background="{StaticResource AccentColorMuted}"
-                Command="{Binding MergeTagsCommand}"/>
+                Command="{Binding ImportTagsCommand}"/>
     </Grid>
 </Window>

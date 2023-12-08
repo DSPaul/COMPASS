@@ -128,8 +128,8 @@ namespace COMPASS.ViewModels
         public ActionCommand ImportTagsCommand => _importTagsCommand ??= new(ImportTags);
         public void ImportTags()
         {
-            var vm = new ImportTagsViewModel(MainViewModel.CollectionVM.AllCodexCollections.ToList());
-            var w = new ImportTagsWindow(vm);
+            var importVM = new ImportTagsViewModel(MainViewModel.CollectionVM.AllCodexCollections.ToList());
+            var w = new ImportTagsWindow(importVM);
             w.Show();
         }
 

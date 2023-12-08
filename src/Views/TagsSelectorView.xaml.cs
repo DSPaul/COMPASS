@@ -3,11 +3,11 @@
 namespace COMPASS.Views
 {
     /// <summary>
-    /// Interaction logic for ImportTagsView.xaml
+    /// Interaction logic for TagsSelectorView.xaml
     /// </summary>
-    public partial class ImportTagsView : UserControl
+    public partial class TagsSelectorView : UserControl
     {
-        public ImportTagsView()
+        public TagsSelectorView()
         {
             InitializeComponent();
         }
