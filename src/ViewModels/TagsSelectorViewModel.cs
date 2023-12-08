@@ -13,6 +13,8 @@ namespace COMPASS.ViewModels
             SelectedTagCollection = TagCollections.FirstOrDefault();
         }
 
+        public TagsSelectorViewModel(CodexCollection collection) : this(new List<CodexCollection> { collection }) { }
+
         private List<TagCollection> _tagCollections = new();
         public List<TagCollection> TagCollections
         {

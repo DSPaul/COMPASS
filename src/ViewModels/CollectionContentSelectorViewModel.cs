@@ -35,7 +35,7 @@ namespace COMPASS.ViewModels
             UpdateSteps();
 
             //Put Tags in Checkable Wrapper
-            SelectableTags = CompleteCollection.RootTags.Select(t => new CheckableTreeNode<Tag>(t)).ToList();
+            TagsSelectorVM = new(completeCollection);
 
             //Put codices in dictionary so they can be labeled true/false for import
             SelectableCodices = CompleteCollection.AllCodices.Select(codex => new SelectableCodex(codex)).ToList();
@@ -72,7 +72,8 @@ namespace COMPASS.ViewModels
         public bool HasSettings { get; set; }
 
         //TAGS STEP
-        public List<CheckableTreeNode<Tag>> SelectableTags { get; set; }
+        public TagsSelectorViewModel TagsSelectorVM { get; set; }
+        public IEnumerable<CheckableTreeNode<Tag>> SelectableTags => TagsSelectorVM.SelectedTagCollection.TagsRoot.Children;
 
         // CODICES STEP
         public List<SelectableCodex> SelectableCodices { get; set; }

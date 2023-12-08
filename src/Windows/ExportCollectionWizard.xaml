@@ -7,7 +7,7 @@
         xmlns:controls="clr-namespace:COMPASS.Resources.Controls" 
         xmlns:tools="clr-namespace:COMPASS.Tools"
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
-        xmlns:local="clr-namespace:COMPASS.Windows"
+        xmlns:local="clr-namespace:COMPASS.Windows" xmlns:views="clr-namespace:COMPASS.Views"
         d:DataContext="{d:DesignInstance Type=viewmodels:ExportCollectionViewModel}"
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
         Title="{Binding CollectionToExport.DirectoryName, StringFormat=Exporting {0:}}" 
@@ -222,38 +222,7 @@
                                 <Setter Property="Content">
                                     <Setter.Value>
                                         <Grid Visibility="{Binding CurrentStep, ConverterParameter=Tags, Converter={StaticResource ShowInStepConverter}}">
-                                            <Grid.Resources>
-                                                <tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
-                                                <HierarchicalDataTemplate x:Key="RegularTag" ItemsSource="{Binding Children}">
-                                                    <Border CornerRadius="5" Margin="0,3">
-                                                        <Border.Background>
-                                                            <SolidColorBrush Color="{Binding Item.BackgroundColor}"/>
-                                                        </Border.Background>
-                                                        <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsChecked, Mode=TwoWay}" 
-                                                              Content="{Binding Item.Content}" Foreground="{StaticResource TextColor}"/>
-                                                    </Border>
-                                                </HierarchicalDataTemplate>
-                                                <HierarchicalDataTemplate x:Key="GroupTag" ItemsSource="{Binding Children}">
-                                                    <Border Margin="0,3" Background="{x:Null}" >
-                                                        <StackPanel Orientation="Horizontal" >
-                                                            <Rectangle Fill="{Binding Item.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
-                                                                   Width="2" Height="16" Margin="3" VerticalAlignment="Bottom" />
-                                                            <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
-                                                                  Content="{Binding Item.Content}" Foreground="LightGray"
-                                                                  FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
-                                                        </StackPanel>
-                                                    </Border>
-                                                </HierarchicalDataTemplate>
-                                            </Grid.Resources>
-                                            <TreeView ItemsSource="{Binding ContentSelectorVM.SelectableTags}" Background="Transparent" 
-                                                      HorizontalAlignment="Stretch" BorderThickness="0" 
-                                                      ItemTemplateSelector="{StaticResource TagTemplateSelector}">
-                                                <TreeView.ItemContainerStyle>
-                                                    <Style TargetType="TreeViewItem">
-                                                        <Setter Property="Focusable" Value="False" />
-                                                    </Style>
-                                                </TreeView.ItemContainerStyle>
-                                            </TreeView>
+                                            <views:TagsSelectorView DataContext="{Binding ContentSelectorVM.TagsSelectorVM}" />
                                         </Grid>
                                     </Setter.Value>
                                 </Setter>
