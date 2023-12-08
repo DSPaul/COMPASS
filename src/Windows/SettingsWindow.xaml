@@ -55,7 +55,7 @@
             <Setter Property="FontWeight" Value="Light"/>
             <Setter Property="FontSize" Value="20"/>
         </Style>
-        <Style TargetType="Rectangle" x:Key="Separator">
+        <Style TargetType="Rectangle" x:Key="SeparatorStyle">
             <Setter Property="Fill" Value="{StaticResource DarkUIElementBackground}"/>
             <Setter Property="Width" Value="10000"/>
             <Setter Property="Height" Value="3"/>
@@ -280,6 +280,7 @@
                                                                 <ColumnDefinition Width="auto" SharedSizeGroup="Tag"/>
                                                                 <ColumnDefinition Width="auto"/>
                                                                 <ColumnDefinition Width="auto"/>
+                                                                <ColumnDefinition Width="auto"/>
                                                             </Grid.ColumnDefinitions>
                                                             <TextBlock Text="{Binding Folder}" Margin="0" TextWrapping="Wrap"/>
                                                             <materialDesign:PackIcon Kind="Link" Grid.Column="1" Margin="10,0"/>
@@ -287,8 +288,9 @@
                                                                     Background="{Binding Tag.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}">
                                                                 <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/>
                                                             </Border>
+                                                            <Rectangle Fill="{StaticResource Separator}" Width="2" Margin="5,0" VerticalAlignment="Stretch" Grid.Column="3"/>
                                                             <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="FolderOpen" Width="20" 
-                                                                    Margin="5,0" Grid.Column="3" ToolTip="Show In Explorer" 
+                                                                    Margin="5,0" Grid.Column="4" ToolTip="Show In Explorer" 
                                                                     Command="{Binding DataContext.ShowInExplorerCommand,
                                                                     RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                     CommandParameter="{Binding Folder}"/>
@@ -296,7 +298,7 @@
                                                                 Command="{Binding DataContext.RemoveFolderTagPairCommand, 
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                 CommandParameter="{Binding}" Margin="5,0" 
-                                                                Grid.Column="4" ToolTip="Remove Link"/>
+                                                                Grid.Column="5" ToolTip="Remove Link"/>
                                                         </Grid>
                                                     </Border>
                                                 </DataTemplate>
@@ -395,7 +397,7 @@
                                 </StackPanel>
                                 <TextBlock Text="Overwrite existing metadata" Grid.Row="0" Grid.Column="2"/>
                                 
-                                <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3" Grid.Column="0"
+                                <Rectangle Style="{StaticResource SeparatorStyle}" Grid.ColumnSpan="3" Grid.Column="0"
                                            Grid.Row="1"/>
 
                                 <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
@@ -432,7 +434,7 @@
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource ObjectToBoolConverter}, 
                                                                  ConverterParameter={x:Static models:MetaDataOverwriteMode.Always}}" />
                                                 </StackPanel>
-                                                <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3"
+                                                <Rectangle Style="{StaticResource SeparatorStyle}" Grid.ColumnSpan="3"
                                                            Grid.Column="0" Grid.Row="1"/>
                                             </Grid>
                                         </DataTemplate>
