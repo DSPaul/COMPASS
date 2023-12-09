@@ -320,8 +320,9 @@
                                 <TextBlock Text="Exclude" Style="{StaticResource RadioBtnTextBox}"/>
                             </Border>
                         </RadioButton>
-                        <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="DotsVertical" VerticalAlignment="Center" Margin="5,0,0,0"
-                                Width="30" Height="30" Click="Toggle_ContextMenu" ContextMenu="{StaticResource AllTagsContextMenu}"/>
+                        <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="DotsVertical" VerticalAlignment="Center" Margin="10,0,0,0"
+                                Width="30" Height="30" Foreground="{StaticResource TextMutedColor}" Click="Toggle_ContextMenu" ContextMenu="{StaticResource AllTagsContextMenu}" 
+                                ToolTip="Additional Actions" Background="{StaticResource Layer4}"/>
                     </StackPanel>
 
                     <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"  Grid.Row="4"

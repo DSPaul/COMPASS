@@ -1223,6 +1223,10 @@
         <Setter Property="Height" Value="20"/>
     </Style>
 
+    <Style TargetType="materialDesign:PackIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}" x:Key="ToolTipIcon">
+        <Setter Property="ToolTipService.InitialShowDelay" Value="0"/>
+    </Style>
+
     <!--#region Progressbar-->
     <Style x:Key="RoundedProgressBar" TargetType="{x:Type ProgressBar}">
         <Setter Property="BorderThickness" Value="0"/>

@@ -103,12 +103,12 @@
                                             </Grid.RowDefinitions>
                                             <StackPanel Orientation="Horizontal" Margin="20,0">
                                                 <CheckBox Content="Reset personal data on all items" IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/>
-                                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                                     ToolTip="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last openened &#x0a; - Times opened &#x0a; - Date added"/>
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal" Margin="20,0" Grid.Row="1">
                                                 <CheckBox Content="Include files that are referenced by these items" IsChecked="{Binding IncludeFiles}"/>
-                                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                                                          ToolTip="This will include referenced files such as pdf's, images, ect. as part of the export"/>
                                             </StackPanel>
                                             <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="2"/>
@@ -199,7 +199,7 @@
                                                                 <DockPanel>
                                                                     <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" DockPanel.Dock="Right"
                                                                      Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
-                                                                     ToolTip="This file could not be found"/>
+                                                                     ToolTip="This file could not be found" Style="{StaticResource ToolTipIcon}"/>
                                                                     <TextBlock Text ="{Binding Codex.FileName}" Style="{StaticResource default}"/>
                                                                 </DockPanel>
                                                             </DataTemplate>
@@ -246,7 +246,7 @@
                                                                         <TextBlock Text="{Binding Path}" Margin="0" TextWrapping="Wrap"/>
                                                                         <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" Grid.Column="1"
                                                                                     Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
-                                                                                    ToolTip="This path could not be found"/>
+                                                                                    ToolTip="This path could not be found" Style="{StaticResource ToolTipIcon}"/>
                                                                     </Grid>
                                                                 </CheckBox>
                                                             </Border>
@@ -302,9 +302,10 @@
                                                                                 </Border>
                                                                                 <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" Grid.Column="3"
                                                                                                                 Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
-                                                                                                                ToolTip="This path could not be found"/>
+                                                                                                                ToolTip="This path could not be found" Style="{StaticResource ToolTipIcon}"/>
                                                                                 <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" Grid.Column="4"
                                                                                                                 Visibility="{Binding TagExists, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
+                                                                                                                Style="{StaticResource ToolTipIcon}"
                                                                                                                 ToolTip="This Tag could not be found or was not selected for export"/>
                                                                             </Grid>
                                                                         </CheckBox>

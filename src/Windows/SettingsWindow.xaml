@@ -99,7 +99,7 @@
                             <TextBox PreviewTextInput="FilterOnlyNumbers" Padding="2,0"  Margin="2" MinWidth="50"
                                      Text="{Binding VirtualizationThresholdList}"/>
                             <TextBlock Text="items." Margin="5,0"/>
-                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                     ToolTip="Virtualized layouts only render items when they are scrolled into view, which greatly reduces load times for large collections. This will however cause stutter while scrolling.
                                         The List layout loads reasonable fast so virtualization is only needed for big collections."/>
                         </StackPanel>
@@ -110,7 +110,7 @@
                             <TextBox PreviewTextInput="FilterOnlyNumbers" Padding="2,0"  Margin="2" MinWidth="50"
                                      Text="{Binding VirtualizationThresholdCard}"/>
                             <TextBlock Text="items." Margin="5,0"/>
-                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                     ToolTip="Virtualized layouts only render items when they are scrolled into view, which greatly reduces load times for large collections. This will however cause stutter while scrolling.
                                         The card layout loads the slowest due to due to its complexity so virtualisation is recommended even for medium sized collections."/>
                         </StackPanel>
@@ -121,7 +121,7 @@
                             <TextBox PreviewTextInput="FilterOnlyNumbers" Padding="2,0"  Margin="2" MinWidth="50"
                                      Text="{Binding VirtualizationThresholdTile}"/>
                             <TextBlock Text="items." Margin="5,0"/>
-                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                     ToolTip="Virtualized layouts only render items when they are scrolled into view, which greatly reduces load times for large collections. This will however cause stutter while scrolling.
                                         The Grid layout loads reasonable fast so virtualization is only needed for big collections."/>
                         </StackPanel>
@@ -136,7 +136,7 @@
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Automatic Import From Folders" Style="{StaticResource SectionTitle}"/>
-                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                     ToolTip="These folders will periodically be checked for files that have not yet been imported, and import them automatically."/>
                             </StackPanel>
                             <TextBlock Text="Folders to Check:"/>
@@ -254,7 +254,7 @@
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Link Folders to Tags" Style="{StaticResource SectionTitle}"/>
-                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                                          ToolTip="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
                             </StackPanel>
                             <Button Style="{StaticResource TextButton}" HorizontalAlignment="Left"
@@ -262,7 +262,8 @@
                                     Command="{Binding DetectFolderTagPairsCommand}" Margin="5">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Detect links based on imported files" Margin="0"/>
-                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="5,3,0,3" Foreground="{StaticResource TextMutedColor}"/>
+                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="5,3,0,3" Style="{StaticResource ToolTipIcon}"
+                                                             Foreground="{StaticResource TextMutedColor}" ToolTip="If all files from a folder share the same tag, the folder and tag will be linked."/>
                                 </StackPanel>
                             </Button>
                             <CheckBox Content="Treat tags and folders with the same name as linked" Margin="10,5" IsChecked="{Binding AutoLinkFolderTagSameName}"/>
@@ -392,7 +393,7 @@
                                 <TextBlock Text="Property"/>
                                 <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Margin="20,0">
                                     <TextBlock Text="Source Priority" />
-                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                                          ToolTip="If mutliple sources provide metadata for a given property, the value from the topmost source will be used."/>
                                 </StackPanel>
                                 <TextBlock Text="Overwrite existing metadata" Grid.Row="0" Grid.Column="2"/>
