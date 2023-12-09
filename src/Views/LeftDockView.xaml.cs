@@ -84,5 +84,11 @@ namespace COMPASS.Views
             }
 
         }
+
+        private void Toggle_ContextMenu(object sender, RoutedEventArgs e)
+        {
+            ((Button)sender).ContextMenu!.PlacementTarget = (Button)sender;
+            ((Button)sender).ContextMenu!.IsOpen = !((Button)sender).ContextMenu!.IsOpen;
+        }
     }
 }

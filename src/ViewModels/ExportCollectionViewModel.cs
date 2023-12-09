@@ -11,6 +11,8 @@ namespace COMPASS.ViewModels
 {
     public class ExportCollectionViewModel : WizardViewModel
     {
+
+        public ExportCollectionViewModel() : this(MainViewModel.CollectionVM.CurrentCollection) { }
         public ExportCollectionViewModel(CodexCollection collectionToExport)
         {
             CollectionToExport = collectionToExport;
@@ -79,63 +81,70 @@ namespace COMPASS.ViewModels
 
         public async Task ExportToFile()
         {
-            SaveFileDialog saveFileDialog = new()
+            try
             {
-                Filter = $"COMPASS File (*{Constants.COMPASSFileExtension})|*{Constants.COMPASSFileExtension}",
-                FileName = CollectionToExport.DirectoryName,
-                DefaultExt = Constants.COMPASSFileExtension
-            };
-
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                //make sure to save first
-                ContentSelectorVM.CuratedCollection.CreateDirectories();
-                ContentSelectorVM.CuratedCollection.Save();
-
-                string targetPath = saveFileDialog.FileName;
-                using ZipFile zip = new();
-                zip.AddDirectory(ContentSelectorVM.CuratedCollection.FullDataPath);
-
-                //Change Codex Path to relative and add those files if the options is set
-                var itemsWithOfflineSource = ContentSelectorVM.CuratedCollection.AllCodices.Where(codex => codex.HasOfflineSource());
-                string commonFolder = Utils.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Path).ToList());
-                foreach (Codex codex in itemsWithOfflineSource)
+                SaveFileDialog saveFileDialog = new()
                 {
-                    string relativePath = codex.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
-                    if (IncludeFiles && File.Exists(codex.Path))
-                    {
-                        int index_start_filename = relativePath.Length - Path.GetFileName(codex.Path).Length;
-                        zip.AddFile(codex.Path, Path.Combine("Files", relativePath[0..index_start_filename]));
-                    }
-                    //strip longest common path so relative paths stay, given that full paths will break anyway
-                    codex.Path = relativePath;
-                }
-
-                ContentSelectorVM.CuratedCollection.SaveCodices();
-                zip.UpdateFile(ContentSelectorVM.CuratedCollection.CodicesDataFilePath, "");
-
-                //Progress reporting
-                var ProgressVM = ProgressViewModel.GetInstance();
-                ProgressVM.Text = "Exporting Collection";
-                ProgressVM.ShowCount = false;
-                ProgressVM.ResetCounter();
-                zip.SaveProgress += (object _, SaveProgressEventArgs args) =>
-                {
-                    ProgressVM.TotalAmount = Math.Max(ProgressVM.TotalAmount, args.EntriesTotal);
-                    if (args.EventType == ZipProgressEventType.Saving_AfterWriteEntry)
-                    {
-                        ProgressVM.IncrementCounter();
-                    }
+                    Filter = $"COMPASS File (*{Constants.COMPASSFileExtension})|*{Constants.COMPASSFileExtension}",
+                    FileName = CollectionToExport.DirectoryName,
+                    DefaultExt = Constants.COMPASSFileExtension
                 };
 
-                //Export
-                await Task.Run(() =>
+                if (saveFileDialog.ShowDialog() == true)
                 {
-                    zip.Save(targetPath);
-                    Directory.Delete(ContentSelectorVM.CuratedCollection.FullDataPath, true);
+                    //make sure to save first
+                    ContentSelectorVM.CuratedCollection.CreateDirectories();
+                    ContentSelectorVM.CuratedCollection.Save();
+
+                    string targetPath = saveFileDialog.FileName;
+                    using ZipFile zip = new();
+                    zip.AddDirectory(ContentSelectorVM.CuratedCollection.FullDataPath);
+
+                    //Change Codex Path to relative and add those files if the options is set
+                    var itemsWithOfflineSource = ContentSelectorVM.CuratedCollection.AllCodices.Where(codex => codex.HasOfflineSource());
+                    string commonFolder = Utils.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Path).ToList());
+                    foreach (Codex codex in itemsWithOfflineSource)
+                    {
+                        string relativePath = codex.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
+                        if (IncludeFiles && File.Exists(codex.Path))
+                        {
+                            int index_start_filename = relativePath.Length - Path.GetFileName(codex.Path).Length;
+                            zip.AddFile(codex.Path, Path.Combine("Files", relativePath[0..index_start_filename]));
+                        }
+                        //strip longest common path so relative paths stay, given that full paths will break anyway
+                        codex.Path = relativePath;
+                    }
+
+                    ContentSelectorVM.CuratedCollection.SaveCodices();
+                    zip.UpdateFile(ContentSelectorVM.CuratedCollection.CodicesDataFilePath, "");
+
+                    //Progress reporting
+                    var ProgressVM = ProgressViewModel.GetInstance();
+                    ProgressVM.Text = "Exporting Collection";
                     ProgressVM.ShowCount = false;
-                });
-                Logger.Info($"Exported {CollectionToExport.DirectoryName} to {targetPath}");
+                    ProgressVM.ResetCounter();
+                    zip.SaveProgress += (object _, SaveProgressEventArgs args) =>
+                    {
+                        ProgressVM.TotalAmount = Math.Max(ProgressVM.TotalAmount, args.EntriesTotal);
+                        if (args.EventType == ZipProgressEventType.Saving_AfterWriteEntry)
+                        {
+                            ProgressVM.IncrementCounter();
+                        }
+                    };
+
+                    //Export
+                    await Task.Run(() =>
+                    {
+                        zip.Save(targetPath);
+                        Directory.Delete(ContentSelectorVM.CuratedCollection.FullDataPath, true);
+                        ProgressVM.ShowCount = false;
+                    });
+                    Logger.Info($"Exported {CollectionToExport.DirectoryName} to {targetPath}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Export failed", ex);
             }
         }
 

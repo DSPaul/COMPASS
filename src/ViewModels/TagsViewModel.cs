@@ -133,6 +133,25 @@ namespace COMPASS.ViewModels
             w.Show();
         }
 
+        private ActionCommand _exportTagsCommand;
+        public ActionCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags, _collectionVM.CurrentCollection.RootTags.Any);
+        public void ExportTags()
+        {
+            var vm = new ExportCollectionViewModel();
+
+            //configure export vm for tags only
+            vm.AdvancedExport = true;
+            vm.Steps.Clear();
+            vm.Steps.Add("Tags");
+            foreach (var codex in vm.ContentSelectorVM.SelectableCodices)
+            {
+                codex.Selected = false;
+            }
+
+            var w = new ExportCollectionWizard(vm);
+            w.Show();
+        }
+
         #region Drag & Drop Tags Treeview
         //Drop on Treeview Behaviour
         void IDropTarget.DragOver(IDropInfo dropInfo) => DragDrop.DefaultDropHandler.DragOver(dropInfo);

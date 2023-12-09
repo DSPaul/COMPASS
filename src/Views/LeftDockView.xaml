@@ -185,6 +185,14 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
+                    <Grid.Resources>
+                        <ContextMenu x:Key="AllTagsContextMenu">
+                            <MenuItem Header="Sort All Tags" tools:AP.IconKind="TagMultipleOutline" ToolTip="Sorts all the Tags and Tag Groups A->Z"
+                                Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortAllTagsCommand}"/>
+                            <MenuItem Header="Export Tags" tools:AP.IconKind="TagArrowUpOutline" ToolTip="Export tags to a file"
+                                Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.ExportTagsCommand}"/>
+                        </ContextMenu>
+                    </Grid.Resources>
 
                     <TabControl Grid.Row="0" Margin="30,10,30,10" Background="Transparent" 
                                 BorderThickness="0" Padding="2,0,2,0" 
@@ -312,18 +320,15 @@
                                 <TextBlock Text="Exclude" Style="{StaticResource RadioBtnTextBox}"/>
                             </Border>
                         </RadioButton>
+                        <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="DotsVertical" VerticalAlignment="Center" Margin="5,0,0,0"
+                                Width="30" Height="30" Click="Toggle_ContextMenu" ContextMenu="{StaticResource AllTagsContextMenu}"/>
                     </StackPanel>
 
                     <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"  Grid.Row="4"
                         ItemsSource="{Binding Path=TreeViewSource,Mode=TwoWay}"  Margin="5" Cursor="Arrow"
                         dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}"
-                        ItemTemplateSelector="{StaticResource TagTemplateSelector}" MouseRightButtonDown="TagTree_MouseRightButtonDown">
-                        <TreeView.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Sort All Tags" tools:AP.IconKind="TagMultipleOutline" ToolTip="Sorts all the Tags and Tag Groups A->Z"
-                                          Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortAllTagsCommand}"/>
-                            </ContextMenu>
-                        </TreeView.ContextMenu>
+                        ItemTemplateSelector="{StaticResource TagTemplateSelector}" ContextMenu="{StaticResource AllTagsContextMenu}"
+                        MouseRightButtonDown="TagTree_MouseRightButtonDown">
                         <TreeView.Resources>
                             <Style TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
