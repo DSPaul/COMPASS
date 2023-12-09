@@ -81,6 +81,8 @@ namespace COMPASS.ViewModels
 
         public async Task ExportToFile()
         {
+            var ProgressVM = ProgressViewModel.GetInstance();
+
             try
             {
                 SaveFileDialog saveFileDialog = new()
@@ -119,7 +121,6 @@ namespace COMPASS.ViewModels
                     zip.UpdateFile(ContentSelectorVM.CuratedCollection.CodicesDataFilePath, "");
 
                     //Progress reporting
-                    var ProgressVM = ProgressViewModel.GetInstance();
                     ProgressVM.Text = "Exporting Collection";
                     ProgressVM.ShowCount = false;
                     ProgressVM.ResetCounter();
@@ -145,6 +146,8 @@ namespace COMPASS.ViewModels
             catch (Exception ex)
             {
                 Logger.Error("Export failed", ex);
+                ProgressVM.ShowCount = false;
+                CloseAction();
             }
         }
 

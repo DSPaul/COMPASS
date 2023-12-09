@@ -345,9 +345,18 @@ namespace COMPASS.ViewModels
 
         public async Task Import(string path)
         {
+            CodexCollection collectionToImport;
             //unzip the file
-            string unzipLocation = await Utils.UnZipCollection(path);
-            var collectionToImport = new CodexCollection(Path.GetFileName(unzipLocation));
+            try
+            {
+                string unzipLocation = await Utils.UnZipCollection(path);
+                collectionToImport = new(Path.GetFileName(unzipLocation));
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn($"Failed to read {path}", ex);
+                return;
+            }
 
             //open wizard
             ImportCollectionViewModel ImportCollectionVM = new(collectionToImport);
