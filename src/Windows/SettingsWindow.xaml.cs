@@ -69,7 +69,7 @@ namespace COMPASS.Windows
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             var s = sender as ScrollViewer;
-            if (s.ComputedVerticalScrollBarVisibility == Visibility.Collapsed)
+            if (s!.ComputedVerticalScrollBarVisibility == Visibility.Collapsed)
             {
                 var parentScrollViewer = FindParentScrollViewer(s);
                 if (parentScrollViewer is null) return;

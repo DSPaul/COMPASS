@@ -29,9 +29,15 @@ namespace COMPASS.Views
         //Make sure selected Item is always in view
         private void FileView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is DataGrid dataGrid && e.AddedItems != null && e.AddedItems.Count > 0)
+            if (sender is DataGrid dataGrid && e.AddedItems is { Count: > 0 })
             {
-                dataGrid.ScrollIntoView(e.AddedItems[0]);
+                try
+                {
+                    dataGrid.ScrollIntoView(e.AddedItems[0]);
+                }
+                catch{ 
+                    //happens when first item is null
+                }
             }
         }
 

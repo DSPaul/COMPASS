@@ -359,8 +359,8 @@ namespace COMPASS.ViewModels
             }
 
             //open wizard
-            ImportCollectionViewModel ImportCollectionVM = new(collectionToImport);
-            ImportCollectionWizard wizard = new(ImportCollectionVM);
+            ImportCollectionViewModel importCollectionVM = new(collectionToImport);
+            ImportCollectionWizard wizard = new(importCollectionVM);
             wizard.Show();
         }
 
@@ -381,7 +381,7 @@ namespace COMPASS.ViewModels
             targetCollection.Load(hidden: true);
             targetCollection.MergeWith(CurrentCollection);
 
-            message = $"Succesfully merged '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'";
+            message = $"Successfully merged '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'";
             MessageBox.Show(message, "Merge Success");
         }
         #endregion

@@ -61,8 +61,11 @@ namespace COMPASS.ViewModels
             //Disable skip
             AutoUpdater.ShowSkipButton = false;
             //Set Icon
-            string runningExePath = Process.GetCurrentProcess().MainModule.FileName;
-            AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath).ToBitmap();
+            string runningExePath = Process.GetCurrentProcess().MainModule?.FileName;
+            if (String.IsNullOrWhiteSpace(runningExePath))
+            {
+                AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath!)?.ToBitmap();
+            }
 #if DEBUG
             //AutoUpdater.InstalledVersion = new("0.2.0"); //for testing only
 #endif

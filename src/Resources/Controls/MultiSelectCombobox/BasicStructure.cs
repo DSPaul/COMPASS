@@ -1,12 +1,11 @@
-﻿using BlackPearl.Controls.Contract;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
-namespace BlackPearl.Controls.CoreLibrary
+namespace COMPASS.Resources.Controls.MultiSelectCombobox
 {
     [TemplatePart(Name = "placeholderText", Type = typeof(TextBlock))]
     [TemplatePart(Name = "rtxt", Type = typeof(RichTextBox))]
@@ -39,74 +38,74 @@ namespace BlackPearl.Controls.CoreLibrary
 
         private TextBlock PlaceholderElement { get; set; }
 
-        private RichTextBox richTextBoxElement;
+        private RichTextBox _richTextBoxElement;
         private RichTextBox RichTextBoxElement
         {
-            get => richTextBoxElement;
+            get => _richTextBoxElement;
             set
             {
-                if (richTextBoxElement != null)
+                if (_richTextBoxElement != null)
                 {
-                    richTextBoxElement.TextChanged -= RichTextBoxElement_TextChanged;
-                    richTextBoxElement.SizeChanged -= RichTextBoxElement_SizeChanged;
-                    DataObject.RemovePastingHandler(richTextBoxElement, PasteHandler);
-                    DataObject.RemoveCopyingHandler(richTextBoxElement, OnSelectionStartDrag);
-                    richTextBoxElement.RemoveHandler(CommandManager.PreviewExecutedEvent, new ExecutedRoutedEventHandler(SetClipboardTextWithCommandCancelled));
-                    richTextBoxElement.DragEnter -= OnDragEnter;
-                    richTextBoxElement.Drop -= OnDragDrop;
+                    _richTextBoxElement.TextChanged -= RichTextBoxElement_TextChanged;
+                    _richTextBoxElement.SizeChanged -= RichTextBoxElement_SizeChanged;
+                    DataObject.RemovePastingHandler(_richTextBoxElement, PasteHandler);
+                    DataObject.RemoveCopyingHandler(_richTextBoxElement, OnSelectionStartDrag);
+                    _richTextBoxElement.RemoveHandler(CommandManager.PreviewExecutedEvent, new ExecutedRoutedEventHandler(SetClipboardTextWithCommandCancelled));
+                    _richTextBoxElement.DragEnter -= OnDragEnter;
+                    _richTextBoxElement.Drop -= OnDragDrop;
                 }
 
-                richTextBoxElement = value;
+                _richTextBoxElement = value;
 
-                if (richTextBoxElement != null)
+                if (_richTextBoxElement != null)
                 {
-                    richTextBoxElement.SetParagraphAsFirstBlock();
+                    _richTextBoxElement.SetParagraphAsFirstBlock();
 
                     if (SelectedItems != null)
                     {
                         //Add all selected items
                         foreach (object item in SelectedItems)
                         {
-                            richTextBoxElement.AddToParagraph(item, CreateInlineUIElement);
+                            _richTextBoxElement.AddToParagraph(item, CreateInlineUIElement);
                         }
                     }
 
-                    richTextBoxElement.TextChanged += RichTextBoxElement_TextChanged;
-                    richTextBoxElement.SizeChanged += RichTextBoxElement_SizeChanged;
-                    DataObject.AddPastingHandler(richTextBoxElement, PasteHandler);
-                    DataObject.AddCopyingHandler(richTextBoxElement, OnSelectionStartDrag);
-                    richTextBoxElement.AddHandler(CommandManager.PreviewExecutedEvent, new ExecutedRoutedEventHandler(SetClipboardTextWithCommandCancelled));
-                    richTextBoxElement.DragEnter += OnDragEnter;
-                    richTextBoxElement.Drop += OnDragDrop;
-                    richTextBoxElement.AllowDrop = true;
+                    _richTextBoxElement.TextChanged += RichTextBoxElement_TextChanged;
+                    _richTextBoxElement.SizeChanged += RichTextBoxElement_SizeChanged;
+                    DataObject.AddPastingHandler(_richTextBoxElement, PasteHandler);
+                    DataObject.AddCopyingHandler(_richTextBoxElement, OnSelectionStartDrag);
+                    _richTextBoxElement.AddHandler(CommandManager.PreviewExecutedEvent, new ExecutedRoutedEventHandler(SetClipboardTextWithCommandCancelled));
+                    _richTextBoxElement.DragEnter += OnDragEnter;
+                    _richTextBoxElement.Drop += OnDragDrop;
+                    _richTextBoxElement.AllowDrop = true;
                 }
             }
         }
 
         private Popup PopupElement { get; set; }
 
-        private ListBox suggestionElement;
+        private ListBox _suggestionElement;
         private ListBox SuggestionElement
         {
-            get => suggestionElement;
+            get => _suggestionElement;
             set
             {
-                if (suggestionElement != null)
+                if (_suggestionElement != null)
                 {
-                    suggestionElement.PreviewMouseUp -= SuggestionDropdown_PreviewMouseUp;
-                    suggestionElement.PreviewKeyUp -= SuggestionElement_PreviewKeyUp;
-                    suggestionElement.PreviewMouseDown -= SuggestionDropdown_PreviewMouseDown;
+                    _suggestionElement.PreviewMouseUp -= SuggestionDropdown_PreviewMouseUp;
+                    _suggestionElement.PreviewKeyUp -= SuggestionElement_PreviewKeyUp;
+                    _suggestionElement.PreviewMouseDown -= SuggestionDropdown_PreviewMouseDown;
                 }
 
-                suggestionElement = value;
-                suggestionElement.DisplayMemberPath = DisplayMemberPath;
-                suggestionElement.ItemsSource = ItemSource;
+                _suggestionElement = value;
+                _suggestionElement.DisplayMemberPath = DisplayMemberPath;
+                _suggestionElement.ItemsSource = ItemSource;
 
-                if (suggestionElement != null)
+                if (_suggestionElement != null)
                 {
-                    suggestionElement.PreviewMouseUp += SuggestionDropdown_PreviewMouseUp;
-                    suggestionElement.PreviewKeyUp += SuggestionElement_PreviewKeyUp;
-                    suggestionElement.PreviewMouseDown += SuggestionDropdown_PreviewMouseDown;
+                    _suggestionElement.PreviewMouseUp += SuggestionDropdown_PreviewMouseUp;
+                    _suggestionElement.PreviewKeyUp += SuggestionElement_PreviewKeyUp;
+                    _suggestionElement.PreviewMouseDown += SuggestionDropdown_PreviewMouseDown;
                 }
             }
         }
@@ -191,7 +190,7 @@ namespace BlackPearl.Controls.CoreLibrary
         private static void SelectedItemsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!(d is MultiSelectCombobox multiChoiceControl
-                && e.NewValue is IList selectedItems && selectedItems != null))
+                && e.NewValue is IList selectedItems))
             {
                 return;
             }
@@ -200,15 +199,15 @@ namespace BlackPearl.Controls.CoreLibrary
             {
                 //Unsubscribe handlers first
                 if (!multiChoiceControl.UnsubscribeHandler()
-                    || multiChoiceControl?.RichTextBoxElement == null)
+                    || multiChoiceControl.RichTextBoxElement == null)
                 {
                     //Failed to unsubscribe, return
                     return;
                 }
 
-                foreach (var textblock in multiChoiceControl?.RichTextBoxElement?.GetParagraph()?.Inlines?.Select(i => i.GetTextBlock())?.Where(i => i != null))
+                foreach (var textBlock in multiChoiceControl.RichTextBoxElement?.GetParagraph()?.Inlines?.Select(i => i.GetTextBlock()).Where(i => i != null))
                 {
-                    textblock.Unloaded -= multiChoiceControl.Tb_Unloaded;
+                    textBlock.Unloaded -= multiChoiceControl.Tb_Unloaded;
                 }
 
                 //Clear everything in RichTextBox
@@ -217,14 +216,14 @@ namespace BlackPearl.Controls.CoreLibrary
                 //Add all selected items
                 foreach (object item in selectedItems)
                 {
-                    multiChoiceControl?.RichTextBoxElement?.AddToParagraph(item, multiChoiceControl.CreateInlineUIElement);
+                    multiChoiceControl.RichTextBoxElement?.AddToParagraph(item, multiChoiceControl.CreateInlineUIElement);
                 }
 
                 multiChoiceControl.RaiseSelectionChangedEvent(e.OldValue as IList ?? new ArrayList(0), e.NewValue as IList ?? new ArrayList(0));
             }
             finally
             {
-                multiChoiceControl.SubsribeHandler();
+                multiChoiceControl.SubscribeHandler();
             }
         }
         /// <summary>
@@ -272,8 +271,8 @@ namespace BlackPearl.Controls.CoreLibrary
             typeof(MultiSelectCombobox));
         public event SelectionChangedEventHandler SelectionChanged
         {
-            add { AddHandler(SelectionChangedEvent, value); }
-            remove { RemoveHandler(SelectionChangedEvent, value); }
+            add => AddHandler(SelectionChangedEvent, value);
+            remove => RemoveHandler(SelectionChangedEvent, value);
         }
 
         /// <summary>

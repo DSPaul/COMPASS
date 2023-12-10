@@ -8,8 +8,7 @@
              xmlns:tools ="clr-namespace:COMPASS.Tools"
              xmlns:models="clr-namespace:COMPASS.Models" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-             xmlns:import="clr-namespace:COMPASS.ViewModels.Import" 
-             xmlns:customControls="clr-namespace:COMPASS.Resources.Controls" 
+             xmlns:import="clr-namespace:COMPASS.ViewModels.Import"
              xmlns:views="clr-namespace:COMPASS.Views" 
              xmlns:converters="clr-namespace:COMPASS.Converters"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -140,7 +139,7 @@
                     <Separator>
                         <Separator.Style>
                             <Style TargetType="Separator" BasedOn="{StaticResource MarginlessSeparator}">
-                                <!--Tranlate down 3 pixels to hide it when there is no content under it-->
+                                <!--Translate down 3 pixels to hide it when there is no content under it-->
                                 <Setter Property="RenderTransform">
                                     <Setter.Value>
                                         <TranslateTransform Y="3"/>
@@ -153,6 +152,12 @@
                               Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortChildrenCommand}"
                               Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self},
                               Converter={StaticResource ToVisibilityConverter}}"/>
+                </ContextMenu>
+                <ContextMenu x:Key="AllTagsContextMenu">
+                    <MenuItem Header="Sort All Tags" tools:AP.IconKind="TagMultipleOutline" ToolTip="Sorts all the Tags and Tag Groups A->Z"
+                        Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortAllTagsCommand}"/>
+                    <MenuItem Header="Export Tags" tools:AP.IconKind="TagArrowUpOutline" ToolTip="Export tags to a file"
+                        Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.ExportTagsCommand}"/>
                 </ContextMenu>
                 <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type models:TreeViewNode}" ItemsSource="{Binding Children}">
                     <Button Cursor="Hand" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.AddTagFilterCommand}">
@@ -185,15 +190,6 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Grid.Resources>
-                        <ContextMenu x:Key="AllTagsContextMenu">
-                            <MenuItem Header="Sort All Tags" tools:AP.IconKind="TagMultipleOutline" ToolTip="Sorts all the Tags and Tag Groups A->Z"
-                                Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortAllTagsCommand}"/>
-                            <MenuItem Header="Export Tags" tools:AP.IconKind="TagArrowUpOutline" ToolTip="Export tags to a file"
-                                Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.ExportTagsCommand}"/>
-                        </ContextMenu>
-                    </Grid.Resources>
-
                     <TabControl Grid.Row="0" Margin="30,10,30,10" Background="Transparent" 
                                 BorderThickness="0" Padding="2,0,2,0" 
                                 SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
@@ -320,7 +316,7 @@
                                 <TextBlock Text="Exclude" Style="{StaticResource RadioBtnTextBox}"/>
                             </Border>
                         </RadioButton>
-                        <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="DotsVertical" VerticalAlignment="Center" Margin="10,0,0,0"
+                        <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="DotsVertical" Margin="10,0,0,0"
                                 Width="30" Height="30" Foreground="{StaticResource TextMutedColor}" Click="Toggle_ContextMenu" ContextMenu="{StaticResource AllTagsContextMenu}" 
                                 ToolTip="Additional Actions" Background="{StaticResource Layer4}"/>
                     </StackPanel>
@@ -708,7 +704,7 @@
                             Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GenericURL}"/>
 
                         <TextBlock Text="Other" Style="{StaticResource Categorizer}"/>
-                        <Button tools:AP.IconKind="FileCad" Style="{StaticResource HighlightedButton}" Content="From .CMPS File"/>
+                        <Button tools:AP.IconKind="FileCad" Style="{StaticResource HighlightedButton}" Content="From .CMPSS File"/>
                     </StackPanel>
                 </ScrollViewer>
             </ContentControl>

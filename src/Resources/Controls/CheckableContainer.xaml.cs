@@ -21,7 +21,7 @@ namespace COMPASS.Resources.Controls
 
         // Using a DependencyProperty as the backing store for CheckText.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CheckTextProperty =
-            DependencyProperty.Register("CheckText", typeof(string), typeof(CheckableContainer), new PropertyMetadata(""));
+            DependencyProperty.Register(nameof(CheckText), typeof(string), typeof(CheckableContainer), new PropertyMetadata(""));
 
 
         public bool IsChecked
@@ -32,6 +32,6 @@ namespace COMPASS.Resources.Controls
 
         // Using a DependencyProperty as the backing store for IsChecked.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsCheckedProperty =
-            DependencyProperty.Register("IsChecked", typeof(bool), typeof(CheckableContainer), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(IsChecked), typeof(bool), typeof(CheckableContainer), new PropertyMetadata(false));
     }
 }

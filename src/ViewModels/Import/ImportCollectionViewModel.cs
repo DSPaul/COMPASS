@@ -1,6 +1,8 @@
-﻿using COMPASS.Models;
+﻿using System;
+using COMPASS.Models;
 using COMPASS.Tools;
 using System.IO;
+using System.Linq;
 
 namespace COMPASS.ViewModels.Import
 {
@@ -11,17 +13,24 @@ namespace COMPASS.ViewModels.Import
             CollectionToImport = collectionToImport;
             CollectionName = CollectionToImport.DirectoryName.Substring(2, CollectionToImport.DirectoryName.Length - 2 - Constants.COMPASSFileExtension.Length);
 
-            ContentSelectorVM = new(collectionToImport);
-            ContentSelectorVM.CuratedCollection = collectionToImport; //The import collection is tmp anyway so result can be saved on top of it
+            ContentSelectorVM = new(collectionToImport)
+            {
+                CuratedCollection = collectionToImport //The import collection is tmp anyway so result can be saved on top of it
+            };
 
             UpdateSteps();
 
             //if files were included in compass file, set paths of codices to those files
             if (Directory.Exists(CollectionToImport.UserFilesPath))
             {
-                foreach (Codex codex in CollectionToImport.AllCodices)
+                foreach (Codex codex in CollectionToImport.AllCodices.Where(c => c.HasOfflineSource()))
                 {
-                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath, Path.GetFileName(codex.Path));
+                    string fileName = Path.GetFileName(codex.Path);
+                    if (String.IsNullOrEmpty(fileName))
+                    {
+                        continue;
+                    }
+                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath,fileName);
                     if (File.Exists(includedFilePath))
                     {
                         codex.Path = includedFilePath;

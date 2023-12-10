@@ -9,14 +9,15 @@ namespace COMPASS.Converters
     {
         public object Convert(object value, Type targetType, object getFullRes, System.Globalization.CultureInfo culture)
         {
-            if (!File.Exists((string)value)) return null;
+            if (value is not string path) return null;
+            if (!File.Exists(path)) return null;
             bool fullRes = System.Convert.ToBoolean(getFullRes);
             BitmapImage bi = new();
             bi.BeginInit();
 
             bi.CreateOptions = fullRes ? BitmapCreateOptions.IgnoreImageCache : BitmapCreateOptions.DelayCreation;
             bi.CacheOption = BitmapCacheOption.OnLoad;
-            bi.UriSource = new Uri(value.ToString());
+            bi.UriSource = new Uri(path);
             bi.EndInit();
             return bi;
         }

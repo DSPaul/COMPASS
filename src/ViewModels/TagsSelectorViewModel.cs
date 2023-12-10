@@ -41,7 +41,7 @@ namespace COMPASS.ViewModels
 
             public string Name { get; set; }
 
-            public CheckableTreeNode<Tag> _tagsRoot = null;
+            private CheckableTreeNode<Tag> _tagsRoot = null;
             public CheckableTreeNode<Tag> TagsRoot
             {
                 get
@@ -51,10 +51,12 @@ namespace COMPASS.ViewModels
 
                     //load
                     _collection.LoadTags();
-                    //convert to treenodes
-                    _tagsRoot = new CheckableTreeNode<Tag>();
-                    _tagsRoot.Children = new(_collection.RootTags
-                        .Select(t => new CheckableTreeNode<Tag>(t)));
+                    //convert to nodes
+                    _tagsRoot = new CheckableTreeNode<Tag>
+                    {
+                        Children = new(_collection.RootTags
+                            .Select(t => new CheckableTreeNode<Tag>(t)))
+                    };
                     //init expanded and checked
                     foreach (var node in Utils.FlattenTree(_tagsRoot.Children))
                     {

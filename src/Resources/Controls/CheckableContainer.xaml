@@ -11,7 +11,7 @@
             <Grid>
                 <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent"
             Panel.ZIndex="1"/>
-                <!-- Rect in front so only templated checkbox can be clicked, because templatebinding is not two way-->
+                <!-- Rect in front so only templated checkbox can be clicked, because template binding is not two way-->
                 <Border x:Name="Border" CornerRadius="5,5,0,0" Panel.ZIndex="0">
                     <CheckBox Content="{TemplateBinding Content}" IsChecked="{TemplateBinding IsChecked}" Margin="10"
                 Focusable="False"/>

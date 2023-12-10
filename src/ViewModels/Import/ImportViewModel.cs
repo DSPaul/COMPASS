@@ -36,7 +36,7 @@ namespace COMPASS.ViewModels.Import
                 case ImportSource.ISBN:
                     ImportURL(source);
                     break;
-            };
+            }
         }
 
         public static bool Stealth = true;
@@ -135,7 +135,10 @@ namespace COMPASS.ViewModels.Import
                 return;
             }
 
-            foreach (Codex codex in newCodices) codex.RefreshThumbnail();
+            foreach (Codex codex in newCodices)
+            {
+                codex.RefreshThumbnail();
+            }
         }
     }
 }

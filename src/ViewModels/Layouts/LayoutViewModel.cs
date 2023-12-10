@@ -48,7 +48,7 @@ namespace COMPASS.ViewModels.Layouts
             set => SetProperty(ref _selectedCodex, value);
         }
 
-        public virtual bool DoVirtualization { get; }
+        public abstract bool DoVirtualization { get; }
 
         //Set Type of view
         public Layout LayoutType { get; init; }

@@ -4,7 +4,7 @@
                     xmlns:converters ="clr-namespace:COMPASS.Converters"
                     xmlns:models ="clr-namespace:COMPASS.Models"
                     xmlns:tools="clr-namespace:COMPASS.Tools"
-                    xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary">
+                    xmlns:multiSelectCombobox="clr-namespace:COMPASS.Resources.Controls.MultiSelectCombobox">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Themes/DarkTheme.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -872,7 +872,7 @@
         </Setter>
     </Style>
 
-    <ControlTemplate TargetType="BlackPearl:MultiSelectCombobox" x:Key="Default">
+    <ControlTemplate TargetType="multiSelectCombobox:MultiSelectCombobox" x:Key="Default">
         <Grid>
             <ToggleButton Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}"
                 Focusable="false" IsChecked="{Binding Path=IsOpen,Mode=OneWayToSource,ElementName=popup}"

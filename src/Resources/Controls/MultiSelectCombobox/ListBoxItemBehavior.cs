@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace BlackPearl.Controls.CoreLibrary.Behavior
+namespace COMPASS.Resources.Controls.MultiSelectCombobox
 {
     //References - http://stackoverflow.com/questions/1114092/listbox-scrollbar-doesnt-follow-selected-item-with-icollectionview
     //           - https://www.codeproject.com/Articles/28959/Introduction-to-Attached-Behaviors-in-WPF
@@ -65,6 +65,6 @@ namespace BlackPearl.Controls.CoreLibrary.Behavior
             ownerType: typeof(ListBoxItemBehavior),
             defaultMetadata: new UIPropertyMetadata(-1));
         public static int GetSelectionEndIndex(ListBox listBox) => (int)listBox.GetValue(SelectionEndIndexProperty);
-        public static void SetSelectioEndtIndex(ListBox listBox, int value) => listBox.SetValue(SelectionEndIndexProperty, value);
+        public static void SetSelectionEndIndex(ListBox listBox, int value) => listBox.SetValue(SelectionEndIndexProperty, value);
     }
 }

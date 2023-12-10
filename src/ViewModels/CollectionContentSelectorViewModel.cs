@@ -1,7 +1,6 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -59,7 +58,7 @@ namespace COMPASS.ViewModels
 
         private CodexCollection _curatedCollection;
         /// <summary>
-        /// Curated collection that containts only the selected items 
+        /// Curated collection that contains only the selected items 
         /// </summary>
         public CodexCollection CuratedCollection
         {
@@ -185,8 +184,8 @@ namespace COMPASS.ViewModels
             CuratedCollection.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).ToList();
 
             //Remove the tags that didn't make it from codices
-            var RemovedTags = CompleteCollection.AllTags.Except(Utils.FlattenTree(CompleteCollection.RootTags)).ToList();
-            foreach (Tag t in RemovedTags)
+            var removedTags = CompleteCollection.AllTags.Except(Utils.FlattenTree(CompleteCollection.RootTags)).ToList();
+            foreach (Tag t in removedTags)
             {
                 CuratedCollection.AllTags.Remove(t);
                 foreach (var codex in CuratedCollection.AllCodices)

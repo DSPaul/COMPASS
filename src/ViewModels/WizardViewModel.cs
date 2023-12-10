@@ -38,12 +38,12 @@ namespace COMPASS.ViewModels
 
         private ActionCommand _nextStepCommand;
         public ActionCommand NextStepCommand => _nextStepCommand ??= new(NextStep, ShowNextButton);
-        public virtual void NextStep() => StepCounter++;
+        protected virtual void NextStep() => StepCounter++;
         public virtual bool ShowNextButton() => StepCounter < Steps.Count - 1;
 
         private ActionCommand _prevStepCommand;
         public ActionCommand PrevStepCommand => _prevStepCommand ??= new(PrevStep, ShowBackButton);
-        public virtual void PrevStep() => StepCounter--;
+        protected virtual void PrevStep() => StepCounter--;
         public virtual bool ShowBackButton() => StepCounter > 0;
 
         private ActionCommand _finishCommand;

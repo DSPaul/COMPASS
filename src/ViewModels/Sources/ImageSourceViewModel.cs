@@ -14,9 +14,11 @@ namespace COMPASS.ViewModels.Sources
         public override Task<Codex> GetMetaData(Codex codex)
         {
             // Work on a copy
-            codex = new Codex(codex);
+            codex = new Codex(codex)
+            {
+                PageCount = 1
+            };
 
-            codex.PageCount = 1;
             return Task.FromResult(codex);
         }
         public override async Task<bool> FetchCover(Codex codex) =>

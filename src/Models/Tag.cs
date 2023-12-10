@@ -64,13 +64,13 @@ namespace COMPASS.Models
         }
 
         //Implement IHasID
-        public int _ID;
+        private int _id;
         public int ID
         {
-            get => _ID;
+            get => _id;
             set
             {
-                SetProperty(ref _ID, value);
+                SetProperty(ref _id, value);
                 foreach (var child in Children)
                 {
                     child.ParentID = value;
@@ -111,8 +111,14 @@ namespace COMPASS.Models
             Tag temp = Parent;
             while (!temp.IsGroup)
             {
-                if (temp.Parent != null) temp = temp.Parent;
-                else break;
+                if (temp.Parent != null)
+                {
+                    temp = temp.Parent;
+                }
+                else
+                {
+                    break;
+                }
             }
             return temp;
         }

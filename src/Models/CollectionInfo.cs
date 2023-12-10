@@ -14,7 +14,7 @@ namespace COMPASS.Models
         /// <summary>
         /// Checks if the collections has settings that differ from the default settings
         /// </summary>
-        /// <returns>True if settings were moddified, false if they are default</returns>
+        /// <returns>True if settings were modified, false if they are default</returns>
         public bool ContainsSettings() =>
             AutoImportDirectories.Count > 0 ||
             BanishedPaths.Count > 0 ||
@@ -38,7 +38,7 @@ namespace COMPASS.Models
 
         [XmlArray(ElementName = "FiletypePreferences")]
         [XmlArrayItem(ElementName = "FileType")]
-        public List<ObservableKeyValuePair<string, bool>> SerializableFiletypePreferences { get; set; } = new(); //needed because Dicts cannot be serialized
+        public List<ObservableKeyValuePair<string, bool>> SerializableFiletypePreferences { get; set; } = new(); //needed because Dictionaries cannot be serialized
 
         //Copies the dict into the serializable version
         public void PrepareSave() => SerializableFiletypePreferences = FiletypePreferences.Select(x => new ObservableKeyValuePair<string, bool>(x)).ToList();

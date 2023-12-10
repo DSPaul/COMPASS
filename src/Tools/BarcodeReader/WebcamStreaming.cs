@@ -1,13 +1,13 @@
-﻿using OpenCvSharp;
-using OpenCvSharp.Extensions;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using OpenCvSharp;
+using OpenCvSharp.Extensions;
 
-namespace BarcodeReaderTool
+namespace COMPASS.Tools.BarcodeReader
 {
     // based on https://github.com/FrancescoBonizzi/WebcamControl-WPF-With-OpenCV
     public sealed class WebcamStreaming : IDisposable
@@ -42,7 +42,7 @@ namespace BarcodeReaderTool
         public async Task Start()
         {
             // Never run two parallel tasks for the webcam streaming
-            if (_previewTask != null && !_previewTask.IsCompleted)
+            if (_previewTask is { IsCompleted: false })
                 return;
 
             var initializationSemaphore = new SemaphoreSlim(0, 1);

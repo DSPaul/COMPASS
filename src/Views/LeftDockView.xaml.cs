@@ -74,15 +74,14 @@ namespace COMPASS.Views
         private void TabItemClick(object sender, MouseButtonEventArgs e)
         {
             var border = sender as Border;
-            var tabItem = border.TemplatedParent as TabItem;
-            var tabControl = tabItem.Parent as TabControl;
-            var vm = tabControl.DataContext as IDealsWithTabControl;
+            var tabItem = border!.TemplatedParent as TabItem;
+            var tabControl = tabItem!.Parent as TabControl;
+            var vm = tabControl!.DataContext as IDealsWithTabControl;
             if (tabItem.IsSelected)
             {
-                vm.SelectedTab = 0;
+                vm!.SelectedTab = 0;
                 e.Handled = true;
             }
-
         }
 
         private void Toggle_ContextMenu(object sender, RoutedEventArgs e)

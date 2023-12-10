@@ -23,7 +23,7 @@ namespace COMPASS.ViewModels
         //Tag for Context Menu
         public Tag ContextTag { get; set; }
 
-        //Selected tab from tabcontroll with options to add tags
+        //Selected tab from tabControl with options to add tags
         private int _selectedTab = 0;
         public int SelectedTab
         {
@@ -38,8 +38,6 @@ namespace COMPASS.ViewModels
                         break;
                     case 2:
                         AddGroup();
-                        break;
-                    default:
                         break;
                 }
                 SetProperty(ref _selectedTab, value);
@@ -137,10 +135,12 @@ namespace COMPASS.ViewModels
         public ActionCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags, _collectionVM.CurrentCollection.RootTags.Any);
         public void ExportTags()
         {
-            var vm = new ExportCollectionViewModel();
+            var vm = new ExportCollectionViewModel
+            {
+                //configure export vm for tags only
+                AdvancedExport = true
+            };
 
-            //configure export vm for tags only
-            vm.AdvancedExport = true;
             vm.Steps.Clear();
             vm.Steps.Add("Tags");
             foreach (var codex in vm.ContentSelectorVM.SelectableCodices)

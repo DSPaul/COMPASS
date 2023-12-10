@@ -9,7 +9,7 @@ using System.Text;
 
 namespace COMPASS.Tools
 {
-    public static partial class ExtensionMethods
+    public static class ExtensionMethods
     {
         #region ObservableCollection Extensions
         /// <summary>
@@ -41,12 +41,15 @@ namespace COMPASS.Tools
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
-        /// <param name="range"></param>
+        /// <param name="toAdd"></param>
         public static void AddRange<T>(
         this ObservableCollection<T> collection, IEnumerable<T> toAdd)
         {
             if (toAdd == null) throw new ArgumentNullException(nameof(toAdd));
-            foreach (var i in toAdd) collection.Add(i);
+            foreach (var i in toAdd)
+            {
+                collection.Add(i);
+            }
         }
 
         /// <summary>

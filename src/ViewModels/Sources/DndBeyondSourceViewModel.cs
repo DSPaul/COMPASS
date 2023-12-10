@@ -8,8 +8,6 @@ namespace COMPASS.ViewModels.Sources
 {
     public class DndBeyondSourceViewModel : SourceViewModel
     {
-        public DndBeyondSourceViewModel() : base() { }
-
         public override MetaDataSource Source => MetaDataSource.DnDBeyond;
 
         public override async Task<Codex> GetMetaData(Codex codex)
@@ -17,7 +15,7 @@ namespace COMPASS.ViewModels.Sources
             // Work on a copy
             codex = new Codex(codex);
 
-            //Scrape metadata by going to storepage, get to storepage by using that /credits redirects there
+            //Scrape metadata by going to store page, get to store page by using that /credits redirects there
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to DnD Beyond"));
             HtmlDocument doc = await Utils.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
             HtmlNode src = doc?.DocumentNode;

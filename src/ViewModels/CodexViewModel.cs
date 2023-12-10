@@ -79,7 +79,7 @@ namespace COMPASS.ViewModels
             catch (Exception ex)
             {
                 Logger.Error($"Failed to open {toOpen.SourceURL}", ex);
-                //fails if no internet, pinging 8.8.8.8 DNS instead of server because some sites like gmbinder block ping
+                //fails if no internet, pinging 8.8.8.8 DNS instead of server because some sites like gm binder block ping
                 if (!Utils.PingURL()) Logger.Warn($"Cannot open this item online when not connected to the internet", ex);
                 return false;
             }
@@ -115,7 +115,11 @@ namespace COMPASS.ViewModels
 
             if (rsltMessageBox == MessageBoxResult.Yes)
             {
-                foreach (Codex f in toOpen) OpenCodex(f);
+                foreach (Codex f in toOpen)
+                {
+                    OpenCodex(f);
+                }
+
                 return true;
             }
             return false;
@@ -322,7 +326,7 @@ namespace COMPASS.ViewModels
 
         private ReturningRelayCommand<IList, Task> _getMetaDataBulkCommand;
         public ReturningRelayCommand<IList, Task> GetMetaDataBulkCommand => _getMetaDataBulkCommand ??= new(
-            async (IList codices) =>
+            async codices =>
             {
                 try
                 {
@@ -363,7 +367,7 @@ namespace COMPASS.ViewModels
 
             ChooseMetaDataViewModel chooseMetaDataVM = new();
 
-            await Parallel.ForEachAsync(codices, parallelOptions, async (codex, token) => await GetMetaData(codex, chooseMetaDataVM));
+            await Parallel.ForEachAsync(codices, parallelOptions, async (codex, _) => await GetMetaData(codex, chooseMetaDataVM));
 
             if (chooseMetaDataVM.CodicesWithChoices.Any())
             {

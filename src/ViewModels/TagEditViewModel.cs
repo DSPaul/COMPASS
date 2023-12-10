@@ -55,8 +55,15 @@ namespace COMPASS.ViewModels
 
             if (CreateNewTag)
             {
-                if (TempTag.Parent is null) MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(_editedTag);
-                else TempTag.Parent.Children.Add(_editedTag);
+                if (TempTag.Parent is null)
+                {
+                    MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(_editedTag);
+                }
+                else
+                {
+                    TempTag.Parent.Children.Add(_editedTag);
+                }
+
                 _editedTag.ID = Utils.GetAvailableID(MainViewModel.CollectionVM.CurrentCollection.AllTags);
                 MainViewModel.CollectionVM.CurrentCollection.AllTags.Add(_editedTag);
             }

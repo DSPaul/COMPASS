@@ -16,7 +16,7 @@ namespace COMPASS.Tools
         public static log4net.ILog FileLog;
 
         // Log to Log Tab
-        public static ObservableCollection<LogEntry> ActivityLog { get; private set; } = new ObservableCollection<LogEntry>();
+        public static ObservableCollection<LogEntry> ActivityLog { get; } = new ObservableCollection<LogEntry>();
 
         public static void Info(string message) =>
             Application.Current.Dispatcher.Invoke(()

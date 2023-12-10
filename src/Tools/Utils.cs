@@ -124,7 +124,7 @@ namespace COMPASS.Tools
         /// Unzips a collection stored in a .cmpss file
         /// </summary>
         /// <param name="path">Path to the .cmpss file</param>
-        /// <returns>Path to unziped folder</returns>
+        /// <returns>Path to unzipped folder</returns>
         public static async Task<string> UnZipCollection(string path)
         {
             string fileName = Path.GetFileName(path);
@@ -226,7 +226,10 @@ namespace COMPASS.Tools
                 {
                     commonFolder = nextFolderToTest;
                 }
-                else break;
+                else
+                {
+                    break;
+                }
             }
             return commonFolder;
         }

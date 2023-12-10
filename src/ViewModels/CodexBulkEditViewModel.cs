@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using COMPASS.Resources.Controls.MultiSelectCombobox;
 
 namespace COMPASS.ViewModels
 {

@@ -1,6 +1,6 @@
-﻿using BarcodeReaderTool;
-using System;
+﻿using System;
 using System.Windows;
+using COMPASS.Tools.BarcodeReader;
 
 namespace COMPASS.Windows
 {

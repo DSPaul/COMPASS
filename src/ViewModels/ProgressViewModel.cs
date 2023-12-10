@@ -114,7 +114,7 @@ namespace COMPASS.ViewModels
             //Reset any progress
             Counter = 0;
             TotalAmount = 0;
-            //create a new tokensource
+            //create a new tokenSource
             GlobalCancellationTokenSource = new();
             //force refresh the command so that it grabs the right cancel function
             _cancelTasksCommand = null;

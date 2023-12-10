@@ -48,7 +48,7 @@ namespace COMPASS.ViewModels.Sources
             Source = source;
         }
 
-        private Dictionary<MetaDataSource, string> ImportSourceNames = new()
+        private readonly Dictionary<MetaDataSource, string> _importSourceNames = new()
         {
             { MetaDataSource.None, "None"},
             { MetaDataSource.File,"File Name/Path"},
@@ -61,11 +61,11 @@ namespace COMPASS.ViewModels.Sources
             { MetaDataSource.GenericURL,"Website Header" }
         };
 
-        public MetaDataSource Source;
+        public readonly MetaDataSource Source;
 
         // ITag Interface
         [XmlIgnore]
-        public string Content => ImportSourceNames[Source];
+        public string Content => _importSourceNames[Source];
         [XmlIgnore]
         public Color BackgroundColor => throw new NotImplementedException();
 

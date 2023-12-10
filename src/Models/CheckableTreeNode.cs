@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace COMPASS.Models
 {
-    public class CheckableTreeNode<T> : ObservableObject, IHasChildren<CheckableTreeNode<T>> where T : IHasChildren<T>
+    public class CheckableTreeNode<T> : ObservableObject, IHasChildren<CheckableTreeNode<T>> where T : class, IHasChildren<T>
     {
 
         public CheckableTreeNode()

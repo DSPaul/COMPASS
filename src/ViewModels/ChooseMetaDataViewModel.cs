@@ -31,7 +31,7 @@ namespace COMPASS.ViewModels
         public override ObservableCollection<string> Steps => new(CodicesWithChoices.Select(pair => pair.Item1.Title));
         public Tuple<Codex, Codex> CurrentPair => CodicesWithChoices[StepCounter];
 
-        public override void NextStep()
+        protected override void NextStep()
         {
             ApplyChoice();
             StepCounter++;
@@ -40,7 +40,7 @@ namespace COMPASS.ViewModels
             ShouldUseNewValue = DefaultShouldUseNewValue;
         }
 
-        public override void PrevStep()
+        protected override void PrevStep()
         {
             ApplyChoice();
             StepCounter--;
@@ -69,7 +69,7 @@ namespace COMPASS.ViewModels
                 if (CodicesWithChoices[i].Item2.Thumbnail?.EndsWith(".tmp.png") == true)
                     File.Delete(CodicesWithChoices[i].Item2.Thumbnail);
 
-                //Set image paths back so that copy operataion after this doesn't change them to the temp files
+                //Set image paths back so that copy operation after this doesn't change them to the temp files
                 _codicesWithMadeChoices[i].SetImagePaths(MainViewModel.CollectionVM.CurrentCollection);
 
                 //copy metadata data over
@@ -106,7 +106,7 @@ namespace COMPASS.ViewModels
                 foreach (var prop in PropsToAsk)
                 {
                     bool useNew = prop.Label == "Tags" ?
-                     //for tags, new value was chosesn when there are more tags in the list
+                     //for tags, new value was chosen when there are more tags in the list
                      ((IList<Tag>)prop.GetProp(_codicesWithMadeChoices[StepCounter])).Count > ((IList<Tag>)prop.GetProp(CurrentPair.Item1)).Count
                      // for all the other, do a string compare to see if the new options was chosen
                      : prop.GetProp(CurrentPair.Item1)?.ToString() != prop.GetProp(_codicesWithMadeChoices[StepCounter])?.ToString();

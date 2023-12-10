@@ -17,8 +17,10 @@ namespace COMPASS.ViewModels
         {
             CollectionToExport = collectionToExport;
 
-            ContentSelectorVM = new(collectionToExport);
-            ContentSelectorVM.CuratedCollection = new CodexCollection("__export__tmp");
+            ContentSelectorVM = new(collectionToExport)
+            {
+                CuratedCollection = new CodexCollection("__export__tmp")
+            };
 
             UpdateSteps();
         }
@@ -46,7 +48,7 @@ namespace COMPASS.ViewModels
 
         public bool IncludeFiles { get; set; }
 
-        public async override void ApplyAll()
+        public override async void ApplyAll()
         {
             //if we do a quick import, set all the things in the contentSelector have the right value
             if (!AdvancedExport)
@@ -81,7 +83,7 @@ namespace COMPASS.ViewModels
 
         public async Task ExportToFile()
         {
-            var ProgressVM = ProgressViewModel.GetInstance();
+            var progressVM = ProgressViewModel.GetInstance();
 
             try
             {
@@ -103,15 +105,17 @@ namespace COMPASS.ViewModels
                     zip.AddDirectory(ContentSelectorVM.CuratedCollection.FullDataPath);
 
                     //Change Codex Path to relative and add those files if the options is set
-                    var itemsWithOfflineSource = ContentSelectorVM.CuratedCollection.AllCodices.Where(codex => codex.HasOfflineSource());
+                    var itemsWithOfflineSource = ContentSelectorVM.CuratedCollection.AllCodices
+                        .Where(codex => codex.HasOfflineSource())
+                        .ToList();
                     string commonFolder = Utils.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Path).ToList());
                     foreach (Codex codex in itemsWithOfflineSource)
                     {
                         string relativePath = codex.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
                         if (IncludeFiles && File.Exists(codex.Path))
                         {
-                            int index_start_filename = relativePath.Length - Path.GetFileName(codex.Path).Length;
-                            zip.AddFile(codex.Path, Path.Combine("Files", relativePath[0..index_start_filename]));
+                            int indexStartFilename = relativePath.Length - Path.GetFileName(codex.Path)!.Length;
+                            zip.AddFile(codex.Path, Path.Combine("Files", relativePath[0..indexStartFilename]));
                         }
                         //strip longest common path so relative paths stay, given that full paths will break anyway
                         codex.Path = relativePath;
@@ -121,15 +125,15 @@ namespace COMPASS.ViewModels
                     zip.UpdateFile(ContentSelectorVM.CuratedCollection.CodicesDataFilePath, "");
 
                     //Progress reporting
-                    ProgressVM.Text = "Exporting Collection";
-                    ProgressVM.ShowCount = false;
-                    ProgressVM.ResetCounter();
-                    zip.SaveProgress += (object _, SaveProgressEventArgs args) =>
+                    progressVM.Text = "Exporting Collection";
+                    progressVM.ShowCount = false;
+                    progressVM.ResetCounter();
+                    zip.SaveProgress += (_, args) =>
                     {
-                        ProgressVM.TotalAmount = Math.Max(ProgressVM.TotalAmount, args.EntriesTotal);
+                        progressVM.TotalAmount = Math.Max(progressVM.TotalAmount, args.EntriesTotal);
                         if (args.EventType == ZipProgressEventType.Saving_AfterWriteEntry)
                         {
-                            ProgressVM.IncrementCounter();
+                            progressVM.IncrementCounter();
                         }
                     };
 
@@ -138,7 +142,7 @@ namespace COMPASS.ViewModels
                     {
                         zip.Save(targetPath);
                         Directory.Delete(ContentSelectorVM.CuratedCollection.FullDataPath, true);
-                        ProgressVM.ShowCount = false;
+                        progressVM.ShowCount = false;
                     });
                     Logger.Info($"Exported {CollectionToExport.DirectoryName} to {targetPath}");
                 }
@@ -146,7 +150,7 @@ namespace COMPASS.ViewModels
             catch (Exception ex)
             {
                 Logger.Error("Export failed", ex);
-                ProgressVM.ShowCount = false;
+                progressVM.ShowCount = false;
                 CloseAction();
             }
         }

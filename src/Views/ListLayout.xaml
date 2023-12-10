@@ -58,7 +58,7 @@
         </DataGrid.ItemContainerStyle>
         <DataGrid.RowStyle>
             <Style TargetType="{x:Type DataGridRow}">
-                <EventSetter Event="Control.MouseDoubleClick" Handler="HandleDoubleClick" />
+                <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
                 <Setter Property="Background" Value="{x:Null}"/>
                 <Setter Property="ContextMenu" Value="{StaticResource MultiCodexContextMenu}"/>
                 <Setter Property="Template">

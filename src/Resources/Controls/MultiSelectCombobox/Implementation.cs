@@ -1,5 +1,4 @@
-﻿using COMPASS.Tools;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +6,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using EM = BlackPearl.Controls.CoreLibrary.EntensionMethods;
+using COMPASS.Tools;
 
-namespace BlackPearl.Controls.CoreLibrary
+namespace COMPASS.Resources.Controls.MultiSelectCombobox
 {
     public sealed partial class MultiSelectCombobox
     {
@@ -43,7 +42,7 @@ namespace BlackPearl.Controls.CoreLibrary
             if (e.Data.GetDataPresent(DataFormats.Text))
             {
                 var data = e.Data.GetData(DataFormats.Text);
-                if (string.IsNullOrWhiteSpace(data.ToString()))
+                if (String.IsNullOrWhiteSpace(data?.ToString()))
                 {
                     return null;
                 }
@@ -69,7 +68,7 @@ namespace BlackPearl.Controls.CoreLibrary
                     return;
                 }
 
-                if (data.GetType() == typeof(string))
+                if (data is string)
                 {
                     PasteHandler(data.ToString());
                     return;
@@ -83,17 +82,16 @@ namespace BlackPearl.Controls.CoreLibrary
                         return;
                     }
 
-                    foreach (var obj in data as object[])
+                    foreach (var obj in (object[])data)
                     {
                         AddToSelectedItems(obj);
                     }
                 }
             }
-            catch { }
             finally
             {
                 //Subscribe back
-                SubsribeHandler();
+                SubscribeHandler();
             }
         }
         private void OnSelectionStartDrag(object sender, DataObjectCopyingEventArgs e)
@@ -103,11 +101,11 @@ namespace BlackPearl.Controls.CoreLibrary
                 return;
             }
 
-            var dragDropData = richTextBoxElement.GetDragDropObject();
+            var dragDropData = _richTextBoxElement.GetDragDropObject();
             if (dragDropData == null)
                 return;
 
-            var dropResult = DragDrop.DoDragDrop(richTextBoxElement, dragDropData, DragDropEffects.Move | DragDropEffects.Copy);
+            var dropResult = DragDrop.DoDragDrop(_richTextBoxElement, dragDropData, DragDropEffects.Move | DragDropEffects.Copy);
             if (dropResult == DragDropEffects.Move)
             {
                 //If the original RichTextbox is not the same as the one where the drag and drop was performed, then we delete the old text
@@ -160,7 +158,7 @@ namespace BlackPearl.Controls.CoreLibrary
                 RichTextBoxElement.Selection.Select(RichTextBoxElement.CaretPosition, RichTextBoxElement.CaretPosition);
 
                 //Hide drop-down
-                HideSuggestions(EM.SuggestionCleanupOperation.ResetIndex | EM.SuggestionCleanupOperation.ClearSelection);
+                HideSuggestions(ExtensionMethods.SuggestionCleanupOperation.ResetIndex | ExtensionMethods.SuggestionCleanupOperation.ClearSelection);
 
                 if (!RichTextBoxElement.CaretPosition.IsAtLineStartPosition)
                 {
@@ -200,11 +198,9 @@ namespace BlackPearl.Controls.CoreLibrary
                     case Key.Escape:
                         {
                             e.Handled = true;
-                            HideSuggestions(EM.SuggestionCleanupOperation.ResetIndex | EM.SuggestionCleanupOperation.ClearSelection);
+                            HideSuggestions(ExtensionMethods.SuggestionCleanupOperation.ResetIndex | ExtensionMethods.SuggestionCleanupOperation.ClearSelection);
                             RichTextBoxElement.TryFocus();
                         }
-                        break;
-                    default:
                         break;
                 }
             }
@@ -228,7 +224,7 @@ namespace BlackPearl.Controls.CoreLibrary
                 }
                 //Hide suggestion drop-down
                 //Reset suggestion drop down list
-                HideSuggestions(EM.SuggestionCleanupOperation.ResetIndex | EM.SuggestionCleanupOperation.ResetItemSource);
+                HideSuggestions(ExtensionMethods.SuggestionCleanupOperation.ResetIndex | ExtensionMethods.SuggestionCleanupOperation.ResetItemSource);
                 //User is expecting to complete item selection
                 if (IsBlankTextWithItemSeparator(userEnteredText))
                 {
@@ -246,7 +242,7 @@ namespace BlackPearl.Controls.CoreLibrary
             finally
             {
                 //Subscribe back
-                SubsribeHandler();
+                SubscribeHandler();
             }
         }
         private void RichTextBoxElement_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -277,8 +273,7 @@ namespace BlackPearl.Controls.CoreLibrary
                 return;
             }
 
-            HideSuggestions(EM.SuggestionCleanupOperation.ResetIndex | EM.SuggestionCleanupOperation.ClearSelection);
-            return;
+            HideSuggestions(ExtensionMethods.SuggestionCleanupOperation.ResetIndex | ExtensionMethods.SuggestionCleanupOperation.ClearSelection);
         }
         private void UpdateSelectedItemIfSelectionIsDone(Key? key = null)
         {
@@ -319,7 +314,7 @@ namespace BlackPearl.Controls.CoreLibrary
             finally
             {
                 //Subscribe back
-                SubsribeHandler();
+                SubscribeHandler();
             }
         }
         private void PasteHandler(string values)
@@ -343,7 +338,7 @@ namespace BlackPearl.Controls.CoreLibrary
                 //Single item paste
                 if (values.IndexOfAny(GetSeparators()) == -1)
                 {
-                    richTextBoxElement.AddToParagraph(values, CreateRunElement);
+                    _richTextBoxElement.AddToParagraph(values, CreateRunElement);
                     return;
                 }
                 //User has entered valid text + separator
@@ -359,14 +354,14 @@ namespace BlackPearl.Controls.CoreLibrary
 
                 if (!string.IsNullOrWhiteSpace(multipleTexts[i]))
                 {
-                    richTextBoxElement.AddToParagraph(multipleTexts[i], CreateRunElement);
+                    _richTextBoxElement.AddToParagraph(multipleTexts[i], CreateRunElement);
                 }
             }
             catch { }
             finally
             {
                 //Subscribe back
-                SubsribeHandler();
+                SubscribeHandler();
             }
         }
         private void RemoveSelectedItems()
@@ -383,7 +378,7 @@ namespace BlackPearl.Controls.CoreLibrary
             //For that, before removing elements, we need to say that we dont want to remove back the tag if the item is unloaded.
             //For exemple, if we have a item call "Andréa Müller;" and we select it, and we paste back "Andréa Müller;",
             //if Tb_Unloaded is call, "Andréa Müller;" is removed from SelectedItems => then Combobox and SelectedItems is not sync
-            foreach (var inline in richTextBoxElement.GetParagraph().Inlines)
+            foreach (var inline in _richTextBoxElement.GetParagraph().Inlines)
             {
                 var textblock = inline.GetTextBlock();
                 if (textblock != null && selectedItems.Contains(inline.GetObject()))
@@ -392,16 +387,21 @@ namespace BlackPearl.Controls.CoreLibrary
                 }
             }
             //using richTextBoxElement.Selection.Text to empty has the advantage to keep the cursor position
-            richTextBoxElement.Selection.Text = "";
+            _richTextBoxElement.Selection.Text = "";
         }
 
 
         private static string GetClipboardTextWithCommandCancelled(DataObjectPastingEventArgs e)
         {
-            string clipboard = e?.DataObject?.GetData(typeof(string)) as string;
+            if (e is null)
+            {
+                throw new ArgumentNullException(nameof(e));
+            }
+            
+            string clipboard = e.DataObject?.GetData(typeof(string)) as string;
             clipboard = clipboard?.Replace("\r", "")
-                                    ?.Replace("\t", "")
-                                    ?.Replace("\n", "");
+                                    .Replace("\t", "")
+                                    .Replace("\n", "");
             e.CancelCommand();
             e.Handled = true;
             return clipboard;
@@ -427,7 +427,7 @@ namespace BlackPearl.Controls.CoreLibrary
         /// <summary>
         /// Subscribes to events for controls
         /// </summary>
-        private void SubsribeHandler()
+        private void SubscribeHandler()
         {
             //Check handler registration
             if (isHandlerRegistered)
@@ -533,7 +533,6 @@ namespace BlackPearl.Controls.CoreLibrary
         /// Tries to set item from entered text in RichTextBox
         /// </summary>
         /// <param name="itemString">entered text</param>
-        /// <param name="forceAdd">Allows creation of new item</param>
         private void UpdateSelectedItemsFromEnteredText(string itemString)
         {
             if (string.IsNullOrWhiteSpace(itemString))
@@ -558,10 +557,10 @@ namespace BlackPearl.Controls.CoreLibrary
             AddToSelectedItems(itemToAdd);
             RaiseSelectionChangedEvent(new ArrayList(0), new[] { itemToAdd });
         }
-        private bool IsItemAlreadySelected(string itemString) => SelectedItems?.Cast<object>()?.HasAnyExactMatch(itemString, LookUpContract, this) == true;
+        private bool IsItemAlreadySelected(string itemString) => SelectedItems?.Cast<object>().HasAnyExactMatch(itemString, LookUpContract, this) == true;
         private object GetItemToAdd(string itemString)
         {
-            IEnumerable<object> controlItemSource = ItemSource?.Cast<object>();
+            IEnumerable<object> controlItemSource = ItemSource?.Cast<object>().ToList();
 
             bool hasAnyMatch = controlItemSource.HasAnyExactMatch(itemString, LookUpContract, this);
             object itemToAdd = hasAnyMatch  //Check if any match
@@ -582,7 +581,7 @@ namespace BlackPearl.Controls.CoreLibrary
             //Add item in RichTextBox UI
             RichTextBoxElement.AddToParagraph(itemToAdd, CreateInlineUIElement);
 
-            var nextItemTag = richTextBoxElement.GetNextItemTag();
+            var nextItemTag = _richTextBoxElement.GetNextItemTag();
 
             if (nextItemTag == null || SelectedItems?.Contains(nextItemTag) != true)
             {
@@ -605,8 +604,6 @@ namespace BlackPearl.Controls.CoreLibrary
         /// <summary>
         /// Tries to set item from suggestion drop-down
         /// </summary>
-        /// <param name="runTagToRemove"></param>
-        /// <param name="itemObject"></param>
         private void UpdateSelectedItemsFromSuggestionDropdown()
         {
             try
@@ -630,12 +627,12 @@ namespace BlackPearl.Controls.CoreLibrary
                 AddSuggestionsToSelectedItems(SuggestionElement.SelectedItems);
 
                 //Hide drop-down
-                HideSuggestions(EM.SuggestionCleanupOperation.ResetIndex | EM.SuggestionCleanupOperation.ClearSelection | EM.SuggestionCleanupOperation.ResetItemSource);
+                HideSuggestions(ExtensionMethods.SuggestionCleanupOperation.ResetIndex | ExtensionMethods.SuggestionCleanupOperation.ClearSelection | ExtensionMethods.SuggestionCleanupOperation.ResetItemSource);
             }
             finally
             {
                 //Subscribe back
-                SubsribeHandler();
+                SubscribeHandler();
             }
 
             RichTextBoxElement.TryFocus();
@@ -646,13 +643,15 @@ namespace BlackPearl.Controls.CoreLibrary
         /// <summary>
         /// Shows suggestion drop-down
         /// </summary>
-        private void ShowSuggestions() => PopupElement.Show(HasAnySuggestion, () => SuggestionElement.CleanOperation(EM.SuggestionCleanupOperation.ResetIndex, ItemSource));
-        private void HideSuggestions(EM.SuggestionCleanupOperation cleanupOperation) => PopupElement.Hide(null, () => SuggestionElement.CleanOperation(cleanupOperation, ItemSource));
+        private void ShowSuggestions() => PopupElement.Show(HasAnySuggestion, () => SuggestionElement.CleanOperation(ExtensionMethods.SuggestionCleanupOperation.ResetIndex, ItemSource));
+        private void HideSuggestions(ExtensionMethods.SuggestionCleanupOperation cleanupOperation) => PopupElement.Hide(null, () => SuggestionElement.CleanOperation(cleanupOperation, ItemSource));
         private bool HasAnySuggestion() => SuggestionElement.Items.Count > 0;
         private bool UpdateSuggestions(string userEnteredText)
         {
             //Get Items to be shown in suggestion drop-down for current text
-            IEnumerable<object> itemsToAdd = ItemSource?.Cast<object>().GetSuggestions(userEnteredText, LookUpContract, this);
+            IEnumerable<object> itemsToAdd = ItemSource?.Cast<object>()
+                                                        .GetSuggestions(userEnteredText, LookUpContract, this)
+                                                        ?.ToList();
 
             //Add suggestion items to suggestion drop-down
             SuggestionElement.ItemsSource = itemsToAdd;
@@ -686,15 +685,15 @@ namespace BlackPearl.Controls.CoreLibrary
         /// <summary>
         /// Create RichTextBox document element for given object
         /// </summary>
-        /// <param name="objectToDisplay"></param>
+        /// <param name="text"></param>
         /// <returns></returns>
         private Inline CreateRunElement(object text)
         {
-            Run runElement = richTextBoxElement.GetCurrentRunBlock();
+            Run runElement = _richTextBoxElement.GetCurrentRunBlock();
 
             if (runElement == null)
             {
-                runElement = richTextBoxElement.GetParagraph().Inlines.LastOrDefault(i => i is Run) as Run;
+                runElement = _richTextBoxElement.GetParagraph().Inlines.LastOrDefault(i => i is Run) as Run;
             }
 
             if (runElement != null)
@@ -738,13 +737,9 @@ namespace BlackPearl.Controls.CoreLibrary
 
         public char[] GetSeparators()
         {
-            char[] array = new char[1] { ItemSeparator };
-            if (AdditionalItemSeparators == null)
-            {
-                return array;
-            }
-            //Array.Append not available in net 461
-            return array.Concat(AdditionalItemSeparators).ToArray();
+            char[] array = { ItemSeparator };
+            return AdditionalItemSeparators == null ? array :
+                array.Concat(AdditionalItemSeparators).ToArray();
         }
 
         #endregion

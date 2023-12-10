@@ -89,7 +89,10 @@ namespace COMPASS.Models
 
                 //Constructing AllTags and pass it to all the tags
                 AllTags = Utils.FlattenTree(RootTags).ToList();
-                foreach (Tag t in AllTags) t.AllTags = AllTags;
+                foreach (Tag t in AllTags)
+                {
+                    t.AllTags = AllTags;
+                }
             }
             else
             {
@@ -145,11 +148,16 @@ namespace COMPASS.Models
                 try
                 {
                     Info = serializer.Deserialize(reader) as CollectionInfo;
+                    if (Info == null)
+                    {
+                        Logger.Warn($"Could not load info for {CollectionInfoFilePath}");
+                        return false;
+                    }
                     Info.CompleteLoading(this);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Could not load {CollectionInfoFilePath}", ex);
+                    Logger.Error($"Could not load info for {CollectionInfoFilePath}", ex);
                     return false;
                 }
             }
@@ -256,14 +264,15 @@ namespace COMPASS.Models
         public void ImportTags(IEnumerable<Tag> tags)
         {
             // change ID's of Tags so there aren't any duplicates
-            var tagsToImport = Utils.FlattenTree(tags);
+            List<Tag> tagsList = tags.ToList();
+            var tagsToImport = Utils.FlattenTree(tagsList);
             foreach (Tag tag in tagsToImport)
             {
                 tag.ID = Utils.GetAvailableID(AllTags);
                 tag.AllTags = AllTags;
                 AllTags.Add(tag);
             }
-            RootTags.AddRange(tags);
+            RootTags.AddRange(tagsList);
             MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
         }
 

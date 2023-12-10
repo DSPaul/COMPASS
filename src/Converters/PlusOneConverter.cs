@@ -10,7 +10,22 @@ namespace COMPASS.Converters
     /// </summary>
     class PlusOneConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => (int)value + 1;
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is not int i)
+            {
+                throw new ArgumentException($"{nameof(value)} was not an integer");
+            }
+            return i+1;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) 
+        {
+            if (value is not int i)
+            {
+                throw new ArgumentException($"{nameof(value)} was not an integer");
+            }
+            return i-1;
+        }
     }
 }

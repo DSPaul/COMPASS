@@ -21,7 +21,7 @@ namespace COMPASS.ViewModels.Sources
 
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading Metadata from openlibrary.org"));
             Debug.Assert(IsValidSource(codex), "Codex without ISBN was used in ISBN Source");
-            string uri = $"http://openlibrary.org/api/books?bibkeys=ISBN:{codex.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
+            string uri = $"https://openlibrary.org/api/books?bibkeys=ISBN:{codex.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
 
             JObject metadata = await Utils.GetJsonAsync(uri);
 

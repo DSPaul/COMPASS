@@ -94,7 +94,7 @@ namespace COMPASS.Tools
 
             try
             {
-                await Parallel.ForEachAsync(codices, parallelOptions, async (codex, token) => await GetCover(codex, chooseMetaDataVM));
+                await Parallel.ForEachAsync(codices, parallelOptions, async (codex, _) => await GetCover(codex, chooseMetaDataVM));
             }
             catch (OperationCanceledException ex)
             {
@@ -119,7 +119,7 @@ namespace COMPASS.Tools
         public static async Task SaveCover(string imgURL, Codex destCodex)
         {
             var imgBytes = await Utils.DownloadFileAsync(imgURL);
-            File.WriteAllBytes(destCodex.CoverArt, imgBytes);
+            await File.WriteAllBytesAsync(destCodex.CoverArt, imgBytes);
             CreateThumbnail(destCodex);
         }
 
@@ -168,7 +168,7 @@ namespace COMPASS.Tools
         public static MagickImage GetCroppedScreenShot(IWebDriver driver, IWebElement webElement)
             => GetCroppedScreenShot(driver, webElement.Location, webElement.Size);
 
-        private static MagickImage GetCroppedScreenShot(IWebDriver driver, System.Drawing.Point location, System.Drawing.Size size)
+        private static MagickImage GetCroppedScreenShot(IWebDriver driver, Point location, Size size)
         {
             //take the screenshot
             Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();

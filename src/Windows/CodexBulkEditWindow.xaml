@@ -7,9 +7,9 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:models ="clr-namespace:COMPASS.Models"
         xmlns:converters ="clr-namespace:COMPASS.Converters"
-        xmlns:tools ="clr-namespace:COMPASS.Tools" 
-        xmlns:blackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary" 
-        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
+        xmlns:tools ="clr-namespace:COMPASS.Tools"
+        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
+        xmlns:multiSelectCombobox="clr-namespace:COMPASS.Resources.Controls.MultiSelectCombobox"
         d:DataContext="{d:DesignInstance Type=viewmodels:CodexBulkEditViewModel}"
         mc:Ignorable="d"
         Title="Bulk Edit" Height="470" Width="800" FontSize="16" 
@@ -96,7 +96,7 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Text="Authors:" Margin="0,10"/>
-        <blackPearl:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
+        <multiSelectCombobox:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
                                                     Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1" ItemSeparator="," 
                                                     LookUpContract="{Binding Contract}"
                                                     ItemSource="{Binding MVM.CollectionVM.FilterVM.AuthorList}" 
