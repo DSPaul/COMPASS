@@ -1,5 +1,6 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
 using COMPASS.Windows;
@@ -7,6 +8,7 @@ using GongSolutions.Wpf.DragDrop;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
@@ -70,9 +72,9 @@ namespace COMPASS.ViewModels
             // transfer expanded property
             if (TreeViewSource is not null)
             {
-                foreach (TreeViewNode node in Utils.FlattenTree(newTreeViewSource))
+                foreach (TreeViewNode node in newTreeViewSource.Flatten())
                 {
-                    node.Expanded = Utils.FlattenTree(TreeViewSource).FirstOrDefault(n => n.Tag == node.Tag)?.Expanded ?? node.Expanded;
+                    node.Expanded = TreeViewSource.Flatten().FirstOrDefault(n => n.Tag == node.Tag)?.Expanded ?? node.Expanded;
                 }
             }
             TreeViewSource = new(newTreeViewSource);

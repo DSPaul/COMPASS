@@ -451,7 +451,7 @@ namespace COMPASS.ViewModels
                 foreach (Tag group in includedGroups)
                 {
                     // Make list with all included tags in that group, including children
-                    List<Tag> singleGroupTags = Utils.FlattenTree(includedTags.Where(tag => tag.GetGroup() == group)).ToList();
+                    List<Tag> singleGroupTags = includedTags.Where(tag => tag.GetGroup() == group).Flatten().ToList();
                     // Add parents of those tags, must come AFTER children, otherwise children of parents are included which is wrong
                     for (int i = 0; i < singleGroupTags.Count; i++)
                     {
@@ -476,7 +476,7 @@ namespace COMPASS.ViewModels
             if (excludedTags.Count > 0)
             {
                 // If parent is excluded, so should all the children
-                excludedTags = Utils.FlattenTree(excludedTags).ToList();
+                excludedTags = excludedTags.Flatten().ToList();
                 excludedCodices = new(_allCodices.Where(f => excludedTags.Intersect(f.Tags).Any()));
             }
 

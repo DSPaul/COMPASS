@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
 using HtmlAgilityPack;
@@ -25,7 +26,7 @@ namespace COMPASS.ViewModels.Sources
 
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading metadata from GM Binder"));
             Debug.Assert(IsValidSource(codex), "Invalid Codex was used in GM Binder source");
-            HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
+            HtmlDocument doc = await IOService.ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)

@@ -58,7 +58,7 @@ namespace COMPASS.ViewModels
                             .Select(t => new CheckableTreeNode<Tag>(t)))
                     };
                     //init expanded and checked
-                    foreach (var node in Utils.FlattenTree(_tagsRoot.Children))
+                    foreach (var node in _tagsRoot.Children.Flatten())
                     {
                         node.Expanded = node.Item.IsGroup;
                         node.IsChecked = false;
@@ -73,7 +73,7 @@ namespace COMPASS.ViewModels
                 get
                 {
                     if (TagsRoot == null) return 0;
-                    return Utils.FlattenTree(CheckableTreeNode<Tag>.GetCheckedItems(TagsRoot.Children)).Count();
+                    return CheckableTreeNode<Tag>.GetCheckedItems(TagsRoot.Children).Flatten().Count();
                 }
             }
         }

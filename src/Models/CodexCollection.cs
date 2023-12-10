@@ -88,7 +88,7 @@ namespace COMPASS.Models
                 }
 
                 //Constructing AllTags and pass it to all the tags
-                AllTags = Utils.FlattenTree(RootTags).ToList();
+                AllTags = RootTags.Flatten().ToList();
                 foreach (Tag t in AllTags)
                 {
                     t.AllTags = AllTags;
@@ -265,7 +265,7 @@ namespace COMPASS.Models
         {
             // change ID's of Tags so there aren't any duplicates
             List<Tag> tagsList = tags.ToList();
-            var tagsToImport = Utils.FlattenTree(tagsList);
+            var tagsToImport = tagsList.Flatten();
             foreach (Tag tag in tagsToImport)
             {
                 tag.ID = Utils.GetAvailableID(AllTags);

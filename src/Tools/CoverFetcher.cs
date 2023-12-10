@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.ViewModels;
 using COMPASS.ViewModels.Sources;
 using COMPASS.Windows;
@@ -118,7 +119,7 @@ namespace COMPASS.Tools
 
         public static async Task SaveCover(string imgURL, Codex destCodex)
         {
-            var imgBytes = await Utils.DownloadFileAsync(imgURL);
+            var imgBytes = await IOService.DownloadFileAsync(imgURL);
             await File.WriteAllBytesAsync(destCodex.CoverArt, imgBytes);
             CreateThumbnail(destCodex);
         }
@@ -128,7 +129,7 @@ namespace COMPASS.Tools
             //check if it's a valid file
             if (String.IsNullOrEmpty(imagePath) ||
                 !Path.Exists(imagePath) ||
-                !Utils.IsImageFile(imagePath))
+                !IOService.IsImageFile(imagePath))
             {
                 return false;
             }

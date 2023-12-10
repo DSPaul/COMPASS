@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using ImageMagick;
 using ImageMagick.Formats;
@@ -15,7 +16,7 @@ namespace COMPASS.ViewModels.Sources
     public class PdfSourceViewModel : SourceViewModel
     {
         public override MetaDataSource Source => MetaDataSource.PDF;
-        public override bool IsValidSource(Codex codex) => Utils.IsPDFFile(codex.Path);
+        public override bool IsValidSource(Codex codex) => IOService.IsPDFFile(codex.Path);
 
         public override async Task<Codex> GetMetaData(Codex codex)
         {
@@ -78,7 +79,7 @@ namespace COMPASS.ViewModels.Sources
         public override async Task<bool> FetchCover(Codex codex)
         {
             //return false if file doesn't exist
-            if (!Utils.IsPDFFile(codex.Path) ||
+            if (!IOService.IsPDFFile(codex.Path) ||
                 !File.Exists(codex.Path))
             {
                 return false;

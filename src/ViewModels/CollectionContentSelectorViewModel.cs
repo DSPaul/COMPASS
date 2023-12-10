@@ -47,7 +47,7 @@ namespace COMPASS.ViewModels
                                                             .OrderByDescending(x => x.Value)
                                                             .ToList();
             FolderTagLinks = CompleteCollection.Info.FolderTagPairs
-                .Select(link => new SelectableFolderTagLink(link.Folder, link.Tag, Utils.FlattenTree(CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags))))
+                .Select(link => new SelectableFolderTagLink(link.Folder, link.Tag, CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).Flatten()))
                 .ToList();
         }
 
@@ -184,7 +184,7 @@ namespace COMPASS.ViewModels
             CuratedCollection.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).ToList();
 
             //Remove the tags that didn't make it from codices
-            var removedTags = CompleteCollection.AllTags.Except(Utils.FlattenTree(CompleteCollection.RootTags)).ToList();
+            var removedTags = CompleteCollection.AllTags.Except(CompleteCollection.RootTags.Flatten()).ToList();
             foreach (Tag t in removedTags)
             {
                 CuratedCollection.AllTags.Remove(t);

@@ -1,5 +1,7 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Resources.Controls.MultiSelectCombobox;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.Windows;
 using GongSolutions.Wpf.DragDrop;
@@ -12,7 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using COMPASS.Resources.Controls.MultiSelectCombobox;
 
 namespace COMPASS.ViewModels
 {
@@ -41,7 +42,7 @@ namespace COMPASS.ViewModels
         private ObservableCollection<TreeViewNode> _treeViewSource;
         public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
-        private HashSet<TreeViewNode> AllTreeViewNodes => Utils.FlattenTree(TreeViewSource).ToHashSet();
+        private HashSet<TreeViewNode> AllTreeViewNodes => TreeViewSource.Flatten().ToHashSet();
 
         private bool CreateNewCodex => _editedCodex == null;
 
@@ -239,7 +240,7 @@ namespace COMPASS.ViewModels
         {
             if (dropInfo.Data is DataObject data
                 && data.GetFileDropList().Count == 1
-                && Utils.IsImageFile(data.GetFileDropList().Cast<string>().First()))
+                && IOService.IsImageFile(data.GetFileDropList().Cast<string>().First()))
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
@@ -254,7 +255,7 @@ namespace COMPASS.ViewModels
         {
             if (dropInfo.Data is DataObject data
                 && data.GetFileDropList().Count == 1
-                && Utils.IsImageFile(data.GetFileDropList().Cast<string>().First()))
+                && IOService.IsImageFile(data.GetFileDropList().Cast<string>().First()))
             {
                 string path = data.GetFileDropList().Cast<string>().First();
                 CoverFetcher.GetCoverFromImage(path, TempCodex);

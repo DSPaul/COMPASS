@@ -1,11 +1,11 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Resources.Controls.MultiSelectCombobox;
 using COMPASS.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using COMPASS.Resources.Controls.MultiSelectCombobox;
 
 namespace COMPASS.ViewModels
 {
@@ -91,7 +91,7 @@ namespace COMPASS.ViewModels
         {
             TagsToAdd.Remove(t);
             TagsToRemove.Remove(t);
-            foreach (var node in Utils.FlattenTree(TreeViewSource))
+            foreach (var node in TreeViewSource.Flatten())
             {
                 if (node.Tag == t)
                 {

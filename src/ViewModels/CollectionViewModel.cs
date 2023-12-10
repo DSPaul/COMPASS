@@ -1,6 +1,7 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Properties;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
 using COMPASS.Windows;
@@ -327,34 +328,14 @@ namespace COMPASS.ViewModels
         //Import Collection
         private ActionCommand _importCommand;
         public ActionCommand ImportCommand => _importCommand ??= new(async () => await Import());
-        public async Task Import()
+
+        public async Task Import(string path = null)
         {
-            //ask for cmpss file using fileDialog
-            OpenFileDialog openFileDialog = new()
-            {
-                Filter = $"COMPASS File (*{Constants.COMPASSFileExtension})|*{Constants.COMPASSFileExtension}",
-                CheckFileExists = true,
-                Multiselect = false,
-                Title = "Choose a COMPASS file to import",
-            };
+            var collectionToImport = await IOService.OpenCPMSSFile(path);
 
-            if (openFileDialog.ShowDialog() != true) return;
-
-            await Import(openFileDialog.FileName);
-        }
-
-        public async Task Import(string path)
-        {
-            CodexCollection collectionToImport;
-            //unzip the file
-            try
+            if (collectionToImport == null)
             {
-                string unzipLocation = await Utils.UnZipCollection(path);
-                collectionToImport = new(Path.GetFileName(unzipLocation));
-            }
-            catch (Exception ex)
-            {
-                Logger.Warn($"Failed to read {path}", ex);
+                Logger.Warn("Failed to open file");
                 return;
             }
 

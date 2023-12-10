@@ -1,5 +1,6 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Sources;
 using COMPASS.Windows;
@@ -80,7 +81,7 @@ namespace COMPASS.ViewModels
             {
                 Logger.Error($"Failed to open {toOpen.SourceURL}", ex);
                 //fails if no internet, pinging 8.8.8.8 DNS instead of server because some sites like gm binder block ping
-                if (!Utils.PingURL()) Logger.Warn($"Cannot open this item online when not connected to the internet", ex);
+                if (!IOService.PingURL()) Logger.Warn($"Cannot open this item online when not connected to the internet", ex);
                 return false;
             }
 
@@ -203,7 +204,7 @@ namespace COMPASS.ViewModels
         public static void ShowInExplorer(Codex toShow)
         {
             string folderPath = Path.GetDirectoryName(toShow.Path);
-            Utils.ShowInExplorer(folderPath);
+            IOService.ShowInExplorer(folderPath);
         }
 
         //Move Codex to other CodexCollection

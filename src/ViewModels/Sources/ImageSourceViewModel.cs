@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using System.IO;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace COMPASS.ViewModels.Sources
     {
         public override MetaDataSource Source => MetaDataSource.Image;
 
-        public override bool IsValidSource(Codex codex) => File.Exists(codex.Path) && Utils.IsImageFile(codex.Path);
+        public override bool IsValidSource(Codex codex) => File.Exists(codex.Path) && IOService.IsImageFile(codex.Path);
 
         public override Task<Codex> GetMetaData(Codex codex)
         {

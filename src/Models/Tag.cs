@@ -1,4 +1,5 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Services;
+using COMPASS.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -39,7 +40,7 @@ namespace COMPASS.Models
             get => _content;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _content, value);
             }
         }

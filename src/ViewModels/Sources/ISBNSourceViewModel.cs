@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using Newtonsoft.Json.Linq;
 using System;
@@ -23,7 +24,7 @@ namespace COMPASS.ViewModels.Sources
             Debug.Assert(IsValidSource(codex), "Codex without ISBN was used in ISBN Source");
             string uri = $"https://openlibrary.org/api/books?bibkeys=ISBN:{codex.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
 
-            JObject metadata = await Utils.GetJsonAsync(uri);
+            JObject metadata = await IOService.GetJsonAsync(uri);
 
             if (!metadata.HasValues)
             {
@@ -83,7 +84,7 @@ namespace COMPASS.ViewModels.Sources
             try
             {
                 string uri = $"https://openlibrary.org/isbn/{codex.ISBN}.json";
-                JObject metadata = await Utils.GetJsonAsync(uri);
+                JObject metadata = await IOService.GetJsonAsync(uri);
 
                 if (metadata == null || !metadata.HasValues)
                 {

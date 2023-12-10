@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using Ionic.Zip;
 using Microsoft.Win32;
@@ -108,7 +109,7 @@ namespace COMPASS.ViewModels
                     var itemsWithOfflineSource = ContentSelectorVM.CuratedCollection.AllCodices
                         .Where(codex => codex.HasOfflineSource())
                         .ToList();
-                    string commonFolder = Utils.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Path).ToList());
+                    string commonFolder = IOService.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Path).ToList());
                     foreach (Codex codex in itemsWithOfflineSource)
                     {
                         string relativePath = codex.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);

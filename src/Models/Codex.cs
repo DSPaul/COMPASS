@@ -1,4 +1,5 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Services;
+using COMPASS.Tools;
 using COMPASS.ViewModels.Sources;
 using System;
 using System.Collections.Generic;
@@ -79,7 +80,7 @@ namespace COMPASS.Models
             get => _path;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _path, value);
             }
         }
@@ -90,7 +91,7 @@ namespace COMPASS.Models
             get => _title;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _title, value);
                 RaisePropertyChanged(nameof(SortingTitle));
             }
@@ -110,7 +111,7 @@ namespace COMPASS.Models
             get => _sortingTitle;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _sortingTitle, value);
             }
         }
@@ -146,7 +147,7 @@ namespace COMPASS.Models
             get => _publisher;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _publisher, value);
             }
         }
@@ -157,7 +158,7 @@ namespace COMPASS.Models
             get => _version;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _version, value);
             }
         }
@@ -168,7 +169,7 @@ namespace COMPASS.Models
             get => _sourceURL;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _sourceURL, value);
             }
         }
@@ -181,7 +182,7 @@ namespace COMPASS.Models
             get => _coverArt;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _coverArt, value);
             }
         }
@@ -192,7 +193,7 @@ namespace COMPASS.Models
             get => _thumbnail;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _thumbnail, value);
             }
         }
@@ -230,7 +231,7 @@ namespace COMPASS.Models
             get => _description;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _description, value);
             }
         }
@@ -290,7 +291,7 @@ namespace COMPASS.Models
             get => _isbn;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _isbn, value);
             }
         }

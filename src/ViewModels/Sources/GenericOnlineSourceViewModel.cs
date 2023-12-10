@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using HtmlAgilityPack;
 using System;
@@ -23,7 +24,7 @@ namespace COMPASS.ViewModels.Sources
 
             // Scrape metadata
             Debug.Assert(IsValidSource(codex), "Codex without URL was used in Generic URL source");
-            HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
+            HtmlDocument doc = await IOService.ScrapeSite(codex.SourceURL);
             HtmlNode src = doc?.DocumentNode;
 
             if (src is null)

@@ -1,5 +1,6 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.Windows;
 using System;
@@ -78,7 +79,7 @@ namespace COMPASS.ViewModels.Import
                 ImportError = $"'{InputURL}' is not a valid URL for {ImportTitle}";
                 return;
             }
-            if (!Utils.PingURL())
+            if (!IOService.PingURL())
             {
                 ImportError = "You need to be connected to the internet to import an online source.";
                 return;

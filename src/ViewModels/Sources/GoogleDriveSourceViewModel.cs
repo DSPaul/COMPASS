@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
 using HtmlAgilityPack;
@@ -31,7 +32,7 @@ namespace COMPASS.ViewModels.Sources
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
+                HtmlDocument doc = await IOService.ScrapeSite(codex.SourceURL);
                 HtmlNode src = doc?.DocumentNode;
                 if (src is null) return false;
 

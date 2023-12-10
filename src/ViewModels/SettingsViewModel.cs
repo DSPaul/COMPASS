@@ -1,6 +1,7 @@
 ﻿using AutoUpdaterDotNET;
 using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.Windows;
 using Ionic.Zip;
@@ -169,7 +170,7 @@ namespace COMPASS.ViewModels
 
         //Open folder in explorer
         private RelayCommand<string> _showInExplorerCommand;
-        public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(Utils.ShowInExplorer);
+        public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(IOService.ShowInExplorer);
 
         #region Auto import folders
         public CollectionViewSource AutoImportDirectories
@@ -205,7 +206,7 @@ namespace COMPASS.ViewModels
 
         //Add a directory from auto import
         private ActionCommand _pickAutoImportDirectoryCommand;
-        public ActionCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(() => AddAutoImportDirectory(Utils.PickFolder()));
+        public ActionCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(() => AddAutoImportDirectory(IOService.PickFolder()));
 
         //File types to import
         private List<ObservableKeyValuePair<string, bool>> _filetypePreferences;

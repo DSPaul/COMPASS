@@ -117,5 +117,38 @@ namespace COMPASS.Tools
             return propInfo.GetValue(obj);
         }
         #endregion
+
+        #region EnumerableExtensions
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<T> l, string method = "dfs") where T : IHasChildren<T>
+        {
+            var result = l.ToList();
+
+            switch (method)
+            {
+                //Breadth first search
+                case "bfs":
+                    {
+                        for (int i = 0; i < result.Count; i++)
+                        {
+                            T parent = result[i];
+                            result.AddRange(parent.Children);
+                            yield return parent;
+                        }
+                        break;
+                    }
+                //Depth first search (pre-order)
+                case "dfs":
+                    {
+                        for (int i = 0; i < result.Count; i++)
+                        {
+                            T parent = result[i];
+                            result.InsertRange(i + 1, parent.Children);
+                            yield return parent;
+                        }
+                        break;
+                    }
+            }
+        }
+        #endregion
     }
 }

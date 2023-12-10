@@ -1,6 +1,7 @@
 ﻿using AutoUpdaterDotNET;
 using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Layouts;
 using COMPASS.ViewModels.Sources;
@@ -100,11 +101,11 @@ namespace COMPASS.ViewModels
         {
             //Start internet checkup timer
             _checkConnectionTimer = new();
-            _checkConnectionTimer.Tick += (_, _) => Task.Run(() => IsOnline = Utils.PingURL());
+            _checkConnectionTimer.Tick += (_, _) => Task.Run(() => IsOnline = IOService.PingURL());
             _checkConnectionTimer.Interval = new TimeSpan(0, 0, 10);
             _checkConnectionTimer.Start();
             //to check right away on startup
-            Task.Run(() => IsOnline = Utils.PingURL());
+            Task.Run(() => IsOnline = IOService.PingURL());
         }
 
         #endregion
