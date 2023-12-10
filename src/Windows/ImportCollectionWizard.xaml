@@ -4,10 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
-        xmlns:local="clr-namespace:COMPASS.Windows"
         xmlns:import="clr-namespace:COMPASS.ViewModels.Import" 
         xmlns:controls="clr-namespace:COMPASS.Resources.Controls" 
-        xmlns:tools="clr-namespace:COMPASS.Tools"
         xmlns:views="clr-namespace:COMPASS.Views"
         d:DataContext="{d:DesignInstance Type=import:ImportCollectionViewModel}"
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
@@ -22,14 +20,14 @@
         </Grid.RowDefinitions>
         <DockPanel Margin="40,10">
 
-            <!--Only show this on step 0 -->
+            <!--Only show this on step overview -->
             <TextBlock Text="Overview" DockPanel.Dock="Left" FontSize="20" FontWeight="Light" 
-            Visibility="{Binding StepCounter, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
-            <!--Only show this after step 0 -->
+                Visibility="{Binding CurrentStep, ConverterParameter=Overview, Converter={StaticResource ShowInStepConverter}}"/>
+            <!--Only show this on all other steps -->
             <TextBlock DockPanel.Dock="Left" FontSize="20" FontWeight="Light" 
-                       Visibility="{Binding StepCounter, Converter={StaticResource ToVisibilityConverter}}">
+                   Visibility="{Binding CurrentStep, ConverterParameter=!Overview, Converter={StaticResource ShowInStepConverter}}">
                 Choose which
-            <Run Text="{Binding CurrentStep, Mode=OneWay}" Foreground="{StaticResource AccentColor}"/>
+                <Run Text="{Binding CurrentStep, Mode=OneWay}" Foreground="{StaticResource AccentColor}"/>
                 to import.
             </TextBlock>
             <TextBlock HorizontalAlignment="Right" FontSize="20" FontWeight="Light" DockPanel.Dock="Right">
@@ -138,7 +136,7 @@
                                             <StackPanel Orientation="Horizontal" Margin="20,0">
                                                 <CheckBox Content="Reset personal data on all items" IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/>
                                                 <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
-                                                        ToolTip="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last openened &#x0a; - Times opened &#x0a; - Date added"/>
+                                                        ToolTip="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last opened &#x0a; - Times opened &#x0a; - Date added"/>
                                             </StackPanel>
                                             <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/>
                                             <DataGrid x:Name="ListLayoutGrid" ItemsSource="{Binding ContentSelectorVM.SelectableCodices, IsAsync=True}"
