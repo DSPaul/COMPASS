@@ -1,6 +1,10 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Services;
+using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
+using COMPASS.Windows;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
@@ -47,6 +51,39 @@ namespace COMPASS.ViewModels
             ImportViewModel.Stealth = false;
             ImportViewModel.Import(source);
         });
+
+        private ActionCommand _importBooksFromCompassFileCommand;
+        public ActionCommand ImportBooksFromCompassFileCommand => _importBooksFromCompassFileCommand ??= new(async () => await ImportBooksFromCompassFile());
+        public async Task ImportBooksFromCompassFile()
+        {
+            var collectionToImport = await IOService.OpenCPMSSFile();
+
+            if (collectionToImport == null)
+            {
+                Logger.Warn("Failed to open file");
+                return;
+            }
+
+            var vm = new ImportCollectionViewModel(collectionToImport)
+            {
+                //configure export vm for codices only
+                AdvancedImport = true,
+                MergeIntoCollection = true
+            };
+
+            if (!vm.ContentSelectorVM.HasCodices)
+            {
+                System.Windows.MessageBox.Show($"{collectionToImport.DirectoryName[2..]} does not contain items to import", "No items found", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                return;
+            }
+
+            vm.Steps.Clear();
+            vm.Steps.Add(CollectionContentSelectorViewModel.ItemsStep);
+            vm.ContentSelectorVM.TagsSelectorVM.SelectedTagCollection.TagsRoot.IsChecked = false;
+
+            var w = new ImportCollectionWizard(vm);
+            w.Show();
+        }
         #endregion
 
     }

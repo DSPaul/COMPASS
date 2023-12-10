@@ -283,15 +283,17 @@
                             </ContentControl>
                         </TabItem>
                         <TabItem Header="Import Tags" tools:AP.IconKind="TagArrowDownOutline" ToolTip="Import Tags">
-                            <ContentControl tools:AP.Header="Import Tags from..." tools:AP.IconKind="TagArrowDownOutline" 
+                            <ContentControl tools:AP.Header="Import Tags" tools:AP.IconKind="TagArrowDownOutline" 
                                     Style="{StaticResource TagsTabContentWrapper}">
                                 <StackPanel>
-                                    <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}"
+                                    <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}" Margin="5"
                                             Command="{Binding ImportTagsFromOtherCollectionsCommand}" HorizontalContentAlignment="Left">
-                                        <TextBlock Text="Another collection..." TextWrapping="Wrap"/>
+                                        <TextBlock Text="From Another collection..." TextWrapping="Wrap"/>
                                     </Button>
-                                    <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}"
-                                            Command="{Binding ImportTagsFromCompassFileCommand}" Content="A .cmpss file..."/>
+                                    <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}" Margin="5,0,5,5"
+                                            Command="{Binding ImportTagsFromCompassFileCommand}" HorizontalContentAlignment="Left">
+                                        <TextBlock Text="From a .cmpss file..." TextWrapping="Wrap"/>
+                                    </Button>
                                 </StackPanel>
                             </ContentControl>
                         </TabItem>
@@ -709,7 +711,8 @@
                             Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GenericURL}"/>
 
                         <TextBlock Text="Other" Style="{StaticResource Categorizer}"/>
-                        <Button tools:AP.IconKind="FileCad" Style="{StaticResource HighlightedButton}" Content="From .CMPSS File"/>
+                        <Button tools:AP.IconKind="FileCad" Style="{StaticResource HighlightedButton}" Content="From a .cmpss file"
+                                Command="{Binding ImportBooksFromCompassFileCommand}"/>
                     </StackPanel>
                 </ScrollViewer>
             </ContentControl>
