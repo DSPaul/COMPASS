@@ -124,11 +124,29 @@ namespace COMPASS.ViewModels
             _collectionVM.FilterVM.AddFilter(new(Filter.FilterType.Tag, tag), include);
         }
 
-        private ActionCommand _importTagsCommand;
-        public ActionCommand ImportTagsCommand => _importTagsCommand ??= new(ImportTags);
-        public void ImportTags()
+        private ActionCommand _importTagsFromOtherCollectionsCommand;
+        public ActionCommand ImportTagsFromOtherCollectionsCommand => _importTagsFromOtherCollectionsCommand ??= new(ImportTagsFromOtherCollections);
+        public void ImportTagsFromOtherCollections()
         {
             var importVM = new ImportTagsViewModel(MainViewModel.CollectionVM.AllCodexCollections.ToList());
+            var w = new ImportTagsWindow(importVM);
+            w.Show();
+        }
+
+        private ActionCommand _importTagsFromCompassFileCommand;
+        public ActionCommand ImportTagsFromCompassFileCommand => _importTagsFromCompassFileCommand ??= new(async () => await ImportTagsFromCompassFile());
+        public async Task ImportTagsFromCompassFile()
+        {
+            var collectionToImport = await IOService.OpenCPMSSFile();
+
+            if (collectionToImport == null)
+            {
+                Logger.Warn("Failed to open file");
+                return;
+            }
+
+            var importVM = new ImportTagsViewModel(collectionToImport);
+            //TODO: check if there are any tags in the file
             var w = new ImportTagsWindow(importVM);
             w.Show();
         }

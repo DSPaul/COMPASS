@@ -242,6 +242,7 @@
                             <Style TargetType="ContentControl" x:Key="TagsTabContentWrapper">
                                 <Setter Property="Visibility" Value="{Binding Data.Collapsed, Source={StaticResource TagsTabsCollapsedProxy}, 
                                     Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
+                                <Setter Property="Cursor" Value="Arrow"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate>
@@ -282,12 +283,16 @@
                             </ContentControl>
                         </TabItem>
                         <TabItem Header="Import Tags" tools:AP.IconKind="TagArrowDownOutline" ToolTip="Import Tags">
-                            <ContentControl tools:AP.Header="Import Tags" tools:AP.IconKind="TagArrowDownOutline" 
+                            <ContentControl tools:AP.Header="Import Tags from..." tools:AP.IconKind="TagArrowDownOutline" 
                                     Style="{StaticResource TagsTabContentWrapper}">
-                                <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}"
-                                        Command="{Binding ImportTagsCommand}">
-                                    <TextBlock Text="From another collection..." TextWrapping="Wrap"/>
-                                </Button>
+                                <StackPanel>
+                                    <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}"
+                                            Command="{Binding ImportTagsFromOtherCollectionsCommand}" HorizontalContentAlignment="Left">
+                                        <TextBlock Text="Another collection..." TextWrapping="Wrap"/>
+                                    </Button>
+                                    <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}"
+                                            Command="{Binding ImportTagsFromCompassFileCommand}" Content="A .cmpss file..."/>
+                                </StackPanel>
                             </ContentControl>
                         </TabItem>
                     </TabControl>
