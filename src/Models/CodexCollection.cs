@@ -1,4 +1,5 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Services;
+using COMPASS.Tools;
 using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
