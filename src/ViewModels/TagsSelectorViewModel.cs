@@ -29,6 +29,8 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _selectedTagCollection, value);
         }
 
+        public bool HasTags => TagCollections.Any(tc => tc.TagsRoot.Children.Any());
+
         public class TagCollection : ObservableObject
         {
             public TagCollection(CodexCollection c)

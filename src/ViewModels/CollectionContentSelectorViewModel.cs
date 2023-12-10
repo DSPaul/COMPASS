@@ -51,6 +51,10 @@ namespace COMPASS.ViewModels
                 .ToList();
         }
 
+        public const string TagsStep = "Tags";
+        public const string ItemsStep = "Items";
+        public const string SettingsStep = "Settings";
+
         /// <summary>
         /// Complete collections whose content will be subselected
         /// </summary>
@@ -252,15 +256,15 @@ namespace COMPASS.ViewModels
 
             if (HasTags)
             {
-                Steps.Add("Tags");
+                Steps.Add(TagsStep);
             }
             if (HasCodices)
             {
-                Steps.Add("Items");
+                Steps.Add(ItemsStep);
             }
             if (HasSettings)
             {
-                Steps.Add("Settings");
+                Steps.Add(SettingsStep);
             }
 
             RaisePropertyChanged(nameof(Steps));

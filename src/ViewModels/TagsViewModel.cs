@@ -146,7 +146,13 @@ namespace COMPASS.ViewModels
             }
 
             var importVM = new ImportTagsViewModel(collectionToImport);
-            //TODO: check if there are any tags in the file
+
+            if (!importVM.TagsSelectorVM.HasTags)
+            {
+                System.Windows.MessageBox.Show($"{collectionToImport.DirectoryName[2..]} does not contain tags", "No Tags found", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                return;
+            }
+
             var w = new ImportTagsWindow(importVM);
             w.Show();
         }
@@ -162,7 +168,7 @@ namespace COMPASS.ViewModels
             };
 
             vm.Steps.Clear();
-            vm.Steps.Add("Tags");
+            vm.Steps.Add(CollectionContentSelectorViewModel.TagsStep);
             foreach (var codex in vm.ContentSelectorVM.SelectableCodices)
             {
                 codex.Selected = false;
