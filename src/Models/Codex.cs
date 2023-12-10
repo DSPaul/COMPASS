@@ -94,6 +94,7 @@ namespace COMPASS.Models
                 value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _title, value);
                 RaisePropertyChanged(nameof(SortingTitle));
+                RaisePropertyChanged(nameof(SortingTitleContainsNumbers));
             }
         }
 
@@ -102,7 +103,11 @@ namespace COMPASS.Models
         public string SortingTitle
         {
             get => (String.IsNullOrEmpty(_sortingTitle) ? _title : _sortingTitle).PadNumbers();
-            set => SetProperty(ref _sortingTitle, value);
+            set
+            {
+                SetProperty(ref _sortingTitle, value);
+                RaisePropertyChanged(nameof(SortingTitleContainsNumbers));
+            }
         }
         //separate property needed for serialization or it will get _title and save that
         //instead of saving an empty and mirroring _title during runtime
@@ -115,6 +120,16 @@ namespace COMPASS.Models
                 SetProperty(ref _sortingTitle, value);
             }
         }
+
+        [XmlIgnore]
+        public bool SortingTitleContainsNumbers => Constants.RegexNumbersOnly().IsMatch(SortingTitle);
+        [XmlIgnore]
+        public string ZeroPaddingExplainer =>
+            "What's with all the 0's? \n \n" +
+            "Zero-padding numbers ensures numerical sorting instead of alphabetical sorting. \n" +
+            "Consider the numbers 1, 2, 13, and 20. \n" +
+            "Without zero-padding, they would be sorted alphabetically as 1, 13, 2, 20. \n" +
+            "However, with zero-padding, the order becomes 01, 02, 13, 20. \n";
 
         private ObservableCollection<string> _authors = new();
         public ObservableCollection<string> Authors

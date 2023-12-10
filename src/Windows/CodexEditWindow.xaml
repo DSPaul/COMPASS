@@ -167,8 +167,14 @@
                                  Grid.Row="2" Padding="5,0"/>
 
                         <TextBlock Text="Sorting Title:" Grid.Row="3" Margin="3,5,3,3"/>
-                        <TextBox Text="{Binding TempCodex.SortingTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                 Grid.Row="4" Padding="5,0"/>
+                        <DockPanel Grid.Row="4" HorizontalAlignment="Stretch">
+                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="6" DockPanel.Dock="Right"
+                                                     Visibility="{Binding TempCodex.SortingTitleContainsNumbers, Converter={StaticResource ToVisibilityConverter}}"
+                                                     Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
+                                                     ToolTip="{Binding TempCodex.ZeroPaddingExplainer}" />
+                            <TextBox Text="{Binding TempCodex.SortingTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      Padding="5,0" HorizontalAlignment="Stretch"/>
+                        </DockPanel>
 
                         <TextBlock Text="Authors:" Grid.Row="5" Margin="3,5,3,3"/>
                         <multiSelectCombobox:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
