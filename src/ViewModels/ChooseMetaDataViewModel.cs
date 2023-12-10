@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ namespace COMPASS.ViewModels
                 if (_codicesWithMadeChoices[i].CoverArt != CodicesWithChoices[i].Item1.CoverArt)
                 {
                     File.Copy(_codicesWithMadeChoices[i].CoverArt, CodicesWithChoices[i].Item1.CoverArt, true);
-                    CoverFetcher.CreateThumbnail(CodicesWithChoices[i].Item1);
+                    CoverService.CreateThumbnail(CodicesWithChoices[i].Item1);
                     CodicesWithChoices[i].Item1.RefreshThumbnail();
                 }
                 //delete temp cover if it exists

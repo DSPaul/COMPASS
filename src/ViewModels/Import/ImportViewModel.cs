@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.Windows;
 using Microsoft.Win32;
@@ -126,7 +127,7 @@ namespace COMPASS.ViewModels.Import
             try
             {
                 await CodexViewModel.StartGetMetaDataProcess(newCodices);
-                await CoverFetcher.GetCover(newCodices);
+                await CoverService.GetCover(newCodices);
             }
             catch (OperationCanceledException ex)
             {
