@@ -170,7 +170,7 @@ namespace COMPASS.ViewModels
             MetaDataOverwriteMode curSetting = (MetaDataOverwriteMode)coverProp.OverwriteMode;
             coverProp.OverwriteMode = MetaDataOverwriteMode.Always;
             //get the cover
-            await Task.Run(() => CoverFetcher.GetCover(TempCodex));
+            await Task.Run(() => CoverService.GetCover(TempCodex));
             //Restore cover preference
             coverProp.OverwriteMode = curSetting;
             ShowLoading = false;
@@ -189,7 +189,7 @@ namespace COMPASS.ViewModels
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                CoverFetcher.GetCoverFromImage(openFileDialog.FileName, TempCodex);
+                CoverService.GetCoverFromImage(openFileDialog.FileName, TempCodex);
                 RefreshCover();
             }
         }
@@ -258,7 +258,7 @@ namespace COMPASS.ViewModels
                 && IOService.IsImageFile(data.GetFileDropList().Cast<string>().First()))
             {
                 string path = data.GetFileDropList().Cast<string>().First();
-                CoverFetcher.GetCoverFromImage(path, TempCodex);
+                CoverService.GetCoverFromImage(path, TempCodex);
                 RefreshCover();
             }
         }

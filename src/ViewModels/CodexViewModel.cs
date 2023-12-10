@@ -479,11 +479,11 @@ namespace COMPASS.ViewModels
 
         private ReturningRelayCommand<Codex, Task> _getCoverCommand;
         public ReturningRelayCommand<Codex, Task> GetCoverCommand => _getCoverCommand ??=
-            new(async codex => await CoverFetcher.GetCover(new List<Codex>() { codex }));
+            new(async codex => await CoverService.GetCover(new List<Codex>() { codex }));
 
         private ReturningRelayCommand<IList, Task> _getCoverBulkCommand;
         public ReturningRelayCommand<IList, Task> GetCoverBulkCommand => _getCoverBulkCommand ??=
-            new(async codices => await CoverFetcher.GetCover(codices.Cast<Codex>().ToList()));
+            new(async codices => await CoverService.GetCover(codices.Cast<Codex>().ToList()));
 
         public static void DataGridHandleKeyDown(object sender, KeyEventArgs e)
             => HandleKeyDownOnCodex(((DataGrid)sender).SelectedItems, e);

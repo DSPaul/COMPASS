@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace COMPASS.Tools
+namespace COMPASS.Services
 {
-    public static class WebDriverFactory
+    public static class WebDriverService
     {
         private static Browser _browser;
         public enum Browser

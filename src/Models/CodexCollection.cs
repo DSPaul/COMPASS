@@ -316,7 +316,7 @@ namespace COMPASS.Models
                 }
                 else
                 {
-                    CoverFetcher.CreateThumbnail(codex);
+                    CoverService.CreateThumbnail(codex);
                 }
 
                 //update img path to these new files

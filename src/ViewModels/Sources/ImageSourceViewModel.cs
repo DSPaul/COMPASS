@@ -23,6 +23,6 @@ namespace COMPASS.ViewModels.Sources
             return Task.FromResult(codex);
         }
         public override async Task<bool> FetchCover(Codex codex) =>
-            await Task.Run(() => CoverFetcher.GetCoverFromImage(codex.Path, codex));
+            await Task.Run(() => CoverService.GetCoverFromImage(codex.Path, codex));
     }
 }

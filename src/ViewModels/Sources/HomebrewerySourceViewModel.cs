@@ -58,15 +58,15 @@ namespace COMPASS.ViewModels.Sources
         {
             if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading cover from Homebrewery"));
-            OpenQA.Selenium.WebDriver driver = await WebDriverFactory.GetWebDriver();
+            OpenQA.Selenium.WebDriver driver = await WebDriverService.GetWebDriver();
             try
             {
                 string url = codex.SourceURL.Replace("/share/", "/print/"); //use print API to only show doc itself
                 await Task.Run(() => driver.Navigate().GoToUrl(url));
                 var coverPage = driver.FindElement(OpenQA.Selenium.By.Id("p1"));
                 //screenshot and download the image
-                MagickImage image = CoverFetcher.GetCroppedScreenShot(driver, coverPage);
-                CoverFetcher.SaveCover(image, codex);
+                MagickImage image = CoverService.GetCroppedScreenShot(driver, coverPage);
+                CoverService.SaveCover(image, codex);
                 return true;
             }
             catch (Exception ex)

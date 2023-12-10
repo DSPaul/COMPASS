@@ -34,7 +34,7 @@ namespace COMPASS.ViewModels
             SettingsViewModel.GetInstance().MVM = this;
 
             //Update stuff
-            WebDriverFactory.InitWebdriver();
+            WebDriverService.InitWebdriver();
             InitAutoUpdates();
 
             //Start timer that periodically checks if there is an internet connection

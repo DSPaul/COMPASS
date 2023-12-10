@@ -1,5 +1,5 @@
 ﻿using COMPASS.Models;
-using COMPASS.Services;
+using COMPASS.Tools;
 using COMPASS.ViewModels;
 using COMPASS.ViewModels.Sources;
 using COMPASS.Windows;
@@ -13,9 +13,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace COMPASS.Tools
+namespace COMPASS.Services
 {
-    public static class CoverFetcher
+    public static class CoverService
     {
         public static async Task GetCover(Codex codex, ChooseMetaDataViewModel chooseMetaDataViewModel = null)
         {

@@ -94,7 +94,7 @@ namespace COMPASS.ViewModels.Sources
                 image.Trim(); //cut off all transparency
 
                 await image.WriteAsync(codex.CoverArt);
-                CoverFetcher.CreateThumbnail(codex);
+                CoverService.CreateThumbnail(codex);
                 return true;
             }
             catch (Exception ex)

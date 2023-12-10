@@ -696,7 +696,7 @@ namespace COMPASS.ViewModels
             foreach (Codex codex in MainViewModel.CollectionVM.CurrentCollection.AllCodices)
             {
                 //codex.Thumbnail = codex.CoverArt.Replace("CoverArt", "Thumbnails");
-                CoverFetcher.CreateThumbnail(codex);
+                CoverService.CreateThumbnail(codex);
             }
         }
 

@@ -39,7 +39,7 @@ namespace COMPASS.ViewModels.Sources
                 string imgURL = src.SelectSingleNode("//meta[@property='og:image']").GetAttributeValue("content", String.Empty);
                 //cut of "=W***-h***-p" from URL that crops the image if it is present
                 if (imgURL.Contains('=')) imgURL = imgURL.Split('=')[0];
-                await CoverFetcher.SaveCover(imgURL, codex);
+                await CoverService.SaveCover(imgURL, codex);
                 return true;
             }
             catch (Exception ex)

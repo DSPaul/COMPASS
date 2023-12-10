@@ -164,7 +164,7 @@ namespace COMPASS.ViewModels.Import
             progressVM.Text = "Downloading Cover";
             try
             {
-                await CoverFetcher.GetCover(newCodex)
+                await CoverService.GetCover(newCodex)
                  .ContinueWith(_ => progressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Cover loaded.")));
             }
             catch (OperationCanceledException ex)
