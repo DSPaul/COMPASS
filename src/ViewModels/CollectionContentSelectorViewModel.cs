@@ -225,10 +225,11 @@ namespace COMPASS.ViewModels
                 CuratedCollection.Info.BanishedPaths = new(BanishedPaths.Where(x => x.Selected).Select(x => x.Path));
             }
 
-            if (!SelectFileTypePrefs)
+            CuratedCollection.Info.FiletypePreferences.Clear();
+            if (SelectFileTypePrefs)
             {
                 //for file types, select all or nothing because checking whether to select a checkbox becomes ridiculous
-                CuratedCollection.Info.FiletypePreferences.Clear();
+                CuratedCollection.Info.FiletypePreferences = CompleteCollection.Info.FiletypePreferences;
             }
 
             CuratedCollection.Info.FolderTagPairs.Clear();
