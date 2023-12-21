@@ -34,7 +34,7 @@ namespace COMPASS.ViewModels
                 SetProperty(ref _counter, value);
                 RaisePropertyChanged(nameof(Percentage));
                 RaisePropertyChanged(nameof(FullText));
-                RaisePropertyChanged(nameof(ImportInProgress));
+                RaisePropertyChanged(nameof(WorkInProgress));
             }
         }
 
@@ -48,7 +48,7 @@ namespace COMPASS.ViewModels
                 SetProperty(ref _totalAmount, value);
                 RaisePropertyChanged(nameof(Percentage));
                 RaisePropertyChanged(nameof(FullText));
-                RaisePropertyChanged(nameof(ImportInProgress));
+                RaisePropertyChanged(nameof(WorkInProgress));
             }
         }
 
@@ -61,6 +61,9 @@ namespace COMPASS.ViewModels
             }
         }
 
+        /// <summary>
+        /// Displays [x/y] next to export title
+        /// </summary>
         public bool ShowCount { get; set; } = true;
 
         private string _text;
@@ -85,7 +88,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public bool ImportInProgress => TotalAmount > 0 && Counter < TotalAmount;
+        public bool WorkInProgress => TotalAmount > 0 && Counter < TotalAmount;
 
         private readonly Mutex _progressMutex = new();
         public void IncrementCounter()
@@ -102,6 +105,12 @@ namespace COMPASS.ViewModels
             _progressMutex.ReleaseMutex();
         }
 
+        public void Clear()
+        {
+            ResetCounter();
+            TotalAmount = 0;
+        }
+
         public void AddLogEntry(LogEntry entry) =>
             Application.Current.Dispatcher.Invoke(() =>
             Log.Add(entry)
@@ -112,8 +121,7 @@ namespace COMPASS.ViewModels
         public void ConfirmCancellation()
         {
             //Reset any progress
-            Counter = 0;
-            TotalAmount = 0;
+            Clear();
             //create a new tokenSource
             GlobalCancellationTokenSource = new();
             //force refresh the command so that it grabs the right cancel function

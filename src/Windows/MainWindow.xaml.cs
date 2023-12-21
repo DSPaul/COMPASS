@@ -154,11 +154,11 @@ namespace COMPASS.Windows
         private async void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             var progressVM = ProgressViewModel.GetInstance();
-            if (progressVM.ImportInProgress)
+            if (progressVM.WorkInProgress)
             {
                 progressVM.CancelBackgroundTask();
                 int totalDelay = 0;
-                while (progressVM.ImportInProgress && totalDelay < 5000)
+                while (progressVM.WorkInProgress && totalDelay < 5000)
                 {
                     int delay = 100;
                     await Task.Delay(delay);

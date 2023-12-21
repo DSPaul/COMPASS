@@ -143,7 +143,6 @@ namespace COMPASS.ViewModels
                     {
                         zip.Save(targetPath);
                         Directory.Delete(ContentSelectorVM.CuratedCollection.FullDataPath, true);
-                        progressVM.ShowCount = false;
                     });
                     Logger.Info($"Exported {CollectionToExport.DirectoryName} to {targetPath}");
                 }
@@ -151,7 +150,7 @@ namespace COMPASS.ViewModels
             catch (Exception ex)
             {
                 Logger.Error("Export failed", ex);
-                progressVM.ShowCount = false;
+                progressVM.Clear();
                 CloseAction();
             }
         }

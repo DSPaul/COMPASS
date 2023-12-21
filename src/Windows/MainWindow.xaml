@@ -378,7 +378,7 @@
                 </StackPanel>
 
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" Grid.Column="1"
-                            Visibility="{Binding ProgressVM.ImportInProgress, Converter={StaticResource ToVisibilityConverter}}">
+                            Visibility="{Binding ProgressVM.WorkInProgress, Converter={StaticResource ToVisibilityConverter}}">
                     <TextBlock Text="{Binding ProgressVM.FullText, FallbackValue=Stuff in Progress, Mode=OneWay}" Margin="20,0" 
                                FontFamily="Segoe UI"/>
                     <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" Height="12" Width="200"
