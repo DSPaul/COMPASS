@@ -101,7 +101,7 @@
                                 <Setter Property="Visibility" Value="Collapsed"/>
                             </Style>
                         </Grid.Resources>
-                        <TextBlock Text="{Binding Title}">
+                        <TextBlock Text="{Binding Title}" TextTrimming="WordEllipsis" Height="60">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                     <Style.Triggers>
@@ -113,7 +113,7 @@
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        <TextBlock Text="{Binding AuthorsAsString}">
+                        <TextBlock Text="{Binding AuthorsAsString}" TextTrimming="WordEllipsis" Height="60">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                     <Style.Triggers>
@@ -125,7 +125,7 @@
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        <TextBlock Text="{Binding Publisher}">
+                        <TextBlock Text="{Binding Publisher}" TextTrimming="WordEllipsis" Height="60">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                     <Style.Triggers>
