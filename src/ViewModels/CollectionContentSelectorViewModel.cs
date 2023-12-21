@@ -201,18 +201,20 @@ namespace COMPASS.ViewModels
 
         public void ApplySelectedCodices()
         {
+            CuratedCollection.AllCodices.Clear();
+            CuratedCollection.AllCodices.AddRange(SelectableCodices.Where(x => x.Selected).Select(x => new Codex(x.Codex))); //make new codices to not modify the existing ones
+
             if (RemovePersonalData)
             {
-                SelectableCodices.ForEach(c => c.Codex.ClearPersonalData());
+                foreach (var codex in CuratedCollection.AllCodices)
+                {
+                    codex.ClearPersonalData();
+                }
             }
-
-            CuratedCollection.AllCodices.Clear();
-            CuratedCollection.AllCodices.AddRange(SelectableCodices.Where(x => x.Selected).Select(x => x.Codex));
         }
 
         public void ApplySelectedPreferences()
         {
-
             CuratedCollection.Info.AutoImportDirectories.Clear();
             if (SelectAutoImportFolders)
             {
