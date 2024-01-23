@@ -110,7 +110,7 @@ namespace COMPASS.Services
             }
         }
 
-        public static void SaveCover(MagickImage image, Codex destCodex)
+        public static void SaveCover(IMagickImage image, Codex destCodex)
         {
             if (image.Width > 850) image.Resize(850, 0);
             image.Write(destCodex.CoverArt);
@@ -166,10 +166,10 @@ namespace COMPASS.Services
         }
 
         //Take screenshot of specific html element 
-        public static MagickImage GetCroppedScreenShot(IWebDriver driver, IWebElement webElement)
+        public static IMagickImage GetCroppedScreenShot(IWebDriver driver, IWebElement webElement)
             => GetCroppedScreenShot(driver, webElement.Location, webElement.Size);
 
-        private static MagickImage GetCroppedScreenShot(IWebDriver driver, Point location, Size size)
+        private static IMagickImage GetCroppedScreenShot(IWebDriver driver, Point location, Size size)
         {
             //take the screenshot
             Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();
@@ -177,7 +177,7 @@ namespace COMPASS.Services
             if (img == null) return new MagickImage();
             var imgCropped = img.Clone(new Rectangle(location, size), img.PixelFormat);
             var mf = new MagickFactory();
-            return new(mf.Image.Create(imgCropped));
+            return mf.Image.Create(imgCropped);
         }
     }
 }
