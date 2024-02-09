@@ -74,10 +74,16 @@
                                                         <controls:CheckableContainer CheckText="All Books/Items" IsChecked="{Binding ExportAllCodices}"
                                                                 Visibility="{Binding ContentSelectorVM.HasCodices, Converter={StaticResource ToVisibilityConverter}}">
                                                             <StackPanel Margin="10">
-                                                                <CheckBox Content="Remove Personal Data" Template="{StaticResource BorderedCheckbox}" Margin="5"
-                                                                          IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/>
-                                                                <CheckBox Content="Include referenced files" Template="{StaticResource BorderedCheckbox}" Margin="5"
-                                                                            IsChecked="{Binding IncludeFiles}"/>
+                                                                <StackPanel Orientation="Horizontal" Margin="20,0">
+                                                                    <CheckBox Content="Reset personal data on all items" IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/>
+                                                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
+                                                                            ToolTip="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last openened &#x0a; - Times opened &#x0a; - Date added"/>
+                                                                </StackPanel>
+                                                                <StackPanel Orientation="Horizontal" Margin="20,0" Grid.Row="1">
+                                                                    <CheckBox Content="Include files that are referenced by these items" IsChecked="{Binding IncludeFiles}"/>
+                                                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
+                                                                              ToolTip="This will include referenced files such as pdf's, images, ect. as part of the export"/>
+                                                                </StackPanel>
                                                             </StackPanel>
                                                         </controls:CheckableContainer>
 

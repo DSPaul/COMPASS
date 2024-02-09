@@ -56,7 +56,8 @@ namespace COMPASS.ViewModels.Import
                 toSearch.Remove(currentFolder);
             }
 
-            ImportAmount = toImport.Count;
+            //Filter out banshed paths
+            toImport = toImport.Except(_targetCollection.Info.BanishedPaths).ToList();
 
             //find how many files of each filetype
             var toImportGrouped = toImport.GroupBy(Path.GetExtension).ToList();
@@ -71,6 +72,9 @@ namespace COMPASS.ViewModels.Import
             {
                 //init ToImportFileTypes with values from FileTypePreferences
                 ToImportFiletypes = toImportGrouped.Select(x => new FileTypeInfo(x.Key, _targetCollection.Info.FiletypePreferences[x.Key], x.Count())).ToList();
+
+                //To Display in UI
+                ImportAmount = toImport.Count;
 
                 //open window to let user choose which filetypes to import
                 ImportFolderWindow importFolderWindow = new(this)
