@@ -55,7 +55,7 @@
         </ListView.ItemContainerStyle>
         <ListView.ItemsPanel>
             <ItemsPanelTemplate>
-                <vwp:VirtualizingWrapPanel AllowDifferentSizedItems="True" Orientation="Horizontal" SpacingMode="Uniform"/>
+                <vwp:VirtualizingWrapPanel AllowDifferentSizedItems="False" Orientation="Horizontal" SpacingMode="Uniform"/>
             </ItemsPanelTemplate>
         </ListView.ItemsPanel>
         <ListView.ItemTemplate>
