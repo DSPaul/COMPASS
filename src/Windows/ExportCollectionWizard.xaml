@@ -63,15 +63,24 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
                                             <RadioButton GroupName="Advanced" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"
-                                                     Grid.Column="0" Template="{StaticResource BigRadioButton}" 
+                                                     Grid.Column="0" Template="{StaticResource BigRadioButton}"
                                                      IsChecked="{Binding AdvancedExport, Converter={StaticResource NegateConverter}}">
                                                 <StackPanel>
                                                     <TextBlock Text="Quick Export" TextAlignment="Center" FontSize="20" Margin="20"/>
-                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                                         <CheckBox Content="All Tags" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ExportAllTags}"
                                                                 Visibility="{Binding ContentSelectorVM.HasTags, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
-                                                        <CheckBox Content="All Books/Items" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ExportAllCodices}"
-                                                                Visibility="{Binding ContentSelectorVM.HasCodices, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
+
+                                                        <controls:CheckableContainer CheckText="All Books/Items" IsChecked="{Binding ExportAllCodices}"
+                                                                Visibility="{Binding ContentSelectorVM.HasCodices, Converter={StaticResource ToVisibilityConverter}}">
+                                                            <StackPanel Margin="10">
+                                                                <CheckBox Content="Remove Personal Data" Template="{StaticResource BorderedCheckbox}" Margin="5"
+                                                                          IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/>
+                                                                <CheckBox Content="Include referenced files" Template="{StaticResource BorderedCheckbox}" Margin="5"
+                                                                            IsChecked="{Binding IncludeFiles}"/>
+                                                            </StackPanel>
+                                                        </controls:CheckableContainer>
+
                                                         <CheckBox Content="All Settings" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ExportAllSettings}"
                                                                 Visibility="{Binding ContentSelectorVM.HasSettings, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
                                                     </StackPanel>
