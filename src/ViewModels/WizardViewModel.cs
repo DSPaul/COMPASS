@@ -2,6 +2,7 @@
 using COMPASS.Models;
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
@@ -25,7 +26,8 @@ namespace COMPASS.ViewModels
             set
             {
                 if (value <= 0) value = 0;
-                else if (value >= Steps.Count) ApplyAll();
+                else if (value >= Steps.Count)
+                    ApplyAll();
                 SetProperty(ref _stepCounter, value);
                 RaisePropertyChanged(nameof(CurrentStep));
                 RaisePropertyChanged(nameof(ShowBackButton));
@@ -47,8 +49,8 @@ namespace COMPASS.ViewModels
         public virtual bool ShowBackButton() => StepCounter > 0;
 
         private ActionCommand _finishCommand;
-        public ActionCommand FinishCommand => _finishCommand ??= new(ApplyAll, ShowFinishButton);
-        public abstract void ApplyAll();
+        public ActionCommand FinishCommand => _finishCommand ??= new(async () => await ApplyAll(), ShowFinishButton);
+        public abstract Task ApplyAll();
         public virtual bool ShowFinishButton() => StepCounter == Steps.Count - 1;
 
         public Action CloseAction;

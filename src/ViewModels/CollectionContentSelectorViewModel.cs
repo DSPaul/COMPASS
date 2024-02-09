@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace COMPASS.ViewModels
@@ -245,11 +246,12 @@ namespace COMPASS.ViewModels
         /// <summary>
         /// Builds the curated collection based on the selection
         /// </summary>
-        public override void ApplyAll()
+        public override Task ApplyAll()
         {
             ApplySelectedTags();
             ApplySelectedCodices();
             ApplySelectedPreferences();
+            return Task.CompletedTask;
         }
 
         public void UpdateSteps()

@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
@@ -50,7 +51,7 @@ namespace COMPASS.ViewModels
             ShouldUseNewValue = DefaultShouldUseNewValue;
         }
 
-        public override void ApplyAll()
+        public override Task ApplyAll()
         {
             ApplyChoice();
             CloseAction.Invoke();
@@ -76,6 +77,7 @@ namespace COMPASS.ViewModels
                 //copy metadata data over
                 CodicesWithChoices[i].Item1.Copy(_codicesWithMadeChoices[i]);
             }
+            return Task.CompletedTask;
         }
 
         private void ApplyChoice()

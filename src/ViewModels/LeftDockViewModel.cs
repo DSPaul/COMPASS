@@ -46,11 +46,7 @@ namespace COMPASS.ViewModels
 
         #region Add Books Tab
         private RelayCommand<ImportSource> _importCommand;
-        public RelayCommand<ImportSource> ImportCommand => _importCommand ??= new(source =>
-        {
-            ImportViewModel.Stealth = false;
-            ImportViewModel.Import(source);
-        });
+        public RelayCommand<ImportSource> ImportCommand => _importCommand ??= new(async source => await ImportViewModel.Import(source));
 
         private ActionCommand _importBooksFromCompassFileCommand;
         public ActionCommand ImportBooksFromCompassFileCommand => _importBooksFromCompassFileCommand ??= new(async () => await ImportBooksFromCompassFile());

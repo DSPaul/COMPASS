@@ -49,7 +49,7 @@ namespace COMPASS.ViewModels
 
         public bool IncludeFiles { get; set; }
 
-        public override async void ApplyAll()
+        public override async Task ApplyAll()
         {
             //if we do a quick import, set all the things in the contentSelector have the right value
             if (!AdvancedExport)
@@ -74,12 +74,11 @@ namespace COMPASS.ViewModels
             }
 
             //Apply the selection
-            ContentSelectorVM.ApplyAll();
+            await ContentSelectorVM.ApplyAll();
 
             CloseAction.Invoke();
 
             await ExportToFile();
-
         }
 
         public async Task ExportToFile()

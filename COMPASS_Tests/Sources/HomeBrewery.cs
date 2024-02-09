@@ -8,6 +8,7 @@ namespace COMPASS_Tests.Services
     public class HomeBrewery
     {
         static MainViewModel? mvm;
+        const string TEST_COLLECTION = "__unitTests";
 
         [ClassInitialize]
         public static void Init(TestContext testContext)
@@ -16,7 +17,14 @@ namespace COMPASS_Tests.Services
                 new System.Windows.Application();
 
             mvm = new MainViewModel();
-            mvm.
+            if (!MainViewModel.CollectionVM.CollectionDirectories.Contains(TEST_COLLECTION))
+            {
+                MainViewModel.CollectionVM.CreateAndLoadCollection(TEST_COLLECTION);
+            }
+            else
+            {
+                MainViewModel.CollectionVM.LoadCollection(new(TEST_COLLECTION)).Wait();
+            }
         }
 
         [TestMethod]

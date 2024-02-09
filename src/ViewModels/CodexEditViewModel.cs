@@ -160,8 +160,8 @@ namespace COMPASS.ViewModels
         }
 
         private ActionCommand _fetchCoverCommand;
-        public ActionCommand FetchCoverCommand => _fetchCoverCommand ??= new(FetchCover);
-        private async void FetchCover()
+        public ActionCommand FetchCoverCommand => _fetchCoverCommand ??= new(async () => await FetchCoverAsync());
+        private async Task FetchCoverAsync()
         {
             ShowLoading = true;
             //make it so cover always gets overwritten if this case, store old value first

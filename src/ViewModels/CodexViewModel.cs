@@ -210,7 +210,7 @@ namespace COMPASS.ViewModels
         //Move Codex to other CodexCollection
         private RelayCommand<object[]> _moveToCollectionCommand;
         public RelayCommand<object[]> MoveToCollectionCommand => _moveToCollectionCommand ??= new(MoveToCollection);
-        public static void MoveToCollection(object[] par)
+        public void MoveToCollection(object[] par)
         {
             //par contains 2 parameters
             CodexCollection targetCollection = new((string)par[0]);
@@ -289,7 +289,9 @@ namespace COMPASS.ViewModels
 
                     Logger.Info($"Moved {toMove.Title} from {MainViewModel.CollectionVM.CurrentCollection.DirectoryName} to {targetCollection.DirectoryName}");
                 }
-                //Save changes to TargetCollection
+
+                //Save changes to both collections
+                MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
                 targetCollection.SaveCodices();
             }
         }

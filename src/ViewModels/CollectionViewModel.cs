@@ -32,9 +32,13 @@ namespace COMPASS.ViewModels
             get => _currentCollection;
             set
             {
-                if (value == null) return;
-                LoadCollection(value);
-                RaisePropertyChanged();
+                if (value == null)
+                {
+                    return;
+                }
+                //save prev collection before switching
+                _currentCollection?.Save();
+                SetProperty(ref _currentCollection, value);
             }
         }
 
@@ -156,10 +160,8 @@ namespace COMPASS.ViewModels
             return legal;
         }
 
-        public void LoadCollection(CodexCollection collection)
+        public async Task LoadCollection(CodexCollection collection)
         {
-            _currentCollection?.Save();
-
             int success = collection.Load();
             if (success < 0)
             {
@@ -174,15 +176,18 @@ namespace COMPASS.ViewModels
                 return;
             }
 
-            _currentCollection = collection;
-            RaisePropertyChanged(nameof(CurrentCollection));
+            if (_currentCollection != collection)
+            {
+                _currentCollection = collection;
+                RaisePropertyChanged(nameof(CurrentCollection));
+            }
             MainVM?.CurrentLayout?.RaisePreferencesChanged();
 
             //create new viewmodels
             FilterVM = new(collection.AllCodices);
             TagsVM = new(this);
 
-            _ = AutoImport();
+            await AutoImport();
         }
 
         public async Task AutoImport()
@@ -193,13 +198,15 @@ namespace COMPASS.ViewModels
                 FolderNames = CurrentCollection.Info.AutoImportDirectories.ToList(),
             };
             await Task.Delay(TimeSpan.FromSeconds(2));
+            ImportViewModel.Stealth = true;
             var toImport = folderImportVM.GetPathsFromFolders();
-            ImportViewModel.ImportFiles(toImport);
+            await ImportViewModel.ImportFilesAsync(toImport);
         }
 
-        public void Refresh()
+        public async Task Refresh()
         {
-            LoadCollection(CurrentCollection);
+            CurrentCollection.Save();
+            await LoadCollection(CurrentCollection);
             FilterVM.ReFilter(true);
         }
 
@@ -327,9 +334,10 @@ namespace COMPASS.ViewModels
 
         //Import Collection
         private ActionCommand _importCommand;
-        public ActionCommand ImportCommand => _importCommand ??= new(async () => await Import());
+        public ActionCommand ImportCommand => _importCommand ??= new(async () => await ImportCMPSSFileAsync());
 
-        public async Task Import(string path = null)
+
+        public async Task ImportCMPSSFileAsync(string path = null)
         {
             var collectionToImport = await IOService.OpenCPMSSFile(path);
 
@@ -347,8 +355,8 @@ namespace COMPASS.ViewModels
 
         //Merge Collection into another
         private RelayCommand<string> _mergeCollectionIntoCommand;
-        public RelayCommand<string> MergeCollectionIntoCommand => _mergeCollectionIntoCommand ??= new(MergeIntoCollection);
-        public void MergeIntoCollection(string collectionToMergeInto)
+        public RelayCommand<string> MergeCollectionIntoCommand => _mergeCollectionIntoCommand ??= new(async s => await MergeIntoCollection(s));
+        public async Task MergeIntoCollection(string collectionToMergeInto)
         {
             //Show some kind of are you sure?
             string message = $"You are about to merge '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'. \n" +
@@ -360,7 +368,7 @@ namespace COMPASS.ViewModels
             CodexCollection targetCollection = new(collectionToMergeInto);
 
             targetCollection.Load(hidden: true);
-            targetCollection.MergeWith(CurrentCollection);
+            await targetCollection.MergeWith(CurrentCollection);
 
             message = $"Successfully merged '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'";
             MessageBox.Show(message, "Merge Success");

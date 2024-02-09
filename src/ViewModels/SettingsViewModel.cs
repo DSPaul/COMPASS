@@ -478,13 +478,13 @@ namespace COMPASS.ViewModels
         }
 
         private ActionCommand _moveToNewDataPathCommand;
-        public ActionCommand MoveToNewDataPathCommand => _moveToNewDataPathCommand ??= new(MoveToNewDataPath);
-        public async void MoveToNewDataPath()
+        public ActionCommand MoveToNewDataPathCommand => _moveToNewDataPathCommand ??= new(async () => await MoveToNewDataPath());
+        public async Task MoveToNewDataPath()
         {
             bool success;
             try
             {
-                success = await CopyData(CompassDataPath, NewDataPath);
+                success = await CopyDataAsync(CompassDataPath, NewDataPath);
             }
             catch (OperationCanceledException ex)
             {
@@ -504,7 +504,7 @@ namespace COMPASS.ViewModels
             {
                 try
                 {
-                    await CopyData(CompassDataPath, NewDataPath);
+                    await CopyDataAsync(CompassDataPath, NewDataPath);
                 }
                 catch (OperationCanceledException ex)
                 {
@@ -547,7 +547,7 @@ namespace COMPASS.ViewModels
             ChangeToNewDataPath();
         }
 
-        public static async Task<bool> CopyData(string sourceDir, string destDir)
+        public static async Task<bool> CopyDataAsync(string sourceDir, string destDir)
         {
             ProgressViewModel progressVM = ProgressViewModel.GetInstance();
             ProgressWindow progressWindow = new()

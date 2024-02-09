@@ -1,8 +1,9 @@
-﻿using System;
-using COMPASS.Models;
+﻿using COMPASS.Models;
 using COMPASS.Tools;
+using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Import
 {
@@ -30,7 +31,7 @@ namespace COMPASS.ViewModels.Import
                     {
                         continue;
                     }
-                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath,fileName);
+                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath, fileName);
                     if (File.Exists(includedFilePath))
                     {
                         codex.Path = includedFilePath;
@@ -79,7 +80,7 @@ namespace COMPASS.ViewModels.Import
         public override bool ShowFinishButton() => base.ShowFinishButton() &&
             !(CurrentStep == "Overview" && !MergeIntoCollection && !IsCollectionNameLegal);
 
-        public override void ApplyAll()
+        public override async Task ApplyAll()
         {
             //if we do a quick import, set all the things in the contentSelector have the right value
             if (!AdvancedImport)
@@ -103,17 +104,17 @@ namespace COMPASS.ViewModels.Import
                 ContentSelectorVM.SelectFolderTagLinks = ImportAllSettings;
             }
 
+            CloseAction.Invoke();
+
             //Apply the selection
-            ContentSelectorVM.ApplyAll();
+            await ContentSelectorVM.ApplyAll();
 
             //Save the changes to a permanent collection
             var targetCollection = MergeIntoCollection ?
                 MainViewModel.CollectionVM.CurrentCollection :
                 MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
 
-            targetCollection.MergeWith(ContentSelectorVM.CuratedCollection);
-
-            CloseAction.Invoke();
+            await targetCollection.MergeWith(ContentSelectorVM.CuratedCollection);
         }
 
         public void UpdateSteps()

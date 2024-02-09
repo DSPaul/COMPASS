@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
 
@@ -184,6 +185,7 @@ namespace COMPASS.Models
 
         public void Save()
         {
+            RaisePropertyChanged(nameof(AllCodices));
             Directory.CreateDirectory(UserFilesPath);
             SaveTags();
             SaveCodices();
@@ -247,14 +249,14 @@ namespace COMPASS.Models
         /// Will merge all the data from toMerge into this collection
         /// </summary>
         /// <param name="toMerge"></param>
-        public void MergeWith(CodexCollection toMerge)
+        public async Task MergeWith(CodexCollection toMerge)
         {
             ImportTags(toMerge.RootTags);
             ImportCodicesFrom(toMerge);
             Info.MergeWith(toMerge.Info);
             if (MainViewModel.CollectionVM.CurrentCollection == this)
             {
-                MainViewModel.CollectionVM.Refresh();
+                await MainViewModel.CollectionVM.Refresh();
             }
             else
             {

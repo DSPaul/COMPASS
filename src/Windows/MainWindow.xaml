@@ -163,7 +163,8 @@
                     <StackPanel Orientation="Horizontal">
                         <!--Collection Dropdown-->
                         <ComboBox Style="{StaticResource RpgDropdownStyle}" SelectedItem="{Binding CurrentCollection, Mode=TwoWay}" 
-                                  DisplayMemberPath="DirectoryName" ItemsSource="{Binding AllCodexCollections}"/>
+                                  DisplayMemberPath="DirectoryName" ItemsSource="{Binding AllCodexCollections}" 
+                                  SelectionChanged="CollectionComboBox_SelectionChanged"/>
                         <Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>
                         <!--Create Collection-->
                         <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="FolderPlus" Foreground="{StaticResource CollectionIconFill}" ToolTip="Create New Collection"
@@ -359,6 +360,7 @@
             </Grid>
             <!--#endregion-->
 
+            <!--Bottom bar-->
             <Grid DockPanel.Dock="Bottom" Height="25" Background="{StaticResource TitlebarBackground}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>

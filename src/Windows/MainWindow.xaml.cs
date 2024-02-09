@@ -175,7 +175,7 @@ namespace COMPASS.Windows
             ((Button)sender).ContextMenu!.IsOpen = !((Button)sender).ContextMenu!.IsOpen;
         }
 
-        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        private async void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
@@ -198,11 +198,14 @@ namespace COMPASS.Windows
                     break;
 
                 case Key.F5:
-                    MainViewModel.CollectionVM.Refresh();
+                    await MainViewModel.CollectionVM.Refresh();
                     e.Handled = true;
                     break;
             }
         }
+
+        private async void CollectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            => await MainViewModel.CollectionVM.LoadCollection(MainViewModel.CollectionVM.CurrentCollection);
     }
 }
 

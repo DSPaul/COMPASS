@@ -71,8 +71,8 @@ namespace COMPASS.ViewModels.Import
         }
 
         private ActionCommand _submitUrlCommand;
-        public ActionCommand SubmitURLCommand => _submitUrlCommand ??= new(SubmitURL);
-        public async void SubmitURL()
+        public ActionCommand SubmitURLCommand => _submitUrlCommand ??= new(async () => await SubmitURL());
+        public async Task SubmitURL()
         {
             if (!InputURL.Contains(ExampleURL) && ValidateURL)
             {
@@ -97,7 +97,7 @@ namespace COMPASS.ViewModels.Import
             };
             progressWindow.Show();
 
-            Codex newCodex = await ImportURL();
+            Codex newCodex = await ImportURLAsync();
 
             if (ShowEditWhenDone)
             {
@@ -121,7 +121,7 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        public async Task<Codex> ImportURL()
+        public async Task<Codex> ImportURLAsync()
         {
             var progressVM = ProgressViewModel.GetInstance();
             progressVM.ResetCounter();

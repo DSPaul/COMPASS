@@ -12,20 +12,21 @@ namespace COMPASS.ViewModels.Import
 {
     public static class ImportViewModel
     {
-        public static void Import(ImportSource source) => Import(source, MainViewModel.CollectionVM.CurrentCollection);
-        public static void Import(ImportSource source, CodexCollection targetCollection)
+        public static async Task Import(ImportSource source) => await Import(source, MainViewModel.CollectionVM.CurrentCollection);
+        public static async Task Import(ImportSource source, CodexCollection targetCollection)
         {
+            Stealth = false; //when explicityly called from Command, always show follow up UI
             List<string> pathsToImport;
             switch (source)
             {
                 case ImportSource.File:
                     pathsToImport = ChooseFiles();
-                    ImportFiles(pathsToImport, targetCollection);
+                    await ImportFilesAsync(pathsToImport, targetCollection);
                     break;
 
                 case ImportSource.Folder:
                     pathsToImport = new ImportFolderViewModel(targetCollection).ChooseFolders();
-                    ImportFiles(pathsToImport, targetCollection);
+                    await ImportFilesAsync(pathsToImport, targetCollection);
                     break;
                 case ImportSource.Manual:
                     ImportManual();
@@ -69,7 +70,7 @@ namespace COMPASS.ViewModels.Import
             window.Show();
         }
 
-        public static async void ImportFiles(List<string> paths, CodexCollection targetCollection = null)
+        public static async Task ImportFilesAsync(List<string> paths, CodexCollection targetCollection = null)
         {
             targetCollection ??= MainViewModel.CollectionVM.CurrentCollection;
 
@@ -100,23 +101,21 @@ namespace COMPASS.ViewModels.Import
             //    window.Show();
             //}
 
-            await Task.Run(() =>
+            //make new codices synchronously so they all have a valid ID
+            foreach (string path in paths)
             {
-                //make new codices synchronously so they all have a valid ID
-                foreach (string path in paths)
-                {
-                    ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
+                ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                    Codex newCodex = new(targetCollection) { Path = path };
-                    newCodices.Add(newCodex);
-                    targetCollection.AllCodices.Add(newCodex);
+                Codex newCodex = new(targetCollection) { Path = path };
+                newCodices.Add(newCodex);
+                targetCollection.AllCodices.Add(newCodex);
 
-                    LogEntry logEntry = new(LogEntry.MsgType.Info, $"Importing {path}");
-                    progressVM.IncrementCounter();
-                    progressVM.AddLogEntry(logEntry);
-                }
-                MainViewModel.CollectionVM.CurrentCollection.Save();
-            });
+                LogEntry logEntry = new(LogEntry.MsgType.Info, $"Importing {path}");
+                progressVM.IncrementCounter();
+                progressVM.AddLogEntry(logEntry);
+            }
+
+            MainViewModel.CollectionVM.CurrentCollection.Save();
 
             await FinishImport(newCodices);
             Stealth = true;

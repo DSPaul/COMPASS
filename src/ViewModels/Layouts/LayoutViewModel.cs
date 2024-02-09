@@ -67,7 +67,7 @@ namespace COMPASS.ViewModels.Layouts
             }
         }
 
-        public void Drop(IDropInfo dropInfo)
+        public async void Drop(IDropInfo dropInfo)
         {
             if (dropInfo.Data is DataObject data)
             {
@@ -81,11 +81,12 @@ namespace COMPASS.ViewModels.Layouts
                 //Check if its a cmpss file, do import if so
                 if (!folders.Any() && files.Count == 1 && files.First().EndsWith(Constants.COMPASSFileExtension))
                 {
-                    _ = MainViewModel.CollectionVM.Import(files.First());
+                    await MainViewModel.CollectionVM.ImportCMPSSFileAsync(files.First());
                     return;
                 }
 
                 //else check for folder import
+                ImportViewModel.Stealth = false;
                 if (folders.Any())
                 {
                     ImportFolderViewModel folderImportVM = new()
@@ -96,8 +97,7 @@ namespace COMPASS.ViewModels.Layouts
                     files = folderImportVM.GetPathsFromFolders();
                 }
 
-                ImportViewModel.Stealth = false;
-                ImportViewModel.ImportFiles(files.ToList());
+                await ImportViewModel.ImportFilesAsync(files.ToList());
             }
         }
     }
