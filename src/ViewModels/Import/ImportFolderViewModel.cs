@@ -42,6 +42,12 @@ namespace COMPASS.ViewModels.Import
             return GetPathsFromFolders();
         }
 
+        /// <summary>
+        /// Get a list of all the file paths that are not banned
+        /// because of banishent or due to file extension preference
+        /// That are either in FileName or in a folder in FolderNames
+        /// </summary>
+        /// <returns></returns>
         public List<string> GetPathsFromFolders()
         {
             //find files in folder, including subfolder
@@ -63,12 +69,14 @@ namespace COMPASS.ViewModels.Import
             var toImportGrouped = toImport.GroupBy(Path.GetExtension).ToList();
 
             //add new file extension to global file preferences
-            foreach (string extension in toImportGrouped.Select(x => x.Key))
+            var extensions = toImportGrouped.Select(x => x.Key).ToList();
+            var newExtensions = extensions.Except(_targetCollection.Info.FiletypePreferences.Keys).ToList();
+            foreach (string extension in extensions)
             {
                 _targetCollection.Info.FiletypePreferences.TryAdd(extension, true);
             }
 
-            if (!ImportViewModel.Stealth)
+            if (!ImportViewModel.Stealth || newExtensions.Any())
             {
                 //init ToImportFileTypes with values from FileTypePreferences
                 ToImportFiletypes = toImportGrouped.Select(x => new FileTypeInfo(x.Key, _targetCollection.Info.FiletypePreferences[x.Key], x.Count())).ToList();
