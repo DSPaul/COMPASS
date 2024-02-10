@@ -112,6 +112,12 @@ namespace COMPASS.Services
 
         public static void SaveCover(IMagickImage image, Codex destCodex)
         {
+            if (String.IsNullOrEmpty(destCodex.CoverArt))
+            {
+                Logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
+                return;
+            }
+
             if (image.Width > 850) image.Resize(850, 0);
             image.Write(destCodex.CoverArt);
             CreateThumbnail(destCodex);
@@ -119,13 +125,26 @@ namespace COMPASS.Services
 
         public static async Task SaveCover(string imgURL, Codex destCodex)
         {
+            if (String.IsNullOrEmpty(destCodex.CoverArt))
+            {
+                Logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
+                return;
+            }
+
             var imgBytes = await IOService.DownloadFileAsync(imgURL);
             await File.WriteAllBytesAsync(destCodex.CoverArt, imgBytes);
             CreateThumbnail(destCodex);
         }
 
-        public static bool GetCoverFromImage(string imagePath, Codex destFile)
+        public static bool GetCoverFromImage(string imagePath, Codex destCodex
+            )
         {
+            if (String.IsNullOrEmpty(destCodex.CoverArt))
+            {
+                Logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
+                return false;
+            }
+
             //check if it's a valid file
             if (String.IsNullOrEmpty(imagePath) ||
                 !Path.Exists(imagePath) ||
@@ -138,8 +157,8 @@ namespace COMPASS.Services
             {
                 using MagickImage image = new(imagePath);
                 if (image.Width > 1000) image.Resize(1000, 0);
-                image.Write(destFile.CoverArt);
-                CreateThumbnail(destFile);
+                image.Write(destCodex.CoverArt);
+                CreateThumbnail(destCodex);
                 return true;
             }
             catch (Exception ex)
@@ -152,6 +171,12 @@ namespace COMPASS.Services
 
         public static void CreateThumbnail(Codex c)
         {
+            if (String.IsNullOrEmpty(c.CoverArt))
+            {
+                Logger.Error("Trying to write thumbnail to empty path", new InvalidOperationException());
+                return;
+            }
+
             int newWidth = 200; //sets resolution of thumbnail in pixels
             if (!Path.Exists(c.CoverArt)) return;
             using MagickImage image = new(c.CoverArt);
@@ -173,11 +198,16 @@ namespace COMPASS.Services
         {
             //take the screenshot
             Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();
-            var img = Image.FromStream(new MemoryStream(ss.AsByteArray)) as Bitmap;
-            if (img == null) return new MagickImage();
-            var imgCropped = img.Clone(new Rectangle(location, size), img.PixelFormat);
-            var mf = new MagickFactory();
-            return mf.Image.Create(imgCropped);
+            using Bitmap img = Image.FromStream(new MemoryStream(ss.AsByteArray)) as Bitmap;
+
+            if (img == null)
+            {
+                return new MagickImage();
+            }
+
+            using Bitmap imgCropped = img.Clone(new Rectangle(location, size), img.PixelFormat);
+            var mf = new MagickImageFactory();
+            return mf.Create(imgCropped);
         }
     }
 }
