@@ -10,7 +10,6 @@ using ImageMagick;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -94,7 +93,7 @@ namespace COMPASS.ViewModels
             log4net.Config.XmlConfigurator.Configure();
             Logger.Init();
             Application.Current.DispatcherUnhandledException += Logger.LogUnhandledException;
-            Logger.Info($"Launching Compass {Version}");
+            Logger.Info($"Launching Compass {VersionName}");
         }
 
         private void InitConnectionTimer()
@@ -121,7 +120,7 @@ namespace COMPASS.ViewModels
 
         private DispatcherTimer _checkConnectionTimer;
 
-        public string Version => $"v{Assembly.GetExecutingAssembly().GetName().Version?.ToString()[0..5]}";
+        public string VersionName => $"v{Reflection.Version}";
         public ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
 
         #endregion
