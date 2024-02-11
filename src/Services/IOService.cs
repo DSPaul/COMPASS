@@ -13,8 +13,10 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace COMPASS.Services
 {
@@ -125,15 +127,22 @@ namespace COMPASS.Services
         {
             string fileName = Path.GetFileName(path);
             string tmpCollectionPath = Path.Combine(CodexCollection.CollectionsPath, $"__{fileName}");
+
             //make sure any previous temp data is gone
             ClearTmpData(tmpCollectionPath);
+
             //unzip the file to tmp folder
-            ZipFile zip = ZipFile.Read(path);
+            using ZipFile zip = ZipFile.Read(path);
+
+            //report progress
             var progressVM = ProgressViewModel.GetInstance();
             progressVM.Text = $"Reading {path}";
             progressVM.ResetCounter();
             progressVM.TotalAmount = 1;
+
+            //extract
             await Task.Run(() => zip.ExtractAll(tmpCollectionPath));
+
             progressVM.IncrementCounter();
             return tmpCollectionPath;
         }
@@ -239,6 +248,34 @@ namespace COMPASS.Services
 
                 if (openFileDialog.ShowDialog() != true) return null;
                 path = openFileDialog.FileName;
+            }
+
+            //Check compatibility
+            using (ZipFile zip = ZipFile.Read(path))
+            {
+                var versionFile = zip.SingleOrDefault(entry => entry.FileName == "Version");
+                if (versionFile == null)
+                {
+                    //No version information means we cannot ensure compatibility, so abort
+                    string message = $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
+                    Logger.Warn(message);
+                    MessageBox.Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return null;
+                }
+
+                using var stream = new MemoryStream();
+                versionFile.Extract(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                using StreamReader reader = new(stream);
+                string versionStr = reader.ReadToEnd();
+                Version version = new(versionStr);
+                if (version > Assembly.GetExecutingAssembly().GetName().Version)
+                {
+                    string message = $"Cannot import {Path.GetFileName(path)} because it was created in a newer version of COMPASS (v{version}), and might therefor not be compatible with your version v{Reflection.Version}. Please update and try again.";
+                    Logger.Warn(message);
+                    MessageBox.Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return null;
+                }
             }
 
             //unzip the file

@@ -137,6 +137,9 @@ namespace COMPASS.ViewModels
                         }
                     };
 
+                    //Add version so we can check compatibility when importing
+                    zip.AddEntry("Version", Reflection.Version);
+
                     //Export
                     await Task.Run(() =>
                     {

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace COMPASS.Models
 {
@@ -145,10 +146,20 @@ namespace COMPASS.Models
         {
             if (File.Exists(CollectionInfoFilePath))
             {
-                using var reader = new StreamReader(CollectionInfoFilePath);
-                System.Xml.Serialization.XmlSerializer serializer = new(typeof(CollectionInfo));
                 try
                 {
+                    using var reader = new StreamReader(CollectionInfoFilePath);
+
+                    //Obsolete properties should still be deserialized for backwards compatibility
+                    var overrides = new XmlAttributeOverrides();
+                    var obsoleteAttributes = new XmlAttributes { XmlIgnore = false };
+                    var obsoleteProperties = Reflection.GetObsoleteProperties(typeof(CollectionInfo));
+                    foreach (string prop in obsoleteProperties)
+                    {
+                        overrides.Add(typeof(CollectionInfo), prop, obsoleteAttributes);
+                    }
+
+                    XmlSerializer serializer = new(typeof(CollectionInfo), overrides);
                     Info = serializer.Deserialize(reader) as CollectionInfo;
                     if (Info == null)
                     {
