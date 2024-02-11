@@ -86,10 +86,9 @@ namespace COMPASS.ViewModels.Layouts
                 }
 
                 //else check for folder import
-                ImportViewModel.Stealth = false;
                 if (folders.Any())
                 {
-                    ImportFolderViewModel folderImportVM = new()
+                    ImportFolderViewModel folderImportVM = new(manuallyTriggered: true)
                     {
                         FolderNames = folders.ToList(),
                         FileNames = files.ToList()

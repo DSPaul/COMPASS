@@ -15,7 +15,6 @@ namespace COMPASS.ViewModels.Import
         public static async Task Import(ImportSource source) => await Import(source, MainViewModel.CollectionVM.CurrentCollection);
         public static async Task Import(ImportSource source, CodexCollection targetCollection)
         {
-            Stealth = false; //when explicityly called from Command, always show follow up UI
             List<string> pathsToImport;
             switch (source)
             {
@@ -25,7 +24,9 @@ namespace COMPASS.ViewModels.Import
                     break;
 
                 case ImportSource.Folder:
-                    pathsToImport = new ImportFolderViewModel(targetCollection).ChooseFolders();
+                    var importFolderVM = new ImportFolderViewModel(targetCollection, manuallyTriggered: true);
+                    importFolderVM.LetUserSelectFolders();
+                    pathsToImport = importFolderVM.GetPathsFromFolders();
                     await ImportFilesAsync(pathsToImport, targetCollection);
                     break;
                 case ImportSource.Manual:
@@ -40,8 +41,6 @@ namespace COMPASS.ViewModels.Import
                     break;
             }
         }
-
-        public static bool Stealth = true;
 
         public static List<string> ChooseFiles()
         {
@@ -91,16 +90,6 @@ namespace COMPASS.ViewModels.Import
 
             List<Codex> newCodices = new();
 
-            //Don't show progress window anymore, doesn't seem necessary anymore, mostly gets in the way
-            //if (!Stealth)
-            //{
-            //    ProgressWindow window = new(3)
-            //    {
-            //        Owner = Application.Current.MainWindow
-            //    };
-            //    window.Show();
-            //}
-
             //make new codices synchronously so they all have a valid ID
             foreach (string path in paths)
             {
@@ -118,7 +107,6 @@ namespace COMPASS.ViewModels.Import
             MainViewModel.CollectionVM.CurrentCollection.Save();
 
             await FinishImport(newCodices);
-            Stealth = true;
         }
 
         public static async Task FinishImport(List<Codex> newCodices)
