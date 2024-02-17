@@ -139,6 +139,8 @@
                                 <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                     ToolTip="These folders will periodically be checked for files that have not yet been imported, and import them automatically."/>
                             </StackPanel>
+                            
+                            <!--Auto import folders-->
                             <TextBlock Text="Folders to Check:"/>
                             <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0">
                                 <StackPanel Margin="0,10,0,5">
@@ -150,6 +152,7 @@
                                                         <Grid>
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="auto"/>
                                                                 <ColumnDefinition Width="auto"/>
                                                                 <ColumnDefinition Width="auto"/>
                                                             </Grid.ColumnDefinitions>
@@ -183,11 +186,16 @@
                                                                 Command="{Binding DataContext.ShowInExplorerCommand,
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                 CommandParameter="{Binding FullPath}"/>
+                                                            <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Edit" Width="20" 
+                                                                    Margin="5" Grid.Column="2" ToolTip="Edit" VerticalAlignment="Top"
+                                                                    Command="{Binding DataContext.EditAutoImportDirectoryCommand,
+                                                                    RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                                                    CommandParameter="{Binding}"/>
                                                             <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Delete" Width="20" 
                                                                 Command="{Binding DataContext.RemoveAutoImportDirectoryCommand, 
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                 CommandParameter="{Binding}" Margin="5" VerticalAlignment="Top" 
-                                                                Grid.Column="2" ToolTip="Remove From Auto Import"/>
+                                                                Grid.Column="3" ToolTip="Remove From Auto Import"/>
                                                         </Grid>
                                                     </Border>
                                                 </DataTemplate>
@@ -215,6 +223,8 @@
                                     </Grid>
                                 </StackPanel>
                             </Border>
+                            
+                            <!--File Types-->
                             <TextBlock Text="File Types to import:"
                                        Visibility="{Binding FiletypePreferences.Count, Converter={StaticResource ToVisibilityConverter}}"/>
                             <Border CornerRadius="5" Background="{StaticResource  WindowBackground}"  Margin="10,0"
@@ -223,7 +233,7 @@
                                             ItemsSource="{Binding FiletypePreferences}" Background="{x:Null}" BorderBrush="{x:Null}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <WrapPanel IsItemsHost="True" MaxWidth="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                            <UniformGrid Columns="6"/>
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
@@ -234,6 +244,7 @@
                                 </ItemsControl>
                             </Border>
 
+                            <!--Banished Files-->
                             <TextBlock Text="Banished Files (will be excluded from automatic import):"
                                        Visibility="{Binding BanishedPaths.View.IsEmpty, Converter={StaticResource ToVisibilityConverter},ConverterParameter=true}"/>
                             <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0"

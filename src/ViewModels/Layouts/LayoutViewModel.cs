@@ -81,7 +81,7 @@ namespace COMPASS.ViewModels.Layouts
                 {
                     ImportFolderViewModel folderImportVM = new(manuallyTriggered: true)
                     {
-                        RecursiveFolders = folders,
+                        RecursiveDirectories = folders,
                         Files = files
                     };
                     await folderImportVM.Import();

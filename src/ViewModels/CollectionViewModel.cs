@@ -195,7 +195,7 @@ namespace COMPASS.ViewModels
             //Start Auto Imports
             ImportFolderViewModel folderImportVM = new(manuallyTriggered: false)
             {
-                NonRecursiveFolders = CurrentCollection.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList(),
+                NonRecursiveDirectories = CurrentCollection.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList(),
             };
             await Task.Delay(TimeSpan.FromSeconds(2));
             await folderImportVM.Import();

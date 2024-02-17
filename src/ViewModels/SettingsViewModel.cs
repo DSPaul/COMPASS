@@ -188,14 +188,22 @@ namespace COMPASS.ViewModels
             }
         }
 
-        //Remove a directory from auto import
+        //Edit a folder from auto import
         private RelayCommand<Folder> _removeAutoImportDirectoryCommand;
         public RelayCommand<Folder> RemoveAutoImportDirectoryCommand => _removeAutoImportDirectoryCommand ??= new(folder =>
             MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.Remove(folder));
 
+        //Remove a folder from auto import
+        private RelayCommand<Folder> _editAutoImportDirectoryCommand;
+        public RelayCommand<Folder> EditAutoImportDirectoryCommand => _editAutoImportDirectoryCommand ??= new(async folder => await EditAutoImportFolder(folder));
+
         //Add a directory from auto import
         private RelayCommand<string> _addAutoImportDirectoryCommand;
         public RelayCommand<string> AddAutoImportDirectoryCommand => _addAutoImportDirectoryCommand ??= new(async dir => await AddAutoImportDirectory(dir));
+
+        //Add a directory from auto import
+        private ActionCommand _pickAutoImportDirectoryCommand;
+        public ActionCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(async () => await AddAutoImportDirectory(IOService.PickFolder()));
 
         private async Task AddAutoImportDirectory(string dir)
         {
@@ -203,15 +211,20 @@ namespace COMPASS.ViewModels
             {
                 var importFolderVM = new ImportFolderViewModel(true)
                 {
-                    RecursiveFolders = new List<string> { dir },
+                    RecursiveDirectories = new List<string> { dir },
                 };
                 await importFolderVM.Import();
             }
         }
 
-        //Add a directory from auto import
-        private ActionCommand _pickAutoImportDirectoryCommand;
-        public ActionCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(async () => await AddAutoImportDirectory(IOService.PickFolder()));
+        private async Task EditAutoImportFolder(Folder folder)
+        {
+            var importFolderVM = new ImportFolderViewModel(true)
+            {
+                ExistingFolders = new List<Folder> { folder },
+            };
+            await importFolderVM.Import();
+        }
 
         //File types to import
         private List<ObservableKeyValuePair<string, bool>> _filetypePreferences;

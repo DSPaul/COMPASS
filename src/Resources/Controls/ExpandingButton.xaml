@@ -7,9 +7,6 @@
              mc:Ignorable="d" 
              x:Name="ExpandingBtnControl"
              d:DesignHeight="200" d:DesignWidth="200">
-    <UserControl.Resources>
-        <converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
-    </UserControl.Resources>
     <Border CornerRadius="7" Background="Gray">
         <StackPanel Orientation="Vertical"  x:Name="OutsidePanel">
             <ToggleButton x:Name="ToggleBtn" Click="CheckedChanged">

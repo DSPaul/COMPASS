@@ -19,7 +19,7 @@ namespace COMPASS.Resources.Controls
             set => SetValue(CheckTextProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for CheckText.  This enables animation, styling, binding, etc...
+        // Using a DependencyProperty as the backing store for Header.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CheckTextProperty =
             DependencyProperty.Register(nameof(CheckText), typeof(string), typeof(CheckableContainer), new PropertyMetadata(""));
 

@@ -24,9 +24,12 @@ namespace COMPASS.ViewModels.Import
         private readonly CodexCollection _targetCollection;
         private bool _manuallyTriggered = true;
 
-        public List<string> RecursiveFolders { get; set; } = new();
-        public List<string> NonRecursiveFolders { get; set; } = new();
+        public string WindowTitle => _manuallyTriggered ? "Import Folder(s)" : "AutoImport";
+
+        public List<string> RecursiveDirectories { get; set; } = new();
+        public List<string> NonRecursiveDirectories { get; set; } = new();
         public List<string> Files { get; set; } = new();
+        public List<Folder> ExistingFolders { get; set; } = new();
 
 
         private bool _autoImportFolders = true;
@@ -39,7 +42,7 @@ namespace COMPASS.ViewModels.Import
         public async Task Import()
         {
             //if no files are given to import, don't
-            if (_manuallyTriggered && RecursiveFolders.Count + NonRecursiveFolders.Count + Files.Count == 0)
+            if (_manuallyTriggered && RecursiveDirectories.Count + NonRecursiveDirectories.Count + ExistingFolders.Count + Files.Count == 0)
             {
                 LetUserSelectFolders();
             }
@@ -51,7 +54,7 @@ namespace COMPASS.ViewModels.Import
 
         /// <summary>
         /// Lets a user select folders using a dialog 
-        /// and stores them in RecursiveFolders
+        /// and stores them in RecursiveDirectories
         /// </summary>
         /// <returns>A list of paths </returns>
         private void LetUserSelectFolders()
@@ -60,26 +63,26 @@ namespace COMPASS.ViewModels.Import
 
             if (!selectedPath.Any()) return;
 
-            RecursiveFolders = selectedPath.ToList();
+            RecursiveDirectories = selectedPath.ToList();
         }
 
         /// <summary>
         /// Get a list of all the file paths that are not banned
         /// because of banishent or due to file extension preference
-        /// That are either in FileName or in a folder in RecursiveFolders
+        /// That are either in FileName or in a folder in RecursiveDirectories
         /// </summary>
         /// <returns></returns>
         private List<string> GetPathsToImport()
         {
             // 1. Unroll the recursive folders and add them to non recursive folders
-            Queue<string> toSearch = new(RecursiveFolders);
+            Queue<string> toSearch = new(RecursiveDirectories);
             while (toSearch.Any())
             {
                 string currentFolder = toSearch.Dequeue();
 
                 if (Directory.Exists(currentFolder))
                 {
-                    NonRecursiveFolders.Add(currentFolder);
+                    NonRecursiveDirectories.Add(currentFolder);
                     foreach (string dir in Directory.GetDirectories(currentFolder))
                     {
                         toSearch.Enqueue(dir);
@@ -89,7 +92,7 @@ namespace COMPASS.ViewModels.Import
 
             //2. Build a list with all the files to import
             List<string> toImport = new(Files);
-            foreach (var folder in NonRecursiveFolders)
+            foreach (var folder in NonRecursiveDirectories)
             {
                 if (Directory.Exists(folder))
                 {
@@ -116,8 +119,20 @@ namespace COMPASS.ViewModels.Import
                 ImportAmount = toImport.Count;
 
                 //Build the checkable folder Tree
-                IEnumerable<Folder> folderObjects = RecursiveFolders.Select(f => new Folder(f));
+                IEnumerable<Folder> folderObjects = RecursiveDirectories.Select(f => new Folder(f));
                 CheckableFolders = folderObjects.Select(f => new CheckableTreeNode<Folder>(f)).ToList();
+
+                foreach (Folder folder in ExistingFolders)
+                {
+                    //first make a checkable Folder with all the subfolders, then uncheck those not in the original
+                    var checkableFolder = new CheckableTreeNode<Folder>(new Folder(folder.FullPath));
+                    var chosenSubFolderPaths = folder.SubFolders.Flatten().Select(sf => sf.FullPath).ToList();
+                    foreach (var subFolder in checkableFolder.Children.Flatten())
+                    {
+                        subFolder.IsChecked = chosenSubFolderPaths.Contains(subFolder.Item.FullPath);
+                    }
+                    CheckableFolders.Add(checkableFolder);
+                }
             }
 
             //find how many files of each filetype
@@ -126,7 +141,7 @@ namespace COMPASS.ViewModels.Import
             var newExtensions = extensions.Except(_targetCollection.Info.FiletypePreferences.Keys).ToList();
 
             //Add Extionsions Step
-            if (_manuallyTriggered || newExtensions.Any())
+            if (newExtensions.Any())
             {
                 Steps.Add("Extensions");
 
@@ -174,21 +189,19 @@ namespace COMPASS.ViewModels.Import
         #endregion
 
         #region File Type Selection Step
-        private IEnumerable<FileTypeInfo> _knownFileTypes;
+        private IEnumerable<FileTypeInfo> _knownFileTypes = Enumerable.Empty<FileTypeInfo>();
         public IEnumerable<FileTypeInfo> KnownFileTypes
         {
             get => _knownFileTypes;
             set => SetProperty(ref _knownFileTypes, value);
         }
 
-        private IEnumerable<FileTypeInfo> _unknownFileTypes;
+        private IEnumerable<FileTypeInfo> _unknownFileTypes = Enumerable.Empty<FileTypeInfo>();
         public IEnumerable<FileTypeInfo> UnknownFileTypes
         {
             get => _unknownFileTypes;
             set => SetProperty(ref _unknownFileTypes, value);
         }
-        public IEnumerable<FileTypeInfo> ToImportFiletypes => UnknownFileTypes.Concat(KnownFileTypes);
-
 
         //helper class for file type selection during folder import
         public class FileTypeInfo
@@ -217,10 +230,18 @@ namespace COMPASS.ViewModels.Import
                 {
                     checkableFolder.Item.HasAllSubFolders = checkableFolder.IsChecked == true;
                 }
+
+                //Add the folder to the AutoImportFolders
                 var checkedFolders = CheckableTreeNode<Folder>.GetCheckedItems(CheckableFolders);
                 foreach (Folder folder in checkedFolders)
                 {
                     _targetCollection.Info.AutoImportFolders.AddIfMissing(folder);
+                }
+
+                //Remove the existingFolders as they have been replaced
+                foreach (Folder folder in ExistingFolders)
+                {
+                    _targetCollection.Info.AutoImportFolders.Remove(folder);
                 }
             }
 
