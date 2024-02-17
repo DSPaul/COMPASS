@@ -1,4 +1,5 @@
 ﻿using COMPASS.Tools;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,14 +17,24 @@ namespace COMPASS.Models
         /// </summary>
         /// <returns>True if settings were modified, false if they are default</returns>
         public bool ContainsSettings() =>
-            AutoImportDirectories.Count > 0 ||
+            AutoImportFolders.Count > 0 ||
             BanishedPaths.Count > 0 ||
             FiletypePreferences.Count > 0 ||
             FolderTagPairs.Count > 0;
 
         #region Folders to Auto Import
-        //Folders to check for new files
+
+        [Obsolete]
         public ObservableCollection<string> AutoImportDirectories { get; set; } = new();
+
+        //Folders to check for new files
+        private ObservableCollection<Folder> _autoImportFolders;
+        public ObservableCollection<Folder> AutoImportFolders
+        {
+            get => _autoImportFolders ??= new();
+            set => _autoImportFolders = value;
+        }
+
         public ObservableCollection<string> BanishedPaths { get; set; } = new();
         #endregion
 
@@ -50,15 +61,31 @@ namespace COMPASS.Models
 
         public void CompleteLoading(CodexCollection owner)
         {
+            //Set the collections on all the tags
             foreach (var pair in FolderTagPairs)
             {
                 pair.InitTag(owner);
             }
+
+            #region Migrate save data from previous versions
+
+#pragma warning disable CS0612 // Type or member is obsolete
+
+            //(1.6.0 -> 1.7.0) migrate from AutoImportFoldersViewSource to AutoImportFolders 
+            if (AutoImportDirectories.Any() && !AutoImportFolders.Any())
+            {
+                AutoImportFolders = new(AutoImportDirectories.Select(dir => new Folder(dir)));
+                AutoImportDirectories = null;
+            }
+
+#pragma warning restore CS0612 // Type or member is obsolete
+
+            #endregion
         }
 
         public void MergeWith(CollectionInfo other)
         {
-            AutoImportDirectories.AddRange(other.AutoImportDirectories);
+            AutoImportFolders.AddRange(other.AutoImportFolders);
             BanishedPaths.AddRange(other.BanishedPaths);
             //For file type prefs, overwrite if already in dict, add otherwise
             other.PrepareSave(); // make sure serializable prefs are in sync in prefs in other

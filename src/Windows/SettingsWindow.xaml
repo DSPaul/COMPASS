@@ -143,7 +143,7 @@
                             <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0">
                                 <ScrollViewer MaxHeight="400">
                                     <StackPanel Margin="0,10,0,5">
-                                        <ItemsControl ItemsSource="{Binding AutoImportDirectories.View}">
+                                        <ItemsControl ItemsSource="{Binding AutoImportFoldersViewSource.View}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <Border BorderBrush="{StaticResource AccentColorMuted}" BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
@@ -152,18 +152,41 @@
                                                                 <ColumnDefinition Width="*"/>
                                                                 <ColumnDefinition Width="auto"/>
                                                                 <ColumnDefinition Width="auto"/>
-                                                                <ColumnDefinition Width="auto"/>
                                                             </Grid.ColumnDefinitions>
-                                                            <TextBlock Text="{Binding}" Margin="0" TextWrapping="Wrap"/>
+                                                            <TreeView Background="Transparent" BorderThickness="0">
+                                                                <TreeView.Resources>
+                                                                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                                                                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                                                                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
+                                                                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black" />
+                                                                </TreeView.Resources>
+                                                                <TreeViewItem ItemsSource="{Binding SubFolders}">
+                                                                    <TreeViewItem.Header>
+                                                                        <TextBlock Text="{Binding FullPath}" TextWrapping="Wrap" Margin="5" Foreground="{StaticResource TextColor}"/>
+                                                                    </TreeViewItem.Header>
+                                                                    <TreeViewItem.ItemTemplate>
+                                                                        <HierarchicalDataTemplate ItemsSource="{Binding SubFolders}">
+                                                                            <TextBlock Text="{Binding Name, Mode=OneWay}" 
+                                                                                       TextWrapping="Wrap" Margin="5" Foreground="{StaticResource TextColor}"/>
+                                                                        </HierarchicalDataTemplate>
+                                                                    </TreeViewItem.ItemTemplate>
+                                                                </TreeViewItem>
+                                                                <TreeView.ItemContainerStyle>
+                                                                    <Style TargetType="TreeViewItem">
+                                                                        <Setter Property="Focusable" Value="False" />
+                                                                        <Setter Property="IsExpanded" Value="False"/>
+                                                                    </Style>
+                                                                </TreeView.ItemContainerStyle>
+                                                            </TreeView>
                                                             <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="FolderOpen" Width="20" 
-                                                                Margin="5,0" Grid.Column="1" ToolTip="Show In Explorer"
+                                                                Margin="5" Grid.Column="1" ToolTip="Show In Explorer" VerticalAlignment="Top"
                                                                 Command="{Binding DataContext.ShowInExplorerCommand,
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
-                                                                CommandParameter="{Binding}"/>
+                                                                CommandParameter="{Binding FullPath}"/>
                                                             <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Delete" Width="20" 
                                                                 Command="{Binding DataContext.RemoveAutoImportDirectoryCommand, 
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
-                                                                CommandParameter="{Binding}" Margin="5,0" 
+                                                                CommandParameter="{Binding}" Margin="5" VerticalAlignment="Top" 
                                                                 Grid.Column="2" ToolTip="Remove From Auto Import"/>
                                                         </Grid>
                                                     </Border>

@@ -76,27 +76,31 @@ namespace COMPASS.ViewModels.Layouts
                 var folders = paths.Cast<string>().Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
                 var files = paths.Cast<string>().Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
 
-                if (!folders.Any() && !files.Any()) return;
-
-                //Check if its a cmpss file, do import if so
-                if (!folders.Any() && files.Count == 1 && files.First().EndsWith(Constants.COMPASSFileExtension))
-                {
-                    await MainViewModel.CollectionVM.ImportCMPSSFileAsync(files.First());
-                    return;
-                }
-
-                //else check for folder import
+                //check for folder import
                 if (folders.Any())
                 {
                     ImportFolderViewModel folderImportVM = new(manuallyTriggered: true)
                     {
-                        FolderNames = folders.ToList(),
-                        FileNames = files.ToList()
+                        RecursiveFolders = folders,
+                        Files = files
                     };
-                    files = folderImportVM.GetPathsFromFolders();
+                    await folderImportVM.Import();
                 }
-
-                await ImportViewModel.ImportFilesAsync(files.ToList());
+                //If no files or folders, to nothing
+                else if (!files.Any())
+                {
+                    return;
+                }
+                //Check if its a cmpss file, do import if so
+                else if (files.Count == 1 && files.First().EndsWith(Constants.COMPASSFileExtension))
+                {
+                    await MainViewModel.CollectionVM.ImportCMPSSFileAsync(files.First());
+                }
+                //If none of the above, just import the files
+                else
+                {
+                    await ImportViewModel.ImportFilesAsync(files);
+                }
             }
         }
     }

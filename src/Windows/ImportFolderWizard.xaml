@@ -15,7 +15,7 @@
                 <TextBlock Text="{Binding Path=ImportAmount, StringFormat=Files found: {0:#}, FallbackValue=Files found: 0}"
                        TextWrapping="Wrap" VerticalAlignment="Top" Margin="5"/>
 
-                <CheckBox Margin="10" IsChecked="{Binding AutoImportFolders}"
+                <CheckBox Margin="10" IsChecked="{Binding AddAutoImportFolders}"
                       Content="Automatically import future files from these folders"/>
 
                 <Border Background="{StaticResource Layer2}" Grid.Row="2" d:Height="50" MaxHeight="400"

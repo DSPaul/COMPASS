@@ -24,23 +24,37 @@ namespace COMPASS.ViewModels.Import
         private readonly CodexCollection _targetCollection;
         private bool _manuallyTriggered = true;
 
-        public List<string> FolderNames { get; set; } = new();
-        public List<string> FileNames { get; set; } = new();
+        public List<string> RecursiveFolders { get; set; } = new();
+        public List<string> NonRecursiveFolders { get; set; } = new();
+        public List<string> Files { get; set; } = new();
 
 
         private bool _autoImportFolders = true;
-        public bool AutoImportFolders
+        public bool AddAutoImportFolders
         {
             get => _autoImportFolders;
             set => SetProperty(ref _autoImportFolders, value);
         }
 
+        public async Task Import()
+        {
+            //if no files are given to import, don't
+            if (_manuallyTriggered && RecursiveFolders.Count + NonRecursiveFolders.Count + Files.Count == 0)
+            {
+                LetUserSelectFolders();
+            }
+
+            var toImport = GetPathsToImport();
+            toImport = LetUserFilterToImport(toImport);
+            await ImportViewModel.ImportFilesAsync(toImport, _targetCollection);
+        }
+
         /// <summary>
         /// Lets a user select folders using a dialog 
-        /// and stores them in FoldernNames
+        /// and stores them in RecursiveFolders
         /// </summary>
-        /// <returns></returns>
-        public List<string> LetUserSelectFolders()
+        /// <returns>A list of paths </returns>
+        private void LetUserSelectFolders()
         {
             VistaFolderBrowserDialog openFolderDialog = new()
             {
@@ -48,40 +62,47 @@ namespace COMPASS.ViewModels.Import
             };
 
             var dialogResult = openFolderDialog.ShowDialog();
-            if (dialogResult == false) return new();
+            if (dialogResult == false) return;
 
-            return FolderNames = openFolderDialog.SelectedPaths.ToList();
+            RecursiveFolders = openFolderDialog.SelectedPaths.ToList();
         }
 
         /// <summary>
         /// Get a list of all the file paths that are not banned
         /// because of banishent or due to file extension preference
-        /// That are either in FileName or in a folder in FolderNames
+        /// That are either in FileName or in a folder in RecursiveFolders
         /// </summary>
         /// <returns></returns>
-        public List<string> GetPathsFromFolders()
+        private List<string> GetPathsToImport()
         {
-            //find files in folder, including subfolder
-            List<string> toSearch = new(FolderNames); //list with folders to search
-            List<string> toImport = new(FileNames); //list with files to import
-
-            //Find all files in the subfolders
-            while (toSearch.Count > 0)
+            // 1. Unroll the recursive folders and add them to non recursive folders
+            List<string> toSearch = new(RecursiveFolders);
+            while (toSearch.Any())
             {
                 string currentFolder = toSearch[0];
+                NonRecursiveFolders.Add(currentFolder);
                 toSearch.AddRange(Directory.GetDirectories(currentFolder));
-                toImport.AddRange(Directory.GetFiles(currentFolder));
                 toSearch.Remove(currentFolder);
             }
 
-            //Filter out banished paths
-            toImport = toImport.Except(_targetCollection.Info.BanishedPaths).ToList();
+            //2. Build a list with all the files to import
+            List<string> toImport = new(Files);
+            foreach (var folder in NonRecursiveFolders)
+            {
+                toImport.AddRange(Directory.GetFiles(folder));
+            }
 
-            //find how many files of each filetype
-            var toImportGrouped = toImport.GroupBy(Path.GetExtension).ToList();
-            var extensions = toImportGrouped.Select(x => x.Key).ToList();
-            var newExtensions = extensions.Except(_targetCollection.Info.FiletypePreferences.Keys).ToList();
+            //3. Filter out doubles and banished paths
+            return toImport.Distinct().Except(_targetCollection.Info.BanishedPaths).ToList();
+        }
 
+        /// <summary>
+        /// Shows an <see cref="ImportFolderWizard"/> if certain conditions are met
+        /// </summary>
+        /// <param name="toImport"></param>
+        /// <returns></returns>
+        private List<string> LetUserFilterToImport(IList<string> toImport)
+        {
             //Add SubFolders Step
             if (_manuallyTriggered)
             {
@@ -90,9 +111,14 @@ namespace COMPASS.ViewModels.Import
                 ImportAmount = toImport.Count;
 
                 //Build the checkable folder Tree
-                IEnumerable<Folder> folderObjects = FolderNames.Select(f => new Folder(f));
+                IEnumerable<Folder> folderObjects = RecursiveFolders.Select(f => new Folder(f));
                 CheckableFolders = folderObjects.Select(f => new CheckableTreeNode<Folder>(f)).ToList();
             }
+
+            //find how many files of each filetype
+            var toImportGrouped = toImport.GroupBy(Path.GetExtension).ToList();
+            var extensions = toImportGrouped.Select(x => x.Key).ToList();
+            var newExtensions = extensions.Except(_targetCollection.Info.FiletypePreferences.Keys).ToList();
 
             //Add Extionsions Step
             if (_manuallyTriggered || newExtensions.Any())
@@ -139,7 +165,7 @@ namespace COMPASS.ViewModels.Import
         #region Subfolder Select Step
         public int ImportAmount { get; set; }
 
-        public List<CheckableTreeNode<Folder>> CheckableFolders { get; set; }
+        public List<CheckableTreeNode<Folder>> CheckableFolders { get; set; } = new();
         #endregion
 
         #region File Type Selection Step
@@ -178,24 +204,29 @@ namespace COMPASS.ViewModels.Import
 
         public override Task ApplyAll()
         {
-            //update the global file type preferences for the collection
+            //Update the Auto Import Folders
+            if (AddAutoImportFolders)
+            {
+                //go over every folder and set the HasAllSubFolder Flag
+                foreach (var checkableFolder in CheckableFolders.Flatten())
+                {
+                    checkableFolder.Item.HasAllSubFolders = checkableFolder.IsChecked == true;
+                }
+                var checkedFolders = CheckableTreeNode<Folder>.GetCheckedItems(CheckableFolders);
+                foreach (Folder folder in checkedFolders)
+                {
+                    _targetCollection.Info.AutoImportFolders.AddIfMissing(folder);
+                }
+            }
+
+            //update the collections file type preferences
             foreach (var filetypeHelper in UnknownFileTypes)
             {
                 _targetCollection.Info.FiletypePreferences.TryAdd(filetypeHelper.FileExtension, filetypeHelper.ShouldImport);
             }
-            foreach (var filetypeHelper in UnknownFileTypes)
+            foreach (var filetypeHelper in KnownFileTypes)
             {
                 _targetCollection.Info.FiletypePreferences[filetypeHelper.FileExtension] = filetypeHelper.ShouldImport;
-            }
-
-            //Update the Auto Import Folder
-            //TODO exclude subfolders
-            if (AutoImportFolders)
-            {
-                foreach (string dir in FolderNames)
-                {
-                    _targetCollection.Info.AutoImportDirectories.AddIfMissing(dir);
-                }
             }
 
             CloseAction?.Invoke();

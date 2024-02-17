@@ -413,7 +413,7 @@
                                     </Style>
                                 </StackPanel.Style>
                                 <Rectangle Width="2" Fill="{StaticResource Separator}"/>
-                                <TextBlock Text="{Binding Version, FallbackValue=v1.0.0}" FontFamily="Segoe UI" Margin="10,0"
+                                <TextBlock Text="{Binding VersionName, FallbackValue=v1.0.0}" FontFamily="Segoe UI" Margin="10,0"
                                   Typography.Capitals="AllSmallCaps" SnapsToDevicePixels="True" VerticalAlignment="Center"/>
                             </StackPanel>
                         </ControlTemplate>

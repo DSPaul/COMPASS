@@ -195,11 +195,10 @@ namespace COMPASS.ViewModels
             //Start Auto Imports
             ImportFolderViewModel folderImportVM = new(manuallyTriggered: false)
             {
-                FolderNames = CurrentCollection.Info.AutoImportDirectories.ToList(),
+                NonRecursiveFolders = CurrentCollection.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList(),
             };
             await Task.Delay(TimeSpan.FromSeconds(2));
-            var toImport = folderImportVM.GetPathsFromFolders();
-            await ImportViewModel.ImportFilesAsync(toImport);
+            await folderImportVM.Import();
         }
 
         public async Task Refresh()

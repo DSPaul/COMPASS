@@ -173,24 +173,24 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(IOService.ShowInExplorer);
 
         #region Auto import folders
-        public CollectionViewSource AutoImportDirectories
+        public CollectionViewSource AutoImportFoldersViewSource
         {
             get
             {
                 CollectionViewSource temp = new()
                 {
-                    Source = MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories,
+                    Source = MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders,
                     IsLiveSortingRequested = true,
                 };
-                temp.SortDescriptions.Add(new SortDescription());
+                temp.SortDescriptions.Add(new SortDescription("FullPath", ListSortDirection.Ascending));
                 return temp;
             }
         }
 
         //Remove a directory from auto import
-        private RelayCommand<string> _removeAutoImportDirectoryCommand;
-        public RelayCommand<string> RemoveAutoImportDirectoryCommand => _removeAutoImportDirectoryCommand ??= new(dir =>
-            MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories.Remove(dir));
+        private RelayCommand<Folder> _removeAutoImportDirectoryCommand;
+        public RelayCommand<Folder> RemoveAutoImportDirectoryCommand => _removeAutoImportDirectoryCommand ??= new(folder =>
+            MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.Remove(folder));
 
         //Add a directory from auto import
         private RelayCommand<string> _addAutoImportDirectoryCommand;
@@ -200,7 +200,7 @@ namespace COMPASS.ViewModels
         {
             if (!String.IsNullOrWhiteSpace(dir))
             {
-                MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportDirectories.AddIfMissing(dir);
+                MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.AddIfMissing(new(dir));
             }
         }
 

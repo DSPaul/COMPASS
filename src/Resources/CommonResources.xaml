@@ -1213,6 +1213,62 @@
             </StackPanel>
         </Border>
     </HierarchicalDataTemplate>
+
+    <Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid
+                          Width="15"
+                          Height="13"
+                          Background="Transparent">
+                        <Path x:Name="ExpandPath"
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Center" 
+                            Margin="1,1,1,1"
+                            Fill="Gray"
+                            Data="M 4 0 L 8 4 L 4 8 Z"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked"
+                                Value="True">
+                            <Setter Property="Data"
+                                TargetName="ExpandPath"
+                                Value="M 0 4 L 8 4 L 4 8 Z"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ControlTemplate TargetType="{x:Type TreeViewItem}" x:Key="WideTreeViewItem">
+        <StackPanel>
+            <Border Name="Bd"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Padding="{TemplateBinding Padding}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="19" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <ToggleButton x:Name="Expander"
+                      Style="{StaticResource ExpandCollapseToggleStyle}"
+                      IsChecked="{Binding Path=IsExpanded,
+                                  RelativeSource={RelativeSource TemplatedParent}}"
+                      ClickMode="Press"/>
+                    <ContentPresenter x:Name="PART_Header"
+                    Grid.Column="1"
+                        ContentSource="Header"
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                </Grid>
+            </Border>
+            <ItemsPresenter x:Name="ItemsHost" Margin="19,0,0,0" />
+        </StackPanel>
+    </ControlTemplate>
     <!--#endregion-->
 
     <Style TargetType="materialDesign:PackIcon">

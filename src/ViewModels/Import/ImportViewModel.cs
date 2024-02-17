@@ -22,12 +22,9 @@ namespace COMPASS.ViewModels.Import
                     pathsToImport = ChooseFiles();
                     await ImportFilesAsync(pathsToImport, targetCollection);
                     break;
-
                 case ImportSource.Folder:
-                    var importFolderVM = new ImportFolderViewModel(targetCollection, manuallyTriggered: true);
-                    importFolderVM.LetUserSelectFolders();
-                    pathsToImport = importFolderVM.GetPathsFromFolders();
-                    await ImportFilesAsync(pathsToImport, targetCollection);
+                    ImportFolderViewModel importFolderVM = new(targetCollection, manuallyTriggered: true);
+                    await importFolderVM.Import();
                     break;
                 case ImportSource.Manual:
                     ImportManual();

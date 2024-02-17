@@ -41,7 +41,7 @@ namespace COMPASS.ViewModels
             SelectableCodices = CompleteCollection.AllCodices.Select(codex => new SelectableCodex(codex)).ToList();
 
             //prep settings data for selection
-            AutoImportFolders = CompleteCollection.Info.AutoImportDirectories.Select(folder => new SelectableWithPathHelper(folder)).ToList();
+            AutoImportFolders = CompleteCollection.Info.AutoImportFolders.Select(folder => new SelectableWithPathHelper(folder.FullPath)).ToList();
             BanishedPaths = CompleteCollection.Info.BanishedPaths.Select(path => new SelectableWithPathHelper(path)).ToList();
             FileTypePrefs = CompleteCollection.Info.FiletypePreferences
                                                             .Select(x => new ObservableKeyValuePair<string, bool>(x))
@@ -216,10 +216,12 @@ namespace COMPASS.ViewModels
 
         public void ApplySelectedPreferences()
         {
-            CuratedCollection.Info.AutoImportDirectories.Clear();
+            List<string> selectedFolderPaths = AutoImportFolders.Where(x => x.Selected).Select(x => x.Path).ToList();
+            List<Folder> selectedFolders = CuratedCollection.Info.AutoImportFolders.Where(f => selectedFolderPaths.Contains(f.FullPath)).ToList();
+            CuratedCollection.Info.AutoImportFolders.Clear();
             if (SelectAutoImportFolders)
             {
-                CuratedCollection.Info.AutoImportDirectories = new(AutoImportFolders.Where(x => x.Selected).Select(x => x.Path));
+                CuratedCollection.Info.AutoImportFolders = new(selectedFolders);
             }
 
             CuratedCollection.Info.BanishedPaths.Clear();
