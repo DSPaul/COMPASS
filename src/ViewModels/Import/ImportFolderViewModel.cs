@@ -1,7 +1,7 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.Windows;
-using Ookii.Dialogs.Wpf;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -56,15 +56,11 @@ namespace COMPASS.ViewModels.Import
         /// <returns>A list of paths </returns>
         private void LetUserSelectFolders()
         {
-            VistaFolderBrowserDialog openFolderDialog = new()
-            {
-                Multiselect = true,
-            };
+            string[] selectedPath = IOService.PickFolders();
 
-            var dialogResult = openFolderDialog.ShowDialog();
-            if (dialogResult == false) return;
+            if (!selectedPath.Any()) return;
 
-            RecursiveFolders = openFolderDialog.SelectedPaths.ToList();
+            RecursiveFolders = selectedPath.ToList();
         }
 
         /// <summary>
@@ -76,20 +72,29 @@ namespace COMPASS.ViewModels.Import
         private List<string> GetPathsToImport()
         {
             // 1. Unroll the recursive folders and add them to non recursive folders
-            List<string> toSearch = new(RecursiveFolders);
+            Queue<string> toSearch = new(RecursiveFolders);
             while (toSearch.Any())
             {
-                string currentFolder = toSearch[0];
-                NonRecursiveFolders.Add(currentFolder);
-                toSearch.AddRange(Directory.GetDirectories(currentFolder));
-                toSearch.Remove(currentFolder);
+                string currentFolder = toSearch.Dequeue();
+
+                if (Directory.Exists(currentFolder))
+                {
+                    NonRecursiveFolders.Add(currentFolder);
+                    foreach (string dir in Directory.GetDirectories(currentFolder))
+                    {
+                        toSearch.Enqueue(dir);
+                    }
+                }
             }
 
             //2. Build a list with all the files to import
             List<string> toImport = new(Files);
             foreach (var folder in NonRecursiveFolders)
             {
-                toImport.AddRange(Directory.GetFiles(folder));
+                if (Directory.Exists(folder))
+                {
+                    toImport.AddRange(Directory.GetFiles(folder));
+                }
             }
 
             //3. Filter out doubles and banished paths

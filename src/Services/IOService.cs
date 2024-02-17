@@ -225,12 +225,31 @@ namespace COMPASS.Services
             Process.Start(startInfo);
         }
 
+        /// <summary>
+        /// Allow the user to select a single folder using a dialog
+        /// </summary>
+        /// <returns> the selected path, null if canceled/failed / whatever </returns>
         public static string PickFolder()
         {
             VistaFolderBrowserDialog openFolderDialog = new();
             var dialogResult = openFolderDialog.ShowDialog();
             if (dialogResult == false) return null;
             return openFolderDialog.SelectedPath;
+        }
+
+        /// <summary>
+        /// Allow the user to select multiple folders using a dialog
+        /// </summary>
+        /// <returns> Ilist with selected paths, empty list if canceled/failed / whatever </returns>
+        public static string[] PickFolders()
+        {
+            VistaFolderBrowserDialog openFolderDialog = new()
+            {
+                Multiselect = true,
+            };
+            var dialogResult = openFolderDialog.ShowDialog();
+            if (dialogResult == false) return new string[0];
+            return openFolderDialog.SelectedPaths;
         }
 
         public static async Task<CodexCollection> OpenCPMSSFile(string path = null)

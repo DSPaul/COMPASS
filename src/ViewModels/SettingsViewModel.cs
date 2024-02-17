@@ -3,6 +3,7 @@ using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Services;
 using COMPASS.Tools;
+using COMPASS.ViewModels.Import;
 using COMPASS.Windows;
 using Ionic.Zip;
 using Microsoft.Win32;
@@ -194,19 +195,23 @@ namespace COMPASS.ViewModels
 
         //Add a directory from auto import
         private RelayCommand<string> _addAutoImportDirectoryCommand;
-        public RelayCommand<string> AddAutoImportDirectoryCommand => _addAutoImportDirectoryCommand ??= new(AddAutoImportDirectory);
+        public RelayCommand<string> AddAutoImportDirectoryCommand => _addAutoImportDirectoryCommand ??= new(async dir => await AddAutoImportDirectory(dir));
 
-        private void AddAutoImportDirectory(string dir)
+        private async Task AddAutoImportDirectory(string dir)
         {
-            if (!String.IsNullOrWhiteSpace(dir))
+            if (!String.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))
             {
-                MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.AddIfMissing(new(dir));
+                var importFolderVM = new ImportFolderViewModel(true)
+                {
+                    RecursiveFolders = new List<string> { dir },
+                };
+                await importFolderVM.Import();
             }
         }
 
         //Add a directory from auto import
         private ActionCommand _pickAutoImportDirectoryCommand;
-        public ActionCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(() => AddAutoImportDirectory(IOService.PickFolder()));
+        public ActionCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(async () => await AddAutoImportDirectory(IOService.PickFolder()));
 
         //File types to import
         private List<ObservableKeyValuePair<string, bool>> _filetypePreferences;

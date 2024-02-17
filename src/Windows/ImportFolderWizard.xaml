@@ -10,7 +10,7 @@
         Title="Import Folder" Height="400" Width="600" WindowStartupLocation="CenterScreen">
     <controls:Wizard>
         <Grid>
-            <StackPanel Orientation="Vertical" Margin="20" d:Visibility="Visible"
+            <StackPanel Orientation="Vertical" Margin="20,0" d:Visibility="Visible"
                         Visibility="{Binding CurrentStep, ConverterParameter=SubFolders, Converter={StaticResource ShowInStepConverter}}">
                 <TextBlock Text="{Binding Path=ImportAmount, StringFormat=Files found: {0:#}, FallbackValue=Files found: 0}"
                        TextWrapping="Wrap" VerticalAlignment="Top" Margin="5"/>
@@ -39,7 +39,7 @@
                     </TreeView>
                 </Border>
             </StackPanel>
-            <StackPanel Margin="20" d:Visibility="Collapsed"
+            <StackPanel Margin="20,0" d:Visibility="Collapsed"
                         Visibility="{Binding CurrentStep, ConverterParameter=Extensions, Converter={StaticResource ShowInStepConverter}}">
                 <TextBlock Text="Select which file types should be imported."  Margin="5"/>
 

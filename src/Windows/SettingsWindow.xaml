@@ -141,8 +141,8 @@
                             </StackPanel>
                             <TextBlock Text="Folders to Check:"/>
                             <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0">
-                                <ScrollViewer MaxHeight="400">
-                                    <StackPanel Margin="0,10,0,5">
+                                <StackPanel Margin="0,10,0,5">
+                                    <ScrollViewer MaxHeight="250">
                                         <ItemsControl ItemsSource="{Binding AutoImportFoldersViewSource.View}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
@@ -193,27 +193,27 @@
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
-                                        <Grid Margin="10">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="auto"/>
-                                                <ColumnDefinition Width="auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBox x:Name="NewAutoImportFolderTextBox" tools:AP.PlaceHolderText="Path/to/folder/to/add" Margin="0" BorderThickness="0"/>
-                                            <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Plus" Grid.Column="1" Margin="10,0" 
-                                                Background="{StaticResource AccentColorMuted}" Padding="3,2" 
-                                                IsDefault="{Binding ElementName=NewAutoImportFolderTextBox, Path= IsFocused}"
-                                                Command="{Binding AddAutoImportDirectoryCommand}" ToolTip="Add Folder"
-                                                CommandParameter="{Binding ElementName=NewAutoImportFolderTextBox, Path=Text}"/>
-                                            <Label Content="OR" Grid.Column="2" VerticalAlignment="Center" Margin="5"/>
-                                            <Button Style="{StaticResource IconTextButton}" Content="Select a Folder..." 
-                                                    ToolTip="Select Folder To Add" Grid.Column="3" Padding="3" Margin="5,0"
-                                                    Background="{StaticResource AccentColorMuted}" tools:AP.IconKind="FolderPlus"
-                                                    Command="{Binding PickAutoImportDirectoryCommand}"/>
-                                        </Grid>
-                                    </StackPanel>
-                                </ScrollViewer>
+                                    </ScrollViewer>
+                                    <Grid Margin="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="NewAutoImportFolderTextBox" tools:AP.PlaceHolderText="Path/to/folder/to/add" Margin="0" BorderThickness="0"/>
+                                        <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Plus" Grid.Column="1" Margin="10,0" 
+                                            Background="{StaticResource AccentColorMuted}" Padding="3,2" 
+                                            IsDefault="{Binding ElementName=NewAutoImportFolderTextBox, Path= IsFocused}"
+                                            Command="{Binding AddAutoImportDirectoryCommand}" ToolTip="Add Folder"
+                                            CommandParameter="{Binding ElementName=NewAutoImportFolderTextBox, Path=Text}"/>
+                                        <Label Content="OR" Grid.Column="2" VerticalAlignment="Center" Margin="5"/>
+                                        <Button Style="{StaticResource IconTextButton}" Content="Select a Folder..." 
+                                                ToolTip="Select Folder To Add" Grid.Column="3" Padding="3" Margin="5,0"
+                                                Background="{StaticResource AccentColorMuted}" tools:AP.IconKind="FolderPlus"
+                                                Command="{Binding PickAutoImportDirectoryCommand}"/>
+                                    </Grid>
+                                </StackPanel>
                             </Border>
                             <TextBlock Text="File Types to import:"
                                        Visibility="{Binding FiletypePreferences.Count, Converter={StaticResource ToVisibilityConverter}}"/>
