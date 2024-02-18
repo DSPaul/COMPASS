@@ -266,11 +266,11 @@
                                                             </Border>
                                                         </DataTemplate>
                                                     </StackPanel.Resources>
-                                                    <controls:CheckableContainer CheckText="Directories to Auto Import from." 
+                                                    <!--<controls:CheckableContainer CheckText="Directories to Auto Import from." 
                                                                             Visibility="{Binding AutoImportFolders.Count, Converter={StaticResource ToVisibilityConverter}}"
                                                                             IsChecked="{Binding SelectAutoImportFolders}">
                                                         <ItemsControl ItemsSource="{Binding AutoImportFolders}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/>
-                                                    </controls:CheckableContainer>
+                                                    </controls:CheckableContainer>-->
                                                     <controls:CheckableContainer CheckText="Banished files (Files to Exclude from future imports)" 
                                                                             Visibility="{Binding BanishedPaths.Count, Converter={StaticResource ToVisibilityConverter}}"
                                                                             IsChecked="{Binding SelectBanishedFiles}">
