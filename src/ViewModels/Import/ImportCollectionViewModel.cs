@@ -57,7 +57,7 @@ namespace COMPASS.ViewModels.Import
                 RaisePropertyChanged(nameof(IsCollectionNameLegal));
             }
         }
-        public bool IsCollectionNameLegal => CollectionViewModel.IsLegalCollectionName(CollectionName);
+        public bool IsCollectionNameLegal => MainViewModel.CollectionVM.IsLegalCollectionName(CollectionName);
 
         public bool ImportAllTags { get; set; } = true;
         public bool ImportAllCodices { get; set; } = true;

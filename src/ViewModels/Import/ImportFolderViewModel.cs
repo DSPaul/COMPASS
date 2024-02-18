@@ -166,8 +166,8 @@ namespace COMPASS.ViewModels.Import
                 if (dialogResult == false) return new();
             }
 
-            //filer toImport so it only contains files from check subfolders
-            if (CheckableFolders != null)
+            //filer toImport so it only contains files from checked subfolders
+            if (CheckableFolders.Any())
             {
                 List<string> toImportBySubFolders = new();
                 var checkedFolders = CheckableTreeNode<Folder>.GetCheckedItems(CheckableFolders).Flatten();

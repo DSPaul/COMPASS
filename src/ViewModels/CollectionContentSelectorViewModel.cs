@@ -25,7 +25,7 @@ namespace COMPASS.ViewModels
             }
             else
             {
-                CompleteCollection.Load(hidden: true);
+                CompleteCollection.Load(MakeStartupCollection: false);
             }
 
             //Checks which steps need to be included in wizard

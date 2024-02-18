@@ -110,7 +110,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.DoVirtualizationList = value;
-                MVM.CurrentLayout.RaisePreferencesChanged();
+                MVM.CurrentLayout.UpdateDoVirtualization();
             }
         }
 
@@ -120,7 +120,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.DoVirtualizationCard = value;
-                MVM.CurrentLayout.RaisePreferencesChanged();
+                MVM.CurrentLayout.UpdateDoVirtualization();
             }
         }
 
@@ -130,7 +130,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.DoVirtualizationTile = value;
-                MVM.CurrentLayout.RaisePreferencesChanged();
+                MVM.CurrentLayout.UpdateDoVirtualization();
             }
         }
 
@@ -140,7 +140,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.VirtualizationThresholdList = value;
-                MVM.CurrentLayout.RaisePreferencesChanged();
+                MVM.CurrentLayout.UpdateDoVirtualization();
             }
         }
 
@@ -150,7 +150,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.VirtualizationThresholdCard = value;
-                MVM.CurrentLayout.RaisePreferencesChanged();
+                MVM.CurrentLayout.UpdateDoVirtualization();
             }
         }
 
@@ -160,7 +160,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.VirtualizationThresholdTile = value;
-                MVM.CurrentLayout.RaisePreferencesChanged();
+                MVM.CurrentLayout.UpdateDoVirtualization();
             }
         }
         #endregion

@@ -21,6 +21,13 @@ namespace COMPASS.ViewModels
         public CollectionViewModel(MainViewModel mainViewModel)
         {
             MainVM = mainViewModel;
+
+            //Get all collections by folder name
+            AllCodexCollections = new(Directory
+                .GetDirectories(CodexCollection.CollectionsPath)
+                .Select(Path.GetFileName)
+                .Where(IsLegalCollectionName)
+                .Select(dir => new CodexCollection(dir)));
         }
 
         #region Properties
@@ -32,7 +39,7 @@ namespace COMPASS.ViewModels
             get => _currentCollection;
             set
             {
-                if (value == null)
+                if (value == null || value == _currentCollection)
                 {
                     return;
                 }
@@ -46,7 +53,7 @@ namespace COMPASS.ViewModels
         public ObservableCollection<CodexCollection> AllCodexCollections
         {
             get => _allCodexCollections;
-            set => SetProperty(ref _allCodexCollections, value);
+            init => SetProperty(ref _allCodexCollections, value);
         }
 
         //Needed for binding to context menu "Move to Collection"
@@ -91,46 +98,24 @@ namespace COMPASS.ViewModels
         {
             Directory.CreateDirectory(CodexCollection.CollectionsPath);
 
-            //Get all collections by folder name
-            AllCodexCollections = new(Directory
-                .GetDirectories(CodexCollection.CollectionsPath)
-                .Select(Path.GetFileName)
-                .Where(IsLegalCollectionName)
-                .Select(dir => new CodexCollection(dir)));
-
             while (CurrentCollection is null)
             {
-                //in case of first boot or all saves are corrupted, create default collection
+                //in case of first boot, or if the existing ones couldn't load, create default collection
                 if (AllCodexCollections.Count == 0)
                 {
-                    // if default collection already exists but is corrupted
-                    // keep generating new collection names until a new one is found
-                    bool created = false;
-                    int attempt = 0;
                     string name = "Default Collection";
-                    while (!created && attempt < 10) //only try 10 times to prevent infinite loop
-                    {
-                        if (!Path.Exists(Path.Combine(CodexCollection.CollectionsPath, name)))
-                        {
-                            CreateAndLoadCollection(name);
-                            created = true;
-                        }
-                        else
-                        {
-                            name = $"Default Collection {attempt}";
-                            attempt++;
-                        }
-                    }
+                    CreateAndLoadCollection(name);
                 }
 
                 //in case startup collection no longer exists, pick first one that does exists
-                else if (AllCodexCollections.All(collection => collection.DirectoryName != Settings.Default.StartupCollection))
+                else if (!AllCodexCollections.Any(collection => collection.DirectoryName == Settings.Default.StartupCollection))
                 {
                     Logger.Warn($"The collection {Settings.Default.StartupCollection} could not be found.", new DirectoryNotFoundException());
-                    CurrentCollection = AllCodexCollections.First();
-                    if (CurrentCollection is null)
+                    var firstCollection = AllCodexCollections.First();
+                    bool loaded = TryLoadCollection(firstCollection);
+                    if (!loaded)
                     {
-                        // if it is null -> loading failed -> remove it from the pool and try again
+                        // if loading failed -> remove it from the pool and try again
                         AllCodexCollections.RemoveAt(0);
                     }
                 }
@@ -138,29 +123,35 @@ namespace COMPASS.ViewModels
                 //otherwise, open startup collection
                 else
                 {
-                    CurrentCollection = AllCodexCollections.First(collection => collection.DirectoryName == Settings.Default.StartupCollection);
-                    if (CurrentCollection is null)
+                    var startupCollection = AllCodexCollections.First(collection => collection.DirectoryName == Settings.Default.StartupCollection);
+                    bool loaded = TryLoadCollection(startupCollection);
+                    if (!loaded)
                     {
-                        // if it is null -> loading failed -> remove it from the pool and try again
-                        AllCodexCollections.Remove(AllCodexCollections.First(collection => collection.DirectoryName == Settings.Default.StartupCollection));
+                        // if loading failed -> remove it from the pool and try again
+                        AllCodexCollections.Remove(startupCollection);
                     }
                 }
             }
         }
 
-        public static bool IsLegalCollectionName(string dirName)
+        public bool IsLegalCollectionName(string dirName)
         {
             bool legal =
                 dirName.IndexOfAny(Path.GetInvalidPathChars()) < 0
                 && dirName.IndexOfAny(Path.GetInvalidFileNameChars()) < 0
-                && MainViewModel.CollectionVM.AllCodexCollections.All(collection => collection.DirectoryName != dirName)
+                && AllCodexCollections.All(collection => collection.DirectoryName != dirName)
                 && !String.IsNullOrWhiteSpace(dirName)
                 && dirName.Length < 100
                 && (dirName.Length < 2 || dirName[..2] != "__"); //reserved for protected folders
             return legal;
         }
 
-        public async Task LoadCollection(CodexCollection collection)
+        /// <summary>
+        /// Tries to load a collection and will set <see cref="CurrentCollection"/> if succesfull
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <returns>A boolean indiciating whether or not the load was a succes </returns>
+        private bool TryLoadCollection(CodexCollection collection)
         {
             int success = collection.Load();
             if (success < 0)
@@ -173,21 +164,11 @@ namespace COMPASS.ViewModels
                     _ => ""
                 };
                 _ = MessageBox.Show($"Could not load {collection.DirectoryName}. \n" + msg, "Failed to Load Collection", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                return false;
             }
 
-            if (_currentCollection != collection)
-            {
-                _currentCollection = collection;
-                RaisePropertyChanged(nameof(CurrentCollection));
-            }
-            MainVM?.CurrentLayout?.RaisePreferencesChanged();
-
-            //create new viewmodels
-            FilterVM = new(collection.AllCodices);
-            TagsVM = new(this);
-
-            await AutoImport();
+            CurrentCollection = collection;
+            return true;
         }
 
         public async Task AutoImport()
@@ -204,8 +185,24 @@ namespace COMPASS.ViewModels
         public async Task Refresh()
         {
             CurrentCollection.Save();
-            await LoadCollection(CurrentCollection);
+            bool loaded = TryLoadCollection(CurrentCollection);
+
+            if (!loaded)
+            {
+                //something must have gone wrong during save right before
+                //highly unlikely, look at this later
+                //TODO
+                return;
+            }
+
+            MainVM?.CurrentLayout?.UpdateDoVirtualization();
+
+            FilterVM = new(CurrentCollection.AllCodices);
+            TagsVM = new(CurrentCollection, FilterVM);
+
             FilterVM.ReFilter(true);
+
+            await AutoImport();
         }
 
         private ActionCommand _toggleCreateCollectionCommand;
@@ -223,9 +220,16 @@ namespace COMPASS.ViewModels
         public CodexCollection CreateAndLoadCollection(string dirName)
         {
             var newCollection = CreateCollection(dirName);
-            CurrentCollection = newCollection;
-            CreateCollectionVisibility = false;
-            return newCollection;
+
+            bool success = TryLoadCollection(newCollection);
+
+            if (success)
+            {
+                CurrentCollection = newCollection;
+                CreateCollectionVisibility = false;
+                return newCollection;
+            }
+            return null;
         }
 
         public CodexCollection CreateCollection(string dirName)
@@ -365,7 +369,7 @@ namespace COMPASS.ViewModels
 
             CodexCollection targetCollection = new(collectionToMergeInto);
 
-            targetCollection.Load(hidden: true);
+            targetCollection.Load(MakeStartupCollection: false);
             await targetCollection.MergeWith(CurrentCollection);
 
             message = $"Successfully merged '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'";

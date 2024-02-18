@@ -419,7 +419,6 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-
             </Grid>
 
             <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}"/>

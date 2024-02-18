@@ -204,8 +204,7 @@ namespace COMPASS.Windows
             }
         }
 
-        private async void CollectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            => await MainViewModel.CollectionVM.LoadCollection(MainViewModel.CollectionVM.CurrentCollection);
+        private async void CollectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) => await MainViewModel.CollectionVM.Refresh();
     }
 }
 

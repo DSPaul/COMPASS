@@ -34,7 +34,7 @@ namespace COMPASS.ViewModels.Layouts
             return newLayout;
         }
 
-        public void RaisePreferencesChanged() => RaisePropertyChanged(nameof(DoVirtualization));
+        public void UpdateDoVirtualization() => RaisePropertyChanged(nameof(DoVirtualization));
 
         #region Properties
 

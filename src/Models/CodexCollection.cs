@@ -41,7 +41,13 @@ namespace COMPASS.Models
 
         public List<Tag> AllTags { get; private set; } = new();
         public List<Tag> RootTags { get; set; }
-        public ObservableCollection<Codex> AllCodices { get; private set; } = new();
+
+        private ObservableCollection<Codex> _allCodices = new();
+        public ObservableCollection<Codex> AllCodices
+        {
+            get => _allCodices;
+            private set => SetProperty(ref _allCodices, value);
+        }
 
         public CollectionInfo Info { get; private set; } = new();
 
@@ -49,11 +55,16 @@ namespace COMPASS.Models
 
         #region Load Data From File
 
+        //To prevent saving a collection that hasn't loaded yet, which would wipe all your data
+        private bool _loadedTags = false;
+        private bool _loadedCodices = false;
+        private bool _loadedInfo = false;
+
         /// <summary>
-        /// Loads the collection and unless hidden, sets it as the new default to load on startup
+        /// Loads the collection and unless MakeStartupCollection, sets it as the new default to load on startup
         /// </summary>
         /// <returns>int that gives status: 0 for success, -1 for failed tags, -2 for failed codices, -4 for failed info, or combination of those</returns>
-        public int Load(bool hidden = false)
+        public int Load(bool MakeStartupCollection = true)
         {
             int result = 0;
             bool loadedTags = LoadTags();
@@ -62,7 +73,7 @@ namespace COMPASS.Models
             if (!loadedTags) { result -= 1; }
             if (!loadedCodices) { result -= 2; }
             if (!loadedInfo) { result -= 4; }
-            if (!hidden)
+            if (MakeStartupCollection)
             {
                 Properties.Settings.Default.StartupCollection = DirectoryName;
                 Logger.Info($"Loaded {DirectoryName}");
@@ -78,7 +89,7 @@ namespace COMPASS.Models
                 //loading root tags          
                 using (var reader = new StreamReader(TagsDataFilePath))
                 {
-                    System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Tag>));
+                    XmlSerializer serializer = new(typeof(List<Tag>));
                     try
                     {
                         RootTags = serializer.Deserialize(reader) as List<Tag>;
@@ -101,6 +112,7 @@ namespace COMPASS.Models
             {
                 RootTags = new();
             }
+            _loadedTags = true;
             return true;
         }
 
@@ -111,7 +123,7 @@ namespace COMPASS.Models
             {
                 using (var reader = new StreamReader(CodicesDataFilePath))
                 {
-                    System.Xml.Serialization.XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
+                    XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
                     try
                     {
                         AllCodices = serializer.Deserialize(reader) as ObservableCollection<Codex>;
@@ -139,6 +151,7 @@ namespace COMPASS.Models
             {
                 AllCodices = new();
             }
+            _loadedCodices = true;
             return true;
         }
 
@@ -178,6 +191,7 @@ namespace COMPASS.Models
             {
                 Info = new();
             }
+            _loadedInfo = true;
             return true;
         }
         #endregion
@@ -198,29 +212,45 @@ namespace COMPASS.Models
         {
             RaisePropertyChanged(nameof(AllCodices));
             Directory.CreateDirectory(UserFilesPath);
-            SaveTags();
-            SaveCodices();
-            SaveInfo();
+            bool savedTags = SaveTags();
+            bool savedCodices = SaveCodices();
+            bool savedInfo = SaveInfo();
             Properties.Settings.Default.Save();
-            Logger.Info($"Saved {DirectoryName}");
+
+            if (savedCodices || savedTags || savedInfo)
+            {
+                Logger.Info($"Saved {DirectoryName}");
+            }
         }
 
-        public void SaveTags()
+        public bool SaveTags()
         {
+            if (!_loadedTags)
+            {
+                //Should always load a collection before it can be saved
+                return false;
+            }
             try
             {
                 using var writer = XmlWriter.Create(TagsDataFilePath, SettingsViewModel.XmlWriteSettings);
-                System.Xml.Serialization.XmlSerializer serializer = new(typeof(List<Tag>));
+                XmlSerializer serializer = new(typeof(List<Tag>));
                 serializer.Serialize(writer, RootTags);
             }
             catch (Exception ex)
             {
                 Logger.Error($"Failed to Save Tags to {TagsDataFilePath}", ex);
+                return false;
             }
+            return true;
         }
 
-        public void SaveCodices()
+        public bool SaveCodices()
         {
+            if (!_loadedCodices)
+            {
+                //Should always load a collection before it can be saved
+                return false;
+            }
             //Copy id's of tags into list for serialisation
             foreach (Codex codex in AllCodices)
             {
@@ -230,28 +260,37 @@ namespace COMPASS.Models
             try
             {
                 using var writer = XmlWriter.Create(CodicesDataFilePath, SettingsViewModel.XmlWriteSettings);
-                System.Xml.Serialization.XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
+                XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
                 serializer.Serialize(writer, AllCodices);
             }
             catch (Exception ex)
             {
                 Logger.Error($"Failed to Save Codex Info to {CodicesDataFilePath}", ex);
+                return false;
             }
+            return true;
         }
 
-        public void SaveInfo()
+        public bool SaveInfo()
         {
+            if (!_loadedInfo)
+            {
+                //Should always load a collection before it can be saved
+                return false;
+            }
             Info.PrepareSave();
             try
             {
                 using var writer = XmlWriter.Create(CollectionInfoFilePath, SettingsViewModel.XmlWriteSettings);
-                System.Xml.Serialization.XmlSerializer serializer = new(typeof(CollectionInfo));
+                XmlSerializer serializer = new(typeof(CollectionInfo));
                 serializer.Serialize(writer, Info);
             }
             catch (Exception ex)
             {
                 Logger.Error($"Failed to Save Tags to {TagsDataFilePath}", ex);
+                return false;
             }
+            return true;
         }
 
         #endregion    

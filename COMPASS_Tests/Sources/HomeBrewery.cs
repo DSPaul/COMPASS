@@ -23,7 +23,8 @@ namespace COMPASS_Tests.Services
             }
             else
             {
-                MainViewModel.CollectionVM.LoadCollection(new(TEST_COLLECTION)).Wait();
+                MainViewModel.CollectionVM.CurrentCollection = new(TEST_COLLECTION);
+                MainViewModel.CollectionVM.Refresh().Wait();
             }
         }
 
