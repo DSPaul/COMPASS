@@ -14,7 +14,7 @@ namespace COMPASS.ViewModels
         public CodexBulkEditViewModel(List<Codex> toEdit)
         {
             _editedCodices = toEdit;
-            TempCodex = new();
+            _tempCodex = new();
 
             //set common metadata
             _commonAuthors = _editedCodices.Select(f => f.Authors.ToList()).Aggregate((xs, ys) => xs.Intersect(ys).ToList());
@@ -34,7 +34,7 @@ namespace COMPASS.ViewModels
 
         #region Properties
 
-        private ObservableCollection<TreeViewNode> _treeViewSource;
+        private ObservableCollection<TreeViewNode>? _treeViewSource;
         public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
 
@@ -65,30 +65,33 @@ namespace COMPASS.ViewModels
 
         #region Methods and Commands
 
-        private RelayCommand<Tag> _plusCheckCommand;
+        private RelayCommand<Tag>? _plusCheckCommand;
         public RelayCommand<Tag> PlusCheckCommand => _plusCheckCommand ??= new(AddTag);
 
-        public void AddTag(Tag t)
+        public void AddTag(Tag? t)
         {
+            if (t is null) return;
             if (!TagsToAdd.Contains(t)) TagsToAdd.Add(t);
             else TagsToAdd.Remove(t);
             TagsToRemove.Remove(t);
         }
 
-        private RelayCommand<Tag> _minCheckCommand;
+        private RelayCommand<Tag>? _minCheckCommand;
         public RelayCommand<Tag> MinCheckCommand => _minCheckCommand ??= new(RemoveTag);
 
-        public void RemoveTag(Tag t)
+        public void RemoveTag(Tag? t)
         {
+            if (t is null) return;
             if (!TagsToRemove.Contains(t)) TagsToRemove.Add(t);
             else TagsToRemove.Remove(t);
             TagsToAdd.Remove(t);
         }
 
-        private RelayCommand<Tag> _removeFromItemsControlCommand;
+        private RelayCommand<Tag>? _removeFromItemsControlCommand;
         public RelayCommand<Tag> RemoveFromItemsControlCommand => _removeFromItemsControlCommand ??= new(RemoveTagFromItemsControl);
-        private void RemoveTagFromItemsControl(Tag t)
+        private void RemoveTagFromItemsControl(Tag? t)
         {
+            if (t is null) return;
             TagsToAdd.Remove(t);
             TagsToRemove.Remove(t);
             foreach (var node in TreeViewSource.Flatten())
@@ -102,9 +105,9 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public Action CloseAction { get; set; }
+        public Action CloseAction { get; set; } = () => { };
 
-        private ActionCommand _okCommand;
+        private ActionCommand? _okCommand;
         public ActionCommand OKCommand => _okCommand ??= new(OKBtn);
         public void OKBtn()
         {
@@ -181,7 +184,7 @@ namespace COMPASS.ViewModels
             CloseAction();
         }
 
-        private ActionCommand _cancelCommand;
+        private ActionCommand? _cancelCommand;
         public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel() => CloseAction();
 

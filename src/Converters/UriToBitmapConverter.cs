@@ -7,7 +7,7 @@ namespace COMPASS.Converters
 {
     class UriToBitmapConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object getFullRes, System.Globalization.CultureInfo culture)
+        public object? Convert(object value, Type targetType, object getFullRes, System.Globalization.CultureInfo culture)
         {
             if (value is not string path) return null;
             if (!File.Exists(path)) return null;

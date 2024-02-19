@@ -19,7 +19,7 @@ namespace COMPASS.Services
         }
 
         //Get an initialised webdriver with right browser
-        private static WebDriver _webDriver;
+        private static WebDriver? _webDriver;
         public static async Task<WebDriver> GetWebDriver()
         {
             DriverService driverService = _browser switch

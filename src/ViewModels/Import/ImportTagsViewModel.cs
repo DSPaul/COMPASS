@@ -17,7 +17,7 @@ namespace COMPASS.ViewModels.Import
 
         public TagsSelectorViewModel TagsSelectorVM { get; set; }
 
-        private ActionCommand _importTagsCommand;
+        private ActionCommand? _importTagsCommand;
         public ActionCommand ImportTagsCommand => _importTagsCommand ??= new(ImportTags);
         public void ImportTags()
         {

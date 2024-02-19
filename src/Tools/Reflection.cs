@@ -6,7 +6,7 @@ namespace COMPASS.Tools
 {
     public static class Reflection
     {
-        public static string Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString(3);
+        public static string? Version => Assembly.GetExecutingAssembly().GetName().Version?.ToString(3);
 
         public static List<string> GetObsoleteProperties(Type type)
         {
@@ -16,8 +16,7 @@ namespace COMPASS.Tools
             PropertyInfo[] properties = type.GetProperties();
             foreach (PropertyInfo property in properties)
             {
-                ObsoleteAttribute obsoleteAttribute = Attribute.GetCustomAttribute(property, typeof(ObsoleteAttribute)) as ObsoleteAttribute;
-                if (obsoleteAttribute != null)
+                if (Attribute.GetCustomAttribute(property, typeof(ObsoleteAttribute)) is ObsoleteAttribute)
                 {
                     obsoleteProperties.Add(property.Name);
                 }

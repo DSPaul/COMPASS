@@ -13,7 +13,7 @@ namespace COMPASS.Models
 
         public Folder(string path)
         {
-            FullPath = path;
+            _fullPath = path;
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace COMPASS.Models
             set => SetProperty(ref _fullPath, value);
         }
 
-        private ObservableCollection<Folder> _subFolders;
+        private ObservableCollection<Folder>? _subFolders;
         public ObservableCollection<Folder> SubFolders
         {
             get
@@ -74,7 +74,7 @@ namespace COMPASS.Models
             }
             else
             {
-                foreach (Folder folder in _subFolders)
+                foreach (Folder folder in _subFolders!)
                 {
                     folder.AddNewSubFolders();
                 }

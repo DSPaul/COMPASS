@@ -44,7 +44,7 @@ namespace COMPASS.Resources.Controls
             };
             base.OnInitialized(e);
         }
-        public ObservableCollection<ColumnInfo> ColumnInfo
+        public ObservableCollection<ColumnInfo>? ColumnInfo
         {
             get => (ObservableCollection<ColumnInfo>)GetValue(ColumnInfoProperty);
             set => SetValue(ColumnInfoProperty, value);

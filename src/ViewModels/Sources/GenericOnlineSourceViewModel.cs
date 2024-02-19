@@ -24,8 +24,8 @@ namespace COMPASS.ViewModels.Sources
 
             // Scrape metadata
             Debug.Assert(IsValidSource(codex), "Codex without URL was used in Generic URL source");
-            HtmlDocument doc = await IOService.ScrapeSite(codex.SourceURL);
-            HtmlNode src = doc?.DocumentNode;
+            HtmlDocument? doc = await IOService.ScrapeSite(codex.SourceURL);
+            HtmlNode? src = doc?.DocumentNode;
 
             if (src is null)
             {
@@ -37,7 +37,7 @@ namespace COMPASS.ViewModels.Sources
             codex.Title = src.SelectSingleNode("//meta[@property='og:title']")?.GetAttributeValue("content", null) ?? codex.Title;
 
             // Authors
-            string author = src.SelectSingleNode("//meta[@property='og:author']")?.GetAttributeValue("content", String.Empty);
+            string? author = src.SelectSingleNode("//meta[@property='og:author']")?.GetAttributeValue("content", String.Empty);
             if (!String.IsNullOrEmpty(author))
             {
                 codex.Authors = new() { author };
@@ -51,7 +51,7 @@ namespace COMPASS.ViewModels.Sources
             {
                 if (codex.SourceURL.Contains(folderTagPair.Folder))
                 {
-                    codex.Tags.AddIfMissing(folderTagPair.Tag);
+                    codex.Tags.AddIfMissing(folderTagPair.Tag!);
                 }
             }
             return codex;

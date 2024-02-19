@@ -32,8 +32,8 @@ namespace COMPASS.ViewModels.Sources
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument doc = await IOService.ScrapeSite(codex.SourceURL);
-                HtmlNode src = doc?.DocumentNode;
+                HtmlDocument? doc = await IOService.ScrapeSite(codex.SourceURL);
+                HtmlNode? src = doc?.DocumentNode;
                 if (src is null) return false;
 
                 string imgURL = src.SelectSingleNode("//meta[@property='og:image']").GetAttributeValue("content", String.Empty);

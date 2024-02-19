@@ -1,6 +1,6 @@
-﻿using System;
-using OpenCvSharp;
+﻿using OpenCvSharp;
 using OpenCvSharp.Extensions;
+using System;
 using ZXing.Common;
 
 namespace COMPASS.Tools.BarcodeReader
@@ -15,7 +15,7 @@ namespace COMPASS.Tools.BarcodeReader
             Cv2.WarpAffine(source, destination, rotationMat, source.Size());
         }
 
-        public string DetectBarcode(Mat mat, double rotation = 0)
+        public string? DetectBarcode(Mat mat, double rotation = 0)
         {
             // Multiple passes here to test against different thresholds
             var thresholds = new[]
@@ -25,7 +25,7 @@ namespace COMPASS.Tools.BarcodeReader
 
             var originalFrame = mat.Clone();
 
-            string barcodeText = null;
+            string? barcodeText = null;
             foreach (var t in thresholds)
             {
                 barcodeText = DetectBarcodeInternal(mat, t, rotation);
@@ -41,7 +41,7 @@ namespace COMPASS.Tools.BarcodeReader
             return barcodeText;
         }
 
-        private string DetectBarcodeInternal(Mat mat, double threshold, double rotation = 0)
+        private string? DetectBarcodeInternal(Mat mat, double threshold, double rotation = 0)
         {
             var image = mat;
 

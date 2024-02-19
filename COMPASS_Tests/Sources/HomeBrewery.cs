@@ -38,7 +38,7 @@ namespace COMPASS_Tests.Services
 
             var vm = SourceViewModel.GetSourceVM(MetaDataSource.Homebrewery);
 
-            Codex response = await vm.GetMetaData(codex);
+            Codex response = await vm!.GetMetaData(codex);
 
             Assert.IsNotNull(response);
             Assert.IsFalse(String.IsNullOrEmpty(response.Title));
@@ -70,7 +70,7 @@ namespace COMPASS_Tests.Services
             }
 
             //Fetch the cover
-            bool success = await vm.FetchCover(codex);
+            bool success = await vm!.FetchCover(codex);
 
             //see it it worked
             Assert.IsTrue(success);

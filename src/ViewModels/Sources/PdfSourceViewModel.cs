@@ -24,7 +24,7 @@ namespace COMPASS.ViewModels.Sources
             codex = new Codex(codex);
 
             Debug.Assert(IsValidSource(codex), "Codex without pdf found in pdf source");
-            PdfDocument pdfDoc = null;
+            PdfDocument? pdfDoc = null;
             try
             {
                 var info = await Task.Run(() =>
@@ -39,7 +39,7 @@ namespace COMPASS.ViewModels.Sources
                 {
                     codex.Authors = new() { info.GetAuthor() };
                 }
-                codex.PageCount = pdfDoc.GetNumberOfPages();
+                codex.PageCount = pdfDoc!.GetNumberOfPages();
 
                 // If it already has an ISBN, no need to check again
                 if (!String.IsNullOrEmpty(codex.ISBN)) return codex;
@@ -113,7 +113,7 @@ namespace COMPASS.ViewModels.Sources
         };
 
         //Lazy load read Settings and make it static because takes a lot of time to construct according to profiler
-        private static MagickReadSettings _readSettings;
+        private static MagickReadSettings? _readSettings;
         private static MagickReadSettings ReadSettings => _readSettings ??= new()
         {
             Density = new Density(100),

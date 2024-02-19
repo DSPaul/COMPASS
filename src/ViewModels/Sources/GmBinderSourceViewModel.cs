@@ -26,10 +26,10 @@ namespace COMPASS.ViewModels.Sources
 
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading metadata from GM Binder"));
             Debug.Assert(IsValidSource(codex), "Invalid Codex was used in GM Binder source");
-            HtmlDocument doc = await IOService.ScrapeSite(codex.SourceURL);
-            HtmlNode src = doc?.DocumentNode;
+            HtmlDocument? doc = await IOService.ScrapeSite(codex.SourceURL);
+            HtmlNode? src = doc?.DocumentNode;
 
-            if (src is null)
+            if (doc is null || src is null)
             {
                 ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, $"Could not reach {codex.SourceURL}"));
                 return codex;
@@ -39,8 +39,8 @@ namespace COMPASS.ViewModels.Sources
             codex.Publisher = "GM Binder";
 
             //get pagecount
-            HtmlNode previewDiv = doc.GetElementbyId("preview");
-            IEnumerable<HtmlNode> pages = previewDiv.ChildNodes.Where(node => node.Id.Contains('p'));
+            HtmlNode? previewDiv = doc.GetElementbyId("preview");
+            IEnumerable<HtmlNode> pages = previewDiv?.ChildNodes.Where(node => node.Id.Contains('p')) ?? Enumerable.Empty<HtmlNode>();
             codex.PageCount = pages.Count();
 
             return codex;

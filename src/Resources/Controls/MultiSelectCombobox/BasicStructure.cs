@@ -36,10 +36,10 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
             SuggestionElement = GetTemplateChild("lstSuggestion") as ListBox;
         }
 
-        private TextBlock PlaceholderElement { get; set; }
+        private TextBlock? PlaceholderElement { get; set; }
 
-        private RichTextBox _richTextBoxElement;
-        private RichTextBox RichTextBoxElement
+        private RichTextBox? _richTextBoxElement;
+        private RichTextBox? RichTextBoxElement
         {
             get => _richTextBoxElement;
             set
@@ -82,10 +82,10 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
             }
         }
 
-        private Popup PopupElement { get; set; }
+        private Popup? PopupElement { get; set; }
 
-        private ListBox _suggestionElement;
-        private ListBox SuggestionElement
+        private ListBox? _suggestionElement;
+        private ListBox? SuggestionElement
         {
             get => _suggestionElement;
             set
@@ -98,11 +98,11 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
                 }
 
                 _suggestionElement = value;
-                _suggestionElement.DisplayMemberPath = DisplayMemberPath;
-                _suggestionElement.ItemsSource = ItemSource;
 
                 if (_suggestionElement != null)
                 {
+                    _suggestionElement.DisplayMemberPath = DisplayMemberPath;
+                    _suggestionElement.ItemsSource = ItemSource;
                     _suggestionElement.PreviewMouseUp += SuggestionDropdown_PreviewMouseUp;
                     _suggestionElement.PreviewKeyUp += SuggestionElement_PreviewKeyUp;
                     _suggestionElement.PreviewMouseDown += SuggestionDropdown_PreviewMouseDown;
@@ -205,9 +205,9 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
                     return;
                 }
 
-                foreach (var textBlock in multiChoiceControl.RichTextBoxElement?.GetParagraph()?.Inlines?.Select(i => i.GetTextBlock()).Where(i => i != null))
+                foreach (TextBlock? textBlock in multiChoiceControl.RichTextBoxElement?.GetParagraph()?.Inlines?.Select(i => i.GetTextBlock()).Where(i => i is not null) ?? Enumerable.Empty<TextBlock>())
                 {
-                    textBlock.Unloaded -= multiChoiceControl.Tb_Unloaded;
+                    textBlock!.Unloaded -= multiChoiceControl.Tb_Unloaded;
                 }
 
                 //Clear everything in RichTextBox
@@ -233,7 +233,7 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
         /// <param name="e">arguments</param>
         private static void ItemSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (!(d is MultiSelectCombobox multiChoiceControl))
+            if (d is not MultiSelectCombobox multiChoiceControl)
             {
                 return;
             }
@@ -253,7 +253,7 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
         /// <param name="e"></param>
         private static void DisplayMemberPathChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (!(d is MultiSelectCombobox msc)
+            if (d is not MultiSelectCombobox msc
                 || msc.SuggestionElement == null)
             {
                 return;

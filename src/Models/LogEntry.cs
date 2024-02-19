@@ -4,8 +4,8 @@
     {
         public LogEntry(MsgType msgType, string message)
         {
-            Type = msgType;
-            Msg = message;
+            _type = msgType;
+            _msg = message;
         }
 
         private MsgType _type;

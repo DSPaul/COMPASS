@@ -70,7 +70,7 @@ namespace COMPASS.ViewModels.Import
             set => SetProperty(ref _importError, value);
         }
 
-        private ActionCommand _submitUrlCommand;
+        private ActionCommand? _submitUrlCommand;
         public ActionCommand SubmitURLCommand => _submitUrlCommand ??= new(async () => await SubmitURL());
         public async Task SubmitURL()
         {
@@ -110,7 +110,7 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        private ActionCommand _openBarcodeScannerCommand;
+        private ActionCommand? _openBarcodeScannerCommand;
         public ActionCommand OpenBarcodeScannerCommand => _openBarcodeScannerCommand ??= new(OpenBarcodeScanner);
         private void OpenBarcodeScanner()
         {

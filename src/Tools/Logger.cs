@@ -13,7 +13,7 @@ namespace COMPASS.Tools
         public static void Init() => FileLog = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         // Log To file
-        public static log4net.ILog FileLog;
+        public static log4net.ILog? FileLog { get; private set; }
 
         // Log to Log Tab
         public static ObservableCollection<LogEntry> ActivityLog { get; } = new ObservableCollection<LogEntry>();
@@ -24,24 +24,24 @@ namespace COMPASS.Tools
         public static void Warn(string message)
         {
             Application.Current.Dispatcher.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Warning, message)));
-            FileLog.Warn(message);
+            FileLog?.Warn(message);
         }
 
         public static void Warn(string message, Exception ex)
         {
             Application.Current.Dispatcher.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Warning, message)));
-            FileLog.Warn(message, ex);
+            FileLog?.Warn(message, ex);
         }
 
         public static void Error(string message, Exception ex)
         {
             Application.Current.Dispatcher.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Error, message)));
-            FileLog.Error(message, ex);
+            FileLog?.Error(message, ex);
         }
 
         public static void LogUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            FileLog.Fatal(e.Exception.ToString(), e.Exception);
+            FileLog?.Fatal(e.Exception.ToString(), e.Exception);
             //prompt user to submit logs and open an issue
             string message = $"Its seems COMPASS has run into a critical error ({e.Exception.Message}).\n" +
                 $"You can help improve COMPASS by opening an issue on {Constants.RepoURL} with the error message. \n" +

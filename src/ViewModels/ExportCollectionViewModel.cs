@@ -28,7 +28,7 @@ namespace COMPASS.ViewModels
 
         public CollectionContentSelectorViewModel ContentSelectorVM { get; set; }
 
-        public CodexCollection CollectionToExport { get; set; } = null;
+        public CodexCollection CollectionToExport { get; set; }
 
         //OVERVIEW STEP
 
@@ -79,7 +79,7 @@ namespace COMPASS.ViewModels
             //Apply the selection
             await ContentSelectorVM.ApplyAll();
 
-            CloseAction.Invoke();
+            CloseAction?.Invoke();
 
             await ExportToFile();
         }
@@ -156,7 +156,7 @@ namespace COMPASS.ViewModels
             {
                 Logger.Error("Export failed", ex);
                 progressVM.Clear();
-                CloseAction();
+                CloseAction?.Invoke();
             }
         }
 

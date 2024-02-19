@@ -25,7 +25,7 @@ namespace COMPASS.ViewModels
         private readonly FilterViewModel _filterVM;
 
         //Tag for Context Menu
-        public Tag ContextTag { get; set; }
+        public Tag? ContextTag { get; set; }
 
         //Selected tab from tabControl with options to add tags
         private int _selectedTab = 0;
@@ -60,7 +60,7 @@ namespace COMPASS.ViewModels
         }
 
         //TreeViewSource with hierarchy
-        private ObservableCollection<TreeViewNode> _treeViewSource;
+        private ObservableCollection<TreeViewNode> _treeViewSource = new();
         public ObservableCollection<TreeViewNode> TreeViewSource
         {
             get => _treeViewSource;
@@ -72,27 +72,28 @@ namespace COMPASS.ViewModels
             List<TreeViewNode> newTreeViewSource = _codexCollection.RootTags.Select(tag => new TreeViewNode(tag)).ToList();
 
             // transfer expanded property
-            if (TreeViewSource is not null)
+            if (TreeViewSource.Any())
             {
-                foreach (TreeViewNode node in newTreeViewSource.Flatten())
+                var oldNodes = TreeViewSource.Flatten().ToList();
+                foreach (TreeViewNode newNode in newTreeViewSource.Flatten())
                 {
-                    node.Expanded = TreeViewSource.Flatten().FirstOrDefault(n => n.Tag == node.Tag)?.Expanded ?? node.Expanded;
+                    newNode.Expanded = oldNodes.Find(n => n.Tag == newNode.Tag)?.Expanded ?? newNode.Expanded;
                 }
             }
             TreeViewSource = new(newTreeViewSource);
         }
 
         //Tag Creation ViewModel
-        private IEditViewModel _addTagViewModel;
-        public IEditViewModel AddTagViewModel
+        private IEditViewModel? _addTagViewModel;
+        public IEditViewModel? AddTagViewModel
         {
             get => _addTagViewModel;
             set => SetProperty(ref _addTagViewModel, value);
         }
 
         //Group Creation ViewModel
-        private IEditViewModel _addGroupViewModel;
-        public IEditViewModel AddGroupViewModel
+        private IEditViewModel? _addGroupViewModel;
+        public IEditViewModel? AddGroupViewModel
         {
             get => _addGroupViewModel;
             set => SetProperty(ref _addGroupViewModel, value);
@@ -100,12 +101,12 @@ namespace COMPASS.ViewModels
 
         //Add Tag Buttons
 
-        private ActionCommand _addTagCommand;
+        private ActionCommand? _addTagCommand;
         public ActionCommand AddTagCommand => _addTagCommand ??= new(AddTag);
         public void AddTag() => AddTagViewModel = new TagEditViewModel(null, true);
 
 
-        private ActionCommand _addGroupCommand;
+        private ActionCommand? _addGroupCommand;
         public ActionCommand AddGroupCommand => _addGroupCommand ??= new(AddGroup);
         public void AddGroup()
         {
@@ -116,17 +117,18 @@ namespace COMPASS.ViewModels
             AddGroupViewModel = new TagEditViewModel(newTag, true);
         }
 
-        private RelayCommand<object[]> _addTagFilterCommand;
+        private RelayCommand<object[]>? _addTagFilterCommand;
         public RelayCommand<object[]> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
-        public void AddTagFilterHelper(object[] par)
+        public void AddTagFilterHelper(object[]? par)
         {
+            if (par == null) return;
             //needed because relay command only takes functions with one arg
             Tag tag = (Tag)par[0];
             bool include = (bool)par[1];
             _filterVM.AddFilter(new(Filter.FilterType.Tag, tag), include);
         }
 
-        private ActionCommand _importTagsFromOtherCollectionsCommand;
+        private ActionCommand? _importTagsFromOtherCollectionsCommand;
         public ActionCommand ImportTagsFromOtherCollectionsCommand => _importTagsFromOtherCollectionsCommand ??= new(ImportTagsFromOtherCollections);
         public void ImportTagsFromOtherCollections()
         {
@@ -135,7 +137,7 @@ namespace COMPASS.ViewModels
             w.Show();
         }
 
-        private ActionCommand _importTagsFromCompassFileCommand;
+        private ActionCommand? _importTagsFromCompassFileCommand;
         public ActionCommand ImportTagsFromCompassFileCommand => _importTagsFromCompassFileCommand ??= new(async () => await ImportTagsFromCompassFile());
         public async Task ImportTagsFromCompassFile()
         {
@@ -159,7 +161,7 @@ namespace COMPASS.ViewModels
             w.Show();
         }
 
-        private ActionCommand _exportTagsCommand;
+        private ActionCommand? _exportTagsCommand;
         public ActionCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags, _codexCollection.RootTags.Any);
         public void ExportTags()
         {
@@ -202,11 +204,11 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Tag Context Menu
-        private ActionCommand _createChildCommand;
+        private ActionCommand? _createChildCommand;
         public ActionCommand CreateChildCommand => _createChildCommand ??= new(CreateChildTag);
         private void CreateChildTag()
         {
-            if (ContextTag != null)
+            if (ContextTag is not null)
             {
                 Tag newTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags)
                 {
@@ -219,16 +221,16 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _sortChildrenCommand;
+        private ActionCommand? _sortChildrenCommand;
         public ActionCommand SortChildrenCommand => _sortChildrenCommand ??= new(SortChildren, CanSortChildren);
         public void SortChildren()
         {
             SortChildren(ContextTag);
             BuildTagTreeView();
         }
-        public void SortChildren(Tag tag)
+        public void SortChildren(Tag? tag)
         {
-            if (tag == null) return;
+            if (tag is null) return;
             tag.Children = new(tag.Children.OrderBy(t => t.Content));
             foreach (Tag child in tag.Children)
             {
@@ -236,9 +238,9 @@ namespace COMPASS.ViewModels
             }
         }
         public bool CanSortChildren() => CanSortChildren(ContextTag);
-        public bool CanSortChildren(Tag tag) => tag?.Children.Any() == true;
+        public bool CanSortChildren(Tag? tag) => tag?.Children.Any() == true;
 
-        private ActionCommand _sortAllTagsCommand;
+        private ActionCommand? _sortAllTagsCommand;
         public ActionCommand SortAllTagsCommand => _sortAllTagsCommand ??= new(SortAllTags);
         public void SortAllTags()
         {
@@ -251,11 +253,11 @@ namespace COMPASS.ViewModels
             BuildTagTreeView();
         }
 
-        private ActionCommand _editTagCommand;
+        private ActionCommand? _editTagCommand;
         public ActionCommand EditTagCommand => _editTagCommand ??= new(EditTag);
         public void EditTag()
         {
-            if (ContextTag != null)
+            if (ContextTag is not null)
             {
                 TagPropWindow tpw = new(new TagEditViewModel(ContextTag, false));
                 tpw.ShowDialog();
@@ -263,12 +265,12 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _deleteTagCommand;
+        private ActionCommand? _deleteTagCommand;
         public ActionCommand DeleteTagCommand => _deleteTagCommand ??= new(DeleteTag);
         public void DeleteTag()
         {
             //tag to delete is context, because DeleteTag is called from context menu
-            if (ContextTag == null) return;
+            if (ContextTag is null) return;
             MainViewModel.CollectionVM.CurrentCollection.DeleteTag(ContextTag);
             _filterVM.RemoveFilter(new(Filter.FilterType.Tag, ContextTag));
 

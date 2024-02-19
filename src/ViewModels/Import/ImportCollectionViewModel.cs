@@ -42,7 +42,7 @@ namespace COMPASS.ViewModels.Import
 
         public CollectionContentSelectorViewModel ContentSelectorVM { get; set; }
 
-        public CodexCollection CollectionToImport { get; set; } = null; //collection that was in the cmpss file
+        public CodexCollection CollectionToImport { get; set; } //collection that was in the cmpss file
 
         //OVERVIEW STEP
         public bool MergeIntoCollection { get; set; } = false;
@@ -104,7 +104,7 @@ namespace COMPASS.ViewModels.Import
                 ContentSelectorVM.SelectFolderTagLinks = ImportAllSettings;
             }
 
-            CloseAction.Invoke();
+            CloseAction?.Invoke();
 
             //Apply the selection
             await ContentSelectorVM.ApplyAll();
@@ -113,6 +113,13 @@ namespace COMPASS.ViewModels.Import
             var targetCollection = MergeIntoCollection ?
                 MainViewModel.CollectionVM.CurrentCollection :
                 MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
+
+            //if create an load fails
+            if (targetCollection is null)
+            {
+                //TODO idk, show an error of some kind
+                return;
+            }
 
             await targetCollection.MergeWith(ContentSelectorVM.CuratedCollection);
         }

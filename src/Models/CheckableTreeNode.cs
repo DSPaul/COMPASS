@@ -7,9 +7,11 @@ namespace COMPASS.Models
 {
     public class CheckableTreeNode<T> : ObservableObject, IHasChildren<CheckableTreeNode<T>> where T : class, IHasChildren<T>
     {
-
-        public CheckableTreeNode()
+        public CheckableTreeNode(T item)
         {
+            _item = item;
+            Children = new(item.Children.Select(child => new CheckableTreeNode<T>(child)));
+
             Children.CollectionChanged += (_, _) =>
             {
                 Update();
@@ -18,12 +20,6 @@ namespace COMPASS.Models
                     child.Parent = this;
                 }
             };
-        }
-
-        public CheckableTreeNode(T item) : this()
-        {
-            Item = item;
-            Children = new(item.Children.Select(child => new CheckableTreeNode<T>(child)));
         }
 
         private T _item;
@@ -71,7 +67,7 @@ namespace COMPASS.Models
             }
         }
 
-        public CheckableTreeNode<T> Parent { get; set; }
+        public CheckableTreeNode<T>? Parent { get; set; }
 
         private void Update()
         {
@@ -93,7 +89,7 @@ namespace COMPASS.Models
             }
         }
 
-        public event Action<bool?> Updated;
+        public event Action<bool?>? Updated;
 
         private bool _expanded = true;
         public bool Expanded
@@ -102,16 +98,18 @@ namespace COMPASS.Models
             set => SetProperty(ref _expanded, value);
         }
 
-        public T GetCheckedItems()
+        public T? GetCheckedItems()
         {
             if (IsChecked == false) return default;
+
             Item.Children = new(Children.Where(child => child.IsChecked != false)
-                                        .Select(child => child.GetCheckedItems()));
+                                        .Select(child => child.GetCheckedItems()!));
+
             return Item;
         }
 
         public static IEnumerable<T> GetCheckedItems(IEnumerable<CheckableTreeNode<T>> items) =>
-            items.Where(child => child.IsChecked != false)
-                 .Select(child => child.GetCheckedItems());
+            items.Where(item => item.IsChecked != false)
+                 .Select(item => item.GetCheckedItems()!);
     }
 }

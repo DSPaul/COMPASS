@@ -24,22 +24,15 @@ namespace COMPASS.Models
 
         #region Folders to Auto Import
 
-        [Obsolete]
-        public ObservableCollection<string> AutoImportDirectories { get; set; } = new();
-
-        //Folders to check for new files
-        private ObservableCollection<Folder> _autoImportFolders;
-        public ObservableCollection<Folder> AutoImportFolders
-        {
-            get => _autoImportFolders ??= new();
-            set => _autoImportFolders = value;
-        }
+        [Obsolete("Replaced by AutoImportFolders")]
+        public ObservableCollection<string>? AutoImportDirectories { get; set; } = new();
+        public ObservableCollection<Folder> AutoImportFolders { get; set; } = new();
 
         public ObservableCollection<string> BanishedPaths { get; set; } = new();
         #endregion
 
         #region File Type preferences for auto import
-        private Dictionary<string, bool> _filetypePreferences;
+        private Dictionary<string, bool>? _filetypePreferences;
         [XmlIgnore]
         public Dictionary<string, bool> FiletypePreferences
         {
@@ -69,16 +62,16 @@ namespace COMPASS.Models
 
             #region Migrate save data from previous versions
 
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
 
             //(1.6.0 -> 1.7.0) migrate from AutoImportFoldersViewSource to AutoImportFolders 
-            if (AutoImportDirectories.Any() && !AutoImportFolders.Any())
+            if (AutoImportDirectories is not null && AutoImportDirectories.Any() && !AutoImportFolders.Any())
             {
                 AutoImportFolders = new(AutoImportDirectories.Select(dir => new Folder(dir)));
                 AutoImportDirectories = null;
             }
 
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
 
             #endregion
         }
@@ -91,7 +84,7 @@ namespace COMPASS.Models
             other.PrepareSave(); // make sure serializable prefs are in sync in prefs in other
             foreach (var pref in other.SerializableFiletypePreferences)
             {
-                var existing = SerializableFiletypePreferences.FirstOrDefault(x => x.Key == pref.Key);
+                var existing = SerializableFiletypePreferences.Find(x => x.Key == pref.Key);
                 if (existing != default)
                 {
                     existing.Value = pref.Value;
@@ -101,7 +94,7 @@ namespace COMPASS.Models
                     SerializableFiletypePreferences.Add(pref);
                 }
             }
-            FiletypePreferences = null; //reset lazy loading
+            _filetypePreferences = null; //reset lazy loading
             FolderTagPairs.AddRange(other.FolderTagPairs);
 
         }

@@ -12,7 +12,7 @@ namespace COMPASS.ViewModels
     {
         public LeftDockViewModel(MainViewModel mainViewModel)
         {
-            MainVM = mainViewModel;
+            _mainVM = mainViewModel;
         }
 
         private MainViewModel _mainVM;
@@ -45,10 +45,10 @@ namespace COMPASS.ViewModels
         }
 
         #region Add Books Tab
-        private RelayCommand<ImportSource> _importCommand;
+        private RelayCommand<ImportSource>? _importCommand;
         public RelayCommand<ImportSource> ImportCommand => _importCommand ??= new(async source => await ImportViewModel.Import(source));
 
-        private ActionCommand _importBooksFromCompassFileCommand;
+        private ActionCommand? _importBooksFromCompassFileCommand;
         public ActionCommand ImportBooksFromCompassFileCommand => _importBooksFromCompassFileCommand ??= new(async () => await ImportBooksFromCompassFile());
         public async Task ImportBooksFromCompassFile()
         {
@@ -75,7 +75,7 @@ namespace COMPASS.ViewModels
 
             vm.Steps.Clear();
             vm.Steps.Add(CollectionContentSelectorViewModel.ItemsStep);
-            vm.ContentSelectorVM.TagsSelectorVM.SelectedTagCollection.TagsRoot.IsChecked = false;
+            vm.ContentSelectorVM.TagsSelectorVM.SelectedTagCollection!.TagsRoot.IsChecked = false;
 
             var w = new ImportCollectionWizard(vm);
             w.Show();

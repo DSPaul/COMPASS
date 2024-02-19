@@ -1,6 +1,7 @@
 ﻿using COMPASS.Models;
 using COMPASS.ViewModels.Import;
 using GongSolutions.Wpf.DragDrop;
+using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -23,7 +24,7 @@ namespace COMPASS.ViewModels.Layouts
         {
             layout ??= (Layout)Properties.Settings.Default.PreferedLayout;
             Properties.Settings.Default.PreferedLayout = (int)layout;
-            LayoutViewModel newLayout = layout switch
+            LayoutViewModel? newLayout = layout switch
             {
                 Layout.Home => new HomeLayoutViewModel(),
                 Layout.List => new ListLayoutViewModel(),
@@ -31,6 +32,7 @@ namespace COMPASS.ViewModels.Layouts
                 Layout.Tile => new TileLayoutViewModel(),
                 _ => null
             };
+            if (newLayout == null) throw new NotImplementedException(layout.ToString());
             return newLayout;
         }
 
@@ -41,8 +43,8 @@ namespace COMPASS.ViewModels.Layouts
         public CodexViewModel CodexVM { get; init; } = new();
 
         //Selected File
-        private Codex _selectedCodex;
-        public Codex SelectedCodex
+        private Codex? _selectedCodex;
+        public Codex? SelectedCodex
         {
             get => _selectedCodex;
             set => SetProperty(ref _selectedCodex, value);

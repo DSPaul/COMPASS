@@ -4,12 +4,12 @@ namespace COMPASS.Models
 {
     public class ObservableKeyValuePair<K, V> : ObservableObject
     {
-
+        //empty ctor for deserialization
         public ObservableKeyValuePair() { }
         public ObservableKeyValuePair(K key, V value)
         {
-            Key = key;
-            Value = value;
+            _key = key;
+            _value = value;
         }
         public ObservableKeyValuePair(KeyValuePair<K, V> pair) : this(pair.Key, pair.Value) { }
 

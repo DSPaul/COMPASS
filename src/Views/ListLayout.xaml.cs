@@ -22,8 +22,10 @@ namespace COMPASS.Views
 
         public void HandleDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Codex toOpen = ((DataGridRow)sender).DataContext as Codex;
-            CodexViewModel.OpenCodex(toOpen);
+            if (sender is DataGridRow dataGridRow && dataGridRow.DataContext is Codex codex)
+            {
+                CodexViewModel.OpenCodex(codex);
+            }
         }
 
         //Make sure selected Item is always in view
@@ -35,7 +37,8 @@ namespace COMPASS.Views
                 {
                     dataGrid.ScrollIntoView(e.AddedItems[0]);
                 }
-                catch{ 
+                catch
+                {
                     //happens when first item is null
                 }
             }
@@ -44,7 +47,7 @@ namespace COMPASS.Views
         private void FileView_DataContextChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e) => LoadDataGridInfo();
 
         private void LoadDataGridInfo()
-            => ListLayoutGrid.ColumnInfo = JsonConvert.DeserializeObject<ObservableCollection<ColumnInfo>>(Properties.Settings.Default["DataGridCollumnInfo"].ToString());
+            => ListLayoutGrid.ColumnInfo = JsonConvert.DeserializeObject<ObservableCollection<ColumnInfo>>(Properties.Settings.Default["DataGridCollumnInfo"].ToString()!);
 
         private void FileView_TargetUpdated(object sender, System.Windows.Data.DataTransferEventArgs e)
             => LoadDataGridInfo();

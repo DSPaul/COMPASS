@@ -50,7 +50,7 @@ namespace COMPASS.Windows
             {
                 // We need to tell the system what our size should be when maximized. Otherwise it will cover the whole screen,
                 // including the task bar.
-                MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
+                MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO))!;
 
                 // Adjust the maximized size and position to fit the work area of the correct monitor
                 IntPtr monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);

@@ -22,8 +22,11 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _tagCollections, value);
         }
 
-        private TagCollection _selectedTagCollection;
-        public TagCollection SelectedTagCollection
+        private TagCollection? _selectedTagCollection;
+        /// <summary>
+        /// Can be null if no collections were present in the cmpss file
+        /// </summary>
+        public TagCollection? SelectedTagCollection
         {
             get => _selectedTagCollection;
             set => SetProperty(ref _selectedTagCollection, value);
@@ -43,7 +46,7 @@ namespace COMPASS.ViewModels
 
             public string Name { get; set; }
 
-            private CheckableTreeNode<Tag> _tagsRoot = null;
+            private CheckableTreeNode<Tag>? _tagsRoot = null;
             public CheckableTreeNode<Tag> TagsRoot
             {
                 get
@@ -54,7 +57,7 @@ namespace COMPASS.ViewModels
                     //load
                     _collection.LoadTags();
                     //convert to nodes
-                    _tagsRoot = new CheckableTreeNode<Tag>
+                    _tagsRoot = new CheckableTreeNode<Tag>(new Tag())
                     {
                         Children = new(_collection.RootTags
                             .Select(t => new CheckableTreeNode<Tag>(t)))

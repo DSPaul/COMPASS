@@ -18,8 +18,8 @@ namespace COMPASS.ViewModels.Sources
 
             //Scrape metadata by going to store page, get to store page by using that /credits redirects there
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to DnD Beyond"));
-            HtmlDocument doc = await IOService.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
-            HtmlNode src = doc?.DocumentNode;
+            HtmlDocument? doc = await IOService.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
+            HtmlNode? src = doc?.DocumentNode;
 
             if (src is null)
             {
@@ -39,8 +39,8 @@ namespace COMPASS.ViewModels.Sources
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument doc = await IOService.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
-                HtmlNode src = doc?.DocumentNode;
+                HtmlDocument? doc = await IOService.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
+                HtmlNode? src = doc?.DocumentNode;
                 if (src is null) return false;
 
                 string imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);

@@ -77,7 +77,7 @@ namespace COMPASS.Windows
             }
         }
 
-        private ScrollViewer FindParentScrollViewer(DependencyObject child)
+        private ScrollViewer? FindParentScrollViewer(DependencyObject child)
         {
             //get parent item
             DependencyObject parentObject = VisualTreeHelper.GetParent(child);

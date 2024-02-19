@@ -30,7 +30,7 @@ namespace COMPASS.ViewModels.Sources
                 Debug.Assert(IsValidSource(codex), "Codex without path was referenced in file source");
                 if (codex.Path!.Contains(folderTagPair.Folder))
                 {
-                    Application.Current.Dispatcher.Invoke(() => codex.Tags.AddIfMissing(folderTagPair.Tag));
+                    Application.Current.Dispatcher.Invoke(() => codex.Tags.AddIfMissing(folderTagPair.Tag!));
                 }
             }
 

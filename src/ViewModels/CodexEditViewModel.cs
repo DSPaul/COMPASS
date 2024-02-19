@@ -19,12 +19,12 @@ namespace COMPASS.ViewModels
 {
     public class CodexEditViewModel : ViewModelBase, IEditViewModel, IDropTarget
     {
-        public CodexEditViewModel(Codex toEdit)
+        public CodexEditViewModel(Codex? toEdit)
         {
             _editedCodex = toEdit;
             //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked
-            TempCodex = new(MainViewModel.CollectionVM.CurrentCollection);
-            if (!CreateNewCodex) TempCodex.Copy(_editedCodex);
+            _tempCodex = new(MainViewModel.CollectionVM.CurrentCollection);
+            if (!CreateNewCodex) TempCodex.Copy(_editedCodex!);
 
             //Apply right checkboxes in AllTags
             foreach (TreeViewNode t in AllTreeViewNodes)
@@ -37,9 +37,9 @@ namespace COMPASS.ViewModels
 
         #region Properties
 
-        readonly Codex _editedCodex;
+        readonly Codex? _editedCodex;
 
-        private ObservableCollection<TreeViewNode> _treeViewSource;
+        private ObservableCollection<TreeViewNode>? _treeViewSource;
         public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
         private HashSet<TreeViewNode> AllTreeViewNodes => TreeViewSource.Flatten().ToHashSet();
@@ -66,7 +66,7 @@ namespace COMPASS.ViewModels
 
         #region Methods and Commands
 
-        private ActionCommand _browsePathCommand;
+        private ActionCommand? _browsePathCommand;
         public ActionCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
         private void BrowsePath()
         {
@@ -81,7 +81,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _browseURLCommand;
+        private ActionCommand? _browseURLCommand;
         public ActionCommand BrowseURLCommand => _browseURLCommand ??= new(BrowseURL);
         private void BrowseURL()
         {
@@ -91,7 +91,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _browseISBNCommand;
+        private ActionCommand? _browseISBNCommand;
         public ActionCommand BrowseISBNCommand => _browseISBNCommand ??= new(BrowseISBN);
         private void BrowseISBN()
         {
@@ -99,7 +99,7 @@ namespace COMPASS.ViewModels
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
 
-        private ActionCommand _tagCheckCommand;
+        private ActionCommand? _tagCheckCommand;
         public ActionCommand TagCheckCommand => _tagCheckCommand ??= new(UpdateTagList);
         private void UpdateTagList()
         {
@@ -113,7 +113,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _quickCreateTagCommand;
+        private ActionCommand? _quickCreateTagCommand;
         public ActionCommand QuickCreateTagCommand => _quickCreateTagCommand ??= new(QuickCreateTag);
         public void QuickCreateTag()
         {
@@ -148,7 +148,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _deleteCodexCommand;
+        private ActionCommand? _deleteCodexCommand;
         public ActionCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
         private void DeleteCodex()
         {
@@ -159,7 +159,7 @@ namespace COMPASS.ViewModels
             CloseAction();
         }
 
-        private ActionCommand _fetchCoverCommand;
+        private ActionCommand? _fetchCoverCommand;
         public ActionCommand FetchCoverCommand => _fetchCoverCommand ??= new(async () => await FetchCoverAsync());
         private async Task FetchCoverAsync()
         {
@@ -177,7 +177,7 @@ namespace COMPASS.ViewModels
             RefreshCover();
         }
 
-        private ActionCommand _chooseCoverCommand;
+        private ActionCommand? _chooseCoverCommand;
         public ActionCommand ChooseCoverCommand => _chooseCoverCommand ??= new(ChooseCover);
         private void ChooseCover()
         {
@@ -205,9 +205,9 @@ namespace COMPASS.ViewModels
             TempCodex.Thumbnail = thumbnail;
         }
 
-        public Action CloseAction { get; set; }
+        public Action CloseAction { get; set; } = () => { };
 
-        private ActionCommand _oKCommand;
+        private ActionCommand? _oKCommand;
         public ActionCommand OKCommand => _oKCommand ??= new(OKBtn);
         public void OKBtn()
         {
@@ -231,7 +231,7 @@ namespace COMPASS.ViewModels
             CloseAction();
         }
 
-        private ActionCommand _cancelCommand;
+        private ActionCommand? _cancelCommand;
         public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel() => CloseAction();
 

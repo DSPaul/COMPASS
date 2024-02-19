@@ -423,14 +423,14 @@
                             <Grid>
                                 <TextBlock Text="-- Select Author --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding AuthorList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedAuthor, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
+                                      SelectedValue="{Binding SelectedAuthor, Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
                             </Grid>
 
                             <TextBlock Text="Publisher:" Margin="0,10,0,0"/>
                             <Grid>
                                 <TextBlock Text="-- Select Publisher --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding PublisherList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedPublisher, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
+                                      SelectedValue="{Binding SelectedPublisher,  Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
                             </Grid>
 
                             <TextBlock Text="Has Property:" Margin="0,10,0,0"/>
@@ -463,13 +463,13 @@
                             <Grid>
                                 <TextBlock Text="-- Select File Type --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding FileTypeList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedFileType, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
+                                      SelectedValue="{Binding SelectedFileType, Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
                             </Grid>
                             <TextBlock Text="Source Website:" Margin="0,5"/>
                             <Grid>
                                 <TextBlock Text="-- Select Website --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding DomainList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedDomain, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
+                                      SelectedValue="{Binding SelectedDomain,  Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
                             </Grid>
                         </StackPanel>
                         <Button Content="Clear All" Grid.Row="4" Margin="10" Command="{Binding ClearFiltersCommand}"

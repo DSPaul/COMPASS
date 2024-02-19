@@ -136,21 +136,21 @@ namespace COMPASS.ViewModels.Import
             }
 
             //find how many files of each filetype
-            var toImportGrouped = toImport.GroupBy(Path.GetExtension).ToList();
+            var toImportGrouped = toImport.GroupBy(p => Path.GetExtension(p)).ToList();
             var extensions = toImportGrouped.Select(x => x.Key).ToList();
             var newExtensions = extensions.Except(_targetCollection.Info.FiletypePreferences.Keys).ToList();
 
-            //Add Extionsions Step
+            //Add Extensions Step
             if (newExtensions.Any())
             {
                 Steps.Add("Extensions");
 
                 KnownFileTypes = toImportGrouped
-                    .Where(grouping => _targetCollection.Info.FiletypePreferences.Keys.Contains(grouping.Key))
+                    .Where(grouping => _targetCollection.Info.FiletypePreferences.ContainsKey(grouping.Key))
                     .Select(x => new FileTypeInfo(x.Key, _targetCollection.Info.FiletypePreferences[x.Key], x.Count())).ToList();
 
                 UnknownFileTypes = toImportGrouped
-                    .Where(grouping => !_targetCollection.Info.FiletypePreferences.Keys.Contains(grouping.Key))
+                    .Where(grouping => !_targetCollection.Info.FiletypePreferences.ContainsKey(grouping.Key))
                     .Select(x => new FileTypeInfo(x.Key, true, x.Count())).ToList();
             }
 

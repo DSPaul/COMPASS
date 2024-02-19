@@ -16,10 +16,12 @@ namespace COMPASS.Resources.Controls
             Key++;
         }
 
-        private void MoveUp(object sender, RoutedEventArgs e)
+        private void MoveUp(object? sender, RoutedEventArgs e)
         {
-            Button btn = sender as Button;
-            ITag toMove = btn.CommandParameter as ITag;
+            Button? btn = sender as Button;
+            ITag? toMove = btn?.CommandParameter as ITag;
+
+            if (toMove is null) return;
 
             int i = 0;
             while (Root.Items[i] != toMove)
@@ -35,10 +37,12 @@ namespace COMPASS.Resources.Controls
             }
         }
 
-        private void MoveDown(object sender, RoutedEventArgs e)
+        private void MoveDown(object? sender, RoutedEventArgs e)
         {
-            Button btn = sender as Button;
-            ITag toMove = btn.CommandParameter as ITag;
+            Button? btn = sender as Button;
+            ITag? toMove = btn?.CommandParameter as ITag;
+
+            if (toMove is null) return;
 
             int i = 0;
             while (Root.Items[i] != toMove)

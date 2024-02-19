@@ -17,7 +17,7 @@ namespace COMPASS.Services
 {
     public static class CoverService
     {
-        public static async Task GetCover(Codex codex, ChooseMetaDataViewModel chooseMetaDataViewModel = null)
+        public static async Task GetCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null)
         {
             Codex MetaDatalessCodex = new()
             {
@@ -27,7 +27,7 @@ namespace COMPASS.Services
                 ID = codex.ID,
             };
 
-            CodexProperty coverProp = SettingsViewModel.GetInstance().MetaDataPreferences.First(prop => prop.Label == "Cover Art");
+            CodexProperty coverProp = SettingsViewModel.GetInstance().MetaDataPreferences.First(prop => prop.Name == nameof(Codex.CoverArt));
 
             if (coverProp.OverwriteMode == MetaDataOverwriteMode.Ask)
             {
@@ -57,7 +57,7 @@ namespace COMPASS.Services
             {
                 ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                SourceViewModel sourceVM = SourceViewModel.GetSourceVM(source);
+                SourceViewModel? sourceVM = SourceViewModel.GetSourceVM(source);
                 if (sourceVM == null || !sourceVM.IsValidSource(codex)) continue;
                 getCoverSuccessful = await sourceVM.FetchCover(MetaDatalessCodex);
                 if (getCoverSuccessful) break;
@@ -136,8 +136,7 @@ namespace COMPASS.Services
             CreateThumbnail(destCodex);
         }
 
-        public static bool GetCoverFromImage(string imagePath, Codex destCodex
-            )
+        public static bool GetCoverFromImage(string imagePath, Codex destCodex)
         {
             if (String.IsNullOrEmpty(destCodex.CoverArt))
             {
@@ -198,7 +197,7 @@ namespace COMPASS.Services
         {
             //take the screenshot
             Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();
-            using Bitmap img = Image.FromStream(new MemoryStream(ss.AsByteArray)) as Bitmap;
+            using Bitmap? img = Image.FromStream(new MemoryStream(ss.AsByteArray)) as Bitmap;
 
             if (img == null)
             {

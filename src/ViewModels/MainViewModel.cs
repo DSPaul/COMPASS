@@ -4,7 +4,6 @@ using COMPASS.Models;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Layouts;
-using COMPASS.ViewModels.Sources;
 using COMPASS.Windows;
 using ImageMagick;
 using System;
@@ -26,8 +25,7 @@ namespace COMPASS.ViewModels
             //Load everything
             UpgradeSettings();
             CollectionVM = new(this);
-            CollectionVM.LoadInitialCollection();
-            CurrentLayout = LayoutViewModel.GetLayout();
+            _currentLayout = LayoutViewModel.GetLayout();
             LeftDockVM = new(this);
             CodexInfoVM = new(this);
             SettingsViewModel.GetInstance().MVM = this;
@@ -61,10 +59,10 @@ namespace COMPASS.ViewModels
             //Disable skip
             AutoUpdater.ShowSkipButton = false;
             //Set Icon
-            string runningExePath = Process.GetCurrentProcess().MainModule?.FileName;
-            if (String.IsNullOrWhiteSpace(runningExePath))
+            string? runningExePath = Process.GetCurrentProcess().MainModule?.FileName;
+            if (!String.IsNullOrWhiteSpace(runningExePath))
             {
-                AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath!)?.ToBitmap();
+                AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath)?.ToBitmap();
             }
 #if DEBUG
             //AutoUpdater.InstalledVersion = new("0.2.0"); //for testing only
@@ -99,10 +97,10 @@ namespace COMPASS.ViewModels
         private void InitConnectionTimer()
         {
             //Start internet checkup timer
-            _checkConnectionTimer = new();
-            _checkConnectionTimer.Tick += (_, _) => Task.Run(() => IsOnline = IOService.PingURL());
-            _checkConnectionTimer.Interval = new TimeSpan(0, 0, 10);
-            _checkConnectionTimer.Start();
+            DispatcherTimer checkConnectionTimer = new();
+            checkConnectionTimer.Tick += (_, _) => Task.Run(() => IsOnline = IOService.PingURL());
+            checkConnectionTimer.Interval = new TimeSpan(0, 0, 10);
+            checkConnectionTimer.Start();
             //to check right away on startup
             Task.Run(() => IsOnline = IOService.PingURL());
         }
@@ -118,8 +116,6 @@ namespace COMPASS.ViewModels
             private set => SetProperty(ref _isOnline, value);
         }
 
-        private DispatcherTimer _checkConnectionTimer;
-
         public string VersionName => $"v{Reflection.Version}";
         public ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
 
@@ -127,7 +123,7 @@ namespace COMPASS.ViewModels
 
         #region ViewModels
 
-        public static CollectionViewModel CollectionVM { get; private set; }
+        public static CollectionViewModel CollectionVM { get; private set; } = new(null);
 
         public CollectionViewModel BindableCollectionVM => CollectionVM; //because binding to static properties sucks
 
@@ -138,27 +134,20 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _currentLayout, value);
         }
 
-        public LeftDockViewModel LeftDockVM { get; private set; }
+        public LeftDockViewModel LeftDockVM { get; init; }
 
-        private SourceViewModel _activeSourceVM;
-        public SourceViewModel ActiveSourceVM
-        {
-            get => _activeSourceVM;
-            set => SetProperty(ref _activeSourceVM, value);
-        }
-
-        public CodexInfoViewModel CodexInfoVM { get; private set; }
+        public CodexInfoViewModel CodexInfoVM { get; init; }
 
         #endregion
 
         #region Commands and Methods
 
         //Open settings
-        private RelayCommand<string> _openSettingsCommand;
+        private RelayCommand<string>? _openSettingsCommand;
         public RelayCommand<string> OpenSettingsCommand => _openSettingsCommand ??= new(OpenSettings);
-        public void OpenSettings(string tab = null)
+        public void OpenSettings(string? tab = "")
         {
-            var settingsWindow = new SettingsWindow(SettingsViewModel.GetInstance(), tab)
+            var settingsWindow = new SettingsWindow(SettingsViewModel.GetInstance(), tab ?? "")
             {
                 Owner = Application.Current.MainWindow
             };
@@ -168,12 +157,12 @@ namespace COMPASS.ViewModels
         //check updates
         public ActionCommand CheckForUpdatesCommand => SettingsViewModel.GetInstance().CheckForUpdatesCommand;
 
-        private ActionCommand _navigateToLinkTree;
+        private ActionCommand? _navigateToLinkTree;
         public ActionCommand NavigateToLinkTree => _navigateToLinkTree ??= new(()
             => Process.Start(new ProcessStartInfo(@"https://linktr.ee/compassapp") { UseShellExecute = true }));
 
         //Change Layout
-        private RelayCommand<LayoutViewModel.Layout> _changeLayoutCommand;
+        private RelayCommand<LayoutViewModel.Layout>? _changeLayoutCommand;
         public RelayCommand<LayoutViewModel.Layout> ChangeLayoutCommand => _changeLayoutCommand ??= new(ChangeLayout);
         public void ChangeLayout(LayoutViewModel.Layout layout) => CurrentLayout = LayoutViewModel.GetLayout(layout);
         #endregion

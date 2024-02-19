@@ -48,7 +48,7 @@ namespace COMPASS.ViewModels
                                                             .OrderByDescending(x => x.Value)
                                                             .ToList();
             FolderTagLinks = CompleteCollection.Info.FolderTagPairs
-                .Select(link => new SelectableFolderTagLink(link.Folder, link.Tag, CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).Flatten()))
+                .Select(link => new SelectableFolderTagLink(link.Folder, link.Tag!, CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).Flatten()))
                 .ToList();
         }
 
@@ -61,7 +61,7 @@ namespace COMPASS.ViewModels
         /// </summary>
         public CodexCollection CompleteCollection { get; set; }
 
-        private CodexCollection _curatedCollection;
+        private CodexCollection? _curatedCollection;
         /// <summary>
         /// Curated collection that contains only the selected items 
         /// </summary>
@@ -77,7 +77,7 @@ namespace COMPASS.ViewModels
 
         //TAGS STEP
         public TagsSelectorViewModel TagsSelectorVM { get; set; }
-        public IEnumerable<CheckableTreeNode<Tag>> SelectableTags => TagsSelectorVM.SelectedTagCollection.TagsRoot.Children;
+        public IEnumerable<CheckableTreeNode<Tag>> SelectableTags => TagsSelectorVM.SelectedTagCollection?.TagsRoot.Children ?? Enumerable.Empty<CheckableTreeNode<Tag>>();
 
         // CODICES STEP
         public List<SelectableCodex> SelectableCodices { get; set; }
@@ -176,9 +176,9 @@ namespace COMPASS.ViewModels
             }
             public Codex Codex { get; }
 
-            private RelayCommand<IList> _itemCheckedCommand;
+            private RelayCommand<IList>? _itemCheckedCommand;
             public RelayCommand<IList> ItemCheckedCommand => _itemCheckedCommand ??= new((items) =>
-                items.Cast<SelectableCodex>()
+                items?.Cast<SelectableCodex>()
                      .ToList()
                      .ForEach(c => c.Selected = Selected));
         }

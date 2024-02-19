@@ -12,7 +12,7 @@ namespace COMPASS.ViewModels
         #region Singleton pattern
         private ProgressViewModel() { }
 
-        private static ProgressViewModel _progressVM;
+        private static ProgressViewModel? _progressVM;
         public static ProgressViewModel GetInstance() => _progressVM ??= new ProgressViewModel();
 
         #endregion
@@ -66,7 +66,7 @@ namespace COMPASS.ViewModels
         /// </summary>
         public bool ShowCount { get; set; } = true;
 
-        private string _text;
+        private string _text = "";
         public string Text
         {
             get => _text;
@@ -130,7 +130,7 @@ namespace COMPASS.ViewModels
             Cancelling = false;
         }
 
-        private ActionCommand _cancelTasksCommand;
+        private ActionCommand? _cancelTasksCommand;
         public ActionCommand CancelTasksCommand => _cancelTasksCommand ??= new(CancelBackgroundTask);
         public void CancelBackgroundTask()
         {

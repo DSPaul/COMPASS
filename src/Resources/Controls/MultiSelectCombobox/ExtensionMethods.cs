@@ -13,7 +13,7 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
     internal static class ExtensionMethods
     {
         #region ListBox
-        public static void ClearSelection(this ListBox suggestionList, Func<bool> precondition = null)
+        public static void ClearSelection(this ListBox suggestionList, Func<bool>? precondition = null)
         {
             if (precondition != null
                 && !precondition())
@@ -23,7 +23,6 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
 
             suggestionList?.SelectedItems.Clear();
         }
-        public static IEnumerable<object> GetItemSource(this ListBox suggestionList) => suggestionList?.ItemsSource?.Cast<object>();
         public static void SelectNextItem(this ListBox suggestionList) => suggestionList.SingleItemSelection(1);
         public static void SelectPreviousItem(this ListBox suggestionList) => suggestionList.SingleItemSelection(-1);
         public static void SelectMultipleNextItem(this ListBox suggestionList) => suggestionList.SelectMultipleItem(1);
@@ -166,10 +165,10 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
         #endregion
 
         #region RichTextBox
-        public static string GetCurrentText(this RichTextBox richTextBox) => GetCurrentRunBlock(richTextBox)?.Text;
+        public static string? GetCurrentText(this RichTextBox richTextBox) => GetCurrentRunBlock(richTextBox)?.Text;
         public static void ResetCurrentText(this RichTextBox richTextBox)
         {
-            Run runElement = GetCurrentRunBlock(richTextBox);
+            Run? runElement = GetCurrentRunBlock(richTextBox);
             if (runElement == null)
             {
                 return;
@@ -179,7 +178,7 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
         }
         public static void RemoveRunBlocks(this RichTextBox richTextBox)
         {
-            Paragraph paragraph = richTextBox?.GetParagraph();
+            Paragraph? paragraph = richTextBox?.GetParagraph();
             if (paragraph == null)
             {
                 return;
@@ -235,7 +234,7 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
             try
             {
                 richTextBox?.SetParagraphAsFirstBlock();
-                Paragraph paragraph = richTextBox?.GetParagraph();
+                Paragraph? paragraph = richTextBox?.GetParagraph();
                 if (paragraph == null)
                 {
                     return;
@@ -247,11 +246,14 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
                 {
                     //First element to insert
                     paragraph.Inlines.Add(elementToAdd);
-                    richTextBox.CaretPosition = richTextBox.CaretPosition.DocumentEnd;
+                    if (richTextBox is not null)
+                    {
+                        richTextBox.CaretPosition = richTextBox.CaretPosition.DocumentEnd;
+                    }
                     return;
                 }
 
-                if (richTextBox.CaretPosition.GetAdjacentElement(LogicalDirection.Forward) is Inline inlineToInsertBefore)
+                if (richTextBox?.CaretPosition.GetAdjacentElement(LogicalDirection.Forward) is Inline inlineToInsertBefore)
                 {
                     paragraph.Inlines.InsertBefore(inlineToInsertBefore, elementToAdd);
                     richTextBox.CaretPosition = elementToAdd.ElementEnd;
@@ -260,7 +262,10 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
 
                 //Insert at the end
                 paragraph.Inlines.InsertAfter(paragraph.Inlines.LastInline, elementToAdd);
-                richTextBox.CaretPosition = richTextBox.CaretPosition.DocumentEnd;
+                if (richTextBox is not null)
+                {
+                    richTextBox.CaretPosition = richTextBox.CaretPosition.DocumentEnd;
+                }
             }
             catch (Exception ex)
             {
@@ -290,7 +295,7 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
             richTextBox.Focus();
             return true;
         }
-        public static DataObject GetDragDropObject(this RichTextBox richTextBox)
+        public static DataObject? GetDragDropObject(this RichTextBox richTextBox)
         {
             var objectToSend = richTextBox.GetSelectedObjects();
             if ((objectToSend?.Length ?? 0) == 0)
@@ -317,31 +322,31 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
             }
         }
 
-        public static Run GetCurrentRunBlock(this RichTextBox richTextBox) => richTextBox?.CaretPosition?.Parent as Run;
-        public static Paragraph GetParagraph(this RichTextBox richTextBox) => richTextBox?.Document?.Blocks.FirstBlock as Paragraph;
-        public static object GetNextItemTag(this RichTextBox richTextBox)
+        public static Run? GetCurrentRunBlock(this RichTextBox richTextBox) => richTextBox?.CaretPosition?.Parent as Run;
+        public static Paragraph? GetParagraph(this RichTextBox richTextBox) => richTextBox?.Document?.Blocks.FirstBlock as Paragraph;
+        public static object? GetNextItemTag(this RichTextBox richTextBox)
             => ((richTextBox.CaretPosition.GetAdjacentElement(LogicalDirection.Forward) as InlineUIContainer)?.Child as FrameworkElement)?.Tag;
         public static string GetSelectedText(this RichTextBox richTextBox)
         {
             string selectedText = string.Join(string.Empty,
-                    richTextBox.GetParagraph().Inlines
+                    richTextBox.GetParagraph()?.Inlines
                                 .Where(inline => inline.ContentStart.CompareTo(richTextBox.Selection.Start) >= 0 && inline.ContentEnd.CompareTo(richTextBox.Selection.End) <= 0)
-                                .Select(inline => inline.GetText()));
+                                .Select(inline => inline.GetText()) ?? Enumerable.Empty<string>());
 
             //Dont forget to add CurrentText
             selectedText += richTextBox.Selection.Text.Trim();
             return selectedText;
         }
 
-        public static object[] GetSelectedObjects(this RichTextBox richTextBox)
+        public static object?[]? GetSelectedObjects(this RichTextBox richTextBox)
             => richTextBox?.GetParagraph()?.Inlines
                                 .Where(inline => inline.ContentStart.CompareTo(richTextBox.Selection.Start) >= 0 && inline.ContentEnd.CompareTo(richTextBox.Selection.End) <= 0)
                                 .Select(inline => inline.GetObject())
                                 .Where(i => i != null).ToArray();
 
-        public static TextBlock GetTextBlock(this Inline inline)
+        public static TextBlock? GetTextBlock(this Inline inline)
         => (inline as InlineUIContainer)?.Child as TextBlock;
-        public static object GetObject(this Inline inline)
+        public static object? GetObject(this Inline inline)
            => GetTextBlock(inline)?.Tag;
         public static string GetText(this Inline inline)
             => GetTextBlock(inline)?.Text ?? string.Empty;
@@ -383,10 +388,10 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
         public static bool HasAnyExactMatch(this IEnumerable<object> source, string itemString, ILookUpContract contract, object sender)
             => source?.Any(i => contract?.IsItemEqualToString(sender, i, itemString) == true) == true;
 
-        public static object GetExactMatch(this IEnumerable<object> source, string itemString, ILookUpContract contract, object sender)
+        public static object? GetExactMatch(this IEnumerable<object> source, string itemString, ILookUpContract contract, object sender)
             => source?.FirstOrDefault(i => contract?.IsItemEqualToString(sender, i, itemString) == true);
 
-        public static IEnumerable<object> GetSuggestions(this IEnumerable<object> source, string itemString, ILookUpContract contract, object sender)
+        public static IEnumerable<object>? GetSuggestions(this IEnumerable<object> source, string itemString, ILookUpContract contract, object sender)
             => source?.Where(i => contract?.IsItemMatchingSearchString(sender, i, itemString) == true);
         #endregion
     }

@@ -11,8 +11,6 @@ namespace COMPASS.Converters
             => value != null && (WindowState)value == WindowState.Maximized;
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value != null && (bool)value ? WindowState.Maximized : WindowState.Normal;
-        }
+            => value != null && (bool)value ? WindowState.Maximized : WindowState.Normal;
     }
 }

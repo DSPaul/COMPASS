@@ -30,17 +30,17 @@ namespace COMPASS.Services
         {
             using HttpClient client = new();
 
-            if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri _)) throw new InvalidOperationException("URI is invalid.");
+            if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? _)) throw new InvalidOperationException("URI is invalid.");
 
             return await client.GetByteArrayAsync(uri);
         }
-        public static async Task<JObject> GetJsonAsync(string uri)
+        public static async Task<JObject?> GetJsonAsync(string uri)
         {
             using HttpClient client = new();
 
-            JObject json = null;
+            JObject? json = null;
 
-            if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri _)) throw new InvalidOperationException("URI is invalid.");
+            if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? _)) throw new InvalidOperationException("URI is invalid.");
 
             HttpResponseMessage response = await client.GetAsync(uri);
             if (response.IsSuccessStatusCode)
@@ -50,7 +50,7 @@ namespace COMPASS.Services
             }
             return json;
         }
-        public static async Task<HtmlDocument> ScrapeSite(string url)
+        public static async Task<HtmlDocument?> ScrapeSite(string url)
         {
             HtmlWeb web = new();
             HtmlDocument doc;
@@ -97,7 +97,7 @@ namespace COMPASS.Services
                     {
                         const string msg = "Internet connection restored";
                         Logger.Info(msg);
-                        Logger.FileLog.Info(msg);
+                        Logger.FileLog?.Info(msg);
                         _showedOfflineWarning = false;
                     }
                     return true;
@@ -146,7 +146,7 @@ namespace COMPASS.Services
             progressVM.IncrementCounter();
             return tmpCollectionPath;
         }
-        public static void ClearTmpData(string tempPath = null)
+        public static void ClearTmpData(string? tempPath = null)
         {
             if (tempPath == null)
             {
@@ -164,7 +164,7 @@ namespace COMPASS.Services
         /// </summary>
         public static string SanitizeXmlString(string xml)
         {
-            if (xml is null) { return null; }
+            if (xml is null) { throw new ArgumentNullException(nameof(xml)); }
 
             StringBuilder buffer = new(xml.Length);
             foreach (char c in xml.Where(c => IsLegalXmlChar(c)))
@@ -215,8 +215,18 @@ namespace COMPASS.Services
         #endregion
 
         #region Dialogs/explorer
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <exception cref="ArgumentException"></exception>
         public static void ShowInExplorer(string path)
         {
+            if (!Path.Exists(path))
+            {
+                throw new ArgumentException("path does not exist");
+            }
+
             ProcessStartInfo startInfo = new()
             {
                 Arguments = path,
@@ -229,7 +239,7 @@ namespace COMPASS.Services
         /// Allow the user to select a single folder using a dialog
         /// </summary>
         /// <returns> the selected path, null if canceled/failed / whatever </returns>
-        public static string PickFolder()
+        public static string? PickFolder()
         {
             VistaFolderBrowserDialog openFolderDialog = new();
             var dialogResult = openFolderDialog.ShowDialog();
@@ -248,11 +258,11 @@ namespace COMPASS.Services
                 Multiselect = true,
             };
             var dialogResult = openFolderDialog.ShowDialog();
-            if (dialogResult == false) return new string[0];
+            if (dialogResult == false) return Array.Empty<string>();
             return openFolderDialog.SelectedPaths;
         }
 
-        public static async Task<CodexCollection> OpenCPMSSFile(string path = null)
+        public static async Task<CodexCollection?> OpenCPMSSFile(string? path = null)
         {
             if (path == null)
             {

@@ -26,16 +26,19 @@ namespace COMPASS.ViewModels
     {
         private SettingsViewModel()
         {
+            //Set defaults
+            _openCodexPriority = new(_openCodexFunctions);
+
             LoadGlobalPreferences();
             _allPreferences.Init();
         }
 
         #region singleton pattern
-        private static SettingsViewModel _settingsVM;
+        private static SettingsViewModel? _settingsVM;
         public static SettingsViewModel GetInstance() => _settingsVM ??= new SettingsViewModel();
         #endregion
 
-        public MainViewModel MVM { get; set; }
+        public MainViewModel? MVM { get; set; }
 
         #region Load and Save Settings
         public static string PreferencesFilePath => Path.Combine(CompassDataPath, "Preferences.xml");
@@ -61,16 +64,40 @@ namespace COMPASS.ViewModels
                 using (var reader = new StreamReader(PreferencesFilePath))
                 {
                     System.Xml.Serialization.XmlSerializer serializer = new(typeof(GlobalPreferences));
-                    _allPreferences = serializer.Deserialize(reader) as GlobalPreferences;
-                    reader.Close();
+                    if (serializer.Deserialize(reader) is GlobalPreferences prefs)
+                    {
+                        _allPreferences = prefs;
+                    }
+                    else
+                    {
+                        Logger.Error($"{PreferencesFilePath} could not be read.", new Exception());
+                        return;
+                    }
                 }
                 //put openFilePriority in right order
-                OpenCodexPriority = new(_openCodexFunctions.OrderBy(pf => _allPreferences.OpenFilePriorityIDs.IndexOf(pf.ID)));
+                OpenCodexPriority = new(_openCodexFunctions.OrderBy(pf =>
+                {
+                    //if preferences doesn't have file priorities, put them in default order
+                    if (_allPreferences.OpenFilePriorityIDs is null)
+                    {
+                        return pf.ID;
+                    }
+
+                    //get index in user preference
+                    int index = _allPreferences.OpenFilePriorityIDs.IndexOf(pf.ID);
+
+                    //if it was not found in preference, use its default ID
+                    if (index < 0)
+                    {
+                        return pf.ID;
+                    }
+
+                    return index;
+                }));
             }
             else
             {
                 Logger.Warn($"{PreferencesFilePath} does not exist.", new FileNotFoundException());
-                CreateDefaultPreferences();
             }
         }
 
@@ -80,8 +107,6 @@ namespace COMPASS.ViewModels
             _filetypePreferences = null;
             RaisePropertyChanged(nameof(FiletypePreferences));
         }
-
-        public void CreateDefaultPreferences() => OpenCodexPriority = new(_openCodexFunctions);
         #endregion
 
         #region Tab: Preferences
@@ -110,7 +135,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.DoVirtualizationList = value;
-                MVM.CurrentLayout.UpdateDoVirtualization();
+                MVM?.CurrentLayout.UpdateDoVirtualization();
             }
         }
 
@@ -120,7 +145,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.DoVirtualizationCard = value;
-                MVM.CurrentLayout.UpdateDoVirtualization();
+                MVM?.CurrentLayout.UpdateDoVirtualization();
             }
         }
 
@@ -130,7 +155,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.DoVirtualizationTile = value;
-                MVM.CurrentLayout.UpdateDoVirtualization();
+                MVM?.CurrentLayout.UpdateDoVirtualization();
             }
         }
 
@@ -140,7 +165,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.VirtualizationThresholdList = value;
-                MVM.CurrentLayout.UpdateDoVirtualization();
+                MVM?.CurrentLayout.UpdateDoVirtualization();
             }
         }
 
@@ -150,7 +175,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.VirtualizationThresholdCard = value;
-                MVM.CurrentLayout.UpdateDoVirtualization();
+                MVM?.CurrentLayout.UpdateDoVirtualization();
             }
         }
 
@@ -160,7 +185,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.VirtualizationThresholdTile = value;
-                MVM.CurrentLayout.UpdateDoVirtualization();
+                MVM?.CurrentLayout.UpdateDoVirtualization();
             }
         }
         #endregion
@@ -170,8 +195,12 @@ namespace COMPASS.ViewModels
         #region Tab: Import
 
         //Open folder in explorer
-        private RelayCommand<string> _showInExplorerCommand;
-        public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(IOService.ShowInExplorer);
+        private RelayCommand<string>? _showInExplorerCommand;
+        public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(path =>
+        {
+            if (String.IsNullOrEmpty(path) || !Path.Exists(path)) return;
+            IOService.ShowInExplorer(path);
+        });
 
         #region Auto import folders
         public CollectionViewSource AutoImportFoldersViewSource
@@ -189,23 +218,23 @@ namespace COMPASS.ViewModels
         }
 
         //Edit a folder from auto import
-        private RelayCommand<Folder> _removeAutoImportDirectoryCommand;
+        private RelayCommand<Folder>? _removeAutoImportDirectoryCommand;
         public RelayCommand<Folder> RemoveAutoImportDirectoryCommand => _removeAutoImportDirectoryCommand ??= new(folder =>
-            MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.Remove(folder));
+            MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.Remove(folder!));
 
         //Remove a folder from auto import
-        private RelayCommand<Folder> _editAutoImportDirectoryCommand;
+        private RelayCommand<Folder>? _editAutoImportDirectoryCommand;
         public RelayCommand<Folder> EditAutoImportDirectoryCommand => _editAutoImportDirectoryCommand ??= new(async folder => await EditAutoImportFolder(folder));
 
         //Add a directory from auto import
-        private RelayCommand<string> _addAutoImportDirectoryCommand;
+        private RelayCommand<string>? _addAutoImportDirectoryCommand;
         public RelayCommand<string> AddAutoImportDirectoryCommand => _addAutoImportDirectoryCommand ??= new(async dir => await AddAutoImportDirectory(dir));
 
         //Add a directory from auto import
-        private ActionCommand _pickAutoImportDirectoryCommand;
+        private ActionCommand? _pickAutoImportDirectoryCommand;
         public ActionCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(async () => await AddAutoImportDirectory(IOService.PickFolder()));
 
-        private async Task AddAutoImportDirectory(string dir)
+        private async Task AddAutoImportDirectory(string? dir)
         {
             if (!String.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))
             {
@@ -217,8 +246,9 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private async Task EditAutoImportFolder(Folder folder)
+        private async Task EditAutoImportFolder(Folder? folder)
         {
+            if (folder is null) return;
             var importFolderVM = new ImportFolderViewModel(true)
             {
                 ExistingFolders = new List<Folder> { folder },
@@ -227,7 +257,7 @@ namespace COMPASS.ViewModels
         }
 
         //File types to import
-        private List<ObservableKeyValuePair<string, bool>> _filetypePreferences;
+        private List<ObservableKeyValuePair<string, bool>>? _filetypePreferences;
         public List<ObservableKeyValuePair<string, bool>> FiletypePreferences
             => _filetypePreferences
             ??= MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences.Select(x => new ObservableKeyValuePair<string, bool>(x)).ToList();
@@ -247,9 +277,9 @@ namespace COMPASS.ViewModels
         }
 
         //Remove a directory from auto import
-        private RelayCommand<string> _removeBanishedPathCommand;
+        private RelayCommand<string>? _removeBanishedPathCommand;
         public RelayCommand<string> RemoveBanishedPathCommand => _removeBanishedPathCommand ??= new(path =>
-            MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.Remove(path));
+            MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.Remove(path!));
 
         #endregion
 
@@ -271,20 +301,20 @@ namespace COMPASS.ViewModels
         public List<Tag> AllTags => MainViewModel.CollectionVM.CurrentCollection.AllTags;
 
         //Remove a directory from auto import
-        private RelayCommand<FolderTagPair> _removeFolderTagPairCommand;
+        private RelayCommand<FolderTagPair>? _removeFolderTagPairCommand;
         public RelayCommand<FolderTagPair> RemoveFolderTagPairCommand => _removeFolderTagPairCommand ??= new(pair =>
-            MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Remove(pair));
+            MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Remove(pair!));
 
         //Add a directory from auto import
-        private RelayCommand<FolderTagPair> _addFolderTagPairCommand;
+        private RelayCommand<FolderTagPair>? _addFolderTagPairCommand;
         public RelayCommand<FolderTagPair> AddFolderTagPairCommand => _addFolderTagPairCommand ??= new(AddFolderTagPair);
-        private void AddFolderTagPair(FolderTagPair pair)
+        private void AddFolderTagPair(FolderTagPair? pair)
         {
-            if (String.IsNullOrWhiteSpace(pair.Folder) || pair.Tag is null || pair.Tag.IsGroup) return;
+            if (pair is null || String.IsNullOrWhiteSpace(pair.Folder) || pair.Tag is null || pair.Tag.IsGroup) return;
             MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.AddIfMissing(pair);
         }
 
-        private ActionCommand _detectFolderTagPairsCommand;
+        private ActionCommand? _detectFolderTagPairsCommand;
         public ActionCommand DetectFolderTagPairsCommand => _detectFolderTagPairsCommand ??= new(DetectFolderTagPairs);
         private void DetectFolderTagPairs()
         {
@@ -294,6 +324,7 @@ namespace COMPASS.ViewModels
                 .SelectMany(path => path.Split("\\"))
                 .ToHashSet()
                 .Select(folder => @"\" + folder + @"\");
+
             foreach (string folder in splitFolders)
             {
                 var codicesInFolder = MainViewModel.CollectionVM.CurrentCollection.AllCodices
@@ -301,7 +332,7 @@ namespace COMPASS.ViewModels
                     .Where(codex => codex.Path.Contains(folder))
                     .ToList();
 
-                if (codicesInFolder.Count() < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
+                if (codicesInFolder.Count < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
 
                 var tagsToLink = codicesInFolder
                     .Select(codex => codex.Tags)
@@ -310,10 +341,10 @@ namespace COMPASS.ViewModels
 
                 // if there are tags that aren't associated with any folder so far,
                 // do only those to try and avoid doubles
-                if (tagsToLink.Count() > 1)
+                if (tagsToLink.Count > 1)
                 {
                     var strippedTagsToLink = tagsToLink
-                        .Except(MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Select(pair => pair.Tag))
+                        .Except(MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Select(pair => pair.Tag!))
                         .ToList();
                     if (strippedTagsToLink.Any()) tagsToLink = strippedTagsToLink;
                 }
@@ -359,7 +390,7 @@ namespace COMPASS.ViewModels
             RaisePropertyChanged(nameof(BrokenCodicesMessage));
         }
 
-        private ActionCommand _showBrokenCodicesCommand;
+        private ActionCommand? _showBrokenCodicesCommand;
         public ActionCommand ShowBrokenCodicesCommand => _showBrokenCodicesCommand ??= new(ShowBrokenCodices);
         private void ShowBrokenCodices()
         {
@@ -382,16 +413,23 @@ namespace COMPASS.ViewModels
 
         public string RenameCompleteMessage => $"Renamed Path Reference in {AmountRenamed} items.";
 
-        private RelayCommand<object[]> _renameFolderRefCommand;
+        private RelayCommand<object[]>? _renameFolderRefCommand;
         public RelayCommand<object[]> RenameFolderRefCommand => _renameFolderRefCommand ??= new(RenameFolderReferences);
 
-        private void RenameFolderReferences(object[] args) => RenameFolderReferences((string)args[0], (string)args[1]);
-        private void RenameFolderReferences(string oldpath, string newpath)
+        private void RenameFolderReferences(object[]? args)
         {
+            if (args is null || args.Length != 2) { return; }
+            RenameFolderReferences(args[0] as string, args[1] as string);
+        }
+
+        private void RenameFolderReferences(string? oldpath, string? newpath)
+        {
+            if (String.IsNullOrWhiteSpace(oldpath) || newpath is null) return;
+
             AmountRenamed = 0;
             foreach (Codex codex in MainViewModel.CollectionVM.CurrentCollection.AllCodices)
             {
-                if (codex.HasOfflineSource() && codex.Path.Contains(oldpath) && !String.IsNullOrWhiteSpace(oldpath) && newpath is not null)
+                if (codex.HasOfflineSource() && codex.Path.Contains(oldpath))
                 {
                     string updatedPath = codex.Path.Replace(oldpath, newpath);
                     //only replace path if old one was broken and new one exists
@@ -406,7 +444,7 @@ namespace COMPASS.ViewModels
         }
 
         //remove refs from codices
-        private ActionCommand _removeBrokenRefsCommand;
+        private ActionCommand? _removeBrokenRefsCommand;
         public ActionCommand RemoveBrokenRefsCommand => _removeBrokenRefsCommand ??= new(RemoveBrokenReferences);
         public void RemoveBrokenReferences()
         {
@@ -419,7 +457,7 @@ namespace COMPASS.ViewModels
         }
 
         //Remove Codices with broken refs
-        private ActionCommand _deleteCodicesWithBrokenRefsCommand;
+        private ActionCommand? _deleteCodicesWithBrokenRefsCommand;
         public ActionCommand DeleteCodicesWithBrokenRefsCommand => _deleteCodicesWithBrokenRefsCommand ??= new(RemoveCodicesWithBrokenRefs);
         public void RemoveCodicesWithBrokenRefs()
         {
@@ -453,9 +491,9 @@ namespace COMPASS.ViewModels
 
         public string BindableDataPath => CompassDataPath; // used because binding to static stuff has its problems
 
-        public string NewDataPath { get; set; }
+        public string NewDataPath { get; set; } = "";
 
-        private ActionCommand _changeDataPathCommand;
+        private ActionCommand? _changeDataPathCommand;
         public ActionCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
         private void ChooseNewDataPath()
         {
@@ -471,7 +509,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _resetDataPathCommand;
+        private ActionCommand? _resetDataPathCommand;
         public ActionCommand ResetDataPathCommand => _resetDataPathCommand ??= new(() => SetNewDataPath(_defaultDataPath));
 
         private void SetNewDataPath(string newPath)
@@ -495,7 +533,7 @@ namespace COMPASS.ViewModels
             window.ShowDialog();
         }
 
-        private ActionCommand _moveToNewDataPathCommand;
+        private ActionCommand? _moveToNewDataPathCommand;
         public ActionCommand MoveToNewDataPathCommand => _moveToNewDataPathCommand ??= new(async () => await MoveToNewDataPath());
         public async Task MoveToNewDataPath()
         {
@@ -516,7 +554,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _copyToNewDataPathCommand;
+        private ActionCommand? _copyToNewDataPathCommand;
         public ActionCommand CopyToNewDataPathCommand => _copyToNewDataPathCommand ??=
             new(async () =>
             {
@@ -534,7 +572,7 @@ namespace COMPASS.ViewModels
                 ChangeToNewDataPath();
             });
 
-        private ActionCommand _changeToNewDataPathCommand;
+        private ActionCommand? _changeToNewDataPathCommand;
         public ActionCommand ChangeToNewDataPathCommand => _changeToNewDataPathCommand ??= new(ChangeToNewDataPath);
         public void ChangeToNewDataPath()
         {
@@ -549,7 +587,7 @@ namespace COMPASS.ViewModels
             Application.Current.Shutdown();
         }
 
-        private ActionCommand _deleteDataCommand;
+        private ActionCommand? _deleteDataCommand;
         public ActionCommand DeleteDataCommand => _deleteDataCommand ??= new(DeleteDataLocation);
 
         public void DeleteDataLocation()
@@ -616,7 +654,7 @@ namespace COMPASS.ViewModels
         }
         #endregion
 
-        private ActionCommand _browseLocalFilesCommand;
+        private ActionCommand? _browseLocalFilesCommand;
         public ActionCommand BrowseLocalFilesCommand => _browseLocalFilesCommand ??= new(BrowseLocalFiles);
         public void BrowseLocalFiles()
         {
@@ -630,9 +668,9 @@ namespace COMPASS.ViewModels
 
         private readonly BackgroundWorker _createZipWorker = new();
         private readonly BackgroundWorker _extractZipWorker = new();
-        private LoadingWindow _lw;
+        private LoadingWindow? _lw;
 
-        private ActionCommand _backupLocalFilesCommand;
+        private ActionCommand? _backupLocalFilesCommand;
         public ActionCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
         public void BackupLocalFiles()
         {
@@ -658,7 +696,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _restoreBackupCommand;
+        private ActionCommand? _restoreBackupCommand;
         public ActionCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
         public void RestoreBackup()
         {
@@ -680,29 +718,37 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private void CreateZip(object sender, DoWorkEventArgs e)
+        private void CreateZip(object? sender, DoWorkEventArgs e)
         {
-            string targetPath = e.Argument as string;
+            if (e.Argument is not string targetPath)
+            {
+                return;
+            }
+
             using ZipFile zip = new();
             zip.AddDirectory(CodexCollection.CollectionsPath, "Collections");
             zip.AddFile(PreferencesFilePath, "");
             zip.Save(targetPath);
         }
 
-        private void ExtractZip(object sender, DoWorkEventArgs e)
+        private void ExtractZip(object? sender, DoWorkEventArgs e)
         {
-            string sourcePath = e.Argument as string;
+            if (e.Argument is not string sourcePath || !Path.Exists(sourcePath))
+            {
+                Logger.Warn($"Cannot extract sourcePath as it does not exit");
+                return;
+            }
             using ZipFile zip = ZipFile.Read(sourcePath);
             zip.ExtractAll(CompassDataPath, ExtractExistingFileAction.OverwriteSilently);
         }
 
-        private void CreateZipDone(object sender, RunWorkerCompletedEventArgs e) => _lw.Close();
+        private void CreateZipDone(object? sender, RunWorkerCompletedEventArgs e) => _lw?.Close();
 
-        private void ExtractZipDone(object sender, RunWorkerCompletedEventArgs e)
+        private void ExtractZipDone(object? sender, RunWorkerCompletedEventArgs e)
         {
             //restore collection that was open
             MainViewModel.CollectionVM.CurrentCollection = new(Properties.Settings.Default.StartupCollection);
-            _lw.Close();
+            _lw?.Close();
         }
         #endregion
 
@@ -727,7 +773,7 @@ namespace COMPASS.ViewModels
         #region Tab: About
         public string Version => "Version: " + Assembly.GetExecutingAssembly().GetName().Version?.ToString()[0..5];
 
-        private ActionCommand _checkForUpdatesCommand;
+        private ActionCommand? _checkForUpdatesCommand;
         public ActionCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);
         private void CheckForUpdates()
         {

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using COMPASS.Tools.BarcodeReader;
+using System;
 using System.Windows;
-using COMPASS.Tools.BarcodeReader;
 
 namespace COMPASS.Windows
 {
@@ -9,7 +9,7 @@ namespace COMPASS.Windows
     {
 
 
-        private WebcamStreaming _webcamStreaming;
+        private WebcamStreaming? _webcamStreaming;
 
         public BarcodeScanWindow()
         {
@@ -51,12 +51,15 @@ namespace COMPASS.Windows
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => _webcamStreaming?.Dispose();
 
-        private async void _webcamStreaming_OnQRCodeRead(object sender, EventArgs e)
+        private async void _webcamStreaming_OnQRCodeRead(object? sender, EventArgs e)
         {
             var qrCodeData = (e as QRCodeReadEventArgs)?.QRCodeData;
             if (String.IsNullOrWhiteSpace(qrCodeData) || !IsValidISBN(qrCodeData)) return;
             DecodedString = qrCodeData;
-            await _webcamStreaming.Stop();
+            if (_webcamStreaming != null)
+            {
+                await _webcamStreaming.Stop();
+            }
             Dispatcher.Invoke(() =>
             {
                 DialogResult = true;

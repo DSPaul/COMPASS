@@ -38,21 +38,21 @@ namespace COMPASS.ViewModels
 
         public string CurrentStep => Steps[StepCounter];
 
-        private ActionCommand _nextStepCommand;
+        private ActionCommand? _nextStepCommand;
         public ActionCommand NextStepCommand => _nextStepCommand ??= new(NextStep, ShowNextButton);
         protected virtual void NextStep() => StepCounter++;
         public virtual bool ShowNextButton() => StepCounter < Steps.Count - 1;
 
-        private ActionCommand _prevStepCommand;
+        private ActionCommand? _prevStepCommand;
         public ActionCommand PrevStepCommand => _prevStepCommand ??= new(PrevStep, ShowBackButton);
         protected virtual void PrevStep() => StepCounter--;
         public virtual bool ShowBackButton() => StepCounter > 0;
 
-        private ActionCommand _finishCommand;
+        private ActionCommand? _finishCommand;
         public ActionCommand FinishCommand => _finishCommand ??= new(async () => await ApplyAll(), ShowFinishButton);
         public abstract Task ApplyAll();
         public virtual bool ShowFinishButton() => StepCounter == Steps.Count - 1;
 
-        public Action CloseAction;
+        public Action? CloseAction;
     }
 }

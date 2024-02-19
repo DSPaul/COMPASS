@@ -7,8 +7,8 @@ namespace COMPASS.Converters
 {
     public class ColorToBrushConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) 
-            => value != null ? new SolidColorBrush((Color)value) : null;
+        public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            => value is null ? null : new SolidColorBrush((Color)value);
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }

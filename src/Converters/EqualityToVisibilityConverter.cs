@@ -19,7 +19,7 @@ namespace COMPASS.Converters
             if (parameter is string s && s.StartsWith('!'))
             {
                 showOnEqual = false;
-                parameter = parameter.ToString()[1..];
+                parameter = s[1..];
             }
             return value?.Equals(parameter) == showOnEqual ? Visibility.Visible : Visibility.Collapsed;
         }

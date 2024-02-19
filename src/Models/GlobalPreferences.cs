@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Serialization;
 
 namespace COMPASS.Models
@@ -11,14 +10,14 @@ namespace COMPASS.Models
     [XmlRoot("SerializablePreferences")]
     public class GlobalPreferences
     {
-        public List<int> OpenFilePriorityIDs { get; set; }
+        public List<int>? OpenFilePriorityIDs { get; set; }
         public List<CodexProperty> CodexProperties { get; set; } = new();
 
         public void Init()
         {
             foreach (var defaultProp in Codex.Properties)
             {
-                CodexProperty prop = CodexProperties.FirstOrDefault(p => p.Label == defaultProp.Label);
+                CodexProperty? prop = CodexProperties.Find(p => p.Name == defaultProp.Name);
                 // Add Preferences from defaults if they weren't found on the loaded Preferences
                 if (prop is null)
                 {

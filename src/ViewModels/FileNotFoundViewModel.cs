@@ -16,7 +16,7 @@ namespace COMPASS.ViewModels
 
         private Codex _codex;
 
-        private ActionCommand _findFileCommand;
+        private ActionCommand? _findFileCommand;
         public ActionCommand FindFileCommand => _findFileCommand ??= new(FindFile);
         public void FindFile()
         {
@@ -30,29 +30,29 @@ namespace COMPASS.ViewModels
                 _codex.Path = openFileDialog.FileName;
                 MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
                 CodexViewModel.OpenCodexLocally(_codex);
-                SetDialogResult(true);
-                CloseAction();
+                SetDialogResult?.Invoke(true);
+                CloseAction?.Invoke();
             }
         }
 
-        private ActionCommand _removePathCommand;
+        private ActionCommand? _removePathCommand;
         public ActionCommand RemovePathCommand => _removePathCommand ??= new(RemovePath);
         private void RemovePath()
         {
             _codex.Path = "";
-            CloseAction();
+            CloseAction?.Invoke();
         }
 
-        private ActionCommand _deleteCodexCommand;
+        private ActionCommand? _deleteCodexCommand;
         public ActionCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
         private void DeleteCodex()
         {
             CodexViewModel.DeleteCodex(_codex);
-            SetDialogResult(true);
-            CloseAction();
+            SetDialogResult?.Invoke(true);
+            CloseAction?.Invoke();
         }
 
-        public Action CloseAction;
-        public Action<bool> SetDialogResult;
+        public Action? CloseAction;
+        public Action<bool>? SetDialogResult;
     }
 }

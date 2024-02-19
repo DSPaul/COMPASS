@@ -18,7 +18,7 @@ namespace COMPASS.Models
     {
         public CodexCollection(string collectionDirectory)
         {
-            DirectoryName = collectionDirectory;
+            _directoryName = collectionDirectory;
         }
 
         public static string CollectionsPath => Path.Combine(SettingsViewModel.CompassDataPath, "Collections");
@@ -40,7 +40,7 @@ namespace COMPASS.Models
         }
 
         public List<Tag> AllTags { get; private set; } = new();
-        public List<Tag> RootTags { get; set; }
+        public List<Tag> RootTags { get; set; } = new();
 
         private ObservableCollection<Codex> _allCodices = new();
         public ObservableCollection<Codex> AllCodices
@@ -92,7 +92,7 @@ namespace COMPASS.Models
                     XmlSerializer serializer = new(typeof(List<Tag>));
                     try
                     {
-                        RootTags = serializer.Deserialize(reader) as List<Tag>;
+                        RootTags = serializer.Deserialize(reader) as List<Tag> ?? new();
                     }
                     catch (Exception ex)
                     {
@@ -126,7 +126,7 @@ namespace COMPASS.Models
                     XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
                     try
                     {
-                        AllCodices = serializer.Deserialize(reader) as ObservableCollection<Codex>;
+                        AllCodices = serializer.Deserialize(reader) as ObservableCollection<Codex> ?? new();
                     }
                     catch (Exception ex)
                     {
@@ -173,12 +173,13 @@ namespace COMPASS.Models
                     }
 
                     XmlSerializer serializer = new(typeof(CollectionInfo), overrides);
-                    Info = serializer.Deserialize(reader) as CollectionInfo;
-                    if (Info == null)
+                    var loadedInfo = serializer.Deserialize(reader) as CollectionInfo;
+                    if (loadedInfo is null)
                     {
                         Logger.Warn($"Could not load info for {CollectionInfoFilePath}");
                         return false;
                     }
+                    Info = loadedInfo;
                     Info.CompleteLoading(this);
                 }
                 catch (Exception ex)
@@ -457,7 +458,7 @@ namespace COMPASS.Models
             }
 
             //Remove folder-tag links that contain this tag
-            Info.FolderTagPairs.RemoveAll(pair => pair.Tag == toDelete);
+            Info.FolderTagPairs.RemoveAll(pair => pair.Tag is not null && pair.Tag == toDelete);
 
             SaveTags();
         }

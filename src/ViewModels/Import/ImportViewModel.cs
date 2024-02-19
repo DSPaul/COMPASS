@@ -66,7 +66,7 @@ namespace COMPASS.ViewModels.Import
             window.Show();
         }
 
-        public static async Task ImportFilesAsync(List<string> paths, CodexCollection targetCollection = null)
+        public static async Task ImportFilesAsync(List<string> paths, CodexCollection? targetCollection = null)
         {
             targetCollection ??= MainViewModel.CollectionVM.CurrentCollection;
 

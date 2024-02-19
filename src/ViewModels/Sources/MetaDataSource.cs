@@ -70,9 +70,9 @@ namespace COMPASS.ViewModels.Sources
         public Color BackgroundColor => throw new NotImplementedException();
 
         //Overwrite Equal operator
-        public override bool Equals(object obj) => Equals(obj as NamedMetaDataSource);
+        public override bool Equals(object? obj) => Equals(obj as NamedMetaDataSource);
 
-        public bool Equals(NamedMetaDataSource other)
+        public bool Equals(NamedMetaDataSource? other)
         {
             if (other is null)
                 return false;
@@ -91,7 +91,10 @@ namespace COMPASS.ViewModels.Sources
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(NamedMetaDataSource lhs, NamedMetaDataSource rhs) => !(lhs == rhs);
+        public static bool operator !=(NamedMetaDataSource lhs, NamedMetaDataSource rhs)
+        {
+            return !(lhs == rhs);
+        }
 
         public override int GetHashCode() => Source.GetHashCode();
     }

@@ -42,7 +42,7 @@ namespace COMPASS.ViewModels
 
         private ObservableCollection<Codex> _allCodices;
         private readonly int _itemsShown = 15;
-        public int ItemsShown => Math.Min(_itemsShown, FilteredCodices.Count);
+        public int ItemsShown => Math.Min(_itemsShown, FilteredCodices?.Count ?? 0);
 
 
         private HashSet<Codex> _includedCodices;
@@ -62,17 +62,21 @@ namespace COMPASS.ViewModels
         public ObservableCollection<Filter> IncludedFilters { get; set; } = new();
         public ObservableCollection<Filter> ExcludedFilters { get; set; } = new();
 
-        private ObservableCollection<Codex> _filteredCodices;
-        public ObservableCollection<Codex> FilteredCodices
+        private ObservableCollection<Codex>? _filteredCodices;
+        public ObservableCollection<Codex>? FilteredCodices
         {
             get => _filteredCodices;
             set => SetProperty(ref _filteredCodices, value);
         }
 
-        public ObservableCollection<Codex> Favorites => new(FilteredCodices.Where(c => c.Favorite));
-        public List<Codex> RecentCodices => FilteredCodices.OrderByDescending(c => c.LastOpened).ToList().GetRange(0, ItemsShown);
-        public List<Codex> MostOpenedCodices => FilteredCodices.OrderByDescending(c => c.OpenedCount).ToList().GetRange(0, ItemsShown);
-        public List<Codex> RecentlyAddedCodices => FilteredCodices.OrderByDescending(c => c.DateAdded).ToList().GetRange(0, ItemsShown);
+        public ObservableCollection<Codex> Favorites => FilteredCodices is null ? new() :
+            new(FilteredCodices.Where(c => c.Favorite));
+        public List<Codex> RecentCodices => FilteredCodices is null ? new() :
+            FilteredCodices.OrderByDescending(c => c.LastOpened).ToList().GetRange(0, ItemsShown);
+        public List<Codex> MostOpenedCodices => FilteredCodices is null ? new() :
+            FilteredCodices.OrderByDescending(c => c.OpenedCount).ToList().GetRange(0, ItemsShown);
+        public List<Codex> RecentlyAddedCodices => FilteredCodices is null ? new() :
+            FilteredCodices.OrderByDescending(c => c.DateAdded).ToList().GetRange(0, ItemsShown);
 
         private string _searchTerm = "";
         public string SearchTerm
@@ -92,7 +96,6 @@ namespace COMPASS.ViewModels
 
         public string SelectedAuthor
         {
-            get => null;
             set
             {
                 if (String.IsNullOrEmpty(value)) return;
@@ -110,7 +113,6 @@ namespace COMPASS.ViewModels
 
         public string SelectedPublisher
         {
-            get => null;
             set
             {
                 if (String.IsNullOrEmpty(value)) return;
@@ -128,7 +130,6 @@ namespace COMPASS.ViewModels
 
         public string SelectedFileType
         {
-            get => null;
             set
             {
                 if (String.IsNullOrEmpty(value)) return;
@@ -145,7 +146,6 @@ namespace COMPASS.ViewModels
 
         public string SelectedDomain
         {
-            get => null;
             set
             {
                 if (String.IsNullOrEmpty(value)) return;
@@ -300,10 +300,11 @@ namespace COMPASS.ViewModels
         //------------- Adding, Removing, ect ------------//
 
         // Remove Filter
-        private RelayCommand<Filter> _removeFromItemsControlCommand;
+        private RelayCommand<Filter>? _removeFromItemsControlCommand;
         public RelayCommand<Filter> RemoveFromItemsControlCommand => _removeFromItemsControlCommand ??= new(RemoveFilter);
-        public void RemoveFilter(Filter filter)
+        public void RemoveFilter(Filter? filter)
         {
+            if (filter is null) return;
             IncludedFilters.Remove(filter);
             ExcludedFilters.Remove(filter);
         }
@@ -314,11 +315,12 @@ namespace COMPASS.ViewModels
         }
 
         // Add Filter
-        private RelayCommand<Filter> _addSourceFilterCommand;
+        private RelayCommand<Filter>? _addSourceFilterCommand;
         public RelayCommand<Filter> AddSourceFilterCommand => _addSourceFilterCommand ??= new(AddSourceFilter);
-        public void AddSourceFilter(Filter filter) => AddFilter(filter, Include);
-        public void AddFilter(Filter filter, bool include = true)
+        public void AddSourceFilter(Filter? filter) => AddFilter(filter, Include);
+        public void AddFilter(Filter? filter, bool include = true)
         {
+            if (filter is null) return;
             if (Keyboard.Modifiers == ModifierKeys.Alt)
             {
                 include = false;
@@ -326,23 +328,20 @@ namespace COMPASS.ViewModels
 
             ObservableCollection<Filter> target = include ? IncludedFilters : ExcludedFilters;
             ObservableCollection<Filter> other = !include ? IncludedFilters : ExcludedFilters;
-            //if Filter is unique, remove previous instance of that Filter before adding
-            if (filter.Unique)
+
+            //if Filter is unique, remove previous instance(s) of that Filter before adding
+            if (filter.Unique && target.Any(f => f.Type == filter.Type))
             {
-                target.Remove(
-                    target.SingleOrDefault(f => f.Type == filter.Type));
+                target.RemoveAll(f => f.Type == filter.Type);
             }
-            //only add if not yet in Included Tags
-            if (!target.Contains(filter))
-            {
-                target.Add(filter);
-                other.Remove(filter);
-            }
+
+            target.AddIfMissing(filter);
+            other.Remove(filter); //filter should never occurr in both include and exclude so remove from other
         }
 
-        private RelayCommand<string> _searchCommand;
+        private RelayCommand<string>? _searchCommand;
         public RelayCommand<string> SearchCommand => _searchCommand ??= new(SearchCommandHelper);
-        private void SearchCommandHelper(string searchTerm)
+        private void SearchCommandHelper(string? searchTerm)
         {
             Filter searchFilter = new(Filter.FilterType.Search, searchTerm);
             if (!String.IsNullOrEmpty(searchTerm))
@@ -356,7 +355,7 @@ namespace COMPASS.ViewModels
         }
 
         //Clear Filters
-        private ActionCommand _clearFiltersCommand;
+        private ActionCommand? _clearFiltersCommand;
         public ActionCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
         public void ClearFilters()
         {
@@ -415,7 +414,7 @@ namespace COMPASS.ViewModels
 
         private HashSet<Codex> GetFilteredCodicesBySearch(Filter searchFilter)
         {
-            string searchTerm = (string)searchFilter.FilterValue;
+            string? searchTerm = searchFilter.FilterValue as string;
 
             if (String.IsNullOrEmpty(searchTerm)) return new(_allCodices);
 
@@ -440,7 +439,7 @@ namespace COMPASS.ViewModels
             HashSet<Codex> includedCodices = new(_allCodices);
 
             List<Tag> includedTags = filters
-                .Select(filter => (Tag)filter.FilterValue)
+                .Select(filter => (Tag)filter.FilterValue!)
                 .ToList();
 
             if (includedTags.Count > 0)
@@ -455,8 +454,8 @@ namespace COMPASS.ViewModels
                     // Add parents of those tags, must come AFTER children, otherwise children of parents are included which is wrong
                     for (int i = 0; i < singleGroupTags.Count; i++)
                     {
-                        Tag parentTag = singleGroupTags[i].Parent;
-                        if (parentTag != null && !parentTag.IsGroup) singleGroupTags.AddIfMissing(parentTag);
+                        Tag? parentTag = singleGroupTags[i].Parent;
+                        if (parentTag is not null && !parentTag.IsGroup) singleGroupTags.AddIfMissing(parentTag);
                     }
 
                     //List of codices that match filters in one group
@@ -471,7 +470,7 @@ namespace COMPASS.ViewModels
         {
             HashSet<Codex> excludedCodices = new();
 
-            var excludedTags = filters.Select(filter => (Tag)filter.FilterValue).ToList();
+            var excludedTags = filters.Select(filter => (Tag)filter.FilterValue!).ToList();
 
             if (excludedTags.Count > 0)
             {
@@ -521,7 +520,7 @@ namespace COMPASS.ViewModels
         public void RemoveCodex(Codex c)
         {
             _excludedCodices.Remove(c);
-            FilteredCodices.Remove(c);
+            FilteredCodices?.Remove(c);
         }
 
         #endregion

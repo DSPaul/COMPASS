@@ -31,9 +31,9 @@ namespace COMPASS.ViewModels
         }
 
         //Open codex Offline
-        private ReturningRelayCommand<Codex, bool> _openCodexLocallyCommand;
+        private ReturningRelayCommand<Codex, bool>? _openCodexLocallyCommand;
         public ReturningRelayCommand<Codex, bool> OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(OpenCodexLocally, CanOpenCodexLocally);
-        public static bool OpenCodexLocally(Codex toOpen)
+        public static bool OpenCodexLocally(Codex? toOpen)
         {
             if (toOpen is null) return false;
             if (!toOpen.HasOfflineSource()) return false;
@@ -56,7 +56,7 @@ namespace COMPASS.ViewModels
                 return fileNotFoundWindow.ShowDialog() ?? false;
             }
         }
-        public static bool CanOpenCodexLocally(Codex toOpen)
+        public static bool CanOpenCodexLocally(Codex? toOpen)
         {
             if (toOpen == null) return false;
 
@@ -64,14 +64,14 @@ namespace COMPASS.ViewModels
         }
 
         //Open codex Online
-        private ReturningRelayCommand<Codex, bool> _openCodexOnlineCommand;
+        private ReturningRelayCommand<Codex, bool>? _openCodexOnlineCommand;
         public ReturningRelayCommand<Codex, bool> OpenCodexOnlineCommand => _openCodexOnlineCommand ??= new(OpenCodexOnline, CanOpenCodexOnline);
-        public static bool OpenCodexOnline(Codex toOpen)
+        public static bool OpenCodexOnline(Codex? toOpen)
         {
             if (!CanOpenCodexOnline(toOpen)) return false;
             try
             {
-                Process.Start(new ProcessStartInfo(toOpen.SourceURL) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(toOpen!.SourceURL) { UseShellExecute = true });
                 toOpen.LastOpened = DateTime.Now;
                 toOpen.OpenedCount++;
                 Logger.Info($"Opened {toOpen.SourceURL}");
@@ -79,24 +79,24 @@ namespace COMPASS.ViewModels
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to open {toOpen.SourceURL}", ex);
+                Logger.Error($"Failed to open {toOpen!.SourceURL}", ex);
                 //fails if no internet, pinging 8.8.8.8 DNS instead of server because some sites like gm binder block ping
                 if (!IOService.PingURL()) Logger.Warn($"Cannot open this item online when not connected to the internet", ex);
                 return false;
             }
 
         }
-        public static bool CanOpenCodexOnline(Codex toOpen)
+        public static bool CanOpenCodexOnline(Codex? toOpen)
         {
-            if (toOpen == null) return false;
+            if (toOpen is null) return false;
 
             return toOpen.HasOnlineSource();
         }
 
         //Open Multiple Files
-        private ReturningRelayCommand<IList, bool> _openSelectedCodicesCommand;
-        public ReturningRelayCommand<IList, bool> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(l => OpenSelectedCodices(l.Cast<Codex>().ToList()));
-        public static bool OpenSelectedCodices(IList<Codex> toOpen)
+        private ReturningRelayCommand<IList, bool>? _openSelectedCodicesCommand;
+        public ReturningRelayCommand<IList, bool> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(l => OpenSelectedCodices(l?.Cast<Codex>().ToList()));
+        public static bool OpenSelectedCodices(IList<Codex>? toOpen)
         {
             if (toOpen is null) return false;
 
@@ -131,21 +131,22 @@ namespace COMPASS.ViewModels
         #region Edit Codex
 
         //Edit File
-        private RelayCommand<Codex> _editCodexCommand;
+        private RelayCommand<Codex>? _editCodexCommand;
         public RelayCommand<Codex> EditCodexCommand => _editCodexCommand ??= new(EditCodex);
-        public static void EditCodex(Codex toEdit)
+        public static void EditCodex(Codex? toEdit)
         {
+            if (toEdit is null) return;
             CodexEditWindow editWindow = new(new CodexEditViewModel(toEdit));
             editWindow.ShowDialog();
             editWindow.Topmost = true;
         }
 
         //Edit Multiple files
-        private RelayCommand<IList> _editCodicesCommand;
+        private RelayCommand<IList>? _editCodicesCommand;
         public RelayCommand<IList> EditCodicesCommand => _editCodicesCommand ??= new(EditCodices);
-        public static void EditCodices(IList toEdit)
+        public static void EditCodices(IList? toEdit)
         {
-            List<Codex> toEditList = toEdit?.Cast<Codex>().ToList();
+            List<Codex>? toEditList = toEdit?.Cast<Codex>().ToList();
             if (toEditList is null) return;
 
             if (toEditList.Count == 1)
@@ -164,21 +165,22 @@ namespace COMPASS.ViewModels
         #region Toggle Favorite 
 
         //Toggle Favorite
-        private RelayCommand<Codex> _favoriteCodexCommand;
+        private RelayCommand<Codex>? _favoriteCodexCommand;
         public RelayCommand<Codex> FavoriteCodexCommand => _favoriteCodexCommand ??= new(FavoriteCodex);
-        public static void FavoriteCodex(Codex toFavorite)
+        public static void FavoriteCodex(Codex? toFavorite)
         {
+            if (toFavorite is null) return;
             toFavorite.Favorite = !toFavorite.Favorite;
             string prefix = toFavorite.Favorite ? "Favorited" : "Unfavorited";
             Logger.Info($"{prefix} {toFavorite.Title}");
         }
 
         //Toggle Favorite
-        private RelayCommand<IList> _favoriteCodicesCommand;
+        private RelayCommand<IList>? _favoriteCodicesCommand;
         public RelayCommand<IList> FavoriteCodicesCommand => _favoriteCodicesCommand ??= new(FavoriteCodices);
-        private static void FavoriteCodices(IList toFavorite)
+        private static void FavoriteCodices(IList? toFavorite)
         {
-            List<Codex> toFavoriteList = toFavorite?.Cast<Codex>().ToList();
+            List<Codex>? toFavoriteList = toFavorite?.Cast<Codex>().ToList();
             if (toFavoriteList is null) return;
             if (toFavoriteList.Count == 1)
             {
@@ -189,7 +191,7 @@ namespace COMPASS.ViewModels
             // if at least one is not favorited, set all to favorite
             // if all are already favorited, unfavorite all
             bool newVal = toFavoriteList.Any(c => !c.Favorite);
-            foreach (Codex codex in toFavorite)
+            foreach (Codex codex in toFavoriteList)
             {
                 codex.Favorite = newVal;
                 Logger.Info($"{(newVal ? "Favorited" : "Unfavorited")} {codex.Title}");
@@ -199,19 +201,23 @@ namespace COMPASS.ViewModels
         #endregion
 
         //Show in Explorer
-        private RelayCommand<Codex> _showInExplorerCommand;
+        private RelayCommand<Codex>? _showInExplorerCommand;
         public RelayCommand<Codex> ShowInExplorerCommand => _showInExplorerCommand ??= new(ShowInExplorer, CanOpenCodexLocally);
-        public static void ShowInExplorer(Codex toShow)
+        public static void ShowInExplorer(Codex? toShow)
         {
-            string folderPath = Path.GetDirectoryName(toShow.Path);
+            if (String.IsNullOrEmpty(toShow?.Path) || !File.Exists(toShow.Path)) return;
+            string? folderPath = Path.GetDirectoryName(toShow.Path);
+            if (String.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath)) return;
             IOService.ShowInExplorer(folderPath);
         }
 
         //Move Codex to other CodexCollection
-        private RelayCommand<object[]> _moveToCollectionCommand;
+        private RelayCommand<object[]>? _moveToCollectionCommand;
         public RelayCommand<object[]> MoveToCollectionCommand => _moveToCollectionCommand ??= new(MoveToCollection);
-        public void MoveToCollection(object[] par)
+        public void MoveToCollection(object[]? par)
         {
+            if (par == null) return;
+
             //par contains 2 parameters
             CodexCollection targetCollection = new((string)par[0]);
             List<Codex> toMoveList = new();
@@ -297,43 +303,51 @@ namespace COMPASS.ViewModels
         }
 
         //Delete Codex
-        private RelayCommand<Codex> _deleteCodexCommand;
+        private RelayCommand<Codex>? _deleteCodexCommand;
         public RelayCommand<Codex> DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
-        public static void DeleteCodex(Codex toDelete) => DeleteCodices(new List<Codex>() { toDelete });
+        public static void DeleteCodex(Codex? toDelete)
+        {
+            if (toDelete == null) return;
+            DeleteCodices(new List<Codex>() { toDelete });
+        }
 
         //Delete Codices
-        private RelayCommand<IList> _deleteCodicesCommand;
+        private RelayCommand<IList>? _deleteCodicesCommand;
         public RelayCommand<IList> DeleteCodicesCommand => _deleteCodicesCommand ??= new(DeleteCodices);
-        public static void DeleteCodices(IList toDelete)
+        public static void DeleteCodices(IList? toDelete)
         {
-            MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(toDelete.Cast<Codex>().ToList());
+            MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(toDelete?.Cast<Codex>().ToList() ?? new());
             MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
 
         //Banish Codex
-        private RelayCommand<Codex> _banishCodexCommand;
-        public RelayCommand<Codex> BanishCodexCommand => _banishCodexCommand ??= new((codex) => BanishCodices(new List<Codex>() { codex }));
+        private RelayCommand<Codex>? _banishCodexCommand;
+        public RelayCommand<Codex> BanishCodexCommand => _banishCodexCommand ??= new((codex) =>
+        {
+            if (codex == null) return;
+            BanishCodices(new List<Codex>() { codex });
+        });
 
         //Banish Codices
-        private RelayCommand<IList> _banishCodicesCommand;
+        private RelayCommand<IList>? _banishCodicesCommand;
         public RelayCommand<IList> BanishCodicesCommand => _banishCodicesCommand ??= new(BanishCodices);
-        public static void BanishCodices(IList toBanish)
+        public static void BanishCodices(IList? toBanish)
         {
-            MainViewModel.CollectionVM.CurrentCollection.BanishCodices(toBanish.Cast<Codex>().ToList());
+            MainViewModel.CollectionVM.CurrentCollection.BanishCodices(toBanish?.Cast<Codex>().ToList() ?? new());
             DeleteCodices(toBanish);
         }
 
-        private ReturningRelayCommand<Codex, Task> _getMetaDataCommand;
+        private ReturningRelayCommand<Codex, Task>? _getMetaDataCommand;
         public ReturningRelayCommand<Codex, Task> GetMetaDataCommand => _getMetaDataCommand ??= new(StartGetMetaDataProcess);
 
 
-        private ReturningRelayCommand<IList, Task> _getMetaDataBulkCommand;
+        private ReturningRelayCommand<IList, Task>? _getMetaDataBulkCommand;
         public ReturningRelayCommand<IList, Task> GetMetaDataBulkCommand => _getMetaDataBulkCommand ??= new(
             async codices =>
             {
                 try
                 {
-                    await StartGetMetaDataProcess(codices.Cast<Codex>().ToList());
+                    await StartGetMetaDataProcess(codices?.Cast<Codex>().ToList() ?? new());
                 }
                 catch (OperationCanceledException ex)
                 {
@@ -343,10 +357,11 @@ namespace COMPASS.ViewModels
             }
         );
 
-        public static async Task StartGetMetaDataProcess(Codex codex)
+        public static async Task StartGetMetaDataProcess(Codex? codex)
         {
             try
             {
+                if (codex == null) { return; }
                 await StartGetMetaDataProcess(new List<Codex>() { codex });
             }
             catch (OperationCanceledException ex)
@@ -433,9 +448,9 @@ namespace COMPASS.ViewModels
                     ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                     // Check if there is metadata from this source to use
-                    if (!metaDataFromSource.Keys.Contains(source))
+                    if (!metaDataFromSource.ContainsKey(source))
                     {
-                        SourceViewModel sourceVM = SourceViewModel.GetSourceVM(source);
+                        SourceViewModel? sourceVM = SourceViewModel.GetSourceVM(source);
                         if (sourceVM is null) continue;
                         if (!sourceVM.IsValidSource(codex)) continue;
                         var metaDataHolder = await sourceVM.GetMetaData(metaDatalessCodex);
@@ -460,7 +475,7 @@ namespace COMPASS.ViewModels
                 {
                     bool isDifferent = prop.Label == "Tags" ?
                     // in case of tags, check if source adds tags that aren't there yet
-                    ((IList<Tag>)prop.GetProp(propHolder)).Except((IList<Tag>)prop.GetProp(codex)).Any()
+                    ((IList<Tag>)prop.GetProp(propHolder)!).Except((IList<Tag>)prop.GetProp(codex)!).Any()
                     //check if ToString() representations are different, doesn't work for tags
                     : prop.GetProp(codex)?.ToString() != prop.GetProp(propHolder)?.ToString();
                     if (isDifferent)
@@ -479,13 +494,17 @@ namespace COMPASS.ViewModels
             ProgressViewModel.GetInstance().IncrementCounter();
         }
 
-        private ReturningRelayCommand<Codex, Task> _getCoverCommand;
+        private ReturningRelayCommand<Codex, Task>? _getCoverCommand;
         public ReturningRelayCommand<Codex, Task> GetCoverCommand => _getCoverCommand ??=
-            new(async codex => await CoverService.GetCover(new List<Codex>() { codex }));
+            new(async codex =>
+            {
+                if (codex is null) return;
+                await CoverService.GetCover(new List<Codex>() { codex });
+            });
 
-        private ReturningRelayCommand<IList, Task> _getCoverBulkCommand;
+        private ReturningRelayCommand<IList, Task>? _getCoverBulkCommand;
         public ReturningRelayCommand<IList, Task> GetCoverBulkCommand => _getCoverBulkCommand ??=
-            new(async codices => await CoverService.GetCover(codices.Cast<Codex>().ToList()));
+            new(async codices => await CoverService.GetCover(codices?.Cast<Codex>().ToList() ?? new()));
 
         public static void DataGridHandleKeyDown(object sender, KeyEventArgs e)
             => HandleKeyDownOnCodex(((DataGrid)sender).SelectedItems, e);
@@ -552,12 +571,14 @@ namespace COMPASS.ViewModels
             Codex targetCodex = (Codex)dropInfo.TargetItem;
             if (targetCodex is null) return;
 
-            Tag toAdd = dropInfo.Data switch
+            Tag? toAdd = dropInfo.Data switch
             {
                 TreeViewNode node => node.Tag,
                 Tag tag => tag,
                 _ => null
             };
+
+            if (toAdd is null) return;
 
             if (!targetCodex.Tags.Contains(toAdd))
             {

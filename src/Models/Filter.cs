@@ -6,7 +6,7 @@ namespace COMPASS.Models
 {
     public sealed class Filter : ITag, IEquatable<Filter>
     {
-        public Filter(FilterType filterType, object filterValue = null)
+        public Filter(FilterType filterType, object? filterValue = null)
         {
             Type = filterType;
             FilterValue = filterValue;
@@ -33,19 +33,19 @@ namespace COMPASS.Models
 
         public Func<Codex, bool> Method => Type switch
         {
-            FilterType.Author => codex => codex.Authors.Contains((string)FilterValue),
-            FilterType.Publisher => codex => codex.Publisher == (string)FilterValue,
-            FilterType.StartReleaseDate => codex => codex.ReleaseDate >= (DateTime?)FilterValue,
-            FilterType.StopReleaseDate => codex => codex.ReleaseDate < (DateTime?)FilterValue,
-            FilterType.MinimumRating => codex => codex.Rating >= (int?)FilterValue,
+            FilterType.Author => codex => FilterValue is string author && codex.Authors.Contains(author),
+            FilterType.Publisher => codex => FilterValue is string publisher && codex.Publisher == publisher,
+            FilterType.StartReleaseDate => codex => FilterValue is DateTime date && codex.ReleaseDate >= date,
+            FilterType.StopReleaseDate => codex => FilterValue is DateTime date && codex.ReleaseDate < date,
+            FilterType.MinimumRating => codex => FilterValue is int rating && codex.Rating >= rating,
             FilterType.OfflineSource => codex => codex.HasOfflineSource(),
             FilterType.OnlineSource => codex => codex.HasOnlineSource(),
             FilterType.HasISBN => codex => !String.IsNullOrEmpty(codex.ISBN),
             FilterType.PhysicalSource => codex => codex.PhysicallyOwned,
             FilterType.Favorite => codex => codex.Favorite,
-            FilterType.FileExtension => codex => codex.FileType == (string)FilterValue,
+            FilterType.FileExtension => codex => FilterValue is string extension && codex.FileType == extension,
             FilterType.HasBrokenPath => codex => codex.HasOfflineSource() && !Path.Exists(codex.Path),
-            FilterType.Domain => codex => codex.HasOnlineSource() && codex.SourceURL.Contains((string)FilterValue),
+            FilterType.Domain => codex => FilterValue is string domain && codex.HasOnlineSource() && codex.SourceURL.Contains(domain),
             _ => _ => true
         };
 
@@ -59,7 +59,7 @@ namespace COMPASS.Models
                 {
                     DateTime date => date.ToShortDateString(),
                     ITag tag => tag.Content,
-                    _ => FilterValue.ToString()
+                    _ => FilterValue.ToString() ?? string.Empty
                 };
                 return $"{Label} {formattedFilterValue} {Suffix}".Trim();
             }
@@ -79,7 +79,7 @@ namespace COMPASS.Models
             FilterType.Favorite => Colors.HotPink,
             FilterType.FileExtension => Colors.OrangeRed,
             FilterType.Search => Colors.Salmon,
-            FilterType.Tag => ((ITag)FilterValue).BackgroundColor,
+            FilterType.Tag => ((ITag?)FilterValue)!.BackgroundColor,
             FilterType.HasBrokenPath => Colors.Gold,
             FilterType.Domain => Colors.MediumTurquoise,
             _ => throw new NotImplementedException(),
@@ -87,7 +87,7 @@ namespace COMPASS.Models
 
         //Properties
         public FilterType Type { get; init; }
-        public object FilterValue { get; init; }
+        public object? FilterValue { get; init; }
         public string Label => Type switch
         {
             FilterType.Author => "Author:",
@@ -122,9 +122,9 @@ namespace COMPASS.Models
         };
 
         //Overwrite Equal operator
-        public override bool Equals(object obj) => Equals(obj as Filter);
+        public override bool Equals(object? obj) => Equals(obj as Filter);
 
-        public bool Equals(Filter other)
+        public bool Equals(Filter? other)
         {
             if (other is null)
                 return false;
