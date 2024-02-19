@@ -117,14 +117,14 @@
                     <RadioButton GroupName="Version" Grid.Column="3" Grid.Row="5" Content="{Binding CurrentPair.Item2.Version}" IsChecked="{Binding ShouldUseNewValue[Version]}"
                                  Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Version}"/>
 
-                    <TextBlock Text="PageCount:" Grid.Row="6" Grid.Column="0"
-                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Pagecount}"/>
+                    <TextBlock Text="Pagecount:" Grid.Row="6" Grid.Column="0"
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=PageCount}"/>
                     <RadioButton GroupName="PageCount" Grid.Column="2" Grid.Row="6" Padding="-15,0"
-                                 Content="{Binding CurrentPair.Item1.PageCount}" IsChecked="{Binding ShouldUseNewValue[Pagecount], Converter={StaticResource NegateConverter}}"
-                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Pagecount}"/>
+                                 Content="{Binding CurrentPair.Item1.PageCount}" IsChecked="{Binding ShouldUseNewValue[PageCount], Converter={StaticResource NegateConverter}}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=PageCount}"/>
                     <RadioButton GroupName="PageCount" Grid.Column="3" Grid.Row="6" Padding="-15,0"
-                                 Content="{Binding CurrentPair.Item2.PageCount}" IsChecked="{Binding ShouldUseNewValue[Pagecount]}"
-                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Pagecount}"/>
+                                 Content="{Binding CurrentPair.Item2.PageCount}" IsChecked="{Binding ShouldUseNewValue[PageCount]}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=PageCount}"/>
 
                     <TextBlock Text="Description:" Grid.Row="7" Grid.Column="0"
                                Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Description}" Margin="20,0,20,5" VerticalAlignment="Bottom"/>
@@ -136,13 +136,13 @@
                                  Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Description}"/>
 
                     <TextBlock Text="Release Date:" Grid.Row="8" Grid.Column="0"
-                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Release Date}"/>
-                    <RadioButton GroupName="Release Date" Grid.Column="2" Grid.Row="8" Padding="-15,0" IsChecked="{Binding ShouldUseNewValue[Release Date], Converter={StaticResource NegateConverter}}"
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=ReleaseDate}"/>
+                    <RadioButton GroupName="Release Date" Grid.Column="2" Grid.Row="8" Padding="-15,0" IsChecked="{Binding ShouldUseNewValue[ReleaseDate], Converter={StaticResource NegateConverter}}"
                                  Content="{Binding CurrentPair.Item1.ReleaseDate, StringFormat=dd/mm/yyyy}"
-                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Release Date}"/>
-                    <RadioButton GroupName="Release Date" Grid.Column="3" Grid.Row="8" Padding="-15,0" IsChecked="{Binding ShouldUseNewValue[Release Date]}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=ReleaseDate}"/>
+                    <RadioButton GroupName="Release Date" Grid.Column="3" Grid.Row="8" Padding="-15,0" IsChecked="{Binding ShouldUseNewValue[ReleaseDate]}"
                                  Content="{Binding CurrentPair.Item2.ReleaseDate, StringFormat=dd/mm/yyyy}"
-                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Release Date}"/>
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=ReleaseDate}"/>
                     
                     <TextBlock Text="Tags:" Grid.Row="8" Grid.Column="0"
                                Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Tags}"/>
@@ -180,15 +180,15 @@
                     </RadioButton>
 
                     <TextBlock Text="Cover/Thumbnail:" Grid.Row="8" Grid.Column="0"
-                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Cover Art}"/>
-                    <RadioButton GroupName="Tags" Grid.Column="2" Grid.Row="8" IsChecked="{Binding ShouldUseNewValue[Cover Art], Converter={StaticResource NegateConverter}}"
-                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Cover Art}">
+                               Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=CoverArt}"/>
+                    <RadioButton GroupName="Tags" Grid.Column="2" Grid.Row="8" IsChecked="{Binding ShouldUseNewValue[CoverArt], Converter={StaticResource NegateConverter}}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=CoverArt}">
                         <RadioButton.Content>
                             <Image Source="{Binding CurrentPair.Item1.CoverArt, Converter={StaticResource UriToBitmapConverter}}" Width="200"/>
                         </RadioButton.Content>
                     </RadioButton>
-                    <RadioButton GroupName="Tags" Grid.Column="3" Grid.Row="8" IsChecked="{Binding ShouldUseNewValue[Cover Art]}"
-                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Cover Art}">
+                    <RadioButton GroupName="Tags" Grid.Column="3" Grid.Row="8" IsChecked="{Binding ShouldUseNewValue[CoverArt]}"
+                                 Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=CoverArt}">
                         <RadioButton.Content>
                             <Image Source="{Binding CurrentPair.Item2.CoverArt, Converter={StaticResource UriToBitmapConverter}}" Width="200"/>
                         </RadioButton.Content>

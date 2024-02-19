@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace COMPASS.Models
@@ -15,6 +16,23 @@ namespace COMPASS.Models
 
         public void Init()
         {
+            //In versions 1.6.0 and lower, label was stored instead of name
+            var useLabel = CodexProperties.All(prop => string.IsNullOrEmpty(prop.Name) && !string.IsNullOrEmpty(prop.Label));
+            if (useLabel)
+            {
+                for (int i = 0; i < CodexProperties.Count; i++)
+                {
+                    CodexProperty prop = CodexProperties[i];
+                    var foundProp = Codex.Properties.Find(p => p.Label == prop.Label);
+                    if (foundProp != null)
+                    {
+                        foundProp.OverwriteMode = prop.OverwriteMode;
+                        CodexProperties[i] = foundProp;
+                    }
+                }
+            }
+
+
             foreach (var defaultProp in Codex.Properties)
             {
                 CodexProperty? prop = CodexProperties.Find(p => p.Name == defaultProp.Name);
@@ -25,6 +43,14 @@ namespace COMPASS.Models
                     CodexProperties.Add(prop);
                 }
                 prop.UpdateSources();
+            }
+        }
+
+        public void PrepareForSave()
+        {
+            foreach (CodexProperty prop in CodexProperties)
+            {
+                prop.PrepareForSave();
             }
         }
     }

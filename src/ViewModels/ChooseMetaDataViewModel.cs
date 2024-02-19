@@ -54,7 +54,7 @@ namespace COMPASS.ViewModels
         public override Task ApplyAll()
         {
             ApplyChoice();
-            CloseAction.Invoke();
+            CloseAction?.Invoke();
 
             for (var i = 0; i < CodicesWithChoices.Count; i++)
             {
@@ -84,14 +84,14 @@ namespace COMPASS.ViewModels
         {
             foreach (var prop in PropsToAsk)
             {
-                if (ShouldUseNewValue[prop.Label])
+                if (ShouldUseNewValue[prop.Name])
                 {
                     prop.SetProp(_codicesWithMadeChoices[StepCounter], CurrentPair.Item2);
                 }
                 else
                 {
                     prop.SetProp(_codicesWithMadeChoices[StepCounter], CurrentPair.Item1);
-                    if (prop.Label == "Tags")
+                    if (prop.Name == nameof(Codex.Tags))
                     {
                         //Because Tags setProp adds instead of overwrites, have to do it different
                         _codicesWithMadeChoices[StepCounter].Tags = new(CurrentPair.Item1.Tags);
@@ -100,7 +100,6 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private Dictionary<string, bool> _shouldUseNewValue;
         private Dictionary<string, bool> DefaultShouldUseNewValue
         {
             get
@@ -108,18 +107,19 @@ namespace COMPASS.ViewModels
                 Dictionary<string, bool> dict = new();
                 foreach (var prop in PropsToAsk)
                 {
-                    bool useNew = prop.Label == "Tags" ?
+                    bool useNew = prop.Name == nameof(Codex.Tags) ?
                      //for tags, new value was chosen when there are more tags in the list
-                     ((IList<Tag>)prop.GetProp(_codicesWithMadeChoices[StepCounter])).Count > ((IList<Tag>)prop.GetProp(CurrentPair.Item1)).Count
+                     ((IList<Tag>)prop.GetProp(_codicesWithMadeChoices[StepCounter])!).Count > ((IList<Tag>)prop.GetProp(CurrentPair.Item1)!).Count
                      // for all the other, do a string compare to see if the new options was chosen
                      : prop.GetProp(CurrentPair.Item1)?.ToString() != prop.GetProp(_codicesWithMadeChoices[StepCounter])?.ToString();
 
-                    dict.Add(prop.Label, useNew);
+                    dict.Add(prop.Name, useNew);
                 }
                 return dict;
             }
         }
 
+        private Dictionary<string, bool>? _shouldUseNewValue;
         public Dictionary<string, bool> ShouldUseNewValue
         {
             get => _shouldUseNewValue ??= DefaultShouldUseNewValue;

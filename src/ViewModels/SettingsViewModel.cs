@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace COMPASS.ViewModels
 {
@@ -48,9 +49,10 @@ namespace COMPASS.ViewModels
         {
             //Prep OpenCodexPriority for save
             _allPreferences.OpenFilePriorityIDs = OpenCodexPriority.Select(pf => pf.ID).ToList();
+            _allPreferences.PrepareForSave();
 
             using var writer = XmlWriter.Create(PreferencesFilePath, XmlWriteSettings);
-            System.Xml.Serialization.XmlSerializer serializer = new(typeof(GlobalPreferences));
+            XmlSerializer serializer = new(typeof(GlobalPreferences));
             serializer.Serialize(writer, _allPreferences);
 
             //Convert list back to dict because dict does not support two way binding
@@ -63,7 +65,11 @@ namespace COMPASS.ViewModels
             {
                 using (var reader = new StreamReader(PreferencesFilePath))
                 {
-                    System.Xml.Serialization.XmlSerializer serializer = new(typeof(GlobalPreferences));
+                    //Label of codexProperties should still be deserialized for backwards compatibility
+                    var overrides = new XmlAttributeOverrides();
+                    var overwriteIgnore = new XmlAttributes { XmlIgnore = false };
+                    overrides.Add(typeof(CodexProperty), nameof(CodexProperty.Label), overwriteIgnore);
+                    XmlSerializer serializer = new(typeof(GlobalPreferences), overrides);
                     if (serializer.Deserialize(reader) is GlobalPreferences prefs)
                     {
                         _allPreferences = prefs;
@@ -74,6 +80,7 @@ namespace COMPASS.ViewModels
                         return;
                     }
                 }
+
                 //put openFilePriority in right order
                 OpenCodexPriority = new(_openCodexFunctions.OrderBy(pf =>
                 {

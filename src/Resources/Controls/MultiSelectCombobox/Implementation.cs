@@ -1,4 +1,7 @@
-﻿using System;
+﻿#nullable disable
+
+using COMPASS.Tools;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +9,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using COMPASS.Tools;
 
 namespace COMPASS.Resources.Controls.MultiSelectCombobox
 {
@@ -14,7 +16,7 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
     {
         #region Members
         private bool isHandlerRegistered = true;
-        private readonly object handlerLock = new object();
+        private readonly object handlerLock = new();
         private const string ObjectString = "Object";
 
         #endregion
@@ -397,7 +399,7 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
             {
                 throw new ArgumentNullException(nameof(e));
             }
-            
+
             string clipboard = e.DataObject?.GetData(typeof(string)) as string;
             clipboard = clipboard?.Replace("\r", "")
                                     .Replace("\t", "")
@@ -560,7 +562,7 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
         private bool IsItemAlreadySelected(string itemString) => SelectedItems?.Cast<object>().HasAnyExactMatch(itemString, LookUpContract, this) == true;
         private object GetItemToAdd(string itemString)
         {
-            IEnumerable<object> controlItemSource = ItemSource?.Cast<object>().ToList();
+            IEnumerable<object> controlItemSource = ItemSource.Cast<object>().ToList();
 
             bool hasAnyMatch = controlItemSource.HasAnyExactMatch(itemString, LookUpContract, this);
             object itemToAdd = hasAnyMatch  //Check if any match
@@ -671,7 +673,7 @@ namespace COMPASS.Resources.Controls.MultiSelectCombobox
             var tb = new TextBlock()
             {
                 //Text based on Display member path
-                Text = objectToDisplay.GetPropertyValue(DisplayMemberPath)?.ToString() + ItemSeparator,
+                Text = objectToDisplay.GetDeepPropertyValue(DisplayMemberPath)?.ToString() + ItemSeparator,
                 //Set object in Tag for easy access for future operations
                 Tag = objectToDisplay
             };

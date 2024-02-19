@@ -437,7 +437,7 @@ namespace COMPASS.ViewModels
 
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
                 if (prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(codex)) continue;
-                if (prop.Label == "Cover Art") continue; //Covers is done separately
+                if (prop.Name == nameof(Codex.CoverArt)) continue; //Covers are done separately
 
                 //propHolder will hold the property from the top preferred source
                 Codex propHolder = new();
@@ -473,7 +473,7 @@ namespace COMPASS.ViewModels
                 }
                 else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask)
                 {
-                    bool isDifferent = prop.Label == "Tags" ?
+                    bool isDifferent = prop.Name == nameof(Codex.Tags) ?
                     // in case of tags, check if source adds tags that aren't there yet
                     ((IList<Tag>)prop.GetProp(propHolder)!).Except((IList<Tag>)prop.GetProp(codex)!).Any()
                     //check if ToString() representations are different, doesn't work for tags

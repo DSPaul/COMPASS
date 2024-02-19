@@ -1,8 +1,6 @@
 ﻿using COMPASS.Models;
 using System;
-using System.Collections.Generic;
 using System.Windows.Media;
-using System.Xml.Serialization;
 
 namespace COMPASS.ViewModels.Sources
 {
@@ -48,26 +46,26 @@ namespace COMPASS.ViewModels.Sources
             Source = source;
         }
 
-        private readonly Dictionary<MetaDataSource, string> _importSourceNames = new()
-        {
-            { MetaDataSource.None, "None"},
-            { MetaDataSource.File,"File Name/Path"},
-            { MetaDataSource.PDF, "PDF File"},
-            { MetaDataSource.Image, "Image File"},
-            { MetaDataSource.GmBinder,"GM Binder"},
-            { MetaDataSource.Homebrewery,"Homebrewery"},
-            { MetaDataSource.GoogleDrive,"Google Drive"},
-            { MetaDataSource.ISBN, "Open Library (ISBN)"},
-            { MetaDataSource.GenericURL,"Website Header" }
-        };
-
-        public readonly MetaDataSource Source;
+        public MetaDataSource Source { get; init; }
 
         // ITag Interface
-        [XmlIgnore]
-        public string Content => _importSourceNames[Source];
-        [XmlIgnore]
-        public Color BackgroundColor => throw new NotImplementedException();
+        public string Content => Source switch
+        {
+            MetaDataSource.None => "None",
+            MetaDataSource.File => "File Name/Path",
+            MetaDataSource.PDF => "PDF File",
+            MetaDataSource.Image => "Image File",
+            MetaDataSource.GmBinder => "GM Binder",
+            MetaDataSource.Homebrewery => "Homebrewery",
+            MetaDataSource.GoogleDrive => "Google Drive",
+            MetaDataSource.ISBN => "Open Library (ISBN)",
+            MetaDataSource.GenericURL => "Website Header",
+            MetaDataSource.Dropbox => "Dropbox",
+            MetaDataSource.DnDBeyond => "Dnd Beyond",
+            _ => throw new NotImplementedException(),
+        };
+
+        public Color BackgroundColor => Colors.Transparent;
 
         //Overwrite Equal operator
         public override bool Equals(object? obj) => Equals(obj as NamedMetaDataSource);

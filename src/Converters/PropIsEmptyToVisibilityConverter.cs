@@ -1,7 +1,6 @@
 ﻿using COMPASS.Models;
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 
@@ -15,18 +14,18 @@ namespace COMPASS.Converters
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-            CodexProperty prop = Codex.Properties.FirstOrDefault(prop => prop.Label == parameter.ToString());
+            CodexProperty? prop = Codex.Properties.Find(prop => prop.Name == parameter.ToString());
 
-            if (prop == null)
+            if (prop is null)
             {
                 throw new ArgumentException($"Property {parameter} could not be found");
             }
-            
+
             bool empty = prop.IsEmpty((Codex)value);
             return empty ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) 
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
 }

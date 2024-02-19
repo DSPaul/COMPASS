@@ -13,65 +13,64 @@ namespace COMPASS.Models
         //Empty ctor for serialization
         public CodexProperty() { }
 
-        public CodexProperty(string label, Func<Codex, bool> isEmpty, Func<Codex, object> getProp, Action<Codex, Codex> setProp, List<NamedMetaDataSource> defaultSources)
+        public CodexProperty(string propName, Func<Codex, bool> isEmpty, Action<Codex, Codex> setProp, List<MetaDataSource> defaultSources, string? label = null)
         {
-            Label = label;
+            Name = propName;
+            Label = label ?? propName;
             IsEmpty = isEmpty;
-            GetProp = getProp;
             SetProp = setProp;
             DefaultSourcePriority = defaultSources;
         }
 
+        public string Name { get; init; }
+
+        [XmlIgnore]
         public string Label { get; init; }
 
-        private Func<Codex, bool> _isEmpty;
+        private Func<Codex, bool>? _isEmpty;
         [XmlIgnore]
         public Func<Codex, bool> IsEmpty
         {
-            get => _isEmpty ??= Codex.Properties.First(prop => prop.Label == Label).IsEmpty;
+            get => _isEmpty ??= Codex.Properties.First(prop => prop.Name == Name).IsEmpty;
             private init => _isEmpty = value;
         }
 
-        private Func<Codex, object> _getProp;
+        private Func<Codex, object?>? _getProp;
         [XmlIgnore]
-        public Func<Codex, object> GetProp
-        {
-            get => _getProp ??= Codex.Properties.First(prop => prop.Label == Label).GetProp;
-            private init => _getProp = value;
-        }
+        public Func<Codex, object?> GetProp => _getProp ??= codex => codex.GetPropertyValue(Name);
 
-        private Action<Codex, Codex> _setProp;
+        private Action<Codex, Codex>? _setProp;
         [XmlIgnore]
         public Action<Codex, Codex> SetProp
         {
-            get => _setProp ??= Codex.Properties.First(prop => prop.Label == Label).SetProp;
+            get => _setProp ??= Codex.Properties.First(prop => prop.Name == Name).SetProp;
             private init => _setProp = value;
         }
 
         #region Import Sources
-        private List<NamedMetaDataSource> _defaultSources;
-        private List<NamedMetaDataSource> DefaultSourcePriority
+        private List<MetaDataSource>? _defaultSources;
+        private List<MetaDataSource> DefaultSourcePriority
         {
-            get => _defaultSources ??= Codex.Properties.First(prop => prop.Label == Label).DefaultSourcePriority;
+            get => _defaultSources ??= Codex.Properties.First(prop => prop.Name == Name).DefaultSourcePriority;
             init => _defaultSources = value;
         }
 
+        private ObservableCollection<NamedMetaDataSource> _sourcePriorityNamed;
         /// <summary>
         /// Ordered List of sources that can set this prop, named for data binding
         /// </summary>
-        private ObservableCollection<NamedMetaDataSource> _sources = new();
+        [XmlIgnore]
+
         public ObservableCollection<NamedMetaDataSource> SourcePriorityNamed
         {
-            get => _sources;
-            set => SetProperty(ref _sources, value);
+            get => _sourcePriorityNamed ??= new(SourcePriority.Select(source => new NamedMetaDataSource(source)));
+            set => SourcePriority = value.Select(namedSource => namedSource.Source).ToList();
         }
 
         /// <summary>
         /// Ordered List of sources that can set this prop, used for logic
         /// </summary>
-        [XmlIgnore]
-        public List<MetaDataSource> SourcePriority 
-            => SourcePriorityNamed.Select(namedSource => namedSource.Source).ToList();
+        public List<MetaDataSource> SourcePriority { get; set; } = new();
 
         private MetaDataOverwriteMode _overwriteMode = MetaDataOverwriteMode.IfEmpty;
         public MetaDataOverwriteMode? OverwriteMode
@@ -91,14 +90,17 @@ namespace COMPASS.Models
             // If a new possible source was not found in the save, add it
             foreach (var source in DefaultSourcePriority)
             {
-                SourcePriorityNamed.AddIfMissing(source);
+                SourcePriority.AddIfMissing(source);
             }
 
             // If a possible source was removed (due to a specific metadata fetch breaking
             // or due to an api change or something), remove it from the sources
-            SourcePriorityNamed = new(SourcePriorityNamed
-                .Where(source => DefaultSourcePriority.Contains(source)));
+            SourcePriority.RemoveAll(source => !DefaultSourcePriority.Contains(source));
         }
+
+        public void PrepareForSave() =>
+            //Use order from NameMetaDataSources (which was reordered by user)
+            SourcePriority = SourcePriorityNamed.Select(namedSource => namedSource.Source).ToList();
 
         #endregion
     }

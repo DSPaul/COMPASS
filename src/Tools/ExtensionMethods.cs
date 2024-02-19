@@ -85,37 +85,55 @@ namespace COMPASS.Tools
         #endregion
 
         #region ReflectionExtentions
-        //From BlackPearl
-        public static object GetPropertyValue(this object obj, string path)
+        private static PropertyInfo? GetPropertyInfo(this object obj, string propName)
         {
-            if (string.IsNullOrEmpty(path) || obj == null)
+            if (obj is null) throw new ArgumentNullException(nameof(obj));
+            if (String.IsNullOrWhiteSpace(propName)) throw new ArgumentNullException(nameof(propName), propName);
+
+            Type? type = obj.GetType();
+
+            //keep going up the inheritance tree to find it
+            while (type is not null)
             {
-                return obj;
+                try
+                {
+                    PropertyInfo? info = type.GetProperty(propName);
+                    if (info is not null) return info;
+                }
+                catch (AmbiguousMatchException) { }
+
+                type = type.BaseType;
             }
-
-            int dotIndex = path.IndexOf('.');
-            if (dotIndex < 0)
-            {
-                return GetValue(obj, path);
-            }
-
-            obj = GetValue(obj, path.Substring(0, dotIndex + 1));
-            path = path.Remove(0, dotIndex);
-
-            return obj.GetPropertyValue(path);
+            return null;
         }
-
-        //From BlackPearl
-        private static object GetValue(object obj, string propertyName)
+        public static object? GetPropertyValue(this object obj, string propName)
         {
-            PropertyInfo propInfo = obj.GetType().GetProperty(propertyName);
-            if (propInfo == null)
-            {
-                return null;
-            }
-
+            var propInfo = obj.GetPropertyInfo(propName);
+            if (propInfo is null) throw new MissingFieldException(propName);
             return propInfo.GetValue(obj);
         }
+
+        public static object? GetDeepPropertyValue(this object obj, string fullPropName)
+        {
+            string[] propNames = fullPropName.Split('.');
+            object? result = obj;
+            foreach (string propName in propNames)
+            {
+                result = result?.GetPropertyValue(propName);
+            }
+            return result;
+        }
+
+        public static void SetProperty(this object obj, string propName, object value)
+        {
+            var propInfo = obj.GetPropertyInfo(propName);
+
+            if (propInfo is not null && propInfo.CanWrite)
+            {
+                propInfo.SetValue(obj, value);
+            }
+        }
+
         #endregion
 
         #region EnumerableExtensions
