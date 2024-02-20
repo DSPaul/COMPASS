@@ -4,7 +4,6 @@ using COMPASS.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -87,33 +86,36 @@ namespace COMPASS.Models
             if (File.Exists(TagsDataFilePath))
             {
                 //loading root tags          
-                using (var reader = new StreamReader(TagsDataFilePath))
+                using var reader = new StreamReader(TagsDataFilePath);
+                XmlSerializer serializer = new(typeof(List<Tag>));
+                try
                 {
-                    XmlSerializer serializer = new(typeof(List<Tag>));
-                    try
-                    {
-                        RootTags = serializer.Deserialize(reader) as List<Tag> ?? new();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error($"Could not load {TagsDataFilePath}.", ex);
-                        return false;
-                    }
+                    RootTags = serializer.Deserialize(reader) as List<Tag> ?? new();
                 }
-
-                //Constructing AllTags and pass it to all the tags
-                AllTags = RootTags.Flatten().ToList();
-                foreach (Tag t in AllTags)
+                catch (Exception ex)
                 {
-                    t.AllTags = AllTags;
+                    Logger.Error($"Could not load {TagsDataFilePath}.", ex);
+                    return false;
                 }
             }
             else
             {
                 RootTags = new();
             }
+
+            CompleteLoadingTags();
             _loadedTags = true;
             return true;
+        }
+
+        private void CompleteLoadingTags()
+        {
+            //Constructing AllTags and pass it to all the tags
+            AllTags = RootTags.Flatten().ToList();
+            foreach (Tag t in AllTags)
+            {
+                t.AllTags = AllTags;
+            }
         }
 
         //Loads AllCodices list from Files
@@ -134,25 +136,27 @@ namespace COMPASS.Models
                         return false;
                     }
                 }
-
-                //AllCodices.CollectionChanged += (e, v) => SaveCodices();
-
-                Debug.Assert(AllCodices != null, nameof(AllCodices) + " != null");
-                foreach (Codex c in AllCodices)
-                {
-                    //reconstruct tags from ID's
-                    c.Tags = new(AllTags.Where(t => c.TagIDs.Contains(t.ID)));
-
-                    //double check image location, redundant but got fucked in an update
-                    c.SetImagePaths(this);
-                }
             }
             else
             {
                 AllCodices = new();
             }
+
+            CompleteLoadingCodices();
             _loadedCodices = true;
             return true;
+        }
+
+        private void CompleteLoadingCodices()
+        {
+            foreach (Codex c in AllCodices)
+            {
+                //reconstruct tags from ID's
+                c.Tags = new(AllTags.Where(t => c.TagIDs.Contains(t.ID)));
+
+                //double check image location, redundant but got fucked in an update
+                c.SetImagePaths(this);
+            }
         }
 
         public bool LoadInfo()
@@ -180,7 +184,6 @@ namespace COMPASS.Models
                         return false;
                     }
                     Info = loadedInfo;
-                    Info.CompleteLoading(this);
                 }
                 catch (Exception ex)
                 {
@@ -192,6 +195,8 @@ namespace COMPASS.Models
             {
                 Info = new();
             }
+
+            Info.CompleteLoading(this);
             _loadedInfo = true;
             return true;
         }

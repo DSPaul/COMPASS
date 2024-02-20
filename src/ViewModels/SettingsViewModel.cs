@@ -31,7 +31,7 @@ namespace COMPASS.ViewModels
             _openCodexPriority = new(_openCodexFunctions);
 
             LoadGlobalPreferences();
-            _allPreferences.Init();
+            _allPreferences.CompleteLoading();
         }
 
         #region singleton pattern
@@ -45,12 +45,22 @@ namespace COMPASS.ViewModels
         public static string PreferencesFilePath => Path.Combine(CompassDataPath, "Preferences.xml");
         public static XmlWriterSettings XmlWriteSettings { get; private set; } = new() { Indent = true };
         private static GlobalPreferences _allPreferences = new();
+
+        private void PreparePreferencesForSave()
+        {
+            //Prep Open Codex Priority for save
+            _allPreferences.OpenFilePriorityIDs = OpenCodexPriority.Select(pf => pf.ID).ToList();
+
+            //Prep Codex Properties for saves
+            foreach (CodexProperty prop in _allPreferences.CodexProperties)
+            {
+                prop.PrepareForSave();
+            }
+        }
+
         public void SavePreferences()
         {
-            //Prep OpenCodexPriority for save
-            _allPreferences.OpenFilePriorityIDs = OpenCodexPriority.Select(pf => pf.ID).ToList();
-            _allPreferences.PrepareForSave();
-
+            PreparePreferencesForSave();
             using var writer = XmlWriter.Create(PreferencesFilePath, XmlWriteSettings);
             XmlSerializer serializer = new(typeof(GlobalPreferences));
             serializer.Serialize(writer, _allPreferences);

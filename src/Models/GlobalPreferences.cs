@@ -14,7 +14,7 @@ namespace COMPASS.Models
         public List<int>? OpenFilePriorityIDs { get; set; }
         public List<CodexProperty> CodexProperties { get; set; } = new();
 
-        public void Init()
+        public void CompleteLoading()
         {
             //In versions 1.6.0 and lower, label was stored instead of name
             var useLabel = CodexProperties.All(prop => string.IsNullOrEmpty(prop.Name) && !string.IsNullOrEmpty(prop.Label));
