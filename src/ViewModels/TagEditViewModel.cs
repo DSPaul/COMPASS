@@ -87,7 +87,7 @@ namespace COMPASS.ViewModels
             {
                 TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             }
-            _editedTag = null;
+            _editedTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             CloseAction();
         }
 

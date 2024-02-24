@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -262,17 +263,17 @@ namespace COMPASS.Services
             return openFolderDialog.SelectedPaths;
         }
 
-        public static async Task<CodexCollection?> OpenCPMSSFile(string? path = null)
+        public static async Task<CodexCollection?> OpenSatchel(string? path = null)
         {
             if (path == null)
             {
-                //ask for cmpss file using fileDialog
+                //ask for satchel file using fileDialog
                 OpenFileDialog openFileDialog = new()
                 {
-                    Filter = $"COMPASS File (*{Constants.COMPASSFileExtension})|*{Constants.COMPASSFileExtension}",
+                    Filter = Constants.SatchelExtensionFilter,
                     CheckFileExists = true,
                     Multiselect = false,
-                    Title = "Choose a COMPASS file to import",
+                    Title = "Choose a COMPASS Satchel file to import",
                 };
 
                 if (openFileDialog.ShowDialog() != true) return null;
@@ -282,8 +283,8 @@ namespace COMPASS.Services
             //Check compatibility
             using (ZipFile zip = ZipFile.Read(path))
             {
-                var versionFile = zip.SingleOrDefault(entry => entry.FileName == "Version");
-                if (versionFile == null)
+                var satchelInfoFile = zip.SingleOrDefault(entry => entry.FileName == Constants.SatchelInfoFileName);
+                if (satchelInfoFile == null)
                 {
                     //No version information means we cannot ensure compatibility, so abort
                     string message = $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
@@ -292,15 +293,54 @@ namespace COMPASS.Services
                     return null;
                 }
 
+                //Read the file contents
                 using var stream = new MemoryStream();
-                versionFile.Extract(stream);
+                satchelInfoFile.Extract(stream);
                 stream.Seek(0, SeekOrigin.Begin);
                 using StreamReader reader = new(stream);
-                string versionStr = reader.ReadToEnd();
-                Version version = new(versionStr);
-                if (version > Assembly.GetExecutingAssembly().GetName().Version)
+                string json = reader.ReadToEnd();
+
+                var satchelInfo = JsonSerializer.Deserialize<SatchelInfo>(json);
+                if (satchelInfo == null)
                 {
-                    string message = $"Cannot import {Path.GetFileName(path)} because it was created in a newer version of COMPASS (v{version}), and might therefor not be compatible with your version v{Reflection.Version}. Please update and try again.";
+                    //No version information means we cannot ensure compatibility, so abort
+                    string message = $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
+                    Logger.Warn(message);
+                    MessageBox.Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return null;
+                }
+
+                var currentVersion = Assembly.GetExecutingAssembly().GetName().Version!;
+                var minVersions = new List<Version> { currentVersion }; //keep a list of min requirements
+
+                var filesInZip = zip.Select(entry => entry.FileName).ToList();
+
+                //Check Codex version
+                if (filesInZip.Contains(Constants.CodicesFileName))
+                {
+                    Version minCodexVersion = Version.Parse(satchelInfo.MinCodexInfoVersion);
+                    minVersions.Add(minCodexVersion);
+                }
+
+                //Check tags version
+                if (filesInZip.Contains(Constants.TagsFileName))
+                {
+                    Version minVersion = Version.Parse(satchelInfo.MinTagsVersion);
+                    minVersions.Add(minVersion);
+                }
+
+                //Check collection info version
+                if (filesInZip.Contains(Constants.CollectionInfoFileName))
+                {
+                    Version minVersion = Version.Parse(satchelInfo.MinCollectionInfoVersion);
+                    minVersions.Add(minVersion);
+                }
+
+                //current version must exceed all min versions
+                if (minVersions.Max() > currentVersion)
+                {
+                    string message = $"Cannot import {Path.GetFileName(path)} because it was created in a newer version of COMPASS (v{satchelInfo.CreationVersion}), " +
+                        $"and has indicated to be incompatible with your version v{Reflection.Version}. Please update and try again.";
                     Logger.Warn(message);
                     MessageBox.Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return null;

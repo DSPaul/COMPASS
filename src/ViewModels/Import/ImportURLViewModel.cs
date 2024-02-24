@@ -42,7 +42,7 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        public ImportURLWindow Window;
+        public ImportURLWindow? Window;
 
         private readonly ImportSource _importSource;
 
@@ -84,7 +84,7 @@ namespace COMPASS.ViewModels.Import
                 ImportError = "You need to be connected to the internet to import an online source.";
                 return;
             }
-            Window.Close();
+            Window?.Close();
 
             var progressVM = ProgressViewModel.GetInstance();
             progressVM.Log.Clear();

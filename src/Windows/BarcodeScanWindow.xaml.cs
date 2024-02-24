@@ -53,7 +53,7 @@ namespace COMPASS.Windows
 
         private async void _webcamStreaming_OnQRCodeRead(object? sender, EventArgs e)
         {
-            var qrCodeData = (e as QRCodeReadEventArgs)?.QRCodeData;
+            string? qrCodeData = (e as QRCodeReadEventArgs)?.QRCodeData;
             if (String.IsNullOrWhiteSpace(qrCodeData) || !IsValidISBN(qrCodeData)) return;
             DecodedString = qrCodeData;
             if (_webcamStreaming != null)

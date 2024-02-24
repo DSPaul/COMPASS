@@ -45,13 +45,5 @@ namespace COMPASS.Models
                 prop.UpdateSources();
             }
         }
-
-        public void PrepareForSave()
-        {
-            foreach (CodexProperty prop in CodexProperties)
-            {
-                prop.PrepareForSave();
-            }
-        }
     }
 }

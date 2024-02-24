@@ -22,9 +22,9 @@ namespace COMPASS.Models
 
         public static string CollectionsPath => Path.Combine(SettingsViewModel.CompassDataPath, "Collections");
         public string FullDataPath => Path.Combine(CollectionsPath, DirectoryName);
-        public string CodicesDataFilePath => Path.Combine(FullDataPath, "CodexInfo.xml");
-        public string TagsDataFilePath => Path.Combine(FullDataPath, "Tags.xml");
-        public string CollectionInfoFilePath => Path.Combine(FullDataPath, "CollectionInfo.xml");
+        public string CodicesDataFilePath => Path.Combine(FullDataPath, Constants.CodicesFileName);
+        public string TagsDataFilePath => Path.Combine(FullDataPath, Constants.TagsFileName);
+        public string CollectionInfoFilePath => Path.Combine(FullDataPath, Constants.CollectionInfoFileName);
 
         public string CoverArtPath => Path.Combine(FullDataPath, "CoverArt");
         public string ThumbnailsPath => Path.Combine(FullDataPath, "Thumbnails");

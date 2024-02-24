@@ -199,8 +199,8 @@ namespace COMPASS.ViewModels
             //force refresh because image is cached
             string covArt = TempCodex.CoverArt;
             string thumbnail = TempCodex.Thumbnail;
-            TempCodex.CoverArt = null;
-            TempCodex.Thumbnail = null;
+            TempCodex.CoverArt = String.Empty;
+            TempCodex.Thumbnail = String.Empty;
             TempCodex.CoverArt = covArt;
             TempCodex.Thumbnail = thumbnail;
         }
@@ -214,7 +214,7 @@ namespace COMPASS.ViewModels
             //Copy changes into Codex
             if (!CreateNewCodex)
             {
-                _editedCodex.Copy(TempCodex);
+                _editedCodex!.Copy(TempCodex);
             }
             else
             {

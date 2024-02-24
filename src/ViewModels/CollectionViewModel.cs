@@ -352,9 +352,9 @@ namespace COMPASS.ViewModels
         {
             SaveFileDialog saveFileDialog = new()
             {
-                Filter = $"COMPASS File (*{Constants.COMPASSFileExtension})|*{Constants.COMPASSFileExtension}",
+                Filter = Constants.SatchelExtensionFilter,
                 FileName = $"{CurrentCollection.DirectoryName}_Tags",
-                DefaultExt = Constants.COMPASSFileExtension
+                DefaultExt = Constants.SatchelExtension
             };
 
             if (saveFileDialog.ShowDialog() != true) return;
@@ -373,12 +373,12 @@ namespace COMPASS.ViewModels
 
         //Import Collection
         private ActionCommand? _importCommand;
-        public ActionCommand ImportCommand => _importCommand ??= new(async () => await ImportCMPSSFileAsync());
+        public ActionCommand ImportCommand => _importCommand ??= new(async () => await ImportSatchelAsync());
 
 
-        public async Task ImportCMPSSFileAsync(string? path = null)
+        public async Task ImportSatchelAsync(string? path = null)
         {
-            var collectionToImport = await IOService.OpenCPMSSFile(path);
+            var collectionToImport = await IOService.OpenSatchel(path);
 
             if (collectionToImport == null)
             {

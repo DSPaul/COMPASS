@@ -22,10 +22,10 @@ namespace COMPASS.Models
             DefaultSourcePriority = defaultSources;
         }
 
-        public string Name { get; init; }
+        public string Name { get; init; } = "";
 
         [XmlIgnore]
-        public string Label { get; init; }
+        public string Label { get; init; } = "";
 
         private Func<Codex, bool>? _isEmpty;
         [XmlIgnore]
@@ -55,7 +55,7 @@ namespace COMPASS.Models
             init => _defaultSources = value;
         }
 
-        private ObservableCollection<NamedMetaDataSource> _sourcePriorityNamed;
+        private ObservableCollection<NamedMetaDataSource>? _sourcePriorityNamed;
         /// <summary>
         /// Ordered List of sources that can set this prop, named for data binding
         /// </summary>

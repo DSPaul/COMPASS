@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
@@ -92,9 +93,9 @@ namespace COMPASS.ViewModels
             {
                 SaveFileDialog saveFileDialog = new()
                 {
-                    Filter = $"COMPASS File (*{Constants.COMPASSFileExtension})|*{Constants.COMPASSFileExtension}",
+                    Filter = Constants.SatchelExtensionFilter,
                     FileName = CollectionToExport.DirectoryName,
-                    DefaultExt = Constants.COMPASSFileExtension
+                    DefaultExt = Constants.SatchelExtension
                 };
 
                 if (saveFileDialog.ShowDialog() == true)
@@ -141,7 +142,8 @@ namespace COMPASS.ViewModels
                     };
 
                     //Add version so we can check compatibility when importing
-                    zip.AddEntry("Version", Reflection.Version);
+                    SatchelInfo info = new();
+                    zip.AddEntry(Constants.SatchelInfoFileName, JsonSerializer.Serialize(info));
 
                     //Export
                     await Task.Run(() =>

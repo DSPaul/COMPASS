@@ -12,7 +12,7 @@ namespace COMPASS.ViewModels.Import
         public ImportCollectionViewModel(CodexCollection collectionToImport)
         {
             CollectionToImport = collectionToImport;
-            CollectionName = CollectionToImport.DirectoryName.Substring(2, CollectionToImport.DirectoryName.Length - 2 - Constants.COMPASSFileExtension.Length);
+            CollectionName = CollectionToImport.DirectoryName.Substring(2, CollectionToImport.DirectoryName.Length - 2 - Constants.SatchelExtension.Length);
 
             ContentSelectorVM = new(collectionToImport)
             {
@@ -42,7 +42,7 @@ namespace COMPASS.ViewModels.Import
 
         public CollectionContentSelectorViewModel ContentSelectorVM { get; set; }
 
-        public CodexCollection CollectionToImport { get; set; } //collection that was in the cmpss file
+        public CodexCollection CollectionToImport { get; set; } //collection that was in the satchel
 
         //OVERVIEW STEP
         public bool MergeIntoCollection { get; set; } = false;

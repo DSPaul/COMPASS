@@ -52,7 +52,7 @@ namespace COMPASS.ViewModels
         public ActionCommand ImportBooksFromCompassFileCommand => _importBooksFromCompassFileCommand ??= new(async () => await ImportBooksFromCompassFile());
         public async Task ImportBooksFromCompassFile()
         {
-            var collectionToImport = await IOService.OpenCPMSSFile();
+            var collectionToImport = await IOService.OpenSatchel();
 
             if (collectionToImport == null)
             {

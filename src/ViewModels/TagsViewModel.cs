@@ -141,7 +141,7 @@ namespace COMPASS.ViewModels
         public ActionCommand ImportTagsFromCompassFileCommand => _importTagsFromCompassFileCommand ??= new(async () => await ImportTagsFromCompassFile());
         public async Task ImportTagsFromCompassFile()
         {
-            var collectionToImport = await IOService.OpenCPMSSFile();
+            var collectionToImport = await IOService.OpenSatchel();
 
             if (collectionToImport == null)
             {

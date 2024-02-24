@@ -26,11 +26,11 @@ namespace COMPASS.Tools.BarcodeReader
 
     public class QRCodeReadEventArgs : EventArgs
     {
-        public QRCodeReadEventArgs(string qRCodeData)
+        public QRCodeReadEventArgs(string? qRCodeData)
         {
             QRCodeData = qRCodeData;
         }
 
-        public string QRCodeData { get; }
+        public string? QRCodeData { get; }
     }
 }

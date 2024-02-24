@@ -24,7 +24,7 @@ namespace COMPASS.ViewModels
 
         private TagCollection? _selectedTagCollection;
         /// <summary>
-        /// Can be null if no collections were present in the cmpss file
+        /// Can be null if no collections were present in the satchel
         /// </summary>
         public TagCollection? SelectedTagCollection
         {

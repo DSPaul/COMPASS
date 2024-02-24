@@ -94,9 +94,9 @@ namespace COMPASS.ViewModels.Layouts
                     return;
                 }
                 //Check if its a cmpss file, do import if so
-                else if (files.Count == 1 && files.First().EndsWith(Constants.COMPASSFileExtension))
+                else if (files.Count == 1 && files.First().EndsWith(Constants.SatchelExtension))
                 {
-                    await MainViewModel.CollectionVM.ImportCMPSSFileAsync(files.First());
+                    await MainViewModel.CollectionVM.ImportSatchelAsync(files.First());
                 }
                 //If none of the above, just import the files
                 else
