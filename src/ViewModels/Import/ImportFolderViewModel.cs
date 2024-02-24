@@ -235,7 +235,10 @@ namespace COMPASS.ViewModels.Import
                 var checkedFolders = CheckableTreeNode<Folder>.GetCheckedItems(CheckableFolders);
                 foreach (Folder folder in checkedFolders)
                 {
-                    _targetCollection.Info.AutoImportFolders.AddIfMissing(folder);
+                    if (!_targetCollection.Info.AutoImportFolders.Any(f => f.FullPath == folder.FullPath))
+                    {
+                        _targetCollection.Info.AutoImportFolders.Add(folder);
+                    }
                 }
 
                 //Remove the existingFolders as they have been replaced

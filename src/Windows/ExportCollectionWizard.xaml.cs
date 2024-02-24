@@ -13,6 +13,7 @@ namespace COMPASS.Windows
             DataContext = vm;
             InitializeComponent();
             vm.CloseAction = Close;
+            vm.CancelAction = () => DialogResult = false;
         }
     }
 }

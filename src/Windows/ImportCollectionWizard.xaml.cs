@@ -13,6 +13,7 @@ namespace COMPASS.Windows
             InitializeComponent();
             DataContext = viewModel;
             viewModel.CloseAction = Close;
+            viewModel.CancelAction = () => DialogResult = false;
         }
 
         private void Window_Closed(object sender, System.EventArgs e) => ((ImportCollectionViewModel)DataContext).Cleanup();

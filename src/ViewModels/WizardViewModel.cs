@@ -38,6 +38,9 @@ namespace COMPASS.ViewModels
 
         public string CurrentStep => Steps[StepCounter];
 
+        private ActionCommand? _cancelCommand;
+        public virtual ActionCommand CancelCommand => _cancelCommand ??= new((CancelAction ?? CloseAction) ?? new Action(() => { }));
+
         private ActionCommand? _nextStepCommand;
         public ActionCommand NextStepCommand => _nextStepCommand ??= new(NextStep, ShowNextButton);
         protected virtual void NextStep() => StepCounter++;
@@ -54,5 +57,6 @@ namespace COMPASS.ViewModels
         public virtual bool ShowFinishButton() => StepCounter == Steps.Count - 1;
 
         public Action? CloseAction;
+        public Action? CancelAction;
     }
 }

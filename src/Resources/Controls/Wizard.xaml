@@ -37,6 +37,8 @@
                 </Border>
 
                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="3" Margin="10">
+                    <Button Style="{StaticResource TextButton}" Content="Cancel" 
+                            Background="{StaticResource CancelFill}" Command="{Binding CancelCommand}"/>        
                     <Button Style="{StaticResource TextButton}" Content="Back" Command="{Binding PrevStepCommand}"
                     Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, 
             Converter={StaticResource ToVisibilityConverter}}"/>
