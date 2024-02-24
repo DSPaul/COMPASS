@@ -75,7 +75,7 @@ namespace COMPASS.Resources.Controls
         }
         protected override void OnSorting(DataGridSortingEventArgs eventArgs)
         {
-            Dispatcher.BeginInvoke(new Action(UpdateColumnInfo));
+            Dispatcher.BeginInvoke(UpdateColumnInfo);
             base.OnSorting(eventArgs);
         }
         protected override void OnPreviewMouseLeftButtonUp(System.Windows.Input.MouseButtonEventArgs e)
