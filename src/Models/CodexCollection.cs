@@ -1,4 +1,6 @@
-﻿using COMPASS.Services;
+﻿using Autofac;
+using COMPASS.Interfaces;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels;
 using System;
@@ -416,7 +418,7 @@ namespace COMPASS.Models
             string message = $"You are about to remove {count} item{(count > 1 ? @"s" : @"")}. " +
                            $"This cannot be undone. " +
                            $"Are you sure you want to continue?";
-            var result = MessageBox.Show(message, "Remove", MessageBoxButton.OKCancel);
+            var result = App.Container.Resolve<IMessageBox>().Show(message, "Remove", MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.OK)
             {
                 foreach (Codex toDel in toDelete)

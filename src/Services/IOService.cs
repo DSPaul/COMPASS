@@ -1,4 +1,6 @@
-﻿using COMPASS.Models;
+﻿using Autofac;
+using COMPASS.Interfaces;
+using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.ViewModels;
 using HtmlAgilityPack;
@@ -289,7 +291,8 @@ namespace COMPASS.Services
                     //No version information means we cannot ensure compatibility, so abort
                     string message = $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
                     Logger.Warn(message);
-                    MessageBox.Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    App.Container.Resolve<IMessageBox>()
+                        .Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return null;
                 }
 
@@ -306,7 +309,8 @@ namespace COMPASS.Services
                     //No version information means we cannot ensure compatibility, so abort
                     string message = $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
                     Logger.Warn(message);
-                    MessageBox.Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    App.Container.Resolve<IMessageBox>()
+                        .Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return null;
                 }
 
@@ -342,7 +346,8 @@ namespace COMPASS.Services
                     string message = $"Cannot import {Path.GetFileName(path)} because it was created in a newer version of COMPASS (v{satchelInfo.CreationVersion}), " +
                         $"and has indicated to be incompatible with your version v{Reflection.Version}. Please update and try again.";
                     Logger.Warn(message);
-                    MessageBox.Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    App.Container.Resolve<IMessageBox>()
+                        .Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return null;
                 }
             }

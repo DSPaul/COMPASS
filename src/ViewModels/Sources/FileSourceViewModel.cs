@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace COMPASS.ViewModels.Sources
 {
@@ -30,7 +29,7 @@ namespace COMPASS.ViewModels.Sources
                 Debug.Assert(IsValidSource(codex), "Codex without path was referenced in file source");
                 if (codex.Path!.Contains(folderTagPair.Folder))
                 {
-                    Application.Current.Dispatcher.Invoke(() => codex.Tags.AddIfMissing(folderTagPair.Tag!));
+                    App.SafeDispatcher.Invoke(() => codex.Tags.AddIfMissing(folderTagPair.Tag!));
                 }
             }
 
@@ -41,7 +40,7 @@ namespace COMPASS.ViewModels.Sources
                     var splitFolders = codex.Path!.Split("\\");
                     if (splitFolders.Any(folder => Fuzz.Ratio(folder.ToLowerInvariant(), tag.Content.ToLowerInvariant()) > 90))
                     {
-                        Application.Current.Dispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
+                        App.SafeDispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
                     }
                 }
             }

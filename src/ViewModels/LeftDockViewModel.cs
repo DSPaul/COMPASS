@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class LeftDockViewModel : ObservableObject, IDealsWithTabControl
+    public class LeftDockViewModel : ViewModelBase, IDealsWithTabControl
     {
         public LeftDockViewModel(MainViewModel mainViewModel)
         {
@@ -69,7 +69,7 @@ namespace COMPASS.ViewModels
 
             if (!vm.ContentSelectorVM.HasCodices)
             {
-                System.Windows.MessageBox.Show($"{collectionToImport.DirectoryName[2..]} does not contain items to import", "No items found", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                messageDialog.Show($"{collectionToImport.DirectoryName[2..]} does not contain items to import", "No items found", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                 return;
             }
 

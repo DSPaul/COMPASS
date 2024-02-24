@@ -4,7 +4,7 @@ using COMPASS.Tools;
 using Ionic.Zip;
 using System.Text.Json;
 
-namespace Tests.Unit_tests
+namespace Tests.UnitTests
 {
     [TestClass]
     public class Serialization

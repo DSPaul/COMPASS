@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class TagsViewModel : ObservableObject, IDropTarget, IDealsWithTabControl
+    public class TagsViewModel : ViewModelBase, IDropTarget, IDealsWithTabControl
     {
         public TagsViewModel(CodexCollection codexCollection, FilterViewModel filterVM)
         {
@@ -153,7 +153,7 @@ namespace COMPASS.ViewModels
 
             if (!importVM.TagsSelectorVM.HasTags)
             {
-                System.Windows.MessageBox.Show($"{collectionToImport.DirectoryName[2..]} does not contain tags", "No Tags found", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                messageDialog.Show($"{collectionToImport.DirectoryName[2..]} does not contain tags", "No Tags found", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                 return;
             }
 

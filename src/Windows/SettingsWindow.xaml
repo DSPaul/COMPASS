@@ -652,6 +652,13 @@
                             <TextBlock Text="Dependencies" Style="{StaticResource SectionTitle}"/>
                             <TextBlock Text="COMPASS could not exist without the following open source projects:" />
                             <UniformGrid Columns="4" >
+                                <TextBlock Text="Inversion of Control:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://autofac.org/"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        Autofac
+                                    </Hyperlink>                
+                                </TextBlock>
                                 <TextBlock Text="Automatic Updates:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/ravibpatel/AutoUpdater.NET"

@@ -2,7 +2,7 @@
 using COMPASS.ViewModels;
 using COMPASS.ViewModels.Sources;
 
-namespace COMPASS_Tests.Services
+namespace Tests.Sources
 {
     [TestClass]
     public class HomeBrewery

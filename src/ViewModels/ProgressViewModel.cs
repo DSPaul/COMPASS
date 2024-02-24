@@ -2,7 +2,6 @@
 using COMPASS.Models;
 using System.Collections.ObjectModel;
 using System.Threading;
-using System.Windows;
 
 namespace COMPASS.ViewModels
 {
@@ -112,7 +111,7 @@ namespace COMPASS.ViewModels
         }
 
         public void AddLogEntry(LogEntry entry) =>
-            Application.Current.Dispatcher.Invoke(() =>
+            App.SafeDispatcher.Invoke(() =>
             Log.Add(entry)
         );
 

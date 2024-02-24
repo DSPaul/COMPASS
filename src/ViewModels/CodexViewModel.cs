@@ -1,4 +1,5 @@
-﻿using COMPASS.Commands;
+﻿using Autofac;
+using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Services;
 using COMPASS.Tools;
@@ -18,7 +19,7 @@ using System.Windows.Input;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexViewModel : ObservableObject, IDropTarget
+    public class CodexViewModel : ViewModelBase, IDropTarget
     {
         #region Open Codex
 
@@ -26,7 +27,11 @@ namespace COMPASS.ViewModels
         public static bool OpenCodex(Codex codex)
         {
             bool success = PreferableFunction<Codex>.TryFunctions(SettingsViewModel.GetInstance().OpenCodexPriority, codex);
-            if (!success) MessageBox.Show("Could not open item, please check local path or URL");
+            if (!success)
+            {
+                messageDialog.Show("Could not open item, please check local path or URL", "Could not open item");
+            }
+
             return success;
         }
 
@@ -112,7 +117,7 @@ namespace COMPASS.ViewModels
             const MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
             const MessageBoxImage imgMessageBox = MessageBoxImage.Warning;
 
-            MessageBoxResult rsltMessageBox = MessageBox.Show(messageBoxText, caption, btnMessageBox, imgMessageBox);
+            MessageBoxResult rsltMessageBox = messageDialog.Show(messageBoxText, caption, btnMessageBox, imgMessageBox);
 
             if (rsltMessageBox == MessageBoxResult.Yes)
             {
@@ -259,14 +264,14 @@ namespace COMPASS.ViewModels
             MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
             MessageBoxImage imgMessageBox = MessageBoxImage.Warning;
 
-            MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, imgMessageBox);
+            MessageBoxResult rsltMessageBox = messageDialog.Show(sMessageBoxText, sCaption, btnMessageBox, imgMessageBox);
 
             if (rsltMessageBox == MessageBoxResult.Yes)
             {
                 bool success = targetCollection.LoadCodices();
                 if (!success)
                 {
-                    MessageBox.Show($"Could not move items to {targetCollection.DirectoryName}", "Target collection could not be loaded.", MessageBoxButton.OK, MessageBoxImage.Error);
+                    messageDialog.Show($"Could not move items to {targetCollection.DirectoryName}", "Target collection could not be loaded.", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 foreach (Codex toMove in toMoveList)

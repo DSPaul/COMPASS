@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using System.Xml.Serialization;
 
 namespace COMPASS.Models
@@ -228,7 +227,7 @@ namespace COMPASS.Models
             get
             {
                 List<Tag> orderedTags = new(_tags.OrderBy(t => t.AllTags.IndexOf(t)));
-                Application.Current.Dispatcher.Invoke(() =>
+                App.SafeDispatcher.Invoke(() =>
                 {
                     _tags.Clear(); //will fail when called from non UI thread which happens during import
                     _tags.AddRange(orderedTags);
@@ -403,7 +402,7 @@ namespace COMPASS.Models
                 {
                     foreach (var tag in other.Tags)
                     {
-                        Application.Current.Dispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
+                        App.SafeDispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
                     }
                 },
                 defaultSources : new()

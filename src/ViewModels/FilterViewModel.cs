@@ -268,7 +268,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public void PopulateMetaDataCollections() => Application.Current.Dispatcher.Invoke(() =>
+        public void PopulateMetaDataCollections() => App.SafeDispatcher.Invoke(() =>
         {
             foreach (Codex c in _allCodices)
             {

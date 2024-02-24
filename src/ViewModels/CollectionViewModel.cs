@@ -17,7 +17,7 @@ using System.Windows;
 
 namespace COMPASS.ViewModels
 {
-    public class CollectionViewModel : ObservableObject
+    public class CollectionViewModel : ViewModelBase
     {
         public CollectionViewModel(MainViewModel? mainViewModel)
         {
@@ -184,7 +184,7 @@ namespace COMPASS.ViewModels
                     -3 => "Both the save file with tags and items seems to be corrupted and could not be read.",
                     _ => ""
                 };
-                _ = MessageBox.Show($"Could not load {collection.DirectoryName}. \n" + msg, "Failed to Load Collection", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = messageDialog.Show($"Could not load {collection.DirectoryName}. \n" + msg, "Failed to Load Collection", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
 
@@ -307,7 +307,7 @@ namespace COMPASS.ViewModels
                 MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
                 MessageBoxImage imgMessageBox = MessageBoxImage.Warning;
 
-                MessageBoxResult rsltMessageBox = MessageBox.Show(sMessageBoxText, sCaption, btnMessageBox, imgMessageBox);
+                MessageBoxResult rsltMessageBox = messageDialog.Show(sMessageBoxText, sCaption, btnMessageBox, imgMessageBox);
 
                 if (rsltMessageBox == MessageBoxResult.Yes)
                 {
@@ -406,7 +406,7 @@ namespace COMPASS.ViewModels
             string message = $"You are about to merge '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'. \n" +
                            $"This will copy all items, tags and preferences to the chosen collection. \n" +
                            $"Are you sure you want to continue?";
-            var result = MessageBox.Show(message, "Confirm merge", MessageBoxButton.OKCancel);
+            var result = messageDialog.Show(message, "Confirm merge", MessageBoxButton.OKCancel);
             if (result != MessageBoxResult.OK) return;
 
             CodexCollection targetCollection = new(collectionToMergeInto);
@@ -415,7 +415,7 @@ namespace COMPASS.ViewModels
             await targetCollection.MergeWith(CurrentCollection);
 
             message = $"Successfully merged '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'";
-            MessageBox.Show(message, "Merge Success");
+            messageDialog.Show(message, "Merge Success");
         }
         #endregion
     }
