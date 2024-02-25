@@ -137,9 +137,9 @@ namespace COMPASS.ViewModels
             w.Show();
         }
 
-        private ActionCommand? _importTagsFromCompassFileCommand;
-        public ActionCommand ImportTagsFromCompassFileCommand => _importTagsFromCompassFileCommand ??= new(async () => await ImportTagsFromCompassFile());
-        public async Task ImportTagsFromCompassFile()
+        private ActionCommand? _importTagsFromSatchelCommand;
+        public ActionCommand ImportTagsFromSatchelCommand => _importTagsFromSatchelCommand ??= new(async () => await ImportTagsFromSatchel());
+        public async Task ImportTagsFromSatchel()
         {
             var collectionToImport = await IOService.OpenSatchel();
 

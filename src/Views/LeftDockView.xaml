@@ -291,8 +291,8 @@
                                         <TextBlock Text="From Another collection..." TextWrapping="Wrap"/>
                                     </Button>
                                     <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}" Margin="5,0,5,5"
-                                            Command="{Binding ImportTagsFromCompassFileCommand}" HorizontalContentAlignment="Left">
-                                        <TextBlock Text="From a .cmpss file..." TextWrapping="Wrap"/>
+                                            Command="{Binding ImportTagsFromSatchelCommand}" HorizontalContentAlignment="Left">
+                                        <TextBlock Text="From a .satchel file..." TextWrapping="Wrap"/>
                                     </Button>
                                 </StackPanel>
                             </ContentControl>
@@ -673,7 +673,7 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Resources>
-                        
+
                         <TextBlock Text="Physical Books" Style="{StaticResource Categorizer}"/>
                         <Button tools:AP.IconKind="BookPlusOutline" Style="{StaticResource HighlightedButton}" Content="Add Manually"
                             Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.Manual}"/>
@@ -711,31 +711,12 @@
                             Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GenericURL}"/>
 
                         <TextBlock Text="Other" Style="{StaticResource Categorizer}"/>
-                        <Button tools:AP.IconKind="FileCad" Style="{StaticResource HighlightedButton}" Content="From a .cmpss file"
-                                Command="{Binding ImportBooksFromCompassFileCommand}"/>
+                        <Button tools:AP.IconKind="Sack" Style="{StaticResource HighlightedButton}" Content="From a .satchel file"
+                                Command="{Binding ImportBooksFromSatchelCommand}"/>
                     </StackPanel>
                 </ScrollViewer>
             </ContentControl>
         </TabItem>
-        <!--<TabItem Header="Share" tools:AP.IconKind="Share" ToolTip="Share" Grid.IsSharedSizeScope="True" DataContext="{x:Static viewmodels:MainViewModel.CollectionVM}">
-            <ContentControl tools:AP.Header="Share" tools:AP.IconKind="Share" Style="{StaticResource TabContentWrapper}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <TextBlock Style="{StaticResource Categorizer}" Text="Export Collection as:"/>
-                        <Button Style="{StaticResource IconTextButton}" Content="COMPASS file" tools:AP.IconKind="FileCad"
-                                Command="{Binding ExportCommand}"/>
-                        <Button Style="{StaticResource IconTextButton}" Content="Spreadsheet (.csv)" tools:AP.IconKind="TableExport"/>
-                        <CheckBox Content="Include files that are referenced by this collection (pdf's and such)" Margin="20,5" 
-                                  Style="{StaticResource WrappingCheckBox}" VerticalAlignment="Top" IsChecked="{Binding IncludeFilesInExport}"/>
-
-                        <TextBlock Style="{StaticResource Categorizer}" Text="Export Tags as:"/>
-                        <Button Style="{StaticResource IconTextButton}" Content="COMPASS file" tools:AP.IconKind="FileCad"
-                                Command="{Binding ExportTagsCommand}"/>
-                        <Button Style="{StaticResource IconTextButton}" Content="To COMPASS Hub" tools:AP.IconKind="Github"/>
-                    </StackPanel>
-                </ScrollViewer>
-            </ContentControl>
-        </TabItem>-->
         <TabItem x:Name="Logs" Header="Logs" tools:AP.IconKind="TextLong" ToolTip="Activity Log" GotFocus="Logs_GotFocus">
             <TabItem.Template>
                 <ControlTemplate TargetType="TabItem">

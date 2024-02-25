@@ -77,7 +77,7 @@
                                                                 <StackPanel Orientation="Horizontal" Margin="20,0">
                                                                     <CheckBox Content="Reset personal data on all items" IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/>
                                                                     <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
-                                                                            ToolTip="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last openened &#x0a; - Times opened &#x0a; - Date added"/>
+                                                                            ToolTip="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last opened &#x0a; - Times opened &#x0a; - Date added"/>
                                                                 </StackPanel>
                                                                 <StackPanel Orientation="Horizontal" Margin="20,0" Grid.Row="1">
                                                                     <CheckBox Content="Include files that are referenced by these items" IsChecked="{Binding IncludeFiles}"/>
@@ -118,7 +118,7 @@
                                             <StackPanel Orientation="Horizontal" Margin="20,0">
                                                 <CheckBox Content="Reset personal data on all items" IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/>
                                                 <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
-                                                    ToolTip="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last openened &#x0a; - Times opened &#x0a; - Date added"/>
+                                                    ToolTip="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last opened &#x0a; - Times opened &#x0a; - Date added"/>
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal" Margin="20,0" Grid.Row="1">
                                                 <CheckBox Content="Include files that are referenced by these items" IsChecked="{Binding IncludeFiles}"/>

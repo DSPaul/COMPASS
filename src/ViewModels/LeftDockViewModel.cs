@@ -48,9 +48,9 @@ namespace COMPASS.ViewModels
         private RelayCommand<ImportSource>? _importCommand;
         public RelayCommand<ImportSource> ImportCommand => _importCommand ??= new(async source => await ImportViewModel.Import(source));
 
-        private ActionCommand? _importBooksFromCompassFileCommand;
-        public ActionCommand ImportBooksFromCompassFileCommand => _importBooksFromCompassFileCommand ??= new(async () => await ImportBooksFromCompassFile());
-        public async Task ImportBooksFromCompassFile()
+        private ActionCommand? _importBooksFromSatchelCommand;
+        public ActionCommand ImportBooksFromSatchelCommand => _importBooksFromSatchelCommand ??= new(async () => await ImportBooksFromSatchel());
+        public async Task ImportBooksFromSatchel()
         {
             var collectionToImport = await IOService.OpenSatchel();
 
@@ -60,9 +60,10 @@ namespace COMPASS.ViewModels
                 return;
             }
 
+            //Create importcollection ready to merge into existing collection
+            //set in advanced mode as a sort of preview
             var vm = new ImportCollectionViewModel(collectionToImport)
             {
-                //configure export vm for codices only
                 AdvancedImport = true,
                 MergeIntoCollection = true
             };
@@ -79,6 +80,8 @@ namespace COMPASS.ViewModels
 
             var w = new ImportCollectionWizard(vm);
             w.Show();
+
+            //Add tags of the imported files under a new root tag
         }
         #endregion
 

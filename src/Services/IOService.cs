@@ -122,9 +122,9 @@ namespace COMPASS.Services
         #region (De)Serialization
 
         /// <summary>
-        /// Unzips a collection stored in a .cmpss file
+        /// Unzips a collection stored in a satchel file
         /// </summary>
-        /// <param name="path">Path to the .cmpss file</param>
+        /// <param name="path">Path to the sathcel file</param>
         /// <returns>Path to unzipped folder</returns>
         public static async Task<string> UnZipCollection(string path)
         {

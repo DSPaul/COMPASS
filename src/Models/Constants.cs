@@ -8,8 +8,8 @@ namespace COMPASS.Models
     {
         public const string RepoURL = "https://github.com/DSPAUL/COMPASS";
 
-        public const string SatchelExtension = ".cmpss";
-        public const string SatchelExtensionFilter = $"COMPASS Sathcel File (*{SatchelExtension})|*{SatchelExtension}";
+        public const string SatchelExtension = ".satchel";
+        public const string SatchelExtensionFilter = $"COMPASS Satchel File (*{SatchelExtension})|*{SatchelExtension}";
 
         //File names
         public const string SatchelInfoFileName = "SatchelInfo.json";
