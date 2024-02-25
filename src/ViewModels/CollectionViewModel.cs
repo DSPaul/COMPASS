@@ -273,7 +273,7 @@ namespace COMPASS.ViewModels
 
             CodexCollection newCollection = new(dirName);
 
-            newCollection.CreateDirectories();
+            newCollection.InitAsNew();
 
             AllCodexCollections.Add(newCollection);
             return newCollection;

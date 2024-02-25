@@ -206,7 +206,19 @@ namespace COMPASS.Models
 
         #region Save Data To XML File
 
-        public void CreateDirectories()
+        /// <summary>
+        /// Will initialize the collection for the first time. 
+        /// </summary>
+        public void InitAsNew()
+        {
+            _loadedCodices = true;
+            _loadedInfo = true;
+            _loadedTags = true;
+
+            CreateDirectories();
+        }
+
+        private void CreateDirectories()
         {
             //top folder
             Directory.CreateDirectory(FullDataPath);
@@ -304,14 +316,14 @@ namespace COMPASS.Models
         #endregion    
 
         /// <summary>
-        /// Will merge all the data from toMerge into this collection
+        /// Will merge all the data from toMergeFrom into this collection
         /// </summary>
-        /// <param name="toMerge"></param>
-        public async Task MergeWith(CodexCollection toMerge)
+        /// <param name="toMergeFrom"></param>
+        public async Task MergeWith(CodexCollection toMergeFrom)
         {
-            ImportTags(toMerge.RootTags);
-            ImportCodicesFrom(toMerge);
-            Info.MergeWith(toMerge.Info);
+            ImportTags(toMergeFrom.RootTags);
+            ImportCodicesFrom(toMergeFrom);
+            Info.MergeWith(toMergeFrom.Info);
             if (MainViewModel.CollectionVM.CurrentCollection == this)
             {
                 await MainViewModel.CollectionVM.Refresh();
@@ -320,6 +332,28 @@ namespace COMPASS.Models
             {
                 Save();
             }
+        }
+
+        public void RenameCollection(string newCollectionName)
+        {
+            string oldName = DirectoryName;
+            DirectoryName = newCollectionName;
+
+            foreach (Codex codex in AllCodices)
+            {
+                //Replace folder names in image paths
+                codex.SetImagePaths(this);
+            }
+            try
+            {
+                Directory.Move(Path.Combine(CollectionsPath, oldName), Path.Combine(CollectionsPath, newCollectionName));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to move data files from {oldName} to {newCollectionName}", ex);
+            }
+
+            Logger.Info($"Renamed  {oldName} to {newCollectionName}");
         }
 
         public void ImportTags(IEnumerable<Tag> tags)
@@ -468,28 +502,6 @@ namespace COMPASS.Models
             Info.FolderTagPairs.RemoveAll(pair => pair.Tag is not null && pair.Tag == toDelete);
 
             SaveTags();
-        }
-
-        public void RenameCollection(string newCollectionName)
-        {
-            string oldName = DirectoryName;
-            DirectoryName = newCollectionName;
-
-            foreach (Codex codex in AllCodices)
-            {
-                //Replace folder names in image paths
-                codex.SetImagePaths(this);
-            }
-            try
-            {
-                Directory.Move(Path.Combine(CollectionsPath, oldName), Path.Combine(CollectionsPath, newCollectionName));
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"Failed to move data files from {oldName} to {newCollectionName}", ex);
-            }
-
-            Logger.Info($"Renamed  {oldName} to {newCollectionName}");
         }
     }
 }

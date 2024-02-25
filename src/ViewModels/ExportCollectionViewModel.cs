@@ -101,7 +101,7 @@ namespace COMPASS.ViewModels
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     //make sure to save first
-                    ContentSelectorVM.CuratedCollection.CreateDirectories();
+                    ContentSelectorVM.CuratedCollection.InitAsNew();
                     ContentSelectorVM.CuratedCollection.Save();
 
                     string targetPath = saveFileDialog.FileName;
