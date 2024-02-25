@@ -189,7 +189,7 @@ namespace COMPASS.ViewModels
             CuratedCollection.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).ToList();
 
             //Remove the tags that didn't make it from codices
-            var removedTags = CompleteCollection.AllTags.Except(CompleteCollection.RootTags.Flatten()).ToList();
+            var removedTags = CompleteCollection.AllTags.Except(CuratedCollection.RootTags.Flatten()).ToList();
             foreach (Tag t in removedTags)
             {
                 CuratedCollection.AllTags.Remove(t);
@@ -250,8 +250,9 @@ namespace COMPASS.ViewModels
         /// </summary>
         public override Task ApplyAll()
         {
-            ApplySelectedTags();
+            //order is important!
             ApplySelectedCodices();
+            ApplySelectedTags();
             ApplySelectedPreferences();
             return Task.CompletedTask;
         }
