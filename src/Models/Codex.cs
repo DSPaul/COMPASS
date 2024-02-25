@@ -226,9 +226,10 @@ namespace COMPASS.Models
         {
             get
             {
-                List<Tag> orderedTags = new(_tags.OrderBy(t => t.AllTags.IndexOf(t)));
                 App.SafeDispatcher.Invoke(() =>
                 {
+                    //order them in same order as alltags by starting with alltags and keeping the ones we need using intersect
+                    List<Tag> orderedTags = _tags.FirstOrDefault()?.AllTags.Intersect(_tags).ToList() ?? new List<Tag>();
                     _tags.Clear(); //will fail when called from non UI thread which happens during import
                     _tags.AddRange(orderedTags);
                 });
