@@ -123,7 +123,9 @@ namespace COMPASS.ViewModels
 
         #region ViewModels
 
-        public static CollectionViewModel CollectionVM { get; private set; } = new(null);
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public static CollectionViewModel CollectionVM { get; private set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public CollectionViewModel BindableCollectionVM => CollectionVM; //because binding to static properties sucks
 
