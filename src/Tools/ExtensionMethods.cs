@@ -115,6 +115,11 @@ namespace COMPASS.Tools
 
         public static object? GetDeepPropertyValue(this object obj, string fullPropName)
         {
+            if (String.IsNullOrEmpty(fullPropName))
+            {
+                return obj;
+            }
+
             string[] propNames = fullPropName.Split('.');
             object? result = obj;
             foreach (string propName in propNames)
