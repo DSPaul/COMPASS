@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using COMPASS.Tools;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
@@ -67,14 +68,17 @@ namespace COMPASS.Services
             if (IsInstalled("chrome.exe"))
             {
                 _browser = Browser.Chrome;
+                Logger.Debug("Chrome install found");
             }
             else if (IsInstalled("firefox.exe"))
             {
                 _browser = Browser.Firefox;
+                Logger.Debug("firefox install found");
             }
             else if (IsInstalled("msedge.exe"))
             {
                 _browser = Browser.Edge;
+                Logger.Debug("edge install found");
             }
         }
 
