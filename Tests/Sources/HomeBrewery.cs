@@ -45,7 +45,7 @@ namespace Tests.Sources
             Assert.IsFalse(String.IsNullOrEmpty(response.Description));
         }
 
-        [TestMethod]
+        [TestMethod, Priority(2)]
         public async Task GetCoverFromHomeBrewery()
         {
             //Setup
@@ -73,9 +73,9 @@ namespace Tests.Sources
             bool success = await vm!.FetchCover(codex);
 
             //see it it worked
-            Assert.IsTrue(success);
-            Assert.IsTrue(File.Exists(codex.Thumbnail));
-            Assert.IsTrue(File.Exists(codex.CoverArt));
+            Assert.IsTrue(success, "Failed to fetch cover");
+            Assert.IsTrue(File.Exists(codex.Thumbnail), "Thumbnail doesn't exist");
+            Assert.IsTrue(File.Exists(codex.CoverArt), "Cover doesn't exist");
         }
     }
 }

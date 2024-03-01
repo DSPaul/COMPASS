@@ -1,0 +1,47 @@
+name: build and test
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+    - '**.cs'
+    - '**.csproj'
+  push:
+    branches: [ dev ]
+
+env:
+  DOTNET_VERSION: '7.0.x' # The .NET SDK version to use
+
+jobs:
+  build-and-test:
+
+    name: build-and-test
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup Chrome
+      uses: browser-actions/setup-chrome@v1.5.0
+
+    - name: Install dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Test
+      run: dotnet test --no-build --no-restore -v normal --filter Priority!=2
+
+    - name: Upload Log Artifact
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: log-file
+        #using $env{appdata} did't work so use this for now, fine until cross platform
+        path: C:\Users\runneradmin\AppData\Roaming\COMPASS\logs\test.log

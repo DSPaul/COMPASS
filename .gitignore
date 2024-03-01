@@ -95,3 +95,4 @@ TagTrees/
 .idea
 Deployment/release-notes-template.md
 Deployment/changes.md
+*.coverage

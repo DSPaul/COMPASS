@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using COMPASS;
 using COMPASS.Interfaces;
+using COMPASS.Tools;
 using Tests.Mocks;
 
 namespace Tests
@@ -18,6 +19,9 @@ namespace Tests
             builder.RegisterType<MockMessageBox>().As<IMessageBox>();
 
             App.Container = builder.Build();
+
+            Logger.Init();
+            Logger.Warn("Logger Initialized");
         }
     }
 }

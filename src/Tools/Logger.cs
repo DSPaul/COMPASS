@@ -4,7 +4,6 @@ using COMPASS.Models;
 using COMPASS.ViewModels;
 using System;
 using System.Collections.ObjectModel;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -12,7 +11,18 @@ namespace COMPASS.Tools
 {
     public static class Logger
     {
-        public static void Init() => FileLog = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
+        public static void Init()
+        {
+            log4net.GlobalContext.Properties["CompassDataPath"] = SettingsViewModel.CompassDataPath;
+            log4net.Config.XmlConfigurator.Configure();
+            FileLog = log4net.LogManager.GetLogger(nameof(Logger));
+            try
+            {
+                Application.Current.DispatcherUnhandledException += LogUnhandledException;
+            }
+            catch { }
+            Info($"Launching Compass v{Reflection.Version}");
+        }
 
         // Log To file
         public static log4net.ILog? FileLog { get; private set; }
@@ -23,6 +33,9 @@ namespace COMPASS.Tools
         public static void Info(string message) =>
             App.SafeDispatcher.Invoke(()
                 => ActivityLog.Add(new(LogEntry.MsgType.Info, message)));
+
+        public static void Debug(string message) => FileLog?.Debug(message);
+
 
         public static void Warn(string message, Exception? ex = null)
         {
@@ -43,7 +56,7 @@ namespace COMPASS.Tools
             FileLog?.Error(message, ex);
         }
 
-        public static void LogUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private static void LogUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             FileLog?.Fatal(e.Exception.ToString(), e.Exception);
             //prompt user to submit logs and open an issue

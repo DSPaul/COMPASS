@@ -201,6 +201,7 @@ namespace COMPASS.Services
 
             if (img == null)
             {
+                Logger.Debug("Screenshot from webdriver was null");
                 return new MagickImage();
             }
 

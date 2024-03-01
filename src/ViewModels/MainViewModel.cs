@@ -19,7 +19,7 @@ namespace COMPASS.ViewModels
     {
         public MainViewModel()
         {
-            InitLogger();
+            Logger.Init();
             ViewModelBase.MVM = this;
 
             //Load everything
@@ -83,15 +83,6 @@ namespace COMPASS.ViewModels
             timer.Start();
             //check at startup
             AutoUpdater.Start();
-        }
-
-        public void InitLogger()
-        {
-            log4net.GlobalContext.Properties["CompassDataPath"] = SettingsViewModel.CompassDataPath;
-            log4net.Config.XmlConfigurator.Configure();
-            Logger.Init();
-            Application.Current.DispatcherUnhandledException += Logger.LogUnhandledException;
-            Logger.Info($"Launching Compass {VersionName}");
         }
 
         private void InitConnectionTimer()
