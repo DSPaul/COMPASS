@@ -30,7 +30,14 @@ namespace COMPASS.Models
         public ObservableCollection<Tag> Children
         {
             get => _children;
-            set => SetProperty(ref _children, value);
+            set
+            {
+                SetProperty(ref _children, value);
+                foreach (var child in _children)
+                {
+                    child.Parent = this;
+                }
+            }
         }
 
         //implement ITag
@@ -65,7 +72,7 @@ namespace COMPASS.Models
         }
 
         //Implement IHasID
-        private int _id;
+        private int _id = -1;
         public int ID
         {
             get => _id;

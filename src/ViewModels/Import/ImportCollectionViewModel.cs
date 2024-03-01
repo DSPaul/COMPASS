@@ -44,6 +44,11 @@ namespace COMPASS.ViewModels.Import
 
         public CodexCollection CollectionToImport { get; set; } //collection that was in the satchel
 
+        /// <summary>
+        /// Indicates that the tags should all be imported in a new, seperate group
+        /// </summary>
+        public bool ImportTagsSeperatly { get; set; } = false;
+
         //OVERVIEW STEP
         public bool MergeIntoCollection { get; set; } = false;
 
@@ -82,6 +87,9 @@ namespace COMPASS.ViewModels.Import
 
         public override async Task ApplyAll()
         {
+
+            CloseAction?.Invoke();
+
             //if we do a quick import, set all the things in the contentSelector have the right value
             if (!AdvancedImport)
             {
@@ -104,7 +112,34 @@ namespace COMPASS.ViewModels.Import
                 ContentSelectorVM.SelectFolderTagLinks = ImportAllSettings;
             }
 
-            CloseAction?.Invoke();
+            //If we have tags and are doing an advanced import, but the tags step is missing, ask if we should still import them
+            if (AdvancedImport                                                   // if we are doing an advanced import
+                && !Steps.Contains(CollectionContentSelectorViewModel.TagsStep)  // and the tags step is missing
+                && ContentSelectorVM.HasTags                                     // but there are tags included in the import
+                && ContentSelectorVM.SelectableCodices                           // and the tags are present on the chosen codices
+                    .Where(x => x.Selected)
+                    .SelectMany(sc => sc.Codex.Tags)
+                    .Any())
+            {
+                string message = $"Some of the items that you are about to import have Tags, \n " +
+                    $"would you like to import these as well?\n " +
+                    $"They will be put in a new tag group called {CollectionName}.";
+                var result = messageDialog.Show(message, "Tags found", System.Windows.MessageBoxButton.YesNoCancel);
+
+                switch (result)
+                {
+                    case System.Windows.MessageBoxResult.Cancel:
+                        return;
+                    case System.Windows.MessageBoxResult.Yes:
+                        ImportTagsSeperatly = true;
+                        ContentSelectorVM.OnlyTagsOnCodices = true;
+                        break;
+                    default:
+                        //all other cases, make sure to deselect all tags
+                        ContentSelectorVM.TagsSelectorVM.SelectedTagCollection!.TagsRoot.IsChecked = false;
+                        break;
+                }
+            }
 
             //Apply the selection
             await ContentSelectorVM.ApplyAll();
@@ -121,7 +156,7 @@ namespace COMPASS.ViewModels.Import
                 return;
             }
 
-            await targetCollection.MergeWith(ContentSelectorVM.CuratedCollection);
+            await targetCollection.MergeWith(ContentSelectorVM.CuratedCollection, ImportTagsSeperatly);
         }
 
         public void UpdateSteps()

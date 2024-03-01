@@ -35,7 +35,7 @@ namespace COMPASS.ViewModels
 
         public bool ExportAllTags { get; set; } = true;
         public bool ExportAllCodices { get; set; } = true;
-        public bool ExportAllSettings { get; set; } = true;
+        public bool ExportAllSettings { get; set; } = false;
 
         private bool _advancedExport = false;
         public bool AdvancedExport

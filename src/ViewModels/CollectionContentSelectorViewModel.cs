@@ -79,6 +79,11 @@ namespace COMPASS.ViewModels
         public TagsSelectorViewModel TagsSelectorVM { get; set; }
         public IEnumerable<CheckableTreeNode<Tag>> SelectableTags => TagsSelectorVM.SelectedTagCollection?.TagsRoot.Children ?? Enumerable.Empty<CheckableTreeNode<Tag>>();
 
+        /// <summary>
+        /// Indicates that only tags that are persent on codices should be imported
+        /// </summary>
+        public bool OnlyTagsOnCodices { get; set; } = false;
+
         // CODICES STEP
         public List<SelectableCodex> SelectableCodices { get; set; }
 
@@ -186,16 +191,35 @@ namespace COMPASS.ViewModels
 
         public void ApplySelectedTags()
         {
-            CuratedCollection.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).ToList();
+            if (!HasTags) return;
 
-            //Remove the tags that didn't make it from codices
-            var removedTags = CompleteCollection.AllTags.Except(CuratedCollection.RootTags.Flatten()).ToList();
-            foreach (Tag t in removedTags)
+            if (OnlyTagsOnCodices) //indicates that we should keep all the tags that occur on the chosen codices
             {
-                CuratedCollection.AllTags.Remove(t);
-                foreach (var codex in CuratedCollection.AllCodices)
+                var assignedTags = CuratedCollection.AllCodices.SelectMany(c => c.Tags).Distinct().ToList(); //get all the tags that are assigned to a codex
+                //delesect all tags
+                TagsSelectorVM.SelectedTagCollection!.TagsRoot.IsChecked = false;
+                var allselectableTags = SelectableTags.Flatten().ToList();
+                foreach (var tag in assignedTags)
                 {
-                    codex.Tags.Remove(t);
+                    allselectableTags.Single(st => st.Item == tag).IsChecked = true;
+                }
+                CuratedCollection.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).ToList();
+
+            }
+            else //otherwise use the users choice
+            {
+                CuratedCollection.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).ToList();
+
+                //Remove the tags that didn't make it from codices
+                var removedTags = CompleteCollection.AllTags.Except(CuratedCollection.RootTags.Flatten()).ToList();
+
+                foreach (Tag t in removedTags)
+                {
+                    CuratedCollection.AllTags.Remove(t);
+                    foreach (var codex in CuratedCollection.AllCodices)
+                    {
+                        codex.Tags.Remove(t);
+                    }
                 }
             }
         }
@@ -251,7 +275,7 @@ namespace COMPASS.ViewModels
         public override Task ApplyAll()
         {
             //order is important!
-            ApplySelectedCodices();
+            ApplySelectedCodices(); //first codices, makes copies, so further operations don't modify the existing ones
             ApplySelectedTags();
             ApplySelectedPreferences();
             return Task.CompletedTask;

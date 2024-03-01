@@ -54,8 +54,8 @@ namespace COMPASS.ViewModels
                     //Lazy load, only load the first time
                     if (_tagsRoot != null) return _tagsRoot;
 
-                    //load
-                    _collection.LoadTags();
+                    //load if not done yet
+                    if (!_collection.AllTags.Any()) _collection.LoadTags();
                     //convert to nodes
                     _tagsRoot = new CheckableTreeNode<Tag>(new Tag())
                     {

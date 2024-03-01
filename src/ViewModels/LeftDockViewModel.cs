@@ -74,14 +74,12 @@ namespace COMPASS.ViewModels
                 return;
             }
 
+            //setup for only codices
             vm.Steps.Clear();
             vm.Steps.Add(CollectionContentSelectorViewModel.ItemsStep);
-            vm.ContentSelectorVM.TagsSelectorVM.SelectedTagCollection!.TagsRoot.IsChecked = false;
 
             var w = new ImportCollectionWizard(vm);
             w.Show();
-
-            //Add tags of the imported files under a new root tag
         }
         #endregion
 

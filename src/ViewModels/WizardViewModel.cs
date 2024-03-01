@@ -1,12 +1,11 @@
 ﻿using COMPASS.Commands;
-using COMPASS.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public abstract class WizardViewModel : ObservableObject
+    public abstract class WizardViewModel : ViewModelBase
     {
         private ObservableCollection<string> _steps = new();
         public virtual ObservableCollection<string> Steps

@@ -41,7 +41,20 @@ namespace COMPASS.Models
         }
 
         public List<Tag> AllTags { get; private set; } = new();
-        public List<Tag> RootTags { get; set; } = new();
+
+        private List<Tag> _rootTags = new();
+        public List<Tag> RootTags
+        {
+            get => _rootTags;
+            set
+            {
+                _rootTags = value;
+                foreach (Tag t in _rootTags)
+                {
+                    t.Parent = null;
+                }
+            }
+        }
 
         private ObservableCollection<Codex> _allCodices = new();
         public ObservableCollection<Codex> AllCodices
@@ -118,6 +131,12 @@ namespace COMPASS.Models
             {
                 t.AllTags = AllTags;
             }
+
+            foreach (Codex c in AllCodices)
+            {
+                //set the new object on the open codices
+                c.Tags = new(AllTags.Where(t => c.TagIDs.Contains(t.ID)));
+            }
         }
 
         //Loads AllCodices list from Files
@@ -125,18 +144,16 @@ namespace COMPASS.Models
         {
             if (File.Exists(CodicesDataFilePath))
             {
-                using (var reader = new StreamReader(CodicesDataFilePath))
+                using var reader = new StreamReader(CodicesDataFilePath);
+                XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
+                try
                 {
-                    XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
-                    try
-                    {
-                        AllCodices = serializer.Deserialize(reader) as ObservableCollection<Codex> ?? new();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error($"Could not load {CodicesDataFilePath}", ex);
-                        return false;
-                    }
+                    AllCodices = serializer.Deserialize(reader) as ObservableCollection<Codex> ?? new();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Could not load {CodicesDataFilePath}", ex);
+                    return false;
                 }
             }
             else
@@ -319,11 +336,29 @@ namespace COMPASS.Models
         /// Will merge all the data from toMergeFrom into this collection
         /// </summary>
         /// <param name="toMergeFrom"></param>
-        public async Task MergeWith(CodexCollection toMergeFrom)
+        /// <param name="separateTags"> if true, all new tags will be put under a group with the name of the collection they came from</param>
+        public async Task MergeWith(CodexCollection toMergeFrom, bool separateTags = false)
         {
+            //Merge Tags
+            if (separateTags)
+            {
+                var rootTag = new Tag(toMergeFrom.AllTags)
+                {
+                    IsGroup = true,
+                    Content = toMergeFrom.DirectoryName.Trim('_'),
+                    Children = new(toMergeFrom.RootTags)
+                };
+                toMergeFrom.RootTags = new() { rootTag };
+            }
             ImportTags(toMergeFrom.RootTags);
+
+            //merge codices
             ImportCodicesFrom(toMergeFrom);
+
+            //merge info
             Info.MergeWith(toMergeFrom.Info);
+
+            //save
             if (MainViewModel.CollectionVM.CurrentCollection == this)
             {
                 await MainViewModel.CollectionVM.Refresh();

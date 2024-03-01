@@ -75,6 +75,7 @@ namespace Tests.UnitTests
             //Because satchel does not contain a codexInfo file, should work
             var collection = await IOService.OpenSatchel(path);
             Assert.IsNotNull(collection);
+            Directory.Delete(collection.FullDataPath, true);
 
             //Now add a codex file
             zip.AddEntry(Constants.CodicesFileName, "Not important");
@@ -83,6 +84,7 @@ namespace Tests.UnitTests
             //Now that the codex file is added, should be null
             collection = await IOService.OpenSatchel(path);
             Assert.IsNull(collection);
+
         }
     }
 }
