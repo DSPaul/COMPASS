@@ -74,8 +74,9 @@ artifacts/
 
 
 # Others
-Deployment/
 Images/
+Deployment/InnoSetup/
+Deployment/Versions/
 ~$*
 *~
 *.dbmdl
@@ -92,3 +93,5 @@ AnalysisReport.sarif
 upgrade-assistant.clef
 TagTrees/
 .idea
+Deployment/release-notes-template.md
+Deployment/changes.md
