@@ -1,12 +1,14 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Markup;
 
 namespace COMPASS.Resources.Controls
 {
     /// <summary>
     /// Interaction logic for CheckableContainer.xaml
     /// </summary>
+    [ContentProperty(nameof(InnerContent))]
     public partial class CheckableContainer : UserControl
     {
         public CheckableContainer()
@@ -39,5 +41,18 @@ namespace COMPASS.Resources.Controls
                 BindsTwoWayByDefault = true,
                 DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
             });
+
+
+        public object InnerContent
+        {
+            get => GetValue(InnerContentProperty);
+            set => SetValue(InnerContentProperty, value);
+        }
+
+        // Using a DependencyProperty as the backing store for InnerContent.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty InnerContentProperty =
+            DependencyProperty.Register(nameof(InnerContent), typeof(object), typeof(CheckableContainer));
+
+
     }
 }
