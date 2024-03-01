@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace COMPASS.Resources.Controls
 {
@@ -32,6 +33,11 @@ namespace COMPASS.Resources.Controls
 
         // Using a DependencyProperty as the backing store for IsChecked.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsCheckedProperty =
-            DependencyProperty.Register(nameof(IsChecked), typeof(bool), typeof(CheckableContainer), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(IsChecked), typeof(bool), typeof(CheckableContainer), new FrameworkPropertyMetadata
+            {
+                DefaultValue = false,
+                BindsTwoWayByDefault = true,
+                DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            });
     }
 }
