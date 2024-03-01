@@ -128,7 +128,7 @@
                                             <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="2"/>
                                             <DataGrid x:Name="ListLayoutGrid" ItemsSource="{Binding ContentSelectorVM.SelectableCodices, IsAsync=True}"
                                                 Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
-                                                CanUserAddRows="False" SelectionMode="Extended" AutoGenerateColumns="False" Grid.Row="3"
+                                                CanUserAddRows="False" SelectionMode="Extended" AutoGenerateColumns="False" Grid.Row="3" CanUserDeleteRows="False"
                                                 RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True" ColumnHeaderStyle="{StaticResource BasicDataGridColumnHeaderStyle}"
                                                 VerticalGridLinesBrush="#FF484848" HorizontalGridLinesBrush="#FF484848" ClipToBounds="True">
                                                 <DataGrid.Resources>
@@ -266,11 +266,11 @@
                                                             </Border>
                                                         </DataTemplate>
                                                     </StackPanel.Resources>
-                                                    <!--<controls:CheckableContainer CheckText="Directories to Auto Import from." 
+                                                    <controls:CheckableContainer CheckText="Directories to Auto Import from." 
                                                                             Visibility="{Binding AutoImportFolders.Count, Converter={StaticResource ToVisibilityConverter}}"
                                                                             IsChecked="{Binding SelectAutoImportFolders}">
                                                         <ItemsControl ItemsSource="{Binding AutoImportFolders}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/>
-                                                    </controls:CheckableContainer>-->
+                                                    </controls:CheckableContainer>
                                                     <controls:CheckableContainer CheckText="Banished files (Files to Exclude from future imports)" 
                                                                             Visibility="{Binding BanishedPaths.Count, Converter={StaticResource ToVisibilityConverter}}"
                                                                             IsChecked="{Binding SelectBanishedFiles}">
@@ -294,7 +294,7 @@
                                                     </controls:CheckableContainer>
                                                     <controls:CheckableContainer CheckText="Folder-Tag Links" 
                                                                         Visibility="{Binding FolderTagLinks.Count, Converter={StaticResource ToVisibilityConverter}}"
-                                                                        IsChecked="{Binding ImportFolderTagLinks}">
+                                                                        IsChecked="{Binding SelectFolderTagLinks}">
                                                         <ItemsControl ItemsSource="{Binding FolderTagLinksVS.View}"  Grid.IsSharedSizeScope="True">
                                                             <ItemsControl.ItemTemplate>
                                                                 <DataTemplate>

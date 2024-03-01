@@ -217,7 +217,7 @@ namespace COMPASS.ViewModels
         public void ApplySelectedPreferences()
         {
             List<string> selectedFolderPaths = AutoImportFolders.Where(x => x.Selected).Select(x => x.Path).ToList();
-            List<Folder> selectedFolders = CuratedCollection.Info.AutoImportFolders.Where(f => selectedFolderPaths.Contains(f.FullPath)).ToList();
+            List<Folder> selectedFolders = CompleteCollection.Info.AutoImportFolders.Where(f => selectedFolderPaths.Contains(f.FullPath)).ToList();
             CuratedCollection.Info.AutoImportFolders.Clear();
             if (SelectAutoImportFolders)
             {

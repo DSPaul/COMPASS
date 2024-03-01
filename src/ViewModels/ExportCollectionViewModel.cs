@@ -74,9 +74,6 @@ namespace COMPASS.ViewModels
                 ContentSelectorVM.SelectFolderTagLinks = ExportAllSettings;
             }
 
-            //Disable export of AutoImportFolders because it's so file system specific that it doesn't make sense to share
-            ContentSelectorVM.SelectAutoImportFolders = false;
-
             //Apply the selection
             await ContentSelectorVM.ApplyAll();
 
