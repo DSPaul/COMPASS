@@ -36,7 +36,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test --no-build --no-restore -v normal --filter Priority!=2
+      run: dotnet test --no-restore -v normal --filter Priority!=2
 
     - name: Upload Log Artifact
       if: failure()
