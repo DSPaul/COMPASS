@@ -34,7 +34,7 @@ namespace COMPASS.ViewModels.Sources
                     return pdfDoc.GetDocumentInfo();
                 });
 
-                codex.Title = info.GetTitle();
+                codex.Title = info.GetTitle() ?? String.Empty;
                 if (info.GetAuthor() is not null)
                 {
                     codex.Authors = new() { info.GetAuthor() };
