@@ -90,6 +90,7 @@ namespace COMPASS.Models
             get => _title;
             set
             {
+                if (value is null) return;
                 value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _title, value);
                 RaisePropertyChanged(nameof(SortingTitle));
