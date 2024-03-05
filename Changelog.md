@@ -1,10 +1,11 @@
 # CHANGELOG
-## COMPASS v1.7.0 (25 February 2024)
+
+## COMPASS v1.7.0 (25 February 2024)
 
 ### New Features
 
 - IMPORT & EXPORT are here in the form of `Satchels`! In this new update you can:
-  - Export collections to a new .sachel file to share with your friends. Exports can include:
+  - Export collections to a new .satchel file to share with your friends. Exports can include:
     - the tags from a collection
     - the items in the collection (such as books and maps) including their metadata, cover art and even the files referenced by those items such as pdf's.
     - your settings for that collection such as which file types to exclude from import
@@ -25,8 +26,9 @@
 - COMPASS now saves more often to prevent data loss.
 - Info and warning tooltips now appear instantly.
 - Added an explainer when zero-padding is applied to the sorting title.
-- When autoimport tries to import a new file type, it will now always ask what to do with it.
+- When auto import tries to import a new file type, it will now always ask what to do with it.
 - Increased stability.
+- When manually resolving a broken file reference, COMPASS will analyze how the file path changed and attempt to fix other broken links by applying the same change.
 
 ### Fixes
 

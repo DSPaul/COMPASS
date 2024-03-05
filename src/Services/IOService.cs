@@ -366,6 +366,12 @@ namespace COMPASS.Services
         }
         #endregion
 
+        /// <summary>
+        /// Get the longest common path shared by all the given paths
+        /// </summary>
+        /// <param name="paths"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static string GetCommonFolder(List<string> paths)
         {
             if (paths is null) throw new ArgumentNullException(nameof(paths));
@@ -387,6 +393,45 @@ namespace COMPASS.Services
                 }
             }
             return commonFolder;
+        }
+
+        /// <summary>
+        /// Returns the paths without the longest common end
+        /// </summary>
+        /// <param name="path1"></param>
+        /// <param name="path2"></param>
+        /// <returns></returns>
+        public static (string, string) GetDifferingRoot(in string path1, in string path2)
+        {
+            if (path1 is null)
+            {
+                throw new ArgumentNullException(nameof(path1));
+            }
+            if (path2 is null)
+            {
+                throw new ArgumentNullException(nameof(path2));
+            }
+            if (path1 == path2)
+            {
+                return (path1, path2);
+            }
+
+            var dirs1 = path1.Split(Path.DirectorySeparatorChar);
+            var dirs2 = path2.Split(Path.DirectorySeparatorChar);
+
+            int shortestLength = Math.Min(dirs1.Length, dirs2.Length);
+
+            int commonDirs = 0;
+            while (commonDirs < shortestLength                                    //while we have not iterated over the entire shortest array
+                && dirs1.TakeLast(commonDirs + 1).SequenceEqual(dirs2.TakeLast(commonDirs + 1)))  //and the last x elements are the same
+            {
+                commonDirs++;
+            }
+
+            string remainingPath1 = String.Join(Path.DirectorySeparatorChar, dirs1.Take(dirs1.Length - commonDirs));
+            string remainingPath2 = String.Join(Path.DirectorySeparatorChar, dirs2.Take(dirs2.Length - commonDirs));
+
+            return (remainingPath1, remainingPath2);
         }
     }
 }
