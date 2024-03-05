@@ -117,9 +117,15 @@ namespace COMPASS.ViewModels
                         {
                             int indexStartFilename = relativePath.Length - Path.GetFileName(codex.Path)!.Length;
                             zip.AddFile(codex.Path, Path.Combine("Files", relativePath[0..indexStartFilename]));
+                            //keep the relative path, will be used during import to link the included files
+                            codex.Path = relativePath;
                         }
-                        //strip longest common path so relative paths stay, given that full paths will break anyway
-                        codex.Path = relativePath;
+
+                        //absolute path is user specific, so counts as personal data 
+                        if (ContentSelectorVM.RemovePersonalData)
+                        {
+                            codex.Path = relativePath;
+                        }
                     }
 
                     ContentSelectorVM.CuratedCollection.SaveCodices();
