@@ -4,6 +4,7 @@ using COMPASS.Models;
 using COMPASS.ViewModels;
 using System;
 using System.Collections.ObjectModel;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -16,11 +17,10 @@ namespace COMPASS.Tools
             log4net.GlobalContext.Properties["CompassDataPath"] = SettingsViewModel.CompassDataPath;
             log4net.Config.XmlConfigurator.Configure();
             FileLog = log4net.LogManager.GetLogger(nameof(Logger));
-            try
+            if (Application.Current is not null)
             {
                 Application.Current.DispatcherUnhandledException += LogUnhandledException;
             }
-            catch { }
             Info($"Launching Compass v{Reflection.Version}");
         }
 
@@ -70,5 +70,8 @@ namespace COMPASS.Tools
                 Environment.Exit(1);
             }
         }
+
+        public static void LogUnhandledException(object? sender, FirstChanceExceptionEventArgs e)
+            => FileLog?.Fatal(e.Exception.ToString(), e.Exception);
     }
 }

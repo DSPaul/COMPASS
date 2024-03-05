@@ -21,7 +21,11 @@ namespace Tests
             App.Container = builder.Build();
 
             Logger.Init();
-            Logger.Warn("Logger Initialized");
+            AppDomain.CurrentDomain.FirstChanceException += Logger.LogUnhandledException;
+            Logger.Debug("Logger Initialized");
         }
+
+        [AssemblyCleanup]
+        public static void MyTestCleanup() => AppDomain.CurrentDomain.FirstChanceException -= Logger.LogUnhandledException;
     }
 }
