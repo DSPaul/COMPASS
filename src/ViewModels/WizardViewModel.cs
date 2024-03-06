@@ -26,7 +26,7 @@ namespace COMPASS.ViewModels
             {
                 if (value <= 0) value = 0;
                 else if (value >= Steps.Count)
-                    ApplyAll();
+                    Finish();
                 SetProperty(ref _stepCounter, value);
                 RaisePropertyChanged(nameof(CurrentStep));
                 RaisePropertyChanged(nameof(ShowBackButton));
@@ -51,8 +51,8 @@ namespace COMPASS.ViewModels
         public virtual bool ShowBackButton() => StepCounter > 0;
 
         private ActionCommand? _finishCommand;
-        public ActionCommand FinishCommand => _finishCommand ??= new(async () => await ApplyAll(), ShowFinishButton);
-        public abstract Task ApplyAll();
+        public ActionCommand FinishCommand => _finishCommand ??= new(async () => await Finish(), ShowFinishButton);
+        public abstract Task Finish();
         public virtual bool ShowFinishButton() => StepCounter == Steps.Count - 1;
 
         public Action? CloseAction;

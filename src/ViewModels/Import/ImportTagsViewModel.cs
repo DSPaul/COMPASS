@@ -26,7 +26,7 @@ namespace COMPASS.ViewModels.Import
                 var tags = CheckableTreeNode<Tag>.GetCheckedItems(template.TagsRoot.Children).ToList();
                 if (tags.Any())
                 {
-                    MainViewModel.CollectionVM.CurrentCollection.ImportTags(tags);
+                    MainViewModel.CollectionVM.CurrentCollection.AddTags(tags);
                 }
             }
             CloseAction.Invoke();

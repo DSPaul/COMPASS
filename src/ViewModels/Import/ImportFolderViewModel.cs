@@ -220,7 +220,7 @@ namespace COMPASS.ViewModels.Import
         }
         #endregion
 
-        public override Task ApplyAll()
+        public override Task Finish()
         {
             //Update the Auto Import Folders
             if (AddAutoImportFolders)

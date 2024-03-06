@@ -13,9 +13,6 @@ namespace Tests.Sources
         [ClassInitialize]
         public static void Init(TestContext testContext)
         {
-            if (System.Windows.Application.Current == null)
-                new System.Windows.Application();
-
             mvm = new MainViewModel();
             if (!MainViewModel.CollectionVM.CollectionDirectories.Contains(TEST_COLLECTION))
             {

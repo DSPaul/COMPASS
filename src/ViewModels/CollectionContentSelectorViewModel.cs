@@ -272,7 +272,7 @@ namespace COMPASS.ViewModels
         /// <summary>
         /// Builds the curated collection based on the selection
         /// </summary>
-        public override Task ApplyAll()
+        public override Task Finish()
         {
             //order is important!
             ApplySelectedCodices(); //first codices, makes copies, so further operations don't modify the existing ones

@@ -350,7 +350,7 @@ namespace COMPASS.Models
                 };
                 toMergeFrom.RootTags = new() { rootTag };
             }
-            ImportTags(toMergeFrom.RootTags);
+            AddTags(toMergeFrom.RootTags);
 
             //merge codices
             ImportCodicesFrom(toMergeFrom);
@@ -391,7 +391,7 @@ namespace COMPASS.Models
             Logger.Info($"Renamed  {oldName} to {newCollectionName}");
         }
 
-        public void ImportTags(IEnumerable<Tag> tags)
+        public void AddTags(IEnumerable<Tag> tags)
         {
             // change ID's of Tags so there aren't any duplicates
             List<Tag> tagsList = tags.ToList();

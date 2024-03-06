@@ -85,7 +85,7 @@ namespace COMPASS.ViewModels.Import
         public override bool ShowFinishButton() => base.ShowFinishButton() &&
             !(CurrentStep == "Overview" && !MergeIntoCollection && !IsCollectionNameLegal);
 
-        public override async Task ApplyAll()
+        public override async Task Finish()
         {
 
             CloseAction?.Invoke();
@@ -142,7 +142,7 @@ namespace COMPASS.ViewModels.Import
             }
 
             //Apply the selection
-            await ContentSelectorVM.ApplyAll();
+            await ContentSelectorVM.Finish();
 
             //Save the changes to a permanent collection
             var targetCollection = MergeIntoCollection ?
