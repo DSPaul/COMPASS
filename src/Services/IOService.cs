@@ -77,7 +77,7 @@ namespace COMPASS.Services
             {
                 LogEntry entry = new(LogEntry.MsgType.Error, $"Failed to reach {url}");
                 progressVM.AddLogEntry(entry);
-                Logger.Error($"{url} does not have any content", new ArgumentNullException());
+                Logger.Error($"{url} does not have any content", new Exception());
                 return null;
             }
             else

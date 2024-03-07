@@ -12,7 +12,7 @@ def replaceVersion(path, old, new):
         f.write(data)
 
 def getOldVersion():
-    #open and read AssebblyInfo
+    #open and read AssemblyInfo
     with open(r"../src/Properties/AssemblyInfo.cs", "r+") as f:
         data = f.read()
     #find old version number

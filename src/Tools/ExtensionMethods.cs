@@ -108,8 +108,7 @@ namespace COMPASS.Tools
         }
         public static object? GetPropertyValue(this object obj, string propName)
         {
-            var propInfo = obj.GetPropertyInfo(propName);
-            if (propInfo is null) throw new MissingFieldException(propName);
+            var propInfo = obj.GetPropertyInfo(propName) ?? throw new MissingFieldException(propName);
             return propInfo.GetValue(obj);
         }
 

@@ -83,10 +83,7 @@ namespace COMPASS.Models
             {
                 IsChecked = null;
             }
-            if (Updated != null)
-            {
-                Updated(IsChecked);
-            }
+            Updated?.Invoke(IsChecked);
         }
 
         public event Action<bool?>? Updated;

@@ -10,10 +10,7 @@ namespace Tests.IntegrationTests
     public class Satchels_Test
     {
         [ClassInitialize]
-        public static void Init(TestContext testContext)
-        {
-            MainViewModel mvm = new();
-        }
+        public static void Init(TestContext testContext) => _ = new MainViewModel();
 
         [TestMethod]
         public async Task TestSatchelExportImport()

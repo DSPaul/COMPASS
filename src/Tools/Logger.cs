@@ -4,6 +4,7 @@ using COMPASS.Models;
 using COMPASS.ViewModels;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,7 +16,7 @@ namespace COMPASS.Tools
         public static void Init()
         {
             log4net.GlobalContext.Properties["CompassDataPath"] = SettingsViewModel.CompassDataPath;
-            log4net.Config.XmlConfigurator.Configure();
+            log4net.Config.XmlConfigurator.Configure(new FileInfo("log4net.config"));
             FileLog = log4net.LogManager.GetLogger(nameof(Logger));
             if (Application.Current is not null)
             {

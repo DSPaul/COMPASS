@@ -7,13 +7,12 @@ namespace Tests.Sources
     [TestClass]
     public class HomeBrewery
     {
-        static MainViewModel? mvm;
         const string TEST_COLLECTION = "__unitTests";
 
         [ClassInitialize]
         public static void Init(TestContext testContext)
         {
-            mvm = new MainViewModel();
+            _ = new MainViewModel();
             if (!MainViewModel.CollectionVM.CollectionDirectories.Contains(TEST_COLLECTION))
             {
                 MainViewModel.CollectionVM.CreateAndLoadCollection(TEST_COLLECTION);

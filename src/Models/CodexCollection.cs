@@ -196,8 +196,7 @@ namespace COMPASS.Models
                     }
 
                     XmlSerializer serializer = new(typeof(CollectionInfo), overrides);
-                    var loadedInfo = serializer.Deserialize(reader) as CollectionInfo;
-                    if (loadedInfo is null)
+                    if (serializer.Deserialize(reader) is not CollectionInfo loadedInfo)
                     {
                         Logger.Warn($"Could not load info for {CollectionInfoFilePath}");
                         return false;

@@ -33,7 +33,7 @@ namespace COMPASS.Windows
                     frameWidth: 300,
                     frameHeight: 300,
                     cameraDeviceId: selectedCameraDeviceId);
-                _webcamStreaming.OnQRCodeRead += _webcamStreaming_OnQRCodeRead;
+                _webcamStreaming.OnQRCodeRead += WebcamStreaming_OnQRCodeRead;
             }
 
             try
@@ -51,7 +51,7 @@ namespace COMPASS.Windows
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => _webcamStreaming?.Dispose();
 
-        private async void _webcamStreaming_OnQRCodeRead(object? sender, EventArgs e)
+        private async void WebcamStreaming_OnQRCodeRead(object? sender, EventArgs e)
         {
             string? qrCodeData = (e as QRCodeReadEventArgs)?.QRCodeData;
             if (String.IsNullOrWhiteSpace(qrCodeData) || !IsValidISBN(qrCodeData)) return;

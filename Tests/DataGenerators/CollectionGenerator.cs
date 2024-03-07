@@ -5,7 +5,7 @@ namespace Tests.DataGenerators
 {
     public static class CollectionGenerator
     {
-        public static Random random = new();
+        private static Random random = new();
 
         /// <summary>
         /// Get a complete collection, meaning that it has everything a collection can have
