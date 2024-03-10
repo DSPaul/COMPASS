@@ -38,7 +38,7 @@ namespace COMPASS.ViewModels
             TagsSelectorVM = new(completeCollection);
 
             //Put codices in dictionary so they can be labeled true/false for import
-            SelectableCodices = CompleteCollection.AllCodices.Select(codex => new SelectableCodex(codex)).ToList();
+            SelectableCodices = CompleteCollection.AllCodices.Select(codex => new SelectableCodex(codex, this)).ToList();
 
             //prep settings data for selection
             AutoImportFolders = CompleteCollection.Info.AutoImportFolders.Select(folder => new SelectableWithPathHelper(folder.FullPath)).ToList();
@@ -86,6 +86,8 @@ namespace COMPASS.ViewModels
 
         // CODICES STEP
         public List<SelectableCodex> SelectableCodices { get; set; }
+        public int SelectedCodicesCount => SelectableCodices.Where(s => s.Selected).Count();
+        public void RaiseSelectedCodicesCountChanged() => RaisePropertyChanged(nameof(SelectedCodicesCount));
 
         public bool RemovePersonalData { get; set; } = true;
 
@@ -175,17 +177,22 @@ namespace COMPASS.ViewModels
 
         public class SelectableCodex : SelectableWithPathHelper
         {
-            public SelectableCodex(Codex codex) : base(codex.Path)
+            private CollectionContentSelectorViewModel _vm;
+            public SelectableCodex(Codex codex, CollectionContentSelectorViewModel vm) : base(codex.Path)
             {
                 Codex = codex;
+                _vm = vm;
             }
             public Codex Codex { get; }
 
             private RelayCommand<IList>? _itemCheckedCommand;
             public RelayCommand<IList> ItemCheckedCommand => _itemCheckedCommand ??= new((items) =>
+            {
                 items?.Cast<SelectableCodex>()
                      .ToList()
-                     .ForEach(c => c.Selected = Selected));
+                     .ForEach(c => c.Selected = Selected);
+                _vm.RaiseSelectedCodicesCountChanged();
+            });
         }
         #endregion
 

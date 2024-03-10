@@ -61,6 +61,8 @@ namespace COMPASS.ViewModels
 
         public ObservableCollection<Filter> IncludedFilters { get; set; } = new();
         public ObservableCollection<Filter> ExcludedFilters { get; set; } = new();
+        public bool HasActiveFilters => IncludedFilters.Any() || ExcludedFilters.Any();
+
 
         private ObservableCollection<Codex>? _filteredCodices;
         public ObservableCollection<Codex>? FilteredCodices

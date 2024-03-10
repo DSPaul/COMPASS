@@ -1,4 +1,5 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Commands;
+using COMPASS.Models;
 using COMPASS.Services;
 using COMPASS.Tools;
 using Ionic.Zip;
@@ -13,7 +14,6 @@ namespace COMPASS.ViewModels
 {
     public class ExportCollectionViewModel : WizardViewModel
     {
-
         public ExportCollectionViewModel() : this(MainViewModel.CollectionVM.CurrentCollection) { }
         public ExportCollectionViewModel(CodexCollection collectionToExport)
         {
@@ -32,7 +32,6 @@ namespace COMPASS.ViewModels
         public CodexCollection CollectionToExport { get; set; }
 
         //OVERVIEW STEP
-
         public bool ExportAllTags { get; set; } = true;
         public bool ExportAllCodices { get; set; } = true;
         public bool ExportAllSettings { get; set; } = false;
@@ -46,6 +45,18 @@ namespace COMPASS.ViewModels
                 SetProperty(ref _advancedExport, value);
                 UpdateSteps();
             }
+        }
+
+        private ActionCommand _applyActiveFiltesCommand;
+        public ActionCommand ApplyActiveFiltersCommand => _applyActiveFiltesCommand ??=
+            new(ApplyActiveFilters, () => MainViewModel.CollectionVM.FilterVM.HasActiveFilters);
+        private void ApplyActiveFilters()
+        {
+            foreach (var selectableCodex in ContentSelectorVM.SelectableCodices)
+            {
+                selectableCodex.Selected = MainViewModel.CollectionVM.FilterVM.FilteredCodices!.Contains(selectableCodex.Codex);
+            }
+            ContentSelectorVM.RaiseSelectedCodicesCountChanged();
         }
 
         public bool IncludeFiles { get; set; }

@@ -7,6 +7,7 @@
         xmlns:controls="clr-namespace:COMPASS.Resources.Controls" 
         xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
         xmlns:views="clr-namespace:COMPASS.Views"
+        xmlns:tools="clr-namespace:COMPASS.Tools"
         d:DataContext="{d:DesignInstance Type=viewmodels:ExportCollectionViewModel}"
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
         Title="{Binding CollectionToExport.DirectoryName, StringFormat=Exporting {0:}}" 
@@ -113,8 +114,13 @@
                                                 <RowDefinition Height="auto"/>
                                                 <RowDefinition Height="auto"/>
                                                 <RowDefinition Height="auto"/>
+                                                <RowDefinition Height="auto"/>
                                                 <RowDefinition Height="*"/>
                                             </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
                                             <StackPanel Orientation="Horizontal" Margin="20,0">
                                                 <CheckBox Content="Reset personal data on all items" IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/>
                                                 <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
@@ -125,11 +131,20 @@
                                                 <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                                                          ToolTip="This will include referenced files such as pdf's, images, ect. as part of the export"/>
                                             </StackPanel>
-                                            <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="2"/>
+                                            <Button Grid.Row="0" Grid.Column="1" Content="Apply Active Filters" Command="{Binding ApplyActiveFiltersCommand}" 
+                                                    Style="{StaticResource IconTextButton}" tools:AP.IconKind="Filter" HorizontalAlignment="Left"/>
+                                            <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="3" Grid.ColumnSpan="2"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="1">
+                                                <Run Text="{Binding ContentSelectorVM.SelectedCodicesCount, Mode=OneWay}"/>
+                                                /
+                                                <Run Text="{Binding ContentSelectorVM.SelectableCodices.Count, Mode=OneTime}"/>
+                                                Items Selected
+                                            </TextBlock>
                                             <DataGrid x:Name="ListLayoutGrid" ItemsSource="{Binding ContentSelectorVM.SelectableCodices, IsAsync=True}"
                                                 Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
-                                                CanUserAddRows="False" SelectionMode="Extended" AutoGenerateColumns="False" Grid.Row="3" CanUserDeleteRows="False"
-                                                RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True" ColumnHeaderStyle="{StaticResource BasicDataGridColumnHeaderStyle}"
+                                                CanUserAddRows="False" SelectionMode="Extended" AutoGenerateColumns="False" CanUserDeleteRows="False"
+                                                RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True" 
+                                                ColumnHeaderStyle="{StaticResource BasicDataGridColumnHeaderStyle}" Grid.Row="4" Grid.ColumnSpan="2"
                                                 VerticalGridLinesBrush="#FF484848" HorizontalGridLinesBrush="#FF484848" ClipToBounds="True">
                                                 <DataGrid.Resources>
                                                     <Style TargetType="{x:Type TextBlock}" x:Key="default">
@@ -276,7 +291,7 @@
                                                                             IsChecked="{Binding SelectBanishedFiles}">
                                                         <ItemsControl ItemsSource="{Binding BanishedPaths}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/>
                                                     </controls:CheckableContainer>
-                                                    <controls:CheckableContainer CheckText="File types to include in imports (these will expand and overwrite your current file type preferences)" 
+                                                    <controls:CheckableContainer CheckText="File types to include in imports" 
                                                                             Visibility="{Binding FileTypePrefs.Count, Converter={StaticResource ToVisibilityConverter}}"
                                                                             IsChecked="{Binding SelectFileTypePrefs}">
                                                         <ItemsControl ItemsSource="{Binding FileTypePrefs}">
