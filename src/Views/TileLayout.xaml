@@ -6,7 +6,7 @@
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:converters="clr-namespace:COMPASS.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
+             xmlns:vwp="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
              xmlns:layouts="clr-namespace:COMPASS.ViewModels.Layouts"
              d:DataContext="{d:DesignInstance Type=layouts:TileLayoutViewModel}"
              mc:Ignorable="d" 
@@ -15,7 +15,7 @@
         <converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
     </UserControl.Resources>
 
-    <wpftk:GridView x:Name="TileLayoutListBox" FocusVisualStyle="{x:Null}" 
+    <ListView x:Name="TileLayoutListBox" FocusVisualStyle="{x:Null}" 
             ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}"  
             Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Top" 
             ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="10,0" SelectionMode="Extended"
@@ -26,7 +26,7 @@
             VirtualizingPanel.IsVirtualizingWhenGrouping="{Binding DoVirtualization}"
             VirtualizingPanel.CacheLengthUnit="Item" VirtualizingPanel.CacheLength="20"
             VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel">
-        <wpftk:GridView.ItemContainerStyle>
+        <ListView.ItemContainerStyle>
             <Style TargetType="{x:Type ListBoxItem}">
                 <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" />
                 <Setter Property="Background" Value="Transparent"/>
@@ -52,8 +52,13 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-        </wpftk:GridView.ItemContainerStyle>
-        <wpftk:GridView.ItemTemplate>
+        </ListView.ItemContainerStyle>
+        <ListView.ItemsPanel>
+            <ItemsPanelTemplate>
+                <vwp:VirtualizingWrapPanel AllowDifferentSizedItems="False" Orientation="Horizontal" SpacingMode="Uniform"/>
+            </ItemsPanelTemplate>
+        </ListView.ItemsPanel>
+        <ListView.ItemTemplate>
             <DataTemplate>
                 <Grid VerticalAlignment="Top" Margin="0,10" RenderTransformOrigin="0.5,0.5"
                       Background="Transparent">
@@ -101,7 +106,7 @@
                                 <Setter Property="Visibility" Value="Collapsed"/>
                             </Style>
                         </Grid.Resources>
-                        <TextBlock Text="{Binding Title}">
+                        <TextBlock Text="{Binding Title}" TextTrimming="WordEllipsis" Height="60">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                     <Style.Triggers>
@@ -113,7 +118,7 @@
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        <TextBlock Text="{Binding AuthorsAsString}">
+                        <TextBlock Text="{Binding AuthorsAsString}" TextTrimming="WordEllipsis" Height="60">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                     <Style.Triggers>
@@ -125,7 +130,7 @@
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        <TextBlock Text="{Binding Publisher}">
+                        <TextBlock Text="{Binding Publisher}" TextTrimming="WordEllipsis" Height="60">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                     <Style.Triggers>
@@ -153,6 +158,6 @@
                     </Grid>
                 </Grid>
             </DataTemplate>
-        </wpftk:GridView.ItemTemplate>
-    </wpftk:GridView>
+        </ListView.ItemTemplate>
+    </ListView>
 </UserControl>

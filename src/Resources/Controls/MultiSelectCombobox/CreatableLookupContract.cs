@@ -1,7 +1,6 @@
-﻿using BlackPearl.Controls.Contract;
-using System;
+﻿using System;
 
-namespace COMPASS.Tools
+namespace COMPASS.Resources.Controls.MultiSelectCombobox
 {
     //Enables multiselect combobox to create items
     public class CreatableLookUpContract : ILookUpContract
@@ -10,11 +9,11 @@ namespace COMPASS.Tools
 
         public object CreateObject(object sender, string searchString) => searchString.Trim();
 
-        public bool IsItemEqualToString(object sender, object item, string seachString)
+        public bool IsItemEqualToString(object sender, object item, string searchString)
         {
             if (item is string str)
             {
-                return String.Compare(seachString.ToLowerInvariant().Trim(), str.ToLowerInvariant().Trim(), StringComparison.InvariantCultureIgnoreCase) == 0;
+                return String.Compare(searchString.ToLowerInvariant().Trim(), str.ToLowerInvariant().Trim(), StringComparison.InvariantCultureIgnoreCase) == 0;
             }
 
             return false;

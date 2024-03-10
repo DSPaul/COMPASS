@@ -6,10 +6,12 @@ namespace COMPASS.Resources.Controls
     {
         protected override void OnClick()
         {
-            bool? wasChecked = this.IsChecked;
+            bool? wasChecked = IsChecked;
             base.OnClick();
             if (wasChecked == true)
-                this.IsChecked = false;
+            {
+                IsChecked = false;
+            }
         }
     }
 }

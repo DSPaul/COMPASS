@@ -9,9 +9,9 @@
         xmlns:converters ="clr-namespace:COMPASS.Converters"
         xmlns:tools ="clr-namespace:COMPASS.Tools" 
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
-        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-        xmlns:blackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary"
+        xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
         xmlns:dd="urn:gong-wpf-dragdrop"
+        xmlns:multiSelectCombobox="clr-namespace:COMPASS.Resources.Controls.MultiSelectCombobox"
         d:DataContext="{d:DesignInstance Type=viewmodels:CodexEditViewModel}"
         mc:Ignorable="d"
         Title="Item Properties" Height="500" Width="1200" FontSize="16" 
@@ -167,11 +167,17 @@
                                  Grid.Row="2" Padding="5,0"/>
 
                         <TextBlock Text="Sorting Title:" Grid.Row="3" Margin="3,5,3,3"/>
-                        <TextBox Text="{Binding TempCodex.SortingTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                 Grid.Row="4" Padding="5,0"/>
+                        <DockPanel Grid.Row="4" HorizontalAlignment="Stretch">
+                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="6" DockPanel.Dock="Right"
+                                                     Visibility="{Binding TempCodex.SortingTitleContainsNumbers, Converter={StaticResource ToVisibilityConverter}}"
+                                                     Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
+                                                     ToolTip="{Binding TempCodex.ZeroPaddingExplainer}" />
+                            <TextBox Text="{Binding TempCodex.SortingTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      Padding="5,0" HorizontalAlignment="Stretch"/>
+                        </DockPanel>
 
                         <TextBlock Text="Authors:" Grid.Row="5" Margin="3,5,3,3"/>
-                        <blackPearl:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
+                        <multiSelectCombobox:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}"
                                                     Grid.Row="6" ItemSeparator="," LookUpContract="{Binding Contract}"
                                                     ItemSource="{Binding MVM.CollectionVM.FilterVM.AuthorList}" 
                                                     SelectedItems="{Binding TempCodex.Authors, Mode=TwoWay}"/>

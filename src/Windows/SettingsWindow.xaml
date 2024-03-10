@@ -55,7 +55,7 @@
             <Setter Property="FontWeight" Value="Light"/>
             <Setter Property="FontSize" Value="20"/>
         </Style>
-        <Style TargetType="Rectangle" x:Key="Separator">
+        <Style TargetType="Rectangle" x:Key="SeparatorStyle">
             <Setter Property="Fill" Value="{StaticResource DarkUIElementBackground}"/>
             <Setter Property="Width" Value="10000"/>
             <Setter Property="Height" Value="3"/>
@@ -82,7 +82,7 @@
                     <StackPanel>
                         <TextBlock Style="{StaticResource SectionTitle}" Text="Behaviour"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Try to open files in this order on double click:" 
+                            <TextBlock Text="Try to open items in this order on double click:" 
                                        TextWrapping="Wrap" VerticalAlignment="Top"/>
                             <controls:PriorityControl ItemsSource="{Binding OpenCodexPriority}"/>
                         </StackPanel>
@@ -99,7 +99,7 @@
                             <TextBox PreviewTextInput="FilterOnlyNumbers" Padding="2,0"  Margin="2" MinWidth="50"
                                      Text="{Binding VirtualizationThresholdList}"/>
                             <TextBlock Text="items." Margin="5,0"/>
-                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                     ToolTip="Virtualized layouts only render items when they are scrolled into view, which greatly reduces load times for large collections. This will however cause stutter while scrolling.
                                         The List layout loads reasonable fast so virtualization is only needed for big collections."/>
                         </StackPanel>
@@ -110,7 +110,7 @@
                             <TextBox PreviewTextInput="FilterOnlyNumbers" Padding="2,0"  Margin="2" MinWidth="50"
                                      Text="{Binding VirtualizationThresholdCard}"/>
                             <TextBlock Text="items." Margin="5,0"/>
-                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                     ToolTip="Virtualized layouts only render items when they are scrolled into view, which greatly reduces load times for large collections. This will however cause stutter while scrolling.
                                         The card layout loads the slowest due to due to its complexity so virtualisation is recommended even for medium sized collections."/>
                         </StackPanel>
@@ -121,7 +121,7 @@
                             <TextBox PreviewTextInput="FilterOnlyNumbers" Padding="2,0"  Margin="2" MinWidth="50"
                                      Text="{Binding VirtualizationThresholdTile}"/>
                             <TextBlock Text="items." Margin="5,0"/>
-                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                            <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                     ToolTip="Virtualized layouts only render items when they are scrolled into view, which greatly reduces load times for large collections. This will however cause stutter while scrolling.
                                         The Grid layout loads reasonable fast so virtualization is only needed for big collections."/>
                         </StackPanel>
@@ -136,14 +136,16 @@
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Automatic Import From Folders" Style="{StaticResource SectionTitle}"/>
-                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                     ToolTip="These folders will periodically be checked for files that have not yet been imported, and import them automatically."/>
                             </StackPanel>
+                            
+                            <!--Auto import folders-->
                             <TextBlock Text="Folders to Check:"/>
                             <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0">
-                                <ScrollViewer MaxHeight="400">
-                                    <StackPanel Margin="0,10,0,5">
-                                        <ItemsControl ItemsSource="{Binding AutoImportDirectories.View}">
+                                <StackPanel Margin="0,10,0,5">
+                                    <ScrollViewer MaxHeight="250">
+                                        <ItemsControl ItemsSource="{Binding AutoImportFoldersViewSource.View}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
                                                     <Border BorderBrush="{StaticResource AccentColorMuted}" BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
@@ -154,44 +156,75 @@
                                                                 <ColumnDefinition Width="auto"/>
                                                                 <ColumnDefinition Width="auto"/>
                                                             </Grid.ColumnDefinitions>
-                                                            <TextBlock Text="{Binding}" Margin="0" TextWrapping="Wrap"/>
+                                                            <TreeView Background="Transparent" BorderThickness="0">
+                                                                <TreeView.Resources>
+                                                                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                                                                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                                                                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
+                                                                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black" />
+                                                                </TreeView.Resources>
+                                                                <TreeViewItem ItemsSource="{Binding SubFolders}">
+                                                                    <TreeViewItem.Header>
+                                                                        <TextBlock Text="{Binding FullPath}" TextWrapping="Wrap" Margin="5" Foreground="{StaticResource TextColor}"/>
+                                                                    </TreeViewItem.Header>
+                                                                    <TreeViewItem.ItemTemplate>
+                                                                        <HierarchicalDataTemplate ItemsSource="{Binding SubFolders}">
+                                                                            <TextBlock Text="{Binding Name, Mode=OneWay}" 
+                                                                                       TextWrapping="Wrap" Margin="5" Foreground="{StaticResource TextColor}"/>
+                                                                        </HierarchicalDataTemplate>
+                                                                    </TreeViewItem.ItemTemplate>
+                                                                </TreeViewItem>
+                                                                <TreeView.ItemContainerStyle>
+                                                                    <Style TargetType="TreeViewItem">
+                                                                        <Setter Property="Focusable" Value="False" />
+                                                                        <Setter Property="IsExpanded" Value="False"/>
+                                                                    </Style>
+                                                                </TreeView.ItemContainerStyle>
+                                                            </TreeView>
                                                             <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="FolderOpen" Width="20" 
-                                                                Margin="5,0" Grid.Column="1" ToolTip="Show In Explorer"
+                                                                Margin="5" Grid.Column="1" ToolTip="Show In Explorer" VerticalAlignment="Top"
                                                                 Command="{Binding DataContext.ShowInExplorerCommand,
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
-                                                                CommandParameter="{Binding}"/>
+                                                                CommandParameter="{Binding FullPath}"/>
+                                                            <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Edit" Width="20" 
+                                                                    Margin="5" Grid.Column="2" ToolTip="Edit" VerticalAlignment="Top"
+                                                                    Command="{Binding DataContext.EditAutoImportDirectoryCommand,
+                                                                    RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                                                    CommandParameter="{Binding}"/>
                                                             <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Delete" Width="20" 
                                                                 Command="{Binding DataContext.RemoveAutoImportDirectoryCommand, 
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
-                                                                CommandParameter="{Binding}" Margin="5,0" 
-                                                                Grid.Column="2" ToolTip="Remove From Auto Import"/>
+                                                                CommandParameter="{Binding}" Margin="5" VerticalAlignment="Top" 
+                                                                Grid.Column="3" ToolTip="Remove From Auto Import"/>
                                                         </Grid>
                                                     </Border>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
-                                        <Grid Margin="10">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="auto"/>
-                                                <ColumnDefinition Width="auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBox x:Name="NewAutoImportFolderTextBox" tools:AP.PlaceHolderText="Path/to/folder/to/add" Margin="0" BorderThickness="0"/>
-                                            <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Plus" Grid.Column="1" Margin="10,0" 
-                                                Background="{StaticResource AccentColorMuted}" Padding="3,2" 
-                                                IsDefault="{Binding ElementName=NewAutoImportFolderTextBox, Path= IsFocused}"
-                                                Command="{Binding AddAutoImportDirectoryCommand}" ToolTip="Add Folder"
-                                                CommandParameter="{Binding ElementName=NewAutoImportFolderTextBox, Path=Text}"/>
-                                            <Label Content="OR" Grid.Column="2" VerticalAlignment="Center" Margin="5"/>
-                                            <Button Style="{StaticResource IconTextButton}" Content="Select a Folder..." 
-                                                    ToolTip="Select Folder To Add" Grid.Column="3" Padding="3" Margin="5,0"
-                                                    Background="{StaticResource AccentColorMuted}" tools:AP.IconKind="FolderPlus"
-                                                    Command="{Binding PickAutoImportDirectoryCommand}"/>
-                                        </Grid>
-                                    </StackPanel>
-                                </ScrollViewer>
+                                    </ScrollViewer>
+                                    <Grid Margin="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="NewAutoImportFolderTextBox" tools:AP.PlaceHolderText="Path/to/folder/to/add" Margin="0" BorderThickness="0"/>
+                                        <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="Plus" Grid.Column="1" Margin="10,0" 
+                                            Background="{StaticResource AccentColorMuted}" Padding="3,2" 
+                                            IsDefault="{Binding ElementName=NewAutoImportFolderTextBox, Path= IsFocused}"
+                                            Command="{Binding AddAutoImportDirectoryCommand}" ToolTip="Add Folder"
+                                            CommandParameter="{Binding ElementName=NewAutoImportFolderTextBox, Path=Text}"/>
+                                        <Label Content="OR" Grid.Column="2" VerticalAlignment="Center" Margin="5"/>
+                                        <Button Style="{StaticResource IconTextButton}" Content="Select a Folder..." 
+                                                ToolTip="Select Folder To Add" Grid.Column="3" Padding="3" Margin="5,0"
+                                                Background="{StaticResource AccentColorMuted}" tools:AP.IconKind="FolderPlus"
+                                                Command="{Binding PickAutoImportDirectoryCommand}"/>
+                                    </Grid>
+                                </StackPanel>
                             </Border>
+                            
+                            <!--File Types-->
                             <TextBlock Text="File Types to import:"
                                        Visibility="{Binding FiletypePreferences.Count, Converter={StaticResource ToVisibilityConverter}}"/>
                             <Border CornerRadius="5" Background="{StaticResource  WindowBackground}"  Margin="10,0"
@@ -200,7 +233,7 @@
                                             ItemsSource="{Binding FiletypePreferences}" Background="{x:Null}" BorderBrush="{x:Null}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <WrapPanel IsItemsHost="True" MaxWidth="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+                                            <UniformGrid Columns="6"/>
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
@@ -211,6 +244,7 @@
                                 </ItemsControl>
                             </Border>
 
+                            <!--Banished Files-->
                             <TextBlock Text="Banished Files (will be excluded from automatic import):"
                                        Visibility="{Binding BanishedPaths.View.IsEmpty, Converter={StaticResource ToVisibilityConverter},ConverterParameter=true}"/>
                             <Border CornerRadius="5" Background="{StaticResource WindowBackground}"  Margin="10,0"
@@ -254,7 +288,7 @@
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Link Folders to Tags" Style="{StaticResource SectionTitle}"/>
-                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                                          ToolTip="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
                             </StackPanel>
                             <Button Style="{StaticResource TextButton}" HorizontalAlignment="Left"
@@ -262,7 +296,8 @@
                                     Command="{Binding DetectFolderTagPairsCommand}" Margin="5">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Detect links based on imported files" Margin="0"/>
-                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="5,3,0,3" Foreground="{StaticResource TextMutedColor}"/>
+                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="5,3,0,3" Style="{StaticResource ToolTipIcon}"
+                                                             Foreground="{StaticResource TextMutedColor}" ToolTip="If all files from a folder share the same tag, the folder and tag will be linked."/>
                                 </StackPanel>
                             </Button>
                             <CheckBox Content="Treat tags and folders with the same name as linked" Margin="10,5" IsChecked="{Binding AutoLinkFolderTagSameName}"/>
@@ -280,6 +315,7 @@
                                                                 <ColumnDefinition Width="auto" SharedSizeGroup="Tag"/>
                                                                 <ColumnDefinition Width="auto"/>
                                                                 <ColumnDefinition Width="auto"/>
+                                                                <ColumnDefinition Width="auto"/>
                                                             </Grid.ColumnDefinitions>
                                                             <TextBlock Text="{Binding Folder}" Margin="0" TextWrapping="Wrap"/>
                                                             <materialDesign:PackIcon Kind="Link" Grid.Column="1" Margin="10,0"/>
@@ -287,8 +323,9 @@
                                                                     Background="{Binding Tag.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}">
                                                                 <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/>
                                                             </Border>
+                                                            <Rectangle Fill="{StaticResource Separator}" Width="2" Margin="5,0" VerticalAlignment="Stretch" Grid.Column="3"/>
                                                             <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="FolderOpen" Width="20" 
-                                                                    Margin="5,0" Grid.Column="3" ToolTip="Show In Explorer" 
+                                                                    Margin="5,0" Grid.Column="4" ToolTip="Show In Explorer" 
                                                                     Command="{Binding DataContext.ShowInExplorerCommand,
                                                                     RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                     CommandParameter="{Binding Folder}"/>
@@ -296,7 +333,7 @@
                                                                 Command="{Binding DataContext.RemoveFolderTagPairCommand, 
                                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                                 CommandParameter="{Binding}" Margin="5,0" 
-                                                                Grid.Column="4" ToolTip="Remove Link"/>
+                                                                Grid.Column="5" ToolTip="Remove Link"/>
                                                         </Grid>
                                                     </Border>
                                                 </DataTemplate>
@@ -390,12 +427,12 @@
                                 <TextBlock Text="Property"/>
                                 <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Margin="20,0">
                                     <TextBlock Text="Source Priority" />
-                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}"
+                                    <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
                                                          ToolTip="If mutliple sources provide metadata for a given property, the value from the topmost source will be used."/>
                                 </StackPanel>
                                 <TextBlock Text="Overwrite existing metadata" Grid.Row="0" Grid.Column="2"/>
                                 
-                                <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3" Grid.Column="0"
+                                <Rectangle Style="{StaticResource SeparatorStyle}" Grid.ColumnSpan="3" Grid.Column="0"
                                            Grid.Row="1"/>
 
                                 <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
@@ -432,7 +469,7 @@
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource ObjectToBoolConverter}, 
                                                                  ConverterParameter={x:Static models:MetaDataOverwriteMode.Always}}" />
                                                 </StackPanel>
-                                                <Rectangle Style="{StaticResource Separator}" Grid.ColumnSpan="3"
+                                                <Rectangle Style="{StaticResource SeparatorStyle}" Grid.ColumnSpan="3"
                                                            Grid.Column="0" Grid.Row="1"/>
                                             </Grid>
                                         </DataTemplate>
@@ -474,7 +511,7 @@
                                 <materialDesign:PackIcon Kind="InfoCircleOutline">
                                     <materialDesign:PackIcon.ToolTip>
                                         <TextBlock>
-                                                Only files with broken references will be updated and only if the updated path points to a file that exists.
+                                                Only items with broken references will be updated and only if the updated path points to a file that exists.
                                                 <LineBreak/>
                                                 If you moved half of your files out of a folder, you can safely use this tool to rename the folder reference.
                                                 <LineBreak/>
@@ -512,11 +549,11 @@
                                        Visibility="{Binding Path=AmountRenamed, Converter={StaticResource ToVisibilityConverter}}"/>
                             <TextBlock Text="Remove broken references:" Margin="10,5"/>
                             <Button Style="{StaticResource IconTextButton}" tools:AP.IconKind="FileDocumentRemoveOutline" 
-                                    Content="Remove broken references from books." HorizontalAlignment="Left" 
+                                    Content="Remove broken references from items." HorizontalAlignment="Left" 
                                         Command="{Binding RemoveBrokenRefsCommand}" />
 
                             <Button Style="{StaticResource IconTextButton}" tools:AP.IconKind="BookRemove" 
-                                    Content="Delete books with broken references.   " HorizontalAlignment="Left"
+                                    Content="Remove items with broken references.   " HorizontalAlignment="Left"
                                         Command="{Binding DeleteCodicesWithBrokenRefsCommand}"/>
                         </StackPanel>
                     </Border>
@@ -615,6 +652,13 @@
                             <TextBlock Text="Dependencies" Style="{StaticResource SectionTitle}"/>
                             <TextBlock Text="COMPASS could not exist without the following open source projects:" />
                             <UniformGrid Columns="4" >
+                                <TextBlock Text="Inversion of Control:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://autofac.org/"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        Autofac
+                                    </Hyperlink>                
+                                </TextBlock>
                                 <TextBlock Text="Automatic Updates:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/ravibpatel/AutoUpdater.NET"

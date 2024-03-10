@@ -1,5 +1,42 @@
 # CHANGELOG
 
+## COMPASS v1.7.0 (25 February 2024)
+
+### New Features
+
+- IMPORT & EXPORT are here in the form of `Satchels`! In this new update you can:
+  - Export collections to a new .satchel file to share with your friends. Exports can include:
+    - the tags from a collection
+    - the items in the collection (such as books and maps) including their metadata, cover art and even the files referenced by those items such as pdf's.
+    - your settings for that collection such as which file types to exclude from import
+  - Import those .satchel files to merge all of its content into one of your existing collections or add it as brand new collection.
+  - Both during import and export, you can pick and choose which tags, books and settings you want to keep using a user friendly wizard. You can access this new feature by using the new "Import" and "Export" options near the collections at the top.
+    - If you only want to import only the tags, you can go to "Import Tags" > "From a .satchel file" in the "Tags" Tab.
+    - If you only want to import the items without any tags, you can select "From a .satchel file" in the "Add Books" Tab.
+  - You can find more info about the new .satchel file format [here](https://github.com/DSPaul/COMPASS/tree/master/Docs/Satchels.md).
+- You can now merge collections. This is especially handy when used in combination with import. If you would like to browse a collection you wish to import before merging it into your existing collections, you can simply import it as a new collection and merge it later.
+- Added a new context menu to the tags tab which can be accessed by right clicking anywhere or clicking the vertical triple dots, with the following options
+  - Sort tags A->Z. [#31](https://github.com/DSPaul/COMPASS/issues/31)
+  - Export Tags.
+- Importing from a folder now allows you to exclude certain subfolders. [#58](https://github.com/DSPaul/COMPASS/issues/58)
+
+### Improvements
+
+- Tags created using "quick new tag" are now automatically added to the item being edited.
+- COMPASS now saves more often to prevent data loss.
+- Info and warning tooltips now appear instantly.
+- Added an explainer when zero-padding is applied to the sorting title.
+- When auto import tries to import a new file type, it will now always ask what to do with it.
+- Increased stability.
+- When manually resolving a broken file reference, COMPASS will analyze how the file path changed and attempt to fix other broken links by applying the same change.
+
+### Fixes
+
+- Fixed tags being cleared when quick creating a tag.
+- Fix total item count not updating.
+- Cards in Card Layout can now resize thanks to an update to the [VirtualizingWrapPanel](https://github.com/sbaeumlisberger/VirtualizingWrapPanel) package. (thanks [@sbaeumlisberger](https://github.com/sbaeumlisberger)) This fixes [#62](https://github.com/DSPaul/COMPASS/issues/62)
+- Fix metadata source priority preferences not persisting.
+
 ## COMPASS v1.6.0 (6 November 2023)
 
 ### Features

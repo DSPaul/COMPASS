@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
 using HtmlAgilityPack;
@@ -31,14 +32,14 @@ namespace COMPASS.ViewModels.Sources
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
-                HtmlNode src = doc?.DocumentNode;
+                HtmlDocument? doc = await IOService.ScrapeSite(codex.SourceURL);
+                HtmlNode? src = doc?.DocumentNode;
                 if (src is null) return false;
 
                 string imgURL = src.SelectSingleNode("//meta[@property='og:image']").GetAttributeValue("content", String.Empty);
                 //cut of "=W***-h***-p" from URL that crops the image if it is present
                 if (imgURL.Contains('=')) imgURL = imgURL.Split('=')[0];
-                await CoverFetcher.SaveCover(imgURL, codex);
+                await CoverService.SaveCover(imgURL, codex);
                 return true;
             }
             catch (Exception ex)

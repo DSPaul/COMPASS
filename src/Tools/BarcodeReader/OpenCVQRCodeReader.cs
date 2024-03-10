@@ -1,8 +1,9 @@
 ﻿using OpenCvSharp;
 using OpenCvSharp.Extensions;
+using System;
 using ZXing.Common;
 
-namespace BarcodeReaderTool
+namespace COMPASS.Tools.BarcodeReader
 {
     // based on https://github.com/FrancescoBonizzi/WebcamControl-WPF-With-OpenCV
     public class OpenCVQRCodeReader
@@ -14,22 +15,25 @@ namespace BarcodeReaderTool
             Cv2.WarpAffine(source, destination, rotationMat, source.Size());
         }
 
-        public string DetectBarcode(Mat mat, double rotation = 0)
+        public string? DetectBarcode(Mat mat, double rotation = 0)
         {
             // Multiple passes here to test against different thresholds
-            var thresholds = new int[]
+            var thresholds = new[]
             {
                 80, 120, 160, 200, 220
             };
 
             var originalFrame = mat.Clone();
 
-            string barcodeText = null;
+            string? barcodeText = null;
             foreach (var t in thresholds)
             {
                 barcodeText = DetectBarcodeInternal(mat, t, rotation);
-                if (!string.IsNullOrWhiteSpace(barcodeText))
+                if (!String.IsNullOrWhiteSpace(barcodeText))
+                {
                     return barcodeText;
+                }
+
                 // If I don't to this, I see a lot of squares on the frame, one for each threshold pass
                 mat = originalFrame;
             }
@@ -37,7 +41,7 @@ namespace BarcodeReaderTool
             return barcodeText;
         }
 
-        private string DetectBarcodeInternal(Mat mat, double threshold, double rotation = 0)
+        private string? DetectBarcodeInternal(Mat mat, double threshold, double rotation = 0)
         {
             var image = mat;
 

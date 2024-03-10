@@ -7,12 +7,12 @@ namespace COMPASS.ViewModels
 {
     public class TagEditViewModel : ObservableObject, IEditViewModel
     {
-        public TagEditViewModel(Tag toEdit, bool createNew)
+        public TagEditViewModel(Tag? toEdit, bool createNew)
         {
             _editedTag = toEdit ?? new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             CreateNewTag = createNew;
 
-            TempTag = new Tag(_editedTag);
+            _tempTag = new Tag(_editedTag);
         }
         #region Properties
 
@@ -46,7 +46,7 @@ namespace COMPASS.ViewModels
 
         #region Functions and Commands
 
-        private ActionCommand _oKCommand;
+        private ActionCommand? _oKCommand;
         public ActionCommand OKCommand => _oKCommand ??= new(OKBtn, CanOkBtn);
         public void OKBtn()
         {
@@ -55,11 +55,20 @@ namespace COMPASS.ViewModels
 
             if (CreateNewTag)
             {
-                if (TempTag.Parent is null) MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(_editedTag);
-                else TempTag.Parent.Children.Add(_editedTag);
+                if (TempTag.Parent is null)
+                {
+                    MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(_editedTag);
+                }
+                else
+                {
+                    TempTag.Parent.Children.Add(_editedTag);
+                }
+
                 _editedTag.ID = Utils.GetAvailableID(MainViewModel.CollectionVM.CurrentCollection.AllTags);
                 MainViewModel.CollectionVM.CurrentCollection.AllTags.Add(_editedTag);
             }
+
+            MainViewModel.CollectionVM.CurrentCollection.SaveTags();
 
             MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
 
@@ -70,7 +79,7 @@ namespace COMPASS.ViewModels
         }
         public bool CanOkBtn() => !String.IsNullOrWhiteSpace(TempTag.Content);
 
-        private ActionCommand _cancelCommand;
+        private ActionCommand? _cancelCommand;
         public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel()
         {
@@ -78,14 +87,14 @@ namespace COMPASS.ViewModels
             {
                 TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             }
-            _editedTag = null;
+            _editedTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             CloseAction();
         }
 
-        private ActionCommand _closeColorSelectionCommand;
+        private ActionCommand? _closeColorSelectionCommand;
         public ActionCommand CloseColorSelectionCommand => _closeColorSelectionCommand ??= new(CloseColorSelection);
 
-        private ActionCommand _colorSameAsParentCommand;
+        private ActionCommand? _colorSameAsParentCommand;
         public ActionCommand ColorSameAsParentCommand => _colorSameAsParentCommand ??= new(SetColorSameAsParent);
         private void SetColorSameAsParent()
         {

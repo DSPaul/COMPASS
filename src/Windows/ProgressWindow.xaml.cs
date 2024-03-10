@@ -21,7 +21,7 @@ namespace COMPASS.Windows
         private int barsDone = 0;
         private int totalBars = 1;
 
-        private void Logs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void Logs_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
@@ -30,7 +30,7 @@ namespace COMPASS.Windows
             }
         }
 
-        private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void ProgressBar_ValueChanged(object? sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (ProgBar.Value >= 100)
             {
@@ -43,7 +43,7 @@ namespace COMPASS.Windows
             }
         }
 
-        private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             // Call activate explicitly because of bug 
             // https://stackoverflow.com/questions/3144004/wpf-app-loses-focus-completely-on-window-close

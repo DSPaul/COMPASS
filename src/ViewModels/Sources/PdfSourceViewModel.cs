@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using ImageMagick;
 using ImageMagick.Formats;
@@ -15,7 +16,7 @@ namespace COMPASS.ViewModels.Sources
     public class PdfSourceViewModel : SourceViewModel
     {
         public override MetaDataSource Source => MetaDataSource.PDF;
-        public override bool IsValidSource(Codex codex) => Utils.IsPDFFile(codex.Path);
+        public override bool IsValidSource(Codex codex) => IOService.IsPDFFile(codex.Path);
 
         public override async Task<Codex> GetMetaData(Codex codex)
         {
@@ -23,7 +24,7 @@ namespace COMPASS.ViewModels.Sources
             codex = new Codex(codex);
 
             Debug.Assert(IsValidSource(codex), "Codex without pdf found in pdf source");
-            PdfDocument pdfDoc = null;
+            PdfDocument? pdfDoc = null;
             try
             {
                 var info = await Task.Run(() =>
@@ -33,12 +34,12 @@ namespace COMPASS.ViewModels.Sources
                     return pdfDoc.GetDocumentInfo();
                 });
 
-                codex.Title = info.GetTitle();
+                codex.Title = info.GetTitle() ?? String.Empty;
                 if (info.GetAuthor() is not null)
                 {
                     codex.Authors = new() { info.GetAuthor() };
                 }
-                codex.PageCount = pdfDoc.GetNumberOfPages();
+                codex.PageCount = pdfDoc!.GetNumberOfPages();
 
                 // If it already has an ISBN, no need to check again
                 if (!String.IsNullOrEmpty(codex.ISBN)) return codex;
@@ -78,7 +79,7 @@ namespace COMPASS.ViewModels.Sources
         public override async Task<bool> FetchCover(Codex codex)
         {
             //return false if file doesn't exist
-            if (!Utils.IsPDFFile(codex.Path) ||
+            if (!IOService.IsPDFFile(codex.Path) ||
                 !File.Exists(codex.Path))
             {
                 return false;
@@ -93,7 +94,7 @@ namespace COMPASS.ViewModels.Sources
                 image.Trim(); //cut off all transparency
 
                 await image.WriteAsync(codex.CoverArt);
-                CoverFetcher.CreateThumbnail(codex);
+                CoverService.CreateThumbnail(codex);
                 return true;
             }
             catch (Exception ex)
@@ -112,7 +113,7 @@ namespace COMPASS.ViewModels.Sources
         };
 
         //Lazy load read Settings and make it static because takes a lot of time to construct according to profiler
-        private static MagickReadSettings _readSettings;
+        private static MagickReadSettings? _readSettings;
         private static MagickReadSettings ReadSettings => _readSettings ??= new()
         {
             Density = new Density(100),

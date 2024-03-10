@@ -44,7 +44,7 @@ namespace COMPASS.Resources.Controls
             };
             base.OnInitialized(e);
         }
-        public ObservableCollection<ColumnInfo> ColumnInfo
+        public ObservableCollection<ColumnInfo>? ColumnInfo
         {
             get => (ObservableCollection<ColumnInfo>)GetValue(ColumnInfoProperty);
             set => SetValue(ColumnInfoProperty, value);
@@ -75,7 +75,7 @@ namespace COMPASS.Resources.Controls
         }
         protected override void OnSorting(DataGridSortingEventArgs eventArgs)
         {
-            Dispatcher.BeginInvoke(new Action(UpdateColumnInfo));
+            Dispatcher.BeginInvoke(UpdateColumnInfo);
             base.OnSorting(eventArgs);
         }
         protected override void OnPreviewMouseLeftButtonUp(System.Windows.Input.MouseButtonEventArgs e)

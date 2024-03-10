@@ -17,8 +17,10 @@ namespace COMPASS.Views
 
         public void HandleDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Codex toOpen = ((ListBoxItem)sender).DataContext as Codex;
-            CodexViewModel.OpenCodex(toOpen);
+            if (sender is ListBoxItem listBoxItem && listBoxItem.DataContext is Codex codex)
+            {
+                CodexViewModel.OpenCodex(codex);
+            }
         }
 
         private void ListBox_PreviewKeyDown(object sender, KeyEventArgs e) => CodexViewModel.ListBoxHandleKeyDown(sender, e);

@@ -103,7 +103,7 @@
                         <DropShadowEffect BlurRadius="15" Direction="300"/>
                     </Border.Effect>
                 </Border>
-                <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" 
+                <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" TextTrimming="WordEllipsis" MaxHeight="60"
                         MaxWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"
                         Visibility="{Binding DataContext.ShowTitle, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource ToVisibilityConverter}}"/>

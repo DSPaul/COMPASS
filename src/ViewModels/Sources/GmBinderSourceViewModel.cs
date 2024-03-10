@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
 using HtmlAgilityPack;
@@ -25,10 +26,10 @@ namespace COMPASS.ViewModels.Sources
 
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading metadata from GM Binder"));
             Debug.Assert(IsValidSource(codex), "Invalid Codex was used in GM Binder source");
-            HtmlDocument doc = await Utils.ScrapeSite(codex.SourceURL);
-            HtmlNode src = doc?.DocumentNode;
+            HtmlDocument? doc = await IOService.ScrapeSite(codex.SourceURL);
+            HtmlNode? src = doc?.DocumentNode;
 
-            if (src is null)
+            if (doc is null || src is null)
             {
                 ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, $"Could not reach {codex.SourceURL}"));
                 return codex;
@@ -38,8 +39,8 @@ namespace COMPASS.ViewModels.Sources
             codex.Publisher = "GM Binder";
 
             //get pagecount
-            HtmlNode previewDiv = doc.GetElementbyId("preview");
-            IEnumerable<HtmlNode> pages = previewDiv.ChildNodes.Where(node => node.Id.Contains('p'));
+            HtmlNode? previewDiv = doc.GetElementbyId("preview");
+            IEnumerable<HtmlNode> pages = previewDiv?.ChildNodes.Where(node => node.Id.Contains('p')) ?? Enumerable.Empty<HtmlNode>();
             codex.PageCount = pages.Count();
 
             return codex;
@@ -49,14 +50,14 @@ namespace COMPASS.ViewModels.Sources
         {
             if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading cover from {codex.SourceURL}"));
-            OpenQA.Selenium.WebDriver driver = await WebDriverFactory.GetWebDriver();
+            OpenQA.Selenium.WebDriver driver = await WebDriverService.GetWebDriver();
             try
             {
                 await Task.Run(() => driver.Navigate().GoToUrl(codex.SourceURL));
-                var coverpage = driver.FindElement(OpenQA.Selenium.By.Id("p1"));
+                var coverPage = driver.FindElement(OpenQA.Selenium.By.Id("p1"));
                 //screenshot and download the image
-                MagickImage image = CoverFetcher.GetCroppedScreenShot(driver, coverpage);
-                CoverFetcher.SaveCover(image, codex);
+                IMagickImage image = CoverService.GetCroppedScreenShot(driver, coverPage);
+                CoverService.SaveCover(image, codex);
                 return true;
             }
             catch (Exception ex)

@@ -1,5 +1,6 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.Windows;
 using System;
@@ -41,7 +42,7 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        public ImportURLWindow Window;
+        public ImportURLWindow? Window;
 
         private readonly ImportSource _importSource;
 
@@ -69,21 +70,21 @@ namespace COMPASS.ViewModels.Import
             set => SetProperty(ref _importError, value);
         }
 
-        private ActionCommand _submitUrlCommand;
-        public ActionCommand SubmitURLCommand => _submitUrlCommand ??= new(SubmitURL);
-        public async void SubmitURL()
+        private ActionCommand? _submitUrlCommand;
+        public ActionCommand SubmitURLCommand => _submitUrlCommand ??= new(async () => await SubmitURL());
+        public async Task SubmitURL()
         {
             if (!InputURL.Contains(ExampleURL) && ValidateURL)
             {
                 ImportError = $"'{InputURL}' is not a valid URL for {ImportTitle}";
                 return;
             }
-            if (!Utils.PingURL())
+            if (!IOService.PingURL())
             {
                 ImportError = "You need to be connected to the internet to import an online source.";
                 return;
             }
-            Window.Close();
+            Window?.Close();
 
             var progressVM = ProgressViewModel.GetInstance();
             progressVM.Log.Clear();
@@ -96,7 +97,7 @@ namespace COMPASS.ViewModels.Import
             };
             progressWindow.Show();
 
-            Codex newCodex = await ImportURL();
+            Codex newCodex = await ImportURLAsync();
 
             if (ShowEditWhenDone)
             {
@@ -109,7 +110,7 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        private ActionCommand _openBarcodeScannerCommand;
+        private ActionCommand? _openBarcodeScannerCommand;
         public ActionCommand OpenBarcodeScannerCommand => _openBarcodeScannerCommand ??= new(OpenBarcodeScanner);
         private void OpenBarcodeScanner()
         {
@@ -120,7 +121,7 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        public async Task<Codex> ImportURL()
+        public async Task<Codex> ImportURLAsync()
         {
             var progressVM = ProgressViewModel.GetInstance();
             progressVM.ResetCounter();
@@ -163,7 +164,7 @@ namespace COMPASS.ViewModels.Import
             progressVM.Text = "Downloading Cover";
             try
             {
-                await CoverFetcher.GetCover(newCodex)
+                await CoverService.GetCover(newCodex)
                  .ContinueWith(_ => progressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Cover loaded.")));
             }
             catch (OperationCanceledException ex)

@@ -1,15 +1,14 @@
 ﻿using AutoUpdaterDotNET;
 using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Layouts;
-using COMPASS.ViewModels.Sources;
 using COMPASS.Windows;
 using ImageMagick;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -20,20 +19,19 @@ namespace COMPASS.ViewModels
     {
         public MainViewModel()
         {
-            InitLogger();
+            Logger.Init();
             ViewModelBase.MVM = this;
 
             //Load everything
             UpgradeSettings();
             CollectionVM = new(this);
-            CollectionVM.LoadInitialCollection();
-            CurrentLayout = LayoutViewModel.GetLayout();
+            _currentLayout = LayoutViewModel.GetLayout();
             LeftDockVM = new(this);
             CodexInfoVM = new(this);
             SettingsViewModel.GetInstance().MVM = this;
 
             //Update stuff
-            WebDriverFactory.InitWebdriver();
+            WebDriverService.InitWebdriver();
             InitAutoUpdates();
 
             //Start timer that periodically checks if there is an internet connection
@@ -61,8 +59,11 @@ namespace COMPASS.ViewModels
             //Disable skip
             AutoUpdater.ShowSkipButton = false;
             //Set Icon
-            string runningExePath = Process.GetCurrentProcess().MainModule.FileName;
-            AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath).ToBitmap();
+            string? runningExePath = Process.GetCurrentProcess().MainModule?.FileName;
+            if (!String.IsNullOrWhiteSpace(runningExePath))
+            {
+                AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath)?.ToBitmap();
+            }
 #if DEBUG
             //AutoUpdater.InstalledVersion = new("0.2.0"); //for testing only
 #endif
@@ -84,24 +85,15 @@ namespace COMPASS.ViewModels
             AutoUpdater.Start();
         }
 
-        public void InitLogger()
-        {
-            log4net.GlobalContext.Properties["CompassDataPath"] = SettingsViewModel.CompassDataPath;
-            log4net.Config.XmlConfigurator.Configure();
-            Logger.Init();
-            Application.Current.DispatcherUnhandledException += Logger.LogUnhandledException;
-            Logger.Info($"Launching Compass {Version}");
-        }
-
         private void InitConnectionTimer()
         {
             //Start internet checkup timer
-            _checkConnectionTimer = new();
-            _checkConnectionTimer.Tick += (_, _) => Task.Run(() => IsOnline = Utils.PingURL());
-            _checkConnectionTimer.Interval = new TimeSpan(0, 0, 10);
-            _checkConnectionTimer.Start();
+            DispatcherTimer checkConnectionTimer = new();
+            checkConnectionTimer.Tick += (_, _) => Task.Run(() => IsOnline = IOService.PingURL());
+            checkConnectionTimer.Interval = new TimeSpan(0, 0, 10);
+            checkConnectionTimer.Start();
             //to check right away on startup
-            Task.Run(() => IsOnline = Utils.PingURL());
+            Task.Run(() => IsOnline = IOService.PingURL());
         }
 
         #endregion
@@ -115,16 +107,16 @@ namespace COMPASS.ViewModels
             private set => SetProperty(ref _isOnline, value);
         }
 
-        private DispatcherTimer _checkConnectionTimer;
-
-        public string Version => $"v{Assembly.GetExecutingAssembly().GetName().Version?.ToString()[0..5]}";
+        public string VersionName => $"v{Reflection.Version}";
         public ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
 
         #endregion
 
         #region ViewModels
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public static CollectionViewModel CollectionVM { get; private set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public CollectionViewModel BindableCollectionVM => CollectionVM; //because binding to static properties sucks
 
@@ -135,27 +127,20 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _currentLayout, value);
         }
 
-        public LeftDockViewModel LeftDockVM { get; private set; }
+        public LeftDockViewModel LeftDockVM { get; init; }
 
-        private SourceViewModel _activeSourceVM;
-        public SourceViewModel ActiveSourceVM
-        {
-            get => _activeSourceVM;
-            set => SetProperty(ref _activeSourceVM, value);
-        }
-
-        public CodexInfoViewModel CodexInfoVM { get; private set; }
+        public CodexInfoViewModel CodexInfoVM { get; init; }
 
         #endregion
 
         #region Commands and Methods
 
         //Open settings
-        private RelayCommand<string> _openSettingsCommand;
+        private RelayCommand<string>? _openSettingsCommand;
         public RelayCommand<string> OpenSettingsCommand => _openSettingsCommand ??= new(OpenSettings);
-        public void OpenSettings(string tab = null)
+        public void OpenSettings(string? tab = "")
         {
-            var settingsWindow = new SettingsWindow(SettingsViewModel.GetInstance(), tab)
+            var settingsWindow = new SettingsWindow(SettingsViewModel.GetInstance(), tab ?? "")
             {
                 Owner = Application.Current.MainWindow
             };
@@ -165,12 +150,12 @@ namespace COMPASS.ViewModels
         //check updates
         public ActionCommand CheckForUpdatesCommand => SettingsViewModel.GetInstance().CheckForUpdatesCommand;
 
-        private ActionCommand _navigateToLinkTree;
+        private ActionCommand? _navigateToLinkTree;
         public ActionCommand NavigateToLinkTree => _navigateToLinkTree ??= new(()
             => Process.Start(new ProcessStartInfo(@"https://linktr.ee/compassapp") { UseShellExecute = true }));
 
         //Change Layout
-        private RelayCommand<LayoutViewModel.Layout> _changeLayoutCommand;
+        private RelayCommand<LayoutViewModel.Layout>? _changeLayoutCommand;
         public RelayCommand<LayoutViewModel.Layout> ChangeLayoutCommand => _changeLayoutCommand ??= new(ChangeLayout);
         public void ChangeLayout(LayoutViewModel.Layout layout) => CurrentLayout = LayoutViewModel.GetLayout(layout);
         #endregion

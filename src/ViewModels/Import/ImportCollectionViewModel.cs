@@ -1,10 +1,9 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
-using System.Collections.Generic;
-using System.ComponentModel;
+using System;
 using System.IO;
 using System.Linq;
-using System.Windows.Data;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Import
 {
@@ -13,37 +12,26 @@ namespace COMPASS.ViewModels.Import
         public ImportCollectionViewModel(CodexCollection collectionToImport)
         {
             CollectionToImport = collectionToImport;
-            CollectionToImport.Load(true);
+            CollectionName = CollectionToImport.DirectoryName.Substring(2, CollectionToImport.DirectoryName.Length - 2 - Constants.SatchelExtension.Length);
 
-            //Checks which steps need to be included in wizard
-            HasCodices = CollectionToImport.AllCodices.Any();
-            HasTags = CollectionToImport.AllTags.Any();
-            HasSettings = CollectionToImport.Info.ContainsSettings();
+            ContentSelectorVM = new(collectionToImport)
+            {
+                CuratedCollection = collectionToImport //The import collection is tmp anyway so result can be saved on top of it
+            };
+
             UpdateSteps();
-
-            //Put Tags in Checkable Wrapper
-            TagsToImport = CollectionToImport.RootTags.Select(t => new CheckableTreeNode<Tag>(t)).ToList();
-
-            //Put codices in dictionary so they can be labeled true/false for import
-            CodicesToImport = CollectionToImport.AllCodices.Select(codex => new ImportCodexHelper(codex)).ToList();
-
-            //prep settings data for selection
-            AutoImportFolders = CollectionToImport.Info.AutoImportDirectories.Select(folder => new ImportPathHelper(folder)).ToList();
-            BanishedPaths = CollectionToImport.Info.BanishedPaths.Select(path => new ImportPathHelper(path)).ToList();
-            FileTypePrefs = CollectionToImport.Info.FiletypePreferences
-                                                            .Select(x => new ObservableKeyValuePair<string, bool>(x))
-                                                            .OrderByDescending(x => x.Value)
-                                                            .ToList();
-            FolderTagLinks = CollectionToImport.Info.FolderTagPairs
-                .Select(link => new ImportFolderTagLinkHelper(link.Folder, link.Tag, Utils.FlattenTree(CheckableTreeNode<Tag>.GetCheckedItems(TagsToImport))))
-                .ToList();
 
             //if files were included in compass file, set paths of codices to those files
             if (Directory.Exists(CollectionToImport.UserFilesPath))
             {
-                foreach (Codex codex in CollectionToImport.AllCodices)
+                foreach (Codex codex in CollectionToImport.AllCodices.Where(c => c.HasOfflineSource()))
                 {
-                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath, Path.GetFileName(codex.Path));
+                    string fileName = Path.GetFileName(codex.Path);
+                    if (String.IsNullOrEmpty(fileName))
+                    {
+                        continue;
+                    }
+                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath, fileName);
                     if (File.Exists(includedFilePath))
                     {
                         codex.Path = includedFilePath;
@@ -52,16 +40,29 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        public CodexCollection TargetCollection { get; set; } = null; //null means new collection should be made
-        public CodexCollection CollectionToImport { get; set; } = null; //collection that was in the cmpss file
+        public CollectionContentSelectorViewModel ContentSelectorVM { get; set; }
+
+        public CodexCollection CollectionToImport { get; set; } //collection that was in the satchel
+
+        /// <summary>
+        /// Indicates that the tags should all be imported in a new, seperate group
+        /// </summary>
+        public bool ImportTagsSeperatly { get; set; } = false;
 
         //OVERVIEW STEP
-        public bool MergeIntoCollection { get; set; } = true;
-        public string CollectionName { get; set; } = "Unnamed Collection";
+        public bool MergeIntoCollection { get; set; } = false;
 
-        public bool HasTags { get; set; }
-        public bool HasCodices { get; set; }
-        public bool HasSettings { get; set; }
+        private string _collectionName = "Unnamed Collection";
+        public string CollectionName
+        {
+            get => _collectionName;
+            set
+            {
+                SetProperty(ref _collectionName, value);
+                RaisePropertyChanged(nameof(IsCollectionNameLegal));
+            }
+        }
+        public bool IsCollectionNameLegal => MainViewModel.CollectionVM.IsLegalCollectionName(CollectionName);
 
         public bool ImportAllTags { get; set; } = true;
         public bool ImportAllCodices { get; set; } = true;
@@ -78,179 +79,84 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
-        //TAGS STEP
-        public List<CheckableTreeNode<Tag>> TagsToImport { get; set; }
+        //Don't show on overview tab if new collection is chosen with illegal name
+        public override bool ShowNextButton() => base.ShowNextButton() &&
+            !(CurrentStep == "Overview" && !MergeIntoCollection && !IsCollectionNameLegal);
+        public override bool ShowFinishButton() => base.ShowFinishButton() &&
+            !(CurrentStep == "Overview" && !MergeIntoCollection && !IsCollectionNameLegal);
 
-        // CODICES STEP
-        public List<ImportCodexHelper> CodicesToImport { get; set; }
-
-        //SETTINGS STEP
-
-        //Auto Import Folders
-        private bool _importAutoImportFolders = false;
-        public bool ImportAutoImportFolders
+        public override async Task Finish()
         {
-            get => (_importAutoImportFolders && AdvancedImport) || (ImportAllSettings && !AdvancedImport);
-            set => SetProperty(ref _importAutoImportFolders, value);
-        }
-        public List<ImportPathHelper> AutoImportFolders { get; init; }
 
-        //Banished paths
-        private bool _importBanishedFiles = false;
-        public bool ImportBanishedFiles
-        {
-            get => (_importBanishedFiles && AdvancedImport) || (ImportAllSettings && !AdvancedImport);
-            set => SetProperty(ref _importBanishedFiles, value);
-        }
-        public List<ImportPathHelper> BanishedPaths { get; init; }
+            CloseAction?.Invoke();
 
-        //File type preferences
-        private bool _importFileTypePrefs = false;
-        public bool ImportFileTypePrefs
-        {
-            get => (_importFileTypePrefs && AdvancedImport) || (ImportAllSettings && !AdvancedImport);
-            set => SetProperty(ref _importFileTypePrefs, value);
-        }
-        public List<ObservableKeyValuePair<string, bool>> FileTypePrefs { get; init; }
-
-        //Tag-Folder links
-        private bool _importFolderTagLinks = false;
-        public bool ImportFolderTagLinks
-        {
-            get => (_importFolderTagLinks && AdvancedImport) || (ImportAllSettings && !AdvancedImport);
-            set => SetProperty(ref _importFolderTagLinks, value);
-        }
-        public List<ImportFolderTagLinkHelper> FolderTagLinks { get; init; }
-
-        public CollectionViewSource FolderTagLinksVS
-        {
-            get
+            //if we do a quick import, set all the things in the contentSelector have the right value
+            if (!AdvancedImport)
             {
-                CollectionViewSource temp = new()
+                //Set it on tags
+                foreach (var selectableTag in ContentSelectorVM.SelectableTags)
                 {
-                    Source = FolderTagLinks,
-                };
-                temp.SortDescriptions.Add(new SortDescription("Folder", ListSortDirection.Ascending));
-                return temp;
-            }
-        }
+                    selectableTag.IsChecked = ImportAllTags;
+                }
 
-        #region Helper classes
-        public class ImportPathHelper : ObservableObject
-        {
-            public ImportPathHelper(string path)
+                //Set it on codices
+                foreach (var selectableCodex in ContentSelectorVM.SelectableCodices)
+                {
+                    selectableCodex.Selected = ImportAllCodices;
+                }
+
+                //Set it on all the settings
+                ContentSelectorVM.SelectAutoImportFolders = ImportAllSettings;
+                ContentSelectorVM.SelectBanishedFiles = ImportAllSettings;
+                ContentSelectorVM.SelectFileTypePrefs = ImportAllSettings;
+                ContentSelectorVM.SelectFolderTagLinks = ImportAllSettings;
+            }
+
+            //If we have tags and are doing an advanced import, but the tags step is missing, ask if we should still import them
+            if (AdvancedImport                                                   // if we are doing an advanced import
+                && !Steps.Contains(CollectionContentSelectorViewModel.TagsStep)  // and the tags step is missing
+                && ContentSelectorVM.HasTags                                     // but there are tags included in the import
+                && ContentSelectorVM.SelectableCodices                           // and the tags are present on the chosen codices
+                    .Where(x => x.Selected)
+                    .SelectMany(sc => sc.Codex.Tags)
+                    .Any())
             {
-                Path = path;
-                ShouldImport = PathExits;
+                string message = $"Some of the items that you are about to import have Tags, \n " +
+                    $"would you like to import these as well?\n " +
+                    $"They will be put in a new tag group called {CollectionName}.";
+                var result = messageDialog.Show(message, "Tags found", System.Windows.MessageBoxButton.YesNoCancel);
+
+                switch (result)
+                {
+                    case System.Windows.MessageBoxResult.Cancel:
+                        return;
+                    case System.Windows.MessageBoxResult.Yes:
+                        ImportTagsSeperatly = true;
+                        ContentSelectorVM.OnlyTagsOnCodices = true;
+                        break;
+                    default:
+                        //all other cases, make sure to deselect all tags
+                        ContentSelectorVM.TagsSelectorVM.SelectedTagCollection!.TagsRoot.IsChecked = false;
+                        break;
+                }
             }
 
-            private bool _shouldImport;
-            public bool ShouldImport
-            {
-                get => _shouldImport;
-                set => SetProperty(ref _shouldImport, value);
-            }
+            //Apply the selection
+            await ContentSelectorVM.Finish();
 
-            public string Path { get; set; }
-
-            public bool PathExits => !System.IO.Path.IsPathFullyQualified(Path) || System.IO.Path.Exists(Path);
-        }
-
-        public class ImportFolderTagLinkHelper : ImportPathHelper
-        {
-            public ImportFolderTagLinkHelper(string path, Tag t, IEnumerable<Tag> existingTags) : base(path)
-            {
-                Tag = t;
-                _existingTags = existingTags;
-            }
-            private IEnumerable<Tag> _existingTags;
-            public Tag Tag { get; }
-            public bool TagExists => _existingTags.Contains(Tag);
-        }
-
-        public class ImportCodexHelper : ImportPathHelper
-        {
-            public ImportCodexHelper(Codex codex) : base(codex.Path)
-            {
-                Codex = codex;
-            }
-            public Codex Codex { get; }
-        }
-        #endregion
-
-        public override void Finish()
-        {
-            TargetCollection = MergeIntoCollection ?
+            //Save the changes to a permanent collection
+            var targetCollection = MergeIntoCollection ?
                 MainViewModel.CollectionVM.CurrentCollection :
                 MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
 
-            //add selected Tags to tmp collection
-            if (AdvancedImport)
+            //if create an load fails
+            if (targetCollection is null)
             {
-                CollectionToImport.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(TagsToImport).ToList();
-
-                //Remove the tags that didn't make it from codices
-                var RemovedTags = CollectionToImport.AllTags.Except(Utils.FlattenTree(CollectionToImport.RootTags)).ToList();
-                foreach (Tag t in RemovedTags)
-                {
-                    CollectionToImport.AllTags.Remove(t);
-                    foreach (var codex in CollectionToImport.AllCodices)
-                    {
-                        codex.Tags.Remove(t);
-                    }
-                }
-            }
-            else if (!ImportAllTags)
-            {
-                foreach (var tag in CollectionToImport.AllTags)
-                {
-                    foreach (var codex in CollectionToImport.AllCodices)
-                    {
-                        codex.Tags.Remove(tag);
-                    }
-                }
-                CollectionToImport.RootTags.Clear();
-                CollectionToImport.AllTags.Clear();
+                //TODO idk, show an error of some kind
+                return;
             }
 
-            //add selected Codices to tmp collection
-            CollectionToImport.AllCodices.Clear();
-            if (AdvancedImport)
-            {
-                CollectionToImport.AllCodices.AddRange(CodicesToImport.Where(x => x.ShouldImport).Select(x => x.Codex));
-            }
-            else if (ImportAllCodices)
-            {
-                CollectionToImport.AllCodices.AddRange(CodicesToImport.Select(x => x.Codex));
-            }
-
-            //Add selected Settings to tmp collection
-            CollectionToImport.Info.AutoImportDirectories.Clear();
-            if (ImportAutoImportFolders)
-            {
-                CollectionToImport.Info.AutoImportDirectories = new(AutoImportFolders.Where(x => x.ShouldImport).Select(x => x.Path));
-            }
-            CollectionToImport.Info.BanishedPaths.Clear();
-            if (ImportBanishedFiles)
-            {
-                CollectionToImport.Info.BanishedPaths = new(BanishedPaths.Where(x => x.ShouldImport).Select(x => x.Path));
-            }
-            if (!ImportFileTypePrefs)
-            {
-                //for file types, import all or nothing because checking whether to import a checkbox becomes ridiculous
-                CollectionToImport.Info.FiletypePreferences.Clear();
-            }
-            CollectionToImport.Info.FolderTagPairs.Clear();
-            if (ImportFolderTagLinks)
-            {
-                CollectionToImport.Info.FolderTagPairs = new(FolderTagLinks.Where(linkHelper => linkHelper.ShouldImport && linkHelper.TagExists)
-                                                                                   .Select(linkHelper => new FolderTagPair(linkHelper.Path, linkHelper.Tag)));
-            }
-
-            //If some tags are no longer present, they should be deleted from Codices
-            TargetCollection.MergeWith(CollectionToImport);
-
-            CloseAction.Invoke();
+            await targetCollection.MergeWith(ContentSelectorVM.CuratedCollection, ImportTagsSeperatly);
         }
 
         public void UpdateSteps()
@@ -260,18 +166,8 @@ namespace COMPASS.ViewModels.Import
             Steps.Add("Overview");
             if (AdvancedImport)
             {
-                if (HasTags)
-                {
-                    Steps.Add("Tags");
-                }
-                if (HasCodices)
-                {
-                    Steps.Add("Codices");
-                }
-                if (HasSettings)
-                {
-                    Steps.Add("Settings");
-                }
+                ContentSelectorVM.UpdateSteps();
+                Steps.AddRange(ContentSelectorVM.Steps);
             }
             RaisePropertyChanged(nameof(Steps));
         }

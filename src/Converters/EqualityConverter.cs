@@ -9,7 +9,9 @@ namespace COMPASS.Converters
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values.Length < 2 || values[0] == null)
+            {
                 return false;
+            }
 
             return values[0].Equals(values[1]);
         }

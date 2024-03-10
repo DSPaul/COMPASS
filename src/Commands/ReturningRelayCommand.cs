@@ -12,23 +12,23 @@ namespace COMPASS.Commands
     /// <typeparam name="R"> Type of return value </typeparam>
     public class ReturningRelayCommand<T, R> : ICommand
     {
-        private readonly Func<T, R> _execute;
-        private readonly Func<T, bool> _canExecute;
+        private readonly Func<T?, R> _execute;
+        private readonly Func<T?, bool>? _canExecute;
 
-        public event EventHandler CanExecuteChanged
+        public event EventHandler? CanExecuteChanged
         {
             add => CommandManager.RequerySuggested += value;
             remove => CommandManager.RequerySuggested -= value;
         }
 
-        public ReturningRelayCommand(Func<T, R> execute, Func<T, bool> canExecute = null)
+        public ReturningRelayCommand(Func<T?, R> execute, Func<T?, bool>? canExecute = null)
         {
             _execute = execute;
             _canExecute = canExecute;
         }
 
-        public bool CanExecute(object parameter) => _canExecute == null || _canExecute((T)parameter);
+        public bool CanExecute(object? parameter) => _canExecute == null || _canExecute((T?)parameter);
 
-        public void Execute(object parameter) => _execute((T)parameter);
+        public void Execute(object? parameter) => _execute((T?)parameter);
     }
 }

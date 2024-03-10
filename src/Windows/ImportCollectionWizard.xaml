@@ -4,23 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
-        xmlns:local="clr-namespace:COMPASS.Windows"
         xmlns:import="clr-namespace:COMPASS.ViewModels.Import" 
         xmlns:controls="clr-namespace:COMPASS.Resources.Controls" 
-        xmlns:converters="clr-namespace:COMPASS.Converters"
-        xmlns:tools="clr-namespace:COMPASS.Tools"
+        xmlns:views="clr-namespace:COMPASS.Views"
         d:DataContext="{d:DesignInstance Type=import:ImportCollectionViewModel}"
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
-        Title="{Binding CollectionToImport.DirectoryName, StringFormat=Importing {0:}}" 
+        Title="{Binding CollectionName, StringFormat=Importing {0:}}" 
         Height="650" Width="1200" Closed="Window_Closed">
     <Grid>
-        <Grid.Resources>
-            <converters:PlusOneConverter x:Key="PlusOneConverter"/>
-            <converters:UriToBitmapConverter x:Key="UriToBitmapConverter"/>
-            <converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
-            <converters:EqualityToVisibilityConverter x:Key="ShowInStepConverter"/>
-            <converters:NegateConverter x:Key="NegateConverter"/>
-        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -29,14 +20,14 @@
         </Grid.RowDefinitions>
         <DockPanel Margin="40,10">
 
-            <!--Only show this on step 0 -->
+            <!--Only show this on step overview -->
             <TextBlock Text="Overview" DockPanel.Dock="Left" FontSize="20" FontWeight="Light" 
-            Visibility="{Binding StepCounter, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
-            <!--Only show this after step 0 -->
+                Visibility="{Binding CurrentStep, ConverterParameter=Overview, Converter={StaticResource ShowInStepConverter}}"/>
+            <!--Only show this on all other steps -->
             <TextBlock DockPanel.Dock="Left" FontSize="20" FontWeight="Light" 
-                       Visibility="{Binding StepCounter, Converter={StaticResource ToVisibilityConverter}}">
+                   Visibility="{Binding CurrentStep, ConverterParameter=!Overview, Converter={StaticResource ShowInStepConverter}}">
                 Choose which
-            <Run Text="{Binding CurrentStep, Mode=OneWay}" Foreground="{StaticResource AccentColor}"/>
+                <Run Text="{Binding CurrentStep, Mode=OneWay}" Foreground="{StaticResource AccentColor}"/>
                 to import.
             </TextBlock>
             <TextBlock HorizontalAlignment="Right" FontSize="20" FontWeight="Light" DockPanel.Dock="Right">
@@ -60,27 +51,6 @@
                 </Style>
             </Border.Resources>
             <ContentControl>
-                <ContentControl.Resources>
-                    <ControlTemplate TargetType="CheckBox" x:Key="BorderedCheckbox">
-                        <Grid>
-                            <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent"
-                    Panel.ZIndex="1"/>
-                            <!-- Rect in front so only templated checkbox can be clicked, because templatebinding is not two way-->
-                            <Border x:Name="Border" CornerRadius="5" Panel.ZIndex="0">
-                                <CheckBox Content="{TemplateBinding Content}" IsChecked="{TemplateBinding IsChecked}" Margin="10"
-                    Focusable="False"/>
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="true">
-                                <Setter TargetName="Border" Property="Background" Value="{StaticResource AccentColorMuted}"/>
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="false">
-                                <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackground}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </ContentControl.Resources>
                 <ContentControl.Style>
                     <Style TargetType="ContentControl">
                         <Style.Triggers>
@@ -97,72 +67,81 @@
                                                 <RowDefinition Height="*"/>
                                                 <RowDefinition Height="*"/>
                                             </Grid.RowDefinitions>
-                                            <Grid.Resources>
-                                                <ControlTemplate TargetType="RadioButton" x:Key="RadioTemplate">
-                                                    <Border x:Name="Border" HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                Background="{StaticResource CardBackground}" Margin="20" CornerRadius="10" 
-                    BorderBrush="{StaticResource AccentColorMuted}">
-                                                        <ContentPresenter Content="{TemplateBinding Content}" 
-                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
-                                                    </Border>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsChecked" Value="true">
-                                                            <Setter TargetName="Border" Property="BorderThickness" Value="4"/>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Grid.Resources>
-                                            <RadioButton GroupName="TargetCollection" HorizontalAlignment="Stretch"
-                 HorizontalContentAlignment="Center" IsChecked="{Binding MergeIntoCollection}"
-                 VerticalAlignment="Stretch" Template="{StaticResource RadioTemplate}">
-                                                <TextBlock Text="Merge into current collection" FontSize="20"/>
-                                            </RadioButton>
-                                            <RadioButton GroupName="TargetCollection" Grid.Row="1"
-                 HorizontalContentAlignment="Center" VerticalAlignment="Stretch" 
-                 Template="{StaticResource RadioTemplate}">
+                                            <RadioButton GroupName="TargetCollection" Grid.Row="0" 
+                                                         IsChecked="{Binding MergeIntoCollection, Converter={StaticResource NegateConverter}}"
+                                                         HorizontalContentAlignment="Center" VerticalAlignment="Stretch" 
+                                                         Template="{StaticResource BigRadioButton}">
                                                 <StackPanel>
                                                     <TextBlock Text="Create new collection" HorizontalAlignment="Center" FontSize="20"/>
-                                                    <TextBox Text="{Binding CollectionName}" MinWidth="200" HorizontalContentAlignment="Center"/>
+                                                    <TextBox Text="{Binding CollectionName, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" HorizontalContentAlignment="Center">
+                                                        <TextBox.Style>
+                                                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsCollectionNameLegal}" Value="False">
+                                                                        <Setter Property="BorderBrush" Value="{StaticResource CancelFill}"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBox.Style>
+                                                    </TextBox>
+                                                    <TextBlock Text="Invalid Collection Name" Foreground="{StaticResource CancelFill}"
+                                                               Visibility="{Binding IsCollectionNameLegal, Converter={StaticResource ToVisibilityConverter}, 
+                                                                ConverterParameter=True}"/>
                                                 </StackPanel>
                                             </RadioButton>
-                                            <Rectangle Fill="{StaticResource Separator}" Grid.Column="1" Width="5" Grid.RowSpan="2" 
-               VerticalAlignment="Stretch"/>
+                                            <RadioButton GroupName="TargetCollection" HorizontalAlignment="Stretch" Grid.Row="1"
+                                                        HorizontalContentAlignment="Center" IsChecked="{Binding MergeIntoCollection}"
+                                                        VerticalAlignment="Stretch" Template="{StaticResource BigRadioButton}">
+                                                <TextBlock Text="Merge into current collection" FontSize="20"/>
+                                            </RadioButton>
+                                            <Rectangle Fill="{StaticResource Separator}" Grid.Column="1" Width="5" 
+                                                       Grid.RowSpan="2" VerticalAlignment="Stretch"/>
                                             <RadioButton GroupName="Advanced" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"
-                 Grid.Column="2" Template="{StaticResource RadioTemplate}" 
-                 IsChecked="{Binding AdvancedImport, Converter={StaticResource NegateConverter}}">
+                                                         Grid.Column="2" Template="{StaticResource BigRadioButton}" 
+                                                         IsChecked="{Binding AdvancedImport, Converter={StaticResource NegateConverter}}">
                                                 <StackPanel>
                                                     <TextBlock Text="Quick Import" TextAlignment="Center" FontSize="20" Margin="20"/>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                         <CheckBox Content="All Tags" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllTags}"
-                          Visibility="{Binding HasTags, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
+                                                                    Visibility="{Binding ContentSelectorVM.HasTags, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
                                                         <CheckBox Content="All Books/Items" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllCodices}"
-                          Visibility="{Binding HasCodices, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
+                                                                    Visibility="{Binding ContentSelectorVM.HasCodices, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
                                                         <CheckBox Content="All Settings" Template="{StaticResource BorderedCheckbox}" IsChecked="{Binding ImportAllSettings}"
-                          Visibility="{Binding HasSettings, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
+                                                                    Visibility="{Binding ContentSelectorVM.HasSettings, Converter={StaticResource ToVisibilityConverter}}" Margin="5"/>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </RadioButton>
                                             <RadioButton GroupName="Advanced" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"
-        Grid.Column="2" Grid.Row="2" Template="{StaticResource RadioTemplate}" 
-                 IsChecked="{Binding AdvancedImport}">
+                                                            Grid.Column="2" Grid.Row="2" Template="{StaticResource BigRadioButton}" 
+                                                            IsChecked="{Binding AdvancedImport}">
                                                 <StackPanel>
                                                     <TextBlock Text="Advanced Import" TextAlignment="Center" FontSize="20"/>
                                                     <TextBlock Text="Pick And Choose" Foreground="{StaticResource TextMutedColor}"
-                TextAlignment="Center"/>
+                                                                TextAlignment="Center"/>
                                                 </StackPanel>
                                             </RadioButton>
                                         </Grid>
                                     </Setter.Value>
                                 </Setter>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding CurrentStep}" Value="Codices">
+                            <DataTrigger Binding="{Binding CurrentStep}" Value="Items">
                                 <Setter Property="Content">
                                     <Setter.Value>
-                                        <Grid Visibility="{Binding CurrentStep, ConverterParameter=Codices, Converter={StaticResource ShowInStepConverter}}">
-                                            <DataGrid x:Name="ListLayoutGrid" ItemsSource="{Binding CodicesToImport, IsAsync=True}"
+                                        <Grid Visibility="{Binding CurrentStep, ConverterParameter=Items, Converter={StaticResource ShowInStepConverter}}">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto"/>
+                                                <RowDefinition Height="auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <StackPanel Orientation="Horizontal" Margin="20,0">
+                                                <CheckBox Content="Reset personal data on all items" IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/>
+                                                <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}"
+                                                        ToolTip="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last opened &#x0a; - Times opened &#x0a; - Date added"/>
+                                            </StackPanel>
+                                            <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/>
+                                            <DataGrid x:Name="ListLayoutGrid" ItemsSource="{Binding ContentSelectorVM.SelectableCodices, IsAsync=True}"
                                                     Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0"
-                                                    CanUserAddRows="False" SelectionMode="Extended" AutoGenerateColumns="False" 
+                                                    CanUserAddRows="False" SelectionMode="Extended" AutoGenerateColumns="False" Grid.Row="2"
                                                     RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True" ColumnHeaderStyle="{StaticResource BasicDataGridColumnHeaderStyle}"
                                                     VerticalGridLinesBrush="#FF484848" HorizontalGridLinesBrush="#FF484848" ClipToBounds="True">
                                                 <DataGrid.Resources>
@@ -228,7 +207,9 @@
                                                     <DataGridTemplateColumn Header="IMPORT" Width="auto" MinWidth="70">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
-                                                                <CheckBox IsChecked="{Binding ShouldImport, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                                                                <CheckBox IsChecked="{Binding Selected, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"
+                                                                          CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=SelectedItems}"
+                                                                          Command="{Binding ItemCheckedCommand}" />
                                                             </DataTemplate>
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
@@ -245,7 +226,7 @@
                                                                 <DockPanel>
                                                                     <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" DockPanel.Dock="Right"
                                                                          Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
-                                                                         ToolTip="This file could not be found"/>
+                                                                         ToolTip="This file could not be found" Style="{StaticResource ToolTipIcon}"/>
                                                                     <TextBlock Text ="{Binding Codex.FileName}" Style="{StaticResource default}"/>
                                                                 </DockPanel>
                                                             </DataTemplate>
@@ -268,38 +249,7 @@
                                 <Setter Property="Content">
                                     <Setter.Value>
                                         <Grid Visibility="{Binding CurrentStep, ConverterParameter=Tags, Converter={StaticResource ShowInStepConverter}}">
-                                            <Grid.Resources>
-                                                <tools:TagTemplateSelector x:Key="TagTemplateSelector"/>
-                                                <HierarchicalDataTemplate x:Key="RegularTag" ItemsSource="{Binding Children}">
-                                                    <Border CornerRadius="5" Margin="0,3">
-                                                        <Border.Background>
-                                                            <SolidColorBrush Color="{Binding Item.BackgroundColor}"/>
-                                                        </Border.Background>
-                                                        <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsChecked, Mode=TwoWay}" 
-                                                                  Content="{Binding Item.Content}" Foreground="{StaticResource TextColor}"/>
-                                                    </Border>
-                                                </HierarchicalDataTemplate>
-                                                <HierarchicalDataTemplate x:Key="GroupTag" ItemsSource="{Binding Children}">
-                                                    <Border Margin="0,3" Background="{x:Null}" >
-                                                        <StackPanel Orientation="Horizontal" >
-                                                            <Rectangle Fill="{Binding Item.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}" 
-                                                                       Width="2" Height="16" Margin="3" VerticalAlignment="Bottom" />
-                                                            <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
-                                                                      Content="{Binding Item.Content}" Foreground="LightGray"
-                                                                      FontSize="16" FontWeight="Bold" Typography.Capitals="AllSmallCaps"/>
-                                                        </StackPanel>
-                                                    </Border>
-                                                </HierarchicalDataTemplate>
-                                            </Grid.Resources>
-                                            <TreeView ItemsSource="{Binding TagsToImport}" Background="Transparent" 
-                                                      HorizontalAlignment="Stretch" BorderThickness="0" 
-                                                      ItemTemplateSelector="{StaticResource TagTemplateSelector}">
-                                                <TreeView.ItemContainerStyle>
-                                                    <Style TargetType="TreeViewItem">
-                                                        <Setter Property="Focusable" Value="False" />
-                                                    </Style>
-                                                </TreeView.ItemContainerStyle>
-                                            </TreeView>
+                                            <views:TagsSelectorView DataContext="{Binding ContentSelectorVM.TagsSelectorVM}" />
                                         </Grid>
                                     </Setter.Value>
                                 </Setter>
@@ -308,13 +258,13 @@
                                 <Setter Property="Content">
                                     <Setter.Value>
                                         <Grid Visibility="{Binding CurrentStep, ConverterParameter=Settings, Converter={StaticResource ShowInStepConverter}}">
-                                            <ScrollViewer>
+                                            <ScrollViewer DataContext="{Binding ContentSelectorVM}">
                                                 <StackPanel>
                                                     <StackPanel.Resources>
                                                         <DataTemplate x:Key="PathTemplate">
                                                             <Border BorderBrush="{StaticResource AccentColorMuted}"
                                                                                 BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
-                                                                <CheckBox IsChecked="{Binding ShouldImport}" HorizontalContentAlignment="Stretch">
+                                                                <CheckBox IsChecked="{Binding Selected}" HorizontalContentAlignment="Stretch">
                                                                     <Grid HorizontalAlignment="Stretch">
                                                                         <Grid.ColumnDefinitions>
                                                                             <ColumnDefinition Width="*"/>
@@ -323,7 +273,7 @@
                                                                         <TextBlock Text="{Binding Path}" Margin="0" TextWrapping="Wrap"/>
                                                                         <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" Grid.Column="1"
                                                                                         Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
-                                                                                        ToolTip="This path could not be found"/>
+                                                                                        ToolTip="This path could not be found" Style="{StaticResource ToolTipIcon}"/>
                                                                     </Grid>
                                                                 </CheckBox>
                                                             </Border>
@@ -331,17 +281,17 @@
                                                     </StackPanel.Resources>
                                                     <controls:CheckableContainer CheckText="Directories to Auto Import from." 
                                                                                 Visibility="{Binding AutoImportFolders.Count, Converter={StaticResource ToVisibilityConverter}}"
-                                                                                IsChecked="{Binding ImportAutoImportFolders}">
+                                                                                IsChecked="{Binding SelectAutoImportFolders}">
                                                         <ItemsControl ItemsSource="{Binding AutoImportFolders}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/>
                                                     </controls:CheckableContainer>
                                                     <controls:CheckableContainer CheckText="Banished files (Files to Exclude from future imports)" 
                                                                                 Visibility="{Binding BanishedPaths.Count, Converter={StaticResource ToVisibilityConverter}}"
-                                                                                IsChecked="{Binding ImportBanishedFiles}">
+                                                                                IsChecked="{Binding SelectBanishedFiles}">
                                                         <ItemsControl ItemsSource="{Binding BanishedPaths}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/>
                                                     </controls:CheckableContainer>
                                                     <controls:CheckableContainer CheckText="File types to include in imports (these will expand and overwrite your current file type preferences)" 
                                                                                 Visibility="{Binding FileTypePrefs.Count, Converter={StaticResource ToVisibilityConverter}}"
-                                                                                IsChecked="{Binding ImportFileTypePrefs}">
+                                                                                IsChecked="{Binding SelectFileTypePrefs}">
                                                         <ItemsControl ItemsSource="{Binding FileTypePrefs}">
                                                             <ItemsControl.ItemsPanel>
                                                                 <ItemsPanelTemplate>
@@ -357,12 +307,12 @@
                                                     </controls:CheckableContainer>
                                                     <controls:CheckableContainer CheckText="Folder-Tag Links" 
                                                                             Visibility="{Binding FolderTagLinks.Count, Converter={StaticResource ToVisibilityConverter}}"
-                                                                            IsChecked="{Binding ImportFolderTagLinks}">
+                                                                            IsChecked="{Binding SelectFolderTagLinks}">
                                                         <ItemsControl ItemsSource="{Binding FolderTagLinksVS.View}"  Grid.IsSharedSizeScope="True">
                                                             <ItemsControl.ItemTemplate>
                                                                 <DataTemplate>
                                                                     <Border BorderBrush="{StaticResource AccentColorMuted}" BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
-                                                                        <CheckBox IsChecked="{Binding ShouldImport}" HorizontalAlignment="Stretch">
+                                                                        <CheckBox IsChecked="{Binding Selected}" HorizontalAlignment="Stretch">
                                                                             <Grid >
                                                                                 <Grid.ColumnDefinitions>
                                                                                     <ColumnDefinition Width="auto"/>
@@ -379,10 +329,10 @@
                                                                                 </Border>
                                                                                 <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" Grid.Column="3"
                                                                                                                     Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
-                                                                                                                    ToolTip="This path could not be found"/>
+                                                                                                                    ToolTip="This path could not be found" Style="{StaticResource ToolTipIcon}"/>
                                                                                 <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" Grid.Column="4"
                                                                                                                     Visibility="{Binding TagExists, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
-                                                                                                                    ToolTip="This Tag could not be found or was not selected for import"/>
+                                                                                                                    ToolTip="This Tag could not be found or was not selected for import" Style="{StaticResource ToolTipIcon}"/>
                                                                             </Grid>
                                                                         </CheckBox>
                                                                     </Border>

@@ -8,8 +8,7 @@
              xmlns:tools ="clr-namespace:COMPASS.Tools"
              xmlns:models="clr-namespace:COMPASS.Models" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
-             xmlns:import="clr-namespace:COMPASS.ViewModels.Import" 
-             xmlns:customControls="clr-namespace:COMPASS.Resources.Controls" 
+             xmlns:import="clr-namespace:COMPASS.ViewModels.Import"
              xmlns:views="clr-namespace:COMPASS.Views" 
              xmlns:converters="clr-namespace:COMPASS.Converters"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -20,6 +19,7 @@
              mc:Ignorable="d" FontSize="20"
              d:DesignHeight="650" d:DesignWidth="300">
     <UserControl.Resources>
+        
         <converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
         <tools:BindingProxy x:Key="CollapsedProxy" Data="{Binding}"/>
         <Style TargetType="Border" x:Key="RadioBtnContainer">
@@ -54,6 +54,7 @@
     <TabControl Background="{StaticResource Layer3}" BorderThickness="0" TabStripPlacement="Left" Padding="0" 
                 SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
         <TabControl.Resources>
+            <tools:BindingProxy x:Key="TagsVMProxy" Data="{Binding MainVM.CollectionVM.TagsVM}" />
             <Style TargetType="TabItem">
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Margin" Value="0"/>
@@ -131,14 +132,35 @@
         <TabItem Header="Tags" tools:AP.IconKind="TagMultiple" ToolTip="Tags"
                  DataContext="{Binding MainVM.CollectionVM.TagsVM}" >
             <TabItem.Resources>
-                <tools:BindingProxy x:Key="Proxy" Data="{Binding}" />
                 <ContextMenu x:Key="TagContextMenu">
-                    <MenuItem Header="New Tag" tools:AP.IconKind="TagPlusOutline" Command="{Binding Source={StaticResource Proxy}, Path=Data.CreateChildCommand}"/>
-                    <MenuItem Header="Edit" tools:AP.IconKind="Edit" Command="{Binding Source={StaticResource Proxy}, Path=Data.EditTagCommand}"/>
-                    <MenuItem Header="Delete" tools:AP.IconKind="Delete" Command="{Binding Source={StaticResource Proxy}, Path=Data.DeleteTagCommand}"/>
+                    <MenuItem Header="New Tag" tools:AP.IconKind="TagPlusOutline" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.CreateChildCommand}"/>
+                    <MenuItem Header="Edit" tools:AP.IconKind="Edit" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.EditTagCommand}"/>
+                    <MenuItem Header="Delete" tools:AP.IconKind="Delete" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.DeleteTagCommand}"/>
+                    <Separator>
+                        <Separator.Style>
+                            <Style TargetType="Separator" BasedOn="{StaticResource MarginlessSeparator}">
+                                <!--Translate down 3 pixels to hide it when there is no content under it-->
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <TranslateTransform Y="3"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Separator.Style>
+                    </Separator>
+                    <MenuItem Header="Sort Children" tools:AP.IconKind="TagMultipleOutline" ToolTip="Sorts its children A->Z"
+                              Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortChildrenCommand}"
+                              Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self},
+                              Converter={StaticResource ToVisibilityConverter}}"/>
+                </ContextMenu>
+                <ContextMenu x:Key="AllTagsContextMenu">
+                    <MenuItem Header="Sort All Tags" tools:AP.IconKind="TagMultipleOutline" ToolTip="Sorts all the Tags and Tag Groups A->Z"
+                        Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortAllTagsCommand}"/>
+                    <MenuItem Header="Export Tags" tools:AP.IconKind="TagArrowUpOutline" ToolTip="Export tags to a file"
+                        Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.ExportTagsCommand}"/>
                 </ContextMenu>
                 <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type models:TreeViewNode}" ItemsSource="{Binding Children}">
-                    <Button Cursor="Hand" Command="{Binding Source={StaticResource Proxy}, Path=Data.AddTagFilterCommand}">
+                    <Button Cursor="Hand" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.AddTagFilterCommand}">
                         <Button.CommandParameter>
                             <MultiBinding Converter="{StaticResource MultiParamConverter}">
                                 <Binding Path="Tag"/>
@@ -168,7 +190,6 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
                     <TabControl Grid.Row="0" Margin="30,10,30,10" Background="Transparent" 
                                 BorderThickness="0" Padding="2,0,2,0" 
                                 SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
@@ -221,6 +242,7 @@
                             <Style TargetType="ContentControl" x:Key="TagsTabContentWrapper">
                                 <Setter Property="Visibility" Value="{Binding Data.Collapsed, Source={StaticResource TagsTabsCollapsedProxy}, 
                                     Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
+                                <Setter Property="Cursor" Value="Arrow"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate>
@@ -263,10 +285,16 @@
                         <TabItem Header="Import Tags" tools:AP.IconKind="TagArrowDownOutline" ToolTip="Import Tags">
                             <ContentControl tools:AP.Header="Import Tags" tools:AP.IconKind="TagArrowDownOutline" 
                                     Style="{StaticResource TagsTabContentWrapper}">
-                                <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}"
-                                        Command="{Binding ImportTagsCommand}">
-                                    <TextBlock Text="From another collection..." TextWrapping="Wrap"/>
-                                </Button>
+                                <StackPanel>
+                                    <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}" Margin="5"
+                                            Command="{Binding ImportTagsFromOtherCollectionsCommand}" HorizontalContentAlignment="Left">
+                                        <TextBlock Text="From another collection..." TextWrapping="Wrap"/>
+                                    </Button>
+                                    <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}" Margin="5,0,5,5"
+                                            Command="{Binding ImportTagsFromSatchelCommand}" HorizontalContentAlignment="Left">
+                                        <TextBlock Text="From a .satchel file..." TextWrapping="Wrap"/>
+                                    </Button>
+                                </StackPanel>
                             </ContentControl>
                         </TabItem>
                     </TabControl>
@@ -295,12 +323,16 @@
                                 <TextBlock Text="Exclude" Style="{StaticResource RadioBtnTextBox}"/>
                             </Border>
                         </RadioButton>
+                        <Button Style="{StaticResource IconBtn}" tools:AP.IconKind="DotsVertical" Margin="10,0,0,0"
+                                Width="30" Height="30" Foreground="{StaticResource TextMutedColor}" Click="Toggle_ContextMenu" ContextMenu="{StaticResource AllTagsContextMenu}" 
+                                ToolTip="Additional Actions" Background="{StaticResource Layer4}"/>
                     </StackPanel>
-                    
+
                     <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"  Grid.Row="4"
                         ItemsSource="{Binding Path=TreeViewSource,Mode=TwoWay}"  Margin="5" Cursor="Arrow"
                         dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}"
-                        ItemTemplateSelector="{StaticResource TagTemplateSelector}" MouseRightButtonDown="TagTree_MouseRightButtonDown">
+                        ItemTemplateSelector="{StaticResource TagTemplateSelector}" ContextMenu="{StaticResource AllTagsContextMenu}"
+                        MouseRightButtonDown="TagTree_MouseRightButtonDown">
                         <TreeView.Resources>
                             <Style TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
@@ -391,14 +423,14 @@
                             <Grid>
                                 <TextBlock Text="-- Select Author --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding AuthorList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedAuthor, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
+                                      SelectedValue="{Binding SelectedAuthor, Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
                             </Grid>
 
                             <TextBlock Text="Publisher:" Margin="0,10,0,0"/>
                             <Grid>
                                 <TextBlock Text="-- Select Publisher --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding PublisherList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedPublisher, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
+                                      SelectedValue="{Binding SelectedPublisher,  Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
                             </Grid>
 
                             <TextBlock Text="Has Property:" Margin="0,10,0,0"/>
@@ -431,13 +463,13 @@
                             <Grid>
                                 <TextBlock Text="-- Select File Type --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding FileTypeList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedFileType, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
+                                      SelectedValue="{Binding SelectedFileType, Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
                             </Grid>
                             <TextBlock Text="Source Website:" Margin="0,5"/>
                             <Grid>
                                 <TextBlock Text="-- Select Website --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding DomainList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedDomain, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
+                                      SelectedValue="{Binding SelectedDomain,  Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
                             </Grid>
                         </StackPanel>
                         <Button Content="Clear All" Grid.Row="4" Margin="10" Command="{Binding ClearFiltersCommand}"
@@ -641,7 +673,7 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Resources>
-                        
+
                         <TextBlock Text="Physical Books" Style="{StaticResource Categorizer}"/>
                         <Button tools:AP.IconKind="BookPlusOutline" Style="{StaticResource HighlightedButton}" Content="Add Manually"
                             Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.Manual}"/>
@@ -679,30 +711,12 @@
                             Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GenericURL}"/>
 
                         <TextBlock Text="Other" Style="{StaticResource Categorizer}"/>
-                        <Button tools:AP.IconKind="FileCad" Style="{StaticResource HighlightedButton}" Content="From .CMPS File"/>
+                        <Button tools:AP.IconKind="Sack" Style="{StaticResource HighlightedButton}" Content="From a .satchel file"
+                                Command="{Binding ImportBooksFromSatchelCommand}"/>
                     </StackPanel>
                 </ScrollViewer>
             </ContentControl>
         </TabItem>
-        <!--<TabItem Header="Share" tools:AP.IconKind="Share" ToolTip="Share" Grid.IsSharedSizeScope="True" DataContext="{x:Static viewmodels:MainViewModel.CollectionVM}">
-            <ContentControl tools:AP.Header="Share" tools:AP.IconKind="Share" Style="{StaticResource TabContentWrapper}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <TextBlock Style="{StaticResource Categorizer}" Text="Export Collection as:"/>
-                        <Button Style="{StaticResource IconTextButton}" Content="COMPASS file" tools:AP.IconKind="FileCad"
-                                Command="{Binding ExportCommand}"/>
-                        <Button Style="{StaticResource IconTextButton}" Content="Spreadsheet (.csv)" tools:AP.IconKind="TableExport"/>
-                        <CheckBox Content="Include files that are referenced by this collection (pdf's and such)" Margin="20,5" 
-                                  Style="{StaticResource WrappingCheckBox}" VerticalAlignment="Top" IsChecked="{Binding IncludeFilesInExport}"/>
-
-                        <TextBlock Style="{StaticResource Categorizer}" Text="Export Tags as:"/>
-                        <Button Style="{StaticResource IconTextButton}" Content="COMPASS file" tools:AP.IconKind="FileCad"
-                                Command="{Binding ExportTagsCommand}"/>
-                        <Button Style="{StaticResource IconTextButton}" Content="To COMPASS Hub" tools:AP.IconKind="Github"/>
-                    </StackPanel>
-                </ScrollViewer>
-            </ContentControl>
-        </TabItem>-->
         <TabItem x:Name="Logs" Header="Logs" tools:AP.IconKind="TextLong" ToolTip="Activity Log" GotFocus="Logs_GotFocus">
             <TabItem.Template>
                 <ControlTemplate TargetType="TabItem">

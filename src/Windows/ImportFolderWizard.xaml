@@ -1,0 +1,110 @@
+﻿<Window x:Class="COMPASS.Windows.ImportFolderWizard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:import="clr-namespace:COMPASS.ViewModels.Import" xmlns:controls="clr-namespace:COMPASS.Resources.Controls"
+        d:DataContext="{d:DesignInstance Type=import:ImportFolderViewModel}"
+        mc:Ignorable="d" Foreground="{StaticResource TextColor}" WindowStyle="ToolWindow" 
+        Background="{StaticResource WindowBackground}" SizeToContent="WidthAndHeight"
+        Title="{Binding WindowTitle, Mode=OneWay}" Height="400" Width="600" WindowStartupLocation="CenterScreen">
+    <controls:Wizard>
+        <Grid>
+            <StackPanel Orientation="Vertical" Margin="20,0" d:Visibility="Collapsed"
+                        Visibility="{Binding CurrentStep, ConverterParameter=SubFolders, Converter={StaticResource ShowInStepConverter}}">
+                <TextBlock Text="{Binding Path=ImportAmount, StringFormat=Files found: {0:#}, FallbackValue=Files found: 0}"
+                       TextWrapping="Wrap" VerticalAlignment="Top" Margin="5"/>
+
+                <CheckBox Margin="10" IsChecked="{Binding AddAutoImportFolders}"
+                      Content="Automatically import future files from these folders"/>
+
+                <Border Background="{StaticResource Layer2}" Grid.Row="2" d:Height="50" MaxHeight="400"
+                    CornerRadius="5" Margin="20,5">
+
+                    <TreeView Background="Transparent"
+                           ItemsSource="{Binding CheckableFolders}" 
+                           HorizontalAlignment="Stretch" BorderThickness="0">
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                                <CheckBox Margin="5" IsChecked="{Binding IsChecked, Mode=TwoWay}" 
+                                    Content="{Binding Item.Name}" Foreground="{StaticResource TextColor}"/>
+                            </HierarchicalDataTemplate>
+                        </TreeView.ItemTemplate>
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="Focusable" Value="False" />
+                                <Setter Property="IsExpanded" Value="{Binding Expanded}"/>
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                    </TreeView>
+                </Border>
+            </StackPanel>
+            <StackPanel Margin="20,0" d:Visibility="Visible"
+                        Visibility="{Binding CurrentStep, ConverterParameter=Extensions, Converter={StaticResource ShowInStepConverter}}">
+                <TextBlock Margin="5">
+                    New extensions were found among the files ready for import. 
+                    <LineBreak/>
+                    Select which file types should be imported.
+                </TextBlock>
+
+                <Separator/>
+
+                <controls:ToggleContainer Header="Newly Found Extensions" IsOpen="True" Margin="10">
+                    <ListBox FocusVisualStyle="{x:Null}"
+                            ItemsSource="{Binding UnknownFileTypes}" Background="{x:Null}" BorderBrush="{x:Null}"
+                            ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid IsItemsHost="True"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Content="{Binding DisplayText}" IsChecked="{Binding ShouldImport, Mode=TwoWay}" Margin="15"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </controls:ToggleContainer>
+                
+                <controls:ToggleContainer Header="Known Extensions" IsOpen="False" Margin="10" Visibility="{Binding KnownFileTypes.Count, Converter={StaticResource ToVisibilityConverter}}">
+                    <ListBox FocusVisualStyle="{x:Null}"
+                            ItemsSource="{Binding KnownFileTypes}" Background="{x:Null}" BorderBrush="{x:Null}"
+                            ScrollViewer.HorizontalScrollBarVisibility="Hidden" Margin="10">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid IsItemsHost="True"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Content="{Binding DisplayText}" IsChecked="{Binding ShouldImport, Mode=TwoWay}" Margin="15"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </controls:ToggleContainer>
+            </StackPanel>
+        </Grid>
+    </controls:Wizard>
+</Window>

@@ -6,19 +6,18 @@ namespace COMPASS.Tools
 {
     public class TagTemplateSelector : DataTemplateSelector
     {
-        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        public override DataTemplate? SelectTemplate(object item, DependencyObject container)
         {
-            FrameworkElement element = container as FrameworkElement;
-            TreeViewNode node = item as TreeViewNode;
-            bool isGroup = false;
-            if (node != null)
+            FrameworkElement? element = container as FrameworkElement;
+            bool isGroup;
+            if (item is TreeViewNode node)
             {
                 isGroup = node.Tag.IsGroup;
             }
             else
             {
-                CheckableTreeNode<Tag> checknode = item as CheckableTreeNode<Tag>;
-                isGroup = checknode.Item.IsGroup;
+                CheckableTreeNode<Tag>? checkNode = item as CheckableTreeNode<Tag>;
+                isGroup = checkNode?.Item.IsGroup ?? false;
             }
 
             if (isGroup)

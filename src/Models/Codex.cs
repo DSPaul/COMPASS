@@ -1,11 +1,11 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Services;
+using COMPASS.Tools;
 using COMPASS.ViewModels.Sources;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using System.Xml.Serialization;
 
 namespace COMPASS.Models
@@ -59,37 +59,17 @@ namespace COMPASS.Models
             ISBN = c.ISBN;
         }
 
-        public bool HasOfflineSource() => !String.IsNullOrWhiteSpace(Path);
-
-        public bool HasOnlineSource() => !String.IsNullOrWhiteSpace(SourceURL);
-
-        public string FileType
-        {
-            get
-            {
-                if (HasOfflineSource())
-                {
-                    return System.IO.Path.GetExtension(Path);
-                }
-
-                else if (HasOnlineSource())
-                {
-                    // online sources can also also point to file 
-                    // either hosted on cloud service like Google drive 
-                    // or services like homebrewery are always .pdf
-                    // skip this for now though
-                    return "webpage";
-                }
-
-                else
-                {
-                    return null;
-                }
-            }
-        }
-        public string FileName => System.IO.Path.GetFileName(Path);
-
         public void RefreshThumbnail() => RaisePropertyChanged(nameof(Thumbnail));
+
+        public void ClearPersonalData()
+        {
+            Favorite = false;
+            PhysicallyOwned = false;
+            DateAdded = DateTime.Now;
+            OpenedCount = 0;
+            LastOpened = default;
+            Rating = 0;
+        }
 
         #region Properties
 
@@ -99,7 +79,7 @@ namespace COMPASS.Models
             get => _path;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _path, value);
             }
         }
@@ -110,9 +90,11 @@ namespace COMPASS.Models
             get => _title;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                if (value is null) return;
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _title, value);
                 RaisePropertyChanged(nameof(SortingTitle));
+                RaisePropertyChanged(nameof(SortingTitleContainsNumbers));
             }
         }
 
@@ -121,7 +103,11 @@ namespace COMPASS.Models
         public string SortingTitle
         {
             get => (String.IsNullOrEmpty(_sortingTitle) ? _title : _sortingTitle).PadNumbers();
-            set => SetProperty(ref _sortingTitle, value);
+            set
+            {
+                SetProperty(ref _sortingTitle, value);
+                RaisePropertyChanged(nameof(SortingTitleContainsNumbers));
+            }
         }
         //separate property needed for serialization or it will get _title and save that
         //instead of saving an empty and mirroring _title during runtime
@@ -130,10 +116,20 @@ namespace COMPASS.Models
             get => _sortingTitle;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _sortingTitle, value);
             }
         }
+
+        [XmlIgnore]
+        public bool SortingTitleContainsNumbers => Constants.RegexNumbersOnly().IsMatch(SortingTitle);
+        [XmlIgnore]
+        public string ZeroPaddingExplainer =>
+            "What's with all the 0's? \n \n" +
+            "Zero-padding numbers ensures numerical sorting instead of alphabetical sorting. \n" +
+            "Consider the numbers 1, 2, 13, and 20. \n" +
+            "Without zero-padding, they would be sorted alphabetically as 1, 13, 2, 20. \n" +
+            "However, with zero-padding, the order becomes 01, 02, 13, 20. \n";
 
         private ObservableCollection<string> _authors = new();
         public ObservableCollection<string> Authors
@@ -166,7 +162,7 @@ namespace COMPASS.Models
             get => _publisher;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _publisher, value);
             }
         }
@@ -177,7 +173,7 @@ namespace COMPASS.Models
             get => _version;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _version, value);
             }
         }
@@ -188,7 +184,7 @@ namespace COMPASS.Models
             get => _sourceURL;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _sourceURL, value);
             }
         }
@@ -201,7 +197,7 @@ namespace COMPASS.Models
             get => _coverArt;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _coverArt, value);
             }
         }
@@ -212,7 +208,7 @@ namespace COMPASS.Models
             get => _thumbnail;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _thumbnail, value);
             }
         }
@@ -231,9 +227,10 @@ namespace COMPASS.Models
         {
             get
             {
-                List<Tag> orderedTags = new(_tags.OrderBy(t => t.AllTags.IndexOf(t)));
-                Application.Current.Dispatcher.Invoke(() =>
+                App.SafeDispatcher.Invoke(() =>
                 {
+                    //order them in same order as alltags by starting with alltags and keeping the ones we need using intersect
+                    List<Tag> orderedTags = _tags.FirstOrDefault()?.AllTags.Intersect(_tags).ToList() ?? new List<Tag>();
                     _tags.Clear(); //will fail when called from non UI thread which happens during import
                     _tags.AddRange(orderedTags);
                 });
@@ -242,7 +239,7 @@ namespace COMPASS.Models
 
             set => SetProperty(ref _tags, value);
         }
-        public List<int> TagIDs { get; set; }
+        public List<int> TagIDs { get; set; } = new();
 
         private string _description = "";
         public string Description
@@ -250,7 +247,7 @@ namespace COMPASS.Models
             get => _description;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _description, value);
             }
         }
@@ -310,121 +307,146 @@ namespace COMPASS.Models
             get => _isbn;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _isbn, value);
             }
         }
+
+        public bool HasOfflineSource() => !String.IsNullOrWhiteSpace(Path);
+
+        public bool HasOnlineSource() => !String.IsNullOrWhiteSpace(SourceURL);
+
+        public string? FileType
+        {
+            get
+            {
+                if (HasOfflineSource())
+                {
+                    return System.IO.Path.GetExtension(Path);
+                }
+
+                else if (HasOnlineSource())
+                {
+                    // online sources can also also point to file 
+                    // either hosted on cloud service like Google drive 
+                    // or services like homebrewery are always .pdf
+                    // skip this for now though
+                    return "webpage";
+                }
+
+                else
+                {
+                    return null;
+                }
+            }
+        }
+        public string FileName => System.IO.Path.GetFileName(Path);
         #endregion 
 
         public static readonly List<CodexProperty> Properties = new()
         {
-            new( "Title",
-                codex => String.IsNullOrWhiteSpace(codex.Title),
-                codex => codex.Title,
-                (codex,other) => codex.Title = other.Title,
-                new List<NamedMetaDataSource>()
+            new(nameof(Title),
+                isEmpty: codex => String.IsNullOrWhiteSpace(codex.Title),
+                setProp: (codex,other) => codex.Title = other.Title,
+                defaultSources: new()
                 {
-                    new(MetaDataSource.PDF),
-                    new(MetaDataSource.File),
-                    new(MetaDataSource.GmBinder),
-                    new(MetaDataSource.Homebrewery),
-                    new(MetaDataSource.GoogleDrive),
-                    new(MetaDataSource.ISBN),
-                    new(MetaDataSource.GenericURL)
+                    MetaDataSource.PDF,
+                    MetaDataSource.File,
+                    MetaDataSource.GmBinder,
+                    MetaDataSource.Homebrewery,
+                    MetaDataSource.GoogleDrive,
+                    MetaDataSource.ISBN,
+                    MetaDataSource.GenericURL
                 }),
-            new( "Authors",
-                codex => codex.Authors is null || !codex.Authors.Any(),
-                codex => codex.Authors,
-                (codex,other) => codex.Authors = other.Authors,
-                new()
+            new( nameof(Authors),
+                isEmpty: codex => codex.Authors is null || !codex.Authors.Any(),
+                setProp: (codex,other) => codex.Authors = other.Authors,
+                defaultSources: new()
                 {
-                    new(MetaDataSource.PDF),
-                    new(MetaDataSource.GmBinder),
-                    new(MetaDataSource.Homebrewery),
-                    new(MetaDataSource.ISBN),
-                    new(MetaDataSource.GenericURL)
+                    MetaDataSource.PDF,
+                    MetaDataSource.GmBinder,
+                    MetaDataSource.Homebrewery,
+                    MetaDataSource.ISBN,
+                    MetaDataSource.GenericURL
                 }),
-            new( "Publisher",
-                codex => String.IsNullOrEmpty(codex.Publisher),
-                codex => codex.Publisher,
-                (codex,other) => codex.Publisher = other.Publisher,
-                new()
+            new( nameof(Publisher),
+                isEmpty: codex => String.IsNullOrEmpty(codex.Publisher),
+                setProp: (codex,other) => codex.Publisher = other.Publisher,
+                defaultSources: new()
                 {
-                    new(MetaDataSource.ISBN),
-                    new(MetaDataSource.GmBinder),
-                    new(MetaDataSource.Homebrewery),
-                    new(MetaDataSource.GoogleDrive),
+                    MetaDataSource.ISBN,
+                    MetaDataSource.GmBinder,
+                    MetaDataSource.Homebrewery,
+                    MetaDataSource.GoogleDrive,
                 }),
-            new( "Version",
-                codex => String.IsNullOrEmpty(codex.Version),
-                codex => codex.Version,
-                (codex,other) => codex.Version = other.Version,
-                new()
+            new( nameof(Version),
+                isEmpty: codex => String.IsNullOrEmpty(codex.Version),
+                setProp: (codex,other) => codex.Version = other.Version,
+                defaultSources: new()
                 {
-                    new(MetaDataSource.Homebrewery)
+                    MetaDataSource.Homebrewery
                 }),
-            new( "Pagecount",
-                codex => codex.PageCount == 0,
-                codex => codex.PageCount,
-                (codex, other) => codex.PageCount = other.PageCount,
-                new()
+            new( nameof(PageCount),
+                isEmpty: codex => codex.PageCount == 0,
+                setProp: (codex, other) => codex.PageCount = other.PageCount,
+                defaultSources: new()
                 {
-                    new(MetaDataSource.PDF),
-                    new(MetaDataSource.Image),
-                    new(MetaDataSource.GmBinder),
-                    new(MetaDataSource.Homebrewery),
-                    new(MetaDataSource.ISBN),
-                }),
-            new( "Tags",
-                codex => codex.Tags is null || !codex.Tags.Any(),
-                codex => codex.Tags,
-                (codex,other) => {
+                    MetaDataSource.PDF,
+                    MetaDataSource.Image,
+                    MetaDataSource.GmBinder,
+                    MetaDataSource.Homebrewery,
+                    MetaDataSource.ISBN,
+                },
+                label: "Pagecount"),
+            new( nameof(Tags),
+                isEmpty: codex => codex.Tags is null || !codex.Tags.Any(),
+                setProp: (codex,other) =>
+                {
                     foreach (var tag in other.Tags)
                     {
-                        Application.Current.Dispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
+                        App.SafeDispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
                     }
                 },
-                new()
+                defaultSources : new()
                 {
-                    new(MetaDataSource.File),
-                    new(MetaDataSource.GenericURL),
+                    MetaDataSource.File,
+                    MetaDataSource.GenericURL,
                 }),
-            new( "Description",
+            new( nameof(Description),
                 codex => String.IsNullOrEmpty(codex.Description),
-                codex => codex.Description,
                 (codex,other) => codex.Description = other.Description,
-                new()
+                defaultSources : new()
                 {
-                    new(MetaDataSource.Homebrewery),
-                    new(MetaDataSource.ISBN),
-                    new(MetaDataSource.GenericURL),
+                    MetaDataSource.Homebrewery,
+                    MetaDataSource.ISBN,
+                    MetaDataSource.GenericURL,
                 }),
-            new( "Release Date",
-                codex => codex.ReleaseDate is null || codex.ReleaseDate == DateTime.MinValue,
-                codex => codex.ReleaseDate,
-                (codex, other) => codex.ReleaseDate = other.ReleaseDate,
-                new()
+            new( nameof(ReleaseDate),
+                isEmpty: codex => codex.ReleaseDate is null || codex.ReleaseDate == DateTime.MinValue,
+                setProp: (codex, other) => codex.ReleaseDate = other.ReleaseDate,
+                defaultSources : new()
                 {
-                    new(MetaDataSource.Homebrewery),
-                    new(MetaDataSource.ISBN),
-                }),
-            new( "Cover Art",
-                codex => !File.Exists(codex.CoverArt),
-                codex => codex.CoverArt,
-                (codex,other) =>
+                    MetaDataSource.Homebrewery,
+                    MetaDataSource.ISBN,
+                },
+                label: "Release Date"),
+            new( nameof(CoverArt),
+                isEmpty: codex => !File.Exists(codex.CoverArt),
+                setProp: (codex,other) =>
                 {
                     codex.CoverArt = other.CoverArt;
                     codex.Thumbnail = other.Thumbnail;
                 },
-                new()
+                defaultSources : new()
                 {
-                    new(MetaDataSource.Image),
-                    new(MetaDataSource.PDF),
-                    new(MetaDataSource.GmBinder),
-                    new(MetaDataSource.Homebrewery),
-                    new(MetaDataSource.GoogleDrive),
-                    new(MetaDataSource.ISBN),
-                }),
+                    MetaDataSource.Image,
+                    MetaDataSource.PDF,
+                    MetaDataSource.GmBinder,
+                    MetaDataSource.Homebrewery,
+                    MetaDataSource.GoogleDrive,
+                    MetaDataSource.ISBN,
+                },
+                label: "Cover Art"),
         };
     }
 }

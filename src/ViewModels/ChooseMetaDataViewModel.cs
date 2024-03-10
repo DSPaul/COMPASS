@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
@@ -31,7 +33,7 @@ namespace COMPASS.ViewModels
         public override ObservableCollection<string> Steps => new(CodicesWithChoices.Select(pair => pair.Item1.Title));
         public Tuple<Codex, Codex> CurrentPair => CodicesWithChoices[StepCounter];
 
-        public override void NextStep()
+        protected override void NextStep()
         {
             ApplyChoice();
             StepCounter++;
@@ -40,7 +42,7 @@ namespace COMPASS.ViewModels
             ShouldUseNewValue = DefaultShouldUseNewValue;
         }
 
-        public override void PrevStep()
+        protected override void PrevStep()
         {
             ApplyChoice();
             StepCounter--;
@@ -49,10 +51,10 @@ namespace COMPASS.ViewModels
             ShouldUseNewValue = DefaultShouldUseNewValue;
         }
 
-        public override void Finish()
+        public override Task Finish()
         {
             ApplyChoice();
-            CloseAction.Invoke();
+            CloseAction?.Invoke();
 
             for (var i = 0; i < CodicesWithChoices.Count; i++)
             {
@@ -60,7 +62,7 @@ namespace COMPASS.ViewModels
                 if (_codicesWithMadeChoices[i].CoverArt != CodicesWithChoices[i].Item1.CoverArt)
                 {
                     File.Copy(_codicesWithMadeChoices[i].CoverArt, CodicesWithChoices[i].Item1.CoverArt, true);
-                    CoverFetcher.CreateThumbnail(CodicesWithChoices[i].Item1);
+                    CoverService.CreateThumbnail(CodicesWithChoices[i].Item1);
                     CodicesWithChoices[i].Item1.RefreshThumbnail();
                 }
                 //delete temp cover if it exists
@@ -69,26 +71,27 @@ namespace COMPASS.ViewModels
                 if (CodicesWithChoices[i].Item2.Thumbnail?.EndsWith(".tmp.png") == true)
                     File.Delete(CodicesWithChoices[i].Item2.Thumbnail);
 
-                //Set image paths back so that copy operataion after this doesn't change them to the temp files
+                //Set image paths back so that copy operation after this doesn't change them to the temp files
                 _codicesWithMadeChoices[i].SetImagePaths(MainViewModel.CollectionVM.CurrentCollection);
 
                 //copy metadata data over
                 CodicesWithChoices[i].Item1.Copy(_codicesWithMadeChoices[i]);
             }
+            return Task.CompletedTask;
         }
 
         private void ApplyChoice()
         {
             foreach (var prop in PropsToAsk)
             {
-                if (ShouldUseNewValue[prop.Label])
+                if (ShouldUseNewValue[prop.Name])
                 {
                     prop.SetProp(_codicesWithMadeChoices[StepCounter], CurrentPair.Item2);
                 }
                 else
                 {
                     prop.SetProp(_codicesWithMadeChoices[StepCounter], CurrentPair.Item1);
-                    if (prop.Label == "Tags")
+                    if (prop.Name == nameof(Codex.Tags))
                     {
                         //Because Tags setProp adds instead of overwrites, have to do it different
                         _codicesWithMadeChoices[StepCounter].Tags = new(CurrentPair.Item1.Tags);
@@ -97,7 +100,6 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private Dictionary<string, bool> _shouldUseNewValue;
         private Dictionary<string, bool> DefaultShouldUseNewValue
         {
             get
@@ -105,18 +107,19 @@ namespace COMPASS.ViewModels
                 Dictionary<string, bool> dict = new();
                 foreach (var prop in PropsToAsk)
                 {
-                    bool useNew = prop.Label == "Tags" ?
-                     //for tags, new value was chosesn when there are more tags in the list
-                     ((IList<Tag>)prop.GetProp(_codicesWithMadeChoices[StepCounter])).Count > ((IList<Tag>)prop.GetProp(CurrentPair.Item1)).Count
+                    bool useNew = prop.Name == nameof(Codex.Tags) ?
+                     //for tags, new value was chosen when there are more tags in the list
+                     ((IList<Tag>)prop.GetProp(_codicesWithMadeChoices[StepCounter])!).Count > ((IList<Tag>)prop.GetProp(CurrentPair.Item1)!).Count
                      // for all the other, do a string compare to see if the new options was chosen
                      : prop.GetProp(CurrentPair.Item1)?.ToString() != prop.GetProp(_codicesWithMadeChoices[StepCounter])?.ToString();
 
-                    dict.Add(prop.Label, useNew);
+                    dict.Add(prop.Name, useNew);
                 }
                 return dict;
             }
         }
 
+        private Dictionary<string, bool>? _shouldUseNewValue;
         public Dictionary<string, bool> ShouldUseNewValue
         {
             get => _shouldUseNewValue ??= DefaultShouldUseNewValue;

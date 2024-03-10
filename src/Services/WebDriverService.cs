@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using COMPASS.Tools;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
@@ -6,9 +7,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace COMPASS.Tools
+namespace COMPASS.Services
 {
-    public static class WebDriverFactory
+    public static class WebDriverService
     {
         private static Browser _browser;
         public enum Browser
@@ -19,7 +20,7 @@ namespace COMPASS.Tools
         }
 
         //Get an initialised webdriver with right browser
-        private static WebDriver _webDriver;
+        private static WebDriver? _webDriver;
         public static async Task<WebDriver> GetWebDriver()
         {
             DriverService driverService = _browser switch
@@ -67,14 +68,17 @@ namespace COMPASS.Tools
             if (IsInstalled("chrome.exe"))
             {
                 _browser = Browser.Chrome;
+                Logger.Debug("Chrome install found");
             }
             else if (IsInstalled("firefox.exe"))
             {
                 _browser = Browser.Firefox;
+                Logger.Debug("firefox install found");
             }
             else if (IsInstalled("msedge.exe"))
             {
                 _browser = Browser.Edge;
+                Logger.Debug("edge install found");
             }
         }
 

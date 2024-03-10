@@ -5,14 +5,12 @@ using System.Windows.Media;
 namespace COMPASS.Models
 {
     /// <summary>
-    /// Wrapper for Func<T,bool> that should be tried in a set order until one succeeds
+    /// Wrapper for Func with param T and bool return that should be tried in a set order until one succeeds
     /// which is indicated by the bool return value
     /// </summary>
     /// <typeparam name="T"> Type of argument of the function</typeparam>
     public class PreferableFunction<T> : ITag, IHasID
     {
-        //parameterless ctor for serialisation
-        internal PreferableFunction() { }
         public PreferableFunction(string name, Func<T, bool> func, int id = -1)
         {
             Content = name;

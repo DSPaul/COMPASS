@@ -12,7 +12,7 @@ namespace COMPASS.ViewModels.Sources
             TargetCollection = targetCollection;
         }
 
-        public static SourceViewModel GetSourceVM(MetaDataSource source) => source switch
+        public static SourceViewModel? GetSourceVM(MetaDataSource source) => source switch
         {
             MetaDataSource.File => new FileSourceViewModel(),
             MetaDataSource.PDF => new PdfSourceViewModel(),

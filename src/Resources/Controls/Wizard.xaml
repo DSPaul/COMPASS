@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="COMPASS.Resources.Controls.Wizard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:COMPASS.Resources.Controls"
+             xmlns:viewmodels="clr-namespace:COMPASS.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:WizardViewModel}">
+    <UserControl.Template>
+        <ControlTemplate>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <DockPanel Margin="40,10">
+                    <!--Contentpresent should replace Textblock after it if content is set-->
+                    <TextBlock DockPanel.Dock="Left" FontSize="20" FontWeight="Light" Text="{Binding CurrentStep, Mode=OneWay}"/>
+                    <TextBlock HorizontalAlignment="Right" FontSize="20" FontWeight="Light" DockPanel.Dock="Right">
+                    <Run Text="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"/>
+                    / 
+                    <Run Text="{Binding Steps.Count, Mode=OneWay}"/>
+                    </TextBlock>
+                </DockPanel>
+
+                <ProgressBar Grid.Row="1" Value="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"
+             Maximum="{Binding Steps.Count, Mode=OneWay}" Height="12" Margin="10,0"
+             Foreground="{StaticResource AccentColor}" Background="{StaticResource UIElementBackground}" 
+             Style="{DynamicResource RoundedProgressBar}"/>
+
+                <Border BorderBrush="{StaticResource DarkUIElementBackground}" Margin="10" BorderThickness="2"
+            Grid.Row="2" CornerRadius="5" Padding="10">
+                    <ContentPresenter Content="{Binding Content, RelativeSource={RelativeSource AncestorType=local:Wizard}}"/>
+                </Border>
+
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="3" Margin="10">
+                    <Button Style="{StaticResource TextButton}" Content="Cancel" 
+                            Background="{StaticResource CancelFill}" Command="{Binding CancelCommand}"/>        
+                    <Button Style="{StaticResource TextButton}" Content="Back" Command="{Binding PrevStepCommand}"
+                    Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, 
+            Converter={StaticResource ToVisibilityConverter}}"/>
+                    <Button Style="{StaticResource TextButton}" Content="Next" Command="{Binding NextStepCommand}"
+                    Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, 
+            Converter={StaticResource ToVisibilityConverter}}"/>
+                    <Button Style="{StaticResource TextButton}" Content="Finish" Command="{Binding FinishCommand}"
+                    Background="{StaticResource AccentColor}"
+                    Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, 
+            Converter={StaticResource ToVisibilityConverter}}"/>
+                </StackPanel>
+            </Grid> 
+        </ControlTemplate>
+    </UserControl.Template>
+</UserControl>

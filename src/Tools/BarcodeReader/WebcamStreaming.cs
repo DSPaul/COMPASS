@@ -7,22 +7,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace BarcodeReaderTool
+namespace COMPASS.Tools.BarcodeReader
 {
     // based on https://github.com/FrancescoBonizzi/WebcamControl-WPF-With-OpenCV
     public sealed class WebcamStreaming : IDisposable
     {
-        private System.Drawing.Bitmap _lastFrame;
-        private Task _previewTask;
+        private System.Drawing.Bitmap? _lastFrame;
+        private Task? _previewTask;
 
-        private CancellationTokenSource _cancellationTokenSource;
+        private CancellationTokenSource? _cancellationTokenSource;
         private readonly Image _imageControlForRendering;
 
         public int CameraDeviceId { get; private set; }
-        public byte[] LastPngFrame { get; private set; }
+        public byte[]? LastPngFrame { get; private set; }
         public bool FlipHorizontally { get; set; }
 
-        public event EventHandler OnQRCodeRead;
+        public event EventHandler? OnQRCodeRead;
         private readonly OpenCVQRCodeReader _qrCodeReader;
 
         private int _currentBarcodeReadFrameCount = 0;
@@ -42,7 +42,7 @@ namespace BarcodeReaderTool
         public async Task Start()
         {
             // Never run two parallel tasks for the webcam streaming
-            if (_previewTask != null && !_previewTask.IsCompleted)
+            if (_previewTask is { IsCompleted: false })
                 return;
 
             var initializationSemaphore = new SemaphoreSlim(0, 1);
@@ -76,7 +76,7 @@ namespace BarcodeReaderTool
                                     {
                                         try
                                         {
-                                            string qrCodeData = _qrCodeReader.DetectBarcode(frame);
+                                            string? qrCodeData = _qrCodeReader.DetectBarcode(frame);
                                             OnQRCodeRead.Invoke(
                                                 this,
                                                 new QRCodeReadEventArgs(qrCodeData));
@@ -133,12 +133,12 @@ namespace BarcodeReaderTool
         public async Task Stop()
         {
             // If "Dispose" gets called before Stop
-            if (_cancellationTokenSource.IsCancellationRequested)
+            if (_cancellationTokenSource?.IsCancellationRequested == true)
                 return;
 
-            if (!_previewTask.IsCompleted)
+            if (_previewTask is not null && !_previewTask.IsCompleted)
             {
-                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource?.Cancel();
 
                 // Wait for it, to avoid conflicts with read/write of _lastFrame
                 await _previewTask;
@@ -146,10 +146,8 @@ namespace BarcodeReaderTool
 
             if (_lastFrame != null)
             {
-                using (var stream = new MemoryStream())
-                {
-                    LastPngFrame = stream.ToArray();
-                }
+                using var stream = new MemoryStream();
+                LastPngFrame = stream.ToArray();
             }
             else
             {
@@ -162,6 +160,5 @@ namespace BarcodeReaderTool
             _cancellationTokenSource?.Cancel();
             _lastFrame?.Dispose();
         }
-
     }
 }

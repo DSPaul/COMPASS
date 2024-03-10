@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Paul De Smul")]
 [assembly: AssemblyProduct("COMPASS")]
-[assembly: AssemblyCopyright("Copyright © Paul De Smul 2022")]
+[assembly: AssemblyCopyright("Copyright © Paul De Smul 2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -40,17 +40,7 @@ using System.Windows;
                                               // app, or any theme specific resource dictionaries)
 )]
 
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers
-// by using the '*' as shown below:
-[assembly: AssemblyVersion("1.6.0")]
-//[assembly: AssemblyFileVersion("1.6.0")]
+[assembly: AssemblyVersion("1.7.0")]
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("windows")]
 
 

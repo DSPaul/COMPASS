@@ -1,4 +1,4 @@
-﻿namespace BlackPearl.Controls.Contract
+﻿namespace COMPASS.Resources.Controls.MultiSelectCombobox
 {
     /// <summary>
     /// Look-up contract for custom search behavior
@@ -22,9 +22,9 @@
         /// </summary>
         /// <param name="sender">control</param>
         /// <param name="item">item to check</param>
-        /// <param name="seachString">search string</param>
+        /// <param name="searchString">search string</param>
         /// <returns>true if matches otherwise false</returns>
-        bool IsItemEqualToString(object sender, object item, string seachString);
+        bool IsItemEqualToString(object sender, object item, string searchString);
         /// <summary>
         /// Creates object from provided string
         /// This method need to be implemented only when SupportsNewObjectCreation is set to true

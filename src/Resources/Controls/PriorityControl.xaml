@@ -3,15 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:Tools ="clr-namespace:COMPASS.Tools"
-             xmlns:local="clr-namespace:COMPASS.Resources.Controls"
+             xmlns:tools ="clr-namespace:COMPASS.Tools"
              xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d" x:Name="Root"
              d:DesignHeight="450" d:DesignWidth="800">
     <ItemsControl.Template>
         <ControlTemplate TargetType="ItemsControl">
             <Border CornerRadius="5" Background="{StaticResource DarkUIElementBackground}" 
-                                            Grid.Row="2" Grid.Column="1" Margin="10,0,20,0">
+                                           Margin="10,0,20,0">
                 <ItemsControl x:Name="InnerItemsControl" BorderBrush="{x:Null}" Background="{x:Null}"
                             HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Padding="5"
                             dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" 
@@ -27,9 +26,9 @@
                                         <ColumnDefinition Width="auto"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="{Binding Content}" Margin="7,2" Foreground="White" FontSize="14"/>
-                                    <Button Grid.Column="1" Style="{StaticResource IconBtn}" Tools:AP.IconKind="MenuUp" Margin="0,0,-3,0"
+                                    <Button Grid.Column="1" Style="{StaticResource IconBtn}" tools:AP.IconKind="MenuUp" Margin="0,0,-3,0"
                                             Click="MoveUp" CommandParameter="{Binding}"/>
-                                    <Button Grid.Column="2" Style="{StaticResource IconBtn}" Tools:AP.IconKind="MenuDown" Margin="-3,0,0,0"
+                                    <Button Grid.Column="2" Style="{StaticResource IconBtn}" tools:AP.IconKind="MenuDown" Margin="-3,0,0,0"
                                             Click="MoveDown" CommandParameter="{Binding}"/>
                                 </Grid>
                             </Border>

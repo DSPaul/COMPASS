@@ -8,7 +8,14 @@ namespace COMPASS.Models
     {
         public const string RepoURL = "https://github.com/DSPAUL/COMPASS";
 
-        public const string COMPASSFileExtension = ".cmpss";
+        public const string SatchelExtension = ".satchel";
+        public const string SatchelExtensionFilter = $"COMPASS Satchel File (*{SatchelExtension})|*{SatchelExtension}";
+
+        //File names
+        public const string SatchelInfoFileName = "SatchelInfo.json";
+        public const string CodicesFileName = "CodexInfo.xml";
+        public const string TagsFileName = "Tags.xml";
+        public const string CollectionInfoFileName = "CollectionInfo.xml";
 
         public static string InstallersPath => Path.Combine(SettingsViewModel.CompassDataPath, "Installers");
         public const string AutoUpdateXMLPath = "https://raw.githubusercontent.com/DSPAUL/COMPASS/master/versionInfo.xml";

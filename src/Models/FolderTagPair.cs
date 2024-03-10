@@ -4,6 +4,7 @@ namespace COMPASS.Models
 {
     public class FolderTagPair : ObservableObject
     {
+        //empty ctor for deserialization
         public FolderTagPair() { }
 
         public FolderTagPair(string folder, Tag tag)
@@ -12,16 +13,16 @@ namespace COMPASS.Models
             Tag = tag;
         }
 
-        private string _folder;
+        private string _folder = "";
         public string Folder
         {
             get => _folder;
             set => SetProperty(ref _folder, value);
         }
 
-        private Tag _tag;
+        private Tag? _tag;
         [XmlIgnore]
-        public Tag Tag
+        public Tag? Tag
         {
             get => _tag;
             set
@@ -38,9 +39,9 @@ namespace COMPASS.Models
         public void InitTag(CodexCollection collection) => Tag = collection.AllTags.Find(t => TagID == t.ID);
 
         #region override Equal operator
-        public override bool Equals(object obj) => this.Equals(obj as FolderTagPair);
+        public override bool Equals(object? obj) => this.Equals(obj as FolderTagPair);
 
-        public bool Equals(FolderTagPair other)
+        public bool Equals(FolderTagPair? other)
         {
             if (other is null)
                 return false;
@@ -48,7 +49,10 @@ namespace COMPASS.Models
                 return true;
             if (GetType() != other.GetType())
                 return false;
-            return Folder == other.Folder && Tag == other.Tag;
+            return Folder == other.Folder
+                && Tag is not null
+                && other.Tag is not null
+                && Tag! == other.Tag!;
         }
         public static bool operator ==(FolderTagPair lhs, FolderTagPair rhs)
         {
@@ -59,9 +63,20 @@ namespace COMPASS.Models
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(FolderTagPair lhs, FolderTagPair rhs) => !(lhs == rhs);
+        public static bool operator !=(FolderTagPair lhs, FolderTagPair rhs)
+        {
+            return !(lhs == rhs);
+        }
 
-        public override int GetHashCode() => Folder.GetHashCode() + Tag.GetHashCode();
+        public override int GetHashCode()
+        {
+            var hash = Folder.GetHashCode();
+            if (Tag is not null)
+            {
+                hash += Tag.GetHashCode();
+            }
+            return hash;
+        }
         #endregion
     }
 }

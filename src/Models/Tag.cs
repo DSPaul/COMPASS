@@ -1,4 +1,5 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Services;
+using COMPASS.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,7 +30,14 @@ namespace COMPASS.Models
         public ObservableCollection<Tag> Children
         {
             get => _children;
-            set => SetProperty(ref _children, value);
+            set
+            {
+                SetProperty(ref _children, value);
+                foreach (var child in _children)
+                {
+                    child.Parent = this;
+                }
+            }
         }
 
         //implement ITag
@@ -39,7 +47,7 @@ namespace COMPASS.Models
             get => _content;
             set
             {
-                value = Utils.SanitizeXmlString(value);
+                value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _content, value);
             }
         }
@@ -64,13 +72,13 @@ namespace COMPASS.Models
         }
 
         //Implement IHasID
-        public int _ID;
+        private int _id = -1;
         public int ID
         {
-            get => _ID;
+            get => _id;
             set
             {
-                SetProperty(ref _ID, value);
+                SetProperty(ref _id, value);
                 foreach (var child in Children)
                 {
                     child.ParentID = value;
@@ -82,14 +90,14 @@ namespace COMPASS.Models
         // so save ID instead
         public int ParentID { get; set; } = -1;
         [XmlIgnore]
-        public Tag Parent
+        public Tag? Parent
         {
-            get => ParentID == -1 ? null : AllTags.FirstOrDefault(tag => tag.ID == ParentID);
+            get => ParentID == -1 ? null : AllTags.Find(tag => tag.ID == ParentID);
             set => ParentID = value?.ID ?? -1;
         }
 
         [XmlIgnore]
-        public List<Tag> AllTags { get; set; } //needed to get parent tag from parent ID
+        public List<Tag> AllTags { get; set; } = new(); //needed to get parent tag from parent ID
 
         // Group tags are important for filtering
         // when filtering, Tags in same group get OR relation
@@ -101,20 +109,14 @@ namespace COMPASS.Models
             set => SetProperty(ref _isGroup, value);
         }
 
-        //returns the first parent that is a group
-        //or Root parent if no parents are group
-        //or null if it is a root tag
+        /// <summary>
+        /// Does an upwards search untill it find either a group tag or a root tag
+        /// </summary>
+        /// <returns></returns>
         public Tag GetGroup()
         {
-            if (IsGroup) return this;
-            if (Parent is null) return null;
-            Tag temp = Parent;
-            while (!temp.IsGroup)
-            {
-                if (temp.Parent != null) temp = temp.Parent;
-                else break;
-            }
-            return temp;
+            if (IsGroup || Parent is null) return this;
+            return Parent.GetGroup();
         }
 
         #region Equal and Copy Functions
@@ -131,9 +133,9 @@ namespace COMPASS.Models
         }
 
         //Overwrite Equal operator
-        public override bool Equals(object obj) => this.Equals(obj as Tag);
+        public override bool Equals(object? obj) => this.Equals(obj as Tag);
 
-        public bool Equals(Tag other)
+        public bool Equals(Tag? other)
         {
             if (other is null)
                 return false;

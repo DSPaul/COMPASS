@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using HtmlAgilityPack;
 using System;
@@ -8,8 +9,6 @@ namespace COMPASS.ViewModels.Sources
 {
     public class DndBeyondSourceViewModel : SourceViewModel
     {
-        public DndBeyondSourceViewModel() : base() { }
-
         public override MetaDataSource Source => MetaDataSource.DnDBeyond;
 
         public override async Task<Codex> GetMetaData(Codex codex)
@@ -17,10 +16,10 @@ namespace COMPASS.ViewModels.Sources
             // Work on a copy
             codex = new Codex(codex);
 
-            //Scrape metadata by going to storepage, get to storepage by using that /credits redirects there
+            //Scrape metadata by going to store page, get to store page by using that /credits redirects there
             ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to DnD Beyond"));
-            HtmlDocument doc = await Utils.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
-            HtmlNode src = doc?.DocumentNode;
+            HtmlDocument? doc = await IOService.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
+            HtmlNode? src = doc?.DocumentNode;
 
             if (src is null)
             {
@@ -40,14 +39,14 @@ namespace COMPASS.ViewModels.Sources
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument doc = await Utils.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
-                HtmlNode src = doc?.DocumentNode;
+                HtmlDocument? doc = await IOService.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
+                HtmlNode? src = doc?.DocumentNode;
                 if (src is null) return false;
 
                 string imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);
 
                 //download the file
-                await CoverFetcher.SaveCover(imgURL, codex);
+                await CoverService.SaveCover(imgURL, codex);
                 return true;
             }
             catch (Exception ex)

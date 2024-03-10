@@ -1,5 +1,7 @@
 ﻿using COMPASS.Commands;
 using COMPASS.Models;
+using COMPASS.Resources.Controls.MultiSelectCombobox;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.Windows;
 using GongSolutions.Wpf.DragDrop;
@@ -17,12 +19,12 @@ namespace COMPASS.ViewModels
 {
     public class CodexEditViewModel : ViewModelBase, IEditViewModel, IDropTarget
     {
-        public CodexEditViewModel(Codex toEdit)
+        public CodexEditViewModel(Codex? toEdit)
         {
             _editedCodex = toEdit;
             //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked
-            TempCodex = new(MainViewModel.CollectionVM.CurrentCollection);
-            if (!CreateNewCodex) TempCodex.Copy(_editedCodex);
+            _tempCodex = new(MainViewModel.CollectionVM.CurrentCollection);
+            if (!CreateNewCodex) TempCodex.Copy(_editedCodex!);
 
             //Apply right checkboxes in AllTags
             foreach (TreeViewNode t in AllTreeViewNodes)
@@ -35,12 +37,12 @@ namespace COMPASS.ViewModels
 
         #region Properties
 
-        readonly Codex _editedCodex;
+        readonly Codex? _editedCodex;
 
-        private ObservableCollection<TreeViewNode> _treeViewSource;
+        private ObservableCollection<TreeViewNode>? _treeViewSource;
         public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
-        private HashSet<TreeViewNode> AllTreeViewNodes => Utils.FlattenTree(TreeViewSource).ToHashSet();
+        private HashSet<TreeViewNode> AllTreeViewNodes => TreeViewSource.Flatten().ToHashSet();
 
         private bool CreateNewCodex => _editedCodex == null;
 
@@ -64,7 +66,7 @@ namespace COMPASS.ViewModels
 
         #region Methods and Commands
 
-        private ActionCommand _browsePathCommand;
+        private ActionCommand? _browsePathCommand;
         public ActionCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
         private void BrowsePath()
         {
@@ -79,7 +81,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _browseURLCommand;
+        private ActionCommand? _browseURLCommand;
         public ActionCommand BrowseURLCommand => _browseURLCommand ??= new(BrowseURL);
         private void BrowseURL()
         {
@@ -89,7 +91,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _browseISBNCommand;
+        private ActionCommand? _browseISBNCommand;
         public ActionCommand BrowseISBNCommand => _browseISBNCommand ??= new(BrowseISBN);
         private void BrowseISBN()
         {
@@ -97,7 +99,7 @@ namespace COMPASS.ViewModels
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
 
-        private ActionCommand _tagCheckCommand;
+        private ActionCommand? _tagCheckCommand;
         public ActionCommand TagCheckCommand => _tagCheckCommand ??= new(UpdateTagList);
         private void UpdateTagList()
         {
@@ -111,22 +113,42 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _quickCreateTagCommand;
+        private ActionCommand? _quickCreateTagCommand;
         public ActionCommand QuickCreateTagCommand => _quickCreateTagCommand ??= new(QuickCreateTag);
         public void QuickCreateTag()
         {
-            TagPropWindow tpw = new(new TagEditViewModel(null, true))
+            //keep track of count to check of tags were created
+            int tagCount = MainViewModel.CollectionVM.CurrentCollection.RootTags.Count;
+
+            TagEditViewModel tagEditVM = new(null, createNew: true);
+            TagPropWindow tpw = new(tagEditVM)
             {
                 Topmost = true
             };
             _ = tpw.ShowDialog();
 
-            //recalculate treeview source
-            _treeViewSource = null;
-            RaisePropertyChanged(nameof(TreeViewSource));
+            if (MainViewModel.CollectionVM.CurrentCollection.RootTags.Count > tagCount) //new tag was created
+            {
+                //recalculate treeview source
+                _treeViewSource = null;
+                RaisePropertyChanged(nameof(TreeViewSource));
+
+                //Apply right checkboxes in AllTags
+                foreach (TreeViewNode t in AllTreeViewNodes)
+                {
+                    t.Expanded = false;
+                    t.Selected = TempCodex.Tags.Contains(t.Tag);
+                    if (t.Children.Any(node => TempCodex.Tags.Contains(node.Tag))) t.Expanded = true;
+                }
+
+                //check the newly created tag
+                TreeViewSource.Last().Selected = true;
+
+                UpdateTagList();
+            }
         }
 
-        private ActionCommand _deleteCodexCommand;
+        private ActionCommand? _deleteCodexCommand;
         public ActionCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
         private void DeleteCodex()
         {
@@ -137,25 +159,25 @@ namespace COMPASS.ViewModels
             CloseAction();
         }
 
-        private ActionCommand _fetchCoverCommand;
-        public ActionCommand FetchCoverCommand => _fetchCoverCommand ??= new(FetchCover);
-        private async void FetchCover()
+        private ActionCommand? _fetchCoverCommand;
+        public ActionCommand FetchCoverCommand => _fetchCoverCommand ??= new(async () => await FetchCoverAsync());
+        private async Task FetchCoverAsync()
         {
             ShowLoading = true;
             //make it so cover always gets overwritten if this case, store old value first
-            CodexProperty coverProp = SettingsViewModel.GetInstance().MetaDataPreferences.First(prop => prop.Label == "Cover Art");
+            CodexProperty coverProp = SettingsViewModel.GetInstance().MetaDataPreferences.First(prop => prop.Name == nameof(Codex.CoverArt));
             Debug.Assert(coverProp.OverwriteMode != null, "coverProp.OverwriteMode != null");
             MetaDataOverwriteMode curSetting = (MetaDataOverwriteMode)coverProp.OverwriteMode;
             coverProp.OverwriteMode = MetaDataOverwriteMode.Always;
             //get the cover
-            await Task.Run(() => CoverFetcher.GetCover(TempCodex));
+            await Task.Run(() => CoverService.GetCover(TempCodex));
             //Restore cover preference
             coverProp.OverwriteMode = curSetting;
             ShowLoading = false;
             RefreshCover();
         }
 
-        private ActionCommand _chooseCoverCommand;
+        private ActionCommand? _chooseCoverCommand;
         public ActionCommand ChooseCoverCommand => _chooseCoverCommand ??= new(ChooseCover);
         private void ChooseCover()
         {
@@ -167,7 +189,7 @@ namespace COMPASS.ViewModels
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                CoverFetcher.GetCoverFromImage(openFileDialog.FileName, TempCodex);
+                CoverService.GetCoverFromImage(openFileDialog.FileName, TempCodex);
                 RefreshCover();
             }
         }
@@ -177,22 +199,22 @@ namespace COMPASS.ViewModels
             //force refresh because image is cached
             string covArt = TempCodex.CoverArt;
             string thumbnail = TempCodex.Thumbnail;
-            TempCodex.CoverArt = null;
-            TempCodex.Thumbnail = null;
+            TempCodex.CoverArt = String.Empty;
+            TempCodex.Thumbnail = String.Empty;
             TempCodex.CoverArt = covArt;
             TempCodex.Thumbnail = thumbnail;
         }
 
-        public Action CloseAction { get; set; }
+        public Action CloseAction { get; set; } = () => { };
 
-        private ActionCommand _oKCommand;
+        private ActionCommand? _oKCommand;
         public ActionCommand OKCommand => _oKCommand ??= new(OKBtn);
         public void OKBtn()
         {
             //Copy changes into Codex
             if (!CreateNewCodex)
             {
-                _editedCodex.Copy(TempCodex);
+                _editedCodex!.Copy(TempCodex);
             }
             else
             {
@@ -200,13 +222,16 @@ namespace COMPASS.ViewModels
                 toAdd.Copy(TempCodex);
                 MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(toAdd);
             }
+
+            MainViewModel.CollectionVM.CurrentCollection.Save();
+
             //Add new Authors, Publishers, ect. to metadata lists
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
             MainViewModel.CollectionVM.FilterVM.ReFilter();
             CloseAction();
         }
 
-        private ActionCommand _cancelCommand;
+        private ActionCommand? _cancelCommand;
         public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel() => CloseAction();
 
@@ -215,7 +240,7 @@ namespace COMPASS.ViewModels
         {
             if (dropInfo.Data is DataObject data
                 && data.GetFileDropList().Count == 1
-                && Utils.IsImageFile(data.GetFileDropList().Cast<string>().First()))
+                && IOService.IsImageFile(data.GetFileDropList().Cast<string>().First()))
             {
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 dropInfo.Effects = DragDropEffects.Copy;
@@ -230,10 +255,10 @@ namespace COMPASS.ViewModels
         {
             if (dropInfo.Data is DataObject data
                 && data.GetFileDropList().Count == 1
-                && Utils.IsImageFile(data.GetFileDropList().Cast<string>().First()))
+                && IOService.IsImageFile(data.GetFileDropList().Cast<string>().First()))
             {
                 string path = data.GetFileDropList().Cast<string>().First();
-                CoverFetcher.GetCoverFromImage(path, TempCodex);
+                CoverService.GetCoverFromImage(path, TempCodex);
                 RefreshCover();
             }
         }

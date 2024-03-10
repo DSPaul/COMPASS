@@ -6,6 +6,9 @@
         {
             LayoutType = Layout.Home;
         }
+
+        public override bool DoVirtualization => false;
+
         public double TileWidth
         {
             get => Properties.Settings.Default.HomeCoverSize;

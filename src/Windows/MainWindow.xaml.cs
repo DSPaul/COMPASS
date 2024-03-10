@@ -50,7 +50,7 @@ namespace COMPASS.Windows
             {
                 // We need to tell the system what our size should be when maximized. Otherwise it will cover the whole screen,
                 // including the task bar.
-                MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
+                MINMAXINFO mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO))!;
 
                 // Adjust the maximized size and position to fit the work area of the correct monitor
                 IntPtr monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
@@ -154,11 +154,11 @@ namespace COMPASS.Windows
         private async void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             var progressVM = ProgressViewModel.GetInstance();
-            if (progressVM.ImportInProgress)
+            if (progressVM.WorkInProgress)
             {
                 progressVM.CancelBackgroundTask();
                 int totalDelay = 0;
-                while (progressVM.ImportInProgress && totalDelay < 5000)
+                while (progressVM.WorkInProgress && totalDelay < 5000)
                 {
                     int delay = 100;
                     await Task.Delay(delay);
@@ -175,7 +175,7 @@ namespace COMPASS.Windows
             ((Button)sender).ContextMenu!.IsOpen = !((Button)sender).ContextMenu!.IsOpen;
         }
 
-        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        private async void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
@@ -198,9 +198,18 @@ namespace COMPASS.Windows
                     break;
 
                 case Key.F5:
-                    MainViewModel.CollectionVM.Refresh();
+                    await MainViewModel.CollectionVM.Refresh();
                     e.Handled = true;
                     break;
+            }
+        }
+
+        private async void CollectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //only refresh if a new item is set
+            if (e.AddedItems.Count > 0)
+            {
+                await MainViewModel.CollectionVM.Refresh();
             }
         }
     }

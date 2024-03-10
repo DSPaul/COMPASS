@@ -8,11 +8,9 @@ namespace COMPASS.Converters
     public class WindowStateToBoolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            => (WindowState)value == WindowState.Maximized;
+            => value != null && (WindowState)value == WindowState.Maximized;
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (bool)value ? WindowState.Maximized : WindowState.Normal;
-        }
+            => value != null && (bool)value ? WindowState.Maximized : WindowState.Normal;
     }
 }

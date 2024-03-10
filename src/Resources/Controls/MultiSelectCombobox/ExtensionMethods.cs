@@ -1,5 +1,4 @@
-﻿using BlackPearl.Controls.Contract;
-using BlackPearl.Controls.CoreLibrary.Behavior;
+﻿using COMPASS.Tools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,12 +8,12 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 
-namespace BlackPearl.Controls.CoreLibrary
+namespace COMPASS.Resources.Controls.MultiSelectCombobox
 {
-    internal static class EntensionMethods
+    internal static class ExtensionMethods
     {
         #region ListBox
-        public static void ClearSelection(this ListBox suggestionList, Func<bool> precondition = null)
+        public static void ClearSelection(this ListBox suggestionList, Func<bool>? precondition = null)
         {
             if (precondition != null
                 && !precondition())
@@ -22,9 +21,8 @@ namespace BlackPearl.Controls.CoreLibrary
                 return;
             }
 
-            suggestionList?.SelectedItems?.Clear();
+            suggestionList?.SelectedItems.Clear();
         }
-        public static IEnumerable<object> GetItemSource(this ListBox suggestionList) => suggestionList?.ItemsSource?.Cast<object>();
         public static void SelectNextItem(this ListBox suggestionList) => suggestionList.SingleItemSelection(1);
         public static void SelectPreviousItem(this ListBox suggestionList) => suggestionList.SingleItemSelection(-1);
         public static void SelectMultipleNextItem(this ListBox suggestionList) => suggestionList.SelectMultipleItem(1);
@@ -63,7 +61,7 @@ namespace BlackPearl.Controls.CoreLibrary
                 return;
             }
 
-            ListBoxAttachedProperties.SetSelectioEndtIndex(suggestionList, index);
+            ListBoxAttachedProperties.SetSelectionEndIndex(suggestionList, index);
         }
 
         public static void CleanOperation(this ListBox suggestionList, SuggestionCleanupOperation operation, IEnumerable goldenItemSource)
@@ -125,7 +123,7 @@ namespace BlackPearl.Controls.CoreLibrary
                 suggestionList.SetSelectionEnd(selectionEnd);
 
                 //Add current item to selected items list
-                suggestionList.SelectedItems?.Add(suggestionItemSource[selectionEnd]);
+                suggestionList.SelectedItems.Add(suggestionItemSource[selectionEnd]);
                 return;
             }
 
@@ -146,14 +144,14 @@ namespace BlackPearl.Controls.CoreLibrary
             if ((selectionStart > selectionEnd && newIndex > selectionEnd)
                 || (selectionStart < selectionEnd && newIndex < selectionEnd))
             {
-                suggestionList.SelectedItems?.Remove(suggestionItemSource[selectionEnd]);
+                suggestionList.SelectedItems.Remove(suggestionItemSource[selectionEnd]);
                 suggestionList.SetSelectionEnd(newIndex);
                 return;
             }
 
             //Otherwise, selection is growing, add current element to selected items list
             suggestionList.SetSelectionEnd(newIndex);
-            suggestionList.SelectedItems?.Add(suggestionItemSource[newIndex]);
+            suggestionList.SelectedItems.Add(suggestionItemSource[newIndex]);
         }
 
         [Flags]
@@ -167,10 +165,10 @@ namespace BlackPearl.Controls.CoreLibrary
         #endregion
 
         #region RichTextBox
-        public static string GetCurrentText(this RichTextBox richTextBox) => GetCurrentRunBlock(richTextBox)?.Text;
+        public static string? GetCurrentText(this RichTextBox richTextBox) => GetCurrentRunBlock(richTextBox)?.Text;
         public static void ResetCurrentText(this RichTextBox richTextBox)
         {
-            Run runElement = GetCurrentRunBlock(richTextBox);
+            Run? runElement = GetCurrentRunBlock(richTextBox);
             if (runElement == null)
             {
                 return;
@@ -180,21 +178,21 @@ namespace BlackPearl.Controls.CoreLibrary
         }
         public static void RemoveRunBlocks(this RichTextBox richTextBox)
         {
-            Paragraph paragraph = richTextBox?.GetParagraph();
+            Paragraph? paragraph = richTextBox?.GetParagraph();
             if (paragraph == null)
             {
                 return;
             }
 
-            var runTags = paragraph.Inlines?.Where(r => r is Run)?.ToList();
-            if (runTags?.Any() != true)
+            var runTags = paragraph.Inlines.Where(r => r is Run).ToList();
+            if (!runTags.Any())
             {
                 return;
             }
 
-            for (int i = 0; i < runTags.Count; i++)
+            foreach (Inline t in runTags)
             {
-                paragraph?.Inlines?.Remove(runTags[i]);
+                paragraph.Inlines.Remove(t);
             }
         }
         public static void TryFocus(this RichTextBox richTextBox)
@@ -206,7 +204,10 @@ namespace BlackPearl.Controls.CoreLibrary
                     richTextBox.Focus();
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.Warn("RichTextBox could not be focussed", ex);
+            }
         }
         public static void SetParagraphAsFirstBlock(this RichTextBox richTextBox)
         {
@@ -221,31 +222,38 @@ namespace BlackPearl.Controls.CoreLibrary
                 richTextBox.Document.Blocks.Clear();
                 richTextBox.Document.Blocks.Add(paragraph);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.Warn("Failed to set paragraph as first block", ex);
+            }
         }
 
 
-        public static void AddToParagraph(this RichTextBox richTextBox, object itemToAdd, Func<object, Inline> createInlineElementFunct)
+        public static void AddToParagraph(this RichTextBox richTextBox, object itemToAdd, Func<object, Inline> createInlineElementFunc)
         {
             try
             {
                 richTextBox?.SetParagraphAsFirstBlock();
-                Paragraph paragraph = richTextBox?.GetParagraph();
+                Paragraph? paragraph = richTextBox?.GetParagraph();
                 if (paragraph == null)
                 {
                     return;
                 }
 
-                Inline elementToAdd = createInlineElementFunct(itemToAdd);
+                Inline elementToAdd = createInlineElementFunc(itemToAdd);
+
                 if (paragraph.Inlines.FirstInline == null)
                 {
                     //First element to insert
                     paragraph.Inlines.Add(elementToAdd);
-                    richTextBox.CaretPosition = richTextBox.CaretPosition.DocumentEnd;
+                    if (richTextBox is not null)
+                    {
+                        richTextBox.CaretPosition = richTextBox.CaretPosition.DocumentEnd;
+                    }
                     return;
                 }
 
-                if (richTextBox.CaretPosition.GetAdjacentElement(LogicalDirection.Forward) is Inline inlineToInsertBefore)
+                if (richTextBox?.CaretPosition.GetAdjacentElement(LogicalDirection.Forward) is Inline inlineToInsertBefore)
                 {
                     paragraph.Inlines.InsertBefore(inlineToInsertBefore, elementToAdd);
                     richTextBox.CaretPosition = elementToAdd.ElementEnd;
@@ -254,22 +262,28 @@ namespace BlackPearl.Controls.CoreLibrary
 
                 //Insert at the end
                 paragraph.Inlines.InsertAfter(paragraph.Inlines.LastInline, elementToAdd);
-                richTextBox.CaretPosition = richTextBox.CaretPosition.DocumentEnd;
+                if (richTextBox is not null)
+                {
+                    richTextBox.CaretPosition = richTextBox.CaretPosition.DocumentEnd;
+                }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.Warn("Failed to add item to paragraph", ex);
+            }
         }
         public static void ClearParagraph(this RichTextBox richTextBox)
         {
-            richTextBox?.GetParagraph()?.Inlines?.Clear();
+            richTextBox?.GetParagraph()?.Inlines.Clear();
             richTextBox?.SetParagraphAsFirstBlock();
         }
 
         public static bool DragDropAdjustSelection(this RichTextBox richTextBox, Point position)
         {
             TextPointer textPointer = richTextBox.GetPositionFromPoint(position, true);
-            int EndOffset = new TextRange(textPointer, richTextBox.Selection.End).Text.Length;
-            int StartOffset = new TextRange(textPointer, richTextBox.Selection.Start).Text.Length;
-            if ((EndOffset == 0 || StartOffset == 0) && richTextBox.Selection.Text.Length > 0)
+            int endOffset = new TextRange(textPointer, richTextBox.Selection.End).Text.Length;
+            int startOffset = new TextRange(textPointer, richTextBox.Selection.Start).Text.Length;
+            if ((endOffset == 0 || startOffset == 0) && richTextBox.Selection.Text.Length > 0)
             {
                 //if its on the same richTextBox and the drag and drop position is the same as actual, then we do not perform OnDragDrop.
                 return false;
@@ -281,13 +295,15 @@ namespace BlackPearl.Controls.CoreLibrary
             richTextBox.Focus();
             return true;
         }
-        public static DataObject GetDragDropObject(this RichTextBox richTextBox)
+        public static DataObject? GetDragDropObject(this RichTextBox richTextBox)
         {
             var objectToSend = richTextBox.GetSelectedObjects();
             if ((objectToSend?.Length ?? 0) == 0)
+            {
                 return null;
+            }
 
-            DataObject data = new DataObject();
+            DataObject data = new();
             data.SetData("Object", objectToSend);
             data.SetText(richTextBox.GetSelectedText());
             return data;
@@ -306,31 +322,31 @@ namespace BlackPearl.Controls.CoreLibrary
             }
         }
 
-        public static Run GetCurrentRunBlock(this RichTextBox richTextBox) => richTextBox?.CaretPosition?.Parent as Run;
-        public static Paragraph GetParagraph(this RichTextBox richTextBox) => richTextBox?.Document?.Blocks?.FirstBlock as Paragraph;
-        public static object GetNextItemTag(this RichTextBox richTextBox)
+        public static Run? GetCurrentRunBlock(this RichTextBox richTextBox) => richTextBox?.CaretPosition?.Parent as Run;
+        public static Paragraph? GetParagraph(this RichTextBox richTextBox) => richTextBox?.Document?.Blocks.FirstBlock as Paragraph;
+        public static object? GetNextItemTag(this RichTextBox richTextBox)
             => ((richTextBox.CaretPosition.GetAdjacentElement(LogicalDirection.Forward) as InlineUIContainer)?.Child as FrameworkElement)?.Tag;
         public static string GetSelectedText(this RichTextBox richTextBox)
         {
-            string SelectedText = string.Join(string.Empty,
-                    richTextBox.GetParagraph().Inlines
-                                .Where(inline => (inline.ContentStart.CompareTo(richTextBox.Selection.Start) >= 0 && inline.ContentEnd.CompareTo(richTextBox.Selection.End) <= 0))
-                                .Select(inline => inline.GetText()));
+            string selectedText = string.Join(string.Empty,
+                    richTextBox.GetParagraph()?.Inlines
+                                .Where(inline => inline.ContentStart.CompareTo(richTextBox.Selection.Start) >= 0 && inline.ContentEnd.CompareTo(richTextBox.Selection.End) <= 0)
+                                .Select(inline => inline.GetText()) ?? Enumerable.Empty<string>());
 
             //Dont forget to add CurrentText
-            SelectedText += richTextBox.Selection.Text.Trim();
-            return SelectedText;
+            selectedText += richTextBox.Selection.Text.Trim();
+            return selectedText;
         }
 
-        public static object[] GetSelectedObjects(this RichTextBox richTextBox)
+        public static object?[]? GetSelectedObjects(this RichTextBox richTextBox)
             => richTextBox?.GetParagraph()?.Inlines
-                                .Where(inline => (inline.ContentStart.CompareTo(richTextBox.Selection.Start) >= 0 && inline.ContentEnd.CompareTo(richTextBox.Selection.End) <= 0))
+                                .Where(inline => inline.ContentStart.CompareTo(richTextBox.Selection.Start) >= 0 && inline.ContentEnd.CompareTo(richTextBox.Selection.End) <= 0)
                                 .Select(inline => inline.GetObject())
                                 .Where(i => i != null).ToArray();
 
-        public static TextBlock GetTextBlock(this Inline inline)
-        => ((inline as InlineUIContainer)?.Child as TextBlock);
-        public static object GetObject(this Inline inline)
+        public static TextBlock? GetTextBlock(this Inline inline)
+        => (inline as InlineUIContainer)?.Child as TextBlock;
+        public static object? GetObject(this Inline inline)
            => GetTextBlock(inline)?.Tag;
         public static string GetText(this Inline inline)
             => GetTextBlock(inline)?.Text ?? string.Empty;
@@ -360,7 +376,10 @@ namespace BlackPearl.Controls.CoreLibrary
                 popupElement.IsOpen = valueToSet;
                 postAction?.Invoke();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.Warn("Show or hide of popup failed", ex);
+            }
         }
 
         #endregion
@@ -369,10 +388,10 @@ namespace BlackPearl.Controls.CoreLibrary
         public static bool HasAnyExactMatch(this IEnumerable<object> source, string itemString, ILookUpContract contract, object sender)
             => source?.Any(i => contract?.IsItemEqualToString(sender, i, itemString) == true) == true;
 
-        public static object GetExactMatch(this IEnumerable<object> source, string itemString, ILookUpContract contract, object sender)
+        public static object? GetExactMatch(this IEnumerable<object> source, string itemString, ILookUpContract contract, object sender)
             => source?.FirstOrDefault(i => contract?.IsItemEqualToString(sender, i, itemString) == true);
 
-        public static IEnumerable<object> GetSuggestions(this IEnumerable<object> source, string itemString, ILookUpContract contract, object sender)
+        public static IEnumerable<object>? GetSuggestions(this IEnumerable<object> source, string itemString, ILookUpContract contract, object sender)
             => source?.Where(i => contract?.IsItemMatchingSearchString(sender, i, itemString) == true);
         #endregion
     }

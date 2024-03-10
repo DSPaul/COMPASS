@@ -9,7 +9,7 @@ using System.Text;
 
 namespace COMPASS.Tools
 {
-    public static partial class ExtensionMethods
+    public static class ExtensionMethods
     {
         #region ObservableCollection Extensions
         /// <summary>
@@ -41,12 +41,15 @@ namespace COMPASS.Tools
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
-        /// <param name="range"></param>
+        /// <param name="toAdd"></param>
         public static void AddRange<T>(
         this ObservableCollection<T> collection, IEnumerable<T> toAdd)
         {
             if (toAdd == null) throw new ArgumentNullException(nameof(toAdd));
-            foreach (var i in toAdd) collection.Add(i);
+            foreach (var i in toAdd)
+            {
+                collection.Add(i);
+            }
         }
 
         /// <summary>
@@ -82,36 +85,91 @@ namespace COMPASS.Tools
         #endregion
 
         #region ReflectionExtentions
-        //From BlackPearl
-        public static object GetPropertyValue(this object obj, string path)
+        private static PropertyInfo? GetPropertyInfo(this object obj, string propName)
         {
-            if (string.IsNullOrEmpty(path) || obj == null)
+            if (obj is null) throw new ArgumentNullException(nameof(obj));
+            if (String.IsNullOrWhiteSpace(propName)) throw new ArgumentNullException(nameof(propName), propName);
+
+            Type? type = obj.GetType();
+
+            //keep going up the inheritance tree to find it
+            while (type is not null)
+            {
+                try
+                {
+                    PropertyInfo? info = type.GetProperty(propName);
+                    if (info is not null) return info;
+                }
+                catch (AmbiguousMatchException) { }
+
+                type = type.BaseType;
+            }
+            return null;
+        }
+        public static object? GetPropertyValue(this object obj, string propName)
+        {
+            var propInfo = obj.GetPropertyInfo(propName) ?? throw new MissingFieldException(propName);
+            return propInfo.GetValue(obj);
+        }
+
+        public static object? GetDeepPropertyValue(this object obj, string fullPropName)
+        {
+            if (String.IsNullOrEmpty(fullPropName))
             {
                 return obj;
             }
 
-            int dotIndex = path.IndexOf('.');
-            if (dotIndex < 0)
+            string[] propNames = fullPropName.Split('.');
+            object? result = obj;
+            foreach (string propName in propNames)
             {
-                return GetValue(obj, path);
+                result = result?.GetPropertyValue(propName);
             }
-
-            obj = GetValue(obj, path.Substring(0, dotIndex + 1));
-            path = path.Remove(0, dotIndex);
-
-            return obj.GetPropertyValue(path);
+            return result;
         }
 
-        //From BlackPearl
-        private static object GetValue(object obj, string propertyName)
+        public static void SetProperty(this object obj, string propName, object value)
         {
-            PropertyInfo propInfo = obj.GetType().GetProperty(propertyName);
-            if (propInfo == null)
-            {
-                return null;
-            }
+            var propInfo = obj.GetPropertyInfo(propName);
 
-            return propInfo.GetValue(obj);
+            if (propInfo is not null && propInfo.CanWrite)
+            {
+                propInfo.SetValue(obj, value);
+            }
+        }
+
+        #endregion
+
+        #region EnumerableExtensions
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<T> l, string method = "dfs") where T : IHasChildren<T>
+        {
+            var result = l.ToList();
+
+            switch (method)
+            {
+                //Breadth first search
+                case "bfs":
+                    {
+                        for (int i = 0; i < result.Count; i++)
+                        {
+                            T parent = result[i];
+                            result.AddRange(parent.Children);
+                            yield return parent;
+                        }
+                        break;
+                    }
+                //Depth first search (pre-order)
+                case "dfs":
+                    {
+                        for (int i = 0; i < result.Count; i++)
+                        {
+                            T parent = result[i];
+                            result.InsertRange(i + 1, parent.Children);
+                            yield return parent;
+                        }
+                        break;
+                    }
+            }
         }
         #endregion
     }

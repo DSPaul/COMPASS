@@ -7,7 +7,7 @@ namespace COMPASS.Models
     {
         public TreeViewNode(Tag tag)
         {
-            Tag = tag;
+            _tag = tag;
             Children = new(tag.Children.Select(childTag => new TreeViewNode(childTag)));
             Expanded = tag.IsGroup;
         }

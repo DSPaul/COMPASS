@@ -4,7 +4,7 @@
                     xmlns:converters ="clr-namespace:COMPASS.Converters"
                     xmlns:models ="clr-namespace:COMPASS.Models"
                     xmlns:tools="clr-namespace:COMPASS.Tools"
-                    xmlns:BlackPearl="clr-namespace:BlackPearl.Controls.CoreLibrary">
+                    xmlns:multiSelectCombobox="clr-namespace:COMPASS.Resources.Controls.MultiSelectCombobox">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Themes/DarkTheme.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -12,6 +12,10 @@
     <!--Converters-->
     <converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
     <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
+    <converters:PlusOneConverter x:Key="PlusOneConverter"/>
+    <converters:UriToBitmapConverter x:Key="UriToBitmapConverter"/>
+    <converters:EqualityToVisibilityConverter x:Key="ShowInStepConverter"/>
+    <converters:NegateConverter x:Key="NegateConverter"/>
 
     <!--TextBlock Style-->
     <Style TargetType="{x:Type TextBlock}">
@@ -673,6 +677,8 @@
         </Setter>
     </Style>
 
+    <!--#region RadioButton-->
+    
     <Style TargetType="{x:Type RadioButton}">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="{StaticResource ButtonBackground}"/>
@@ -764,6 +770,23 @@
         </Setter>
     </Style>
 
+    <ControlTemplate TargetType="RadioButton" x:Key="BigRadioButton">
+        <Border x:Name="Border" HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+        Background="{StaticResource CardBackground}" Margin="20" CornerRadius="10" 
+        BorderBrush="{StaticResource AccentColorMuted}">
+            <ContentPresenter Content="{TemplateBinding Content}" 
+                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="true">
+                <Setter TargetName="Border" Property="BorderThickness" Value="4"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--#endregion-->
+    
     <!--#region Combobox Style-->
     <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
         <Grid>
@@ -849,7 +872,7 @@
         </Setter>
     </Style>
 
-    <ControlTemplate TargetType="BlackPearl:MultiSelectCombobox" x:Key="Default">
+    <ControlTemplate TargetType="multiSelectCombobox:MultiSelectCombobox" x:Key="Default">
         <Grid>
             <ToggleButton Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}"
                 Focusable="false" IsChecked="{Binding Path=IsOpen,Mode=OneWayToSource,ElementName=popup}"
@@ -875,6 +898,7 @@
             </Popup>
         </Grid>
     </ControlTemplate>
+    
     <!--SimpleStyles: ComboBoxItem-->
     <Style x:Key="{x:Type ComboBoxItem}" TargetType="{x:Type ComboBoxItem}">
         <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -982,6 +1006,26 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <ControlTemplate TargetType="CheckBox" x:Key="BorderedCheckbox">
+        <Grid>
+            <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Fill="Transparent"
+        Panel.ZIndex="1"/>
+            <!-- Rect in front so only templated checkbox can be clicked, because templatebinding is not two way-->
+            <Border x:Name="Border" CornerRadius="5" Panel.ZIndex="0">
+                <CheckBox Content="{TemplateBinding Content}" IsChecked="{TemplateBinding IsChecked}" 
+                  Margin="10" Focusable="False"/>
+            </Border>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="true">
+                <Setter TargetName="Border" Property="Background" Value="{StaticResource AccentColorMuted}"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="false">
+                <Setter TargetName="Border" Property="Background" Value="{StaticResource ButtonBackground}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
     <!--#endregion-->
     
     <!--#region DatePicker-->
@@ -1169,6 +1213,62 @@
             </StackPanel>
         </Border>
     </HierarchicalDataTemplate>
+
+    <Style x:Key="ExpandCollapseToggleStyle" TargetType="ToggleButton">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid
+                          Width="15"
+                          Height="13"
+                          Background="Transparent">
+                        <Path x:Name="ExpandPath"
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Center" 
+                            Margin="1,1,1,1"
+                            Fill="Gray"
+                            Data="M 4 0 L 8 4 L 4 8 Z"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked"
+                                Value="True">
+                            <Setter Property="Data"
+                                TargetName="ExpandPath"
+                                Value="M 0 4 L 8 4 L 4 8 Z"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ControlTemplate TargetType="{x:Type TreeViewItem}" x:Key="WideTreeViewItem">
+        <StackPanel>
+            <Border Name="Bd"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Padding="{TemplateBinding Padding}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="19" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <ToggleButton x:Name="Expander"
+                      Style="{StaticResource ExpandCollapseToggleStyle}"
+                      IsChecked="{Binding Path=IsExpanded,
+                                  RelativeSource={RelativeSource TemplatedParent}}"
+                      ClickMode="Press"/>
+                    <ContentPresenter x:Name="PART_Header"
+                    Grid.Column="1"
+                        ContentSource="Header"
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                </Grid>
+            </Border>
+            <ItemsPresenter x:Name="ItemsHost" Margin="19,0,0,0" />
+        </StackPanel>
+    </ControlTemplate>
     <!--#endregion-->
 
     <Style TargetType="materialDesign:PackIcon">
@@ -1177,6 +1277,10 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Width" Value="20"/>
         <Setter Property="Height" Value="20"/>
+    </Style>
+
+    <Style TargetType="materialDesign:PackIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}" x:Key="ToolTipIcon">
+        <Setter Property="ToolTipService.InitialShowDelay" Value="0"/>
     </Style>
 
     <!--#region Progressbar-->

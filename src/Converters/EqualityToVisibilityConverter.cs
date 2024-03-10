@@ -14,10 +14,17 @@ namespace COMPASS.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value.Equals(parameter))
-                return Visibility.Visible;
-            return Visibility.Collapsed;
+            bool showOnEqual = true;
+            // if parameter starts with '!' like "!value" then is should be inverted
+            if (parameter is string s && s.StartsWith('!'))
+            {
+                showOnEqual = false;
+                parameter = s[1..];
+            }
+            return value?.Equals(parameter) == showOnEqual ? Visibility.Visible : Visibility.Collapsed;
         }
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            => throw new NotImplementedException();
     }
 }

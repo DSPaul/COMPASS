@@ -2,7 +2,7 @@
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace BarcodeReaderTool
+namespace COMPASS.Tools.BarcodeReader
 {
     // based on https://github.com/FrancescoBonizzi/WebcamControl-WPF-With-OpenCV
     public static class BitmapExtensions
@@ -26,11 +26,11 @@ namespace BarcodeReaderTool
 
     public class QRCodeReadEventArgs : EventArgs
     {
-        public QRCodeReadEventArgs(string qRCodeData)
+        public QRCodeReadEventArgs(string? qRCodeData)
         {
             QRCodeData = qRCodeData;
         }
 
-        public string QRCodeData { get; }
+        public string? QRCodeData { get; }
     }
 }

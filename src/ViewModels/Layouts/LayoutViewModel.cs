@@ -1,6 +1,7 @@
 ﻿using COMPASS.Models;
 using COMPASS.ViewModels.Import;
 using GongSolutions.Wpf.DragDrop;
+using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -23,7 +24,7 @@ namespace COMPASS.ViewModels.Layouts
         {
             layout ??= (Layout)Properties.Settings.Default.PreferedLayout;
             Properties.Settings.Default.PreferedLayout = (int)layout;
-            LayoutViewModel newLayout = layout switch
+            LayoutViewModel? newLayout = layout switch
             {
                 Layout.Home => new HomeLayoutViewModel(),
                 Layout.List => new ListLayoutViewModel(),
@@ -31,24 +32,25 @@ namespace COMPASS.ViewModels.Layouts
                 Layout.Tile => new TileLayoutViewModel(),
                 _ => null
             };
+            if (newLayout == null) throw new NotImplementedException(layout.ToString());
             return newLayout;
         }
 
-        public void RaisePreferencesChanged() => RaisePropertyChanged(nameof(DoVirtualization));
+        public void UpdateDoVirtualization() => RaisePropertyChanged(nameof(DoVirtualization));
 
         #region Properties
 
         public CodexViewModel CodexVM { get; init; } = new();
 
         //Selected File
-        private Codex _selectedCodex;
-        public Codex SelectedCodex
+        private Codex? _selectedCodex;
+        public Codex? SelectedCodex
         {
             get => _selectedCodex;
             set => SetProperty(ref _selectedCodex, value);
         }
 
-        public virtual bool DoVirtualization { get; }
+        public abstract bool DoVirtualization { get; }
 
         //Set Type of view
         public Layout LayoutType { get; init; }
@@ -67,7 +69,7 @@ namespace COMPASS.ViewModels.Layouts
             }
         }
 
-        public void Drop(IDropInfo dropInfo)
+        public async void Drop(IDropInfo dropInfo)
         {
             if (dropInfo.Data is DataObject data)
             {
@@ -76,28 +78,31 @@ namespace COMPASS.ViewModels.Layouts
                 var folders = paths.Cast<string>().Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
                 var files = paths.Cast<string>().Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
 
-                if (!folders.Any() && !files.Any()) return;
-
-                //Check if its a cmpss file, do import if so
-                if (!folders.Any() && files.Count == 1 && files.First().EndsWith(Constants.COMPASSFileExtension))
-                {
-                    _ = MainViewModel.CollectionVM.Import(files.First());
-                    return;
-                }
-
-                //else check for folder import
+                //check for folder import
                 if (folders.Any())
                 {
-                    ImportFolderViewModel folderImportVM = new()
+                    ImportFolderViewModel folderImportVM = new(manuallyTriggered: true)
                     {
-                        FolderNames = folders.ToList(),
-                        FileNames = files.ToList()
+                        RecursiveDirectories = folders,
+                        Files = files
                     };
-                    files = folderImportVM.GetPathsFromFolders();
+                    await folderImportVM.Import();
                 }
-
-                ImportViewModel.Stealth = false;
-                ImportViewModel.ImportFiles(files.ToList());
+                //If no files or folders, to nothing
+                else if (!files.Any())
+                {
+                    return;
+                }
+                //Check if its a cmpss file, do import if so
+                else if (files.Count == 1 && files.First().EndsWith(Constants.SatchelExtension))
+                {
+                    await MainViewModel.CollectionVM.ImportSatchelAsync(files.First());
+                }
+                //If none of the above, just import the files
+                else
+                {
+                    await ImportViewModel.ImportFilesAsync(files);
+                }
             }
         }
     }
