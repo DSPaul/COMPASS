@@ -7,10 +7,11 @@ namespace COMPASS.Models
 {
     public class CheckableTreeNode<T> : ObservableObject, IHasChildren<CheckableTreeNode<T>> where T : class, IHasChildren<T>
     {
-        public CheckableTreeNode(T item)
+        public CheckableTreeNode(T item, bool containerOnly)
         {
             _item = item;
-            Children = new(item.Children.Select(child => new CheckableTreeNode<T>(child)));
+            ContainerOnly = containerOnly;
+            Children = new(item.Children.Select(child => new CheckableTreeNode<T>(child, containerOnly)));
 
             Children.CollectionChanged += (_, _) =>
             {
@@ -29,6 +30,12 @@ namespace COMPASS.Models
             set => SetProperty(ref _item, value);
         }
 
+        /// <summary>
+        /// Indicates that the node only exists as a container for its children,
+        /// cannot be checked on it's own. Will be unchecked if all children are unchecked.
+        /// </summary>
+        public bool ContainerOnly { get; set; }
+
         private bool? _isChecked = false;
         public bool? IsChecked
         {
@@ -41,16 +48,16 @@ namespace COMPASS.Models
                     //Propagate changes upward
                     Parent?.Update();
                     //propagate changes downwards
-                    if (value != null)
-                    {
-                        foreach (var child in Children)
-                        {
-                            child.IsChecked = value;
-                        }
-                    }
+                    PropagateDown(value);
                 }
             }
         }
+
+        /// <summary>
+        /// Used to set the checked property without triggering updates up and down
+        /// </summary>
+        /// <param name="value"></param>
+        private void InternalSetChecked(bool? value) => SetProperty(ref _isChecked, value, nameof(IsChecked));
 
         private ObservableCollection<CheckableTreeNode<T>> _children = new();
         public ObservableCollection<CheckableTreeNode<T>> Children
@@ -69,21 +76,41 @@ namespace COMPASS.Models
 
         public CheckableTreeNode<T>? Parent { get; set; }
 
+        public void PropagateDown(bool? isChecked)
+        {
+            if (isChecked != null)
+            {
+                InternalSetChecked(isChecked);
+                foreach (var child in Children)
+                {
+                    child.PropagateDown(isChecked);
+                }
+            }
+        }
+
         private void Update()
         {
+            bool? newValue = _isChecked;
             if (Children.All(child => child.IsChecked == true))
             {
-                IsChecked = true;
+                newValue = true;
             }
             else if (Children.All(child => child.IsChecked == false))
             {
-                IsChecked = false;
+                if (ContainerOnly)
+                {
+                    newValue = false;
+                }
+                else newValue ??= true; //if it was null (partial check), become full check
             }
             else
             {
-                IsChecked = null;
+                newValue = null;
             }
+
+            InternalSetChecked(newValue);
             Updated?.Invoke(IsChecked);
+            Parent?.Update();
         }
 
         public event Action<bool?>? Updated;

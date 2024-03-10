@@ -120,12 +120,12 @@ namespace COMPASS.ViewModels.Import
 
                 //Build the checkable folder Tree
                 IEnumerable<Folder> folderObjects = RecursiveDirectories.Select(f => new Folder(f));
-                CheckableFolders = folderObjects.Select(f => new CheckableTreeNode<Folder>(f)).ToList();
+                CheckableFolders = folderObjects.Select(f => new CheckableTreeNode<Folder>(f, containerOnly: false)).ToList();
 
                 foreach (Folder folder in ExistingFolders)
                 {
                     //first make a checkable Folder with all the subfolders, then uncheck those not in the original
-                    var checkableFolder = new CheckableTreeNode<Folder>(new Folder(folder.FullPath));
+                    var checkableFolder = new CheckableTreeNode<Folder>(new Folder(folder.FullPath), containerOnly: false);
                     var chosenSubFolderPaths = folder.SubFolders.Flatten().Select(sf => sf.FullPath).ToList();
                     foreach (var subFolder in checkableFolder.Children.Flatten())
                     {

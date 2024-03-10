@@ -288,7 +288,7 @@
                                 <StackPanel>
                                     <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}" Margin="5"
                                             Command="{Binding ImportTagsFromOtherCollectionsCommand}" HorizontalContentAlignment="Left">
-                                        <TextBlock Text="From Another collection..." TextWrapping="Wrap"/>
+                                        <TextBlock Text="From another collection..." TextWrapping="Wrap"/>
                                     </Button>
                                     <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}" Margin="5,0,5,5"
                                             Command="{Binding ImportTagsFromSatchelCommand}" HorizontalContentAlignment="Left">

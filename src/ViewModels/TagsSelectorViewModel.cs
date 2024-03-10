@@ -57,15 +57,16 @@ namespace COMPASS.ViewModels
                     //load if not done yet
                     if (!_collection.AllTags.Any()) _collection.LoadTags();
                     //convert to nodes
-                    _tagsRoot = new CheckableTreeNode<Tag>(new Tag())
+                    _tagsRoot = new CheckableTreeNode<Tag>(new Tag(), containerOnly: true)
                     {
                         Children = new(_collection.RootTags
-                            .Select(t => new CheckableTreeNode<Tag>(t)))
+                            .Select(t => new CheckableTreeNode<Tag>(t, containerOnly: t.IsGroup)))
                     };
-                    //init expanded and checked
+                    //init expanded, checked and containr only
                     foreach (var node in _tagsRoot.Children.Flatten())
                     {
                         node.Expanded = node.Item.IsGroup;
+                        node.ContainerOnly = node.Item.IsGroup;
                         node.IsChecked = false;
                     }
                     _tagsRoot.Updated += _ => RaisePropertyChanged(nameof(ImportCount));
