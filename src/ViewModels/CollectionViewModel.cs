@@ -245,10 +245,14 @@ namespace COMPASS.ViewModels
                 return null;
             }
 
-            var newCollection = CreateCollection(dirName);
-
-            if (newCollection is null)
+            CodexCollection newCollection;
+            try
             {
+                newCollection = CreateCollection(dirName);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Logger.Warn("Failed to create the collection", ex);
                 return null;
             }
 
@@ -264,11 +268,19 @@ namespace COMPASS.ViewModels
             return null;
         }
 
-        public CodexCollection? CreateCollection(string dirName)
+        /// <summary>
+        /// Creates a new collection
+        /// </summary>
+        /// <param name="dirName"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public CodexCollection CreateCollection(string dirName)
         {
             if (!IsLegalCollectionName(dirName))
             {
-                return null;
+                string msg = $"{dirName} is not a valid collection name";
+                Logger.Warn(msg);
+                throw new InvalidOperationException(msg);
             }
 
             CodexCollection newCollection = new(dirName);

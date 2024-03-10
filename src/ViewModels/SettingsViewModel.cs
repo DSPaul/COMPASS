@@ -591,6 +591,10 @@ namespace COMPASS.ViewModels
 
         private ActionCommand? _changeToNewDataPathCommand;
         public ActionCommand ChangeToNewDataPathCommand => _changeToNewDataPathCommand ??= new(ChangeToNewDataPath);
+
+        /// <summary>
+        /// Sets the data path to <see cref="NewDataPath"/> and restarts the app
+        /// </summary>
         public void ChangeToNewDataPath()
         {
             MainViewModel.CollectionVM.CurrentCollection.Save();
