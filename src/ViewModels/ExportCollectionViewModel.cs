@@ -47,7 +47,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand _applyActiveFiltesCommand;
+        private ActionCommand? _applyActiveFiltesCommand;
         public ActionCommand ApplyActiveFiltersCommand => _applyActiveFiltesCommand ??=
             new(ApplyActiveFilters, () => MainViewModel.CollectionVM.FilterVM.HasActiveFilters);
         private void ApplyActiveFilters()
