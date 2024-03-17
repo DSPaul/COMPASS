@@ -1,10 +1,11 @@
 # CHANGELOG
-## COMPASS v1.7.1 (17 March 2024)
+
+## COMPASS v1.7.1 (17 March 2024)
 
 ### Fixes
 
 - Fix crash on startup on fresh installs
-## COMPASS v1.7.0 (25 February 2024)
+## COMPASS v1.7.0 (10 March 2024)
 
 ### New Features
 
