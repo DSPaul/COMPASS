@@ -27,6 +27,9 @@ namespace COMPASS.ViewModels
             _filterVM = new(new());
             _tagsVM = new(new("__tmp"), _filterVM);
 
+            //Create Collections Directory
+            Directory.CreateDirectory(CodexCollection.CollectionsPath);
+
             //Get all collections by folder name
             AllCodexCollections = new(Directory
                 .GetDirectories(CodexCollection.CollectionsPath)
