@@ -13,48 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Media\CompassLogo.png" />
-    <None Remove="gs\gsdll64.dll" />
-    <None Remove="gs\gsdll64.lib" />
-    <None Remove="gs\gswin64.exe" />
-    <None Remove="gs\gswin64c.exe" />
-  </ItemGroup>
-
-  <ItemGroup>
 
     <Content Include="COMPASS.ico" />
 
-    <Content Include="gs\gsdll64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Content Include="gs\gsdll64.lib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Content Include="gs\gswin64.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Content Include="gs\gswin64c.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Resource Include="Media\CompassLogo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-
-    <Content Include="Media\CoverPlaceholder.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
     <None Include="..\.editorconfig" Link=".editorconfig" />
-
-    <Resource Include="Media\LoadingAnimation.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-
-    <SplashScreen Include="Media\CompassFull.png" />
 
   </ItemGroup>
 
