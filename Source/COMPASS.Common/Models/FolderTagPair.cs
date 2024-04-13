@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Xml.Serialization;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     public class FolderTagPair : ObservableObject
     {

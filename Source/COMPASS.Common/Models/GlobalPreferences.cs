@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Xml.Serialization;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
 
     /// <summary>

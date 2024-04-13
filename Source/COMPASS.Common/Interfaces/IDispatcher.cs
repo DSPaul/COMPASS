@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace COMPASS.Interfaces
+namespace COMPASS.Common.Interfaces
 {
     public interface IDispatcher
     {

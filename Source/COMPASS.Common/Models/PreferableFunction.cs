@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     /// <summary>
     /// Wrapper for Func with param T and bool return that should be tried in a set order until one succeeds

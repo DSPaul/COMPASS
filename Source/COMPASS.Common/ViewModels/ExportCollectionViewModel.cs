@@ -1,7 +1,7 @@
-﻿using COMPASS.Commands;
-using COMPASS.Models;
-using COMPASS.Services;
-using COMPASS.Tools;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
 using Ionic.Zip;
 using Microsoft.Win32;
 using System;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public class ExportCollectionViewModel : WizardViewModel
     {

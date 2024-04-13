@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace COMPASS.Tools
+namespace COMPASS.Common.Tools
 {
     public class BindingProxy : Freezable
     {

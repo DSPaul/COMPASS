@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace COMPASS.Tools
+namespace COMPASS.Common.Tools
 {
     public static class Reflection
     {

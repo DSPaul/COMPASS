@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace COMPASS.Converters
+namespace COMPASS.Common.Converters
 {
     public class EqualityConverter : IMultiValueConverter
     {

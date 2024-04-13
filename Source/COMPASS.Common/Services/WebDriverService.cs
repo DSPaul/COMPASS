@@ -1,4 +1,4 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Common.Tools;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace COMPASS.Services
+namespace COMPASS.Common.Services
 {
     public static class WebDriverService
     {

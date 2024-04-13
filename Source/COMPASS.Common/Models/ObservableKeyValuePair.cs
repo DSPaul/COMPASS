@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     public class ObservableKeyValuePair<K, V> : ObservableObject
     {

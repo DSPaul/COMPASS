@@ -1,11 +1,11 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Common.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Serialization;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     /// <summary>
     /// Contains all the Info on a Collection that needs to be serialized

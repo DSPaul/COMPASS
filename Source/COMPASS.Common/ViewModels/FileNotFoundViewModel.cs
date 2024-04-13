@@ -1,14 +1,14 @@
-﻿using COMPASS.Commands;
-using COMPASS.Models;
-using COMPASS.Services;
-using COMPASS.Tools;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
 using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Linq;
 using System.Media;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public class FileNotFoundViewModel
     {

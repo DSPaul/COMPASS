@@ -1,4 +1,4 @@
-﻿namespace COMPASS.ViewModels.Layouts
+﻿namespace COMPASS.Common.ViewModels.Layouts
 {
     public class TileLayoutViewModel : LayoutViewModel
     {

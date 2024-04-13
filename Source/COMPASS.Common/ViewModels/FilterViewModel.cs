@@ -1,7 +1,7 @@
-﻿using COMPASS.Commands;
-using COMPASS.Models;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
 using COMPASS.Properties;
-using COMPASS.Tools;
+using COMPASS.Common.Tools;
 using FuzzySharp;
 using GongSolutions.Wpf.DragDrop;
 using System;
@@ -13,7 +13,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public class FilterViewModel : ObservableObject, IDropTarget
     {

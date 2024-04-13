@@ -3,7 +3,7 @@ using OpenCvSharp.Extensions;
 using System;
 using ZXing.Common;
 
-namespace COMPASS.Tools.BarcodeReader
+namespace COMPASS.Common.Tools.BarcodeReader
 {
     // based on https://github.com/FrancescoBonizzi/WebcamControl-WPF-With-OpenCV
     public class OpenCVQRCodeReader

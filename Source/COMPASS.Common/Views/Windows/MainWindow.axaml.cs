@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 
-namespace COMPASS.Views;
+namespace COMPASS.Common.Views.Windows;
 
 public partial class MainWindow : Window
 {

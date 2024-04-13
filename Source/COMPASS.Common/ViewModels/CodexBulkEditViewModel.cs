@@ -1,13 +1,13 @@
-﻿using COMPASS.Commands;
-using COMPASS.Models;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
 using COMPASS.Resources.Controls.MultiSelectCombobox;
-using COMPASS.Tools;
+using COMPASS.Common.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public class CodexBulkEditViewModel : ViewModelBase, IEditViewModel
     {

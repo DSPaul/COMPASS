@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 
-namespace COMPASS.Views;
+namespace COMPASS.Common.Views;
 
 public partial class MainView : UserControl
 {

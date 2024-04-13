@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     public class CheckableTreeNode<T> : ObservableObject, IHasChildren<CheckableTreeNode<T>> where T : class, IHasChildren<T>
     {

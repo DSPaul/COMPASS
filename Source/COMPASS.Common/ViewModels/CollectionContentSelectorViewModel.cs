@@ -1,14 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Commands;
-using COMPASS.Models;
-using COMPASS.Tools;
+using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
+using COMPASS.Common.Tools;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     /// <summary>
     /// Class with logic to select only a subset of the content in a collection for import and export purposes

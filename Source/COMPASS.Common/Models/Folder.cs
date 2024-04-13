@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     public class Folder : ObservableObject, IHasChildren<Folder>
     {

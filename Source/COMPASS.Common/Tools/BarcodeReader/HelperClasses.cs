@@ -2,7 +2,7 @@
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace COMPASS.Tools.BarcodeReader
+namespace COMPASS.Common.Tools.BarcodeReader
 {
     // based on https://github.com/FrancescoBonizzi/WebcamControl-WPF-With-OpenCV
     public static class BitmapExtensions

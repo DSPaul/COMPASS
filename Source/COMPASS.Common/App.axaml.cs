@@ -3,8 +3,8 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 
-using COMPASS.ViewModels;
-using COMPASS.Views;
+using COMPASS.Common.ViewModels;
+using COMPASS.Common.Views;
 
 namespace COMPASS.Common;
 

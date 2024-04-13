@@ -1,6 +1,6 @@
-﻿using COMPASS.Models;
-using COMPASS.Services;
-using COMPASS.Tools;
+﻿using COMPASS.Common.Models;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels.Sources
+namespace COMPASS.Common.ViewModels.Sources
 {
     public class ISBNSourceViewModel : SourceViewModel
     {

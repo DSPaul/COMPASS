@@ -1,6 +1,6 @@
 ﻿using Avalonia.Threading;
 using System;
-namespace COMPASS.Services
+namespace COMPASS.Common.Services
 {
     public class ApplicationDispatcher : Interfaces.IDispatcher
     {

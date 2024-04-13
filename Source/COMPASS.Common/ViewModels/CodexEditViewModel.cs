@@ -1,9 +1,9 @@
-﻿using COMPASS.Commands;
-using COMPASS.Models;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
 using COMPASS.Resources.Controls.MultiSelectCombobox;
-using COMPASS.Services;
-using COMPASS.Tools;
-using COMPASS.Windows;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
+using COMPASS.Common.Views.Windows;
 using GongSolutions.Wpf.DragDrop;
 using Microsoft.Win32;
 using System;
@@ -15,7 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public class CodexEditViewModel : ViewModelBase, IEditViewModel, IDropTarget
     {

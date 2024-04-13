@@ -1,14 +1,14 @@
-﻿using COMPASS.Models;
-using COMPASS.Services;
-using COMPASS.Tools;
-using COMPASS.Windows;
+﻿using COMPASS.Common.Models;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
+using COMPASS.Common.Views.Windows;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace COMPASS.ViewModels.Import
+namespace COMPASS.Common.ViewModels.Import
 {
     public class ImportFolderViewModel : WizardViewModel
     {

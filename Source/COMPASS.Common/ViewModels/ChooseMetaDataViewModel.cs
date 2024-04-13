@@ -1,6 +1,6 @@
-﻿using COMPASS.Models;
-using COMPASS.Services;
-using COMPASS.Tools;
+﻿using COMPASS.Common.Models;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public class ChooseMetaDataViewModel : WizardViewModel
     {

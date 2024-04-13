@@ -1,14 +1,14 @@
-﻿using COMPASS.Models;
-using COMPASS.Services;
-using COMPASS.Tools;
-using COMPASS.Windows;
+﻿using COMPASS.Common.Models;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
+using COMPASS.Common.Views.Windows;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels.Import
+namespace COMPASS.Common.ViewModels.Import
 {
     public static class ImportViewModel
     {

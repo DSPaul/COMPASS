@@ -1,9 +1,9 @@
-﻿using COMPASS.Commands;
+﻿using COMPASS.Common.Commands;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public abstract class WizardViewModel : ViewModelBase
     {

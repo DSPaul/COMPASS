@@ -1,10 +1,10 @@
 ﻿using Autofac;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using COMPASS.Interfaces;
-using COMPASS.Models;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public abstract class ViewModelBase : ObservableObject
     {

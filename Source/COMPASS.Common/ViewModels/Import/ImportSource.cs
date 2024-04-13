@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace COMPASS.ViewModels.Import
+namespace COMPASS.Common.ViewModels.Import
 {
     [Flags]
     public enum ImportSource

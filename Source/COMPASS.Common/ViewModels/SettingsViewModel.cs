@@ -1,12 +1,8 @@
-﻿using AutoUpdaterDotNET;
-using COMPASS.Commands;
-using COMPASS.Models;
-using COMPASS.Services;
-using COMPASS.Tools;
-using COMPASS.ViewModels.Import;
-using COMPASS.Windows;
-using Ionic.Zip;
-using Microsoft.Win32;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Import;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,12 +12,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public class SettingsViewModel : ObservableObject
     {

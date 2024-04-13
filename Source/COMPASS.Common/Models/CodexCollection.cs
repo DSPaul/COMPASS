@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Interfaces;
-using COMPASS.Services;
-using COMPASS.Tools;
-using COMPASS.ViewModels;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     public class CodexCollection : ObservableObject
     {

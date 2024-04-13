@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace COMPASS.Converters
+namespace COMPASS.Common.Converters
 {
     public class MultiParamConverter : IMultiValueConverter
     {

@@ -2,7 +2,7 @@
 using System;
 using System.Globalization;
 
-namespace COMPASS.Converters
+namespace COMPASS.Common.Converters
 {
     public class ToVisibilityConverter : IValueConverter
     {

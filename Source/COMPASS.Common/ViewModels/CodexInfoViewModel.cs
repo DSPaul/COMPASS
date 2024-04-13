@@ -1,7 +1,7 @@
-﻿using COMPASS.Commands;
-using COMPASS.Models;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public class CodexInfoViewModel : ObservableObject
     {

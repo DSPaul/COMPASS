@@ -1,7 +1,7 @@
 ﻿using Avalonia.Media;
 using System.Collections.ObjectModel;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     public interface IHasID
     {

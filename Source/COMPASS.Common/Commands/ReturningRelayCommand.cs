@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace COMPASS.Commands
+namespace COMPASS.Common.Commands
 {
     //Relay command that works with functions that return bool
     //to for example indicate success of execution

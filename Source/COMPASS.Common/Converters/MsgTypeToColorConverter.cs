@@ -1,10 +1,10 @@
 ﻿using Avalonia.Data.Converters;
 using Avalonia.Media;
-using COMPASS.Models;
+using COMPASS.Common.Models;
 using System;
 using System.Globalization;
 
-namespace COMPASS.Converters
+namespace COMPASS.Common.Converters
 {
     class MsgTypeToColorConverter : IValueConverter
     {

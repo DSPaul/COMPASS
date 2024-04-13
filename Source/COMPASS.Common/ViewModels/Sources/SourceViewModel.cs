@@ -1,7 +1,7 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Common.Models;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels.Sources
+namespace COMPASS.Common.ViewModels.Sources
 {
     public abstract class SourceViewModel : ObservableObject
     {

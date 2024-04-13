@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     public class TreeViewNode : ObservableObject, IHasChildren<TreeViewNode>
     {

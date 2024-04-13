@@ -1,13 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Tools;
-using COMPASS.ViewModels.Sources;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Sources;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Serialization;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     public class CodexProperty : ObservableObject
     {

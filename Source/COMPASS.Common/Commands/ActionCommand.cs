@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace COMPASS.Commands
+namespace COMPASS.Common.Commands
 {
     /// <summary>
     /// Command for methods without arguments

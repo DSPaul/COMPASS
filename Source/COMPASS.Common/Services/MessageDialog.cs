@@ -1,7 +1,7 @@
-﻿using COMPASS.Interfaces;
+﻿using COMPASS.Common.Interfaces;
 using System.Windows;
 
-namespace COMPASS.Services
+namespace COMPASS.Common.Services
 {
     public class MessageDialog : IMessageBox
     {

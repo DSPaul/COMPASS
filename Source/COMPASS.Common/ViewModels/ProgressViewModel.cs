@@ -1,11 +1,11 @@
-﻿using COMPASS.Commands;
-using COMPASS.Models;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
 using System.Collections.ObjectModel;
 using System.Threading;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
-    public class ProgressViewModel : ObservableObject
+    public class ProgressViewModel : ViewModelBase
     {
 
         #region Singleton pattern

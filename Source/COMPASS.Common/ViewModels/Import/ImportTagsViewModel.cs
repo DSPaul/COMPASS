@@ -1,10 +1,10 @@
-﻿using COMPASS.Commands;
-using COMPASS.Models;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace COMPASS.ViewModels.Import
+namespace COMPASS.Common.ViewModels.Import
 {
     public class ImportTagsViewModel : ViewModelBase
     {

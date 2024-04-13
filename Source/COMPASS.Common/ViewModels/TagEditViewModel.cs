@@ -1,9 +1,9 @@
-﻿using COMPASS.Commands;
-using COMPASS.Models;
-using COMPASS.Tools;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
+using COMPASS.Common.Tools;
 using System;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public class TagEditViewModel : ObservableObject, IEditViewModel
     {

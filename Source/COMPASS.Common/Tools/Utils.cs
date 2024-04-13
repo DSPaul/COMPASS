@@ -1,8 +1,8 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Common.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace COMPASS.Tools
+namespace COMPASS.Common.Tools
 {
     public static class Utils
     {

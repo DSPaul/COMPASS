@@ -1,7 +1,7 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Common.Tools;
 using System;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     public class SatchelInfo
     {

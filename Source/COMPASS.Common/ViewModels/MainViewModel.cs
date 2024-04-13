@@ -1,17 +1,16 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Commands;
-using COMPASS.Models;
-using COMPASS.Services;
-using COMPASS.Tools;
-using COMPASS.ViewModels.Layouts;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Layouts;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
-    public partial class MainViewModel : ObservableObject
+    public partial class MainViewModel : ViewModelBase
     {
         public MainViewModel()
         {

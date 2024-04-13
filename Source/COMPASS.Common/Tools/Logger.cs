@@ -1,7 +1,7 @@
 ﻿using Autofac;
-using COMPASS.Interfaces;
-using COMPASS.Models;
-using COMPASS.ViewModels;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models;
+using COMPASS.Common.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -9,7 +9,7 @@ using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace COMPASS.Tools
+namespace COMPASS.Common.Tools
 {
     public static class Logger
     {

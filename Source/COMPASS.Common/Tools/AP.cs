@@ -1,4 +1,4 @@
-﻿namespace COMPASS.Tools
+﻿namespace COMPASS.Common.Tools
 {
     //Replaced with StyledProperty In Avalonia
 

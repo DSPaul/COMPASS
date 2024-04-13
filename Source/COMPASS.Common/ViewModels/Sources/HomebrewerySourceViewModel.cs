@@ -1,7 +1,7 @@
-﻿using COMPASS.Models;
-using COMPASS.Services;
-using COMPASS.Tools;
-using COMPASS.ViewModels.Import;
+﻿using COMPASS.Common.Models;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Import;
 using HtmlAgilityPack;
 using ImageMagick;
 using Newtonsoft.Json.Linq;
@@ -11,7 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels.Sources
+namespace COMPASS.Common.ViewModels.Sources
 {
     public class HomebrewerySourceViewModel : SourceViewModel
     {

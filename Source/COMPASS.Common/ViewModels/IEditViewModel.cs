@@ -1,7 +1,7 @@
-﻿using COMPASS.Commands;
+﻿using COMPASS.Common.Commands;
 using System;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     /// <summary>
     /// Interface for windows with OK and Cancel buttons which are all windows that edit a codex or tag

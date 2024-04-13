@@ -1,16 +1,16 @@
-﻿using COMPASS.Commands;
-using COMPASS.Models;
-using COMPASS.Services;
-using COMPASS.Tools;
-using COMPASS.ViewModels.Import;
-using COMPASS.Windows;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.Views.Windows;
 using GongSolutions.Wpf.DragDrop;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public class TagsViewModel : ViewModelBase, IDropTarget, IDealsWithTabControl
     {

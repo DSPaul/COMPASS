@@ -1,84 +1,69 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
-
-  
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="Assets\COMPASS.ico" />
     <Content Include="Assets\CompassFull.png" />
-
     <Resource Include="Assets\CompassLogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-
     <Content Include="Assets\CoverPlaceholder.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-
     <Content Include="gs\gsdll64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-
     <Content Include="gs\gsdll64.lib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-
     <Content Include="gs\gswin64.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-
     <Content Include="gs\gswin64c.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-
     <None Include="..\.editorconfig" Link=".editorconfig" />
-
     <Resource Include="Assets\LoadingAnimation.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="8.0.0" />
+    <!-- <PackageReference Include="Autofac" Version="8.0.0" />
     <PackageReference Include="Autoupdater.NET.Official" Version="1.8.5" />
     <PackageReference Include="DotNetZip" Version="1.16.0" />
-    <PackageReference Include="FuzzySharp" Version="2.0.2" />
+    <PackageReference Include="FuzzySharp" Version="2.0.2" /> -->
     <!-- <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" /> -->
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.60" />
+    <!-- <PackageReference Include="HtmlAgilityPack" Version="1.11.60" />
     <PackageReference Include="itext7" Verion="8.0.3" Version="8.0.3" />
     <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.3" />
     <PackageReference Include="log4net" Version="2.0.17" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.6.0" />
-    <PackageReference Include="Magick.NET.SystemDrawing" Version="7.2.2" />
-    <PackageReference Include="MaterialDesignThemes" Version="5.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
-    <PackageReference Include="OpenCvSharp4.Extensions" Version="4.9.0.20240103" />
+    <PackageReference Include="Magick.NET.SystemDrawing" Version="7.2.2" /> -->
+    <!-- <PackageReference Include="MaterialDesignThemes" Version="5.0.0" /> -->
+    <!-- <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" /> -->
+    <!-- <PackageReference Include="OpenCvSharp4.Extensions" Version="4.9.0.20240103" /> -->
     <!-- <PackageReference Include="OpenCvSharp4.Windows" Version="4.9.0.20240103" /> -->
-    <PackageReference Include="ScrapySharp" Version="3.0.0" />
-    <PackageReference Include="Selenium.WebDriver" Verion="4.17.0" Version="4.19.0" />
+    <!-- <PackageReference Include="ScrapySharp" Version="3.0.0" />
+    <PackageReference Include="Selenium.WebDriver" Verion="4.17.0" Version="4.19.0" /> -->
     <!-- <PackageReference Include="VirtualizingWrapPanel" Version="2.0.5" /> -->
     <!-- <PackageReference Include="WpfAnimatedGif" Version="2.0.2" /> -->
-    <PackageReference Include="ZXing.Net" Version="0.16.9" />
+    <!-- <PackageReference Include="ZXing.Net" Version="0.16.9" /> -->
     <!-- <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.12" /> -->
-
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+    <!-- <PackageReference Include="Newtonsoft.Json" Version="13.0.3" /> -->
   </ItemGroup>
-
   <ItemGroup>
     <None Update="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -1,6 +1,6 @@
-﻿using COMPASS.Models;
-using COMPASS.Services;
-using COMPASS.Tools;
+﻿using COMPASS.Common.Models;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
 using ImageMagick;
 using ImageMagick.Formats;
 using iText.Kernel.Pdf;
@@ -11,7 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels.Sources
+namespace COMPASS.Common.ViewModels.Sources
 {
     public class PdfSourceViewModel : SourceViewModel
     {

@@ -1,6 +1,6 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Common.Models;
 
-namespace COMPASS.Tools
+namespace COMPASS.Common.Tools
 {
     public class TagTemplateSelector : DataTemplateSelector
     {

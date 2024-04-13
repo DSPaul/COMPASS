@@ -1,8 +1,8 @@
 ﻿using Autofac;
-using COMPASS.Interfaces;
-using COMPASS.Models;
-using COMPASS.Tools;
-using COMPASS.ViewModels;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels;
 using HtmlAgilityPack;
 using Ionic.Zip;
 using Microsoft.Win32;
@@ -21,7 +21,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace COMPASS.Services
+namespace COMPASS.Common.Services
 {
     public static class IOService
     {

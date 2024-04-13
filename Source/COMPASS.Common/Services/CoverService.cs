@@ -1,10 +1,7 @@
-﻿using COMPASS.Models;
-using COMPASS.Tools;
-using COMPASS.ViewModels;
-using COMPASS.ViewModels.Sources;
-using COMPASS.Windows;
-using ImageMagick;
-using OpenQA.Selenium;
+﻿using COMPASS.Common.Models;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels;
+using COMPASS.Common.ViewModels.Sources;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace COMPASS.Services
+namespace COMPASS.Common.Services
 {
     public static class CoverService
     {

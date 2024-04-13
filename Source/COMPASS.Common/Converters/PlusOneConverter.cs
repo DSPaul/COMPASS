@@ -3,7 +3,7 @@ using Avalonia.Data.Converters;
 using System;
 using System.Globalization;
 
-namespace COMPASS.Converters
+namespace COMPASS.Common.Converters
 {
     /// <summary>
     /// Converter that displays one more than the actual value, perfect for converting indices/counter that start at 0 to

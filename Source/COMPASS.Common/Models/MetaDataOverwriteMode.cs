@@ -1,4 +1,4 @@
-﻿namespace COMPASS.Models
+﻿namespace COMPASS.Common.Models
 {
     public enum MetaDataOverwriteMode
     {

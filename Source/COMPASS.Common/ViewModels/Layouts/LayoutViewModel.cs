@@ -1,12 +1,12 @@
-﻿using COMPASS.Models;
-using COMPASS.ViewModels.Import;
+﻿using COMPASS.Common.Models;
+using COMPASS.Common.ViewModels.Import;
 using GongSolutions.Wpf.DragDrop;
 using System;
 using System.IO;
 using System.Linq;
 using System.Windows;
 
-namespace COMPASS.ViewModels.Layouts
+namespace COMPASS.Common.ViewModels.Layouts
 {
     public abstract class LayoutViewModel : ViewModelBase, IDropTarget
     {

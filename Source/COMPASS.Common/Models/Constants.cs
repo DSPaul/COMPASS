@@ -1,8 +1,8 @@
-﻿using COMPASS.ViewModels;
+﻿using COMPASS.Common.ViewModels;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     public static partial class Constants
     {

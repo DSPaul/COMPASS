@@ -1,12 +1,12 @@
-﻿using COMPASS.Models;
-using COMPASS.Tools;
+﻿using COMPASS.Common.Models;
+using COMPASS.Common.Tools;
 using FuzzySharp;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace COMPASS.ViewModels.Sources
+namespace COMPASS.Common.ViewModels.Sources
 {
     public class FileSourceViewModel : SourceViewModel
     {

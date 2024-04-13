@@ -1,9 +1,9 @@
-﻿using COMPASS.Models;
-using COMPASS.Tools;
+﻿using COMPASS.Common.Models;
+using COMPASS.Common.Tools;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public class TagsSelectorViewModel : ViewModelBase
     {

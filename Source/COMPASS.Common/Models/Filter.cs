@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     public sealed class Filter : ITag, IEquatable<Filter>
     {

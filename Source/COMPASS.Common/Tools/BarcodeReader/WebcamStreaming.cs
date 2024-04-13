@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace COMPASS.Tools.BarcodeReader
+namespace COMPASS.Common.Tools.BarcodeReader
 {
     // based on https://github.com/FrancescoBonizzi/WebcamControl-WPF-With-OpenCV
     public sealed class WebcamStreaming : IDisposable

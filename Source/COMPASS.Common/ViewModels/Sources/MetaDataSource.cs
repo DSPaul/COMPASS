@@ -1,8 +1,8 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Common.Models;
 using System;
 using System.Windows.Media;
 
-namespace COMPASS.ViewModels.Sources
+namespace COMPASS.Common.ViewModels.Sources
 {
     [Flags]
     public enum MetaDataSource

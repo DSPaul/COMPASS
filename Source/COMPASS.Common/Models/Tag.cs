@@ -1,14 +1,14 @@
 ﻿using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Services;
-using COMPASS.Tools;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml.Serialization;
 
-namespace COMPASS.Models
+namespace COMPASS.Common.Models
 {
     public sealed class Tag : ObservableObject, ITag, IHasID, IHasChildren<Tag>, IEquatable<Tag>
     {

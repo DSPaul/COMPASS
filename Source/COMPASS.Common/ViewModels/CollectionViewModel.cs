@@ -1,10 +1,10 @@
-﻿using COMPASS.Commands;
-using COMPASS.Models;
+﻿using COMPASS.Common.Commands;
+using COMPASS.Common.Models;
 using COMPASS.Properties;
-using COMPASS.Services;
-using COMPASS.Tools;
-using COMPASS.ViewModels.Import;
-using COMPASS.Windows;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.Views.Windows;
 using Ionic.Zip;
 using Microsoft.Win32;
 using System;
@@ -15,7 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace COMPASS.ViewModels
+namespace COMPASS.Common.ViewModels
 {
     public class CollectionViewModel : ViewModelBase
     {

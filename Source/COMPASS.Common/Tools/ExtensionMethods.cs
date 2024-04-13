@@ -1,4 +1,4 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace COMPASS.Tools
+namespace COMPASS.Common.Tools
 {
     public static class ExtensionMethods
     {
