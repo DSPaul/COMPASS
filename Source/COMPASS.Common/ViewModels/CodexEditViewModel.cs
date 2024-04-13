@@ -17,7 +17,7 @@ using System.Windows;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexEditViewModel : ViewModelBase_avalonia, IEditViewModel, IDropTarget
+    public class CodexEditViewModel : ViewModelBase, IEditViewModel, IDropTarget
     {
         public CodexEditViewModel(Codex? toEdit)
         {

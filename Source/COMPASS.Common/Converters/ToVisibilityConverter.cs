@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Avalonia.Data.Converters;
+using System;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Data;
 
 namespace COMPASS.Converters
 {
     public class ToVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object shouldInvert, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? shouldInvert, CultureInfo culture)
         {
             bool invert = System.Convert.ToBoolean(shouldInvert);
             bool visible;
@@ -27,10 +26,10 @@ namespace COMPASS.Converters
                     visible = value is not null;
                 }
             }
-            return visible ^ invert ? Visibility.Visible : Visibility.Collapsed;
+            return visible ^ invert;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
 }

@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace COMPASS.ViewModels.Layouts
 {
-    public abstract class LayoutViewModel : ViewModelBase_avalonia, IDropTarget
+    public abstract class LayoutViewModel : ViewModelBase, IDropTarget
     {
         public enum Layout
         {

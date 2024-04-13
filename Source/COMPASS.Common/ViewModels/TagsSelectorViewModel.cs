@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace COMPASS.ViewModels
 {
-    public class TagsSelectorViewModel : ViewModelBase_avalonia
+    public class TagsSelectorViewModel : ViewModelBase
     {
         public TagsSelectorViewModel(List<CodexCollection> collections)
         {

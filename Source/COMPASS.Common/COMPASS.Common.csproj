@@ -48,11 +48,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- <PackageReference Include="Autofac" Version="8.0.0" />
+    <PackageReference Include="Autofac" Version="8.0.0" />
     <PackageReference Include="Autoupdater.NET.Official" Version="1.8.5" />
     <PackageReference Include="DotNetZip" Version="1.16.0" />
     <PackageReference Include="FuzzySharp" Version="2.0.2" />
-    <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
+    <!-- <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" /> -->
     <PackageReference Include="HtmlAgilityPack" Version="1.11.60" />
     <PackageReference Include="itext7" Verion="8.0.3" Version="8.0.3" />
     <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.3" />
@@ -63,18 +63,18 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="OpenCvSharp4.Extensions" Version="4.9.0.20240103" />
-    <PackageReference Include="OpenCvSharp4.Windows" Version="4.9.0.20240103" />
+    <!-- <PackageReference Include="OpenCvSharp4.Windows" Version="4.9.0.20240103" /> -->
     <PackageReference Include="ScrapySharp" Version="3.0.0" />
     <PackageReference Include="Selenium.WebDriver" Verion="4.17.0" Version="4.19.0" />
-    <PackageReference Include="VirtualizingWrapPanel" Version="2.0.5" />
-    <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
+    <!-- <PackageReference Include="VirtualizingWrapPanel" Version="2.0.5" /> -->
+    <!-- <PackageReference Include="WpfAnimatedGif" Version="2.0.2" /> -->
     <PackageReference Include="ZXing.Net" Version="0.16.9" />
-    <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.12" /> -->
+    <!-- <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.12" /> -->
 
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
   </ItemGroup>

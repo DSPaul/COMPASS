@@ -17,7 +17,7 @@ using System.Windows;
 
 namespace COMPASS.ViewModels
 {
-    public class CollectionViewModel : ViewModelBase_avalonia
+    public class CollectionViewModel : ViewModelBase
     {
         public CollectionViewModel(MainViewModel? mainViewModel)
         {

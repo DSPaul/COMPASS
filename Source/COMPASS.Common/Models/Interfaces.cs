@@ -1,5 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows.Media;
+﻿using Avalonia.Media;
+using System.Collections.ObjectModel;
 
 namespace COMPASS.Models
 {

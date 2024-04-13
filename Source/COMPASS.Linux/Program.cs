@@ -1,7 +1,6 @@
-﻿using System;
-
-using Avalonia;
-using Avalonia.ReactiveUI;
+﻿using Avalonia;
+using COMPASS.Common;
+using System;
 
 namespace COMPASS.Linux;
 
@@ -19,6 +18,5 @@ class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace()
-            .UseReactiveUI();
+            .LogToTrace();
 }

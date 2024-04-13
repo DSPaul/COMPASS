@@ -1,4 +1,6 @@
-﻿namespace COMPASS.Models
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace COMPASS.Models
 {
     public class LogEntry : ObservableObject
     {

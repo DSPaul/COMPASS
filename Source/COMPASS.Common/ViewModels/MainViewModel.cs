@@ -1,26 +1,22 @@
-﻿using AutoUpdaterDotNET;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Layouts;
-using COMPASS.Windows;
-using ImageMagick;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
 
 namespace COMPASS.ViewModels
 {
-    public class MainViewModel : ObservableObject
+    public partial class MainViewModel : ObservableObject
     {
         public MainViewModel()
         {
             Logger.Init();
-            ViewModelBase_avalonia.MVM = this;
+            ViewModelBase.MVM = this;
 
             //Load everything
             UpgradeSettings();

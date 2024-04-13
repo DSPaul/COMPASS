@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class TagsViewModel : ViewModelBase_avalonia, IDropTarget, IDealsWithTabControl
+    public class TagsViewModel : ViewModelBase, IDropTarget, IDealsWithTabControl
     {
         public TagsViewModel(CodexCollection codexCollection, FilterViewModel filterVM)
         {

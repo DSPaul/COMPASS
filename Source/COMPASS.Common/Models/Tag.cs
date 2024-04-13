@@ -1,10 +1,11 @@
-﻿using COMPASS.Services;
+﻿using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Services;
 using COMPASS.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows.Media;
 using System.Xml.Serialization;
 
 namespace COMPASS.Models

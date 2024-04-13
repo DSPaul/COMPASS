@@ -1,4 +1,5 @@
-﻿using COMPASS.Services;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Sources;
 using System;

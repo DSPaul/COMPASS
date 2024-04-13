@@ -1,15 +1,14 @@
-﻿using System;
+﻿using Avalonia.Data.Converters;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.Windows.Data;
+using System.Linq;
 
 namespace COMPASS.Converters
 {
     public class MultiParamConverter : IMultiValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-            => values.Clone();
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-            => throw new NotImplementedException();
+        public object Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
+            => values.ToList();
     }
 }

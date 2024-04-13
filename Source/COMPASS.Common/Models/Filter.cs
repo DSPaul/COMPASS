@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Avalonia.Media;
+using System;
 using System.IO;
-using System.Windows.Media;
 
 namespace COMPASS.Models
 {

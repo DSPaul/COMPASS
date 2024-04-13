@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Avalonia.Data;
+using Avalonia.Data.Converters;
+using System;
 using System.Globalization;
-using System.Windows.Data;
 
 namespace COMPASS.Converters
 {
@@ -10,22 +11,24 @@ namespace COMPASS.Converters
     /// </summary>
     class PlusOneConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is not int i)
             {
-                throw new ArgumentException($"{nameof(value)} was not an integer");
+                var exception = new ArgumentException($"{nameof(value)} was not an integer");
+                return new BindingNotification(exception, BindingErrorType.Error);
             }
-            return i+1;
+            return i + 1;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) 
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is not int i)
             {
-                throw new ArgumentException($"{nameof(value)} was not an integer");
+                var exception = new ArgumentException($"{nameof(value)} was not an integer");
+                return new BindingNotification(exception, BindingErrorType.Error);
             }
-            return i-1;
+            return i - 1;
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public class LeftDockViewModel : ViewModelBase_avalonia, IDealsWithTabControl
+    public class LeftDockViewModel : ViewModelBase, IDealsWithTabControl
     {
         public LeftDockViewModel(MainViewModel mainViewModel)
         {

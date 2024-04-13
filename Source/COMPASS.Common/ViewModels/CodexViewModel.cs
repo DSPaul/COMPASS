@@ -19,7 +19,7 @@ using System.Windows.Input;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexViewModel : ViewModelBase_avalonia, IDropTarget
+    public class CodexViewModel : ViewModelBase, IDropTarget
     {
         #region Open Codex
 

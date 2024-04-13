@@ -1,14 +1,14 @@
-﻿using COMPASS.Models;
+﻿using Avalonia.Data.Converters;
+using Avalonia.Media;
+using COMPASS.Models;
 using System;
 using System.Globalization;
-using System.Windows.Data;
-using System.Windows.Media;
 
 namespace COMPASS.Converters
 {
     class MsgTypeToColorConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is LogEntry.MsgType msgType)
             {
@@ -24,7 +24,7 @@ namespace COMPASS.Converters
             return new SolidColorBrush(Colors.Purple); //should never happen, purple so it's clear something went wrong
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
 }

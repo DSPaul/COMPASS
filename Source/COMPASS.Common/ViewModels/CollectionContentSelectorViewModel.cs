@@ -1,4 +1,5 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Tools;
 using System.Collections;
@@ -6,7 +7,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Data;
 
 namespace COMPASS.ViewModels
 {

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Avalonia.Media;
+using System;
 using System.Collections.Generic;
-using System.Windows.Media;
 
 namespace COMPASS.Models
 {
@@ -16,7 +16,8 @@ namespace COMPASS.Models
             Content = name;
             Function = func;
             ID = id;
-            BackgroundColor = (Color)ColorConverter.ConvertFromString("#16D68A")!;
+            _ = Color.TryParse("#16D68A", out var col);
+            BackgroundColor = col;
         }
 
         //Implement ITag

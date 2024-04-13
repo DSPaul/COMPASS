@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexBulkEditViewModel : ViewModelBase_avalonia, IEditViewModel
+    public class CodexBulkEditViewModel : ViewModelBase, IEditViewModel
     {
         public CodexBulkEditViewModel(List<Codex> toEdit)
         {

@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Avalonia.Data.Converters;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
-using System.Windows.Data;
 
 namespace COMPASS.Converters
 {
     public class CompositeCollectionConverter : IMultiValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
         {
             CompositeCollection compositeCollection = new();
 
@@ -21,8 +22,6 @@ namespace COMPASS.Converters
 
             return compositeCollection;
         }
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }
 
 }

@@ -1,31 +1,38 @@
-﻿using COMPASS.Models;
+﻿using Avalonia.Data;
+using Avalonia.Data.Converters;
+using COMPASS.Models;
 using System;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Data;
 
 namespace COMPASS.Converters
 {
     public class PropIsEmptyToVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
+            if (value == null)
+            {
+                var exception = new ArgumentNullException(nameof(value));
+                return new BindingNotification(exception, BindingErrorType.Error);
+            }
+
             if (parameter == null)
             {
-                throw new ArgumentNullException(nameof(parameter));
+                var exception = new ArgumentNullException(nameof(parameter));
+                return new BindingNotification(exception, BindingErrorType.Error);
             }
             CodexProperty? prop = Codex.Properties.Find(prop => prop.Name == parameter.ToString());
 
             if (prop is null)
             {
-                throw new ArgumentException($"Property {parameter} could not be found");
+                var exception = new ArgumentException($"Property {parameter} could not be found");
+                return new BindingNotification(exception, BindingErrorType.Error);
             }
 
-            bool empty = prop.IsEmpty((Codex)value);
-            return empty ? Visibility.Collapsed : Visibility.Visible;
+            return !prop.IsEmpty((Codex)value);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
 }

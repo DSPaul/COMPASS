@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels
 {
-    public abstract class WizardViewModel : ViewModelBase_avalonia
+    public abstract class WizardViewModel : ViewModelBase
     {
         private ObservableCollection<string> _steps = new();
         public virtual ObservableCollection<string> Steps
