@@ -1,4 +1,4 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
 using COMPASS.Resources.Controls.MultiSelectCombobox;
 using COMPASS.Tools;
@@ -107,8 +107,8 @@ namespace COMPASS.ViewModels
 
         public Action CloseAction { get; set; } = () => { };
 
-        private ActionCommand? _okCommand;
-        public ActionCommand OKCommand => _okCommand ??= new(OKBtn);
+        private RelayCommand? _okCommand;
+        public RelayCommand OKCommand => _okCommand ??= new(OKBtn);
         public void OKBtn()
         {
             //Copy changes into each Codex
@@ -184,8 +184,8 @@ namespace COMPASS.ViewModels
             CloseAction();
         }
 
-        private ActionCommand? _cancelCommand;
-        public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
+        private RelayCommand? _cancelCommand;
+        public RelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel() => CloseAction();
 
         #endregion

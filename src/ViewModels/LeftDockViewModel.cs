@@ -1,4 +1,4 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
 using COMPASS.Services;
 using COMPASS.Tools;
@@ -45,11 +45,11 @@ namespace COMPASS.ViewModels
         }
 
         #region Add Books Tab
-        private RelayCommand<ImportSource>? _importCommand;
-        public RelayCommand<ImportSource> ImportCommand => _importCommand ??= new(async source => await ImportViewModel.Import(source));
+        private AsyncRelayCommand<ImportSource>? _importCommand;
+        public AsyncRelayCommand<ImportSource> ImportCommand => _importCommand ??= new(ImportViewModel.Import);
 
-        private ActionCommand? _importBooksFromSatchelCommand;
-        public ActionCommand ImportBooksFromSatchelCommand => _importBooksFromSatchelCommand ??= new(async () => await ImportBooksFromSatchel());
+        private AsyncRelayCommand? _importBooksFromSatchelCommand;
+        public AsyncRelayCommand ImportBooksFromSatchelCommand => _importBooksFromSatchelCommand ??= new(ImportBooksFromSatchel);
         public async Task ImportBooksFromSatchel()
         {
             var collectionToImport = await IOService.OpenSatchel();

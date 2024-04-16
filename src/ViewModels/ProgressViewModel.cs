@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Commands;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
 using System.Collections.ObjectModel;
 using System.Threading;
@@ -130,8 +130,8 @@ namespace COMPASS.ViewModels
             Cancelling = false;
         }
 
-        private ActionCommand? _cancelTasksCommand;
-        public ActionCommand CancelTasksCommand => _cancelTasksCommand ??= new(CancelBackgroundTask);
+        private RelayCommand? _cancelTasksCommand;
+        public RelayCommand CancelTasksCommand => _cancelTasksCommand ??= new(CancelBackgroundTask);
         public void CancelBackgroundTask()
         {
             GlobalCancellationTokenSource.Cancel();

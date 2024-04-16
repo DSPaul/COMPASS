@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Commands;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
 using COMPASS.Tools;
 using System.Collections;

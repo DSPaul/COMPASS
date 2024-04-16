@@ -1,4 +1,4 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
 using COMPASS.Services;
 using COMPASS.Tools;
@@ -47,8 +47,8 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand? _applyActiveFiltesCommand;
-        public ActionCommand ApplyActiveFiltersCommand => _applyActiveFiltesCommand ??=
+        private RelayCommand? _applyActiveFiltesCommand;
+        public RelayCommand ApplyActiveFiltersCommand => _applyActiveFiltesCommand ??=
             new(ApplyActiveFilters, () => MainViewModel.CollectionVM.FilterVM.HasActiveFilters);
         private void ApplyActiveFilters()
         {

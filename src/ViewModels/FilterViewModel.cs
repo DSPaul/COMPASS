@@ -1,4 +1,4 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
 using COMPASS.Properties;
 using COMPASS.Tools;
@@ -357,8 +357,8 @@ namespace COMPASS.ViewModels
         }
 
         //Clear Filters
-        private ActionCommand? _clearFiltersCommand;
-        public ActionCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
+        private RelayCommand? _clearFiltersCommand;
+        public RelayCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
         public void ClearFilters()
         {
             StartReleaseDate = null;

@@ -1,4 +1,4 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
 
 namespace COMPASS.ViewModels
@@ -38,8 +38,8 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand? _toggleCodexInfoCommand;
-        public ActionCommand ToggleCodexInfoCommand => _toggleCodexInfoCommand ??= new(() => ShowCodexInfo = !ShowCodexInfo);
+        private RelayCommand? _toggleCodexInfoCommand;
+        public RelayCommand ToggleCodexInfoCommand => _toggleCodexInfoCommand ??= new(() => ShowCodexInfo = !ShowCodexInfo);
 
         private RelayCommand<string>? _addAuthorFilterCommand;
         public RelayCommand<string> AddAuthorFilterCommand => _addAuthorFilterCommand ??= new(AddAuthorFilter);
