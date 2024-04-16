@@ -25,7 +25,7 @@
             set
             {
                 Properties.Settings.Default.CardShowAuthor = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -35,7 +35,7 @@
             set
             {
                 Properties.Settings.Default.CardShowPublisher = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -45,7 +45,7 @@
             set
             {
                 Properties.Settings.Default.CardShowRelease = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -55,7 +55,7 @@
             set
             {
                 Properties.Settings.Default.CardShowVersion = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -65,7 +65,7 @@
             set
             {
                 Properties.Settings.Default.CardShowRating = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -75,7 +75,7 @@
             set
             {
                 Properties.Settings.Default.CardShowTags = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -85,7 +85,7 @@
             set
             {
                 Properties.Settings.Default.CardShowFileIcons = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 

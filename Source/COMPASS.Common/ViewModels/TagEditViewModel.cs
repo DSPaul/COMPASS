@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Commands;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.Commands;
 using COMPASS.Common.Models;
 using COMPASS.Common.Tools;
 using System;
@@ -35,7 +36,7 @@ namespace COMPASS.Common.ViewModels
             set
             {
                 SetProperty(ref _showColorSelection, value);
-                RaisePropertyChanged(nameof(ShowInfoGrid));
+                OnPropertyChanged(nameof(ShowInfoGrid));
             }
         }
 

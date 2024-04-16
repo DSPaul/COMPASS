@@ -25,8 +25,8 @@
             set
             {
                 Properties.Settings.Default.TileCoverSize = value;
-                RaisePropertyChanged();
-                RaisePropertyChanged(nameof(TileHeight));
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(TileHeight));
             }
         }
 
@@ -38,7 +38,7 @@
             set
             {
                 Properties.Settings.Default.TileShowExtraData = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -48,7 +48,7 @@
             set
             {
                 Properties.Settings.Default.TileDisplayedData = (int)value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 

@@ -87,7 +87,7 @@ namespace COMPASS.Common.ViewModels
         // CODICES STEP
         public List<SelectableCodex> SelectableCodices { get; set; }
         public int SelectedCodicesCount => SelectableCodices.Where(s => s.Selected).Count();
-        public void RaiseSelectedCodicesCountChanged() => RaisePropertyChanged(nameof(SelectedCodicesCount));
+        public void RaiseSelectedCodicesCountChanged() => OnPropertyChanged(nameof(SelectedCodicesCount));
 
         public bool RemovePersonalData { get; set; } = true;
 
@@ -306,7 +306,7 @@ namespace COMPASS.Common.ViewModels
                 Steps.Add(SettingsStep);
             }
 
-            RaisePropertyChanged(nameof(Steps));
+            OnPropertyChanged(nameof(Steps));
         }
     }
 }

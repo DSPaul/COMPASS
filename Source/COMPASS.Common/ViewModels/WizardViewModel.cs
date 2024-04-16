@@ -14,7 +14,7 @@ namespace COMPASS.Common.ViewModels
             set
             {
                 SetProperty(ref _steps, value);
-                RaisePropertyChanged(nameof(CurrentStep));
+                OnPropertyChanged(nameof(CurrentStep));
             }
         }
 
@@ -28,10 +28,10 @@ namespace COMPASS.Common.ViewModels
                 else if (value >= Steps.Count)
                     Finish();
                 SetProperty(ref _stepCounter, value);
-                RaisePropertyChanged(nameof(CurrentStep));
-                RaisePropertyChanged(nameof(ShowBackButton));
-                RaisePropertyChanged(nameof(ShowNextButton));
-                RaisePropertyChanged(nameof(ShowFinishButton));
+                OnPropertyChanged(nameof(CurrentStep));
+                OnPropertyChanged(nameof(ShowBackButton));
+                OnPropertyChanged(nameof(ShowNextButton));
+                OnPropertyChanged(nameof(ShowFinishButton));
             }
         }
 

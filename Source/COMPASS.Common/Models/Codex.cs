@@ -15,7 +15,7 @@ namespace COMPASS.Common.Models
     {
         public Codex()
         {
-            Authors.CollectionChanged += (_, _) => RaisePropertyChanged(nameof(AuthorsAsString));
+            Authors.CollectionChanged += (_, _) => OnPropertyChanged(nameof(AuthorsAsString));
         }
 
         public Codex(CodexCollection cc) : this()
@@ -60,7 +60,7 @@ namespace COMPASS.Common.Models
             ISBN = c.ISBN;
         }
 
-        public void RefreshThumbnail() => RaisePropertyChanged(nameof(Thumbnail));
+        public void RefreshThumbnail() => OnPropertyChanged(nameof(Thumbnail));
 
         public void ClearPersonalData()
         {
@@ -94,8 +94,8 @@ namespace COMPASS.Common.Models
                 if (value is null) return;
                 value = IOService.SanitizeXmlString(value);
                 SetProperty(ref _title, value);
-                RaisePropertyChanged(nameof(SortingTitle));
-                RaisePropertyChanged(nameof(SortingTitleContainsNumbers));
+                OnPropertyChanged(nameof(SortingTitle));
+                OnPropertyChanged(nameof(SortingTitleContainsNumbers));
             }
         }
 
@@ -107,7 +107,7 @@ namespace COMPASS.Common.Models
             set
             {
                 SetProperty(ref _sortingTitle, value);
-                RaisePropertyChanged(nameof(SortingTitleContainsNumbers));
+                OnPropertyChanged(nameof(SortingTitleContainsNumbers));
             }
         }
         //separate property needed for serialization or it will get _title and save that
@@ -139,7 +139,7 @@ namespace COMPASS.Common.Models
             set
             {
                 SetProperty(ref _authors, value);
-                RaisePropertyChanged(nameof(AuthorsAsString));
+                OnPropertyChanged(nameof(AuthorsAsString));
             }
         }
 

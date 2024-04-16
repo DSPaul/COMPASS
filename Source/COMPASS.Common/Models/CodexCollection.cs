@@ -245,7 +245,7 @@ namespace COMPASS.Common.Models
 
         public void Save()
         {
-            RaisePropertyChanged(nameof(AllCodices));
+            OnPropertyChanged(nameof(AllCodices));
             Directory.CreateDirectory(UserFilesPath);
             bool savedTags = SaveTags();
             bool savedCodices = SaveCodices();

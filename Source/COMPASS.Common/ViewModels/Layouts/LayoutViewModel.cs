@@ -36,7 +36,7 @@ namespace COMPASS.Common.ViewModels.Layouts
             return newLayout;
         }
 
-        public void UpdateDoVirtualization() => RaisePropertyChanged(nameof(DoVirtualization));
+        public void UpdateDoVirtualization() => OnPropertyChanged(nameof(DoVirtualization));
 
         #region Properties
 

@@ -26,7 +26,7 @@
             set
             {
                 Properties.Settings.Default.ListShowAuthor = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -36,7 +36,7 @@
             set
             {
                 Properties.Settings.Default.ListShowPublisher = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -46,7 +46,7 @@
             set
             {
                 Properties.Settings.Default.ListShowRelease = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -56,7 +56,7 @@
             set
             {
                 Properties.Settings.Default.ListShowDateAdded = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -66,7 +66,7 @@
             set
             {
                 Properties.Settings.Default.ListShowVersion = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -76,7 +76,7 @@
             set
             {
                 Properties.Settings.Default.ListShowRating = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -86,7 +86,7 @@
             set
             {
                 Properties.Settings.Default.ListShowISBN = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -96,7 +96,7 @@
             set
             {
                 Properties.Settings.Default.ListShowTags = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -106,7 +106,7 @@
             set
             {
                 Properties.Settings.Default.ListShowFileIcons = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -116,7 +116,7 @@
             set
             {
                 Properties.Settings.Default.ListShowEditIcon = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 

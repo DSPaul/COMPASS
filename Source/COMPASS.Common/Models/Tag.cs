@@ -68,7 +68,7 @@ namespace COMPASS.Common.Models
             set
             {
                 SetProperty(ref _serializableBackgroundColor, value);
-                RaisePropertyChanged(nameof(BackgroundColor));
+                OnPropertyChanged(nameof(BackgroundColor));
             }
         }
 
