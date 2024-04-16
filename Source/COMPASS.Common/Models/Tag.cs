@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 
 namespace COMPASS.Common.Models
 {
-    public sealed class Tag : ObservableObject, ITag, IHasID, IHasChildren<Tag>, IEquatable<Tag>
+    public sealed class Tag : ObservableRecipient, ITag, IHasID, IHasChildren<Tag>, IEquatable<Tag>
     {
         //Empty Constructor needed for serialization
         public Tag() { }
@@ -49,7 +49,7 @@ namespace COMPASS.Common.Models
             set
             {
                 value = IOService.SanitizeXmlString(value);
-                SetProperty(ref _content, value);
+                SetProperty(ref _content, value, true); //needs to broadcast so TagEdit can validate the input
             }
         }
 

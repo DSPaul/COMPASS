@@ -305,8 +305,6 @@ namespace COMPASS.Common.ViewModels
             {
                 Steps.Add(SettingsStep);
             }
-
-            OnPropertyChanged(nameof(Steps));
         }
     }
 }

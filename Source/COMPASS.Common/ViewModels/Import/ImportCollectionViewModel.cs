@@ -169,7 +169,6 @@ namespace COMPASS.Common.ViewModels.Import
                 ContentSelectorVM.UpdateSteps();
                 Steps.AddRange(ContentSelectorVM.Steps);
             }
-            OnPropertyChanged(nameof(Steps));
         }
 
         public void Cleanup() => MainViewModel.CollectionVM.DeleteCollection(CollectionToImport);

@@ -199,7 +199,6 @@ namespace COMPASS.Common.ViewModels
                 ContentSelectorVM.UpdateSteps();
                 Steps.AddRange(ContentSelectorVM.Steps);
             }
-            OnPropertyChanged(nameof(Steps));
         }
     }
 }
