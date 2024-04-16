@@ -1,5 +1,5 @@
 ﻿using Autofac;
-using COMPASS.Common.Commands;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
@@ -30,8 +30,8 @@ namespace COMPASS.Common.ViewModels
         }
 
         //Open codex Offline
-        private ReturningRelayCommand<Codex, bool>? _openCodexLocallyCommand;
-        public ReturningRelayCommand<Codex, bool> OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(OpenCodexLocally, CanOpenCodexLocally);
+        private RelayCommand<Codex>? _openCodexLocallyCommand;
+        public RelayCommand<Codex> OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(codex => OpenCodexLocally(codex), CanOpenCodexLocally);
         public static bool OpenCodexLocally(Codex? toOpen)
         {
             if (toOpen is null) return false;
@@ -63,8 +63,8 @@ namespace COMPASS.Common.ViewModels
         }
 
         //Open codex Online
-        private ReturningRelayCommand<Codex, bool>? _openCodexOnlineCommand;
-        public ReturningRelayCommand<Codex, bool> OpenCodexOnlineCommand => _openCodexOnlineCommand ??= new(OpenCodexOnline, CanOpenCodexOnline);
+        private RelayCommand<Codex>? _openCodexOnlineCommand;
+        public RelayCommand<Codex> OpenCodexOnlineCommand => _openCodexOnlineCommand ??= new(codex => OpenCodexOnline(codex), CanOpenCodexOnline);
         public static bool OpenCodexOnline(Codex? toOpen)
         {
             if (!CanOpenCodexOnline(toOpen)) return false;
@@ -93,8 +93,8 @@ namespace COMPASS.Common.ViewModels
         }
 
         //Open Multiple Files
-        private ReturningRelayCommand<IList, bool>? _openSelectedCodicesCommand;
-        public ReturningRelayCommand<IList, bool> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(l => OpenSelectedCodices(l?.Cast<Codex>().ToList()));
+        private RelayCommand<IList>? _openSelectedCodicesCommand;
+        public RelayCommand<IList> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(l => OpenSelectedCodices(l?.Cast<Codex>().ToList()));
         public static bool OpenSelectedCodices(IList<Codex>? toOpen)
         {
             if (toOpen is null) return false;
@@ -336,26 +336,8 @@ namespace COMPASS.Common.ViewModels
             DeleteCodices(toBanish);
         }
 
-        private ReturningRelayCommand<Codex, Task>? _getMetaDataCommand;
-        public ReturningRelayCommand<Codex, Task> GetMetaDataCommand => _getMetaDataCommand ??= new(StartGetMetaDataProcess);
-
-
-        private ReturningRelayCommand<IList, Task>? _getMetaDataBulkCommand;
-        public ReturningRelayCommand<IList, Task> GetMetaDataBulkCommand => _getMetaDataBulkCommand ??= new(
-            async codices =>
-            {
-                try
-                {
-                    await StartGetMetaDataProcess(codices?.Cast<Codex>().ToList() ?? new());
-                }
-                catch (OperationCanceledException ex)
-                {
-                    Logger.Warn("Renewing metadata has been cancelled", ex);
-                    await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
-                }
-            }
-        );
-
+        private AsyncRelayCommand<Codex>? _getMetaDataCommand;
+        public AsyncRelayCommand<Codex> GetMetaDataCommand => _getMetaDataCommand ??= new(StartGetMetaDataProcess);
         public static async Task StartGetMetaDataProcess(Codex? codex)
         {
             try
@@ -369,7 +351,6 @@ namespace COMPASS.Common.ViewModels
                 await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
             }
         }
-
         public static async Task StartGetMetaDataProcess(IList<Codex> codices)
         {
             var progressVM = ProgressViewModel.GetInstance();
@@ -396,7 +377,6 @@ namespace COMPASS.Common.ViewModels
             MainViewModel.CollectionVM.CurrentCollection.Save();
             MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
-
         private static async Task GetMetaData(Codex codex, ChooseMetaDataViewModel chooseMetaDataVM)
         {
             // Lazy load metadata from all the sources, use dict to store
@@ -493,17 +473,34 @@ namespace COMPASS.Common.ViewModels
             ProgressViewModel.GetInstance().IncrementCounter();
         }
 
-        private ReturningRelayCommand<Codex, Task>? _getCoverCommand;
-        public ReturningRelayCommand<Codex, Task> GetCoverCommand => _getCoverCommand ??=
-            new(async codex =>
-            {
-                if (codex is null) return;
-                await CoverService.GetCover(new List<Codex>() { codex });
-            });
+        private AsyncRelayCommand<IList>? _getMetaDataBulkCommand;
+        public AsyncRelayCommand<IList> GetMetaDataBulkCommand => _getMetaDataBulkCommand ??= new(GetMetaDataBulk);
 
-        private ReturningRelayCommand<IList, Task>? _getCoverBulkCommand;
-        public ReturningRelayCommand<IList, Task> GetCoverBulkCommand => _getCoverBulkCommand ??=
-            new(async codices => await CoverService.GetCover(codices?.Cast<Codex>().ToList() ?? new()));
+        private static async Task GetMetaDataBulk(IList? codices)
+        {
+            try
+            {
+                await StartGetMetaDataProcess(codices?.Cast<Codex>().ToList() ?? new());
+            }
+            catch (OperationCanceledException ex)
+            {
+                Logger.Warn("Renewing metadata has been cancelled", ex);
+                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+            }
+        }
+
+        private AsyncRelayCommand<Codex>? _getCoverCommand;
+        public AsyncRelayCommand<Codex> GetCoverCommand => _getCoverCommand ??= new(GetCover);
+        private static async Task GetCover(Codex? codex)
+        {
+            if (codex is null) return;
+            await CoverService.GetCover(new List<Codex>() { codex });
+        }
+
+        private AsyncRelayCommand<IList>? _getCoverBulkCommand;
+        public AsyncRelayCommand<IList> GetCoverBulkCommand => _getCoverBulkCommand ??= new(GetCoverBulk);
+        private static async Task GetCoverBulk(IList? codices) =>
+            await CoverService.GetCover(codices?.Cast<Codex>().ToList() ?? new());
 
         public static void DataGridHandleKeyDown(object sender, KeyEventArgs e)
             => HandleKeyDownOnCodex(((DataGrid)sender).SelectedItems, e);

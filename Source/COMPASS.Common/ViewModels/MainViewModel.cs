@@ -1,4 +1,4 @@
-﻿using COMPASS.Common.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
@@ -143,10 +143,10 @@ namespace COMPASS.Common.ViewModels
         }
 
         //check updates
-        public ActionCommand CheckForUpdatesCommand => SettingsViewModel.GetInstance().CheckForUpdatesCommand;
+        public RelayCommand CheckForUpdatesCommand => SettingsViewModel.GetInstance().CheckForUpdatesCommand;
 
-        private ActionCommand? _navigateToLinkTree;
-        public ActionCommand NavigateToLinkTree => _navigateToLinkTree ??= new(()
+        private RelayCommand? _navigateToLinkTree;
+        public RelayCommand NavigateToLinkTree => _navigateToLinkTree ??= new(()
             => Process.Start(new ProcessStartInfo(@"https://linktr.ee/compassapp") { UseShellExecute = true }));
 
         //Change Layout

@@ -1,4 +1,4 @@
-﻿using COMPASS.Common.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
@@ -234,17 +234,18 @@ namespace COMPASS.Common.ViewModels
             MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.Remove(folder!));
 
         //Remove a folder from auto import
-        private RelayCommand<Folder>? _editAutoImportDirectoryCommand;
-        public RelayCommand<Folder> EditAutoImportDirectoryCommand => _editAutoImportDirectoryCommand ??= new(async folder => await EditAutoImportFolder(folder));
+        private AsyncRelayCommand<Folder>? _editAutoImportDirectoryCommand;
+        public AsyncRelayCommand<Folder> EditAutoImportDirectoryCommand => _editAutoImportDirectoryCommand ??= new(EditAutoImportFolder);
 
         //Add a directory from auto import
-        private RelayCommand<string>? _addAutoImportDirectoryCommand;
-        public RelayCommand<string> AddAutoImportDirectoryCommand => _addAutoImportDirectoryCommand ??= new(async dir => await AddAutoImportDirectory(dir));
+        private AsyncRelayCommand<string>? _addAutoImportDirectoryCommand;
+        public AsyncRelayCommand<string> AddAutoImportDirectoryCommand => _addAutoImportDirectoryCommand ??= new(AddAutoImportDirectory);
 
         //Add a directory from auto import
-        private ActionCommand? _pickAutoImportDirectoryCommand;
-        public ActionCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(async () => await AddAutoImportDirectory(IOService.PickFolder()));
+        private AsyncRelayCommand? _pickAutoImportDirectoryCommand;
+        public AsyncRelayCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(PickAutoImportDirectory);
 
+        private async Task PickAutoImportDirectory() => await AddAutoImportDirectory(IOService.PickFolder());
         private async Task AddAutoImportDirectory(string? dir)
         {
             if (!String.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))
@@ -325,8 +326,8 @@ namespace COMPASS.Common.ViewModels
             MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.AddIfMissing(pair);
         }
 
-        private ActionCommand? _detectFolderTagPairsCommand;
-        public ActionCommand DetectFolderTagPairsCommand => _detectFolderTagPairsCommand ??= new(DetectFolderTagPairs);
+        private RelayCommand? _detectFolderTagPairsCommand;
+        public RelayCommand DetectFolderTagPairsCommand => _detectFolderTagPairsCommand ??= new(DetectFolderTagPairs);
         private void DetectFolderTagPairs()
         {
             var splitFolders = MainViewModel.CollectionVM.CurrentCollection.AllCodices
@@ -401,8 +402,8 @@ namespace COMPASS.Common.ViewModels
             OnPropertyChanged(nameof(BrokenCodicesMessage));
         }
 
-        private ActionCommand? _showBrokenCodicesCommand;
-        public ActionCommand ShowBrokenCodicesCommand => _showBrokenCodicesCommand ??= new(ShowBrokenCodices);
+        private RelayCommand? _showBrokenCodicesCommand;
+        public RelayCommand ShowBrokenCodicesCommand => _showBrokenCodicesCommand ??= new(ShowBrokenCodices);
         private void ShowBrokenCodices()
         {
             MainViewModel.CollectionVM.FilterVM.AddFilter(new(Filter.FilterType.HasBrokenPath));
@@ -455,8 +456,8 @@ namespace COMPASS.Common.ViewModels
         }
 
         //remove refs from codices
-        private ActionCommand? _removeBrokenRefsCommand;
-        public ActionCommand RemoveBrokenRefsCommand => _removeBrokenRefsCommand ??= new(RemoveBrokenReferences);
+        private RelayCommand? _removeBrokenRefsCommand;
+        public RelayCommand RemoveBrokenRefsCommand => _removeBrokenRefsCommand ??= new(RemoveBrokenReferences);
         public void RemoveBrokenReferences()
         {
             foreach (Codex codex in BrokenCodices)
@@ -468,8 +469,8 @@ namespace COMPASS.Common.ViewModels
         }
 
         //Remove Codices with broken refs
-        private ActionCommand? _deleteCodicesWithBrokenRefsCommand;
-        public ActionCommand DeleteCodicesWithBrokenRefsCommand => _deleteCodicesWithBrokenRefsCommand ??= new(RemoveCodicesWithBrokenRefs);
+        private RelayCommand? _deleteCodicesWithBrokenRefsCommand;
+        public RelayCommand DeleteCodicesWithBrokenRefsCommand => _deleteCodicesWithBrokenRefsCommand ??= new(RemoveCodicesWithBrokenRefs);
         public void RemoveCodicesWithBrokenRefs()
         {
             MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(BrokenCodices.ToList());
@@ -504,8 +505,8 @@ namespace COMPASS.Common.ViewModels
 
         public string NewDataPath { get; set; } = "";
 
-        private ActionCommand? _changeDataPathCommand;
-        public ActionCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
+        private RelayCommand? _changeDataPathCommand;
+        public RelayCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
         private void ChooseNewDataPath()
         {
             Ookii.Dialogs.Wpf.VistaFolderBrowserDialog folderBrowserDialog = new()
@@ -520,8 +521,8 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        private ActionCommand? _resetDataPathCommand;
-        public ActionCommand ResetDataPathCommand => _resetDataPathCommand ??= new(() => SetNewDataPath(_defaultDataPath));
+        private RelayCommand? _resetDataPathCommand;
+        public RelayCommand ResetDataPathCommand => _resetDataPathCommand ??= new(() => SetNewDataPath(_defaultDataPath));
 
         private void SetNewDataPath(string newPath)
         {
@@ -544,8 +545,8 @@ namespace COMPASS.Common.ViewModels
             window.ShowDialog();
         }
 
-        private ActionCommand? _moveToNewDataPathCommand;
-        public ActionCommand MoveToNewDataPathCommand => _moveToNewDataPathCommand ??= new(async () => await MoveToNewDataPath());
+        private AsyncRelayCommand? _moveToNewDataPathCommand;
+        public AsyncRelayCommand MoveToNewDataPathCommand => _moveToNewDataPathCommand ??= new(MoveToNewDataPath);
         public async Task MoveToNewDataPath()
         {
             bool success;
@@ -565,26 +566,26 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        private ActionCommand? _copyToNewDataPathCommand;
-        public ActionCommand CopyToNewDataPathCommand => _copyToNewDataPathCommand ??=
-            new(async () =>
+        private AsyncRelayCommand? _copyToNewDataPathCommand;
+        public AsyncRelayCommand CopyToNewDataPathCommand => _copyToNewDataPathCommand ??= new(CopyToNewDataPath);
+        private async Task CopyToNewDataPath()
+        {
+            try
             {
-                try
-                {
-                    await CopyDataAsync(CompassDataPath, NewDataPath);
-                }
-                catch (OperationCanceledException ex)
-                {
-                    Logger.Warn("File copy has been cancelled", ex);
-                    await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
-                    return;
-                }
+                await CopyDataAsync(CompassDataPath, NewDataPath);
+            }
+            catch (OperationCanceledException ex)
+            {
+                Logger.Warn("File copy has been cancelled", ex);
+                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
+                return;
+            }
 
-                ChangeToNewDataPath();
-            });
+            ChangeToNewDataPath();
+        }
 
-        private ActionCommand? _changeToNewDataPathCommand;
-        public ActionCommand ChangeToNewDataPathCommand => _changeToNewDataPathCommand ??= new(ChangeToNewDataPath);
+        private RelayCommand? _changeToNewDataPathCommand;
+        public RelayCommand ChangeToNewDataPathCommand => _changeToNewDataPathCommand ??= new(ChangeToNewDataPath);
 
         /// <summary>
         /// Sets the data path to <see cref="NewDataPath"/> and restarts the app
@@ -602,8 +603,8 @@ namespace COMPASS.Common.ViewModels
             Application.Current.Shutdown();
         }
 
-        private ActionCommand? _deleteDataCommand;
-        public ActionCommand DeleteDataCommand => _deleteDataCommand ??= new(DeleteDataLocation);
+        private RelayCommand? _deleteDataCommand;
+        public RelayCommand DeleteDataCommand => _deleteDataCommand ??= new(DeleteDataLocation);
 
         public void DeleteDataLocation()
         {
@@ -669,8 +670,8 @@ namespace COMPASS.Common.ViewModels
         }
         #endregion
 
-        private ActionCommand? _browseLocalFilesCommand;
-        public ActionCommand BrowseLocalFilesCommand => _browseLocalFilesCommand ??= new(BrowseLocalFiles);
+        private RelayCommand? _browseLocalFilesCommand;
+        public RelayCommand BrowseLocalFilesCommand => _browseLocalFilesCommand ??= new(BrowseLocalFiles);
         public void BrowseLocalFiles()
         {
             ProcessStartInfo startInfo = new()
@@ -685,8 +686,8 @@ namespace COMPASS.Common.ViewModels
         private readonly BackgroundWorker _extractZipWorker = new();
         private LoadingWindow? _lw;
 
-        private ActionCommand? _backupLocalFilesCommand;
-        public ActionCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
+        private RelayCommand? _backupLocalFilesCommand;
+        public RelayCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
         public void BackupLocalFiles()
         {
             SaveFileDialog saveFileDialog = new()
@@ -711,8 +712,8 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        private ActionCommand? _restoreBackupCommand;
-        public ActionCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
+        private RelayCommand? _restoreBackupCommand;
+        public RelayCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
         public void RestoreBackup()
         {
             OpenFileDialog openFileDialog = new()
@@ -788,8 +789,8 @@ namespace COMPASS.Common.ViewModels
         #region Tab: About
         public string Version => "Version: " + Assembly.GetExecutingAssembly().GetName().Version?.ToString()[0..5];
 
-        private ActionCommand? _checkForUpdatesCommand;
-        public ActionCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);
+        private RelayCommand? _checkForUpdatesCommand;
+        public RelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);
         private void CheckForUpdates()
         {
             AutoUpdater.Mandatory = true;

@@ -1,4 +1,4 @@
-﻿using COMPASS.Common.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
@@ -70,8 +70,8 @@ namespace COMPASS.Common.ViewModels.Import
             set => SetProperty(ref _importError, value);
         }
 
-        private ActionCommand? _submitUrlCommand;
-        public ActionCommand SubmitURLCommand => _submitUrlCommand ??= new(async () => await SubmitURL());
+        private AsyncRelayCommand? _submitUrlCommand;
+        public AsyncRelayCommand SubmitURLCommand => _submitUrlCommand ??= new(SubmitURL);
         public async Task SubmitURL()
         {
             if (!InputURL.Contains(ExampleURL) && ValidateURL)
@@ -110,8 +110,8 @@ namespace COMPASS.Common.ViewModels.Import
             }
         }
 
-        private ActionCommand? _openBarcodeScannerCommand;
-        public ActionCommand OpenBarcodeScannerCommand => _openBarcodeScannerCommand ??= new(OpenBarcodeScanner);
+        private RelayCommand? _openBarcodeScannerCommand;
+        public RelayCommand OpenBarcodeScannerCommand => _openBarcodeScannerCommand ??= new(OpenBarcodeScanner);
         private void OpenBarcodeScanner()
         {
             BarcodeScanWindow bcScanWindow = new();

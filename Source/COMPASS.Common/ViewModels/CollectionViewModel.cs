@@ -1,4 +1,4 @@
-﻿using COMPASS.Common.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Properties;
 using COMPASS.Common.Services;
@@ -229,18 +229,18 @@ namespace COMPASS.Common.ViewModels
             await AutoImport();
         }
 
-        private ActionCommand? _toggleCreateCollectionCommand;
-        public ActionCommand ToggleCreateCollectionCommand => _toggleCreateCollectionCommand ??= new(ToggleCreateCollection);
+        private RelayCommand? _toggleCreateCollectionCommand;
+        public RelayCommand ToggleCreateCollectionCommand => _toggleCreateCollectionCommand ??= new(ToggleCreateCollection);
         private void ToggleCreateCollection() => CreateCollectionVisibility = !CreateCollectionVisibility;
 
-        private ActionCommand? _toggleEditCollectionCommand;
-        public ActionCommand ToggleEditCollectionCommand => _toggleEditCollectionCommand ??= new(ToggleEditCollection);
+        private RelayCommand? _toggleEditCollectionCommand;
+        public RelayCommand ToggleEditCollectionCommand => _toggleEditCollectionCommand ??= new(ToggleEditCollection);
         private void ToggleEditCollection() => EditCollectionVisibility = !EditCollectionVisibility;
 
         // Create CodexCollection
-        private ReturningRelayCommand<string, CodexCollection?>? _createCollectionCommand;
-        public ReturningRelayCommand<string, CodexCollection?> CreateCollectionCommand =>
-            _createCollectionCommand ??= new(CreateAndLoadCollection, IsLegalCollectionName);
+        private RelayCommand<string>? _createCollectionCommand;
+        public RelayCommand<string> CreateCollectionCommand =>
+            _createCollectionCommand ??= new(name => CreateAndLoadCollection(name), IsLegalCollectionName);
         public CodexCollection? CreateAndLoadCollection(string? dirName)
         {
             if (dirName == null)
@@ -305,8 +305,8 @@ namespace COMPASS.Common.ViewModels
         }
 
         // Delete Collection
-        private ActionCommand? _deleteCollectionCommand;
-        public ActionCommand DeleteCollectionCommand => _deleteCollectionCommand ??= new(RaiseDeleteCollectionWarning);
+        private RelayCommand? _deleteCollectionCommand;
+        public RelayCommand DeleteCollectionCommand => _deleteCollectionCommand ??= new(RaiseDeleteCollectionWarning);
         public void RaiseDeleteCollectionWarning()
         {
             if (CurrentCollection.AllCodices.Count > 0)
@@ -351,8 +351,8 @@ namespace COMPASS.Common.ViewModels
         }
 
         //Export Collection
-        private ActionCommand? _exportCommand;
-        public ActionCommand ExportCommand => _exportCommand ??= new(Export);
+        private RelayCommand? _exportCommand;
+        public RelayCommand ExportCommand => _exportCommand ??= new(Export);
         public void Export()
         {
             //open wizard
@@ -361,8 +361,8 @@ namespace COMPASS.Common.ViewModels
             wizard.Show();
         }
 
-        private ActionCommand? _exportTagsCommand;
-        public ActionCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags);
+        private RelayCommand? _exportTagsCommand;
+        public RelayCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags);
         public void ExportTags()
         {
             SaveFileDialog saveFileDialog = new()
@@ -387,11 +387,11 @@ namespace COMPASS.Common.ViewModels
         }
 
         //Import Collection
-        private ActionCommand? _importCommand;
-        public ActionCommand ImportCommand => _importCommand ??= new(async () => await ImportSatchelAsync());
+        private AsyncRelayCommand? _importCommand;
+        public AsyncRelayCommand ImportCommand => _importCommand ??= new(ImportSatchelAsync);
 
-
-        public async Task ImportSatchelAsync(string? path = null)
+        public async Task ImportSatchelAsync() => await ImportSatchelAsync(null);
+        public async Task ImportSatchelAsync(string? path)
         {
             var collectionToImport = await IOService.OpenSatchel(path);
 
@@ -408,8 +408,8 @@ namespace COMPASS.Common.ViewModels
         }
 
         //Merge Collection into another
-        private RelayCommand<string>? _mergeCollectionIntoCommand;
-        public RelayCommand<string> MergeCollectionIntoCommand => _mergeCollectionIntoCommand ??= new(async s => await MergeIntoCollection(s));
+        private AsyncRelayCommand<string>? _mergeCollectionIntoCommand;
+        public AsyncRelayCommand<string> MergeCollectionIntoCommand => _mergeCollectionIntoCommand ??= new(MergeIntoCollection);
         public async Task MergeIntoCollection(string? collectionToMergeInto)
         {
             if (String.IsNullOrEmpty(collectionToMergeInto) || !AllCodexCollections.Select(coll => coll.DirectoryName).Contains(collectionToMergeInto))

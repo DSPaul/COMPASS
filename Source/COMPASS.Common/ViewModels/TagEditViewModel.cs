@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Commands;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Tools;
 using System;
@@ -47,8 +47,8 @@ namespace COMPASS.Common.ViewModels
 
         #region Functions and Commands
 
-        private ActionCommand? _oKCommand;
-        public ActionCommand OKCommand => _oKCommand ??= new(OKBtn, CanOkBtn);
+        private RelayCommand? _oKCommand;
+        public RelayCommand OKCommand => _oKCommand ??= new(OKBtn, CanOkBtn);
         public void OKBtn()
         {
             //Apply changes 
@@ -80,8 +80,8 @@ namespace COMPASS.Common.ViewModels
         }
         public bool CanOkBtn() => !String.IsNullOrWhiteSpace(TempTag.Content);
 
-        private ActionCommand? _cancelCommand;
-        public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
+        private RelayCommand? _cancelCommand;
+        public RelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel()
         {
             if (CreateNewTag)
@@ -92,11 +92,11 @@ namespace COMPASS.Common.ViewModels
             CloseAction();
         }
 
-        private ActionCommand? _closeColorSelectionCommand;
-        public ActionCommand CloseColorSelectionCommand => _closeColorSelectionCommand ??= new(CloseColorSelection);
+        private RelayCommand? _closeColorSelectionCommand;
+        public RelayCommand CloseColorSelectionCommand => _closeColorSelectionCommand ??= new(CloseColorSelection);
 
-        private ActionCommand? _colorSameAsParentCommand;
-        public ActionCommand ColorSameAsParentCommand => _colorSameAsParentCommand ??= new(SetColorSameAsParent);
+        private RelayCommand? _colorSameAsParentCommand;
+        public RelayCommand ColorSameAsParentCommand => _colorSameAsParentCommand ??= new(SetColorSameAsParent);
         private void SetColorSameAsParent()
         {
             TempTag.SerializableBackgroundColor = null;

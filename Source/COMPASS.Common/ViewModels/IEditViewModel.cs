@@ -1,4 +1,4 @@
-﻿using COMPASS.Common.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using System;
 
 namespace COMPASS.Common.ViewModels
@@ -10,10 +10,10 @@ namespace COMPASS.Common.ViewModels
     {
         public Action CloseAction { get; set; }
 
-        public ActionCommand CancelCommand { get; }
+        public RelayCommand CancelCommand { get; }
         public void Cancel();
 
-        public ActionCommand OKCommand { get; }
+        public RelayCommand OKCommand { get; }
         public void OKBtn();
     }
 }

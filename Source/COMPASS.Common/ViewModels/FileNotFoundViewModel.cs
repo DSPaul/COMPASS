@@ -1,4 +1,4 @@
-﻿using COMPASS.Common.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
@@ -20,8 +20,8 @@ namespace COMPASS.Common.ViewModels
 
         private Codex _codex;
 
-        private ActionCommand? _findFileCommand;
-        public ActionCommand FindFileCommand => _findFileCommand ??= new(FindFile);
+        private RelayCommand? _findFileCommand;
+        public RelayCommand FindFileCommand => _findFileCommand ??= new(FindFile);
         public void FindFile()
         {
             OpenFileDialog openFileDialog = new()
@@ -65,16 +65,16 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        private ActionCommand? _removePathCommand;
-        public ActionCommand RemovePathCommand => _removePathCommand ??= new(RemovePath);
+        private RelayCommand? _removePathCommand;
+        public RelayCommand RemovePathCommand => _removePathCommand ??= new(RemovePath);
         private void RemovePath()
         {
             _codex.Path = "";
             CloseAction?.Invoke();
         }
 
-        private ActionCommand? _deleteCodexCommand;
-        public ActionCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
+        private RelayCommand? _deleteCodexCommand;
+        public RelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
         private void DeleteCodex()
         {
             CodexViewModel.DeleteCodex(_codex);

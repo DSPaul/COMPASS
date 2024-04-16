@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Commands;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Tools;
 using FuzzySharp;
@@ -353,8 +353,8 @@ namespace COMPASS.Common.ViewModels
         }
 
         //Clear Filters
-        private ActionCommand? _clearFiltersCommand;
-        public ActionCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
+        private RelayCommand? _clearFiltersCommand;
+        public RelayCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
         public void ClearFilters()
         {
             StartReleaseDate = null;
