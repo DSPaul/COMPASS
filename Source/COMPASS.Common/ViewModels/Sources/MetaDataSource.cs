@@ -1,6 +1,6 @@
-﻿using COMPASS.Common.Models;
+﻿using Avalonia.Media;
+using COMPASS.Common.Models;
 using System;
-using System.Windows.Media;
 
 namespace COMPASS.Common.ViewModels.Sources
 {

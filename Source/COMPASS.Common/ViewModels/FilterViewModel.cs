@@ -1,17 +1,13 @@
-﻿using COMPASS.Common.Commands;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.Commands;
 using COMPASS.Common.Models;
-using COMPASS.Properties;
 using COMPASS.Common.Tools;
 using FuzzySharp;
-using GongSolutions.Wpf.DragDrop;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Input;
 
 namespace COMPASS.Common.ViewModels
 {

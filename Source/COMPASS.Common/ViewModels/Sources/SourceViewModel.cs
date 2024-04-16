@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels.Sources
 {
-    public abstract class SourceViewModel : ObservableObject
+    public abstract class SourceViewModel : ViewModelBase
     {
         protected SourceViewModel() : this(MainViewModel.CollectionVM.CurrentCollection) { }
 

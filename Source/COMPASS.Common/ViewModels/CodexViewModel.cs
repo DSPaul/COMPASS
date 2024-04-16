@@ -4,8 +4,6 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Sources;
-using COMPASS.Common.Views.Windows;
-using GongSolutions.Wpf.DragDrop;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,10 +11,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-
 namespace COMPASS.Common.ViewModels
 {
     public class CodexViewModel : ViewModelBase, IDropTarget

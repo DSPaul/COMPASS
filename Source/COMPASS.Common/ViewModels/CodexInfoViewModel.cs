@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Commands;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.Commands;
 using COMPASS.Common.Models;
 
 namespace COMPASS.Common.ViewModels

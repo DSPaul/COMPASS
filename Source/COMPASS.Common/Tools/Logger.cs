@@ -7,7 +7,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace COMPASS.Common.Tools
 {
@@ -18,10 +17,10 @@ namespace COMPASS.Common.Tools
             log4net.GlobalContext.Properties["CompassDataPath"] = SettingsViewModel.CompassDataPath;
             log4net.Config.XmlConfigurator.Configure(new FileInfo("log4net.config"));
             FileLog = log4net.LogManager.GetLogger(nameof(Logger));
-            if (Application.Current is not null)
-            {
-                Application.Current.DispatcherUnhandledException += LogUnhandledException;
-            }
+            //if (Application.Current is not null)
+            //{
+            //    Application.Current.DispatcherUnhandledException += LogUnhandledException;
+            //}
             Info($"Launching Compass v{Reflection.Version}");
         }
 
@@ -57,17 +56,16 @@ namespace COMPASS.Common.Tools
             FileLog?.Error(message, ex);
         }
 
-        private static void LogUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        public static void LogUnhandledException(object sender, Exception e)
         {
-            FileLog?.Fatal(e.Exception.ToString(), e.Exception);
+            FileLog?.Fatal(e.ToString(), e);
             //prompt user to submit logs and open an issue
-            string message = $"Its seems COMPASS has run into a critical error ({e.Exception.Message}).\n" +
+            string message = $"Its seems COMPASS has run into a critical error ({e.Message}).\n" +
                 $"You can help improve COMPASS by opening an issue on {Constants.RepoURL} with the error message. \n" +
                 $"Please include the log file located at {SettingsViewModel.CompassDataPath}\\logs.";
             if (Task.Run(() => App.Container.Resolve<IMessageBox>()
                 .Show(message, $"COMPASS ran into a critical error.", MessageBoxButton.OK, MessageBoxImage.Error)).Result == MessageBoxResult.OK)
             {
-                e.Handled = true;
                 Environment.Exit(1);
             }
         }

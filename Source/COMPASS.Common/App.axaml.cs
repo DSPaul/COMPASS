@@ -5,15 +5,13 @@ using Avalonia.Markup.Xaml;
 
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.Views;
+using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common;
 
 public partial class App : Application
 {
-    public override void Initialize()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+    public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
     public override void OnFrameworkInitializationCompleted()
     {

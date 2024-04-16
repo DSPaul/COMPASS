@@ -2,6 +2,8 @@
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Sources;
+using ImageMagick;
+using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
