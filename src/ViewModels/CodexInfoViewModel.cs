@@ -3,15 +3,13 @@ using COMPASS.Models;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexInfoViewModel : ObservableObject
+    public class CodexInfoViewModel : ViewModelBase
     {
 
         public CodexInfoViewModel(MainViewModel mvm)
         {
             MVM = mvm;
         }
-
-        public MainViewModel MVM { get; }
 
         //whether or not the codex info panel is active
         public bool ShowCodexInfo
@@ -20,14 +18,14 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.ShowCodexInfo = value;
-                RaisePropertyChanged(nameof(ShowInfo));
-                RaisePropertyChanged();
+                OnPropertyChanged(nameof(ShowInfo));
+                OnPropertyChanged();
             }
         }
 
         //what the visibility is actually bound to
-        public bool ShowInfo => AutoHide ? ShowCodexInfo && MVM.CurrentLayout.SelectedCodex is not null : ShowCodexInfo;
-        public void SelectedItemChanged() => RaisePropertyChanged(nameof(ShowInfo));
+        public bool ShowInfo => AutoHide ? ShowCodexInfo && MVM!.CurrentLayout.SelectedCodex is not null : ShowCodexInfo;
+        public void SelectedItemChanged() => OnPropertyChanged(nameof(ShowInfo));
 
         public bool AutoHide
         {
@@ -35,8 +33,8 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.AutoHideCodexInfo = value;
-                RaisePropertyChanged();
-                RaisePropertyChanged(nameof(ShowInfo));
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowInfo));
             }
         }
 

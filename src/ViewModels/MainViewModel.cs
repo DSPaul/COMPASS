@@ -1,4 +1,5 @@
 ﻿using AutoUpdaterDotNET;
+using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Services;

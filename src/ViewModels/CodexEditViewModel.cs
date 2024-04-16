@@ -131,7 +131,7 @@ namespace COMPASS.ViewModels
             {
                 //recalculate treeview source
                 _treeViewSource = null;
-                RaisePropertyChanged(nameof(TreeViewSource));
+                OnPropertyChanged(nameof(TreeViewSource));
 
                 //Apply right checkboxes in AllTags
                 foreach (TreeViewNode t in AllTreeViewNodes)

@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Interfaces;
 using COMPASS.Services;
 using COMPASS.Tools;
@@ -246,7 +247,7 @@ namespace COMPASS.Models
 
         public void Save()
         {
-            RaisePropertyChanged(nameof(AllCodices));
+            OnPropertyChanged(nameof(AllCodices));
             Directory.CreateDirectory(UserFilesPath);
             bool savedTags = SaveTags();
             bool savedCodices = SaveCodices();

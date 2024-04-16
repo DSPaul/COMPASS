@@ -1,4 +1,5 @@
-﻿using COMPASS.Services;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Services;
 using COMPASS.Tools;
 using System;
 using System.Collections.Generic;
@@ -67,7 +68,7 @@ namespace COMPASS.Models
             set
             {
                 SetProperty(ref _serializableBackgroundColor, value);
-                RaisePropertyChanged(nameof(BackgroundColor));
+                OnPropertyChanged(nameof(BackgroundColor));
             }
         }
 

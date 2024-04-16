@@ -15,7 +15,7 @@ using System.Windows.Input;
 
 namespace COMPASS.ViewModels
 {
-    public class FilterViewModel : ObservableObject, IDropTarget
+    public class FilterViewModel : ViewModelBase, IDropTarget
     {
         public FilterViewModel(ObservableCollection<Codex> allCodices)
         {
@@ -216,7 +216,7 @@ namespace COMPASS.ViewModels
                 Settings.Default[nameof(SortDirection)] = (int)value;
                 Settings.Default.Save();
                 ApplySorting();
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -228,7 +228,7 @@ namespace COMPASS.ViewModels
                 Settings.Default[nameof(SortProperty)] = value;
                 Settings.Default.Save();
                 ApplySorting();
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -254,9 +254,9 @@ namespace COMPASS.ViewModels
             //cause derived lists to update when codex gets updated
             foreach (Codex c in _allCodices)
             {
-                c.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(Favorites));
-                c.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(RecentCodices));
-                c.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(MostOpenedCodices));
+                c.PropertyChanged += (_, _) => OnPropertyChanged(nameof(Favorites));
+                c.PropertyChanged += (_, _) => OnPropertyChanged(nameof(RecentCodices));
+                c.PropertyChanged += (_, _) => OnPropertyChanged(nameof(MostOpenedCodices));
             }
         }
 
@@ -503,10 +503,10 @@ namespace COMPASS.ViewModels
             {
                 FilteredCodices = new(filteredCodices);
                 //Also apply filtering to these lists
-                RaisePropertyChanged(nameof(Favorites));
-                RaisePropertyChanged(nameof(RecentCodices));
-                RaisePropertyChanged(nameof(MostOpenedCodices));
-                RaisePropertyChanged(nameof(RecentlyAddedCodices));
+                OnPropertyChanged(nameof(Favorites));
+                OnPropertyChanged(nameof(RecentCodices));
+                OnPropertyChanged(nameof(MostOpenedCodices));
+                OnPropertyChanged(nameof(RecentlyAddedCodices));
 
                 FilteredCodices.CollectionChanged += (_, _) => ApplySorting();
             }

@@ -28,7 +28,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.SelectedTab = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
                 if (value > 0) Collapsed = false;
             }
         }

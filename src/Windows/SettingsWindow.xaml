@@ -743,6 +743,13 @@
                                         Material Design Toolkit
                                     </Hyperlink>
                                 </TextBlock>
+                                <TextBlock Text="Reactivity"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/CommunityToolkit/dotnet"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        CommunityToolkit
+                                    </Hyperlink>
+                                </TextBlock>
                                 <TextBlock Text="Json Parsing: "/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/JamesNK/Newtonsoft.Json"
@@ -764,13 +771,13 @@
                                         OpenCVSharp
                                     </Hyperlink>
                                 </TextBlock>
-                                <TextBlock Text="Web Scraping:"/>
+                                <!--<TextBlock Text="Web Scraping:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/rflechner/ScrapySharp"
                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         ScrapySharp
                                     </Hyperlink>
-                                </TextBlock>
+                                </TextBlock>-->
                                 <TextBlock Text="Website Screenshotting:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/SeleniumHQ/selenium"

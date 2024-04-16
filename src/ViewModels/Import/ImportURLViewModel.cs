@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace COMPASS.ViewModels.Import
 {
-    public class ImportURLViewModel : ObservableObject
+    public class ImportURLViewModel : ViewModelBase
     {
 
         public ImportURLViewModel(ImportSource importSource)

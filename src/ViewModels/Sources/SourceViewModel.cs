@@ -1,4 +1,5 @@
-﻿using COMPASS.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Models;
 using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources

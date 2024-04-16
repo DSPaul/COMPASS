@@ -59,7 +59,7 @@ namespace COMPASS.ViewModels.Import
             set
             {
                 SetProperty(ref _collectionName, value);
-                RaisePropertyChanged(nameof(IsCollectionNameLegal));
+                OnPropertyChanged(nameof(IsCollectionNameLegal));
             }
         }
         public bool IsCollectionNameLegal => MainViewModel.CollectionVM.IsLegalCollectionName(CollectionName);
@@ -169,7 +169,7 @@ namespace COMPASS.ViewModels.Import
                 ContentSelectorVM.UpdateSteps();
                 Steps.AddRange(ContentSelectorVM.Steps);
             }
-            RaisePropertyChanged(nameof(Steps));
+            OnPropertyChanged(nameof(Steps));
         }
 
         public void Cleanup() => MainViewModel.CollectionVM.DeleteCollection(CollectionToImport);

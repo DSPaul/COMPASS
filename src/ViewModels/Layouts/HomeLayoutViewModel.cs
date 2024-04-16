@@ -15,8 +15,8 @@
             set
             {
                 Properties.Settings.Default.HomeCoverSize = value;
-                RaisePropertyChanged();
-                RaisePropertyChanged(nameof(TileHeight));
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(TileHeight));
             }
         }
 
@@ -28,7 +28,7 @@
             set
             {
                 Properties.Settings.Default.HomeShowTitle = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Commands;
 using COMPASS.Models;
 using System.Collections.ObjectModel;
 using System.Threading;
@@ -31,9 +32,9 @@ namespace COMPASS.ViewModels
             private set
             {
                 SetProperty(ref _counter, value);
-                RaisePropertyChanged(nameof(Percentage));
-                RaisePropertyChanged(nameof(FullText));
-                RaisePropertyChanged(nameof(WorkInProgress));
+                OnPropertyChanged(nameof(Percentage));
+                OnPropertyChanged(nameof(FullText));
+                OnPropertyChanged(nameof(WorkInProgress));
             }
         }
 
@@ -45,9 +46,9 @@ namespace COMPASS.ViewModels
             {
                 if (value == _totalAmount) return;
                 SetProperty(ref _totalAmount, value);
-                RaisePropertyChanged(nameof(Percentage));
-                RaisePropertyChanged(nameof(FullText));
-                RaisePropertyChanged(nameof(WorkInProgress));
+                OnPropertyChanged(nameof(Percentage));
+                OnPropertyChanged(nameof(FullText));
+                OnPropertyChanged(nameof(WorkInProgress));
             }
         }
 
@@ -72,7 +73,7 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref _text, value);
-                RaisePropertyChanged(nameof(FullText));
+                OnPropertyChanged(nameof(FullText));
             }
         }
 
@@ -125,7 +126,7 @@ namespace COMPASS.ViewModels
             GlobalCancellationTokenSource = new();
             //force refresh the command so that it grabs the right cancel function
             _cancelTasksCommand = null;
-            RaisePropertyChanged(nameof(CancelTasksCommand));
+            OnPropertyChanged(nameof(CancelTasksCommand));
             Cancelling = false;
         }
 
@@ -135,7 +136,7 @@ namespace COMPASS.ViewModels
         {
             GlobalCancellationTokenSource.Cancel();
             Cancelling = true;
-            RaisePropertyChanged(nameof(FullText));
+            OnPropertyChanged(nameof(FullText));
         }
     }
 }

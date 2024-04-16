@@ -1,4 +1,5 @@
 ﻿using AutoUpdaterDotNET;
+using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Commands;
 using COMPASS.Models;
 using COMPASS.Services;
@@ -122,7 +123,7 @@ namespace COMPASS.ViewModels
         {
             //Tell the window that the FiletypePreferences dict might have changed so it needs to fetch it again
             _filetypePreferences = null;
-            RaisePropertyChanged(nameof(FiletypePreferences));
+            OnPropertyChanged(nameof(FiletypePreferences));
         }
         #endregion
 
@@ -379,7 +380,7 @@ namespace COMPASS.ViewModels
             set
             {
                 Properties.Settings.Default.AutoLinkFolderTagSameName = value;
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
         #endregion
@@ -402,9 +403,9 @@ namespace COMPASS.ViewModels
 
         private void BrokenCodicesChanged()
         {
-            RaisePropertyChanged(nameof(BrokenCodices));
-            RaisePropertyChanged(nameof(BrokenCodicesAmount));
-            RaisePropertyChanged(nameof(BrokenCodicesMessage));
+            OnPropertyChanged(nameof(BrokenCodices));
+            OnPropertyChanged(nameof(BrokenCodicesAmount));
+            OnPropertyChanged(nameof(BrokenCodicesMessage));
         }
 
         private ActionCommand? _showBrokenCodicesCommand;
@@ -423,7 +424,7 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref _amountRenamed, value);
-                RaisePropertyChanged(nameof(RenameCompleteMessage));
+                OnPropertyChanged(nameof(RenameCompleteMessage));
                 BrokenCodicesChanged();
             }
         }
