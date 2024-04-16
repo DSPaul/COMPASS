@@ -1,20 +1,25 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using COMPASS.Models;
 using COMPASS.Tools;
 using System;
 
 namespace COMPASS.ViewModels
 {
-    public class TagEditViewModel : ObservableObject, IEditViewModel
+    public class TagEditViewModel : ObservableRecipient, IEditViewModel, IRecipient<PropertyChangedMessage<string>>
     {
-        public TagEditViewModel(Tag? toEdit, bool createNew)
+        public TagEditViewModel(Tag? toEdit, bool createNew) : base()
         {
             _editedTag = toEdit ?? new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             CreateNewTag = createNew;
 
             _tempTag = new Tag(_editedTag);
+
+            IsActive = true;
         }
+
         #region Properties
 
         private Tag _editedTag;
@@ -46,6 +51,15 @@ namespace COMPASS.ViewModels
         #endregion
 
         #region Functions and Commands
+
+        /// <inheritdoc/>
+        public void Receive(PropertyChangedMessage<string> message)
+        {
+            if (message.Sender.GetType() == typeof(Tag) && message.PropertyName == nameof(Tag.Content))
+            {
+                OKCommand.NotifyCanExecuteChanged();
+            }
+        }
 
         private RelayCommand? _oKCommand;
         public RelayCommand OKCommand => _oKCommand ??= new(OKBtn, CanOkBtn);

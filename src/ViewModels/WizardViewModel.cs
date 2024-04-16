@@ -7,6 +7,11 @@ namespace COMPASS.ViewModels
 {
     public abstract class WizardViewModel : ViewModelBase
     {
+        protected WizardViewModel()
+        {
+            Steps.CollectionChanged += (_, _) => OnStepsChanged();
+        }
+
         private ObservableCollection<string> _steps = new();
         public virtual ObservableCollection<string> Steps
         {
@@ -14,7 +19,8 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref _steps, value);
-                OnPropertyChanged(nameof(CurrentStep));
+                _steps.CollectionChanged += (_, _) => OnStepsChanged();
+                OnStepsChanged();
             }
         }
 
@@ -34,14 +40,19 @@ namespace COMPASS.ViewModels
                 }
 
                 SetProperty(ref _stepCounter, value);
-                OnPropertyChanged(nameof(CurrentStep));
-                PrevStepCommand.NotifyCanExecuteChanged();
-                NextStepCommand.NotifyCanExecuteChanged();
-                FinishCommand.NotifyCanExecuteChanged();
+                OnStepsChanged();
             }
         }
 
-        public string CurrentStep => Steps[StepCounter];
+        protected void OnStepsChanged()
+        {
+            OnPropertyChanged(nameof(CurrentStep));
+            PrevStepCommand.NotifyCanExecuteChanged();
+            NextStepCommand.NotifyCanExecuteChanged();
+            FinishCommand.NotifyCanExecuteChanged();
+        }
+
+        public string CurrentStep => StepCounter >= Steps.Count ? "" : Steps[StepCounter];
 
         private RelayCommand? _cancelCommand;
         public virtual RelayCommand CancelCommand => _cancelCommand ??= new((CancelAction ?? CloseAction) ?? new Action(() => { }));

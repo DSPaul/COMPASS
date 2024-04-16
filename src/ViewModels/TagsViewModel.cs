@@ -25,7 +25,16 @@ namespace COMPASS.ViewModels
         private readonly FilterViewModel _filterVM;
 
         //Tag for Context Menu
-        public Tag? ContextTag { get; set; }
+        private Tag? _contextTag;
+        public Tag? ContextTag
+        {
+            get => _contextTag;
+            set
+            {
+                SetProperty(ref _contextTag, value);
+                SortChildrenCommand.NotifyCanExecuteChanged();
+            }
+        }
 
         //Selected tab from tabControl with options to add tags
         private int _selectedTab = 0;
@@ -162,7 +171,7 @@ namespace COMPASS.ViewModels
         }
 
         private RelayCommand? _exportTagsCommand;
-        public RelayCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags, _codexCollection.RootTags.Any);
+        public RelayCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags);
         public void ExportTags()
         {
             var vm = new ExportCollectionViewModel
