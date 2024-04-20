@@ -101,8 +101,6 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _editCollectionVisibility, value);
         }
 
-        public bool IncludeFilesInExport { get; set; } = false;
-
         #endregion
 
         #region Methods and Commands

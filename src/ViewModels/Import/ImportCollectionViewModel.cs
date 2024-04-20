@@ -49,6 +49,8 @@ namespace COMPASS.ViewModels.Import
         /// </summary>
         public bool ImportTagsSeperatly { get; set; } = false;
 
+        public bool _deleteSatchelOnWizardClosing = true; //Delete the satchel if the wizard closes for any reason
+
         //OVERVIEW STEP
         private bool _mergeIntoCollection = false;
         public bool MergeIntoCollection
@@ -89,6 +91,7 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
+
         //Don't show on overview tab if new collection is chosen with illegal name
         public override bool ShowNextButton() => base.ShowNextButton() &&
             !(CurrentStep == "Overview" && !MergeIntoCollection && !IsCollectionNameLegal);
@@ -97,7 +100,7 @@ namespace COMPASS.ViewModels.Import
 
         public override async Task Finish()
         {
-
+            _deleteSatchelOnWizardClosing = false; //need to keep files around to merge files and cover art
             CloseAction?.Invoke();
 
             //if we do a quick import, set all the things in the contentSelector have the right value
@@ -167,6 +170,8 @@ namespace COMPASS.ViewModels.Import
             }
 
             await targetCollection.MergeWith(ContentSelectorVM.CuratedCollection, ImportTagsSeperatly);
+
+            Cleanup();
         }
 
         public void UpdateSteps()
@@ -182,5 +187,12 @@ namespace COMPASS.ViewModels.Import
         }
 
         public void Cleanup() => MainViewModel.CollectionVM.DeleteCollection(CollectionToImport);
+        public void OnWizardClosing()
+        {
+            if (_deleteSatchelOnWizardClosing)
+            {
+                Cleanup();
+            }
+        }
     }
 }
