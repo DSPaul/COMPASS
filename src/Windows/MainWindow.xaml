@@ -21,6 +21,7 @@
     PreviewKeyDown="Window_PreviewKeyDown">
     <Window.Resources>
         <converters:WindowStateToBoolConverter x:Key="IsMaximizedConverter"/>
+        <converters:ToStringConverter x:Key="ToString"/>
         <DataTemplate DataType="{x:Type layouts:ListLayoutViewModel}">
             <views:ListLayout DataContext="{Binding}"/>
         </DataTemplate>
@@ -39,6 +40,7 @@
         <DataTemplate DataType="{x:Type viewmodels:CodexInfoViewModel}">
             <views:CodexInfoView DataContext="{Binding}"/>
         </DataTemplate>
+
     </Window.Resources>
     <Window.Style>
         <Style>
@@ -235,7 +237,7 @@
                                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                                 <Setter Property="MenuItem.Command" Value="{Binding Path=DataContext.MergeCollectionIntoCommand,
                                                         RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type MenuItem}}}"/>
-                                                <Setter Property="MenuItem.CommandParameter" Value="{Binding Header, RelativeSource={RelativeSource self}}"/>
+                                                <Setter Property="MenuItem.CommandParameter" Value="{Binding Header, RelativeSource={RelativeSource self}, Converter={StaticResource ToString}}"/>
                                             </Style>
                                         </MenuItem.ItemContainerStyle>
                                     </MenuItem>
