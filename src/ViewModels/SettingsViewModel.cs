@@ -6,8 +6,9 @@ using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
 using COMPASS.Windows;
-using Ionic.Zip;
 using Microsoft.Win32;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -689,13 +690,11 @@ namespace COMPASS.ViewModels
             Process.Start(startInfo);
         }
 
-        private readonly BackgroundWorker _createZipWorker = new();
-        private readonly BackgroundWorker _extractZipWorker = new();
         private LoadingWindow? _lw;
 
-        private RelayCommand? _backupLocalFilesCommand;
-        public RelayCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
-        public void BackupLocalFiles()
+        private AsyncRelayCommand? _backupLocalFilesCommand;
+        public AsyncRelayCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
+        public async Task BackupLocalFiles()
         {
             SaveFileDialog saveFileDialog = new()
             {
@@ -712,16 +711,19 @@ namespace COMPASS.ViewModels
                 MainViewModel.CollectionVM.CurrentCollection.Save();
                 SavePreferences();
 
-                _createZipWorker.DoWork += CreateZip;
-                _createZipWorker.RunWorkerCompleted += CreateZipDone;
+                await Task.Run(() => CompressUserDataToZip(targetPath));
 
-                _createZipWorker.RunWorkerAsync(targetPath);
+                _lw.Close();
             }
         }
 
-        private RelayCommand? _restoreBackupCommand;
-        public RelayCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
-        public void RestoreBackup()
+        private void CompressUserDataToZip(string zipPath) =>
+            //zip up collections, easiest with system.IO.Compression
+            System.IO.Compression.ZipFile.CreateFromDirectory(CodexCollection.CollectionsPath, zipPath, System.IO.Compression.CompressionLevel.Optimal, true);
+
+        private AsyncRelayCommand? _restoreBackupCommand;
+        public AsyncRelayCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
+        public async Task RestoreBackup()
         {
             OpenFileDialog openFileDialog = new()
             {
@@ -734,44 +736,23 @@ namespace COMPASS.ViewModels
                 _lw = new("Restoring Backup");
                 _lw.Show();
 
-                _extractZipWorker.DoWork += ExtractZip;
-                _extractZipWorker.RunWorkerCompleted += ExtractZipDone;
+                await Task.Run(() => ExtractZip(targetPath));
 
-                _extractZipWorker.RunWorkerAsync(targetPath);
+                //restore collection that was open
+                MainViewModel.CollectionVM.CurrentCollection = new(Properties.Settings.Default.StartupCollection);
+                _lw?.Close();
             }
         }
 
-        private void CreateZip(object? sender, DoWorkEventArgs e)
+        private void ExtractZip(string sourcePath)
         {
-            if (e.Argument is not string targetPath)
-            {
-                return;
-            }
-
-            using ZipFile zip = new();
-            zip.AddDirectory(CodexCollection.CollectionsPath, "Collections");
-            zip.AddFile(PreferencesFilePath, "");
-            zip.Save(targetPath);
-        }
-
-        private void ExtractZip(object? sender, DoWorkEventArgs e)
-        {
-            if (e.Argument is not string sourcePath || !Path.Exists(sourcePath))
+            if (!Path.Exists(sourcePath))
             {
                 Logger.Warn($"Cannot extract sourcePath as it does not exit");
                 return;
             }
-            using ZipFile zip = ZipFile.Read(sourcePath);
-            zip.ExtractAll(CompassDataPath, ExtractExistingFileAction.OverwriteSilently);
-        }
-
-        private void CreateZipDone(object? sender, RunWorkerCompletedEventArgs e) => _lw?.Close();
-
-        private void ExtractZipDone(object? sender, RunWorkerCompletedEventArgs e)
-        {
-            //restore collection that was open
-            MainViewModel.CollectionVM.CurrentCollection = new(Properties.Settings.Default.StartupCollection);
-            _lw?.Close();
+            using ZipArchive archive = ZipArchive.Open(sourcePath);
+            archive.ExtractToDirectory(CompassDataPath);
         }
         #endregion
 

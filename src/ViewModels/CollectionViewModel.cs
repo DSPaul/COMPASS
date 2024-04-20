@@ -5,8 +5,10 @@ using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
 using COMPASS.Windows;
-using Ionic.Zip;
 using Microsoft.Win32;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -376,11 +378,11 @@ namespace COMPASS.ViewModels
             CurrentCollection.SaveTags();
 
             string targetPath = saveFileDialog.FileName;
-            using ZipFile zip = new();
-            zip.AddFile(CurrentCollection.TagsDataFilePath, "");
+            using var archive = ZipArchive.Create();
+            archive.AddEntry(Constants.TagsFileName, CurrentCollection.TagsDataFilePath);
 
             //Export
-            zip.Save(targetPath);
+            archive.SaveTo(targetPath, CompressionType.None);
             Logger.Info($"Exported Tags from {CurrentCollection.DirectoryName} to {targetPath}");
         }
 
