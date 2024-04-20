@@ -60,6 +60,7 @@ namespace COMPASS.ViewModels
         }
 
         public bool IncludeFiles { get; set; }
+        public bool IncludeCoverArt { get; set; }
 
         public override async Task Finish()
         {
@@ -138,6 +139,8 @@ namespace COMPASS.ViewModels
                 foreach (Codex codex in itemsWithOfflineSource)
                 {
                     string relativePath = codex.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
+
+                    //Add the file
                     if (IncludeFiles && File.Exists(codex.Path))
                     {
                         int indexStartFilename = relativePath.Length - Path.GetFileName(codex.Path)!.Length;
@@ -150,6 +153,12 @@ namespace COMPASS.ViewModels
                     if (ContentSelectorVM.RemovePersonalData)
                     {
                         codex.Path = relativePath;
+                    }
+
+                    //Add cover art
+                    if (IncludeCoverArt && File.Exists(codex.CoverArt))
+                    {
+                        zip.AddFile(codex.CoverArt, "CoverArt");
                     }
                 }
 
