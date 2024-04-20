@@ -50,7 +50,16 @@ namespace COMPASS.ViewModels.Import
         public bool ImportTagsSeperatly { get; set; } = false;
 
         //OVERVIEW STEP
-        public bool MergeIntoCollection { get; set; } = false;
+        private bool _mergeIntoCollection = false;
+        public bool MergeIntoCollection
+        {
+            get => _mergeIntoCollection;
+            set
+            {
+                SetProperty(ref _mergeIntoCollection, value);
+                RefreshNavigationBtns();
+            }
+        }
 
         private string _collectionName = "Unnamed Collection";
         public string CollectionName
@@ -60,6 +69,7 @@ namespace COMPASS.ViewModels.Import
             {
                 SetProperty(ref _collectionName, value);
                 OnPropertyChanged(nameof(IsCollectionNameLegal));
+                RefreshNavigationBtns();
             }
         }
         public bool IsCollectionNameLegal => MainViewModel.CollectionVM.IsLegalCollectionName(CollectionName);
