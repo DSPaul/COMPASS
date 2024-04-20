@@ -5,8 +5,9 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.Views.Windows;
-using Ionic.Zip;
-using Microsoft.Win32;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -100,8 +101,6 @@ namespace COMPASS.Common.ViewModels
             get => _editCollectionVisibility;
             set => SetProperty(ref _editCollectionVisibility, value);
         }
-
-        public bool IncludeFilesInExport { get; set; } = false;
 
         #endregion
 
@@ -378,11 +377,11 @@ namespace COMPASS.Common.ViewModels
             CurrentCollection.SaveTags();
 
             string targetPath = saveFileDialog.FileName;
-            using ZipFile zip = new();
-            zip.AddFile(CurrentCollection.TagsDataFilePath, "");
+            using var archive = ZipArchive.Create();
+            archive.AddEntry(Constants.TagsFileName, CurrentCollection.TagsDataFilePath);
 
             //Export
-            zip.Save(targetPath);
+            archive.SaveTo(targetPath, CompressionType.None);
             Logger.Info($"Exported Tags from {CurrentCollection.DirectoryName} to {targetPath}");
         }
 

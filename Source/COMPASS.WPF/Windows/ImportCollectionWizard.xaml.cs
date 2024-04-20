@@ -16,6 +16,6 @@ namespace COMPASS.Windows
             viewModel.CancelAction = () => DialogResult = false;
         }
 
-        private void Window_Closed(object sender, System.EventArgs e) => ((ImportCollectionViewModel)DataContext).Cleanup();
+        private void Window_Closed(object sender, System.EventArgs e) => ((ImportCollectionViewModel)DataContext).OnWizardClosing();
     }
 }

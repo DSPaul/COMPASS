@@ -5,6 +5,8 @@ using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using HtmlAgilityPack;
 using Newtonsoft.Json.Linq;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -131,7 +133,7 @@ namespace COMPASS.Common.Services
             ClearTmpData(tmpCollectionPath);
 
             //unzip the file to tmp folder
-            using ZipFile zip = ZipFile.Read(path);
+            using ZipArchive archive = ZipArchive.Open(path);
 
             //report progress
             var progressVM = ProgressViewModel.GetInstance();
@@ -140,11 +142,12 @@ namespace COMPASS.Common.Services
             progressVM.TotalAmount = 1;
 
             //extract
-            await Task.Run(() => zip.ExtractAll(tmpCollectionPath));
+            await Task.Run(() => archive.ExtractToDirectory(tmpCollectionPath)); //TODO add cancelation and progress reporting
 
             progressVM.IncrementCounter();
             return tmpCollectionPath;
         }
+
         public static void ClearTmpData(string? tempPath = null)
         {
             if (tempPath == null)
@@ -279,9 +282,9 @@ namespace COMPASS.Common.Services
             }
 
             //Check compatibility
-            using (ZipFile zip = ZipFile.Read(path))
+            using (ZipArchive archive = ZipArchive.Open(path))
             {
-                var satchelInfoFile = zip.SingleOrDefault(entry => entry.FileName == Constants.SatchelInfoFileName);
+                var satchelInfoFile = archive.Entries.SingleOrDefault(entry => entry.Key == Constants.SatchelInfoFileName);
                 if (satchelInfoFile == null)
                 {
                     //No version information means we cannot ensure compatibility, so abort
@@ -294,7 +297,7 @@ namespace COMPASS.Common.Services
 
                 //Read the file contents
                 using var stream = new MemoryStream();
-                satchelInfoFile.Extract(stream);
+                satchelInfoFile.WriteTo(stream);
                 stream.Seek(0, SeekOrigin.Begin);
                 using StreamReader reader = new(stream);
                 string json = reader.ReadToEnd();
@@ -313,7 +316,7 @@ namespace COMPASS.Common.Services
                 var currentVersion = Assembly.GetExecutingAssembly().GetName().Version!;
                 var minVersions = new List<Version> { currentVersion }; //keep a list of min requirements
 
-                var filesInZip = zip.Select(entry => entry.FileName).ToList();
+                var filesInZip = archive.Entries.Select(entry => entry.Key).ToList();
 
                 //Check Codex version
                 if (filesInZip.Contains(Constants.CodicesFileName))

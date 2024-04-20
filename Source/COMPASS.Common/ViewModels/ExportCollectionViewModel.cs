@@ -2,8 +2,9 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
-using Ionic.Zip;
-using Microsoft.Win32;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
 using System;
 using System.IO;
 using System.Linq;
@@ -60,6 +61,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         public bool IncludeFiles { get; set; }
+        public bool IncludeCoverArt { get; set; }
 
         public override async Task Finish()
         {
@@ -127,8 +129,7 @@ namespace COMPASS.Common.ViewModels
                 ContentSelectorVM.CuratedCollection.InitAsNew();
                 ContentSelectorVM.CuratedCollection.Save();
 
-                using ZipFile zip = new();
-                zip.AddDirectory(ContentSelectorVM.CuratedCollection.FullDataPath);
+                using var archive = ZipArchive.Create();
 
                 //Change Codex Path to relative and add those files if the options is set
                 var itemsWithOfflineSource = ContentSelectorVM.CuratedCollection.AllCodices
@@ -138,10 +139,11 @@ namespace COMPASS.Common.ViewModels
                 foreach (Codex codex in itemsWithOfflineSource)
                 {
                     string relativePath = codex.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
+
+                    //Add the file
                     if (IncludeFiles && File.Exists(codex.Path))
                     {
-                        int indexStartFilename = relativePath.Length - Path.GetFileName(codex.Path)!.Length;
-                        zip.AddFile(codex.Path, Path.Combine("Files", relativePath[0..indexStartFilename]));
+                        archive.AddEntry(Path.Combine("Files", relativePath), codex.Path);
                         //keep the relative path, will be used during import to link the included files
                         codex.Path = relativePath;
                     }
@@ -151,34 +153,32 @@ namespace COMPASS.Common.ViewModels
                     {
                         codex.Path = relativePath;
                     }
+
+                    //Add cover art
+                    if (IncludeCoverArt && File.Exists(codex.CoverArt))
+                    {
+                        archive.AddEntry(Path.Combine("CoverArt", Path.GetFileName(codex.CoverArt)), codex.CoverArt);
+                    }
                 }
 
+                //Save changes
                 ContentSelectorVM.CuratedCollection.SaveCodices();
-                zip.UpdateFile(ContentSelectorVM.CuratedCollection.CodicesDataFilePath, "");
+
+                //Now add xml files
+                archive.AddAllFromDirectory(ContentSelectorVM.CuratedCollection.FullDataPath);
 
                 //Progress reporting
                 progressVM.Text = "Exporting Collection";
                 progressVM.ShowCount = false;
                 progressVM.ResetCounter();
-                zip.SaveProgress += (_, args) =>
-                {
-                    progressVM.TotalAmount = Math.Max(progressVM.TotalAmount, args.EntriesTotal);
-                    if (args.EventType == ZipProgressEventType.Saving_AfterWriteEntry)
-                    {
-                        progressVM.IncrementCounter();
-                    }
-                };
+                //TODO find new way to track progress
 
                 //Add version so we can check compatibility when importing
                 SatchelInfo info = new();
-                zip.AddEntry(Constants.SatchelInfoFileName, JsonSerializer.Serialize(info));
+                archive.AddEntry(Constants.SatchelInfoFileName, new MemoryStream(JsonSerializer.SerializeToUtf8Bytes(info)));
 
                 //Export
-                await Task.Run(() =>
-                {
-                    zip.Save(targetPath);
-                    Directory.Delete(ContentSelectorVM.CuratedCollection.FullDataPath, true);
-                });
+                await Task.Run(() => archive.SaveTo(targetPath, CompressionType.None));
                 Logger.Info($"Exported {CollectionToExport.DirectoryName} to {targetPath}");
             }
             catch (Exception ex)
@@ -186,6 +186,10 @@ namespace COMPASS.Common.ViewModels
                 Logger.Error("Export failed", ex);
                 progressVM.Clear();
                 CloseAction?.Invoke();
+            }
+            finally
+            {
+                Directory.Delete(ContentSelectorVM.CuratedCollection.FullDataPath, true);
             }
         }
 

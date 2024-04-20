@@ -47,6 +47,11 @@ namespace COMPASS.Common.ViewModels
         protected void OnStepsChanged()
         {
             OnPropertyChanged(nameof(CurrentStep));
+            RefreshNavigationBtns();
+        }
+
+        protected void RefreshNavigationBtns()
+        {
             PrevStepCommand.NotifyCanExecuteChanged();
             NextStepCommand.NotifyCanExecuteChanged();
             FinishCommand.NotifyCanExecuteChanged();

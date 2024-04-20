@@ -1,4 +1,5 @@
-﻿using COMPASS.ViewModels;
+﻿using COMPASS.Tools;
+using COMPASS.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -171,8 +172,17 @@ namespace COMPASS.Windows
 
         private void Toggle_ContextMenu(object sender, RoutedEventArgs e)
         {
-            ((Button)sender).ContextMenu!.PlacementTarget = (Button)sender;
-            ((Button)sender).ContextMenu!.IsOpen = !((Button)sender).ContextMenu!.IsOpen;
+            try
+            {
+                Button btn = (Button)sender;
+                btn.ContextMenu!.PlacementTarget = btn;
+                btn.ContextMenu!.IsOpen = !btn.ContextMenu!.IsOpen;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Could not open collection Context menu", ex);
+                return;
+            }
         }
 
         private async void Window_PreviewKeyDown(object sender, KeyEventArgs e)

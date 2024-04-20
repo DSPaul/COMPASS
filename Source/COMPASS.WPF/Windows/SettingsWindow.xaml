@@ -777,7 +777,14 @@
                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         ScrapySharp
                                     </Hyperlink>
-                                </TextBlock> -->
+                                </TextBlock>-->
+                                <TextBlock Text="Zipping and unzipping:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/adamhathcock/sharpcompress"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                         SharpCompress
+                                     </Hyperlink>          
+                                </TextBlock>
                                 <TextBlock Text="Website Screenshotting:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/SeleniumHQ/selenium"

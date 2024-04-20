@@ -430,7 +430,7 @@ namespace COMPASS.Common.Models
                     }
                 }
 
-                //Move or Generate Thumbnail file
+                //Move Thumbnail file
                 if (File.Exists(codex.Thumbnail))
                 {
                     try
@@ -442,13 +442,15 @@ namespace COMPASS.Common.Models
                         Logger.Warn($"Failed to copy thumbnail of {codex.Title}", ex);
                     }
                 }
-                else
-                {
-                    CoverService.CreateThumbnail(codex);
-                }
 
                 //update img path to these new files
                 codex.SetImagePaths(this);
+
+                //if no thumbnail file was moved, create one
+                if (!File.Exists(codex.Thumbnail))
+                {
+                    CoverService.CreateThumbnail(codex);
+                }
 
                 //move user files included in import
                 if (codex.Path.StartsWith(source.UserFilesPath) && File.Exists(codex.Path))
@@ -456,6 +458,11 @@ namespace COMPASS.Common.Models
                     try
                     {
                         string newPath = codex.Path.Replace(source.UserFilesPath, UserFilesPath);
+                        string? newDir = Path.GetDirectoryName(newPath);
+                        if (newDir != null)
+                        {
+                            Directory.CreateDirectory(newDir);
+                        }
                         File.Copy(codex.Path, newPath, true);
                         codex.Path = newPath;
                     }
