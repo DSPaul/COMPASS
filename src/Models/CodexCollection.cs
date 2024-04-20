@@ -460,6 +460,11 @@ namespace COMPASS.Models
                     try
                     {
                         string newPath = codex.Path.Replace(source.UserFilesPath, UserFilesPath);
+                        string? newDir = Path.GetDirectoryName(newPath);
+                        if (newDir != null)
+                        {
+                            Directory.CreateDirectory(newDir);
+                        }
                         File.Copy(codex.Path, newPath, true);
                         codex.Path = newPath;
                     }

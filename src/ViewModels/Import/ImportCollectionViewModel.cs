@@ -1,6 +1,5 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,12 +25,7 @@ namespace COMPASS.ViewModels.Import
             {
                 foreach (Codex codex in CollectionToImport.AllCodices.Where(c => c.HasOfflineSource()))
                 {
-                    string fileName = Path.GetFileName(codex.Path);
-                    if (String.IsNullOrEmpty(fileName))
-                    {
-                        continue;
-                    }
-                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath, fileName);
+                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath, codex.Path); //TODO, what it this path becomes too long?
                     if (File.Exists(includedFilePath))
                     {
                         codex.Path = includedFilePath;
