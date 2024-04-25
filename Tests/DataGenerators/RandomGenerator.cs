@@ -1,6 +1,5 @@
-﻿using COMPASS.Models;
+﻿//using COMPASS.Models;
 using System.Text;
-using System.Windows.Media;
 
 namespace Tests.DataGenerators
 {
