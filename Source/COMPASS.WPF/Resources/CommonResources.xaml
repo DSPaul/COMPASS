@@ -15,7 +15,6 @@
     <converters:PlusOneConverter x:Key="PlusOneConverter"/>
     <converters:UriToBitmapConverter x:Key="UriToBitmapConverter"/>
     <converters:EqualityToVisibilityConverter x:Key="ShowInStepConverter"/>
-    <converters:NegateConverter x:Key="NegateConverter"/>
 
     <!--TextBlock Style-->
     <Style TargetType="{x:Type TextBlock}">
