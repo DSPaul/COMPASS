@@ -76,8 +76,8 @@
     <PackageReference Include="OpenCvSharp4.Extensions" Version="4.9.0.20240103" />
     <PackageReference Include="OpenCvSharp4.Windows" Version="4.9.0.20240103" />
     <PackageReference Include="ScrapySharp" Version="3.0.0" />
-    <PackageReference Include="Selenium.WebDriver" Verion="4.17.0" Version="4.19.0" />
-    <PackageReference Include="SharpCompress" Version="0.36.0" />
+    <PackageReference Include="Selenium.WebDriver" Verion="4.17.0" Version="4.20.0" />
+    <PackageReference Include="SharpCompress" Version="0.37.0" />
     <PackageReference Include="VirtualizingWrapPanel" Version="2.0.5" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
     <PackageReference Include="ZXing.Net" Version="0.16.9" />
