@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
@@ -658,7 +660,7 @@ namespace COMPASS.Common.ViewModels
                             File.Copy(sourcePath, sourcePath.Replace(sourceDir, destDir), true);
                         }
                         progressVM.IncrementCounter();
-                        App.SafeDispatcher.Invoke(() =>
+                        Dispatcher.UIThread.Invoke(() =>
                             progressVM.Log.Add(new LogEntry(LogEntry.MsgType.Info, $"Copied {sourcePath}")));
                     }
                 });

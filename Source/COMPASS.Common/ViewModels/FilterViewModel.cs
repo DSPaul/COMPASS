@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Tools;
@@ -266,7 +266,7 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        public void PopulateMetaDataCollections() => App.SafeDispatcher.Invoke(() =>
+        public void PopulateMetaDataCollections() => Dispatcher.UIThread.Invoke(() =>
         {
             foreach (Codex c in _allCodices)
             {

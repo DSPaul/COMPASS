@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Avalonia.Threading;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels;
@@ -31,7 +32,7 @@ namespace COMPASS.Common.Tools
         public static ObservableCollection<LogEntry> ActivityLog { get; } = new ObservableCollection<LogEntry>();
 
         public static void Info(string message) =>
-            App.SafeDispatcher.Invoke(()
+            Dispatcher.UIThread.Invoke(()
                 => ActivityLog.Add(new(LogEntry.MsgType.Info, message)));
 
         public static void Debug(string message) => FileLog?.Debug(message);
@@ -39,7 +40,7 @@ namespace COMPASS.Common.Tools
 
         public static void Warn(string message, Exception? ex = null)
         {
-            App.SafeDispatcher.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Warning, message)));
+            Dispatcher.UIThread.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Warning, message)));
             if (ex is null)
             {
                 FileLog?.Warn(message);
@@ -52,7 +53,7 @@ namespace COMPASS.Common.Tools
 
         public static void Error(string message, Exception ex)
         {
-            App.SafeDispatcher.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Error, message)));
+            Dispatcher.UIThread.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Error, message)));
             FileLog?.Error(message, ex);
         }
 

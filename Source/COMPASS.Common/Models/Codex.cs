@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Sources;
@@ -228,7 +229,7 @@ namespace COMPASS.Common.Models
         {
             get
             {
-                App.SafeDispatcher.Invoke(() =>
+                Dispatcher.UIThread.Invoke(() =>
                 {
                     //order them in same order as alltags by starting with alltags and keeping the ones we need using intersect
                     List<Tag> orderedTags = _tags.FirstOrDefault()?.AllTags.Intersect(_tags).ToList() ?? new List<Tag>();
@@ -405,7 +406,7 @@ namespace COMPASS.Common.Models
                 {
                     foreach (var tag in other.Tags)
                     {
-                        App.SafeDispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
+                        Dispatcher.UIThread.Invoke(() => codex.Tags.AddIfMissing(tag));
                     }
                 },
                 defaultSources : new()

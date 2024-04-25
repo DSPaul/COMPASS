@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Avalonia.Threading;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using System.Collections.ObjectModel;
 using System.Threading;
@@ -111,7 +112,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         public void AddLogEntry(LogEntry entry) =>
-            App.SafeDispatcher.Invoke(() =>
+            Dispatcher.UIThread.Invoke(() =>
             Log.Add(entry)
         );
 

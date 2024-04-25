@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Models;
+﻿using Avalonia.Threading;
+using COMPASS.Common.Models;
 using COMPASS.Common.Tools;
 using FuzzySharp;
 using System.Diagnostics;
@@ -29,7 +30,7 @@ namespace COMPASS.Common.ViewModels.Sources
                 Debug.Assert(IsValidSource(codex), "Codex without path was referenced in file source");
                 if (codex.Path!.Contains(folderTagPair.Folder))
                 {
-                    App.SafeDispatcher.Invoke(() => codex.Tags.AddIfMissing(folderTagPair.Tag!));
+                    Dispatcher.UIThread.Invoke(() => codex.Tags.AddIfMissing(folderTagPair.Tag!));
                 }
             }
 
@@ -40,7 +41,7 @@ namespace COMPASS.Common.ViewModels.Sources
                     var splitFolders = codex.Path!.Split("\\");
                     if (splitFolders.Any(folder => Fuzz.Ratio(folder.ToLowerInvariant(), tag.Content.ToLowerInvariant()) > 90))
                     {
-                        App.SafeDispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
+                        Dispatcher.UIThread.Invoke(() => codex.Tags.AddIfMissing(tag));
                     }
                 }
             }
