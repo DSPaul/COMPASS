@@ -37,7 +37,7 @@ namespace COMPASS.Windows
 
         private SettingsViewModel VM;
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => VM.SavePreferences();
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => VM.ApplyPreferences();
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {

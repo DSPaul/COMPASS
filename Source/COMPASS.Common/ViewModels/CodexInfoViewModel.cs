@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
+using COMPASS.Common.Services;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -10,15 +11,18 @@ namespace COMPASS.Common.ViewModels
         public CodexInfoViewModel(MainViewModel mvm)
         {
             MVM = mvm;
+            _preferencesService = PreferencesService.GetInstance();
         }
+
+        private PreferencesService _preferencesService;
 
         //whether or not the codex info panel is active
         public bool ShowCodexInfo
         {
-            get => Properties.Settings.Default.ShowCodexInfo;
+            get => _preferencesService.Preferences.UIState.ShowCodexInfoPanel;
             set
             {
-                Properties.Settings.Default.ShowCodexInfo = value;
+                _preferencesService.Preferences.UIState.ShowCodexInfoPanel = value;
                 OnPropertyChanged(nameof(ShowInfo));
                 OnPropertyChanged();
             }
@@ -30,10 +34,10 @@ namespace COMPASS.Common.ViewModels
 
         public bool AutoHide
         {
-            get => Properties.Settings.Default.AutoHideCodexInfo;
+            get => _preferencesService.Preferences.UIState.AutoHideCodexInfoPanel;
             set
             {
-                Properties.Settings.Default.AutoHideCodexInfo = value;
+                _preferencesService.Preferences.UIState.AutoHideCodexInfoPanel = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ShowInfo));
             }

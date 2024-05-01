@@ -1,4 +1,5 @@
-﻿using COMPASS.Tools;
+﻿using COMPASS.Services;
+using COMPASS.Tools;
 using COMPASS.ViewModels;
 using System;
 using System.ComponentModel;
@@ -34,7 +35,7 @@ namespace COMPASS.Windows
         {
             ProgressViewModel.GetInstance().CancelBackgroundTask();
             MainViewModel.CollectionVM.CurrentCollection.Save();
-            Properties.Settings.Default.Save();
+            PreferencesService.GetInstance().SavePreferences();
         }
 
         #region Window management

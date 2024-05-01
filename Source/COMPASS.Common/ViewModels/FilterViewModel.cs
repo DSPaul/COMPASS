@@ -1,6 +1,6 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Models;
+using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using FuzzySharp;
 using System;
@@ -35,6 +35,8 @@ namespace COMPASS.Common.ViewModels
         }
 
         #region Fields
+
+        PreferencesService _preferencesService = PreferencesService.GetInstance();
 
         private ObservableCollection<Codex> _allCodices;
         private readonly int _itemsShown = 15;
@@ -206,11 +208,10 @@ namespace COMPASS.Common.ViewModels
 
         public ListSortDirection SortDirection
         {
-            get => (ListSortDirection)Settings.Default[nameof(SortDirection)];
+            get => _preferencesService.Preferences.UIState.SortDirection;
             set
             {
-                Settings.Default[nameof(SortDirection)] = (int)value;
-                Settings.Default.Save();
+                _preferencesService.Preferences.UIState.SortDirection = value;
                 ApplySorting();
                 OnPropertyChanged();
             }
@@ -218,11 +219,10 @@ namespace COMPASS.Common.ViewModels
 
         public string SortProperty
         {
-            get => (string)Settings.Default[nameof(SortProperty)];
+            get => _preferencesService.Preferences.UIState.SortProperty;
             set
             {
-                Settings.Default[nameof(SortProperty)] = value;
-                Settings.Default.Save();
+                _preferencesService.Preferences.UIState.SortProperty = value;
                 ApplySorting();
                 OnPropertyChanged();
             }

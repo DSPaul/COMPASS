@@ -1,5 +1,5 @@
 ﻿using Avalonia.Threading;
-using COMPASS.Common.Models;
+using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using FuzzySharp;
 using System.Diagnostics;
@@ -11,6 +11,12 @@ namespace COMPASS.Common.ViewModels.Sources
 {
     public class FileSourceViewModel : SourceViewModel
     {
+        public FileSourceViewModel()
+        {
+            _preferencesService = PreferencesService.GetInstance();
+        }
+
+        private PreferencesService _preferencesService;
         public override MetaDataSource Source => MetaDataSource.File;
 
         public override Task<bool> FetchCover(Codex codex) => throw new System.NotImplementedException();
@@ -34,7 +40,7 @@ namespace COMPASS.Common.ViewModels.Sources
                 }
             }
 
-            if (Properties.Settings.Default.AutoLinkFolderTagSameName)
+            if (_preferencesService.Preferences.AutoLinkFolderTagSameName)
             {
                 foreach (Tag tag in MainViewModel.CollectionVM.CurrentCollection.AllTags)
                 {

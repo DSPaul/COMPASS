@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
@@ -9,13 +10,14 @@ using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -25,11 +27,10 @@ namespace COMPASS.Common.ViewModels
     {
         private SettingsViewModel()
         {
-            //Set defaults
-            _openCodexPriority = new(_openCodexFunctions);
+            _preferencesService = PreferencesService.GetInstance();
 
-            LoadGlobalPreferences();
-            _allPreferences.CompleteLoading();
+            //Save the compass data path into an env var, needed for cross platform transition
+            EnvironmentVarsService.CompassDataPath = Properties.Settings.Default.CompassDataPath;
         }
 
         #region singleton pattern
@@ -37,83 +38,20 @@ namespace COMPASS.Common.ViewModels
         public static SettingsViewModel GetInstance() => _settingsVM ??= new SettingsViewModel();
         #endregion
 
+        PreferencesService _preferencesService;
+
         public MainViewModel? MVM { get; set; }
 
         #region Load and Save Settings
-        public static string PreferencesFilePath => Path.Combine(CompassDataPath, "Preferences.xml");
-        public static XmlWriterSettings XmlWriteSettings { get; private set; } = new() { Indent = true };
-        private static GlobalPreferences _allPreferences = new();
 
-        private void PreparePreferencesForSave()
+        public Preferences Preferences => _preferencesService.Preferences;
+
+        public void ApplyPreferences()
         {
-            //Prep Open Codex Priority for save
-            _allPreferences.OpenFilePriorityIDs = OpenCodexPriority.Select(pf => pf.ID).ToList();
-
-            //Prep Codex Properties for saves
-            foreach (CodexProperty prop in _allPreferences.CodexProperties)
-            {
-                prop.PrepareForSave();
-            }
-        }
-
-        public void SavePreferences()
-        {
-            PreparePreferencesForSave();
-            using var writer = XmlWriter.Create(PreferencesFilePath, XmlWriteSettings);
-            XmlSerializer serializer = new(typeof(GlobalPreferences));
-            serializer.Serialize(writer, _allPreferences);
-
             //Convert list back to dict because dict does not support two way binding
             MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences = FiletypePreferences.ToDictionary(x => x.Key, x => x.Value);
-        }
 
-        public void LoadGlobalPreferences()
-        {
-            if (File.Exists(PreferencesFilePath))
-            {
-                using (var reader = new StreamReader(PreferencesFilePath))
-                {
-                    //Label of codexProperties should still be deserialized for backwards compatibility
-                    var overrides = new XmlAttributeOverrides();
-                    var overwriteIgnore = new XmlAttributes { XmlIgnore = false };
-                    overrides.Add(typeof(CodexProperty), nameof(CodexProperty.Label), overwriteIgnore);
-                    XmlSerializer serializer = new(typeof(GlobalPreferences), overrides);
-                    if (serializer.Deserialize(reader) is GlobalPreferences prefs)
-                    {
-                        _allPreferences = prefs;
-                    }
-                    else
-                    {
-                        Logger.Error($"{PreferencesFilePath} could not be read.", new Exception());
-                        return;
-                    }
-                }
-
-                //put openFilePriority in right order
-                OpenCodexPriority = new(_openCodexFunctions.OrderBy(pf =>
-                {
-                    //if preferences doesn't have file priorities, put them in default order
-                    if (_allPreferences.OpenFilePriorityIDs is null)
-                    {
-                        return pf.ID;
-                    }
-
-                    //get index in user preference
-                    int index = _allPreferences.OpenFilePriorityIDs.IndexOf(pf.ID);
-
-                    //if it was not found in preference, use its default ID
-                    if (index < 0)
-                    {
-                        return pf.ID;
-                    }
-
-                    return index;
-                }));
-            }
-            else
-            {
-                Logger.Warn($"{PreferencesFilePath} does not exist.", new FileNotFoundException());
-            }
+            _preferencesService.SavePreferences();
         }
 
         public void Refresh()
@@ -125,22 +63,6 @@ namespace COMPASS.Common.ViewModels
         #endregion
 
         #region Tab: Preferences
-
-        #region File Source Preference
-        //list with possible functions to open a file
-        private readonly List<PreferableFunction<Codex>> _openCodexFunctions = new()
-            {
-                new PreferableFunction<Codex>("Web Version", CodexViewModel.OpenCodexOnline,0),
-                new PreferableFunction<Codex>("Local File", CodexViewModel.OpenCodexLocally,1)
-            };
-        //same ordered version of the list
-        private ObservableCollection<PreferableFunction<Codex>> _openCodexPriority;
-        public ObservableCollection<PreferableFunction<Codex>> OpenCodexPriority
-        {
-            get => _openCodexPriority;
-            set => SetProperty(ref _openCodexPriority, value);
-        }
-        #endregion
 
         #region Virtualization Preferences
 
@@ -374,10 +296,10 @@ namespace COMPASS.Common.ViewModels
 
         public bool AutoLinkFolderTagSameName
         {
-            get => Properties.Settings.Default.AutoLinkFolderTagSameName;
+            get => _preferencesService.Preferences.AutoLinkFolderTagSameName;
             set
             {
-                Properties.Settings.Default.AutoLinkFolderTagSameName = value;
+                _preferencesService.Preferences.AutoLinkFolderTagSameName = value;
                 OnPropertyChanged();
             }
         }
@@ -386,7 +308,7 @@ namespace COMPASS.Common.ViewModels
         #endregion
 
         #region Tab: Metadata
-        public List<CodexProperty> MetaDataPreferences => _allPreferences.CodexProperties;
+        public List<CodexProperty> MetaDataPreferences => Preferences.CodexProperties;
         #endregion
 
         #region Tab: Data
@@ -501,6 +423,7 @@ namespace COMPASS.Common.ViewModels
             set
             {
                 Properties.Settings.Default.CompassDataPath = value;
+                EnvironmentVarsService.CompassDataPath = value;
                 Properties.Settings.Default.Save();
             }
         }
@@ -704,8 +627,8 @@ namespace COMPASS.Common.ViewModels
                 _lw.Show();
 
                 //save first
+                ApplyPreferences();
                 MainViewModel.CollectionVM.CurrentCollection.Save();
-                SavePreferences();
 
                 await Task.Run(() => CompressUserDataToZip(targetPath));
 
@@ -735,7 +658,7 @@ namespace COMPASS.Common.ViewModels
                 await Task.Run(() => ExtractZip(targetPath));
 
                 //restore collection that was open
-                MainViewModel.CollectionVM.CurrentCollection = new(Properties.Settings.Default.StartupCollection);
+                MainViewModel.CollectionVM.CurrentCollection = new(_preferencesService.Preferences.UIState.StartupCollection);
                 _lw?.Close();
             }
         }

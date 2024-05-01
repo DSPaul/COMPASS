@@ -20,7 +20,7 @@ namespace COMPASS.Common.ViewModels
         //Open Codex wherever
         public static bool OpenCodex(Codex codex)
         {
-            bool success = PreferableFunction<Codex>.TryFunctions(SettingsViewModel.GetInstance().OpenCodexPriority, codex);
+            bool success = PreferableFunction<Codex>.TryFunctions(PreferencesService.GetInstance().Preferences.OpenCodexPriority, codex);
             if (!success)
             {
                 messageDialog.Show("Could not open item, please check local path or URL", "Could not open item");
@@ -403,15 +403,14 @@ namespace COMPASS.Common.ViewModels
                 metaDataFromSource.Add(MetaDataSource.PDF, pdfData);
             }
 
-            // Now use bits and pieces of the Codices in MetaDataFromSource to set the actual metadata based on preferences
-            var properties = SettingsViewModel.GetInstance().MetaDataPreferences;
 
+            // Now use bits and pieces of the Codices in MetaDataFromSource to set the actual metadata based on preferences
             //Codex with metadata that will be shown to the user, and asked if they want to use it
             Codex toAsk = new();
             bool shouldAsk = false;
 
             //Iterate over all the properties and set them
-            foreach (var prop in properties)
+            foreach (var prop in PreferencesService.GetInstance().Preferences.CodexProperties)
             {
 
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;

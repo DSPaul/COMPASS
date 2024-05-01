@@ -23,6 +23,7 @@ namespace COMPASS.Common.ViewModels
         public CollectionViewModel(MainViewModel? mainViewModel)
         {
             MainVM = mainViewModel;
+            _preferencesService = PreferencesService.GetInstance();
 
             //only to avoid null references, should be overwritten as soon as the UI loads, which calls refresh
             _filterVM = new(new());
@@ -42,6 +43,8 @@ namespace COMPASS.Common.ViewModels
 
             Debug.Assert(_currentCollection is not null, "Current Collection should never be null after loading Initial Collection");
         }
+
+        private PreferencesService _preferencesService;
 
         #region Properties
         public MainViewModel? MainVM { get; init; }
@@ -129,9 +132,9 @@ namespace COMPASS.Common.ViewModels
                 }
 
                 //otherwise, open startup collection
-                else if (AllCodexCollections.Any(collection => collection.DirectoryName == Settings.Default.StartupCollection))
+                else if (AllCodexCollections.Any(collection => collection.DirectoryName == _preferencesService.Preferences.UIState.StartupCollection))
                 {
-                    var startupCollection = AllCodexCollections.First(collection => collection.DirectoryName == Settings.Default.StartupCollection);
+                    var startupCollection = AllCodexCollections.First(collection => collection.DirectoryName == _preferencesService.Preferences.UIState.StartupCollection);
                     initSuccess = TryLoadCollection(startupCollection);
                     if (!initSuccess)
                     {
@@ -143,7 +146,7 @@ namespace COMPASS.Common.ViewModels
                 //in case startup collection no longer exists, pick first one that does exists
                 else
                 {
-                    Logger.Warn($"The collection {Settings.Default.StartupCollection} could not be found.", new DirectoryNotFoundException());
+                    Logger.Warn($"The collection {_preferencesService.Preferences.UIState.StartupCollection} could not be found.", new DirectoryNotFoundException());
                     var firstCollection = AllCodexCollections.First();
                     initSuccess = TryLoadCollection(firstCollection);
                     if (!initSuccess)

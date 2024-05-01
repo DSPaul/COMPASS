@@ -1,7 +1,9 @@
 ﻿using COMPASS.Models;
 using COMPASS.Services;
 using COMPASS.Tools;
-using Ionic.Zip;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
 using System.Text.Json;
 
 namespace Tests.UnitTests
@@ -65,12 +67,12 @@ namespace Tests.UnitTests
                 MinTagsVersion = "1.0.0",
             };
 
-            var zip = new ZipFile();
+            using var zip = ZipArchive.Create();
             zip.AddEntry(Constants.SatchelInfoFileName, JsonSerializer.Serialize(info));
             zip.AddEntry(Constants.TagsFileName, "pseudo data");
 
             var path = Path.GetTempPath() + Guid.NewGuid().ToString() + Constants.SatchelExtension;
-            zip.Save(path);
+            zip.SaveTo(path, CompressionType.None);
 
             //Because satchel does not contain a codexInfo file, should work
             var collection = await IOService.OpenSatchel(path);
@@ -79,7 +81,7 @@ namespace Tests.UnitTests
 
             //Now add a codex file
             zip.AddEntry(Constants.CodicesFileName, "Not important");
-            zip.Save(path);
+            zip.SaveTo(path, CompressionType.None);
 
             //Now that the codex file is added, should be null
             collection = await IOService.OpenSatchel(path);
