@@ -1,5 +1,6 @@
 ﻿//https://bengribaudo.com/blog/2012/03/14/1942/saving-restoring-wpf-datagrid-columns-size-sorting-and-order
 
+using COMPASS.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -51,6 +52,8 @@ namespace COMPASS.Resources.Controls
         }
         private void UpdateColumnInfo()
         {
+            PreferencesService prefsService = PreferencesService.GetInstance();
+
             updatingColumnInfo = true;
             ColumnInfo = new ObservableCollection<ColumnInfo>(Columns.Select((x) => new ColumnInfo(x)));
             //persist data
@@ -60,8 +63,8 @@ namespace COMPASS.Resources.Controls
             SortDescription sd = Items.SortDescriptions.FirstOrDefault();
             if (!string.IsNullOrEmpty(sd.PropertyName))
             {
-                Properties.Settings.Default["SortProperty"] = sd.PropertyName;
-                Properties.Settings.Default["SortDirection"] = (int)sd.Direction;
+                prefsService.Preferences.UIState.SortProperty = sd.PropertyName;
+                prefsService.Preferences.UIState.SortDirection = sd.Direction;
             }
 
             Properties.Settings.Default["DataGridCollumnInfo"] = json;
@@ -90,8 +93,10 @@ namespace COMPASS.Resources.Controls
 
         public void ApplySorting()
         {
-            int direction = (int)Properties.Settings.Default["SortDirection"];
-            string prop = (string)Properties.Settings.Default["SortProperty"];
+            PreferencesService prefsService = PreferencesService.GetInstance();
+
+            ListSortDirection direction = prefsService.Preferences.UIState.SortDirection;
+            string prop = prefsService.Preferences.UIState.SortProperty;
 
             if (ColumnInfo is null) return;
             foreach (var column in Columns)
@@ -99,7 +104,7 @@ namespace COMPASS.Resources.Controls
                 //var realColumn = Columns.FirstOrDefault(x => column.Header == x.Header);
                 if (column.SortMemberPath == prop)
                 {
-                    column.SortDirection = (ListSortDirection?)direction;
+                    column.SortDirection = direction;
                     return;
                 }
             }

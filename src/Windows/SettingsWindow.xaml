@@ -84,7 +84,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Try to open items in this order on double click:" 
                                        TextWrapping="Wrap" VerticalAlignment="Top"/>
-                            <controls:PriorityControl ItemsSource="{Binding OpenCodexPriority}"/>
+                            <controls:PriorityControl ItemsSource="{Binding Preferences.OpenCodexPriority}"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -436,7 +436,7 @@
                                            Grid.Row="1"/>
 
                                 <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
-                                              ItemsSource="{Binding MetaDataPreferences}" Margin="10,0">
+                                              ItemsSource="{Binding Preferences.CodexProperties}" Margin="10,0">
                                     <ItemsControl.Resources>
                                         <converters:ObjectToBoolConverter x:Key="ObjectToBoolConverter" />
                                     </ItemsControl.Resources>

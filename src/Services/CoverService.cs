@@ -27,7 +27,7 @@ namespace COMPASS.Services
                 ID = codex.ID,
             };
 
-            CodexProperty coverProp = SettingsViewModel.GetInstance().MetaDataPreferences.First(prop => prop.Name == nameof(Codex.CoverArt));
+            CodexProperty coverProp = PreferencesService.GetInstance().Preferences.CodexProperties.First(prop => prop.Name == nameof(Codex.CoverArt));
 
             if (coverProp.OverwriteMode == MetaDataOverwriteMode.Ask)
             {

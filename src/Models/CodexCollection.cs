@@ -21,7 +21,10 @@ namespace COMPASS.Models
         public CodexCollection(string collectionDirectory)
         {
             _directoryName = collectionDirectory;
+            _preferencesService = PreferencesService.GetInstance();
         }
+
+        private PreferencesService _preferencesService;
 
         public static string CollectionsPath => Path.Combine(SettingsViewModel.CompassDataPath, "Collections");
         public string FullDataPath => Path.Combine(CollectionsPath, DirectoryName);
@@ -90,7 +93,7 @@ namespace COMPASS.Models
             if (!loadedInfo) { result -= 4; }
             if (MakeStartupCollection)
             {
-                Properties.Settings.Default.StartupCollection = DirectoryName;
+                _preferencesService.Preferences.UIState.StartupCollection = DirectoryName;
                 Logger.Info($"Loaded {DirectoryName}");
             }
             return result;
@@ -252,7 +255,7 @@ namespace COMPASS.Models
             bool savedTags = SaveTags();
             bool savedCodices = SaveCodices();
             bool savedInfo = SaveInfo();
-            Properties.Settings.Default.Save();
+            _preferencesService.SavePreferences();
 
             if (savedCodices || savedTags || savedInfo)
             {
@@ -269,7 +272,7 @@ namespace COMPASS.Models
             }
             try
             {
-                using var writer = XmlWriter.Create(TagsDataFilePath, SettingsViewModel.XmlWriteSettings);
+                using var writer = XmlWriter.Create(TagsDataFilePath, XmlService.XmlWriteSettings);
                 XmlSerializer serializer = new(typeof(List<Tag>));
                 serializer.Serialize(writer, RootTags);
             }
@@ -296,7 +299,7 @@ namespace COMPASS.Models
 
             try
             {
-                using var writer = XmlWriter.Create(CodicesDataFilePath, SettingsViewModel.XmlWriteSettings);
+                using var writer = XmlWriter.Create(CodicesDataFilePath, XmlService.XmlWriteSettings);
                 XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
                 serializer.Serialize(writer, AllCodices);
             }
@@ -318,7 +321,7 @@ namespace COMPASS.Models
             Info.PrepareSave();
             try
             {
-                using var writer = XmlWriter.Create(CollectionInfoFilePath, SettingsViewModel.XmlWriteSettings);
+                using var writer = XmlWriter.Create(CollectionInfoFilePath, XmlService.XmlWriteSettings);
                 XmlSerializer serializer = new(typeof(CollectionInfo));
                 serializer.Serialize(writer, Info);
             }

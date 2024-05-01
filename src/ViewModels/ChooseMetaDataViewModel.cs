@@ -17,7 +17,7 @@ namespace COMPASS.ViewModels
         private List<Codex> _codicesWithMadeChoices = new();
 
         public List<CodexProperty> PropsToAsk =>
-            SettingsViewModel.GetInstance().MetaDataPreferences
+            PreferencesService.GetInstance().Preferences.CodexProperties
             .Where(prop => prop.OverwriteMode == MetaDataOverwriteMode.Ask)
             .ToList();
 

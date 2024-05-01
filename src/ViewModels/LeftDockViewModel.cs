@@ -13,9 +13,12 @@ namespace COMPASS.ViewModels
         public LeftDockViewModel(MainViewModel mainViewModel)
         {
             _mainVM = mainViewModel;
+            _preferencesService = PreferencesService.GetInstance();
         }
 
         private MainViewModel _mainVM;
+        private PreferencesService _preferencesService;
+
         public MainViewModel MainVM
         {
             get => _mainVM;
@@ -24,10 +27,10 @@ namespace COMPASS.ViewModels
 
         public int SelectedTab
         {
-            get => Properties.Settings.Default.SelectedTab;
+            get => _preferencesService.Preferences.UIState.StartupTab;
             set
             {
-                Properties.Settings.Default.SelectedTab = value;
+                _preferencesService.Preferences.UIState.StartupTab = value;
                 OnPropertyChanged();
                 if (value > 0) Collapsed = false;
             }
