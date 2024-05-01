@@ -1,4 +1,6 @@
-﻿using COMPASS.Common.Models;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using COMPASS.Common.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,6 +17,14 @@ namespace COMPASS.Common.Tools
                 tempID++;
             }
             return tempID;
+        }
+
+        public static void Shutdown()
+        {
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopApp)
+            {
+                desktopApp.Shutdown();
+            }
         }
     }
 }

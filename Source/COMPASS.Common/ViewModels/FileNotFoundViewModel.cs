@@ -2,11 +2,9 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
-using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Linq;
-using System.Media;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -15,7 +13,6 @@ namespace COMPASS.Common.ViewModels
         public FileNotFoundViewModel(Codex codex)
         {
             _codex = codex;
-            SystemSounds.Exclamation.Play();
         }
 
         private Codex _codex;

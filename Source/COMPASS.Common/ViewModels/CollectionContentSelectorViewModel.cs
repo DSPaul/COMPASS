@@ -4,7 +4,7 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Tools;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -129,18 +129,7 @@ namespace COMPASS.Common.ViewModels
         }
         public List<SelectableFolderTagLink> FolderTagLinks { get; init; }
 
-        public CollectionViewSource FolderTagLinksVS
-        {
-            get
-            {
-                CollectionViewSource temp = new()
-                {
-                    Source = FolderTagLinks,
-                };
-                temp.SortDescriptions.Add(new SortDescription("Folder", ListSortDirection.Ascending));
-                return temp;
-            }
-        }
+        public ObservableCollection<SelectableFolderTagLink> FolderTagLinksSorted => new(FolderTagLinks.OrderBy(link => link.Path));
 
         #region Helper classes
         public class SelectableWithPathHelper : ObservableObject
@@ -203,7 +192,7 @@ namespace COMPASS.Common.ViewModels
             if (OnlyTagsOnCodices) //indicates that we should keep all the tags that occur on the chosen codices
             {
                 var assignedTags = CuratedCollection.AllCodices.SelectMany(c => c.Tags).Distinct().ToList(); //get all the tags that are assigned to a codex
-                //delesect all tags
+                                                                                                             //delesect all tags
                 TagsSelectorVM.SelectedTagCollection!.TagsRoot.IsChecked = false;
                 var allselectableTags = SelectableTags.Flatten().ToList();
                 foreach (var tag in assignedTags)

@@ -1,10 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
-using COMPASS.Properties;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
-using COMPASS.Common.Views.Windows;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
@@ -14,7 +12,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace COMPASS.Common.ViewModels
 {

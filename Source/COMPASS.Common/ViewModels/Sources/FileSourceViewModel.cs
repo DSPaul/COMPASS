@@ -1,4 +1,5 @@
 ﻿using Avalonia.Threading;
+using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using FuzzySharp;
