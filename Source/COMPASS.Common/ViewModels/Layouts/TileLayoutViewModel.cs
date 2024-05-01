@@ -11,8 +11,9 @@ namespace COMPASS.Common.ViewModels.Layouts
             Preferences = PreferencesService.GetInstance().Preferences.TileLayoutPreferences;
         }
 
-        public override bool DoVirtualization => Properties.Settings.Default.DoVirtualizationTile
-                                                 && MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdTile;
+        //TODO check if this is still needed
+        //public override bool DoVirtualization => Properties.Settings.Default.DoVirtualizationTile
+        //                                         && MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdTile;
 
         public TileLayoutPreferences Preferences { get; set; }
     }

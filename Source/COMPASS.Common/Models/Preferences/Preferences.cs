@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Models.XmlDtos;
-using COMPASS.ViewModels;
+using COMPASS.Common.Models.XmlDtos;
+using COMPASS.Common.ViewModels;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace COMPASS.Models.Preferences
+namespace COMPASS.Common.Models.Preferences
 {
     public class Preferences : ObservableObject
     {
@@ -64,17 +64,12 @@ namespace COMPASS.Models.Preferences
 
         public UIState UIState { get; set; }
 
+        private bool _autoLinkFolderTagSameName;
         public bool AutoLinkFolderTagSameName
         {
-            get => Properties.Settings.Default.AutoLinkFolderTagSameName;
-            set
-            {
-                Properties.Settings.Default.AutoLinkFolderTagSameName = value;
-                OnPropertyChanged();
-            }
+            get => _autoLinkFolderTagSameName;
+            set => SetProperty(ref _autoLinkFolderTagSameName, value);
         }
-
-
 
         #endregion
 

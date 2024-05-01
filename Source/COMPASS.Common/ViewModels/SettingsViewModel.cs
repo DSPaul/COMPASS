@@ -1,4 +1,5 @@
-﻿using Avalonia.Threading;
+﻿using Avalonia;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
@@ -10,16 +11,12 @@ using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -28,9 +25,6 @@ namespace COMPASS.Common.ViewModels
         private SettingsViewModel()
         {
             _preferencesService = PreferencesService.GetInstance();
-
-            //Save the compass data path into an env var, needed for cross platform transition
-            EnvironmentVarsService.CompassDataPath = Properties.Settings.Default.CompassDataPath;
         }
 
         #region singleton pattern
@@ -59,73 +53,78 @@ namespace COMPASS.Common.ViewModels
             //Tell the window that the FiletypePreferences dict might have changed so it needs to fetch it again
             _filetypePreferences = null;
             OnPropertyChanged(nameof(FiletypePreferences));
+
+            MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.CollectionChanged += (_, _) => OnPropertyChanged(nameof(AutoImportFolders));
+            MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.CollectionChanged += (_, _) => OnPropertyChanged(nameof(BanishedPaths));
+            MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.CollectionChanged += (_, _) => OnPropertyChanged(nameof(FolderTagPairs));
         }
         #endregion
 
         #region Tab: Preferences
 
-        #region Virtualization Preferences
+        //TODO check if this virtualization stuff is still relevant
+        //#region Virtualization Preferences
 
-        public bool DoVirtualizationList
-        {
-            get => Properties.Settings.Default.DoVirtualizationList;
-            set
-            {
-                Properties.Settings.Default.DoVirtualizationList = value;
-                MVM?.CurrentLayout.UpdateDoVirtualization();
-            }
-        }
+        //public bool DoVirtualizationList
+        //{
+        //    get => Properties.Settings.Default.DoVirtualizationList;
+        //    set
+        //    {
+        //        Properties.Settings.Default.DoVirtualizationList = value;
+        //        MVM?.CurrentLayout.UpdateDoVirtualization();
+        //    }
+        //}
 
-        public bool DoVirtualizationCard
-        {
-            get => Properties.Settings.Default.DoVirtualizationCard;
-            set
-            {
-                Properties.Settings.Default.DoVirtualizationCard = value;
-                MVM?.CurrentLayout.UpdateDoVirtualization();
-            }
-        }
+        //public bool DoVirtualizationCard
+        //{
+        //    get => Properties.Settings.Default.DoVirtualizationCard;
+        //    set
+        //    {
+        //        Properties.Settings.Default.DoVirtualizationCard = value;
+        //        MVM?.CurrentLayout.UpdateDoVirtualization();
+        //    }
+        //}
 
-        public bool DoVirtualizationTile
-        {
-            get => Properties.Settings.Default.DoVirtualizationTile;
-            set
-            {
-                Properties.Settings.Default.DoVirtualizationTile = value;
-                MVM?.CurrentLayout.UpdateDoVirtualization();
-            }
-        }
+        //public bool DoVirtualizationTile
+        //{
+        //    get => Properties.Settings.Default.DoVirtualizationTile;
+        //    set
+        //    {
+        //        Properties.Settings.Default.DoVirtualizationTile = value;
+        //        MVM?.CurrentLayout.UpdateDoVirtualization();
+        //    }
+        //}
 
-        public int VirtualizationThresholdList
-        {
-            get => Properties.Settings.Default.VirtualizationThresholdList;
-            set
-            {
-                Properties.Settings.Default.VirtualizationThresholdList = value;
-                MVM?.CurrentLayout.UpdateDoVirtualization();
-            }
-        }
+        //public int VirtualizationThresholdList
+        //{
+        //    get => Properties.Settings.Default.VirtualizationThresholdList;
+        //    set
+        //    {
+        //        Properties.Settings.Default.VirtualizationThresholdList = value;
+        //        MVM?.CurrentLayout.UpdateDoVirtualization();
+        //    }
+        //}
 
-        public int VirtualizationThresholdCard
-        {
-            get => Properties.Settings.Default.VirtualizationThresholdCard;
-            set
-            {
-                Properties.Settings.Default.VirtualizationThresholdCard = value;
-                MVM?.CurrentLayout.UpdateDoVirtualization();
-            }
-        }
+        //public int VirtualizationThresholdCard
+        //{
+        //    get => Properties.Settings.Default.VirtualizationThresholdCard;
+        //    set
+        //    {
+        //        Properties.Settings.Default.VirtualizationThresholdCard = value;
+        //        MVM?.CurrentLayout.UpdateDoVirtualization();
+        //    }
+        //}
 
-        public int VirtualizationThresholdTile
-        {
-            get => Properties.Settings.Default.VirtualizationThresholdTile;
-            set
-            {
-                Properties.Settings.Default.VirtualizationThresholdTile = value;
-                MVM?.CurrentLayout.UpdateDoVirtualization();
-            }
-        }
-        #endregion
+        //public int VirtualizationThresholdTile
+        //{
+        //    get => Properties.Settings.Default.VirtualizationThresholdTile;
+        //    set
+        //    {
+        //        Properties.Settings.Default.VirtualizationThresholdTile = value;
+        //        MVM?.CurrentLayout.UpdateDoVirtualization();
+        //    }
+        //}
+        //#endregion
 
         #endregion
 
@@ -140,19 +139,7 @@ namespace COMPASS.Common.ViewModels
         });
 
         #region Auto import folders
-        public CollectionViewSource AutoImportFoldersViewSource
-        {
-            get
-            {
-                CollectionViewSource temp = new()
-                {
-                    Source = MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders,
-                    IsLiveSortingRequested = true,
-                };
-                temp.SortDescriptions.Add(new SortDescription("FullPath", ListSortDirection.Ascending));
-                return temp;
-            }
-        }
+        public ObservableCollection<Folder> AutoImportFolders => new(MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.OrderBy(f => f.FullPath));
 
         //Edit a folder from auto import
         private RelayCommand<Folder>? _removeAutoImportDirectoryCommand;
@@ -200,19 +187,7 @@ namespace COMPASS.Common.ViewModels
             => _filetypePreferences
             ??= MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences.Select(x => new ObservableKeyValuePair<string, bool>(x)).ToList();
 
-        public CollectionViewSource BanishedPaths
-        {
-            get
-            {
-                CollectionViewSource temp = new()
-                {
-                    Source = MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths,
-                    IsLiveSortingRequested = true,
-                };
-                temp.SortDescriptions.Add(new SortDescription());
-                return temp;
-            }
-        }
+        public ObservableCollection<string> BanishedPaths => new(MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.OrderBy(x => x));
 
         //Remove a directory from auto import
         private RelayCommand<string>? _removeBanishedPathCommand;
@@ -223,19 +198,8 @@ namespace COMPASS.Common.ViewModels
 
         #region Link Folders to Tag
 
-        public CollectionViewSource FolderTagPairs
-        {
-            get
-            {
-                CollectionViewSource temp = new()
-                {
-                    Source = MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs,
-                    IsLiveSortingRequested = true,
-                };
-                temp.SortDescriptions.Add(new SortDescription("Folder", ListSortDirection.Ascending));
-                return temp;
-            }
-        }
+        public ObservableCollection<FolderTagPair> FolderTagPairs => new(MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.OrderBy(pair => pair.Folder));
+
         public List<Tag> AllTags => MainViewModel.CollectionVM.CurrentCollection.AllTags;
 
         //Remove a directory from auto import
@@ -330,11 +294,7 @@ namespace COMPASS.Common.ViewModels
 
         private RelayCommand? _showBrokenCodicesCommand;
         public RelayCommand ShowBrokenCodicesCommand => _showBrokenCodicesCommand ??= new(ShowBrokenCodices);
-        private void ShowBrokenCodices()
-        {
-            MainViewModel.CollectionVM.FilterVM.AddFilter(new(Filter.FilterType.HasBrokenPath));
-            Application.Current.MainWindow!.Activate();
-        }
+        private void ShowBrokenCodices() => MainViewModel.CollectionVM.FilterVM.AddFilter(new(Filter.FilterType.HasBrokenPath));//Application.Current.MainWindow!.Activate(); //TODO focus window
 
         //Rename the refs
         private int _amountRenamed = 0;
@@ -408,27 +368,9 @@ namespace COMPASS.Common.ViewModels
 
         #region Manage Data
 
-        #region Data Path stuff
+        #region Data Path 
 
-        private static string _defaultDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "COMPASS");
-        public static string CompassDataPath
-        {
-            get
-            {
-                if (Path.Exists(Properties.Settings.Default.CompassDataPath))
-                    return Properties.Settings.Default.CompassDataPath;
-                else return _defaultDataPath;
-            }
-
-            set
-            {
-                Properties.Settings.Default.CompassDataPath = value;
-                EnvironmentVarsService.CompassDataPath = value;
-                Properties.Settings.Default.Save();
-            }
-        }
-
-        public string BindableDataPath => CompassDataPath; // used because binding to static stuff has its problems
+        public string BindableDataPath => EnvironmentVarsService.CompassDataPath; // used because binding to static stuff has its problems
 
         public string NewDataPath { get; set; } = "";
 
@@ -449,7 +391,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         private RelayCommand? _resetDataPathCommand;
-        public RelayCommand ResetDataPathCommand => _resetDataPathCommand ??= new(() => SetNewDataPath(_defaultDataPath));
+        public RelayCommand ResetDataPathCommand => _resetDataPathCommand ??= new(() => SetNewDataPath(EnvironmentVarsService.DefaultDataPath));
 
         private void SetNewDataPath(string newPath)
         {
@@ -463,7 +405,7 @@ namespace COMPASS.Common.ViewModels
                 Directory.CreateDirectory(newPath);
             }
 
-            if (newPath == CompassDataPath) { return; }
+            if (newPath == EnvironmentVarsService.CompassDataPath) { return; }
 
             NewDataPath = newPath;
 
@@ -479,7 +421,7 @@ namespace COMPASS.Common.ViewModels
             bool success;
             try
             {
-                success = await CopyDataAsync(CompassDataPath, NewDataPath);
+                success = await CopyDataAsync(EnvironmentVarsService.CompassDataPath, NewDataPath);
             }
             catch (OperationCanceledException ex)
             {
@@ -499,7 +441,7 @@ namespace COMPASS.Common.ViewModels
         {
             try
             {
-                await CopyDataAsync(CompassDataPath, NewDataPath);
+                await CopyDataAsync(EnvironmentVarsService.CompassDataPath, NewDataPath);
             }
             catch (OperationCanceledException ex)
             {
@@ -521,13 +463,13 @@ namespace COMPASS.Common.ViewModels
         {
             MainViewModel.CollectionVM.CurrentCollection.Save();
 
-            CompassDataPath = NewDataPath;
+            EnvironmentVarsService.CompassDataPath = NewDataPath;
 
             //Restart COMPASS
             var currentExecutablePath = Environment.ProcessPath;
             var args = Environment.GetCommandLineArgs();
             if (currentExecutablePath != null) Process.Start(currentExecutablePath, args);
-            Application.Current.Shutdown();
+            Utils.Shutdown();
         }
 
         private RelayCommand? _deleteDataCommand;
@@ -537,7 +479,7 @@ namespace COMPASS.Common.ViewModels
         {
             try
             {
-                Directory.Delete(CompassDataPath, true);
+                Directory.Delete(EnvironmentVarsService.CompassDataPath, true);
             }
             catch (Exception ex)
             {
@@ -603,7 +545,7 @@ namespace COMPASS.Common.ViewModels
         {
             ProcessStartInfo startInfo = new()
             {
-                Arguments = CompassDataPath,
+                Arguments = EnvironmentVarsService.CompassDataPath,
                 FileName = "explorer.exe"
             };
             Process.Start(startInfo);
@@ -671,7 +613,7 @@ namespace COMPASS.Common.ViewModels
                 return;
             }
             using ZipArchive archive = ZipArchive.Open(sourcePath);
-            archive.ExtractToDirectory(CompassDataPath);
+            archive.ExtractToDirectory(EnvironmentVarsService.CompassDataPath);
         }
         #endregion
 
@@ -689,7 +631,7 @@ namespace COMPASS.Common.ViewModels
 
         #region Tab: What's New
 
-        public readonly string WebViewDataDir = Path.Combine(CompassDataPath, "WebViewData");
+        public readonly string WebViewDataDir = Path.Combine(EnvironmentVarsService.CompassDataPath, "WebViewData");
 
         #endregion
 

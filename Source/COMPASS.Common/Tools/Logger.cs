@@ -2,7 +2,7 @@
 using Avalonia.Threading;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
-using COMPASS.Common.ViewModels;
+using COMPASS.Common.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -15,7 +15,7 @@ namespace COMPASS.Common.Tools
     {
         public static void Init()
         {
-            log4net.GlobalContext.Properties["CompassDataPath"] = SettingsViewModel.CompassDataPath;
+            log4net.GlobalContext.Properties["CompassDataPath"] = EnvironmentVarsService.CompassDataPath;
             log4net.Config.XmlConfigurator.Configure(new FileInfo("log4net.config"));
             FileLog = log4net.LogManager.GetLogger(nameof(Logger));
             //if (Application.Current is not null)
@@ -63,7 +63,7 @@ namespace COMPASS.Common.Tools
             //prompt user to submit logs and open an issue
             string message = $"Its seems COMPASS has run into a critical error ({e.Message}).\n" +
                 $"You can help improve COMPASS by opening an issue on {Constants.RepoURL} with the error message. \n" +
-                $"Please include the log file located at {SettingsViewModel.CompassDataPath}\\logs.";
+                $"Please include the log file located at {EnvironmentVarsService.CompassDataPath}\\logs.";
             if (Task.Run(() => App.Container.Resolve<IMessageBox>()
                 .Show(message, $"COMPASS ran into a critical error.", MessageBoxButton.OK, MessageBoxImage.Error)).Result == MessageBoxResult.OK)
             {

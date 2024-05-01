@@ -1,8 +1,10 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Avalonia.Threading;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Layouts;
+using ImageMagick;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -18,7 +20,6 @@ namespace COMPASS.Common.ViewModels
             ViewModelBase.MVM = this;
 
             //Load everything
-            UpgradeSettings();
             CollectionVM = new(this);
             _currentLayout = LayoutViewModel.GetLayout();
             LeftDockVM = new(this);
@@ -36,16 +37,6 @@ namespace COMPASS.Common.ViewModels
         }
 
         #region Init Functions
-
-        private void UpgradeSettings()
-        {
-            if (Properties.Settings.Default.justUpdated)
-            {
-                Properties.Settings.Default.Upgrade();
-                Properties.Settings.Default.justUpdated = false;
-                Properties.Settings.Default.Save();
-            }
-        }
 
         private void InitAutoUpdates()
         {

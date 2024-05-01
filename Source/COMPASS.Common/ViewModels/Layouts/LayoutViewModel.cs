@@ -2,11 +2,9 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Import;
-using GongSolutions.Wpf.DragDrop;
 using System;
 using System.IO;
 using System.Linq;
-using System.Windows;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
@@ -36,7 +34,8 @@ namespace COMPASS.Common.ViewModels.Layouts
             };
         }
 
-        public void UpdateDoVirtualization() => OnPropertyChanged(nameof(DoVirtualization));
+        //TODO check if this is still needed
+        //public void UpdateDoVirtualization() => OnPropertyChanged(nameof(DoVirtualization));
 
         #region Properties
 
@@ -50,7 +49,8 @@ namespace COMPASS.Common.ViewModels.Layouts
             set => SetProperty(ref _selectedCodex, value);
         }
 
-        public abstract bool DoVirtualization { get; }
+        //TODO check if this is still needed
+        //public abstract bool DoVirtualization { get; }
 
         //Set Type of view
         public Layout LayoutType { get; init; }

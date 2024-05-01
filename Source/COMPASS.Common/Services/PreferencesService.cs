@@ -1,14 +1,13 @@
-﻿using COMPASS.Models;
-using COMPASS.Models.Preferences;
-using COMPASS.Models.XmlDtos;
-using COMPASS.Tools;
-using COMPASS.ViewModels;
+﻿using COMPASS.Common.Models;
+using COMPASS.Common.Models.Preferences;
+using COMPASS.Common.Models.XmlDtos;
+using COMPASS.Common.Tools;
 using System;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace COMPASS.Services
+namespace COMPASS.Common.Services
 {
     public class PreferencesService
     {
@@ -18,15 +17,13 @@ namespace COMPASS.Services
         public static PreferencesService GetInstance() => _prefService ??= new PreferencesService();
         #endregion
 
-        public string PreferencesFilePath => Path.Combine(SettingsViewModel.CompassDataPath, "Preferences.xml");
+        public string PreferencesFilePath => Path.Combine(EnvironmentVarsService.CompassDataPath, "Preferences.xml");
 
         private Preferences? _preferences;
         public Preferences Preferences => _preferences ??= LoadPreferences() ?? new Preferences();
 
         public void SavePreferences()
         {
-            Properties.Settings.Default.Save();
-
             if (_preferences == null) return; //don't save when they aren't loaded
             PreferencesDto dto = _preferences.ToDto();
             using var writer = XmlWriter.Create(PreferencesFilePath, XmlService.XmlWriteSettings);

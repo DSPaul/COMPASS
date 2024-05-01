@@ -11,9 +11,10 @@ namespace COMPASS.Common.ViewModels.Layouts
             Preferences = PreferencesService.GetInstance().Preferences.ListLayoutPreferences;
         }
 
-        public override bool DoVirtualization =>
-            Properties.Settings.Default.DoVirtualizationList &&
-            MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdList;
+        //TODO check if this is still needed
+        //public override bool DoVirtualization =>
+        //    Properties.Settings.Default.DoVirtualizationList &&
+        //    MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdList;
 
         public ListLayoutPreferences Preferences { get; }
 

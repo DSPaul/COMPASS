@@ -1,9 +1,9 @@
-﻿using COMPASS.ViewModels.Sources;
+﻿using COMPASS.Common.ViewModels.Sources;
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace COMPASS.Models.XmlDtos
+namespace COMPASS.Common.Models.XmlDtos
 {
     [XmlRoot("CodexProperty")]
     public class CodexPropertyDto

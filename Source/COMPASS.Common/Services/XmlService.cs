@@ -1,6 +1,6 @@
 ﻿using System.Xml;
 
-namespace COMPASS.Services
+namespace COMPASS.Common.Services
 {
     public class XmlService
     {

@@ -24,7 +24,7 @@ namespace COMPASS.Common.Models
 
         private PreferencesService _preferencesService;
 
-        public static string CollectionsPath => Path.Combine(SettingsViewModel.CompassDataPath, "Collections");
+        public static string CollectionsPath => Path.Combine(EnvironmentVarsService.CompassDataPath, "Collections");
         public string FullDataPath => Path.Combine(CollectionsPath, DirectoryName);
         public string CodicesDataFilePath => Path.Combine(FullDataPath, Constants.CodicesFileName);
         public string TagsDataFilePath => Path.Combine(FullDataPath, Constants.TagsFileName);
