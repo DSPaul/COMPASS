@@ -145,7 +145,7 @@ namespace COMPASS.Services
             progressVM.TotalAmount = 1;
 
             //extract
-            await Task.Run(() => archive.ExtractToDirectory(tmpCollectionPath)); //TODO add cancelation and progress reporting
+            await Task.Run(() => archive.ExtractToDirectory(tmpCollectionPath, progressReport: new Action<double>(progressVM.UpdateFromPercentage)));
 
             progressVM.IncrementCounter();
             return tmpCollectionPath;
