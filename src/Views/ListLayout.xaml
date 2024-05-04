@@ -32,15 +32,15 @@
                 <Setter Property="ContextMenu">
                     <Setter.Value>
                         <ContextMenu IsEnabled="True" Placement="Bottom">
-                            <MenuItem Header="Author"       IsCheckable="True" IsChecked="{Binding Data.ShowAuthor,     Source={StaticResource LayoutProxy}}"/>
-                            <MenuItem Header="Publisher"    IsCheckable="True" IsChecked="{Binding Data.ShowPublisher,  Source={StaticResource LayoutProxy}}"/>
-                            <MenuItem Header="Rating"       IsCheckable="True" IsChecked="{Binding Data.ShowRating,     Source={StaticResource LayoutProxy}}"/>
-                            <MenuItem Header="Release Date" IsCheckable="True" IsChecked="{Binding Data.ShowReleaseDate,Source={StaticResource LayoutProxy}}"/>
-                            <MenuItem Header="Date Added"   IsCheckable="True" IsChecked="{Binding Data.ShowDateAdded,  Source={StaticResource LayoutProxy}}"/>
-                            <MenuItem Header="ISBN"         IsCheckable="True" IsChecked="{Binding Data.ShowISBN,       Source={StaticResource LayoutProxy}}"/>
-                            <MenuItem Header="Tags"         IsCheckable="True" IsChecked="{Binding Data.ShowTags,       Source={StaticResource LayoutProxy}}"/>
-                            <MenuItem Header="Version"      IsCheckable="True" IsChecked="{Binding Data.ShowVersion,    Source={StaticResource LayoutProxy}}"/>
-                            <MenuItem Header="File Icons"   IsCheckable="True" IsChecked="{Binding Data.ShowFileIcons,  Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Author"       IsCheckable="True" IsChecked="{Binding Data.Preferences.ShowAuthor,     Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Publisher"    IsCheckable="True" IsChecked="{Binding Data.Preferences.ShowPublisher,  Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Rating"       IsCheckable="True" IsChecked="{Binding Data.Preferences.ShowRating,     Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Release Date" IsCheckable="True" IsChecked="{Binding Data.Preferences.ShowReleaseDate,Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Date Added"   IsCheckable="True" IsChecked="{Binding Data.Preferences.ShowDateAdded,  Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="ISBN"         IsCheckable="True" IsChecked="{Binding Data.Preferences.ShowISBN,       Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Tags"         IsCheckable="True" IsChecked="{Binding Data.Preferences.ShowTags,       Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="Version"      IsCheckable="True" IsChecked="{Binding Data.Preferences.ShowVersion,    Source={StaticResource LayoutProxy}}"/>
+                            <MenuItem Header="File Icons"   IsCheckable="True" IsChecked="{Binding Data.Preferences.ShowFileIcons,  Source={StaticResource LayoutProxy}}"/>
                         </ContextMenu>
                     </Setter.Value>
                 </Setter>
@@ -105,7 +105,7 @@
         </DataGrid.RowStyle>
         <DataGrid.Columns>
             <DataGridTemplateColumn Header="TITLE" Width="3*" MinWidth="100" CanUserSort="True" SortMemberPath="SortingTitle"
-                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowTitle, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.Preferences.ShowTitle, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Title}" Style="{StaticResource default}" Margin="5,0"/>
@@ -113,7 +113,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="AUTHORS" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="AuthorsAsString"
-                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowAuthor, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.Preferences.ShowAuthor, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding AuthorsAsString}" Style="{StaticResource default}"/>
@@ -121,7 +121,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="PUBLISHER" Width="2*" MinWidth="100" CanUserSort="True" SortMemberPath="Publisher"
-                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowPublisher, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.Preferences.ShowPublisher, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Publisher}" Style="{StaticResource default}"/>
@@ -129,7 +129,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="RELEASE DATE" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="ReleaseDate"
-                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowReleaseDate, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.Preferences.ShowReleaseDate, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding ReleaseDate, StringFormat=dd/MM/yyyy}" Style="{StaticResource default}"/>
@@ -137,7 +137,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="DATE ADDED" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="DateAdded"
-                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowDateAdded, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.Preferences.ShowDateAdded, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding DateAdded, StringFormat=dd/MM/yyyy}" Style="{StaticResource default}"/>
@@ -145,7 +145,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="VERSION" Width="*" MinWidth="20"
-                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowVersion, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.Preferences.ShowVersion, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding Version}" Style="{StaticResource default}"/>
@@ -153,7 +153,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="RATING" Width="*" CanUserSort="True" SortMemberPath="Rating" MinWidth="120"
-                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowRating, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.Preferences.ShowRating, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <materialDesign:RatingBar Value ="{Binding Rating,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RenderTransformOrigin="0.5,0.5">
@@ -167,7 +167,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="ISBN" Width="*" MinWidth="150"
-                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowISBN, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.Preferences.ShowISBN, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <TextBlock Text ="{Binding ISBN}" Style="{StaticResource default}"/>
@@ -175,7 +175,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="TAGS" Width="5*"
-                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowTags, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.Preferences.ShowTags, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <ItemsControl ItemsSource="{Binding Tags}" Background="Transparent" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}"
@@ -191,7 +191,7 @@
             </DataGridTemplateColumn>
             <!--<DataGridTextColumn Width="*"/>-->
             <DataGridTemplateColumn Header="" MinWidth="70" Width="*" CanUserResize="False"
-                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowFileIcons, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.Preferences.ShowFileIcons, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -206,7 +206,7 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="" Width="25" MinWidth="25" CanUserResize="False"
-                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.ShowEditIcon, Converter={StaticResource ToVisibilityConverter}}">
+                                    Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.Preferences.ShowEditIcon, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                         <Button Command="{Binding Path=Data.EditCodexCommand,Source={StaticResource CodexProxy}}">

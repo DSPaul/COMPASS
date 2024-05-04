@@ -1,4 +1,4 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
 using COMPASS.Resources.Controls.MultiSelectCombobox;
 using COMPASS.Services;
@@ -66,8 +66,8 @@ namespace COMPASS.ViewModels
 
         #region Methods and Commands
 
-        private ActionCommand? _browsePathCommand;
-        public ActionCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
+        private RelayCommand? _browsePathCommand;
+        public RelayCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
         private void BrowsePath()
         {
             OpenFileDialog openFileDialog = new()
@@ -81,8 +81,8 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand? _browseURLCommand;
-        public ActionCommand BrowseURLCommand => _browseURLCommand ??= new(BrowseURL);
+        private RelayCommand? _browseURLCommand;
+        public RelayCommand BrowseURLCommand => _browseURLCommand ??= new(BrowseURL);
         private void BrowseURL()
         {
             if (CodexViewModel.CanOpenCodexOnline(TempCodex))
@@ -91,16 +91,16 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand? _browseISBNCommand;
-        public ActionCommand BrowseISBNCommand => _browseISBNCommand ??= new(BrowseISBN);
+        private RelayCommand? _browseISBNCommand;
+        public RelayCommand BrowseISBNCommand => _browseISBNCommand ??= new(BrowseISBN);
         private void BrowseISBN()
         {
             string url = $"https://openlibrary.org/search?q={TempCodex.ISBN}&mode=everything";
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
 
-        private ActionCommand? _tagCheckCommand;
-        public ActionCommand TagCheckCommand => _tagCheckCommand ??= new(UpdateTagList);
+        private RelayCommand? _tagCheckCommand;
+        public RelayCommand TagCheckCommand => _tagCheckCommand ??= new(UpdateTagList);
         private void UpdateTagList()
         {
             TempCodex.Tags.Clear();
@@ -113,8 +113,8 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand? _quickCreateTagCommand;
-        public ActionCommand QuickCreateTagCommand => _quickCreateTagCommand ??= new(QuickCreateTag);
+        private RelayCommand? _quickCreateTagCommand;
+        public RelayCommand QuickCreateTagCommand => _quickCreateTagCommand ??= new(QuickCreateTag);
         public void QuickCreateTag()
         {
             //keep track of count to check of tags were created
@@ -131,7 +131,7 @@ namespace COMPASS.ViewModels
             {
                 //recalculate treeview source
                 _treeViewSource = null;
-                RaisePropertyChanged(nameof(TreeViewSource));
+                OnPropertyChanged(nameof(TreeViewSource));
 
                 //Apply right checkboxes in AllTags
                 foreach (TreeViewNode t in AllTreeViewNodes)
@@ -148,8 +148,8 @@ namespace COMPASS.ViewModels
             }
         }
 
-        private ActionCommand? _deleteCodexCommand;
-        public ActionCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
+        private RelayCommand? _deleteCodexCommand;
+        public RelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
         private void DeleteCodex()
         {
             if (!CreateNewCodex)
@@ -159,26 +159,25 @@ namespace COMPASS.ViewModels
             CloseAction();
         }
 
-        private ActionCommand? _fetchCoverCommand;
-        public ActionCommand FetchCoverCommand => _fetchCoverCommand ??= new(async () => await FetchCoverAsync());
+        private AsyncRelayCommand? _fetchCoverCommand;
+        public AsyncRelayCommand FetchCoverCommand => _fetchCoverCommand ??= new(FetchCoverAsync);
         private async Task FetchCoverAsync()
         {
             ShowLoading = true;
             //make it so cover always gets overwritten if this case, store old value first
-            CodexProperty coverProp = SettingsViewModel.GetInstance().MetaDataPreferences.First(prop => prop.Name == nameof(Codex.CoverArt));
-            Debug.Assert(coverProp.OverwriteMode != null, "coverProp.OverwriteMode != null");
-            MetaDataOverwriteMode curSetting = (MetaDataOverwriteMode)coverProp.OverwriteMode;
+            CodexProperty coverProp = PreferencesService.GetInstance().Preferences.CodexProperties.First(prop => prop.Name == nameof(Codex.CoverArt));
+            MetaDataOverwriteMode curSetting = coverProp.OverwriteMode;
             coverProp.OverwriteMode = MetaDataOverwriteMode.Always;
             //get the cover
-            await Task.Run(() => CoverService.GetCover(TempCodex));
+            await CoverService.GetCover(TempCodex);
             //Restore cover preference
             coverProp.OverwriteMode = curSetting;
             ShowLoading = false;
             RefreshCover();
         }
 
-        private ActionCommand? _chooseCoverCommand;
-        public ActionCommand ChooseCoverCommand => _chooseCoverCommand ??= new(ChooseCover);
+        private RelayCommand? _chooseCoverCommand;
+        public RelayCommand ChooseCoverCommand => _chooseCoverCommand ??= new(ChooseCover);
         private void ChooseCover()
         {
             OpenFileDialog openFileDialog = new()
@@ -207,8 +206,8 @@ namespace COMPASS.ViewModels
 
         public Action CloseAction { get; set; } = () => { };
 
-        private ActionCommand? _oKCommand;
-        public ActionCommand OKCommand => _oKCommand ??= new(OKBtn);
+        private RelayCommand? _oKCommand;
+        public RelayCommand OKCommand => _oKCommand ??= new(OKBtn);
         public void OKBtn()
         {
             //Copy changes into Codex
@@ -231,8 +230,8 @@ namespace COMPASS.ViewModels
             CloseAction();
         }
 
-        private ActionCommand? _cancelCommand;
-        public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
+        private RelayCommand? _cancelCommand;
+        public RelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel() => CloseAction();
 
 

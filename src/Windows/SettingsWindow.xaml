@@ -84,7 +84,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Try to open items in this order on double click:" 
                                        TextWrapping="Wrap" VerticalAlignment="Top"/>
-                            <controls:PriorityControl ItemsSource="{Binding OpenCodexPriority}"/>
+                            <controls:PriorityControl ItemsSource="{Binding Preferences.OpenCodexPriority}"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -436,7 +436,7 @@
                                            Grid.Row="1"/>
 
                                 <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
-                                              ItemsSource="{Binding MetaDataPreferences}" Margin="10,0">
+                                              ItemsSource="{Binding Preferences.CodexProperties}" Margin="10,0">
                                     <ItemsControl.Resources>
                                         <converters:ObjectToBoolConverter x:Key="ObjectToBoolConverter" />
                                     </ItemsControl.Resources>
@@ -743,6 +743,13 @@
                                         Material Design Toolkit
                                     </Hyperlink>
                                 </TextBlock>
+                                <TextBlock Text="Reactivity"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/CommunityToolkit/dotnet"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                        CommunityToolkit
+                                    </Hyperlink>
+                                </TextBlock>
                                 <TextBlock Text="Json Parsing: "/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/JamesNK/Newtonsoft.Json"
@@ -764,12 +771,19 @@
                                         OpenCVSharp
                                     </Hyperlink>
                                 </TextBlock>
-                                <TextBlock Text="Web Scraping:"/>
+                                <!--<TextBlock Text="Web Scraping:"/>
                                 <TextBlock>
                                     <Hyperlink NavigateUri="https://github.com/rflechner/ScrapySharp"
                                                RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                                         ScrapySharp
                                     </Hyperlink>
+                                </TextBlock>-->
+                                <TextBlock Text="Zipping and unzipping:"/>
+                                <TextBlock>
+                                    <Hyperlink NavigateUri="https://github.com/adamhathcock/sharpcompress"
+                                               RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
+                                         SharpCompress
+                                     </Hyperlink>          
                                 </TextBlock>
                                 <TextBlock Text="Website Screenshotting:"/>
                                 <TextBlock>

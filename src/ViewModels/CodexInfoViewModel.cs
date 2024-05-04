@@ -1,47 +1,49 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
+using COMPASS.Services;
 
 namespace COMPASS.ViewModels
 {
-    public class CodexInfoViewModel : ObservableObject
+    public class CodexInfoViewModel : ViewModelBase
     {
 
         public CodexInfoViewModel(MainViewModel mvm)
         {
             MVM = mvm;
+            _preferencesService = PreferencesService.GetInstance();
         }
 
-        public MainViewModel MVM { get; }
+        private PreferencesService _preferencesService;
 
         //whether or not the codex info panel is active
         public bool ShowCodexInfo
         {
-            get => Properties.Settings.Default.ShowCodexInfo;
+            get => _preferencesService.Preferences.UIState.ShowCodexInfoPanel;
             set
             {
-                Properties.Settings.Default.ShowCodexInfo = value;
-                RaisePropertyChanged(nameof(ShowInfo));
-                RaisePropertyChanged();
+                _preferencesService.Preferences.UIState.ShowCodexInfoPanel = value;
+                OnPropertyChanged(nameof(ShowInfo));
+                OnPropertyChanged();
             }
         }
 
         //what the visibility is actually bound to
-        public bool ShowInfo => AutoHide ? ShowCodexInfo && MVM.CurrentLayout.SelectedCodex is not null : ShowCodexInfo;
-        public void SelectedItemChanged() => RaisePropertyChanged(nameof(ShowInfo));
+        public bool ShowInfo => AutoHide ? ShowCodexInfo && MVM!.CurrentLayout.SelectedCodex is not null : ShowCodexInfo;
+        public void SelectedItemChanged() => OnPropertyChanged(nameof(ShowInfo));
 
         public bool AutoHide
         {
-            get => Properties.Settings.Default.AutoHideCodexInfo;
+            get => _preferencesService.Preferences.UIState.AutoHideCodexInfoPanel;
             set
             {
-                Properties.Settings.Default.AutoHideCodexInfo = value;
-                RaisePropertyChanged();
-                RaisePropertyChanged(nameof(ShowInfo));
+                _preferencesService.Preferences.UIState.AutoHideCodexInfoPanel = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowInfo));
             }
         }
 
-        private ActionCommand? _toggleCodexInfoCommand;
-        public ActionCommand ToggleCodexInfoCommand => _toggleCodexInfoCommand ??= new(() => ShowCodexInfo = !ShowCodexInfo);
+        private RelayCommand? _toggleCodexInfoCommand;
+        public RelayCommand ToggleCodexInfoCommand => _toggleCodexInfoCommand ??= new(() => ShowCodexInfo = !ShowCodexInfo);
 
         private RelayCommand<string>? _addAuthorFilterCommand;
         public RelayCommand<string> AddAuthorFilterCommand => _addAuthorFilterCommand ??= new(AddAuthorFilter);

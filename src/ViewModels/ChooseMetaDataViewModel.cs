@@ -17,7 +17,7 @@ namespace COMPASS.ViewModels
         private List<Codex> _codicesWithMadeChoices = new();
 
         public List<CodexProperty> PropsToAsk =>
-            SettingsViewModel.GetInstance().MetaDataPreferences
+            PreferencesService.GetInstance().Preferences.CodexProperties
             .Where(prop => prop.OverwriteMode == MetaDataOverwriteMode.Ask)
             .ToList();
 
@@ -37,7 +37,7 @@ namespace COMPASS.ViewModels
         {
             ApplyChoice();
             StepCounter++;
-            RaisePropertyChanged(nameof(CurrentPair));
+            OnPropertyChanged(nameof(CurrentPair));
             //reset choices
             ShouldUseNewValue = DefaultShouldUseNewValue;
         }
@@ -46,7 +46,7 @@ namespace COMPASS.ViewModels
         {
             ApplyChoice();
             StepCounter--;
-            RaisePropertyChanged(nameof(CurrentPair));
+            OnPropertyChanged(nameof(CurrentPair));
             //copy new codex to temp
             ShouldUseNewValue = DefaultShouldUseNewValue;
         }

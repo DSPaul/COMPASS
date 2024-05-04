@@ -93,8 +93,8 @@
                 </Grid.RowDefinitions>
                 <Border CornerRadius="5" Margin="10,5" SnapsToDevicePixels="True" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
                                 BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
-                                    Width="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                    Height="{Binding DataContext.TileHeight, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                    Width="{Binding DataContext.Preferences.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                    Height="{Binding DataContext.Preferences.TileHeight, RelativeSource={RelativeSource AncestorType=UserControl}}">
                     <Border.Background>
                         <ImageBrush ImageSource="{Binding Thumbnail, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png}"/>
                     </Border.Background>
@@ -104,9 +104,9 @@
                     </Border.Effect>
                 </Border>
                 <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" TextTrimming="WordEllipsis" MaxHeight="60"
-                        MaxWidth="{Binding DataContext.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        MaxWidth="{Binding DataContext.Preferences.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"
-                        Visibility="{Binding DataContext.ShowTitle, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource ToVisibilityConverter}}"/>
+                        Visibility="{Binding DataContext.Preferences.ShowTitle, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource ToVisibilityConverter}}"/>
             </Grid>
         </DataTemplate>
     </UserControl.Resources>

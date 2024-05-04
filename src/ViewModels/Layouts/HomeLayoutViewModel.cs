@@ -1,35 +1,18 @@
-﻿namespace COMPASS.ViewModels.Layouts
+﻿using COMPASS.Models.Preferences;
+using COMPASS.Services;
+
+namespace COMPASS.ViewModels.Layouts
 {
     internal class HomeLayoutViewModel : LayoutViewModel
     {
         public HomeLayoutViewModel() : base()
         {
             LayoutType = Layout.Home;
+            Preferences = PreferencesService.GetInstance().Preferences.HomeLayoutPreferences;
         }
 
         public override bool DoVirtualization => false;
 
-        public double TileWidth
-        {
-            get => Properties.Settings.Default.HomeCoverSize;
-            set
-            {
-                Properties.Settings.Default.HomeCoverSize = value;
-                RaisePropertyChanged();
-                RaisePropertyChanged(nameof(TileHeight));
-            }
-        }
-
-        public double TileHeight => (int)(TileWidth * 4 / 3);
-
-        public bool ShowTitle
-        {
-            get => Properties.Settings.Default.HomeShowTitle;
-            set
-            {
-                Properties.Settings.Default.HomeShowTitle = value;
-                RaisePropertyChanged();
-            }
-        }
+        public HomeLayoutPreferences Preferences { get; set; }
     }
 }

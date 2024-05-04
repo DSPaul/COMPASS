@@ -1,4 +1,5 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
 using System.Collections.ObjectModel;
 using System.Threading;
@@ -31,9 +32,9 @@ namespace COMPASS.ViewModels
             private set
             {
                 SetProperty(ref _counter, value);
-                RaisePropertyChanged(nameof(Percentage));
-                RaisePropertyChanged(nameof(FullText));
-                RaisePropertyChanged(nameof(WorkInProgress));
+                OnPropertyChanged(nameof(Percentage));
+                OnPropertyChanged(nameof(FullText));
+                OnPropertyChanged(nameof(WorkInProgress));
             }
         }
 
@@ -45,9 +46,9 @@ namespace COMPASS.ViewModels
             {
                 if (value == _totalAmount) return;
                 SetProperty(ref _totalAmount, value);
-                RaisePropertyChanged(nameof(Percentage));
-                RaisePropertyChanged(nameof(FullText));
-                RaisePropertyChanged(nameof(WorkInProgress));
+                OnPropertyChanged(nameof(Percentage));
+                OnPropertyChanged(nameof(FullText));
+                OnPropertyChanged(nameof(WorkInProgress));
             }
         }
 
@@ -72,7 +73,7 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref _text, value);
-                RaisePropertyChanged(nameof(FullText));
+                OnPropertyChanged(nameof(FullText));
             }
         }
 
@@ -95,6 +96,12 @@ namespace COMPASS.ViewModels
             _progressMutex.WaitOne();
             Counter++;
             _progressMutex.ReleaseMutex();
+        }
+
+        public void UpdateFromPercentage(double percentage)
+        {
+            TotalAmount = 100;
+            Counter = (int)(percentage * 100);
         }
 
         public void ResetCounter()
@@ -125,17 +132,17 @@ namespace COMPASS.ViewModels
             GlobalCancellationTokenSource = new();
             //force refresh the command so that it grabs the right cancel function
             _cancelTasksCommand = null;
-            RaisePropertyChanged(nameof(CancelTasksCommand));
+            OnPropertyChanged(nameof(CancelTasksCommand));
             Cancelling = false;
         }
 
-        private ActionCommand? _cancelTasksCommand;
-        public ActionCommand CancelTasksCommand => _cancelTasksCommand ??= new(CancelBackgroundTask);
+        private RelayCommand? _cancelTasksCommand;
+        public RelayCommand CancelTasksCommand => _cancelTasksCommand ??= new(CancelBackgroundTask);
         public void CancelBackgroundTask()
         {
             GlobalCancellationTokenSource.Cancel();
             Cancelling = true;
-            RaisePropertyChanged(nameof(FullText));
+            OnPropertyChanged(nameof(FullText));
         }
     }
 }

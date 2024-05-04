@@ -1,7 +1,9 @@
 ﻿using COMPASS.Models;
 using COMPASS.Services;
 using COMPASS.Tools;
-using Ionic.Zip;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
 using System.Text.Json;
 
 namespace Tests.UnitTests
@@ -65,12 +67,12 @@ namespace Tests.UnitTests
                 MinTagsVersion = "1.0.0",
             };
 
-            var zip = new ZipFile();
-            zip.AddEntry(Constants.SatchelInfoFileName, JsonSerializer.Serialize(info));
-            zip.AddEntry(Constants.TagsFileName, "pseudo data");
+            using var zip = ZipArchive.Create();
+            zip.AddEntry(Constants.SatchelInfoFileName, GenerateStreamFromString(JsonSerializer.Serialize(info)));
+            zip.AddEntry(Constants.TagsFileName, GenerateStreamFromString("pseudo data"));
 
             var path = Path.GetTempPath() + Guid.NewGuid().ToString() + Constants.SatchelExtension;
-            zip.Save(path);
+            zip.SaveTo(path, CompressionType.None);
 
             //Because satchel does not contain a codexInfo file, should work
             var collection = await IOService.OpenSatchel(path);
@@ -78,13 +80,23 @@ namespace Tests.UnitTests
             Directory.Delete(collection.FullDataPath, true);
 
             //Now add a codex file
-            zip.AddEntry(Constants.CodicesFileName, "Not important");
-            zip.Save(path);
+            zip.AddEntry(Constants.CodicesFileName, GenerateStreamFromString("Not important"));
+            zip.SaveTo(path, CompressionType.None);
 
             //Now that the codex file is added, should be null
             collection = await IOService.OpenSatchel(path);
             Assert.IsNull(collection);
 
+        }
+
+        public static Stream GenerateStreamFromString(string s)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(s);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
         }
     }
 }

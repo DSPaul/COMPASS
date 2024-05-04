@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.ViewModels.Import;
 using GongSolutions.Wpf.DragDrop;
 using System;
@@ -22,21 +23,19 @@ namespace COMPASS.ViewModels.Layouts
         // but I don't see the point, seems a lot of boilerplate without real advantages
         public static LayoutViewModel GetLayout(Layout? layout = null)
         {
-            layout ??= (Layout)Properties.Settings.Default.PreferedLayout;
-            Properties.Settings.Default.PreferedLayout = (int)layout;
-            LayoutViewModel? newLayout = layout switch
+            layout ??= PreferencesService.GetInstance().Preferences.UIState.StartupLayout;
+            PreferencesService.GetInstance().Preferences.UIState.StartupLayout = (Layout)layout;
+            return layout switch
             {
                 Layout.Home => new HomeLayoutViewModel(),
                 Layout.List => new ListLayoutViewModel(),
                 Layout.Card => new CardLayoutViewModel(),
                 Layout.Tile => new TileLayoutViewModel(),
-                _ => null
+                _ => throw new NotImplementedException(layout.ToString())
             };
-            if (newLayout == null) throw new NotImplementedException(layout.ToString());
-            return newLayout;
         }
 
-        public void UpdateDoVirtualization() => RaisePropertyChanged(nameof(DoVirtualization));
+        public void UpdateDoVirtualization() => OnPropertyChanged(nameof(DoVirtualization));
 
         #region Properties
 

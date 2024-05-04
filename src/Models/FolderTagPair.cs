@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Xml.Serialization;
 
 namespace COMPASS.Models
 {

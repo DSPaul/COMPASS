@@ -1,6 +1,6 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
-using COMPASS.Properties;
+using COMPASS.Services;
 using COMPASS.Tools;
 using FuzzySharp;
 using GongSolutions.Wpf.DragDrop;
@@ -15,7 +15,7 @@ using System.Windows.Input;
 
 namespace COMPASS.ViewModels
 {
-    public class FilterViewModel : ObservableObject, IDropTarget
+    public class FilterViewModel : ViewModelBase, IDropTarget
     {
         public FilterViewModel(ObservableCollection<Codex> allCodices)
         {
@@ -39,6 +39,8 @@ namespace COMPASS.ViewModels
         }
 
         #region Fields
+
+        PreferencesService _preferencesService = PreferencesService.GetInstance();
 
         private ObservableCollection<Codex> _allCodices;
         private readonly int _itemsShown = 15;
@@ -210,25 +212,23 @@ namespace COMPASS.ViewModels
 
         public ListSortDirection SortDirection
         {
-            get => (ListSortDirection)Settings.Default[nameof(SortDirection)];
+            get => _preferencesService.Preferences.UIState.SortDirection;
             set
             {
-                Settings.Default[nameof(SortDirection)] = (int)value;
-                Settings.Default.Save();
+                _preferencesService.Preferences.UIState.SortDirection = value;
                 ApplySorting();
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
         public string SortProperty
         {
-            get => (string)Settings.Default[nameof(SortProperty)];
+            get => _preferencesService.Preferences.UIState.SortProperty;
             set
             {
-                Settings.Default[nameof(SortProperty)] = value;
-                Settings.Default.Save();
+                _preferencesService.Preferences.UIState.SortProperty = value;
                 ApplySorting();
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -254,9 +254,9 @@ namespace COMPASS.ViewModels
             //cause derived lists to update when codex gets updated
             foreach (Codex c in _allCodices)
             {
-                c.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(Favorites));
-                c.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(RecentCodices));
-                c.PropertyChanged += (_, _) => RaisePropertyChanged(nameof(MostOpenedCodices));
+                c.PropertyChanged += (_, _) => OnPropertyChanged(nameof(Favorites));
+                c.PropertyChanged += (_, _) => OnPropertyChanged(nameof(RecentCodices));
+                c.PropertyChanged += (_, _) => OnPropertyChanged(nameof(MostOpenedCodices));
             }
         }
 
@@ -357,8 +357,8 @@ namespace COMPASS.ViewModels
         }
 
         //Clear Filters
-        private ActionCommand? _clearFiltersCommand;
-        public ActionCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
+        private RelayCommand? _clearFiltersCommand;
+        public RelayCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
         public void ClearFilters()
         {
             StartReleaseDate = null;
@@ -503,10 +503,10 @@ namespace COMPASS.ViewModels
             {
                 FilteredCodices = new(filteredCodices);
                 //Also apply filtering to these lists
-                RaisePropertyChanged(nameof(Favorites));
-                RaisePropertyChanged(nameof(RecentCodices));
-                RaisePropertyChanged(nameof(MostOpenedCodices));
-                RaisePropertyChanged(nameof(RecentlyAddedCodices));
+                OnPropertyChanged(nameof(Favorites));
+                OnPropertyChanged(nameof(RecentCodices));
+                OnPropertyChanged(nameof(MostOpenedCodices));
+                OnPropertyChanged(nameof(RecentlyAddedCodices));
 
                 FilteredCodices.CollectionChanged += (_, _) => ApplySorting();
             }

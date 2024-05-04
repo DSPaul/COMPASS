@@ -6,6 +6,7 @@
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:tools ="clr-namespace:COMPASS.Tools"
+             xmlns:preferences ="clr-namespace:COMPASS.Models.Preferences"
              xmlns:models="clr-namespace:COMPASS.Models" 
              xmlns:viewmodels="clr-namespace:COMPASS.ViewModels" 
              xmlns:import="clr-namespace:COMPASS.ViewModels.Import"
@@ -544,7 +545,7 @@
                                     <Setter Property="Margin" Value="5"/>
                                 </Style>
                                 <DataTemplate DataType="{x:Type layouts:ListLayoutViewModel}">
-                                    <StackPanel>
+                                    <StackPanel DataContext="{Binding Preferences}">
                                         <CheckBox Content="Show Author" IsChecked="{Binding ShowAuthor}"/>
                                         <CheckBox Content="Show Publisher" IsChecked="{Binding ShowPublisher}"/>
                                         <CheckBox Content="Show Rating" IsChecked="{Binding ShowRating}"/>
@@ -557,7 +558,7 @@
                                     </StackPanel>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type layouts:CardLayoutViewModel}">
-                                    <StackPanel>
+                                    <StackPanel DataContext="{Binding Preferences}">
                                         <CheckBox Content="Show Authors" IsChecked="{Binding ShowAuthor}"/>
                                         <CheckBox Content="Show Publisher" IsChecked="{Binding ShowPublisher}"/>
                                         <CheckBox Content="Show Rating" IsChecked="{Binding ShowRating}"/>
@@ -567,12 +568,12 @@
                                     </StackPanel>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type layouts:TileLayoutViewModel}">
-                                    <StackPanel Margin="10">
+                                    <StackPanel Margin="10" DataContext="{Binding Preferences}">
                                         <StackPanel.Resources>
                                             <ObjectDataProvider x:Key="DataOptionsFromEnum"
                                                     MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
                                                 <ObjectDataProvider.MethodParameters>
-                                                    <x:Type TypeName="layouts:TileLayoutViewModel+DataOption"/>
+                                                    <x:Type TypeName="preferences:TileLayoutPreferences+DataOption"/>
                                                 </ObjectDataProvider.MethodParameters>
                                             </ObjectDataProvider>
                                         </StackPanel.Resources>
@@ -584,7 +585,7 @@
                                     </StackPanel>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type layouts:HomeLayoutViewModel}">
-                                    <StackPanel Margin="10">
+                                    <StackPanel Margin="10" DataContext="{Binding Preferences}">
                                         <CheckBox Content="Show Title" IsChecked="{Binding ShowTitle}"/>
                                         <TextBlock Text="Cover Size" Margin="5"/>
                                         <Slider Value="{Binding TileWidth}" Minimum="50" Interval="5" Maximum="400" Margin="5"/>

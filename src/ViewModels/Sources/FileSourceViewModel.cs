@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Services;
 using COMPASS.Tools;
 using FuzzySharp;
 using System.Diagnostics;
@@ -10,6 +11,12 @@ namespace COMPASS.ViewModels.Sources
 {
     public class FileSourceViewModel : SourceViewModel
     {
+        public FileSourceViewModel()
+        {
+            _preferencesService = PreferencesService.GetInstance();
+        }
+
+        private PreferencesService _preferencesService;
         public override MetaDataSource Source => MetaDataSource.File;
 
         public override Task<bool> FetchCover(Codex codex) => throw new System.NotImplementedException();
@@ -33,7 +40,7 @@ namespace COMPASS.ViewModels.Sources
                 }
             }
 
-            if (Properties.Settings.Default.AutoLinkFolderTagSameName)
+            if (_preferencesService.Preferences.AutoLinkFolderTagSameName)
             {
                 foreach (Tag tag in MainViewModel.CollectionVM.CurrentCollection.AllTags)
                 {

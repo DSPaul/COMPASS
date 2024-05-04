@@ -1,4 +1,4 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
 using System;
 using System.Collections.Generic;
@@ -17,8 +17,8 @@ namespace COMPASS.ViewModels.Import
 
         public TagsSelectorViewModel TagsSelectorVM { get; set; }
 
-        private ActionCommand? _importTagsCommand;
-        public ActionCommand ImportTagsCommand => _importTagsCommand ??= new(ImportTags);
+        private RelayCommand? _importTagsCommand;
+        public RelayCommand ImportTagsCommand => _importTagsCommand ??= new(ImportTags);
         public void ImportTags()
         {
             foreach (var template in TagsSelectorVM.TagCollections)

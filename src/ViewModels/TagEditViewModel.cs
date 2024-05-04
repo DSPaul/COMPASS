@@ -1,19 +1,25 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using COMPASS.Models;
 using COMPASS.Tools;
 using System;
 
 namespace COMPASS.ViewModels
 {
-    public class TagEditViewModel : ObservableObject, IEditViewModel
+    public class TagEditViewModel : ObservableRecipient, IEditViewModel, IRecipient<PropertyChangedMessage<string>>
     {
-        public TagEditViewModel(Tag? toEdit, bool createNew)
+        public TagEditViewModel(Tag? toEdit, bool createNew) : base()
         {
             _editedTag = toEdit ?? new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
             CreateNewTag = createNew;
 
             _tempTag = new Tag(_editedTag);
+
+            IsActive = true;
         }
+
         #region Properties
 
         private Tag _editedTag;
@@ -35,7 +41,7 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref _showColorSelection, value);
-                RaisePropertyChanged(nameof(ShowInfoGrid));
+                OnPropertyChanged(nameof(ShowInfoGrid));
             }
         }
 
@@ -46,8 +52,17 @@ namespace COMPASS.ViewModels
 
         #region Functions and Commands
 
-        private ActionCommand? _oKCommand;
-        public ActionCommand OKCommand => _oKCommand ??= new(OKBtn, CanOkBtn);
+        /// <inheritdoc/>
+        public void Receive(PropertyChangedMessage<string> message)
+        {
+            if (message.Sender.GetType() == typeof(Tag) && message.PropertyName == nameof(Tag.Content))
+            {
+                OKCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        private RelayCommand? _oKCommand;
+        public RelayCommand OKCommand => _oKCommand ??= new(OKBtn, CanOkBtn);
         public void OKBtn()
         {
             //Apply changes 
@@ -79,8 +94,8 @@ namespace COMPASS.ViewModels
         }
         public bool CanOkBtn() => !String.IsNullOrWhiteSpace(TempTag.Content);
 
-        private ActionCommand? _cancelCommand;
-        public ActionCommand CancelCommand => _cancelCommand ??= new(Cancel);
+        private RelayCommand? _cancelCommand;
+        public RelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel()
         {
             if (CreateNewTag)
@@ -91,11 +106,11 @@ namespace COMPASS.ViewModels
             CloseAction();
         }
 
-        private ActionCommand? _closeColorSelectionCommand;
-        public ActionCommand CloseColorSelectionCommand => _closeColorSelectionCommand ??= new(CloseColorSelection);
+        private RelayCommand? _closeColorSelectionCommand;
+        public RelayCommand CloseColorSelectionCommand => _closeColorSelectionCommand ??= new(CloseColorSelection);
 
-        private ActionCommand? _colorSameAsParentCommand;
-        public ActionCommand ColorSameAsParentCommand => _colorSameAsParentCommand ??= new(SetColorSameAsParent);
+        private RelayCommand? _colorSameAsParentCommand;
+        public RelayCommand ColorSameAsParentCommand => _colorSameAsParentCommand ??= new(SetColorSameAsParent);
         private void SetColorSameAsParent()
         {
             TempTag.SerializableBackgroundColor = null;

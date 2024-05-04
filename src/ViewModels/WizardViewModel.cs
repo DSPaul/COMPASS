@@ -1,4 +1,4 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -7,6 +7,11 @@ namespace COMPASS.ViewModels
 {
     public abstract class WizardViewModel : ViewModelBase
     {
+        protected WizardViewModel()
+        {
+            Steps.CollectionChanged += (_, _) => OnStepsChanged();
+        }
+
         private ObservableCollection<string> _steps = new();
         public virtual ObservableCollection<string> Steps
         {
@@ -14,7 +19,8 @@ namespace COMPASS.ViewModels
             set
             {
                 SetProperty(ref _steps, value);
-                RaisePropertyChanged(nameof(CurrentStep));
+                _steps.CollectionChanged += (_, _) => OnStepsChanged();
+                OnStepsChanged();
             }
         }
 
@@ -24,34 +30,50 @@ namespace COMPASS.ViewModels
             get => _stepCounter;
             set
             {
-                if (value <= 0) value = 0;
+                if (value <= 0)
+                {
+                    value = 0;
+                }
                 else if (value >= Steps.Count)
+                {
                     Finish();
+                }
+
                 SetProperty(ref _stepCounter, value);
-                RaisePropertyChanged(nameof(CurrentStep));
-                RaisePropertyChanged(nameof(ShowBackButton));
-                RaisePropertyChanged(nameof(ShowNextButton));
-                RaisePropertyChanged(nameof(ShowFinishButton));
+                OnStepsChanged();
             }
         }
 
-        public string CurrentStep => Steps[StepCounter];
+        protected void OnStepsChanged()
+        {
+            OnPropertyChanged(nameof(CurrentStep));
+            RefreshNavigationBtns();
+        }
 
-        private ActionCommand? _cancelCommand;
-        public virtual ActionCommand CancelCommand => _cancelCommand ??= new((CancelAction ?? CloseAction) ?? new Action(() => { }));
+        protected void RefreshNavigationBtns()
+        {
+            PrevStepCommand.NotifyCanExecuteChanged();
+            NextStepCommand.NotifyCanExecuteChanged();
+            FinishCommand.NotifyCanExecuteChanged();
+        }
 
-        private ActionCommand? _nextStepCommand;
-        public ActionCommand NextStepCommand => _nextStepCommand ??= new(NextStep, ShowNextButton);
+        public string CurrentStep => StepCounter >= Steps.Count ? "" : Steps[StepCounter];
+
+        private RelayCommand? _cancelCommand;
+        public virtual RelayCommand CancelCommand => _cancelCommand ??= new((CancelAction ?? CloseAction) ?? new Action(() => { }));
+
+        private RelayCommand? _nextStepCommand;
+        public RelayCommand NextStepCommand => _nextStepCommand ??= new(NextStep, ShowNextButton);
         protected virtual void NextStep() => StepCounter++;
         public virtual bool ShowNextButton() => StepCounter < Steps.Count - 1;
 
-        private ActionCommand? _prevStepCommand;
-        public ActionCommand PrevStepCommand => _prevStepCommand ??= new(PrevStep, ShowBackButton);
+        private RelayCommand? _prevStepCommand;
+        public RelayCommand PrevStepCommand => _prevStepCommand ??= new(PrevStep, ShowBackButton);
         protected virtual void PrevStep() => StepCounter--;
         public virtual bool ShowBackButton() => StepCounter > 0;
 
-        private ActionCommand? _finishCommand;
-        public ActionCommand FinishCommand => _finishCommand ??= new(async () => await Finish(), ShowFinishButton);
+        private AsyncRelayCommand? _finishCommand;
+        public AsyncRelayCommand FinishCommand => _finishCommand ??= new(Finish, ShowFinishButton);
         public abstract Task Finish();
         public virtual bool ShowFinishButton() => StepCounter == Steps.Count - 1;
 

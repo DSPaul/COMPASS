@@ -1,12 +1,13 @@
-﻿using COMPASS.Commands;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
-using COMPASS.Properties;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
 using COMPASS.Windows;
-using Ionic.Zip;
 using Microsoft.Win32;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -22,6 +23,7 @@ namespace COMPASS.ViewModels
         public CollectionViewModel(MainViewModel? mainViewModel)
         {
             MainVM = mainViewModel;
+            _preferencesService = PreferencesService.GetInstance();
 
             //only to avoid null references, should be overwritten as soon as the UI loads, which calls refresh
             _filterVM = new(new());
@@ -41,6 +43,8 @@ namespace COMPASS.ViewModels
 
             Debug.Assert(_currentCollection is not null, "Current Collection should never be null after loading Initial Collection");
         }
+
+        private PreferencesService _preferencesService;
 
         #region Properties
         public MainViewModel? MainVM { get; init; }
@@ -101,8 +105,6 @@ namespace COMPASS.ViewModels
             set => SetProperty(ref _editCollectionVisibility, value);
         }
 
-        public bool IncludeFilesInExport { get; set; } = false;
-
         #endregion
 
         #region Methods and Commands
@@ -130,9 +132,9 @@ namespace COMPASS.ViewModels
                 }
 
                 //otherwise, open startup collection
-                else if (AllCodexCollections.Any(collection => collection.DirectoryName == Settings.Default.StartupCollection))
+                else if (AllCodexCollections.Any(collection => collection.DirectoryName == _preferencesService.Preferences.UIState.StartupCollection))
                 {
-                    var startupCollection = AllCodexCollections.First(collection => collection.DirectoryName == Settings.Default.StartupCollection);
+                    var startupCollection = AllCodexCollections.First(collection => collection.DirectoryName == _preferencesService.Preferences.UIState.StartupCollection);
                     initSuccess = TryLoadCollection(startupCollection);
                     if (!initSuccess)
                     {
@@ -144,7 +146,7 @@ namespace COMPASS.ViewModels
                 //in case startup collection no longer exists, pick first one that does exists
                 else
                 {
-                    Logger.Warn($"The collection {Settings.Default.StartupCollection} could not be found.", new DirectoryNotFoundException());
+                    Logger.Warn($"The collection {_preferencesService.Preferences.UIState.StartupCollection} could not be found.", new DirectoryNotFoundException());
                     var firstCollection = AllCodexCollections.First();
                     initSuccess = TryLoadCollection(firstCollection);
                     if (!initSuccess)
@@ -229,18 +231,18 @@ namespace COMPASS.ViewModels
             await AutoImport();
         }
 
-        private ActionCommand? _toggleCreateCollectionCommand;
-        public ActionCommand ToggleCreateCollectionCommand => _toggleCreateCollectionCommand ??= new(ToggleCreateCollection);
+        private RelayCommand? _toggleCreateCollectionCommand;
+        public RelayCommand ToggleCreateCollectionCommand => _toggleCreateCollectionCommand ??= new(ToggleCreateCollection);
         private void ToggleCreateCollection() => CreateCollectionVisibility = !CreateCollectionVisibility;
 
-        private ActionCommand? _toggleEditCollectionCommand;
-        public ActionCommand ToggleEditCollectionCommand => _toggleEditCollectionCommand ??= new(ToggleEditCollection);
+        private RelayCommand? _toggleEditCollectionCommand;
+        public RelayCommand ToggleEditCollectionCommand => _toggleEditCollectionCommand ??= new(ToggleEditCollection);
         private void ToggleEditCollection() => EditCollectionVisibility = !EditCollectionVisibility;
 
         // Create CodexCollection
-        private ReturningRelayCommand<string, CodexCollection?>? _createCollectionCommand;
-        public ReturningRelayCommand<string, CodexCollection?> CreateCollectionCommand =>
-            _createCollectionCommand ??= new(CreateAndLoadCollection, IsLegalCollectionName);
+        private RelayCommand<string>? _createCollectionCommand;
+        public RelayCommand<string> CreateCollectionCommand =>
+            _createCollectionCommand ??= new(name => CreateAndLoadCollection(name), IsLegalCollectionName);
         public CodexCollection? CreateAndLoadCollection(string? dirName)
         {
             if (dirName == null)
@@ -305,8 +307,8 @@ namespace COMPASS.ViewModels
         }
 
         // Delete Collection
-        private ActionCommand? _deleteCollectionCommand;
-        public ActionCommand DeleteCollectionCommand => _deleteCollectionCommand ??= new(RaiseDeleteCollectionWarning);
+        private RelayCommand? _deleteCollectionCommand;
+        public RelayCommand DeleteCollectionCommand => _deleteCollectionCommand ??= new(RaiseDeleteCollectionWarning);
         public void RaiseDeleteCollectionWarning()
         {
             if (CurrentCollection.AllCodices.Count > 0)
@@ -351,8 +353,8 @@ namespace COMPASS.ViewModels
         }
 
         //Export Collection
-        private ActionCommand? _exportCommand;
-        public ActionCommand ExportCommand => _exportCommand ??= new(Export);
+        private RelayCommand? _exportCommand;
+        public RelayCommand ExportCommand => _exportCommand ??= new(Export);
         public void Export()
         {
             //open wizard
@@ -361,8 +363,8 @@ namespace COMPASS.ViewModels
             wizard.Show();
         }
 
-        private ActionCommand? _exportTagsCommand;
-        public ActionCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags);
+        private RelayCommand? _exportTagsCommand;
+        public RelayCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags);
         public void ExportTags()
         {
             SaveFileDialog saveFileDialog = new()
@@ -378,20 +380,20 @@ namespace COMPASS.ViewModels
             CurrentCollection.SaveTags();
 
             string targetPath = saveFileDialog.FileName;
-            using ZipFile zip = new();
-            zip.AddFile(CurrentCollection.TagsDataFilePath, "");
+            using var archive = ZipArchive.Create();
+            archive.AddEntry(Constants.TagsFileName, CurrentCollection.TagsDataFilePath);
 
             //Export
-            zip.Save(targetPath);
+            archive.SaveTo(targetPath, CompressionType.None);
             Logger.Info($"Exported Tags from {CurrentCollection.DirectoryName} to {targetPath}");
         }
 
         //Import Collection
-        private ActionCommand? _importCommand;
-        public ActionCommand ImportCommand => _importCommand ??= new(async () => await ImportSatchelAsync());
+        private AsyncRelayCommand? _importCommand;
+        public AsyncRelayCommand ImportCommand => _importCommand ??= new(ImportSatchelAsync);
 
-
-        public async Task ImportSatchelAsync(string? path = null)
+        public async Task ImportSatchelAsync() => await ImportSatchelAsync(null);
+        public async Task ImportSatchelAsync(string? path)
         {
             var collectionToImport = await IOService.OpenSatchel(path);
 
@@ -408,8 +410,8 @@ namespace COMPASS.ViewModels
         }
 
         //Merge Collection into another
-        private RelayCommand<string>? _mergeCollectionIntoCommand;
-        public RelayCommand<string> MergeCollectionIntoCommand => _mergeCollectionIntoCommand ??= new(async s => await MergeIntoCollection(s));
+        private AsyncRelayCommand<string>? _mergeCollectionIntoCommand;
+        public AsyncRelayCommand<string> MergeCollectionIntoCommand => _mergeCollectionIntoCommand ??= new(MergeIntoCollection);
         public async Task MergeIntoCollection(string? collectionToMergeInto)
         {
             if (String.IsNullOrEmpty(collectionToMergeInto) || !AllCodexCollections.Select(coll => coll.DirectoryName).Contains(collectionToMergeInto))

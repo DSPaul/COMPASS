@@ -1,4 +1,5 @@
-﻿using COMPASS.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Models;
 using COMPASS.Tools;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,7 +70,7 @@ namespace COMPASS.ViewModels
                         node.ContainerOnly = node.Item.IsGroup;
                         node.IsChecked = false;
                     }
-                    _tagsRoot.Updated += _ => RaisePropertyChanged(nameof(ImportCount));
+                    _tagsRoot.Updated += _ => OnPropertyChanged(nameof(ImportCount));
                     return _tagsRoot;
                 }
             }

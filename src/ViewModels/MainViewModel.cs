@@ -1,5 +1,6 @@
 ﻿using AutoUpdaterDotNET;
-using COMPASS.Commands;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
 using COMPASS.Services;
 using COMPASS.Tools;
@@ -148,10 +149,10 @@ namespace COMPASS.ViewModels
         }
 
         //check updates
-        public ActionCommand CheckForUpdatesCommand => SettingsViewModel.GetInstance().CheckForUpdatesCommand;
+        public RelayCommand CheckForUpdatesCommand => SettingsViewModel.GetInstance().CheckForUpdatesCommand;
 
-        private ActionCommand? _navigateToLinkTree;
-        public ActionCommand NavigateToLinkTree => _navigateToLinkTree ??= new(()
+        private RelayCommand? _navigateToLinkTree;
+        public RelayCommand NavigateToLinkTree => _navigateToLinkTree ??= new(()
             => Process.Start(new ProcessStartInfo(@"https://linktr.ee/compassapp") { UseShellExecute = true }));
 
         //Change Layout

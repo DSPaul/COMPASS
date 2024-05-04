@@ -1,6 +1,5 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,12 +25,7 @@ namespace COMPASS.ViewModels.Import
             {
                 foreach (Codex codex in CollectionToImport.AllCodices.Where(c => c.HasOfflineSource()))
                 {
-                    string fileName = Path.GetFileName(codex.Path);
-                    if (String.IsNullOrEmpty(fileName))
-                    {
-                        continue;
-                    }
-                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath, fileName);
+                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath, codex.Path); //TODO, what it this path becomes too long?
                     if (File.Exists(includedFilePath))
                     {
                         codex.Path = includedFilePath;
@@ -49,8 +43,19 @@ namespace COMPASS.ViewModels.Import
         /// </summary>
         public bool ImportTagsSeperatly { get; set; } = false;
 
+        public bool _deleteSatchelOnWizardClosing = true; //Delete the satchel if the wizard closes for any reason
+
         //OVERVIEW STEP
-        public bool MergeIntoCollection { get; set; } = false;
+        private bool _mergeIntoCollection = false;
+        public bool MergeIntoCollection
+        {
+            get => _mergeIntoCollection;
+            set
+            {
+                SetProperty(ref _mergeIntoCollection, value);
+                RefreshNavigationBtns();
+            }
+        }
 
         private string _collectionName = "Unnamed Collection";
         public string CollectionName
@@ -59,7 +64,8 @@ namespace COMPASS.ViewModels.Import
             set
             {
                 SetProperty(ref _collectionName, value);
-                RaisePropertyChanged(nameof(IsCollectionNameLegal));
+                OnPropertyChanged(nameof(IsCollectionNameLegal));
+                RefreshNavigationBtns();
             }
         }
         public bool IsCollectionNameLegal => MainViewModel.CollectionVM.IsLegalCollectionName(CollectionName);
@@ -79,6 +85,7 @@ namespace COMPASS.ViewModels.Import
             }
         }
 
+
         //Don't show on overview tab if new collection is chosen with illegal name
         public override bool ShowNextButton() => base.ShowNextButton() &&
             !(CurrentStep == "Overview" && !MergeIntoCollection && !IsCollectionNameLegal);
@@ -87,7 +94,7 @@ namespace COMPASS.ViewModels.Import
 
         public override async Task Finish()
         {
-
+            _deleteSatchelOnWizardClosing = false; //need to keep files around to merge files and cover art
             CloseAction?.Invoke();
 
             //if we do a quick import, set all the things in the contentSelector have the right value
@@ -157,6 +164,8 @@ namespace COMPASS.ViewModels.Import
             }
 
             await targetCollection.MergeWith(ContentSelectorVM.CuratedCollection, ImportTagsSeperatly);
+
+            Cleanup();
         }
 
         public void UpdateSteps()
@@ -169,9 +178,15 @@ namespace COMPASS.ViewModels.Import
                 ContentSelectorVM.UpdateSteps();
                 Steps.AddRange(ContentSelectorVM.Steps);
             }
-            RaisePropertyChanged(nameof(Steps));
         }
 
         public void Cleanup() => MainViewModel.CollectionVM.DeleteCollection(CollectionToImport);
+        public void OnWizardClosing()
+        {
+            if (_deleteSatchelOnWizardClosing)
+            {
+                Cleanup();
+            }
+        }
     }
 }

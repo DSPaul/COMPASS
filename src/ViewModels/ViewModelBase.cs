@@ -1,6 +1,6 @@
 ﻿using Autofac;
+using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Interfaces;
-using COMPASS.Models;
 
 namespace COMPASS.ViewModels
 {

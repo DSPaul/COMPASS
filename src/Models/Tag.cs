@@ -1,4 +1,5 @@
-﻿using COMPASS.Services;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Services;
 using COMPASS.Tools;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Xml.Serialization;
 
 namespace COMPASS.Models
 {
-    public sealed class Tag : ObservableObject, ITag, IHasID, IHasChildren<Tag>, IEquatable<Tag>
+    public sealed class Tag : ObservableRecipient, ITag, IHasID, IHasChildren<Tag>, IEquatable<Tag>
     {
         //Empty Constructor needed for serialization
         public Tag() { }
@@ -48,7 +49,7 @@ namespace COMPASS.Models
             set
             {
                 value = IOService.SanitizeXmlString(value);
-                SetProperty(ref _content, value);
+                SetProperty(ref _content, value, true); //needs to broadcast so TagEdit can validate the input
             }
         }
 
@@ -67,7 +68,7 @@ namespace COMPASS.Models
             set
             {
                 SetProperty(ref _serializableBackgroundColor, value);
-                RaisePropertyChanged(nameof(BackgroundColor));
+                OnPropertyChanged(nameof(BackgroundColor));
             }
         }
 

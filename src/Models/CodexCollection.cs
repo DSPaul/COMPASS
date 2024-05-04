@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Interfaces;
 using COMPASS.Services;
 using COMPASS.Tools;
@@ -20,7 +21,10 @@ namespace COMPASS.Models
         public CodexCollection(string collectionDirectory)
         {
             _directoryName = collectionDirectory;
+            _preferencesService = PreferencesService.GetInstance();
         }
+
+        private PreferencesService _preferencesService;
 
         public static string CollectionsPath => Path.Combine(SettingsViewModel.CompassDataPath, "Collections");
         public string FullDataPath => Path.Combine(CollectionsPath, DirectoryName);
@@ -89,7 +93,7 @@ namespace COMPASS.Models
             if (!loadedInfo) { result -= 4; }
             if (MakeStartupCollection)
             {
-                Properties.Settings.Default.StartupCollection = DirectoryName;
+                _preferencesService.Preferences.UIState.StartupCollection = DirectoryName;
                 Logger.Info($"Loaded {DirectoryName}");
             }
             return result;
@@ -246,12 +250,12 @@ namespace COMPASS.Models
 
         public void Save()
         {
-            RaisePropertyChanged(nameof(AllCodices));
+            OnPropertyChanged(nameof(AllCodices));
             Directory.CreateDirectory(UserFilesPath);
             bool savedTags = SaveTags();
             bool savedCodices = SaveCodices();
             bool savedInfo = SaveInfo();
-            Properties.Settings.Default.Save();
+            _preferencesService.SavePreferences();
 
             if (savedCodices || savedTags || savedInfo)
             {
@@ -268,7 +272,7 @@ namespace COMPASS.Models
             }
             try
             {
-                using var writer = XmlWriter.Create(TagsDataFilePath, SettingsViewModel.XmlWriteSettings);
+                using var writer = XmlWriter.Create(TagsDataFilePath, XmlService.XmlWriteSettings);
                 XmlSerializer serializer = new(typeof(List<Tag>));
                 serializer.Serialize(writer, RootTags);
             }
@@ -295,7 +299,7 @@ namespace COMPASS.Models
 
             try
             {
-                using var writer = XmlWriter.Create(CodicesDataFilePath, SettingsViewModel.XmlWriteSettings);
+                using var writer = XmlWriter.Create(CodicesDataFilePath, XmlService.XmlWriteSettings);
                 XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
                 serializer.Serialize(writer, AllCodices);
             }
@@ -317,7 +321,7 @@ namespace COMPASS.Models
             Info.PrepareSave();
             try
             {
-                using var writer = XmlWriter.Create(CollectionInfoFilePath, SettingsViewModel.XmlWriteSettings);
+                using var writer = XmlWriter.Create(CollectionInfoFilePath, XmlService.XmlWriteSettings);
                 XmlSerializer serializer = new(typeof(CollectionInfo));
                 serializer.Serialize(writer, Info);
             }
@@ -431,7 +435,7 @@ namespace COMPASS.Models
                     }
                 }
 
-                //Move or Generate Thumbnail file
+                //Move Thumbnail file
                 if (File.Exists(codex.Thumbnail))
                 {
                     try
@@ -443,13 +447,15 @@ namespace COMPASS.Models
                         Logger.Warn($"Failed to copy thumbnail of {codex.Title}", ex);
                     }
                 }
-                else
-                {
-                    CoverService.CreateThumbnail(codex);
-                }
 
                 //update img path to these new files
                 codex.SetImagePaths(this);
+
+                //if no thumbnail file was moved, create one
+                if (!File.Exists(codex.Thumbnail))
+                {
+                    CoverService.CreateThumbnail(codex);
+                }
 
                 //move user files included in import
                 if (codex.Path.StartsWith(source.UserFilesPath) && File.Exists(codex.Path))
@@ -457,6 +463,11 @@ namespace COMPASS.Models
                     try
                     {
                         string newPath = codex.Path.Replace(source.UserFilesPath, UserFilesPath);
+                        string? newDir = Path.GetDirectoryName(newPath);
+                        if (newDir != null)
+                        {
+                            Directory.CreateDirectory(newDir);
+                        }
                         File.Copy(codex.Path, newPath, true);
                         codex.Path = newPath;
                     }
