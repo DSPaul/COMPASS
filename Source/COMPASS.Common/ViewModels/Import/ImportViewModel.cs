@@ -1,8 +1,7 @@
 ﻿using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
-using COMPASS.Common.Views.Windows;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,7 +95,7 @@ namespace COMPASS.Common.ViewModels.Import
                 newCodices.Add(newCodex);
                 targetCollection.AllCodices.Add(newCodex);
 
-                LogEntry logEntry = new(LogEntry.MsgType.Info, $"Importing {path}");
+                LogEntry logEntry = new(Severity.Info, $"Importing {path}");
                 progressVM.IncrementCounter();
                 progressVM.AddLogEntry(logEntry);
             }

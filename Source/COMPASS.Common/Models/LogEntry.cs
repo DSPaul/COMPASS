@@ -1,20 +1,21 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.Models.Enums;
 
 namespace COMPASS.Common.Models
 {
     public class LogEntry : ObservableObject
     {
-        public LogEntry(MsgType msgType, string message)
+        public LogEntry(Severity severity, string message)
         {
-            _type = msgType;
+            _severity = severity;
             _msg = message;
         }
 
-        private MsgType _type;
-        public MsgType Type
+        private Severity _severity;
+        public Severity Severity
         {
-            get => _type;
-            set => SetProperty(ref _type, value);
+            get => _severity;
+            set => SetProperty(ref _severity, value);
         }
 
         private string _msg;
@@ -22,13 +23,6 @@ namespace COMPASS.Common.Models
         {
             get => _msg;
             set => SetProperty(ref _msg, value);
-        }
-
-        public enum MsgType
-        {
-            Info,
-            Warning,
-            Error
         }
     }
 }

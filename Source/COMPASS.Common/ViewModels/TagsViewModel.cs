@@ -1,10 +1,11 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Autofac;
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
-using COMPASS.Common.Views.Windows;
-using GongSolutions.Wpf.DragDrop;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -162,7 +163,8 @@ namespace COMPASS.Common.ViewModels
 
             if (!importVM.TagsSelectorVM.HasTags)
             {
-                messageDialog.Show($"{collectionToImport.DirectoryName[2..]} does not contain tags", "No Tags found", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                Notification noTagsFound = new("No Tags found", $"{collectionToImport.DirectoryName[2..]} does not contain tags");
+                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(noTagsFound);
                 return;
             }
 

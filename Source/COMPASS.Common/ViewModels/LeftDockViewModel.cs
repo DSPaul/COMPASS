@@ -1,9 +1,11 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Autofac;
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
-using COMPASS.Common.Views.Windows;
 using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels
@@ -73,7 +75,8 @@ namespace COMPASS.Common.ViewModels
 
             if (!vm.ContentSelectorVM.HasCodices)
             {
-                messageDialog.Show($"{collectionToImport.DirectoryName[2..]} does not contain items to import", "No items found", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                Notification noItemsFound = new("No items found", $"{collectionToImport.DirectoryName[2..]} does not contain items to import");
+                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(noItemsFound);
                 return;
             }
 

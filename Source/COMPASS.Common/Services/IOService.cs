@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using HtmlAgilityPack;
@@ -66,14 +67,14 @@ namespace COMPASS.Common.Services
             catch (Exception ex)
             {
                 //fails if URL could not be loaded
-                progressVM.AddLogEntry(new(LogEntry.MsgType.Error, ex.Message));
+                progressVM.AddLogEntry(new(Severity.Error, ex.Message));
                 Logger.Error($"Could not load {url}", ex);
                 return null;
             }
 
             if (doc.ParsedText is null || doc.DocumentNode is null)
             {
-                LogEntry entry = new(LogEntry.MsgType.Error, $"Failed to reach {url}");
+                LogEntry entry = new(Severity.Error, $"Failed to reach {url}");
                 progressVM.AddLogEntry(entry);
                 Logger.Error($"{url} does not have any content", new Exception());
                 return null;
@@ -142,7 +143,7 @@ namespace COMPASS.Common.Services
             progressVM.TotalAmount = 1;
 
             //extract
-            await Task.Run(() => archive.ExtractToDirectory(tmpCollectionPath)); //TODO add cancelation and progress reporting
+            await Task.Run(() => archive.ExtractToDirectory(tmpCollectionPath, progressReport: new Action<double>(progressVM.UpdateFromPercentage)));
 
             progressVM.IncrementCounter();
             return tmpCollectionPath;
@@ -281,6 +282,8 @@ namespace COMPASS.Common.Services
                 path = openFileDialog.FileName;
             }
 
+            var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+
             //Check compatibility
             using (ZipArchive archive = ZipArchive.Open(path))
             {
@@ -290,8 +293,8 @@ namespace COMPASS.Common.Services
                     //No version information means we cannot ensure compatibility, so abort
                     string message = $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
                     Logger.Warn(message);
-                    App.Container.Resolve<IMessageBox>()
-                        .Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message, Severity.Warning);
+                    windowedNotificationService.Show(warnNotification);
                     return null;
                 }
 
@@ -308,8 +311,8 @@ namespace COMPASS.Common.Services
                     //No version information means we cannot ensure compatibility, so abort
                     string message = $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
                     Logger.Warn(message);
-                    App.Container.Resolve<IMessageBox>()
-                        .Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message, Severity.Warning);
+                    windowedNotificationService.Show(warnNotification);
                     return null;
                 }
 
@@ -345,8 +348,8 @@ namespace COMPASS.Common.Services
                     string message = $"Cannot import {Path.GetFileName(path)} because it was created in a newer version of COMPASS (v{satchelInfo.CreationVersion}), " +
                         $"and has indicated to be incompatible with your version v{Reflection.Version}. Please update and try again.";
                     Logger.Warn(message);
-                    App.Container.Resolve<IMessageBox>()
-                        .Show(message, $"Could not import {Path.GetFileName(path)}", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message, Severity.Warning);
+                    windowedNotificationService.Show(warnNotification);
                     return null;
                 }
             }

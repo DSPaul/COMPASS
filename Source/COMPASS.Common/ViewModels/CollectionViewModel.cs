@@ -1,5 +1,8 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Autofac;
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
@@ -183,10 +186,11 @@ namespace COMPASS.Common.ViewModels
                 {
                     -1 => "The save file for the Tags seems to be corrupted and could not be read.",
                     -2 => "The save file with all items seems to be corrupted and could not be read.",
-                    -3 => "Both the save file with tags and items seems to be corrupted and could not be read.",
+                    -3 => "Both the save files with tags and items seem to be corrupted and could not be read.",
                     _ => ""
                 };
-                _ = messageDialog.Show($"Could not load {collection.DirectoryName}. \n" + msg, "Failed to Load Collection", MessageBoxButton.OK, MessageBoxImage.Error);
+                Notification error = new("Failed to Load Collection", $"Could not load {collection.DirectoryName}. \n" + msg, Severity.Error);
+                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(error);
                 return false;
             }
 
@@ -310,20 +314,15 @@ namespace COMPASS.Common.ViewModels
         {
             if (CurrentCollection.AllCodices.Count > 0)
             {
-                //MessageBox "Are you Sure?"
-                string sCaption = "Are you Sure?";
+                //"Are you Sure?"
 
                 const string messageSingle = "There is still one item in this collection, if you don't want to remove it from COMPASS, move it to another collection first. Are you sure you want to continue?";
                 string messageMultiple = $"There are still {CurrentCollection.AllCodices.Count} items in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
 
-                string sMessageBoxText = CurrentCollection.AllCodices.Count == 1 ? messageSingle : messageMultiple;
+                Notification areYouSure = Notification.AreYouSureNotification;
+                areYouSure.Body = CurrentCollection.AllCodices.Count == 1 ? messageSingle : messageMultiple;
 
-                MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
-                MessageBoxImage imgMessageBox = MessageBoxImage.Warning;
-
-                MessageBoxResult rsltMessageBox = messageDialog.Show(sMessageBoxText, sCaption, btnMessageBox, imgMessageBox);
-
-                if (rsltMessageBox == MessageBoxResult.Yes)
+                if (areYouSure.Result == NotificationAction.Confirm)
                 {
                     DeleteCollection(CurrentCollection);
                 }
@@ -416,20 +415,24 @@ namespace COMPASS.Common.ViewModels
                 return;
             }
 
-            //Show some kind of are you sure?
-            string message = $"You are about to merge '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'. \n" +
+            //Are you sure?
+            Notification areYouSure = Notification.AreYouSureNotification;
+            areYouSure.Title = "Confirm merge";
+            areYouSure.Body = $"You are about to merge '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'. \n" +
                            $"This will copy all items, tags and preferences to the chosen collection. \n" +
                            $"Are you sure you want to continue?";
-            var result = messageDialog.Show(message, "Confirm merge", MessageBoxButton.OKCancel);
-            if (result != MessageBoxResult.OK) return;
+
+            App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(areYouSure);
+
+            if (areYouSure.Result != NotificationAction.Confirm) return;
 
             CodexCollection targetCollection = new(collectionToMergeInto);
 
             targetCollection.Load(MakeStartupCollection: false);
             await targetCollection.MergeWith(CurrentCollection);
 
-            message = $"Successfully merged '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'";
-            messageDialog.Show(message, "Merge Success");
+            Notification doneNotification = new("Merge Success", $"Successfully merged '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'");
+            App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Toast).Show(doneNotification);
         }
         #endregion
     }

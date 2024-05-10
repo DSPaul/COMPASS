@@ -1,8 +1,11 @@
-﻿using Avalonia;
+﻿using Autofac;
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.Views;
 using COMPASS.Common.Views.Windows;
@@ -35,5 +38,26 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private static IContainer? _container;
+
+    public static IContainer Container
+    {
+        get
+        {
+            if (_container is null)
+            {
+                //init the container
+                var builder = new ContainerBuilder();
+
+                builder.RegisterType<WindowedNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Windowed);
+                builder.RegisterType<WindowedNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Toast); //use windowed for everything for now
+
+                _container = builder.Build();
+            }
+            return _container;
+        }
+        set => _container = value;
     }
 }

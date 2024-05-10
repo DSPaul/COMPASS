@@ -1,4 +1,5 @@
 ﻿using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
@@ -28,7 +29,7 @@ namespace COMPASS.Common.ViewModels.Sources
         public override async Task<bool> FetchCover(Codex codex)
         {
             if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading cover from Google Drive"));
+            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Google Drive"));
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
@@ -46,7 +47,7 @@ namespace COMPASS.Common.ViewModels.Sources
             {
                 string msg = $"Failed to get cover from {codex.SourceURL}";
                 Logger.Error(msg, ex);
-                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, msg));
+                ProgressVM.AddLogEntry(new(Severity.Error, msg));
                 return false;
             }
         }

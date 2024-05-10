@@ -1,11 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
-using COMPASS.Common.Views.Windows;
 using System;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace COMPASS.Common.ViewModels.Import
 {
@@ -149,7 +148,7 @@ namespace COMPASS.Common.ViewModels.Import
                 await CodexViewModel.StartGetMetaDataProcess(newCodex)
                 .ContinueWith(_ =>
                 {
-                    progressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Metadata loaded."));
+                    progressVM.AddLogEntry(new(Severity.Info, "Metadata loaded."));
                     progressVM.ResetCounter();
                 });
             }
@@ -165,7 +164,7 @@ namespace COMPASS.Common.ViewModels.Import
             try
             {
                 await CoverService.GetCover(newCodex)
-                 .ContinueWith(_ => progressVM.AddLogEntry(new(LogEntry.MsgType.Info, "Cover loaded.")));
+                 .ContinueWith(_ => progressVM.AddLogEntry(new(Severity.Info, "Cover loaded.")));
             }
             catch (OperationCanceledException ex)
             {
@@ -177,7 +176,7 @@ namespace COMPASS.Common.ViewModels.Import
             //Complete import
             string logMsg = $"Imported {newCodex.Title}";
             Logger.Info(logMsg);
-            progressVM.AddLogEntry(new LogEntry(LogEntry.MsgType.Info, logMsg));
+            progressVM.AddLogEntry(new LogEntry(Severity.Info, logMsg));
 
             return newCodex;
         }

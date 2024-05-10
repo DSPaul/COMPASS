@@ -167,18 +167,21 @@ namespace COMPASS.Common.ViewModels
                 //Now add xml files
                 archive.AddAllFromDirectory(ContentSelectorVM.CuratedCollection.FullDataPath);
 
-                //Progress reporting
-                progressVM.Text = "Exporting Collection";
-                progressVM.ShowCount = false;
-                progressVM.ResetCounter();
-                //TODO find new way to track progress
-
                 //Add version so we can check compatibility when importing
                 SatchelInfo info = new();
                 archive.AddEntry(Constants.SatchelInfoFileName, new MemoryStream(JsonSerializer.SerializeToUtf8Bytes(info)));
 
+                //Progress reporting
+                progressVM.Text = "Exporting Collection";
+                progressVM.ShowCount = false;
+                progressVM.ResetCounter();
+                progressVM.TotalAmount = 1;
+                //TODO find new way to track progress
+
                 //Export
                 await Task.Run(() => archive.SaveTo(targetPath, CompressionType.None));
+
+                progressVM.IncrementCounter();
                 Logger.Info($"Exported {CollectionToExport.DirectoryName} to {targetPath}");
             }
             catch (Exception ex)

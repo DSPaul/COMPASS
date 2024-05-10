@@ -1,8 +1,4 @@
-﻿using Autofac;
-using CommunityToolkit.Mvvm.ComponentModel;
-
-using COMPASS.Common.Interfaces;
-using COMPASS.Common.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -10,8 +6,5 @@ namespace COMPASS.Common.ViewModels
     {
         //So every viewmodel has access to all the others
         public static MainViewModel? MVM { get; set; }
-
-        private static IMessageBox? _messageBox;
-        protected static IMessageBox messageDialog => _messageBox ??= App.Container.Resolve<IMessageBox>();
     }
 }

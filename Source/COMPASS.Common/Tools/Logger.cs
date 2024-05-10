@@ -2,12 +2,12 @@
 using Avalonia.Threading;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
 
 namespace COMPASS.Common.Tools
 {
@@ -33,42 +33,44 @@ namespace COMPASS.Common.Tools
 
         public static void Info(string message) =>
             Dispatcher.UIThread.Invoke(()
-                => ActivityLog.Add(new(LogEntry.MsgType.Info, message)));
+                => ActivityLog.Add(new(Severity.Info, message)));
 
         public static void Debug(string message) => FileLog?.Debug(message);
 
 
         public static void Warn(string message, Exception? ex = null)
         {
-            Dispatcher.UIThread.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Warning, message)));
+            Dispatcher.UIThread.Invoke(() => ActivityLog.Add(new(Severity.Warning, message)));
             if (ex is null)
-            {
-                FileLog?.Warn(message);
-            }
-            else
-            {
-                FileLog?.Warn(message, ex);
-            }
+                if (ex is null)
+                {
+                    FileLog?.Warn(message);
+                }
+                else
+                {
+                    FileLog?.Warn(message, ex);
+                }
         }
 
         public static void Error(string message, Exception ex)
         {
-            Dispatcher.UIThread.Invoke(() => ActivityLog.Add(new(LogEntry.MsgType.Error, message)));
+            Dispatcher.UIThread.Invoke(() => ActivityLog.Add(new(Severity.Error, message)));
+            FileLog?.Error(message, ex);
             FileLog?.Error(message, ex);
         }
 
         public static void LogUnhandledException(object sender, Exception e)
         {
             FileLog?.Fatal(e.ToString(), e);
+
             //prompt user to submit logs and open an issue
             string message = $"Its seems COMPASS has run into a critical error ({e.Message}).\n" +
                 $"You can help improve COMPASS by opening an issue on {Constants.RepoURL} with the error message. \n" +
                 $"Please include the log file located at {EnvironmentVarsService.CompassDataPath}\\logs.";
-            if (Task.Run(() => App.Container.Resolve<IMessageBox>()
-                .Show(message, $"COMPASS ran into a critical error.", MessageBoxButton.OK, MessageBoxImage.Error)).Result == MessageBoxResult.OK)
-            {
-                Environment.Exit(1);
-            }
+            Notification crashNotification = new($"COMPASS ran into a critical error.", message, Severity.Error);
+            App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(crashNotification);
+
+            Environment.Exit(1);
         }
 
         public static void LogUnhandledException(object? sender, FirstChanceExceptionEventArgs e)

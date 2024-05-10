@@ -1,22 +1,27 @@
-﻿using Avalonia.Data.Converters;
+using Avalonia.Data.Converters;
 using Avalonia.Media;
-using COMPASS.Common.Models;
+
+using COMPASS.Common.Models.Enums;
 using System;
 using System.Globalization;
 
 namespace COMPASS.Common.Converters
 {
-    class MsgTypeToColorConverter : IValueConverter
+    class SeverityToColorConverter : IValueConverter
     {
+        public Color InfoColor { get; set; } = Colors.LightGray;
+        public Color WarningColor { get; set; } = Color.Parse("#FFB800");
+        public Color ErrorColor { get; set; } = Colors.Red;
+
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (value is LogEntry.MsgType msgType)
+            if (value is Severity severity)
             {
-                return msgType switch
+                return severity switch
                 {
-                    LogEntry.MsgType.Info => new SolidColorBrush(Colors.LightGray),
-                    LogEntry.MsgType.Warning => new SolidColorBrush(Colors.Yellow),
-                    LogEntry.MsgType.Error => new SolidColorBrush(Colors.Red),
+                    Severity.Info => new SolidColorBrush(InfoColor),
+                    Severity.Warning => new SolidColorBrush(WarningColor),
+                    Severity.Error => new SolidColorBrush(ErrorColor),
                     _ => new SolidColorBrush(Colors.Pink),//should never happen, Bright pink so it's clear something went wrong
                 };
             }

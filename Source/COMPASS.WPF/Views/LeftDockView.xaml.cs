@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.Enums;
 using COMPASS.ViewModels;
 using System.Collections.Specialized;
 using System.Linq;
@@ -41,12 +42,12 @@ namespace COMPASS.Views
                 if (sender is ItemCollection itemCollection)
                 {
                     LogEntry entry = itemCollection.SourceCollection.Cast<LogEntry>().Last();
-                    if (entry.Type == LogEntry.MsgType.Warning)
+                    if (entry.Severity == Severity.Warning)
                     {
                         var WarningNotification = (Ellipse)template.FindName("WarningNotification", Logs);
                         WarningNotification.Visibility = Visibility.Visible;
                     }
-                    else if (entry.Type == LogEntry.MsgType.Error)
+                    else if (entry.Severity == Severity.Error)
                     {
                         var ErrorNotification = (Ellipse)template.FindName("ErrorNotification", Logs);
                         ErrorNotification.Visibility = Visibility.Visible;

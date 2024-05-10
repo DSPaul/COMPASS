@@ -1,10 +1,31 @@
 # CHANGELOG
-## COMPASS v1.7.1 (17 March 2024)
+
+## COMPASS v1.7.2 (04 May 2024)
+
+### New Features
+
+- Added a the option to include Cover art in export.
+
+### Improvements
+
+- Improved performance of zip and unzip. This speeds up import, export and backup.
+
+### Fixes
+
+- Fix included files not being imported.
+
+### Road to cross platform
+
+- Adopt Mvvm Toolkit (to prepare for switch to [AvaloniaUI](https://www.avaloniaui.net/)).
+- Switch Zip library from windows only DotNetZip to Cross platfrom SharpCompress.
+- Move all preferences to the preferences.xml file.
+
+## COMPASS v1.7.1 (17 March 2024)
 
 ### Fixes
 
 - Fix crash on startup on fresh installs
-## COMPASS v1.7.0 (25 February 2024)
+## COMPASS v1.7.0 (10 March 2024)
 
 ### New Features
 

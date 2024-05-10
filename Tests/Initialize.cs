@@ -11,7 +11,8 @@ namespace Tests
             //init the container
             var builder = new ContainerBuilder();
 
-            builder.RegisterType<MockMessageBox>().As<IMessageBox>();
+            builder.RegisterType<MockNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Windowed);
+            builder.RegisterType<MockNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Toast);
 
             App.Container = builder.Build();
 

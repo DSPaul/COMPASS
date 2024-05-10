@@ -1,6 +1,8 @@
-﻿using COMPASS.Common.Models;
+﻿using Autofac;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Tools;
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -132,18 +134,20 @@ namespace COMPASS.Common.ViewModels.Import
                 string message = $"Some of the items that you are about to import have Tags, \n " +
                     $"would you like to import these as well?\n " +
                     $"They will be put in a new tag group called {CollectionName}.";
-                var result = messageDialog.Show(message, "Tags found", System.Windows.MessageBoxButton.YesNoCancel);
 
-                switch (result)
+                Notification notification = new("Tags found", message, Severity.Info, NotificationAction.Cancel | NotificationAction.Decline | NotificationAction.Confirm);
+                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(notification);
+
+                switch (notification.Result)
                 {
-                    case System.Windows.MessageBoxResult.Cancel:
+                    case NotificationAction.Cancel:
                         return;
-                    case System.Windows.MessageBoxResult.Yes:
+                    case NotificationAction.Confirm:
                         ImportTagsSeperatly = true;
                         ContentSelectorVM.OnlyTagsOnCodices = true;
                         break;
-                    default:
-                        //all other cases, make sure to deselect all tags
+                    case NotificationAction.Decline:
+                        //make sure to deselect all tags
                         ContentSelectorVM.TagsSelectorVM.SelectedTagCollection!.TagsRoot.IsChecked = false;
                         break;
                 }

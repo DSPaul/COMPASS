@@ -27,7 +27,7 @@
     <PackageReference Include="FuzzySharp" Version="2.0.2" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
-    <PackageReference Include="itext7" Verion="8.0.3" Version="8.0.4" />
+    <PackageReference Include="itext7" Version="8.0.4" />
     <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.4" />
     <PackageReference Include="log4net" Version="2.0.17" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="13.7.0" />
@@ -38,7 +38,7 @@
     <PackageReference Include="OpenCvSharp4.Extensions" Version="4.9.0.20240103" />
     <PackageReference Include="OpenCvSharp4.Windows" Version="4.9.0.20240103" />
     <PackageReference Include="ScrapySharp" Version="3.0.0" />
-    <PackageReference Include="Selenium.WebDriver" Verion="4.17.0" Version="4.20.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.20.0" />
     <PackageReference Include="SharpCompress" Version="0.37.2" />
     <PackageReference Include="VirtualizingWrapPanel" Version="2.0.5" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
