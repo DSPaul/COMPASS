@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.Enums;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
@@ -24,14 +25,14 @@ namespace COMPASS.ViewModels.Sources
             // Work on a copy
             codex = new Codex(codex);
 
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading metadata from Homebrewery"));
+            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from Homebrewery"));
             Debug.Assert(IsValidSource(codex), "Invalid Codex was used in Homebrewery source");
             HtmlDocument? doc = await IOService.ScrapeSite(codex.SourceURL);
             HtmlNode? src = doc?.DocumentNode;
 
             if (src is null)
             {
-                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, $"Could not reach {codex.SourceURL}"));
+                ProgressVM.AddLogEntry(new(Severity.Error, $"Could not reach {codex.SourceURL}"));
                 return codex;
             }
 
@@ -43,7 +44,7 @@ namespace COMPASS.ViewModels.Sources
             string? script = src.SelectSingleNode("/html/body/script[2]")?.InnerText;
             if (script is null || script.Length < 13)
             {
-                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, $"Failed to read metadata from HomeBrewery"));
+                ProgressVM.AddLogEntry(new(Severity.Error, $"Failed to read metadata from HomeBrewery"));
                 return codex;
             }
             //json is encapsulated by "start_app() function, so cut that out
@@ -63,7 +64,7 @@ namespace COMPASS.ViewModels.Sources
         public override async Task<bool> FetchCover(Codex codex)
         {
             if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading cover from Homebrewery"));
+            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Homebrewery"));
             OpenQA.Selenium.WebDriver driver = await WebDriverService.GetWebDriver();
             try
             {
@@ -80,7 +81,7 @@ namespace COMPASS.ViewModels.Sources
             {
                 string msg = $"Failed to get cover from {codex.SourceURL}";
                 Logger.Error(msg, ex);
-                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, msg));
+                ProgressVM.AddLogEntry(new(Severity.Error, msg));
                 return false;
             }
             finally

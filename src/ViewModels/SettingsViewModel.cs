@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
+using COMPASS.Models.Enums;
 using COMPASS.Models.Preferences;
 using COMPASS.Services;
 using COMPASS.Tools;
@@ -584,7 +585,7 @@ namespace COMPASS.ViewModels
                         }
                         progressVM.IncrementCounter();
                         App.SafeDispatcher.Invoke(() =>
-                            progressVM.Log.Add(new LogEntry(LogEntry.MsgType.Info, $"Copied {sourcePath}")));
+                            progressVM.Log.Add(new LogEntry(Severity.Info, $"Copied {sourcePath}")));
                     }
                 });
             }

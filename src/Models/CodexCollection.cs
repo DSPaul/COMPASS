@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Interfaces;
+using COMPASS.Models.Enums;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels;
@@ -10,7 +11,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -493,19 +493,21 @@ namespace COMPASS.Models
 
         public void DeleteCodices(IList<Codex> toDelete)
         {
-            int count = toDelete.Count;
-            string message = $"You are about to remove {count} item{(count > 1 ? @"s" : @"")}. " +
+            Notification deleteWarnNotification = Notification.AreYouSureNotification;
+            deleteWarnNotification.Body = $"You are about to remove {toDelete.Count} item{(toDelete.Count > 1 ? @"s" : @"")}. " +
                            $"This cannot be undone. " +
                            $"Are you sure you want to continue?";
-            var result = App.Container.Resolve<IMessageBox>().Show(message, "Remove", MessageBoxButton.OKCancel);
-            if (result == MessageBoxResult.OK)
+            var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+            windowedNotificationService.Show(deleteWarnNotification);
+
+            if (deleteWarnNotification.Result == NotificationAction.Confirm)
             {
                 foreach (Codex toDel in toDelete)
                 {
                     DeleteCodex(toDel);
                 }
+                SaveCodices();
             }
-            SaveCodices();
         }
 
         public void BanishCodices(IList<Codex> toBanish)

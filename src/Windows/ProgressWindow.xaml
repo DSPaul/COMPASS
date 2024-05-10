@@ -21,7 +21,7 @@
         </Style>
     </Window.Style>
     <Window.Resources>
-        <conv:MsgTypeToColorConverter x:Key="MsgTypeToColorConverter"/>
+        <conv:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
     </Window.Resources>
     <Border Background="{StaticResource WindowBackground}" CornerRadius="5" 
             BorderThickness="2" BorderBrush="{StaticResource PopupOutline}">
@@ -52,7 +52,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Msg, FallbackValue=Message}" FontSize="12"  TextWrapping="Wrap"
-                                               Foreground="{Binding Type, Mode=OneWay,Converter={StaticResource MsgTypeToColorConverter}}"/>
+                                               Foreground="{Binding Severity, Mode=OneWay,Converter={StaticResource SeverityToColorConverter}}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

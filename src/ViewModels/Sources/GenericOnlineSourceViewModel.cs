@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.Enums;
 using COMPASS.Services;
 using COMPASS.Tools;
 using HtmlAgilityPack;
@@ -20,7 +21,7 @@ namespace COMPASS.ViewModels.Sources
             // Work on a copy
             codex = new Codex(codex);
 
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Extracting metadata from website header"));
+            ProgressVM.AddLogEntry(new(Severity.Info, $"Extracting metadata from website header"));
 
             // Scrape metadata
             Debug.Assert(IsValidSource(codex), "Codex without URL was used in Generic URL source");
@@ -29,7 +30,7 @@ namespace COMPASS.ViewModels.Sources
 
             if (src is null)
             {
-                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, $"Could not reach {codex.SourceURL}"));
+                ProgressVM.AddLogEntry(new(Severity.Error, $"Could not reach {codex.SourceURL}"));
                 return codex;
             }
 

@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using COMPASS;
 using COMPASS.Interfaces;
+using COMPASS.Models.Enums;
 using COMPASS.Tools;
 using Tests.Mocks;
 
@@ -16,7 +17,8 @@ namespace Tests
             var builder = new ContainerBuilder();
 
             builder.RegisterType<MockDispatcher>().As<IDispatcher>();
-            builder.RegisterType<MockMessageBox>().As<IMessageBox>();
+            builder.RegisterType<MockNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Windowed);
+            builder.RegisterType<MockNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Toast);
 
             App.Container = builder.Build();
 
