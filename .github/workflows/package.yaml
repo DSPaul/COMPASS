@@ -1,0 +1,55 @@
+name: Create Installer
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  DOTNET_VERSION: '7.0.x'
+
+jobs:
+  create-installer:
+    name: Build
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Extract Version
+      run: |
+        $tag = "${{ github.ref#refs/tags/ }}"
+        $version = $tag.Substring(1)
+        echo "VERSION=$version" >> $GITHUB_ENV
+      shell: pws"
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Install Inno Setup
+      uses: choco install innosetup --version=6.2.1 -y
+      shell: pwsh
+
+    - name: Install dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: publish
+      run: dotnet publish -p:PublishProfile=FolderProfile.pubxml"
+    
+    - name: package
+      run: iscc Deployment/install.iss
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v3
+      with:
+        name: COMPASS_Installer
+        path: Deployment\Versions\COMPASS_Setup_${{ env.VERSION }}.exe
+
+    
+
+    
