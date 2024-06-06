@@ -43,7 +43,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: COMPASS_Installer
-        path: Deployment\Versions\COMPASS_Setup_${{ inputs.version }}.exe
+        path: .\Deployment\Versions\${{ inputs.version }}\COMPASS_Setup_${{ inputs.version }}.exe
 
     
 
