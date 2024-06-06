@@ -3,7 +3,7 @@ name: Create Installer
 on:
   push:
     tags:
-      - '*'
+      - 'v*.*.*'
 
 env:
   DOTNET_VERSION: '7.0.x'
@@ -18,7 +18,7 @@ jobs:
 
     - name: Extract Version
       run: |
-        $tag = "${{ github.ref#refs/tags/ }}"
+        $tag = "${{ github.ref_name }}"
         $version = $tag.Substring(1)
         echo "VERSION=$version" >> $GITHUB_ENV
       shell: pws"
