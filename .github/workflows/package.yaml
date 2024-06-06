@@ -40,7 +40,7 @@ jobs:
       run: iscc Deployment/install.iss
 
     - name: Upload installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: COMPASS_Installer
         path: .\Deployment\Versions\${{ inputs.version }}\COMPASS_Setup_${{ inputs.version }}.exe
