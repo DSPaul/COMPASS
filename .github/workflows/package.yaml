@@ -34,7 +34,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: publish
-      run: dotnet publish -p:PublishProfile=FolderProfile.pubxml"
+      run: dotnet publish -p:PublishProfile=FolderProfile.pubxml
     
     - name: package
       run: iscc Deployment/install.iss
