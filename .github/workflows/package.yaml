@@ -4,12 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version number'
+        description: 'Version number that will appear in the exe name'
         required: true
         type: string
-
-env:
-  DOTNET_VERSION: '7.0.x'
+      branch:
+        description: 'the branch used to create the installer'
+        required: true
+        type: string
 
 jobs:
   create-installer:
@@ -18,11 +19,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with: 
+        ref: ${{ inputs.branch }}
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-version: 7.0.x
     
     - name: Install Inno Setup
       run: choco install innosetup --version=6.2.1 -y
