@@ -1,9 +1,12 @@
 name: Create Installer
 
-on:
-  push:
-    tags:
-      - 'v*.*.*'
+on: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number'
+        required: true
+        type: string
 
 env:
   DOTNET_VERSION: '7.0.x'
@@ -15,13 +18,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Extract Version
-      run: |
-        $tag = "${{ github.ref_name }}"
-        $version = $tag.Substring(1)
-        echo "VERSION=$version" >> $GITHUB_ENV
-      shell: pws"
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
@@ -48,7 +44,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: COMPASS_Installer
-        path: Deployment\Versions\COMPASS_Setup_${{ env.VERSION }}.exe
+        path: Deployment\Versions\COMPASS_Setup_${{ inputs.version }}.exe
 
     
 
