@@ -10,7 +10,7 @@
 
 
 # COMPASS
-The Codex Organizer to make Pen-and-paper Adventuring Super Simple or COMPASS for short is a windows application to organize and manage all your TTRPG rulebooks, inspired by [Playnite](https://github.com/JosefNemec/Playnite). You can download the latest version of COMPASS [here](https://github.com/DSPaul/COMPASS/releases/latest).
+The Codex Organizer to make Pen-and-paper Adventuring Super Simple or COMPASS for short is a windows application to organize and manage all your TTRPG rulebooks, inspired by [Playnite](https://github.com/JosefNemec/Playnite). You can download the latest version of COMPASS over at https://www.compassapp.info or in the [Github Releases section](https://github.com/DSPaul/COMPASS/releases).
 
 ## :scroll: Story
 
@@ -49,7 +49,7 @@ I created this project to solve a problem I had and as a learning opportunity. I
 
 - If you find a bug, please open a github issue and report it there so it can be fixed. If you don't have a github account, you can also join the [discord](https://discord.gg/HawGMJgS9Y) and share it there. Please include a clear explanation of the nature of the bug and if possible steps to reproduce it.
 - If you have ideas for new features or improvements, you can put those in a github issue as well.
-- As for code contributions and pull requests, I am not currently looking for contributors. There are many reasons for this but [this video](https://www.youtube.com/watch?v=YIL5fuAUPiA) summarizes it pretty well. If you cannot help yourself however, all pull requests should be made against the dev branch. Dev gets merged into master with every new release.
+- As for code contributions and pull requests, please check out the issues labeled with "help wanted". All pull requests should be made against the dev branch. Dev gets merged into master with every new release. I will not be accepting PR's for anyting besided those issues. There are many reasons for this but [this video](https://www.youtube.com/watch?v=YIL5fuAUPiA) summarizes it pretty well. 
 
 ## :heart: Support the project
 

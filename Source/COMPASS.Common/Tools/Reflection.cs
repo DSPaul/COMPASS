@@ -6,7 +6,7 @@ namespace COMPASS.Common.Tools
 {
     public static class Reflection
     {
-        public static string Version => Assembly.GetExecutingAssembly().GetName().Version!.ToString(3);
+        public static string Version { get; } = Assembly.GetExecutingAssembly().GetName().Version!.ToString(3);
 
         public static List<string> GetObsoleteProperties(Type type)
         {

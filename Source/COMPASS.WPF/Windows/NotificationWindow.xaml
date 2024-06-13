@@ -39,6 +39,7 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="{StaticResource Layer2}"
                     BorderThickness="0,0,0,3" CornerRadius="10, 10, 0, 0"
@@ -73,11 +74,24 @@
                 </ContentControl>
             </Grid>
             
-            <TextBlock Grid.Row="2" Grid.ColumnSpan="3" Text="{Binding Body}" Margin="10,5" TextWrapping="Wrap" 
+            <TextBlock Grid.Row="2" Grid.ColumnSpan="3" Text="{Binding Body}" Margin="20,15" TextWrapping="Wrap" 
                        HorizontalAlignment="Center" TextAlignment="Left"
                        d:Text="You are about to delete 5 files, &#x0a;are you sure you want to continue?"/>
+
+            <ItemsControl Grid.Row="3" Grid.ColumnSpan="3" ItemsSource="{Binding Options}" Margin="50,5">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding Key}" IsChecked="{Binding Value}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
             
-            <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal">
+            <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal">
                 <Button Style="{StaticResource TextButton}" Content="{Binding CancelText}" Margin="5" Padding="3" Width="80" Click="CancelClick"
                         Visibility="{Binding Actions, Converter={StaticResource FlagsToVisibilityConverter}, ConverterParameter={x:Static enums:NotificationAction.Cancel}}"
                         BorderBrush="{StaticResource TextColor}" BorderThickness="2" Background="Transparent"/>
