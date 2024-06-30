@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Interfaces;
 using COMPASS.Models;
+using COMPASS.Models.Enums;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Sources;
@@ -29,7 +31,8 @@ namespace COMPASS.ViewModels
             bool success = PreferableFunction<Codex>.TryFunctions(PreferencesService.GetInstance().Preferences.OpenCodexPriority, codex);
             if (!success)
             {
-                messageDialog.Show("Could not open item, please check local path or URL", "Could not open item");
+                Notification notification = new("Could Not open item", "Could not open item, please check local path or URL");
+                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(notification);
             }
 
             return success;
@@ -110,16 +113,11 @@ namespace COMPASS.ViewModels
                 return OpenCodex(toOpen.First());
             }
 
-            //MessageBox "Are you Sure?"
-            string messageBoxText = "You are about to open " + toOpen.Count + " items. Are you sure you wish to continue?";
-            const string caption = "Are you Sure?";
+            Notification notification = Notification.AreYouSureNotification;
+            notification.Body = "You are about to open " + toOpen.Count + " items. Are you sure you wish to continue?";
+            App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(notification);
 
-            const MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
-            const MessageBoxImage imgMessageBox = MessageBoxImage.Warning;
-
-            MessageBoxResult rsltMessageBox = messageDialog.Show(messageBoxText, caption, btnMessageBox, imgMessageBox);
-
-            if (rsltMessageBox == MessageBoxResult.Yes)
+            if (notification.Result == NotificationAction.Confirm)
             {
                 foreach (Codex f in toOpen)
                 {
@@ -254,24 +252,24 @@ namespace COMPASS.ViewModels
                 return;
             }
 
-            //MessageBox "Are you Sure?"
+            //"Are you Sure?"
+
+            var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+
             string messageSingle = $"Moving  {toMoveList[0].Title} to {targetCollection.DirectoryName} will remove all tags from the item, are you sure you wish to continue?";
             string messageMultiple = $"Moving these {toMoveList.Count} items to {targetCollection.DirectoryName} will remove all tags from these items, are you sure you wish to continue?";
 
-            string sCaption = "Are you Sure?";
-            string sMessageBoxText = toMoveList.Count == 1 ? messageSingle : messageMultiple;
+            Notification areYouSureNotification = Notification.AreYouSureNotification;
+            areYouSureNotification.Body = toMoveList.Count == 1 ? messageSingle : messageMultiple;
+            windowedNotificationService.Show(areYouSureNotification);
 
-            MessageBoxButton btnMessageBox = MessageBoxButton.YesNo;
-            MessageBoxImage imgMessageBox = MessageBoxImage.Warning;
-
-            MessageBoxResult rsltMessageBox = messageDialog.Show(sMessageBoxText, sCaption, btnMessageBox, imgMessageBox);
-
-            if (rsltMessageBox == MessageBoxResult.Yes)
+            if (areYouSureNotification.Result == NotificationAction.Confirm)
             {
                 bool success = targetCollection.LoadCodices();
                 if (!success)
                 {
-                    messageDialog.Show($"Could not move items to {targetCollection.DirectoryName}", "Target collection could not be loaded.", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Notification errorNotification = new("Target collection could not be loaded.", $"Could not move items to {targetCollection.DirectoryName}", Severity.Error);
+                    windowedNotificationService.Show(errorNotification);
                     return;
                 }
                 foreach (Codex toMove in toMoveList)

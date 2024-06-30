@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.Enums;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
@@ -24,14 +25,14 @@ namespace COMPASS.ViewModels.Sources
             // Work on a copy
             codex = new Codex(codex);
 
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading metadata from GM Binder"));
+            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from GM Binder"));
             Debug.Assert(IsValidSource(codex), "Invalid Codex was used in GM Binder source");
             HtmlDocument? doc = await IOService.ScrapeSite(codex.SourceURL);
             HtmlNode? src = doc?.DocumentNode;
 
             if (doc is null || src is null)
             {
-                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, $"Could not reach {codex.SourceURL}"));
+                ProgressVM.AddLogEntry(new(Severity.Error, $"Could not reach {codex.SourceURL}"));
                 return codex;
             }
 
@@ -49,7 +50,7 @@ namespace COMPASS.ViewModels.Sources
         public override async Task<bool> FetchCover(Codex codex)
         {
             if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Downloading cover from {codex.SourceURL}"));
+            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from {codex.SourceURL}"));
             OpenQA.Selenium.WebDriver driver = await WebDriverService.GetWebDriver();
             try
             {
@@ -64,7 +65,7 @@ namespace COMPASS.ViewModels.Sources
             {
                 string msg = $"Failed to get cover from {codex.SourceURL}";
                 Logger.Error(msg, ex);
-                ProgressVM.AddLogEntry(new(LogEntry.MsgType.Error, msg));
+                ProgressVM.AddLogEntry(new(Severity.Error, msg));
                 return false;
             }
             finally

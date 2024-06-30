@@ -1,4 +1,10 @@
 # CHANGELOG
+## COMPASS v1.7.3 (03 June 2024)
+
+### Improvements
+
+    - Redesigned notification for info, warning and errors
+    - One click crash report submission
 
 ## COMPASS v1.7.2 (04 May 2024)
 

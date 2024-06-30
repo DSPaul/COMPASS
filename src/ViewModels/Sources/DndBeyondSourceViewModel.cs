@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.Enums;
 using COMPASS.Services;
 using COMPASS.Tools;
 using HtmlAgilityPack;
@@ -17,7 +18,7 @@ namespace COMPASS.ViewModels.Sources
             codex = new Codex(codex);
 
             //Scrape metadata by going to store page, get to store page by using that /credits redirects there
-            ProgressVM.AddLogEntry(new(LogEntry.MsgType.Info, $"Connecting to DnD Beyond"));
+            ProgressVM.AddLogEntry(new(Severity.Info, $"Connecting to DnD Beyond"));
             HtmlDocument? doc = await IOService.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
             HtmlNode? src = doc?.DocumentNode;
 

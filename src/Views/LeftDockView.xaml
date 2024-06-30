@@ -743,7 +743,7 @@
             </TabItem.Template>
             <ContentControl tools:AP.Header="Activity Log" tools:AP.IconKind="TextLong" Style="{StaticResource TabContentWrapper}">
                 <ContentControl.Resources>
-                    <converters:MsgTypeToColorConverter x:Key="MsgTypeToColorConverter"/>
+                    <converters:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
                 </ContentControl.Resources>
                 <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto" Background="{StaticResource LogBackground}">
                     <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{x:Static tools:Logger.ActivityLog}" Margin="10,5">
@@ -755,7 +755,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Msg, FallbackValue=Message}" FontSize="12" TextWrapping="Wrap" Margin="0,3"
-                                               Foreground="{Binding Type, Mode=OneWay,Converter={StaticResource MsgTypeToColorConverter}}"/>
+                                               Foreground="{Binding Severity, Mode=OneWay,Converter={StaticResource SeverityToColorConverter}}"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

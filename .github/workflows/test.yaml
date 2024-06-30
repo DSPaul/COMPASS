@@ -8,6 +8,9 @@ on:
     - '**.csproj'
   push:
     branches: [ dev ]
+    paths:
+    - '**.cs'
+    - '**.csproj'
 
 env:
   DOTNET_VERSION: '7.0.x' # The .NET SDK version to use
