@@ -1,4 +1,5 @@
-﻿using Avalonia.Threading;
+﻿using Avalonia.Input;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
@@ -12,7 +13,7 @@ using System.Linq;
 
 namespace COMPASS.Common.ViewModels
 {
-    public class FilterViewModel : ViewModelBase, IDropTarget
+    public class FilterViewModel : ViewModelBase
     {
         public FilterViewModel(ObservableCollection<Codex> allCodices)
         {
@@ -526,48 +527,50 @@ namespace COMPASS.Common.ViewModels
 
         #region Drag Drop Handlers
         //Drop on Treeview Behaviour
-        void IDropTarget.DragOver(IDropInfo dropInfo)
+        void OnDragOver(object sender, DragEventArgs e)
         {
-            //Tree to Filter Box
-            switch (dropInfo.Data)
+            //Move From Treeview
+            if (e.Data.GetValue<TreeViewNode>() is TreeViewNode tvn && !tvn.Tag.IsGroup)
             {
-                //Move From Treeview
-                case TreeViewNode draggedTvnTreeViewNode:
-                    if (!draggedTvnTreeViewNode.Tag.IsGroup)
-                    {
-                        dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-                        dropInfo.Effects = DragDropEffects.Copy;
-                    }
-                    break;
-                //Move Filter included/excluded
-                case Filter:
-                //Do filter specific stuff here if needed
-                //Move Tag between included/excluded
-                case Tag:
-                    dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-                    dropInfo.Effects = DragDropEffects.Move;
-                    break;
+                e.DragEffects = DragDropEffects.Copy;
+            }
+            //Move Filter to included/excluded
+            else if (e.Data.GetValue<Filter>() is Filter)
+            {
+                e.DragEffects = DragDropEffects.Move;
+            }
+            //Move Tag between included/excluded
+            else if (e.Data.GetValue<Tag>() is Tag tag)
+            {
+                e.DragEffects = DragDropEffects.Move;
+            }
+            else
+            {
+                e.DragEffects = DragDropEffects.None;
             }
         }
 
-        void IDropTarget.Drop(IDropInfo dropInfo)
+        void OnDrop(object sender, DragEventArgs e)
         {
             //Included filter Listbox has extra empty collection to tell them apart
-            bool toIncluded = ((CompositeCollection)dropInfo.TargetCollection).Count > 1;
+            //TODO: get TargetCollection from sender somehow
+            //OLD CODE: bool toIncluded = ((CompositeCollection)dropInfo.TargetCollection).Count > 1;
+            bool toIncluded = false;
 
-            switch (dropInfo.Data)
+            //Move From Treeview
+            if (e.Data.GetValue<TreeViewNode>() is TreeViewNode tvn && !tvn.Tag.IsGroup)
             {
-                //Tree to Filter Box
-                case TreeViewNode draggedTreeViewNode:
-                    AddFilter(new(Filter.FilterType.Tag, draggedTreeViewNode.Tag), toIncluded);
-                    break;
-                //Between include and exclude
-                case Filter draggedFilter:
-                    AddFilter(draggedFilter, toIncluded);
-                    break;
-                case Tag draggedTag:
-                    AddFilter(new(Filter.FilterType.Tag, draggedTag), toIncluded);
-                    break;
+                AddFilter(new(Filter.FilterType.Tag, tvn.Tag), toIncluded);
+            }
+            //Move Filter to included/excluded
+            else if (e.Data.GetValue<Filter>() is Filter draggedFilter)
+            {
+                AddFilter(draggedFilter, toIncluded);
+            }
+            //Move Tag between included/excluded
+            else if (e.Data.GetValue<Tag>() is Tag draggedTag)
+            {
+                AddFilter(new(Filter.FilterType.Tag, draggedTag), toIncluded);
             }
         }
         #endregion

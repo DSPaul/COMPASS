@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels
 {
-    public class TagsViewModel : ViewModelBase, IDropTarget, IDealsWithTabControl
+    public class TagsViewModel : ViewModelBase, IDealsWithTabControl
     {
         public TagsViewModel(CodexCollection codexCollection, FilterViewModel filterVM)
         {
@@ -195,10 +196,9 @@ namespace COMPASS.Common.ViewModels
 
         #region Drag & Drop Tags Treeview
         //Drop on Treeview Behaviour
-        void IDropTarget.DragOver(IDropInfo dropInfo) => DragDrop.DefaultDropHandler.DragOver(dropInfo);
-        void IDropTarget.Drop(IDropInfo dropInfo)
+        //TODO: used to have to call the default implemenation of drag and drop here, not sure 
+        void OnDrop(object sender, DragEventArgs e)
         {
-            DragDrop.DefaultDropHandler.Drop(dropInfo);
             // Drag & Drop will modify the Collection of Treeview nodes that the treeview is bound to
             // We need to convert that back to the collection of Tags so that the changes are saved
             var newRootTags = TreeViewSource.Select(node => node.ToTag()).ToList();

@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Models;
+﻿using Avalonia.Input;
+using COMPASS.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -171,6 +172,27 @@ namespace COMPASS.Common.Tools
                     }
             }
         }
+        #endregion
+
+        #region Drag & Drop
+
+        /// <summary>
+        /// Tries to get an object of a certain type from the data
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"></param>
+        /// <returns>null if not found</returns>
+        public static T? GetValue<T>(this IDataObject data) where T : class
+        {
+            string format = typeof(T).Name;
+
+            if (data.Contains(format))
+            {
+                return data.Get(typeof(T).Name) as T;
+            }
+            else return null;
+        }
+
         #endregion
     }
 }

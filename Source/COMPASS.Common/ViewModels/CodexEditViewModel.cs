@@ -1,11 +1,8 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Avalonia.Input;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
-using COMPASS.Resources.Controls.MultiSelectCombobox;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
-using COMPASS.Common.Views.Windows;
-using GongSolutions.Wpf.DragDrop;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,11 +10,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace COMPASS.Common.ViewModels
 {
-    public class CodexEditViewModel : ViewModelBase, IEditViewModel, IDropTarget
+    public class CodexEditViewModel : ViewModelBase, IEditViewModel
     {
         public CodexEditViewModel(Codex? toEdit)
         {
@@ -235,28 +231,27 @@ namespace COMPASS.Common.ViewModels
         public void Cancel() => CloseAction();
 
 
-        public void DragOver(IDropInfo dropInfo)
+        public void OnDragOver(object sender, DragEventArgs e)
         {
-            if (dropInfo.Data is DataObject data
-                && data.GetFileDropList().Count == 1
-                && IOService.IsImageFile(data.GetFileDropList().Cast<string>().First()))
+            if (e.Data is DataObject data
+                && data.GetFiles()?.Count() == 1
+                && IOService.IsImageFile(data.GetFiles()?.Select(f => f.Path.AbsolutePath).First() ?? ""))
             {
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Copy;
+                e.DragEffects = DragDropEffects.Copy;
             }
             else
             {
-                dropInfo.Effects = DragDropEffects.None;
+                e.DragEffects = DragDropEffects.None;
             }
         }
 
-        public void Drop(IDropInfo dropInfo)
+        public void Drop(object sender, DragEventArgs e)
         {
-            if (dropInfo.Data is DataObject data
-                && data.GetFileDropList().Count == 1
-                && IOService.IsImageFile(data.GetFileDropList().Cast<string>().First()))
+            if (e.Data is DataObject data
+                && data.GetFiles()?.Count() == 1
+                && IOService.IsImageFile(data.GetFiles()?.Select(f => f.Path.AbsolutePath).First() ?? ""))
             {
-                string path = data.GetFileDropList().Cast<string>().First();
+                string path = data.GetFiles()!.Select(f => f.Path.AbsolutePath).First();
                 CoverService.GetCoverFromImage(path, TempCodex);
                 RefreshCover();
             }

@@ -1,4 +1,5 @@
 ﻿
+using Avalonia.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Import;
@@ -8,7 +9,7 @@ using System.Linq;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
-    public abstract class LayoutViewModel : ViewModelBase, IDropTarget
+    public abstract class LayoutViewModel : ViewModelBase
     {
         public enum Layout
         {
@@ -50,36 +51,37 @@ namespace COMPASS.Common.ViewModels.Layouts
         }
 
         //TODO check if this is still needed
-        //public abstract bool DoVirtualization { get; }
+        public abstract bool DoVirtualization { get; }
 
         //Set Type of view
         public Layout LayoutType { get; init; }
         #endregion
 
-        public void DragOver(IDropInfo dropInfo)
+        public void OnDragOver(object? sender, DragEventArgs e)
         {
-            if (dropInfo.Data is DataObject)
+            if (e.Data is DataObject)
             {
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Copy;
-            }
-            else
-            {
-                dropInfo.NotHandled = true;
+                //TODO: handle UI changes on hover manually
+                //e.DropTargetAdorner = DropTargetAdorners.Highlight;
+                e.DragEffects = DragDropEffects.Copy;
+                e.Handled = true;
             }
         }
 
-        public async void Drop(IDropInfo dropInfo)
+        public async void OnDrop(object? sender, DragEventArgs e)
         {
-            if (dropInfo.Data is DataObject data)
+            if (e.Data is DataObject data)
             {
-                var paths = data.GetFileDropList();
+                var paths = data.GetFiles()?
+                    .Select(f => f.Path.AbsolutePath);
 
-                var folders = paths.Cast<string>().Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
-                var files = paths.Cast<string>().Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
+                if (paths is null) return;
+
+                var folders = paths.Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
+                var files = paths.Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
 
                 //check for folder import
-                if (folders.Any())
+                if (folders.Count != 0)
                 {
                     ImportFolderViewModel folderImportVM = new(manuallyTriggered: true)
                     {
@@ -89,7 +91,7 @@ namespace COMPASS.Common.ViewModels.Layouts
                     await folderImportVM.Import();
                 }
                 //If no files or folders, to nothing
-                else if (!files.Any())
+                else if (files.Count == 0)
                 {
                     return;
                 }

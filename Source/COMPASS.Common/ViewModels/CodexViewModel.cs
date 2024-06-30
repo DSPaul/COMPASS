@@ -1,4 +1,6 @@
 ﻿using Autofac;
+using Avalonia.Controls;
+using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
@@ -15,7 +17,7 @@ using System.Linq;
 using System.Threading.Tasks;
 namespace COMPASS.Common.ViewModels
 {
-    public class CodexViewModel : ViewModelBase, IDropTarget
+    public class CodexViewModel : ViewModelBase
     {
         #region Open Codex
 
@@ -549,27 +551,39 @@ namespace COMPASS.Common.ViewModels
         }
 
         #region Drag & Drop
-        void IDropTarget.DragOver(IDropInfo dropInfo)
+
+        //Handle drag&drop of Tags on Codices to add them
+
+        public void OnDragOver(object sender, DragEventArgs e)
         {
-            if ((dropInfo.Data is TreeViewNode node && !node.Tag.IsGroup)
-                || dropInfo.Data is Tag { IsGroup: false })
+            if ((e.Data.GetValue<TreeViewNode>() is TreeViewNode node &&
+                !node.Tag.IsGroup)
+                ||
+                (e.Data.GetValue<Tag>() is Tag { IsGroup: false }))
             {
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Copy;
+                //TODO Hanlde adorner manually
+                //dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                e.DragEffects = DragDropEffects.Copy;
             }
         }
 
-        void IDropTarget.Drop(IDropInfo dropInfo)
+        private void OnDrop(object sender, DragEventArgs e)
         {
-            Codex targetCodex = (Codex)dropInfo.TargetItem;
-            if (targetCodex is null) return;
+            //Codex targetCodex = (Codex)dropInfo.TargetItem;
+            //TODO check if sender is actually the codex or a control or viewmodel of some sort
+            if (sender is not Codex targetCodex) return;
 
-            Tag? toAdd = dropInfo.Data switch
+            Tag? toAdd = null;
+
+            if (e.Data.Contains(nameof(TreeViewNode)))
             {
-                TreeViewNode node => node.Tag,
-                Tag tag => tag,
-                _ => null
-            };
+                TreeViewNode? tvn = e.Data.Get(nameof(TreeViewNode)) as TreeViewNode;
+                toAdd = tvn?.Tag;
+            }
+            else if (e.Data.Contains(nameof(Tag)))
+            {
+                toAdd = e.Data.Get(nameof(Tag)) as Tag;
+            }
 
             if (toAdd is null) return;
 
