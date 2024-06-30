@@ -44,6 +44,10 @@ jobs:
         name: COMPASS_exe
         path: .\src\bin\Publish\win-x64\COMPASS.exe
 
+    - name: remove unsigned exe
+      shell: pwsh
+      run: rm .\src\bin\Publish\win-x64\COMPASS.exe
+
     - name: Sign app
       id: signing-app
       uses: signpath/github-action-submit-signing-request@v0.4
@@ -54,16 +58,7 @@ jobs:
         signing-policy-slug: test-signing
         github-artifact-id: ${{steps.upload-exe.outputs.artifact-id}}
         wait-for-completion: true
-        output-artifact-directory: .\
-    
-    - name: remove unsigned exe
-      shell: pwsh
-      run: rm .\src\bin\Publish\win-x64\COMPASS.exe
-    
-    #signed app will be downloaded as a zip file, extract it and replace it unsiged exe with the signed one
-    - name: Unzip and replace
-      shell: pwsh
-      run: Expand-Archive .\COMPASS_exe.zip .\src\bin\Publish\win-x64\COMPASS.exe
+        output-artifact-directory: .\src\bin\Publish\win-x64\
 
     - name: Package
       run: iscc Deployment/install.iss
