@@ -72,7 +72,8 @@ jobs:
         path: .\Deployment\Versions\${{ inputs.version }}\COMPASS_Setup_${{ inputs.version }}.exe
 
   sign-installer:
-    name: sign intaller
+    name: sign installer
+    needs: build
     runs-on: windows-latest
 
     steps:
