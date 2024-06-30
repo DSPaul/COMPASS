@@ -55,11 +55,15 @@ jobs:
         github-artifact-id: ${{steps.upload-exe.outputs.artifact-id}}
         wait-for-completion: true
         output-artifact-directory: .\
-      
-    #singed app will be downloaded as a zip file, extract it and replace it unsiged exe with the singed one
+    
+    - name: remove unsigned exe
+      shell: pwsh
+      run: rm .\src\bin\Publish\win-x64\COMPASS.exe
+    
+    #signed app will be downloaded as a zip file, extract it and replace it unsiged exe with the signed one
     - name: Unzip and replace
       shell: pwsh
-      run: Expand-Archive -Force .\COMPASS_exe.zip .\src\bin\Publish\win-x64\COMPASS.exe
+      run: Expand-Archive .\COMPASS_exe.zip .\src\bin\Publish\win-x64\COMPASS.exe
 
     - name: Package
       run: iscc Deployment/install.iss
