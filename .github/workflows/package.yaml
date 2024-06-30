@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build, package and Sign
     runs-on: windows-latest
 
     steps:
@@ -70,14 +70,7 @@ jobs:
         name: COMPASS_Installer
         path: .\Deployment\Versions\${{ inputs.version }}\COMPASS_Setup_${{ inputs.version }}.exe
 
-  sign-installer:
-    name: sign installer
-    needs: build
-    runs-on: windows-latest
-
-    steps:
-    - name: Code Signing
-      id: signing
+    - name: Sign installer
       uses: signpath/github-action-submit-signing-request@v0.4
       with:
         api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
