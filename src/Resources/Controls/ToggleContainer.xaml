@@ -23,7 +23,7 @@
                                   IsChecked="{Binding IsOpen, RelativeSource={RelativeSource AncestorType=local:ToggleContainer}}">
                         <ToggleButton.Template>
                             <ControlTemplate>
-                                <Grid>
+                                <Grid Background="{TemplateBinding Background}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="*"/>
