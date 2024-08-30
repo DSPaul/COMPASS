@@ -228,7 +228,15 @@ namespace COMPASS.ViewModels.Import
                 //go over every folder and set the HasAllSubFolder Flag
                 foreach (var checkableFolder in CheckableFolders.Flatten())
                 {
-                    checkableFolder.Item.HasAllSubFolders = checkableFolder.IsChecked == true;
+                    checkableFolder.Item.HasAllSubFolders = 
+                        checkableFolder.IsChecked == true && 
+                        checkableFolder.Children.All(child => child.IsChecked == true); //need this check as well because folder might also be checked without any children
+                }
+
+                //Remove the existingFolders as they will be replaced
+                foreach (Folder folder in ExistingFolders)
+                {
+                    _targetCollection.Info.AutoImportFolders.Remove(folder);
                 }
 
                 //Add the folder to the AutoImportFolders
@@ -239,12 +247,6 @@ namespace COMPASS.ViewModels.Import
                     {
                         _targetCollection.Info.AutoImportFolders.Add(folder);
                     }
-                }
-
-                //Remove the existingFolders as they have been replaced
-                foreach (Folder folder in ExistingFolders)
-                {
-                    _targetCollection.Info.AutoImportFolders.Remove(folder);
                 }
             }
 

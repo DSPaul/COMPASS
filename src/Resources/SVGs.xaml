@@ -113,33 +113,38 @@
         </Canvas>
     </Canvas>
 
-    <Canvas x:Key="Warning" Width="85.772171" Height="75.167618">
+    <Canvas x:Key="Warning" Width="44.843098" Height="39.830719">
         <Canvas.RenderTransform>
-            <TranslateTransform X="0" Y="0"/>
+            <TranslateTransform X="-85.882299" Y="-144.6052"/>
         </Canvas.RenderTransform>
-        <Canvas Name="layer1">
-            <Canvas.RenderTransform>
-                <TranslateTransform X="-65.354987" Y="-120.97478"/>
-            </Canvas.RenderTransform>
-            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3443" Fill="#FFC3C234" StrokeThickness="6.618" Stroke="#FF353535" StrokeMiterLimit="4" StrokeLineJoin="Round" Data="M 68.663745 192.83339 108.24107 124.28345 147.8184 192.8334 Z"/>
-            <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="105.74107" Canvas.Top="144.526" Width="5" Height="27.593374" RadiusY="0.17764075" RadiusX="0.17764075" Name="rect3445" Fill="#FF353535" StrokeThickness="6.26493" StrokeMiterLimit="4" StrokeLineJoin="Round"/>
-            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3453" Fill="#FF353535" StrokeThickness="0.943251" Stroke="#FF353535" StrokeMiterLimit="4" StrokeLineJoin="Round" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Data="m 100.93241 10.639901 0 3.3424 -2.894606 1.6712 -2.894604 -1.6712 0 -3.3424 2.894604 -1.6712001 z">
-                <Path.RenderTransform>
-                    <RotateTransform Angle="-60" CenterX="250.34939" CenterY="88.466527"/>
-                </Path.RenderTransform>
-            </Path>
-            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path34532" Fill="#FF353535" StrokeThickness="0.943251" Stroke="#FF353535" StrokeMiterLimit="4" StrokeLineJoin="Round" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Data="m 100.93241 10.639901 0 3.3424 -2.894606 1.6712 -2.894604 -1.6712 0 -3.3424 2.894604 -1.6712001 z">
-                <Path.RenderTransform>
-                    <MatrixTransform Matrix="0.37133541 -0.6431718 0.6431718 0.37133541 63.918005 231.01547"/>
-                </Path.RenderTransform>
-            </Path>
-            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3470" Fill="#FF353535" StrokeThickness="0.943251" Stroke="#FF353535" StrokeMiterLimit="4" StrokeLineJoin="Round" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Data="m 100.93241 10.639901 0 3.3424 -2.894606 1.6712 -2.894604 -1.6712 0 -3.3424 2.894604 -1.6712001 z">
-                <Path.RenderTransform>
-                    <MatrixTransform Matrix="0.37133541 -0.6431718 0.6431718 0.37133541 63.918005 203.70669"/>
-                </Path.RenderTransform>
-            </Path>
-        </Canvas>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path3443" Fill="#FFFFB800" StrokeThickness="6.618" Stroke="#FFFFB800" StrokeMiterLimit="4" StrokeLineJoin="Round">
+            <Path.Data>
+                <PathGeometry Figures="m 89.191058 181.12692 18.924462 -33.21306 19.30112 32.9956 z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="106.36885" Canvas.Top="154.16246" Width="3.869993" Height="18.391058" RadiusY="1.9349965" RadiusX="1.9349965" Name="rect3445" Fill="#FF353535" StrokeThickness="4.49974" StrokeMiterLimit="4" StrokeLineJoin="Round"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="106.4" Canvas.Top="174.6" Width="3.9" Height="3.9" Name="path837" Fill="#FF353535" StrokeThickness="0.396339" StrokeLineJoin="Round" StrokeStartLineCap="Square" StrokeEndLineCap="Square"/>
     </Canvas>
 
+    <Canvas x:Key="InfoIcon" Width="132.51335" Height="40.853119">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="-44.767891" Y="-143.62962"/>
+        </Canvas.RenderTransform>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="48.2" Canvas.Top="148.5" Width="32" Height="32" Name="path839" Fill="#FF2091E4" StrokeThickness="0.492527" StrokeLineJoin="Round" StrokeStartLineCap="Square" StrokeEndLineCap="Square"/>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="62.286385" Canvas.Top="160.83725" Width="3.869993" Height="14.51565" RadiusY="1.9349965" RadiusX="1.9349965" Name="rect34452" Fill="#FF353535" StrokeThickness="3.99763" StrokeMiterLimit="4" StrokeLineJoin="Round"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="62.3" Canvas.Top="155.8" Width="3.9" Height="3.9" Name="path8373" Fill="#FF353535" StrokeThickness="0.396338" StrokeLineJoin="Round" StrokeStartLineCap="Square" StrokeEndLineCap="Square"/>
+    </Canvas>
 
+    <Canvas x:Key="ErrorIcon" Width="132.51335" Height="40.853119">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="-126" Y="-143.62962"/>
+        </Canvas.RenderTransform>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path871" Fill="#FF0000" StrokeThickness="6.49676" Stroke="#FF0000" StrokeMiterLimit="4" StrokeLineJoin="Round" StrokeStartLineCap="Square" StrokeEndLineCap="Square">
+            <Path.Data>
+                <PathGeometry Figures="m 170.95926 155.46707 0 17.17823 -14.87679 8.58911 -14.87678 -8.58911 0 -17.17823 14.87678 -8.58912 z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="154.33647" Canvas.Top="151.5596" Width="3.869993" Height="18.391058" RadiusY="1.9349965" RadiusX="1.9349965" Name="rect34456" Fill="#FF353535" StrokeThickness="4.49974" StrokeMiterLimit="4" StrokeLineJoin="Round"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="154.3" Canvas.Top="172" Width="3.9" Height="3.9" Name="path8379" Fill="#FF353535" StrokeThickness="0.396338" StrokeLineJoin="Round" StrokeStartLineCap="Square" StrokeEndLineCap="Square"/>
+    </Canvas>
 </ResourceDictionary>

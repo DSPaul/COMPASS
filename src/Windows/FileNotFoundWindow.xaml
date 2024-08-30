@@ -8,13 +8,13 @@
         mc:Ignorable="d" Background="{StaticResource WindowBackground}"
         d:DataContext="{d:DesignInstance Type=viewModels:FileNotFoundViewModel}"
         WindowStyle="ToolWindow" WindowStartupLocation="CenterOwner"
-        Title="File Not Found" Height="350" Width="648">
+        Title="File Not Found" Height="350" Width="670">
     <Grid>
         <StackPanel VerticalAlignment="Center">
             <ContentControl Content="{StaticResource Warning}" RenderTransformOrigin="0.5,0.5"
                              Margin="0,40,0,0">
                 <ContentControl.RenderTransform>
-                    <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                    <ScaleTransform ScaleX="2" ScaleY="2"/>
                 </ContentControl.RenderTransform>
             </ContentControl>
             <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="0,30,0,10">

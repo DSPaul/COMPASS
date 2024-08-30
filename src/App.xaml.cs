@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using COMPASS.Interfaces;
+using COMPASS.Models.Enums;
 using COMPASS.Services;
 using COMPASS.ViewModels;
 using System.IO;
@@ -29,7 +30,8 @@ namespace COMPASS
                     var builder = new ContainerBuilder();
 
                     builder.RegisterType<ApplicationDispatcher>().As<IDispatcher>();
-                    builder.RegisterType<MessageDialog>().As<IMessageBox>();
+                    builder.RegisterType<WindowedNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Windowed);
+                    builder.RegisterType<WindowedNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Toast); //use windowed for everything for now
 
                     _container = builder.Build();
                 }

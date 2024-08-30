@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Interfaces;
+using COMPASS.Models.Enums;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels;
@@ -10,7 +11,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -25,6 +25,7 @@ namespace COMPASS.Models
         }
 
         private PreferencesService _preferencesService;
+        private static readonly object writeLocker = new object();
 
         public static string CollectionsPath => Path.Combine(SettingsViewModel.CompassDataPath, "Collections");
         public string FullDataPath => Path.Combine(CollectionsPath, DirectoryName);
@@ -270,15 +271,37 @@ namespace COMPASS.Models
                 //Should always load a collection before it can be saved
                 return false;
             }
+
             try
             {
-                using var writer = XmlWriter.Create(TagsDataFilePath, XmlService.XmlWriteSettings);
-                XmlSerializer serializer = new(typeof(List<Tag>));
-                serializer.Serialize(writer, RootTags);
+                string tempFileName = TagsDataFilePath + ".tmp";
+
+                lock (writeLocker)
+                {
+                    using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
+                    {
+                        XmlSerializer serializer = new(typeof(List<Tag>));
+                        serializer.Serialize(writer, RootTags);
+                    }
+
+                    //if successfully written to the tmp file, move to actual path
+                    File.Move(tempFileName, TagsDataFilePath, true);
+                    File.Delete(tempFileName);
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Logger.Error($"Access denied when trying to save Tags to {TagsDataFilePath}", ex);
+                return false;
+            }
+            catch (IOException ex)
+            {
+                Logger.Error($"IO error occurred when saving Tags to {TagsDataFilePath}", ex);
+                return false;
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to Save Tags to {TagsDataFilePath}", ex);
+                Logger.Error($"Failed to save Tags to {TagsDataFilePath}", ex);
                 return false;
             }
             return true;
@@ -299,13 +322,34 @@ namespace COMPASS.Models
 
             try
             {
-                using var writer = XmlWriter.Create(CodicesDataFilePath, XmlService.XmlWriteSettings);
-                XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
-                serializer.Serialize(writer, AllCodices);
+                string tempFileName = CodicesDataFilePath + ".tmp";
+                
+                lock (writeLocker)
+                {
+                    using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
+                    {
+                        XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
+                        serializer.Serialize(writer, AllCodices);
+                    }
+
+                    //if successfully written to the tmp file, move to actual path
+                    File.Move(tempFileName, CodicesDataFilePath, true);
+                    File.Delete(tempFileName);
+                }
+            }
+            catch(UnauthorizedAccessException ex)
+            {
+                Logger.Error($"Access denied when trying to save Codex Info to {CodicesDataFilePath}", ex);
+                return false;
+            }
+            catch (IOException ex)
+            {
+                Logger.Error($"IO error occurred when saving Codex Info to {CodicesDataFilePath}", ex);
+                return false;
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to Save Codex Info to {CodicesDataFilePath}", ex);
+                Logger.Error($"Failed to save Codex Info to {CodicesDataFilePath}", ex);
                 return false;
             }
             return true;
@@ -321,13 +365,34 @@ namespace COMPASS.Models
             Info.PrepareSave();
             try
             {
-                using var writer = XmlWriter.Create(CollectionInfoFilePath, XmlService.XmlWriteSettings);
-                XmlSerializer serializer = new(typeof(CollectionInfo));
-                serializer.Serialize(writer, Info);
+                string tempFileName = CollectionInfoFilePath + ".tmp";
+
+                lock (writeLocker)
+                {
+                    using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
+                    {
+                        XmlSerializer serializer = new(typeof(CollectionInfo));
+                        serializer.Serialize(writer, Info);
+                    }
+
+                    //if successfully written to the tmp file, move to actual path
+                    File.Move(tempFileName, CollectionInfoFilePath, true);
+                    File.Delete(tempFileName);
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Logger.Error($"Access denied when trying to save Collection Info to {CollectionInfoFilePath}", ex);
+                return false;
+            }
+            catch (IOException ex)
+            {
+                Logger.Error($"IO error occurred when saving Collection Info to {CollectionInfoFilePath}", ex);
+                return false;
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to Save Tags to {TagsDataFilePath}", ex);
+                Logger.Error($"Failed to save Collection Info to {CollectionInfoFilePath}", ex);
                 return false;
             }
             return true;
@@ -493,19 +558,21 @@ namespace COMPASS.Models
 
         public void DeleteCodices(IList<Codex> toDelete)
         {
-            int count = toDelete.Count;
-            string message = $"You are about to remove {count} item{(count > 1 ? @"s" : @"")}. " +
+            Notification deleteWarnNotification = Notification.AreYouSureNotification;
+            deleteWarnNotification.Body = $"You are about to remove {toDelete.Count} item{(toDelete.Count > 1 ? @"s" : @"")}. " +
                            $"This cannot be undone. " +
                            $"Are you sure you want to continue?";
-            var result = App.Container.Resolve<IMessageBox>().Show(message, "Remove", MessageBoxButton.OKCancel);
-            if (result == MessageBoxResult.OK)
+            var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+            windowedNotificationService.Show(deleteWarnNotification);
+
+            if (deleteWarnNotification.Result == NotificationAction.Confirm)
             {
                 foreach (Codex toDel in toDelete)
                 {
                     DeleteCodex(toDel);
                 }
+                SaveCodices();
             }
-            SaveCodices();
         }
 
         public void BanishCodices(IList<Codex> toBanish)

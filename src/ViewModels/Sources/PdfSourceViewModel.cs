@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.Enums;
 using COMPASS.Services;
 using COMPASS.Tools;
 using ImageMagick;
@@ -66,7 +67,7 @@ namespace COMPASS.ViewModels.Sources
                 //in case pdf is corrupt: PdfReader will throw error
                 //in those cases: import the pdf without opening it
                 Logger.Error($"Failed to read metadata from {Path.GetFileName(codex.Path)}", ex);
-                LogEntry logEntry = new(LogEntry.MsgType.Warning, $"Failed to read metadata from {codex.Title}");
+                LogEntry logEntry = new(Severity.Warning, $"Failed to read metadata from {codex.Title}");
                 ProgressVM.AddLogEntry(logEntry);
             }
 
@@ -100,7 +101,7 @@ namespace COMPASS.ViewModels.Sources
             catch (Exception ex)
             {
                 Logger.Error($"Failed to generate cover from {Path.GetFileName(codex.Path)}", ex);
-                LogEntry logEntry = new(LogEntry.MsgType.Warning, $"Failed to generate cover from {codex.Title}");
+                LogEntry logEntry = new(Severity.Warning, $"Failed to generate cover from {codex.Title}");
                 ProgressVM.AddLogEntry(logEntry);
                 return false;
             }
