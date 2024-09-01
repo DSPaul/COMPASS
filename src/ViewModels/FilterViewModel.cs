@@ -286,8 +286,11 @@ namespace COMPASS.ViewModels
                 //Populate Domain Collection
                 if (c.HasOnlineSource())
                 {
-                    string domain = new Uri(c.SourceURL).Host;
-                    if (!String.IsNullOrEmpty(domain)) DomainList.AddIfMissing(domain);
+                    string domain = Uri.IsWellFormedUriString(c.SourceURL, UriKind.Absolute) ? 
+                        new Uri(c.SourceURL).Host : 
+                        c.SourceURL;
+                    if (!string.IsNullOrEmpty(domain)) DomainList.AddIfMissing(domain);
+                    throw new Exception();
                 }
             }
             AuthorList.Remove(""); //remove "" author because String.IsNullOrEmpty cannot be called during Union
