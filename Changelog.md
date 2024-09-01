@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## COMPASS v1.7.4 (01 September 2024)
+
+### Fixes
+
+- Fixed crash when saving preferences
+
 ## COMPASS v1.7.3 (30 August 2024)
 
 ### Improvements
