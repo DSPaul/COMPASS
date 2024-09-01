@@ -290,7 +290,6 @@ namespace COMPASS.ViewModels
                         new Uri(c.SourceURL).Host : 
                         c.SourceURL;
                     if (!string.IsNullOrEmpty(domain)) DomainList.AddIfMissing(domain);
-                    throw new Exception();
                 }
             }
             AuthorList.Remove(""); //remove "" author because String.IsNullOrEmpty cannot be called during Union
