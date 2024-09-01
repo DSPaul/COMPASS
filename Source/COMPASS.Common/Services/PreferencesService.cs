@@ -3,6 +3,7 @@ using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Tools;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
@@ -19,6 +20,8 @@ namespace COMPASS.Common.Services
 
         public string PreferencesFilePath => Path.Combine(EnvironmentVarsService.CompassDataPath, "Preferences.xml");
 
+        public static object writeLocker = new object();
+
         private Preferences? _preferences;
         public Preferences Preferences => _preferences ??= LoadPreferences() ?? new Preferences();
 
@@ -26,9 +29,36 @@ namespace COMPASS.Common.Services
         {
             if (_preferences == null) return; //don't save when they aren't loaded
             PreferencesDto dto = _preferences.ToDto();
-            using var writer = XmlWriter.Create(PreferencesFilePath, XmlService.XmlWriteSettings);
-            XmlSerializer serializer = new(typeof(PreferencesDto));
-            serializer.Serialize(writer, dto);
+
+            try
+            {
+                string tempFileName = PreferencesFilePath + ".tmp";
+
+                lock (writeLocker)
+                {
+                    using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
+                    {
+                        XmlSerializer serializer = new(typeof(PreferencesDto));
+                        serializer.Serialize(writer, dto);
+                    }
+
+                    //if successfully written to the tmp file, move to actual path
+                    File.Move(tempFileName, PreferencesFilePath, true);
+                    File.Delete(tempFileName);
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Logger.Error($"Access denied when trying to save Preferences to {PreferencesFilePath}", ex);
+            }
+            catch (IOException ex)
+            {
+                Logger.Error($"IO error occurred when saving Preferences to {PreferencesFilePath}", ex);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to save Preferences to {PreferencesFilePath}", ex);
+            }            
         }
 
         public Preferences? LoadPreferences()

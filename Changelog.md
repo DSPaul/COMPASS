@@ -1,10 +1,34 @@
 # CHANGELOG
-## COMPASS v1.7.3 (03 June 2024)
+
+## COMPASS v1.7.5 (01 September 2024)
 
 ### Improvements
 
-    - Redesigned notification for info, warning and errors
-    - One click crash report submission
+- Made restart after crash optional
+
+### Fixes 
+
+- Fixed crash when source URL didn't start with https://
+
+## COMPASS v1.7.4 (01 September 2024)
+
+### Fixes
+
+- Fixed crash when saving preferences
+
+## COMPASS v1.7.3 (30 August 2024)
+
+### Improvements
+
+- Redesigned notification for info, warning and errors
+- One click crash report submission
+- Save files can no longer get corrupted
+
+### Fixes
+
+- Fix tag - folder linking not working
+- Fixed a bug where unchecking all subfolders would still add them
+- Fixed a bug where editing a list of subfolders would delete them
 
 ## COMPASS v1.7.2 (04 May 2024)
 

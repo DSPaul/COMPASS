@@ -69,12 +69,13 @@ namespace COMPASS.Common.Tools
             string message = $"An unexpected error ocurred.\n" +
                 $"{e.Message}" +
                 $"You can help improve COMPASS by opening an issue on {Constants.RepoURL} with the error message. \n" +
-                $"Please include the log file located at {EnvironmentVarsService.CompassDataPath}\\logs \n." +
-                $"COMPASS will now restart.";
+                $"Please include the log file located at {EnvironmentVarsService.CompassDataPath}\\logs";
 
             Notification crashNotification = new($"COMPASS ran into a critical error.", message, Severity.Error);
+            string restartOption = "Restart COMPASS.";
             string submitOption = "Submit an anonymous crash report.";
-            crashNotification.Options.Add(new(submitOption, true));
+            crashNotification.Options.Add(new(restartOption, true));
+            crashNotification.Options.Add(new(submitOption, true)); 
 
             App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(crashNotification);
 
@@ -88,9 +89,13 @@ namespace COMPASS.Common.Tools
             e.Handled = true;
 
             //Restart
-            var currentExecutablePath = Environment.ProcessPath;
-            var args = Environment.GetCommandLineArgs();
-            if (currentExecutablePath != null) Process.Start(currentExecutablePath, args);
+            if (crashNotification.IsOptionSelected(restartOption))
+            {
+                var currentExecutablePath = Environment.ProcessPath;
+                var args = Environment.GetCommandLineArgs();
+                if (currentExecutablePath != null) Process.Start(currentExecutablePath, args);
+            }
+
             Environment.Exit(1);
         }
 
