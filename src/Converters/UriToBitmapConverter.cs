@@ -17,9 +17,17 @@ namespace COMPASS.Converters
 
             bi.CreateOptions = fullRes ? BitmapCreateOptions.IgnoreImageCache : BitmapCreateOptions.DelayCreation;
             bi.CacheOption = BitmapCacheOption.OnLoad;
-            bi.UriSource = new Uri(path);
-            bi.EndInit();
-            return bi;
+
+            try
+            {
+                bi.UriSource = new Uri(path);
+                bi.EndInit();
+                return bi;
+            }
+            catch 
+            {
+                return null;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

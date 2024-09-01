@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## COMPASS v1.7.5 (01 September 2024)
+
+### Improvements
+
+- Made restart after crash optional
+
+### Fixes 
+
+- Fixed crash when source URL didn't start with https://
+
 ## COMPASS v1.7.4 (01 September 2024)
 
 ### Fixes
