@@ -185,6 +185,10 @@ namespace COMPASS.Models
             set
             {
                 value = IOService.SanitizeXmlString(value);
+                if (value.StartsWith("www."))
+                {
+                    value = @"https://" + value;
+                }
                 SetProperty(ref _sourceURL, value);
             }
         }
@@ -227,10 +231,10 @@ namespace COMPASS.Models
         {
             get
             {
+                //order them in same order as alltags by starting with alltags and keeping the ones we need using intersect
+                List<Tag> orderedTags = _tags.FirstOrDefault()?.AllTags.Intersect(_tags).ToList() ?? new List<Tag>();
                 App.SafeDispatcher.Invoke(() =>
                 {
-                    //order them in same order as alltags by starting with alltags and keeping the ones we need using intersect
-                    List<Tag> orderedTags = _tags.FirstOrDefault()?.AllTags.Intersect(_tags).ToList() ?? new List<Tag>();
                     _tags.Clear(); //will fail when called from non UI thread which happens during import
                     _tags.AddRange(orderedTags);
                 });

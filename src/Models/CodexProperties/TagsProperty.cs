@@ -11,7 +11,7 @@ namespace COMPASS.Models.CodexProperties
 
         public override void SetProp(Codex target, Codex source)
         {
-            foreach (var tag in source.Tags)
+            foreach (var tag in source.Tags.ToList())
             {
                 App.SafeDispatcher.Invoke(() => target.Tags.AddIfMissing(tag));
             }
