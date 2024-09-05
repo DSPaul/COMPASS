@@ -56,7 +56,7 @@ namespace COMPASS.Common.ViewModels
             set => SetProperty(ref _showLoading, value);
         }
 
-        public CreatableLookUpContract Contract { get; set; } = new();
+        //public CreatableLookUpContract Contract { get; set; } = new();
 
         #endregion
 

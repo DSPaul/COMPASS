@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
-using COMPASS.Resources.Controls.MultiSelectCombobox;
 using COMPASS.Common.Tools;
 using System;
 using System.Collections.Generic;
@@ -59,7 +58,7 @@ namespace COMPASS.Common.ViewModels
             set => SetProperty(ref _tempCodex, value);
         }
 
-        public CreatableLookUpContract Contract { get; set; } = new();
+        //public CreatableLookUpContract Contract { get; set; } = new();
 
         #endregion
 

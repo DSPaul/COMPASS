@@ -1,19 +1,16 @@
-﻿using System.Windows;
+﻿using Avalonia;
 
 namespace COMPASS.Common.Tools
 {
-    public class BindingProxy : Freezable
+    public class BindingProxy : AvaloniaObject
     {
-        protected override Freezable CreateInstanceCore() => new BindingProxy();
+        public static readonly StyledProperty<object> DataProperty =
+        AvaloniaProperty.Register<BindingProxy, object>(nameof(Data));
 
         public object Data
         {
             get => GetValue(DataProperty);
             set => SetValue(DataProperty, value);
         }
-
-        public static readonly DependencyProperty DataProperty =
-            DependencyProperty.Register(nameof(Data), typeof(object), typeof(BindingProxy), new UIPropertyMetadata(null));
-
     }
 }

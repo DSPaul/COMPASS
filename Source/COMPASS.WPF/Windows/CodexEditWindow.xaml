@@ -244,6 +244,8 @@
                             <TreeView x:Name="TagSelection" ItemsSource="{Binding TreeViewSource}" 
                                   MinWidth="200" PreviewMouseWheel="treeView_PreviewMouseWheel"
                                   BorderBrush="{x:Null}" Background="{x:Null}" ItemTemplateSelector="{StaticResource TagTemplateSelector}">
+                                <!-- for TagTemplateSelector replacement, check out link below
+      https://github.com/AvaloniaUI/Avalonia.Samples/tree/main/src/Avalonia.Samples/DataTemplates/IDataTemplateSample-->
                                 <TreeView.Resources>
                                     <Style TargetType="{x:Type TreeViewItem}">
                                         <Setter Property="IsExpanded" Value="{Binding Expanded}"/>

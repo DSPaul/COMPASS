@@ -86,6 +86,8 @@
                       ItemsSource="{Binding SelectedTagCollection.TagsRoot.Children}"
                       HorizontalAlignment="Stretch" BorderThickness="0" 
                       ItemTemplateSelector="{StaticResource TagTemplateSelector}">
+                <!-- for TagTemplateSelector replacement, check out link below
+      https://github.com/AvaloniaUI/Avalonia.Samples/tree/main/src/Avalonia.Samples/DataTemplates/IDataTemplateSample-->
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="TreeViewItem">
                         <Setter Property="Focusable" Value="False" />

@@ -50,8 +50,9 @@ namespace COMPASS.Common.ViewModels.Layouts
             set => SetProperty(ref _selectedCodex, value);
         }
 
-        //TODO check if this is still needed
-        public abstract bool DoVirtualization { get; }
+        //TODO check if this is still needed, remove abstract for now so derived classes can skip it
+        //public abstract bool DoVirtualization { get; }
+        public bool DoVirtualization { get; }
 
         //Set Type of view
         public Layout LayoutType { get; init; }

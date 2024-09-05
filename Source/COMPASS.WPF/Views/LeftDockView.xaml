@@ -334,6 +334,8 @@
                         dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding}"
                         ItemTemplateSelector="{StaticResource TagTemplateSelector}" ContextMenu="{StaticResource AllTagsContextMenu}"
                         MouseRightButtonDown="TagTree_MouseRightButtonDown">
+                        <!-- for TagTemplateSelector replacement, check out link below
+                            https://github.com/AvaloniaUI/Avalonia.Samples/tree/main/src/Avalonia.Samples/DataTemplates/IDataTemplateSample-->
                         <TreeView.Resources>
                             <Style TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="{Binding Expanded, Mode=TwoWay}"/>
