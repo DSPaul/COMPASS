@@ -1,11 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Models.CodexProperties;
 using COMPASS.Services;
 using COMPASS.Tools;
-using COMPASS.ViewModels.Sources;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -344,110 +343,17 @@ namespace COMPASS.Models
         public string FileName => System.IO.Path.GetFileName(Path);
         #endregion 
 
-        public static readonly List<CodexProperty> Properties = new()
+        public static readonly List<CodexProperty> MedataProperties = new()
         {
-            new(nameof(Title),
-                isEmpty: codex => String.IsNullOrWhiteSpace(codex.Title),
-                setProp: (codex,other) => codex.Title = other.Title,
-                defaultSources: new()
-                {
-                    MetaDataSource.PDF,
-                    MetaDataSource.File,
-                    MetaDataSource.GmBinder,
-                    MetaDataSource.Homebrewery,
-                    MetaDataSource.GoogleDrive,
-                    MetaDataSource.ISBN,
-                    MetaDataSource.GenericURL
-                }),
-            new( nameof(Authors),
-                isEmpty: codex => codex.Authors is null || !codex.Authors.Any(),
-                setProp: (codex,other) => codex.Authors = other.Authors,
-                defaultSources: new()
-                {
-                    MetaDataSource.PDF,
-                    MetaDataSource.GmBinder,
-                    MetaDataSource.Homebrewery,
-                    MetaDataSource.ISBN,
-                    MetaDataSource.GenericURL
-                }),
-            new( nameof(Publisher),
-                isEmpty: codex => String.IsNullOrEmpty(codex.Publisher),
-                setProp: (codex,other) => codex.Publisher = other.Publisher,
-                defaultSources: new()
-                {
-                    MetaDataSource.ISBN,
-                    MetaDataSource.GmBinder,
-                    MetaDataSource.Homebrewery,
-                    MetaDataSource.GoogleDrive,
-                }),
-            new( nameof(Version),
-                isEmpty: codex => String.IsNullOrEmpty(codex.Version),
-                setProp: (codex,other) => codex.Version = other.Version,
-                defaultSources: new()
-                {
-                    MetaDataSource.Homebrewery
-                }),
-            new( nameof(PageCount),
-                isEmpty: codex => codex.PageCount == 0,
-                setProp: (codex, other) => codex.PageCount = other.PageCount,
-                defaultSources: new()
-                {
-                    MetaDataSource.PDF,
-                    MetaDataSource.Image,
-                    MetaDataSource.GmBinder,
-                    MetaDataSource.Homebrewery,
-                    MetaDataSource.ISBN,
-                },
-                label: "Pagecount"),
-            new( nameof(Tags),
-                isEmpty: codex => codex.Tags is null || !codex.Tags.Any(),
-                setProp: (codex,other) =>
-                {
-                    foreach (var tag in other.Tags)
-                    {
-                        App.SafeDispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
-                    }
-                },
-                defaultSources : new()
-                {
-                    MetaDataSource.File,
-                    MetaDataSource.GenericURL,
-                }),
-            new( nameof(Description),
-                codex => String.IsNullOrEmpty(codex.Description),
-                (codex,other) => codex.Description = other.Description,
-                defaultSources : new()
-                {
-                    MetaDataSource.Homebrewery,
-                    MetaDataSource.ISBN,
-                    MetaDataSource.GenericURL,
-                }),
-            new( nameof(ReleaseDate),
-                isEmpty: codex => codex.ReleaseDate is null || codex.ReleaseDate == DateTime.MinValue,
-                setProp: (codex, other) => codex.ReleaseDate = other.ReleaseDate,
-                defaultSources : new()
-                {
-                    MetaDataSource.Homebrewery,
-                    MetaDataSource.ISBN,
-                },
-                label: "Release Date"),
-            new( nameof(CoverArt),
-                isEmpty: codex => !File.Exists(codex.CoverArt),
-                setProp: (codex,other) =>
-                {
-                    codex.CoverArt = other.CoverArt;
-                    codex.Thumbnail = other.Thumbnail;
-                },
-                defaultSources : new()
-                {
-                    MetaDataSource.Image,
-                    MetaDataSource.PDF,
-                    MetaDataSource.GmBinder,
-                    MetaDataSource.Homebrewery,
-                    MetaDataSource.GoogleDrive,
-                    MetaDataSource.ISBN,
-                },
-                label: "Cover Art"),
+            CodexProperty.GetInstance(nameof(Title))!,
+            CodexProperty.GetInstance(nameof(Authors))!,
+            CodexProperty.GetInstance(nameof(Publisher))!,
+            CodexProperty.GetInstance(nameof(Version))!,
+            CodexProperty.GetInstance(nameof(PageCount))!,
+            CodexProperty.GetInstance(nameof(Tags))!,
+            CodexProperty.GetInstance(nameof(Description))!,
+            CodexProperty.GetInstance(nameof(ReleaseDate))!,
+            CodexProperty.GetInstance(nameof(CoverArt))!,
         };
     }
 }

@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Interfaces;
 using COMPASS.Models;
+using COMPASS.Models.CodexProperties;
 using COMPASS.Models.Enums;
 using COMPASS.Services;
 using COMPASS.Tools;
@@ -419,7 +420,7 @@ namespace COMPASS.ViewModels
 
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
                 if (prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(codex)) continue;
-                if (prop.Name == nameof(Codex.CoverArt)) continue; //Covers are done separately
+                if (prop is CoverArtProperty) continue; //Covers are done separately
 
                 //propHolder will hold the property from the top preferred source
                 Codex propHolder = new();
@@ -430,19 +431,20 @@ namespace COMPASS.ViewModels
                     ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                     // Check if there is metadata from this source to use
-                    if (!metaDataFromSource.ContainsKey(source))
+                    if (!metaDataFromSource.TryGetValue(source, out Codex? value))
                     {
                         SourceViewModel? sourceVM = SourceViewModel.GetSourceVM(source);
                         if (sourceVM is null) continue;
                         if (!sourceVM.IsValidSource(codex)) continue;
                         var metaDataHolder = await sourceVM.GetMetaData(metaDatalessCodex);
-                        metaDataFromSource.Add(source, metaDataHolder);
+                        value = metaDataHolder;
+                        metaDataFromSource.Add(source, value);
                     }
                     // Set the prop Data from this source in propHolder
                     // if the new value is not null/default/empty
-                    if (!prop.IsEmpty(metaDataFromSource[source]))
+                    if (!prop.IsEmpty(value))
                     {
-                        prop.SetProp(propHolder, metaDataFromSource[source]);
+                        prop.SetProp(propHolder, value);
                     }
                 }
 
@@ -453,18 +455,10 @@ namespace COMPASS.ViewModels
                 {
                     prop.SetProp(codex, propHolder);
                 }
-                else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask)
+                else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask && prop.HasNewValue(propHolder, codex))
                 {
-                    bool isDifferent = prop.Name == nameof(Codex.Tags) ?
-                    // in case of tags, check if source adds tags that aren't there yet
-                    ((IList<Tag>)prop.GetProp(propHolder)!).Except((IList<Tag>)prop.GetProp(codex)!).Any()
-                    //check if ToString() representations are different, doesn't work for tags
-                    : prop.GetProp(codex)?.ToString() != prop.GetProp(propHolder)?.ToString();
-                    if (isDifferent)
-                    {
-                        prop.SetProp(toAsk, propHolder);
-                        shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked
-                    }
+                    prop.SetProp(toAsk, propHolder);
+                    shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked
                 }
             }
 

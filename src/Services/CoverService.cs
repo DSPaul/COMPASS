@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.CodexProperties;
 using COMPASS.Tools;
 using COMPASS.ViewModels;
 using COMPASS.ViewModels.Sources;

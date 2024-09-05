@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Models.CodexProperties;
 using COMPASS.Models.XmlDtos;
 using COMPASS.ViewModels;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace COMPASS.Models.Preferences
         public Preferences()
         {
             _openCodexPriority = new(_openCodexFunctions);
-            CodexProperties = Codex.Properties.ToList();
+            CodexProperties = Codex.MedataProperties.ToList();
             ListLayoutPreferences = new();
             CardLayoutPreferences = new();
             TileLayoutPreferences = new();
@@ -120,7 +121,7 @@ namespace COMPASS.Models.Preferences
         /// <returns></returns>
         private static List<CodexProperty> MapCodexProperties(List<CodexPropertyDto> propertyDtos)
         {
-#pragma warning disable CS0612 // Type or member "Label" is obsolete
+#pragma warning disable CS0618 // Type or member "Label" is obsolete
 
             //In versions 1.6.0 and lower, label was stored instead of name
             var useLabel = propertyDtos.All(prop => string.IsNullOrEmpty(prop.Name) && !string.IsNullOrEmpty(prop.Label));
@@ -129,23 +130,26 @@ namespace COMPASS.Models.Preferences
                 for (int i = 0; i < propertyDtos.Count; i++)
                 {
                     CodexPropertyDto propDto = propertyDtos[i];
-                    var foundProp = Codex.Properties.Find(p => p.Label == propDto.Label);
+                    var foundProp = Codex.MedataProperties.Find(p => p.Label == propDto.Label);
                     if (foundProp != null)
                     {
                         propDto.Name = foundProp.Name;
                     }
                 }
             }
-#pragma warning restore CS0612 // Type or member "Label" is obsolete
+#pragma warning restore CS0618 // Type or member "Label" is obsolete
 
             var props = new List<CodexProperty>();
 
-            foreach (var defaultProp in Codex.Properties)
+            foreach (var defaultProp in Codex.MedataProperties)
             {
                 CodexPropertyDto? propDto = propertyDtos.Find(p => p.Name == defaultProp.Name);
                 // Add Preferences from defaults if they weren't found on the loaded Preferences
-                CodexProperty prop = propDto is null ? defaultProp : new(propDto, defaultProp);
-                props.Add(prop);
+                CodexProperty? prop = propDto is null ? defaultProp : CodexProperty.FromDto(propDto);
+                if (prop is not null)
+                {
+                    props.Add(prop);
+                }
             }
 
             return props;

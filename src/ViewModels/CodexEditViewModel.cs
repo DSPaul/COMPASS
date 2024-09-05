@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
+using COMPASS.Models.CodexProperties;
 using COMPASS.Resources.Controls.MultiSelectCombobox;
 using COMPASS.Services;
 using COMPASS.Tools;

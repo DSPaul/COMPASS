@@ -1,4 +1,4 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Models.CodexProperties;
 using COMPASS.Models.Preferences;
 using COMPASS.Models.XmlDtos;
 using COMPASS.Tools;

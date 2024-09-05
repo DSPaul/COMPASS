@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
+using COMPASS.Models.CodexProperties;
 using COMPASS.Models.Enums;
 using COMPASS.Models.Preferences;
 using COMPASS.Services;
