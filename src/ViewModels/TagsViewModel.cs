@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using COMPASS.Interfaces;
 using COMPASS.Models;
 using COMPASS.Models.Enums;
+using COMPASS.Models.Filters;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
@@ -137,7 +138,7 @@ namespace COMPASS.ViewModels
             //needed because relay command only takes functions with one arg
             Tag tag = (Tag)par[0];
             bool include = (bool)par[1];
-            _filterVM.AddFilter(new(Filter.FilterType.Tag, tag), include);
+            _filterVM.AddFilter(new TagFilter(tag), include);
         }
 
         private RelayCommand? _importTagsFromOtherCollectionsCommand;
@@ -285,7 +286,7 @@ namespace COMPASS.ViewModels
             //tag to delete is context, because DeleteTag is called from context menu
             if (ContextTag is null) return;
             MainViewModel.CollectionVM.CurrentCollection.DeleteTag(ContextTag);
-            _filterVM.RemoveFilter(new(Filter.FilterType.Tag, ContextTag));
+            _filterVM.RemoveFilter(new TagFilter(ContextTag));
 
             //Go over all files and remove the tag from tag list
             foreach (var f in _codexCollection.AllCodices)

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
 using COMPASS.Models.CodexProperties;
 using COMPASS.Models.Enums;
+using COMPASS.Models.Filters;
 using COMPASS.Models.Preferences;
 using COMPASS.Services;
 using COMPASS.Tools;
@@ -334,7 +335,7 @@ namespace COMPASS.ViewModels
         public RelayCommand ShowBrokenCodicesCommand => _showBrokenCodicesCommand ??= new(ShowBrokenCodices);
         private void ShowBrokenCodices()
         {
-            MainViewModel.CollectionVM.FilterVM.AddFilter(new(Filter.FilterType.HasBrokenPath));
+            MainViewModel.CollectionVM.FilterVM.AddFilter(new HasBrokenPathFilter());
             Application.Current.MainWindow!.Activate();
         }
 
