@@ -47,6 +47,7 @@ namespace Tests.Sources
             //Setup
             var vm = SourceViewModel.GetSourceVM(MetaDataSource.Homebrewery);
             CodexCollection cc = new(TEST_COLLECTION);
+            cc.InitAsNew();
             cc.Load();
 
             Codex codex = new(cc)

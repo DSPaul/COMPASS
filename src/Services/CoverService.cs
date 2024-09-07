@@ -5,6 +5,7 @@ using COMPASS.ViewModels;
 using COMPASS.ViewModels.Sources;
 using COMPASS.Windows;
 using ImageMagick;
+using ImageMagick.Factories;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
@@ -120,7 +121,9 @@ namespace COMPASS.Services
             }
 
             if (image.Width > 850) image.Resize(850, 0);
+
             image.Write(destCodex.CoverArt);
+            image.Dispose();
             CreateThumbnail(destCodex);
         }
 
@@ -177,13 +180,13 @@ namespace COMPASS.Services
                 return;
             }
 
-            int newWidth = 200; //sets resolution of thumbnail in pixels
+            uint newWidth = 200; //sets resolution of thumbnail in pixels
             if (!Path.Exists(c.CoverArt)) return;
             using MagickImage image = new(c.CoverArt);
             //preserve aspect ratio
-            int width = image.Width;
-            int height = image.Height;
-            int newHeight = newWidth / width * height;
+            uint width = image.Width;
+            uint height = image.Height;
+            uint newHeight = newWidth / width * height;
             //create thumbnail
             image.Thumbnail(newWidth, newHeight);
             image.Write(c.Thumbnail);
@@ -194,21 +197,14 @@ namespace COMPASS.Services
         public static IMagickImage GetCroppedScreenShot(IWebDriver driver, IWebElement webElement)
             => GetCroppedScreenShot(driver, webElement.Location, webElement.Size);
 
-        private static IMagickImage GetCroppedScreenShot(IWebDriver driver, Point location, Size size)
+        public static IMagickImage GetCroppedScreenShot(IWebDriver driver, Point location, Size size)
         {
             //take the screenshot
             Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();
-            using Bitmap? img = Image.FromStream(new MemoryStream(ss.AsByteArray)) as Bitmap;
-
-            if (img == null)
-            {
-                Logger.Debug("Screenshot from webdriver was null");
-                return new MagickImage();
-            }
-
-            using Bitmap imgCropped = img.Clone(new Rectangle(location, size), img.PixelFormat);
             var mf = new MagickImageFactory();
-            return mf.Create(imgCropped);
+            using var img = mf.Create(ss.AsByteArray);
+            img.Resize(3000, 3000); //same size as headless window
+            return img.Clone(location.X, location.Y, (uint)size.Width, (uint)size.Height);
         }
     }
 }

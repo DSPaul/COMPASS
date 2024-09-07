@@ -6,10 +6,15 @@ using COMPASS.ViewModels.Import;
 using HtmlAgilityPack;
 using ImageMagick;
 using Newtonsoft.Json.Linq;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
@@ -65,15 +70,41 @@ namespace COMPASS.ViewModels.Sources
         {
             if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Homebrewery"));
-            OpenQA.Selenium.WebDriver driver = await WebDriverService.GetWebDriver();
+            WebDriver driver = await WebDriverService.GetWebDriver();
+            WebDriverWait wait = new(driver, TimeSpan.FromSeconds(5));
             try
             {
-                string url = codex.SourceURL.Replace("/share/", "/print/"); //use print API to only show doc itself
-                await Task.Run(() => driver.Navigate().GoToUrl(url));
-                var coverPage = driver.FindElement(OpenQA.Selenium.By.Id("p1"))
-                    ?? throw new Exception($"Couldn't find p1 on {url}");
+                string url = codex.SourceURL;
+                var frameSelector = By.Id("BrewRenderer");
+                var pageSelector = By.Id("p1");
+
+                await Task.Run(() =>
+                {
+                    driver.Navigate().GoToUrl(url);
+                    wait.Until(ExpectedConditions.ElementExists(frameSelector));
+                });
+
+                wait.Until(ExpectedConditions.ElementExists(frameSelector));
+
+                Thread.Sleep(500);
+
+                var frame = driver.FindElement(frameSelector);
+                Point location = frame.Location;
+
+                await Task.Run(() =>
+                {
+                    wait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(frameSelector));
+                    wait.Until(ExpectedConditions.ElementExists(pageSelector));
+                });
+
+                Thread.Sleep(500);
+
+                var coverPage = driver.FindElement(pageSelector);
+                location.X += coverPage.Location.X;
+                location.Y += coverPage.Location.Y;
+
                 //screenshot and download the image
-                IMagickImage image = CoverService.GetCroppedScreenShot(driver, coverPage);
+                IMagickImage image = CoverService.GetCroppedScreenShot(driver, location, coverPage.Size);
                 CoverService.SaveCover(image, codex);
                 return true;
             }
