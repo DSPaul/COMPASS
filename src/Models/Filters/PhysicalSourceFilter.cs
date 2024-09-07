@@ -2,7 +2,7 @@
 
 namespace COMPASS.Models.Filters
 {
-    internal class PhysicalSourceFilter : FilterBase
+    internal class PhysicalSourceFilter : Filter
     {
         public PhysicalSourceFilter() : base(FilterType.PhysicalSource)
         { }

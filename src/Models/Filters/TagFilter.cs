@@ -2,7 +2,7 @@
 
 namespace COMPASS.Models.Filters
 {
-    internal class TagFilter : FilterBase
+    internal class TagFilter : Filter
     {
         public TagFilter(Tag tag) : base(FilterType.Tag, tag)
         {

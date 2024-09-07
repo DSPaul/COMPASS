@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace COMPASS.Models.Filters
 {
-    internal class SearchFilter : FilterBase
+    internal class SearchFilter : Filter
     {
         public SearchFilter(string searchTerm) : base(FilterType.Search, searchTerm)
         {

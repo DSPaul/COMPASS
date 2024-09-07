@@ -2,7 +2,7 @@
 
 namespace COMPASS.Models.Filters
 {
-    internal class DomainFilter : FilterBase
+    internal class DomainFilter : Filter
     {
         public DomainFilter(string domain) : base(FilterType.Domain, domain)
         {

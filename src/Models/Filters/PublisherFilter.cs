@@ -2,7 +2,7 @@
 
 namespace COMPASS.Models.Filters
 {
-    public class PublisherFilter : FilterBase
+    public class PublisherFilter : Filter
     {
         public PublisherFilter(string publisher) : base(FilterType.Publisher, publisher)
         {

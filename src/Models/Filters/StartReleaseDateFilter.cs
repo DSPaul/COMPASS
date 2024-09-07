@@ -3,7 +3,7 @@ using System.Windows.Media;
 
 namespace COMPASS.Models.Filters
 {
-    public class StartReleaseDateFilter : FilterBase
+    public class StartReleaseDateFilter : Filter
     {
         public StartReleaseDateFilter(DateTime date) : base(FilterType.StartReleaseDate, date)
         { }

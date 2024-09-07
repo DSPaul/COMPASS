@@ -2,7 +2,7 @@
 
 namespace COMPASS.Models.Filters
 {
-    internal class FavoriteFilter : FilterBase
+    internal class FavoriteFilter : Filter
     {
 
         public FavoriteFilter() : base(FilterType.Favorite)

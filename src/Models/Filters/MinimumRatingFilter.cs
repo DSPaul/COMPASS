@@ -2,7 +2,7 @@
 
 namespace COMPASS.Models.Filters
 {
-    internal class MinimumRatingFilter : FilterBase
+    internal class MinimumRatingFilter : Filter
     {
         public MinimumRatingFilter(int minRating) : base(FilterType.MinimumRating, minRating)
         { }

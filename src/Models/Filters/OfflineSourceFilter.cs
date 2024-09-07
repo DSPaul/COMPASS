@@ -2,7 +2,7 @@
 
 namespace COMPASS.Models.Filters
 {
-    public class OfflineSourceFilter : FilterBase
+    public class OfflineSourceFilter : Filter
     {
         public OfflineSourceFilter() : base(FilterType.OfflineSource)
         { }

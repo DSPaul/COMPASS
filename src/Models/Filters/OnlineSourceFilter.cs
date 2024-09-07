@@ -2,7 +2,7 @@
 
 namespace COMPASS.Models.Filters
 {
-    internal class OnlineSourceFilter : FilterBase
+    internal class OnlineSourceFilter : Filter
     {
         public OnlineSourceFilter() : base(FilterType.OnlineSource)
         { }

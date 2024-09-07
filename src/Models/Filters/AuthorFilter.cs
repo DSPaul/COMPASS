@@ -2,7 +2,7 @@
 
 namespace COMPASS.Models.Filters
 {
-    internal class AuthorFilter : FilterBase
+    internal class AuthorFilter : Filter
     {
         public AuthorFilter(string author) : base(FilterType.Author, author)
         {

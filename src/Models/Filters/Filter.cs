@@ -3,9 +3,9 @@ using System.Windows.Media;
 
 namespace COMPASS.Models.Filters
 {
-    public abstract class FilterBase : ITag, IEquatable<FilterBase>
+    public abstract class Filter : ITag, IEquatable<Filter>
     {
-        public FilterBase(FilterType filterType, object? filterValue = null)
+        public Filter(FilterType filterType, object? filterValue = null)
         {
             Type = filterType;
             FilterValue = filterValue;
@@ -29,9 +29,9 @@ namespace COMPASS.Models.Filters
 
 
         #region IEquatable
-        public override bool Equals(object? obj) => Equals(obj as FilterBase);
+        public override bool Equals(object? obj) => Equals(obj as Filter);
 
-        public bool Equals(FilterBase? other)
+        public bool Equals(Filter? other)
         {
             if (other is null)
                 return false;
@@ -41,7 +41,7 @@ namespace COMPASS.Models.Filters
                 return false;
             return Type == other.Type && FilterValue == other.FilterValue;
         }
-        public static bool operator ==(FilterBase lhs, FilterBase rhs)
+        public static bool operator ==(Filter lhs, Filter rhs)
         {
             if (lhs is null)
             {
@@ -50,7 +50,7 @@ namespace COMPASS.Models.Filters
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(FilterBase lhs, FilterBase rhs)
+        public static bool operator !=(Filter lhs, Filter rhs)
         {
             return !(lhs == rhs);
         }

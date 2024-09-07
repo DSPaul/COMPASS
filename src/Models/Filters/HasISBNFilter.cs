@@ -3,7 +3,7 @@ using System.Windows.Media;
 
 namespace COMPASS.Models.Filters
 {
-    internal class HasISBNFilter : FilterBase
+    internal class HasISBNFilter : Filter
     {
         public HasISBNFilter() : base(FilterType.HasISBN)
         { }

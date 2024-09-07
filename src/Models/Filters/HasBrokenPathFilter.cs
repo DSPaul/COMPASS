@@ -3,7 +3,7 @@ using System.Windows.Media;
 
 namespace COMPASS.Models.Filters
 {
-    internal class HasBrokenPathFilter : FilterBase
+    internal class HasBrokenPathFilter : Filter
     {
         public HasBrokenPathFilter() : base(FilterType.HasBrokenPath)
         { }

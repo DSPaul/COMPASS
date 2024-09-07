@@ -2,7 +2,7 @@
 
 namespace COMPASS.Models.Filters
 {
-    public class FileExtensionFilter : FilterBase
+    public class FileExtensionFilter : Filter
     {
         public FileExtensionFilter(string extension) : base(FilterType.FileExtension, extension)
         {
