@@ -13,7 +13,7 @@ namespace COMPASS.Models.CodexProperties
         {
             foreach (var tag in source.Tags.ToList())
             {
-                App.SafeDispatcher.Invoke(() => target.Tags.AddIfMissing(tag));
+                target.Tags.AddIfMissing(tag);
             }
         }
 

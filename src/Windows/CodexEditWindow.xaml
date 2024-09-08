@@ -226,9 +226,10 @@
 
                         <StackPanel Orientation="Horizontal" Grid.Row="10">
                             <TextBlock Text="Tags:"/>
-                            <ItemsControl ItemsSource="{Binding TempCodex.Tags}" Background="{x:Null}" BorderBrush="{x:Null}" 
-                                Foreground="Black" FontSize="15" VerticalAlignment="Center" 
-                                ItemTemplate="{StaticResource TagTemplate}">
+                            <ItemsControl ItemsSource="{Binding TempCodex.OrderedTags, Mode=OneWay}" 
+                                          Background="{x:Null}" BorderBrush="{x:Null}" 
+                                          Foreground="Black" FontSize="15" VerticalAlignment="Center" 
+                                          ItemTemplate="{StaticResource TagTemplate}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <WrapPanel Orientation="Horizontal"/>

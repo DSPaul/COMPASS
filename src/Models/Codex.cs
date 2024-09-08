@@ -5,6 +5,7 @@ using COMPASS.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -14,7 +15,8 @@ namespace COMPASS.Models
     {
         public Codex()
         {
-            Authors.CollectionChanged += (_, _) => OnPropertyChanged(nameof(AuthorsAsString));
+            Authors.CollectionChanged += OnCollectionChanged;
+            Tags.CollectionChanged += OnCollectionChanged;
         }
 
         public Codex(CodexCollection cc) : this()
@@ -137,7 +139,9 @@ namespace COMPASS.Models
             get => _authors;
             set
             {
+                _authors.CollectionChanged -= OnCollectionChanged;
                 SetProperty(ref _authors, value);
+                _authors.CollectionChanged += OnCollectionChanged;
                 OnPropertyChanged(nameof(AuthorsAsString));
             }
         }
@@ -229,20 +233,20 @@ namespace COMPASS.Models
         [XmlIgnore]
         public ObservableCollection<Tag> Tags
         {
-            get
+            get => _tags;
+            set
             {
-                //order them in same order as alltags by starting with alltags and keeping the ones we need using intersect
-                List<Tag> orderedTags = _tags.FirstOrDefault()?.AllTags.Intersect(_tags).ToList() ?? new List<Tag>();
-                App.SafeDispatcher.Invoke(() =>
-                {
-                    _tags.Clear(); //will fail when called from non UI thread which happens during import
-                    _tags.AddRange(orderedTags);
-                });
-                return _tags;
+                _tags.CollectionChanged -= OnCollectionChanged;
+                _tags = value;
+                _tags.CollectionChanged += OnCollectionChanged;
+                OnPropertyChanged(nameof(OrderedTags));
             }
-
-            set => SetProperty(ref _tags, value);
         }
+
+        [XmlIgnore]
+        //order them in same order as alltags by starting with alltags and keeping the ones we need using intersect
+        public IEnumerable<Tag> OrderedTags => _tags.FirstOrDefault()?.AllTags.Intersect(_tags) ?? Enumerable.Empty<Tag>();
+
         public List<int> TagIDs { get; set; } = new();
 
         private string _description = "";
@@ -359,6 +363,13 @@ namespace COMPASS.Models
             CodexProperty.GetInstance(nameof(ReleaseDate))!,
             CodexProperty.GetInstance(nameof(CoverArt))!,
         };
+
+        private void OnCollectionChanged(object? o, NotifyCollectionChangedEventArgs args)
+        {
+            if (o == Tags) OnPropertyChanged(nameof(OrderedTags));
+            if (o == Authors) OnPropertyChanged(nameof(AuthorsAsString));
+        }
+
     }
 }
 
