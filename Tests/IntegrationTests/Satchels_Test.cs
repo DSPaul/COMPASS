@@ -28,6 +28,7 @@ namespace Tests.IntegrationTests
 
             //Assert export succesfull
             Assert.IsTrue(File.Exists(filePath));
+            Thread.Sleep(100);
 
             CodexCollection? deserializedCollection = null;
             CodexCollection? importedCollection = null;
@@ -39,6 +40,7 @@ namespace Tests.IntegrationTests
                 //Deserialize Satchel
                 deserializedCollection = await IOService.OpenSatchel(filePath);
                 Assert.IsNotNull(deserializedCollection);
+                Thread.Sleep(100);
                 ImportCollectionViewModel importViewModel = new(deserializedCollection);
 
                 Assert.IsTrue(importViewModel.ContentSelectorVM.HasCodices, "deserialized satchel has no Codices");
