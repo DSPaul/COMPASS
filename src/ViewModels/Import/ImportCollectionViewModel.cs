@@ -154,7 +154,7 @@ namespace COMPASS.ViewModels.Import
             }
 
             //Apply the selection
-            await ContentSelectorVM.Finish();
+            ContentSelectorVM.ApplyAllSelections();
 
             //Save the changes to a permanent collection
             var targetCollection = MergeIntoCollection ?

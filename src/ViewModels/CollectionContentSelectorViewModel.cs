@@ -280,13 +280,12 @@ namespace COMPASS.ViewModels
         /// <summary>
         /// Builds the curated collection based on the selection
         /// </summary>
-        public override Task Finish()
+        public void ApplyAllSelections()
         {
             //order is important!
             ApplySelectedCodices(); //first codices, makes copies, so further operations don't modify the existing ones
             ApplySelectedTags();
             ApplySelectedPreferences();
-            return Task.CompletedTask;
         }
 
         public void UpdateSteps()

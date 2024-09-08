@@ -66,7 +66,7 @@ namespace COMPASS.ViewModels
 
         public override async Task Finish()
         {
-            await ApplyChoices();
+            ApplyChoices();
 
             CloseAction?.Invoke();
 
@@ -76,7 +76,7 @@ namespace COMPASS.ViewModels
             await ExportToFile(targetPath);
         }
 
-        public async Task ApplyChoices()
+        public void ApplyChoices()
         {
             //if we do a quick import, set all the things in the contentSelector have the right value
             if (!AdvancedExport)
@@ -101,7 +101,7 @@ namespace COMPASS.ViewModels
             }
 
             //Apply the selection
-            await ContentSelectorVM.Finish();
+            ContentSelectorVM.ApplyAllSelections();
         }
 
         private string? ChooseDestination()
