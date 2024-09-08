@@ -56,7 +56,7 @@ namespace COMPASS.ViewModels.Import
             {
                 toImport = LetUserFilterToImport(toImport);
             }
-            else
+            else if (_manuallyTriggered)
             {
                 Notification noFilesFound = new("No files found", "The selected folder did not contain any files.");
                 var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
