@@ -23,7 +23,7 @@ namespace Tests.IntegrationTests
             //Export
             var filePath = Path.GetTempPath() + Guid.NewGuid().ToString() + Constants.SatchelExtension;
             ExportCollectionViewModel exportViewModel = new(testCollection);
-            await exportViewModel.ApplyChoices();
+            exportViewModel.ApplyChoices();
             await exportViewModel.ExportToFile(filePath);
 
             //Assert export succesfull
