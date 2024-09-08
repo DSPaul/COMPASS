@@ -324,6 +324,9 @@ namespace COMPASS.ViewModels
                 Notification areYouSure = Notification.AreYouSureNotification;
                 areYouSure.Body = CurrentCollection.AllCodices.Count == 1 ? messageSingle : messageMultiple;
 
+                var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+                windowedNotificationService.Show(areYouSure);
+
                 if (areYouSure.Result == NotificationAction.Confirm)
                 {
                     DeleteCollection(CurrentCollection);
