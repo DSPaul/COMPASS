@@ -496,9 +496,16 @@ namespace COMPASS.ViewModels
 
         public void ReFilter(bool force = false)
         {
-            UpdateIncludedCodices(false);
-            UpdateExcludedCodices(false);
-            ApplyFilters(force);
+            try
+            {
+                UpdateIncludedCodices(false);
+                UpdateExcludedCodices(false);
+                ApplyFilters(force);
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn("Something when wrong during filtering", ex);
+            }
         }
         public void RemoveCodex(Codex c)
         {
