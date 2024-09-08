@@ -1,4 +1,7 @@
-﻿using COMPASS.Models;
+﻿using Autofac;
+using COMPASS.Interfaces;
+using COMPASS.Models;
+using COMPASS.Models.Enums;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.Windows;
@@ -44,11 +47,21 @@ namespace COMPASS.ViewModels.Import
             //if no files are given to import, don't
             if (_manuallyTriggered && RecursiveDirectories.Count + NonRecursiveDirectories.Count + ExistingFolders.Count + Files.Count == 0)
             {
-                LetUserSelectFolders();
+                bool success = LetUserSelectFolders();
+                if (!success) return;
             }
 
             var toImport = GetPathsToImport();
-            toImport = LetUserFilterToImport(toImport);
+            if (toImport.Any())
+            {
+                toImport = LetUserFilterToImport(toImport);
+            }
+            else
+            {
+                Notification noFilesFound = new("No files found", "The selected folder did not contain any files.");
+                var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+                windowedNotificationService.Show(noFilesFound);
+            }
             await ImportViewModel.ImportFilesAsync(toImport, _targetCollection);
         }
 
@@ -56,14 +69,12 @@ namespace COMPASS.ViewModels.Import
         /// Lets a user select folders using a dialog 
         /// and stores them in RecursiveDirectories
         /// </summary>
-        /// <returns>A list of paths </returns>
-        private void LetUserSelectFolders()
+        /// <returns> A bool indicating whether the user successfully chose a set of folders </returns>
+        private bool LetUserSelectFolders()
         {
-            string[] selectedPath = IOService.PickFolders();
-
-            if (!selectedPath.Any()) return;
-
-            RecursiveDirectories = selectedPath.ToList();
+            bool success = IOService.TryPickFolders(out string[] selectedPaths);
+            RecursiveDirectories = selectedPaths.ToList();
+            return success;
         }
 
         /// <summary>
@@ -228,8 +239,8 @@ namespace COMPASS.ViewModels.Import
                 //go over every folder and set the HasAllSubFolder Flag
                 foreach (var checkableFolder in CheckableFolders.Flatten())
                 {
-                    checkableFolder.Item.HasAllSubFolders = 
-                        checkableFolder.IsChecked == true && 
+                    checkableFolder.Item.HasAllSubFolders =
+                        checkableFolder.IsChecked == true &&
                         checkableFolder.Children.All(child => child.IsChecked == true); //need this check as well because folder might also be checked without any children
                 }
 

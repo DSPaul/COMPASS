@@ -255,16 +255,17 @@ namespace COMPASS.Services
         /// <summary>
         /// Allow the user to select multiple folders using a dialog
         /// </summary>
+        /// <param name="selectedPaths"> the selected Paths </param>
         /// <returns> Ilist with selected paths, empty list if canceled/failed / whatever </returns>
-        public static string[] PickFolders()
+        public static bool TryPickFolders(out string[] selectedPaths)
         {
             VistaFolderBrowserDialog openFolderDialog = new()
             {
                 Multiselect = true,
             };
             var dialogResult = openFolderDialog.ShowDialog();
-            if (dialogResult == false) return Array.Empty<string>();
-            return openFolderDialog.SelectedPaths;
+            selectedPaths = openFolderDialog.SelectedPaths;
+            return dialogResult == true;
         }
 
         public static async Task<CodexCollection?> OpenSatchel(string? path = null)
