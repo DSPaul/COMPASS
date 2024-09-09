@@ -8,6 +8,6 @@ namespace COMPASS.Models.CodexProperties
             base(propName, label)
         { }
 
-        public override bool IsEmpty(Codex codex) => !File.Exists(GetProp(codex));
+        public override bool IsEmpty(IHasCodexMetadata codex) => !File.Exists(GetProp(codex));
     }
 }

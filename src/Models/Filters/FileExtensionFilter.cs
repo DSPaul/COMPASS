@@ -13,6 +13,6 @@ namespace COMPASS.Models.Filters
 
         public override string Content => $"File Type: {FilterValue}";
 
-        public override bool Apply(Codex codex) => FilterValue is string extension && codex.FileType == extension;
+        public override bool Apply(Codex codex) => FilterValue is string extension && codex.Sources.FileType == extension;
     }
 }

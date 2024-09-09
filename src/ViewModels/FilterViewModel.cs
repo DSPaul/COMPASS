@@ -281,14 +281,14 @@ namespace COMPASS.ViewModels
                 if (!String.IsNullOrEmpty(c.Publisher)) PublisherList.AddIfMissing(c.Publisher);
 
                 //Populate FileType Collection
-                if (!String.IsNullOrEmpty(c.FileType)) FileTypeList.AddIfMissing(c.FileType);
+                if (!String.IsNullOrEmpty(c.Sources.FileType)) FileTypeList.AddIfMissing(c.Sources.FileType);
 
                 //Populate Domain Collection
-                if (c.HasOnlineSource())
+                if (c.Sources.HasOnlineSource())
                 {
-                    string domain = Uri.IsWellFormedUriString(c.SourceURL, UriKind.Absolute) ?
-                        new Uri(c.SourceURL).Host :
-                        c.SourceURL;
+                    string domain = Uri.IsWellFormedUriString(c.Sources.SourceURL, UriKind.Absolute) ?
+                        new Uri(c.Sources.SourceURL).Host :
+                        c.Sources.SourceURL;
                     if (!string.IsNullOrEmpty(domain)) DomainList.AddIfMissing(domain);
                 }
             }

@@ -10,6 +10,6 @@ namespace COMPASS.Models.Filters
 
         public override Color BackgroundColor => Colors.DarkSeaGreen;
         public override string Content => "Has ISBN";
-        public override bool Apply(Codex codex) => !String.IsNullOrEmpty(codex.ISBN);
+        public override bool Apply(Codex codex) => !String.IsNullOrEmpty(codex.Sources.ISBN);
     }
 }

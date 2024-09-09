@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace COMPASS.ViewModels
@@ -179,7 +178,7 @@ namespace COMPASS.ViewModels
         public class SelectableCodex : SelectableWithPathHelper
         {
             private CollectionContentSelectorViewModel _vm;
-            public SelectableCodex(Codex codex, CollectionContentSelectorViewModel vm) : base(codex.Path)
+            public SelectableCodex(Codex codex, CollectionContentSelectorViewModel vm) : base(codex.Sources.Path)
             {
                 Codex = codex;
                 _vm = vm;

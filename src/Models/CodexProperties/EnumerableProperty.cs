@@ -10,14 +10,14 @@ namespace COMPASS.Models.CodexProperties
             base(propName, label)
         { }
 
-        public override bool IsEmpty(Codex codex)
+        public override bool IsEmpty(IHasCodexMetadata codex)
         {
             IEnumerable<T>? value = GetProp(codex);
 
             return !value.SafeAny();
         }
 
-        public override bool HasNewValue(Codex toEvaluate, Codex reference)
+        public override bool HasNewValue(IHasCodexMetadata toEvaluate, IHasCodexMetadata reference)
         {
             var newVal = GetProp(toEvaluate);
             if (!newVal.SafeAny())

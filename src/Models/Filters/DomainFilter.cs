@@ -13,6 +13,9 @@ namespace COMPASS.Models.Filters
 
         public override string Content => $"From: {FilterValue}";
 
-        public override bool Apply(Codex codex) => FilterValue is string domain && codex.HasOnlineSource() && codex.SourceURL.Contains(domain);
+        public override bool Apply(Codex codex) =>
+            FilterValue is string domain &&
+            codex.Sources.HasOnlineSource() &&
+            codex.Sources.SourceURL.Contains(domain);
     }
 }

@@ -170,7 +170,7 @@
                                     Visibility="{Binding Source={StaticResource LayoutProxy}, Path=Data.Preferences.ShowISBN, Converter={StaticResource ToVisibilityConverter}}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <TextBlock Text ="{Binding ISBN}" Style="{StaticResource default}"/>
+                        <TextBlock Text ="{Binding Sources.ISBN}" Style="{StaticResource default}"/>
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>

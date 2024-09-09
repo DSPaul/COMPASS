@@ -6,7 +6,7 @@
             base(propName, label)
         { }
 
-        public override void SetProp(Codex target, Codex source)
+        public override void SetProp(IHasCodexMetadata target, IHasCodexMetadata source)
         {
             target.CoverArt = source.CoverArt;
             target.Thumbnail = source.Thumbnail;

@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.XmlDtos;
 using COMPASS.Services;
 using COMPASS.Tools;
 using FuzzySharp;
@@ -20,23 +21,23 @@ namespace COMPASS.ViewModels.Sources
         public override MetaDataSource Source => MetaDataSource.File;
 
         public override Task<bool> FetchCover(Codex codex) => throw new System.NotImplementedException();
-        public override bool IsValidSource(Codex codex) => codex.HasOfflineSource();
+        public override bool IsValidSource(SourceSet sources) => sources.HasOfflineSource();
 
-        public override Task<Codex> GetMetaData(Codex codex)
+        public override Task<CodexDto> GetMetaData(SourceSet sources)
         {
-            // Work on a copy
-            codex = new Codex(codex);
+            // Use a codex dto to tranfer the data
+            CodexDto codex = new();
 
             // Title
-            codex.Title = Path.GetFileNameWithoutExtension(codex.Path);
+            codex.Title = Path.GetFileNameWithoutExtension(sources.Path);
 
             // Tags based on file path
             foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)
             {
-                Debug.Assert(IsValidSource(codex), "Codex without path was referenced in file source");
-                if (codex.Path!.Contains(folderTagPair.Folder))
+                Debug.Assert(IsValidSource(sources), "Codex without path was referenced in file source");
+                if (sources.Path!.Contains(folderTagPair.Folder))
                 {
-                    App.SafeDispatcher.Invoke(() => codex.Tags.AddIfMissing(folderTagPair.Tag!));
+                    codex.TagIDs.AddIfMissing(folderTagPair.Tag!.ID);
                 }
             }
 
@@ -44,10 +45,10 @@ namespace COMPASS.ViewModels.Sources
             {
                 foreach (Tag tag in MainViewModel.CollectionVM.CurrentCollection.AllTags)
                 {
-                    var splitFolders = codex.Path!.Split("\\");
+                    var splitFolders = sources.Path!.Split("\\");
                     if (splitFolders.Any(folder => Fuzz.Ratio(folder.ToLowerInvariant(), tag.Content.ToLowerInvariant()) > 90))
                     {
-                        App.SafeDispatcher.Invoke(() => codex.Tags.AddIfMissing(tag));
+                        codex.TagIDs.AddIfMissing(tag.ID);
                     }
                 }
             }

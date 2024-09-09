@@ -500,18 +500,18 @@ namespace COMPASS.Models
                 }
 
                 //move user files included in import
-                if (codex.Path.StartsWith(source.UserFilesPath) && File.Exists(codex.Path))
+                if (codex.Sources.Path.StartsWith(source.UserFilesPath) && File.Exists(codex.Sources.Path))
                 {
                     try
                     {
-                        string newPath = codex.Path.Replace(source.UserFilesPath, UserFilesPath);
+                        string newPath = codex.Sources.Path.Replace(source.UserFilesPath, UserFilesPath);
                         string? newDir = Path.GetDirectoryName(newPath);
                         if (newDir != null)
                         {
                             Directory.CreateDirectory(newDir);
                         }
-                        File.Copy(codex.Path, newPath, true);
-                        codex.Path = newPath;
+                        File.Copy(codex.Sources.Path, newPath, true);
+                        codex.Sources.Path = newPath;
                     }
                     catch (Exception ex)
                     {
@@ -555,8 +555,8 @@ namespace COMPASS.Models
         public void BanishCodices(IList<Codex> toBanish)
         {
             if (toBanish is null) return;
-            IEnumerable<string> toBanishPaths = toBanish.Select(codex => codex.Path);
-            IEnumerable<string> toBanishURLs = toBanish.Select(codex => codex.SourceURL);
+            IEnumerable<string> toBanishPaths = toBanish.Select(codex => codex.Sources.Path);
+            IEnumerable<string> toBanishURLs = toBanish.Select(codex => codex.Sources.SourceURL);
             IEnumerable<string> toBanishStrings = toBanishPaths
                 .Concat(toBanishURLs)
                 .Where(s => !String.IsNullOrWhiteSpace(s))

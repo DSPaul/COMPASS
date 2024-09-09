@@ -23,9 +23,7 @@ namespace COMPASS.Services
         {
             Codex MetaDatalessCodex = new()
             {
-                Path = codex.Path,
-                SourceURL = codex.SourceURL,
-                ISBN = codex.ISBN,
+                Sources = codex.Sources,
                 ID = codex.ID,
             };
 
@@ -60,7 +58,7 @@ namespace COMPASS.Services
                 ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                 SourceViewModel? sourceVM = SourceViewModel.GetSourceVM(source);
-                if (sourceVM == null || !sourceVM.IsValidSource(codex)) continue;
+                if (sourceVM == null || !sourceVM.IsValidSource(codex.Sources)) continue;
                 getCoverSuccessful = await sourceVM.FetchCover(MetaDatalessCodex);
                 if (getCoverSuccessful) break;
             }

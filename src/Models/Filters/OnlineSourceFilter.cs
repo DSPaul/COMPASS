@@ -7,7 +7,7 @@ namespace COMPASS.Models.Filters
         public OnlineSourceFilter() : base(FilterType.OnlineSource)
         { }
 
-        public override bool Apply(Codex codex) => codex.HasOnlineSource();
+        public override bool Apply(Codex codex) => codex.Sources.HasOnlineSource();
 
         public override string Content => "Available Online";
         public override Color BackgroundColor => Colors.DarkSeaGreen;

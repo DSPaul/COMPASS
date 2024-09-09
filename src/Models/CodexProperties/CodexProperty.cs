@@ -27,9 +27,9 @@ namespace COMPASS.Models.CodexProperties
 
         #region Methods
 
-        public abstract bool IsEmpty(Codex codex);
+        public abstract bool IsEmpty(IHasCodexMetadata codex);
 
-        public abstract void SetProp(Codex target, Codex source);
+        public abstract void SetProp(IHasCodexMetadata target, IHasCodexMetadata source);
 
         /// <summary>
         /// Checks if the codex to evaluated has a newer value for the property than the reference
@@ -37,7 +37,7 @@ namespace COMPASS.Models.CodexProperties
         /// <param name="toEvaluate"></param>
         /// <param name="reference"></param>
         /// <returns></returns>
-        public abstract bool HasNewValue(Codex toEvaluate, Codex reference);
+        public abstract bool HasNewValue(IHasCodexMetadata toEvaluate, IHasCodexMetadata reference);
 
         #endregion
 
@@ -215,18 +215,18 @@ namespace COMPASS.Models.CodexProperties
             base(propName, label)
         { }
 
-        public override bool IsEmpty(Codex codex) => EqualityComparer<T>.Default.Equals(GetProp(codex), default);
+        public override bool IsEmpty(IHasCodexMetadata codex) => EqualityComparer<T>.Default.Equals(GetProp(codex), default);
 
-        public T? GetProp(Codex codex)
+        public T? GetProp(IHasCodexMetadata codex)
         {
             object? value = codex.GetPropertyValue(Name);
             return value == null ? default : (T)value;
         }
 
-        public override void SetProp(Codex target, Codex source)
+        public override void SetProp(IHasCodexMetadata target, IHasCodexMetadata source)
             => target.SetProperty(Name, GetProp(source));
 
-        public override bool HasNewValue(Codex toEvaluate, Codex reference) =>
+        public override bool HasNewValue(IHasCodexMetadata toEvaluate, IHasCodexMetadata reference) =>
             !EqualityComparer<T>.Default.Equals(GetProp(toEvaluate), GetProp(reference));
     }
 }

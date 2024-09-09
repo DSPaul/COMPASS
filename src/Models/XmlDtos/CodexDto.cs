@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 namespace COMPASS.Models.XmlDtos
 {
     [XmlRoot("Codex"), XmlType("Codex")]
-    public class CodexDto
+    public class CodexDto : IHasCodexMetadata
     {
 
         #region COMPASS related Metadata

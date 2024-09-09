@@ -71,9 +71,12 @@ namespace COMPASS.Models.XmlDtos
                 OpenedCount = dto.OpenedCount,
 
                 //Sources
-                SourceURL = dto.SourceURL,
-                Path = dto.Path,
-                ISBN = dto.ISBN,
+                Sources = new SourceSet()
+                {
+                    SourceURL = dto.SourceURL,
+                    Path = dto.Path,
+                    ISBN = dto.ISBN,
+                }
             };
 
             codex.Tags = new(tags.Where(tag => dto.TagIDs.Contains(tag.ID)));
@@ -112,9 +115,9 @@ namespace COMPASS.Models.XmlDtos
                 OpenedCount = model.OpenedCount,
 
                 //Sources
-                SourceURL = model.SourceURL.Sanitize(),
-                Path = model.Path.Sanitize(),
-                ISBN = model.ISBN.Sanitize(),
+                SourceURL = model.Sources.SourceURL.Sanitize(),
+                Path = model.Sources.Path.Sanitize(),
+                ISBN = model.Sources.ISBN.Sanitize(),
             };
 
             return dto;

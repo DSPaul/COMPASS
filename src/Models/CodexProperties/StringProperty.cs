@@ -6,6 +6,6 @@
             base(propName, label)
         { }
 
-        public override bool IsEmpty(Codex codex) => string.IsNullOrEmpty(GetProp(codex));
+        public override bool IsEmpty(IHasCodexMetadata codex) => string.IsNullOrEmpty(GetProp(codex));
     }
 }

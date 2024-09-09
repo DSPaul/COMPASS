@@ -8,7 +8,7 @@ namespace COMPASS.Models.CodexProperties
             base(propName, label)
         { }
 
-        public override bool IsEmpty(Codex codex)
+        public override bool IsEmpty(IHasCodexMetadata codex)
         {
             DateTime? value = GetProp(codex);
             return value is null || value == DateTime.MinValue;

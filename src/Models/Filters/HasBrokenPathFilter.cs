@@ -12,6 +12,7 @@ namespace COMPASS.Models.Filters
 
         public override string Content => "Has broken path";
 
-        public override bool Apply(Codex codex) => codex.HasOfflineSource() && !Path.Exists(codex.Path);
+        public override bool Apply(Codex codex) =>
+            codex.Sources.HasOfflineSource() && !Path.Exists(codex.Sources.Path);
     }
 }

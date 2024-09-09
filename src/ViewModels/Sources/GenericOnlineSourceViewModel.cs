@@ -1,5 +1,6 @@
 ﻿using COMPASS.Models;
 using COMPASS.Models.Enums;
+using COMPASS.Models.XmlDtos;
 using COMPASS.Services;
 using COMPASS.Tools;
 using HtmlAgilityPack;
@@ -14,25 +15,25 @@ namespace COMPASS.ViewModels.Sources
         public override MetaDataSource Source => MetaDataSource.GenericURL;
 
         public override Task<bool> FetchCover(Codex codex) => throw new NotImplementedException();
-        public override bool IsValidSource(Codex codex) => codex.HasOnlineSource();
+        public override bool IsValidSource(SourceSet sources) => sources.HasOnlineSource();
 
-        public override async Task<Codex> GetMetaData(Codex codex)
+        public override async Task<CodexDto> GetMetaData(SourceSet sources)
         {
-            // Work on a copy
-            codex = new Codex(codex);
-
             ProgressVM.AddLogEntry(new(Severity.Info, $"Extracting metadata from website header"));
 
             // Scrape metadata
-            Debug.Assert(IsValidSource(codex), "Codex without URL was used in Generic URL source");
-            HtmlDocument? doc = await IOService.ScrapeSite(codex.SourceURL);
+            Debug.Assert(IsValidSource(sources), "Codex without URL was used in Generic URL source");
+            HtmlDocument? doc = await IOService.ScrapeSite(sources.SourceURL);
             HtmlNode? src = doc?.DocumentNode;
 
             if (src is null)
             {
-                ProgressVM.AddLogEntry(new(Severity.Error, $"Could not reach {codex.SourceURL}"));
-                return codex;
+                ProgressVM.AddLogEntry(new(Severity.Error, $"Could not reach {sources.SourceURL}"));
+                return new();
             }
+
+            // Use a codex dto to tranfer the data
+            CodexDto codex = new();
 
             // Title 
             codex.Title = src.SelectSingleNode("//meta[@property='og:title']")?.GetAttributeValue("content", null) ?? codex.Title;
@@ -52,7 +53,7 @@ namespace COMPASS.ViewModels.Sources
             {
                 if (codex.SourceURL.Contains(folderTagPair.Folder))
                 {
-                    codex.Tags.AddIfMissing(folderTagPair.Tag!);
+                    codex.TagIDs.AddIfMissing(folderTagPair.Tag!.ID);
                 }
             }
             return codex;

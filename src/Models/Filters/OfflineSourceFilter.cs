@@ -9,6 +9,6 @@ namespace COMPASS.Models.Filters
 
         public override string Content => "Available Offline";
         public override Color BackgroundColor => Colors.DarkSeaGreen;
-        public override bool Apply(Codex codex) => codex.HasOfflineSource();
+        public override bool Apply(Codex codex) => codex.Sources.HasOfflineSource();
     }
 }

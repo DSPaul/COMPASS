@@ -134,25 +134,25 @@ namespace COMPASS.ViewModels
 
                 //Change Codex Path to relative and add those files if the options is set
                 var itemsWithOfflineSource = ContentSelectorVM.CuratedCollection.AllCodices
-                    .Where(codex => codex.HasOfflineSource())
+                    .Where(codex => codex.Sources.HasOfflineSource())
                     .ToList();
-                string commonFolder = IOService.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Path).ToList());
+                string commonFolder = IOService.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Sources.Path).ToList());
                 foreach (Codex codex in itemsWithOfflineSource)
                 {
-                    string relativePath = codex.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
+                    string relativePath = codex.Sources.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
 
                     //Add the file
-                    if (IncludeFiles && File.Exists(codex.Path))
+                    if (IncludeFiles && File.Exists(codex.Sources.Path))
                     {
-                        archive.AddEntry(Path.Combine("Files", relativePath), codex.Path);
+                        archive.AddEntry(Path.Combine("Files", relativePath), codex.Sources.Path);
                         //keep the relative path, will be used during import to link the included files
-                        codex.Path = relativePath;
+                        codex.Sources.Path = relativePath;
                     }
 
                     //absolute path is user specific, so counts as personal data 
                     if (ContentSelectorVM.RemovePersonalData)
                     {
-                        codex.Path = relativePath;
+                        codex.Sources.Path = relativePath;
                     }
 
                     //Add cover art

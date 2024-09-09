@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace COMPASS.Models
 {
-    public class Codex : ObservableObject, IHasID
+    public class Codex : ObservableObject, IHasID, IHasCodexMetadata
     {
         #region Constructors
 
@@ -226,61 +226,12 @@ namespace COMPASS.Models
 
         #endregion
 
-        #region Sources
-        private string _sourceURL = "";
-        public string SourceURL
+        private SourceSet _sources = new();
+        public SourceSet Sources
         {
-            get => _sourceURL;
-            set
-            {
-                if (value.StartsWith("www."))
-                {
-                    value = @"https://" + value;
-                }
-                SetProperty(ref _sourceURL, value);
-            }
+            get => _sources;
+            set => SetProperty(ref _sources, value);
         }
-
-        private string _path = "";
-        public string Path
-        {
-            get => _path;
-            set => SetProperty(ref _path, value);
-        }
-
-        private string _isbn = "";
-        public string ISBN
-        {
-            get => _isbn;
-            set => SetProperty(ref _isbn, value);
-        }
-        #endregion
-
-        public string? FileType
-        {
-            get
-            {
-                if (HasOfflineSource())
-                {
-                    return System.IO.Path.GetExtension(Path);
-                }
-
-                else if (HasOnlineSource())
-                {
-                    // online sources can also also point to file 
-                    // either hosted on cloud service like Google drive 
-                    // or services like homebrewery are always .pdf
-                    // skip this for now though
-                    return "webpage";
-                }
-
-                else
-                {
-                    return null;
-                }
-            }
-        }
-        public string FileName => System.IO.Path.GetFileName(Path);
         #endregion
 
         #region Methods
@@ -288,11 +239,10 @@ namespace COMPASS.Models
         {
             Title = c.Title;
             SortingTitle = c.UserDefinedSortingTitle; //copy field instead of property, or it will copy _title
-            Path = c.Path;
+            Sources = c.Sources.Copy();
             Authors = new(c.Authors);
             Publisher = c.Publisher;
             Version = c.Version;
-            SourceURL = c.SourceURL;
             ID = c.ID;
             CoverArt = c.CoverArt;
             Thumbnail = c.Thumbnail;
@@ -306,7 +256,6 @@ namespace COMPASS.Models
             DateAdded = c.DateAdded;
             Favorite = c.Favorite;
             OpenedCount = c.OpenedCount;
-            ISBN = c.ISBN;
         }
 
         public void RefreshThumbnail() => OnPropertyChanged(nameof(Thumbnail));
@@ -327,9 +276,6 @@ namespace COMPASS.Models
             if (o == Authors) OnPropertyChanged(nameof(AuthorsAsString));
         }
         #endregion
-        public bool HasOfflineSource() => !String.IsNullOrWhiteSpace(Path);
-
-        public bool HasOnlineSource() => !String.IsNullOrWhiteSpace(SourceURL);
 
         public static readonly List<CodexProperty> MedataProperties = new()
         {

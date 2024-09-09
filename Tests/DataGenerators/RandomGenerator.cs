@@ -83,9 +83,12 @@ namespace Tests.DataGenerators
                 Rating = random.Next(0, 6),
                 Favorite = GetRandomBool(falseFreq: 10),
                 OpenedCount = random.Next(100),
-                ISBN = GetRandomISBN(),
-                Path = GetRandomBool() ? GetRandomPath() : String.Empty,       //randomly decide if it has a path
-                SourceURL = GetRandomBool() ? GetRandomUrl() : String.Empty,   //randomly decide if it has a url
+                Sources = new()
+                {
+                    ISBN = GetRandomISBN(),
+                    Path = GetRandomBool() ? GetRandomPath() : String.Empty,       //randomly decide if it has a path
+                    SourceURL = GetRandomBool() ? GetRandomUrl() : String.Empty,   //randomly decide if it has a url
+                }
             };
 
             codex.DateAdded = GetRandomDate((DateTime)codex.ReleaseDate);
