@@ -454,7 +454,7 @@
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="{Binding Label}" VerticalAlignment="Top"/>
                                                 <controls:PriorityControl Grid.Row="0" Grid.Column="1" 
-                                                                          ItemsSource="{Binding SourcePriorityNamed, Mode=TwoWay}"/>
+                                                                          ItemsSource="{Binding SourcePriorityNamed, Mode=OneWay}"/>
                                                 <StackPanel Grid.Row="0" Grid.Column="2"  Margin="10,0,20,0">
                                                     <RadioButton Content="Never" 
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource ObjectToBoolConverter}, 

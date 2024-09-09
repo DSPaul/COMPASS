@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using COMPASS.Models.CodexProperties;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -122,6 +124,148 @@ namespace COMPASS.Models.XmlDtos
 
             return dto;
         }
+
+        #endregion
+
+        #region Preferences
+
+        public static Preferences.Preferences ToModel(this PreferencesDto dto)
+        {
+            var model = new Preferences.Preferences()
+            {
+                OpenCodexPriority = MapCodexPriorities(dto.OpenFilePriorityIDs),
+                CodexProperties = dto.CodexProperties.ToModels(),
+                ListLayoutPreferences = dto.ListLayoutPreferences,
+                CardLayoutPreferences = dto.CardLayoutPreferences,
+                TileLayoutPreferences = dto.TileLayoutPreferences,
+                HomeLayoutPreferences = dto.HomeLayoutPreferences,
+                AutoLinkFolderTagSameName = dto.AutoLinkFolderTagSameName,
+                UIState = dto.UIState,
+            };
+            return model;
+        }
+
+        public static PreferencesDto ToDto(this Preferences.Preferences prefs)
+        {
+            PreferencesDto dto = new()
+            {
+                OpenFilePriorityIDs = prefs.OpenCodexPriority.Select(pf => pf.ID).ToList(),
+                CodexProperties = prefs.CodexProperties.Select(prop => prop.ToDto()).ToList(),
+                ListLayoutPreferences = prefs.ListLayoutPreferences,
+                CardLayoutPreferences = prefs.CardLayoutPreferences,
+                TileLayoutPreferences = prefs.TileLayoutPreferences,
+                HomeLayoutPreferences = prefs.HomeLayoutPreferences,
+                UIState = prefs.UIState,
+                AutoLinkFolderTagSameName = prefs.AutoLinkFolderTagSameName,
+            };
+
+            return dto;
+        }
+
+        /// <summary>
+        /// Map Codex open priority from dto
+        /// </summary>
+        /// <param name="priorityIds"></param>
+        /// <returns></returns>
+        private static ObservableCollection<PreferableFunction<Codex>> MapCodexPriorities(List<int>? priorityIds)
+        {
+            if (priorityIds is null)
+            {
+                return new(Preferences.Preferences.OpenCodexFunctions);
+            }
+
+            return new(Preferences.Preferences.OpenCodexFunctions.OrderBy(pf =>
+            {
+                //if preferences doesn't have file priorities, put them in default order
+                if (priorityIds is null)
+                {
+                    return pf.ID;
+                }
+
+                //get index in user preference
+                int index = priorityIds.IndexOf(pf.ID);
+
+                //if it was not found in preference, use its default ID
+                if (index < 0)
+                {
+                    return pf.ID;
+                }
+
+                return index;
+            }));
+        }
+
+        /// <summary>
+        /// Map codex metadata properties from dto
+        /// </summary>
+        /// <param name="propertyDtos"></param>
+        /// <returns></returns>
+        private static List<CodexProperty> ToModels(this List<CodexPropertyDto> propertyDtos)
+        {
+#pragma warning disable CS0618 // Type or member "Label" is obsolete
+
+            //In versions 1.6.0 and lower, label was stored instead of name
+            var useLabel = propertyDtos.All(prop => string.IsNullOrEmpty(prop.Name) && !string.IsNullOrEmpty(prop.Label));
+            if (useLabel)
+            {
+                for (int i = 0; i < propertyDtos.Count; i++)
+                {
+                    CodexPropertyDto propDto = propertyDtos[i];
+                    var foundProp = Codex.MedataProperties.Find(p => p.Label == propDto.Label);
+                    if (foundProp != null)
+                    {
+                        propDto.Name = foundProp.Name;
+                    }
+                }
+            }
+#pragma warning restore CS0618 // Type or member "Label" is obsolete
+
+            var props = new List<CodexProperty>();
+
+            foreach (var defaultProp in Codex.MedataProperties)
+            {
+                CodexPropertyDto? propDto = propertyDtos.Find(p => p.Name == defaultProp.Name);
+                // Add Preferences from defaults if they weren't found on the loaded Preferences
+                CodexProperty? prop = propDto is null ? defaultProp : propDto.ToModel();
+                if (prop is not null)
+                {
+                    props.Add(prop);
+                }
+            }
+
+            return props;
+        }
+
+        #region CodexProperty
+        public static CodexProperty? ToModel(this CodexPropertyDto propDto)
+        {
+            var prop = CodexProperty.GetInstance(propDto.Name);
+
+            if (prop == null)
+            {
+                return null;
+            }
+
+            prop.SourcePriority = propDto.SourcePriority;
+            prop.OverwriteMode = propDto.OverwriteMode;
+
+            return prop;
+        }
+
+        public static CodexPropertyDto ToDto(this CodexProperty prop)
+        {
+            CodexPropertyDto dto = new()
+            {
+                Name = prop.Name,
+                OverwriteMode = prop.OverwriteMode,
+                //Use order from NameMetaDataSources (which was reordered by user)
+                SourcePriority = prop.SourcePriorityNamed.Select(namedSource => namedSource.Source).ToList(),
+            };
+
+            return dto;
+        }
+
+        #endregion
 
         #endregion
     }

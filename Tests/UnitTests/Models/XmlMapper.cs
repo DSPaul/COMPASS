@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.CodexProperties;
 using COMPASS.Models.XmlDtos;
 using System.Text.Json;
 using Tests.DataGenerators;
@@ -11,7 +12,10 @@ namespace Tests.UnitTests.Models
         [TestMethod]
         public void MapCodex()
         {
-            AssertAllPropMapped(typeof(Codex), typeof(CodexDto));
+            // Sources are 3 props in dto, but only 1 in model
+            int expectedDiff = -2;
+
+            AssertAllPropMapped(typeof(Codex), typeof(CodexDto), expectedDiff);
 
             Codex codex = RandomGenerator.GetRandomCodex();
 
@@ -23,19 +27,36 @@ namespace Tests.UnitTests.Models
                 JsonSerializer.Serialize(codex));
         }
 
-        private void AssertAllPropMapped(Type modelType, Type dtoType)
+        [TestMethod]
+        public void MapCodexProperty()
+        {
+            int expectedDiff = 0;
+
+            AssertAllPropMapped(typeof(CodexProperty), typeof(CodexPropertyDto), expectedDiff);
+
+            CodexProperty codexProp = CodexProperty.GetInstance(nameof(Codex.Title))!;
+
+            CodexPropertyDto dto = codexProp.ToDto();
+            CodexProperty reconstrution = dto.ToModel()!;
+
+            Assert.AreEqual(
+                JsonSerializer.Serialize(reconstrution),
+                JsonSerializer.Serialize(codexProp));
+        }
+
+        private void AssertAllPropMapped(Type modelType, Type dtoType, int expectedDiff)
         {
             var modelPropsCount = modelType
                .GetProperties()
-               .Where(prop => prop.CanWrite)
+               .Where(prop => prop.CanWrite && !prop.IsDefined(typeof(ObsoleteAttribute), false))
                .Count();
 
             var dtoPropCount = dtoType
                 .GetProperties()
-                .Where(prop => prop.CanWrite)
+                .Where(prop => prop.CanWrite && !prop.IsDefined(typeof(ObsoleteAttribute), false))
                 .Count();
 
-            Assert.AreEqual(modelPropsCount, dtoPropCount);
+            Assert.AreEqual(modelPropsCount, dtoPropCount + expectedDiff);
         }
     }
 }

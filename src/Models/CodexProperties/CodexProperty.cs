@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Models.XmlDtos;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Sources;
 using System.Collections.Generic;
@@ -15,13 +14,14 @@ namespace COMPASS.Models.CodexProperties
             Name = propName;
             Label = label ?? propName;
             _defaultSourcePriority = GetDefaultSources(propName);
+            UpdateSources();
         }
 
         #region Properties
 
         public string Name { get; init; }
 
-        public string Label { get; init; }
+        public string Label { get; }
 
         #endregion
 
@@ -49,11 +49,8 @@ namespace COMPASS.Models.CodexProperties
         /// <summary>
         /// Ordered List of sources that can set this prop, named for data binding
         /// </summary>
-        public ObservableCollection<NamedMetaDataSource> SourcePriorityNamed
-        {
-            get => _sourcePriorityNamed ??= new(SourcePriority.Select(source => new NamedMetaDataSource(source)));
-            set => SourcePriority = value.Select(namedSource => namedSource.Source).ToList();
-        }
+        public ObservableCollection<NamedMetaDataSource> SourcePriorityNamed =>
+            _sourcePriorityNamed ??= new(SourcePriority.Select(source => new NamedMetaDataSource(source)));
 
         private List<MetaDataSource> _sourcePriority = new();
         /// <summary>
@@ -93,19 +90,6 @@ namespace COMPASS.Models.CodexProperties
             SourcePriority.RemoveAll(source => !_defaultSourcePriority.Contains(source));
         }
 
-        public CodexPropertyDto ToDto()
-        {
-            CodexPropertyDto dto = new()
-            {
-                Name = Name,
-                OverwriteMode = OverwriteMode,
-                //Use order from NameMetaDataSources (which was reordered by user)
-                SourcePriority = SourcePriorityNamed.Select(namedSource => namedSource.Source).ToList(),
-            };
-
-            return dto;
-        }
-
         #endregion
 
         #region Factory
@@ -123,21 +107,6 @@ namespace COMPASS.Models.CodexProperties
             nameof(Codex.CoverArt) => new CoverArtProperty(nameof(Codex.CoverArt), label: "Cover Art"),
             _ => null //could occur when a new preference file with new props is loaded into an older version of compass
         };
-
-        public static CodexProperty? FromDto(CodexPropertyDto propDto)
-        {
-            var prop = GetInstance(propDto.Name);
-
-            if (prop == null)
-            {
-                return null;
-            }
-
-            prop.SourcePriority = propDto.SourcePriority;
-            prop.OverwriteMode = propDto.OverwriteMode;
-
-            return prop;
-        }
 
         private static List<MetaDataSource> GetDefaultSources(string propName) => propName switch
         {
