@@ -443,7 +443,7 @@ namespace COMPASS.ViewModels
 
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Always || prop.IsEmpty(codex))
                 {
-                    prop.SetProp(codex, preferedMetadata);
+                    prop.SetProp(codex, preferedMetadata.ToModel(MainViewModel.CollectionVM.CurrentCollection.AllTags));
                 }
                 else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask && prop.HasNewValue(preferedMetadata, codex))
                 {

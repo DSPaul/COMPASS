@@ -186,7 +186,7 @@ namespace COMPASS.Models.CodexProperties
 
         public override bool IsEmpty(IHasCodexMetadata codex) => EqualityComparer<T>.Default.Equals(GetProp(codex), default);
 
-        public T? GetProp(IHasCodexMetadata codex)
+        public virtual T? GetProp(IHasCodexMetadata codex)
         {
             object? value = codex.GetPropertyValue(Name);
             return value == null ? default : (T)value;
