@@ -18,7 +18,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -163,36 +162,6 @@ namespace COMPASS.Services
             }
         }
 
-        //based on https://seattlesoftware.wordpress.com/2008/09/11/hexadecimal-value-0-is-an-invalid-character/
-        /// <summary>
-        /// Remove illegal XML characters from a string.
-        /// </summary>
-        public static string SanitizeXmlString(string xml)
-        {
-            if (xml is null) { throw new ArgumentNullException(nameof(xml)); }
-
-            StringBuilder buffer = new(xml.Length);
-            foreach (char c in xml.Where(c => IsLegalXmlChar(c)))
-            {
-                buffer.Append(c);
-            }
-            return buffer.ToString();
-        }
-
-        /// <summary>
-        /// Whether a given character is allowed by XML 1.0.
-        /// </summary>
-        public static bool IsLegalXmlChar(int character) => character switch
-        {
-            0x9 => true, // '\t' == 9 
-            0xA => true, // '\n' == 10         
-            0xD => true, // '\r' == 13        
-            (>= 0x20) and (<= 0xD7FF) => true,
-            (>= 0xE000) and (<= 0xFFFD) => true,
-            (>= 0x10000) and (<= 0x10FFFF) => true,
-            _ => false
-        };
-
         #endregion
 
         #region File formats
@@ -255,16 +224,17 @@ namespace COMPASS.Services
         /// <summary>
         /// Allow the user to select multiple folders using a dialog
         /// </summary>
+        /// <param name="selectedPaths"> the selected Paths </param>
         /// <returns> Ilist with selected paths, empty list if canceled/failed / whatever </returns>
-        public static string[] PickFolders()
+        public static bool TryPickFolders(out string[] selectedPaths)
         {
             VistaFolderBrowserDialog openFolderDialog = new()
             {
                 Multiselect = true,
             };
             var dialogResult = openFolderDialog.ShowDialog();
-            if (dialogResult == false) return Array.Empty<string>();
-            return openFolderDialog.SelectedPaths;
+            selectedPaths = openFolderDialog.SelectedPaths;
+            return dialogResult == true;
         }
 
         public static async Task<CodexCollection?> OpenSatchel(string? path = null)

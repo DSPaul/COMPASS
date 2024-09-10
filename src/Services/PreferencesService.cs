@@ -1,10 +1,9 @@
-﻿using COMPASS.Models;
+﻿using COMPASS.Models.CodexProperties;
 using COMPASS.Models.Preferences;
 using COMPASS.Models.XmlDtos;
 using COMPASS.Tools;
 using COMPASS.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
@@ -21,7 +20,7 @@ namespace COMPASS.Services
 
         public string PreferencesFilePath => Path.Combine(SettingsViewModel.CompassDataPath, "Preferences.xml");
 
-        public static object writeLocker = new object();
+        public static object writeLocker = new();
 
         private Preferences? _preferences;
         public Preferences Preferences => _preferences ??= LoadPreferences() ?? new Preferences();
@@ -61,7 +60,7 @@ namespace COMPASS.Services
             catch (Exception ex)
             {
                 Logger.Error($"Failed to save Preferences to {PreferencesFilePath}", ex);
-            }            
+            }
         }
 
         public Preferences? LoadPreferences()
@@ -77,7 +76,7 @@ namespace COMPASS.Services
                 XmlSerializer serializer = new(typeof(PreferencesDto), overrides);
                 if (serializer.Deserialize(reader) is PreferencesDto prefsDto)
                 {
-                    return prefsDto is null ? new() : new(prefsDto);
+                    return prefsDto is null ? new() : prefsDto.ToModel();
                 }
                 else
                 {

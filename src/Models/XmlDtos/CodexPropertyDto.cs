@@ -10,7 +10,7 @@ namespace COMPASS.Models.XmlDtos
     {
         public string Name { get; set; } = string.Empty;
 
-        [Obsolete]
+        [Obsolete("Label is now determined based on the Name")]
         public string Label { get; set; } = string.Empty;
 
 

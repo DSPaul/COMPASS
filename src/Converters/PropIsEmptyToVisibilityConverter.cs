@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.CodexProperties;
 using System;
 using System.Globalization;
 using System.Windows;
@@ -14,7 +15,7 @@ namespace COMPASS.Converters
             {
                 throw new ArgumentNullException(nameof(parameter));
             }
-            CodexProperty? prop = Codex.Properties.Find(prop => prop.Name == parameter.ToString());
+            CodexProperty? prop = Codex.MedataProperties.Find(prop => prop.Name == parameter.ToString());
 
             if (prop is null)
             {

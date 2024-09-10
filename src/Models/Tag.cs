@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Services;
 using COMPASS.Tools;
 using System;
 using System.Collections.Generic;
@@ -46,11 +45,7 @@ namespace COMPASS.Models
         public string Content
         {
             get => _content;
-            set
-            {
-                value = IOService.SanitizeXmlString(value);
-                SetProperty(ref _content, value, true); //needs to broadcast so TagEdit can validate the input
-            }
+            set => SetProperty(ref _content, value, true); //needs to broadcast so TagEdit can validate the input
         }
 
         // Add [XmlIgnoreAttribute] in a future update and delete the setter

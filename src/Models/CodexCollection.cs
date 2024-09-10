@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Interfaces;
 using COMPASS.Models.Enums;
+using COMPASS.Models.XmlDtos;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels;
@@ -25,7 +26,7 @@ namespace COMPASS.Models
         }
 
         private PreferencesService _preferencesService;
-        private static readonly object writeLocker = new object();
+        private static readonly object writeLocker = new();
 
         public static string CollectionsPath => Path.Combine(SettingsViewModel.CompassDataPath, "Collections");
         public string FullDataPath => Path.Combine(CollectionsPath, DirectoryName);
@@ -136,24 +137,19 @@ namespace COMPASS.Models
             {
                 t.AllTags = AllTags;
             }
-
-            foreach (Codex c in AllCodices)
-            {
-                //set the new object on the open codices
-                c.Tags = new(AllTags.Where(t => c.TagIDs.Contains(t.ID)));
-            }
         }
 
         //Loads AllCodices list from Files
         public bool LoadCodices()
         {
+            CodexDto[] dtos = Array.Empty<CodexDto>();
             if (File.Exists(CodicesDataFilePath))
             {
                 using var reader = new StreamReader(CodicesDataFilePath);
-                XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
+                XmlSerializer serializer = new(typeof(CodexDto[]));
                 try
                 {
-                    AllCodices = serializer.Deserialize(reader) as ObservableCollection<Codex> ?? new();
+                    dtos = serializer.Deserialize(reader) as CodexDto[] ?? Array.Empty<CodexDto>();
                 }
                 catch (Exception ex)
                 {
@@ -161,26 +157,10 @@ namespace COMPASS.Models
                     return false;
                 }
             }
-            else
-            {
-                AllCodices = new();
-            }
 
-            CompleteLoadingCodices();
+            AllCodices = new(dtos.Select(dto => dto.ToModel(AllTags)));
             _loadedCodices = true;
             return true;
-        }
-
-        private void CompleteLoadingCodices()
-        {
-            foreach (Codex c in AllCodices)
-            {
-                //reconstruct tags from ID's
-                c.Tags = new(AllTags.Where(t => c.TagIDs.Contains(t.ID)));
-
-                //double check image location, redundant but got fucked in an update
-                c.SetImagePaths(this);
-            }
         }
 
         public bool LoadInfo()
@@ -314,22 +294,19 @@ namespace COMPASS.Models
                 //Should always load a collection before it can be saved
                 return false;
             }
-            //Copy id's of tags into list for serialisation
-            foreach (Codex codex in AllCodices)
-            {
-                codex.TagIDs = codex.Tags.Select(t => t.ID).ToList();
-            }
+
+            var toSave = AllCodices.Select(c => c.ToDto()).ToList();
 
             try
             {
                 string tempFileName = CodicesDataFilePath + ".tmp";
-                
+
                 lock (writeLocker)
                 {
                     using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
                     {
-                        XmlSerializer serializer = new(typeof(ObservableCollection<Codex>));
-                        serializer.Serialize(writer, AllCodices);
+                        XmlSerializer serializer = new(typeof(List<CodexDto>));
+                        serializer.Serialize(writer, toSave);
                     }
 
                     //if successfully written to the tmp file, move to actual path
@@ -337,7 +314,7 @@ namespace COMPASS.Models
                     File.Delete(tempFileName);
                 }
             }
-            catch(UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException ex)
             {
                 Logger.Error($"Access denied when trying to save Codex Info to {CodicesDataFilePath}", ex);
                 return false;
@@ -523,18 +500,18 @@ namespace COMPASS.Models
                 }
 
                 //move user files included in import
-                if (codex.Path.StartsWith(source.UserFilesPath) && File.Exists(codex.Path))
+                if (codex.Sources.Path.StartsWith(source.UserFilesPath) && File.Exists(codex.Sources.Path))
                 {
                     try
                     {
-                        string newPath = codex.Path.Replace(source.UserFilesPath, UserFilesPath);
+                        string newPath = codex.Sources.Path.Replace(source.UserFilesPath, UserFilesPath);
                         string? newDir = Path.GetDirectoryName(newPath);
                         if (newDir != null)
                         {
                             Directory.CreateDirectory(newDir);
                         }
-                        File.Copy(codex.Path, newPath, true);
-                        codex.Path = newPath;
+                        File.Copy(codex.Sources.Path, newPath, true);
+                        codex.Sources.Path = newPath;
                     }
                     catch (Exception ex)
                     {
@@ -578,8 +555,8 @@ namespace COMPASS.Models
         public void BanishCodices(IList<Codex> toBanish)
         {
             if (toBanish is null) return;
-            IEnumerable<string> toBanishPaths = toBanish.Select(codex => codex.Path);
-            IEnumerable<string> toBanishURLs = toBanish.Select(codex => codex.SourceURL);
+            IEnumerable<string> toBanishPaths = toBanish.Select(codex => codex.Sources.Path);
+            IEnumerable<string> toBanishURLs = toBanish.Select(codex => codex.Sources.SourceURL);
             IEnumerable<string> toBanishStrings = toBanishPaths
                 .Concat(toBanishURLs)
                 .Where(s => !String.IsNullOrWhiteSpace(s))

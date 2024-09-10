@@ -1,15 +1,21 @@
 ﻿using COMPASS.Models;
 using COMPASS.Models.Enums;
+using COMPASS.Models.XmlDtos;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
 using HtmlAgilityPack;
 using ImageMagick;
 using Newtonsoft.Json.Linq;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
@@ -17,27 +23,27 @@ namespace COMPASS.ViewModels.Sources
     public class HomebrewerySourceViewModel : SourceViewModel
     {
         public override MetaDataSource Source => MetaDataSource.Homebrewery;
-        public override bool IsValidSource(Codex codex)
-            => codex.HasOnlineSource() && codex.SourceURL.Contains(new ImportURLViewModel(ImportSource.Homebrewery).ExampleURL);
+        public override bool IsValidSource(SourceSet sources)
+            => sources.HasOnlineSource() && sources.SourceURL.Contains(new ImportURLViewModel(ImportSource.Homebrewery).ExampleURL);
 
-        public override async Task<Codex> GetMetaData(Codex codex)
+        public override async Task<CodexDto> GetMetaData(SourceSet sources)
         {
-            // Work on a copy
-            codex = new Codex(codex);
-
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from Homebrewery"));
-            Debug.Assert(IsValidSource(codex), "Invalid Codex was used in Homebrewery source");
-            HtmlDocument? doc = await IOService.ScrapeSite(codex.SourceURL);
+            Debug.Assert(IsValidSource(sources), "Invalid Codex was used in Homebrewery source");
+            HtmlDocument? doc = await IOService.ScrapeSite(sources.SourceURL);
             HtmlNode? src = doc?.DocumentNode;
 
             if (src is null)
             {
-                ProgressVM.AddLogEntry(new(Severity.Error, $"Could not reach {codex.SourceURL}"));
-                return codex;
+                ProgressVM.AddLogEntry(new(Severity.Error, $"Could not reach {sources.SourceURL}"));
+                return new();
             }
 
-            //Set known metadata
-            codex.Publisher = "Homebrewery";
+            // Use a codex dto to tranfer the data
+            CodexDto codex = new()
+            {
+                Publisher = "Homebrewery"
+            };
 
             //Scrape metadata
             //Select script tag with all metadata in JSON format
@@ -63,23 +69,49 @@ namespace COMPASS.ViewModels.Sources
 
         public override async Task<bool> FetchCover(Codex codex)
         {
-            if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
+            if (String.IsNullOrEmpty(codex.Sources.SourceURL)) { return false; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Homebrewery"));
-            OpenQA.Selenium.WebDriver driver = await WebDriverService.GetWebDriver();
+            WebDriver driver = await WebDriverService.GetWebDriver();
+            WebDriverWait wait = new(driver, TimeSpan.FromSeconds(5));
             try
             {
-                string url = codex.SourceURL.Replace("/share/", "/print/"); //use print API to only show doc itself
-                await Task.Run(() => driver.Navigate().GoToUrl(url));
-                var coverPage = driver.FindElement(OpenQA.Selenium.By.Id("p1"))
-                    ?? throw new Exception($"Couldn't find p1 on {url}");
+                string url = codex.Sources.SourceURL;
+                var frameSelector = By.Id("BrewRenderer");
+                var pageSelector = By.Id("p1");
+
+                await Task.Run(() =>
+                {
+                    driver.Navigate().GoToUrl(url);
+                    wait.Until(ExpectedConditions.ElementExists(frameSelector));
+                });
+
+                wait.Until(ExpectedConditions.ElementExists(frameSelector));
+
+                Thread.Sleep(500);
+
+                var frame = driver.FindElement(frameSelector);
+                Point location = frame.Location;
+
+                await Task.Run(() =>
+                {
+                    wait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(frameSelector));
+                    wait.Until(ExpectedConditions.ElementExists(pageSelector));
+                });
+
+                Thread.Sleep(500);
+
+                var coverPage = driver.FindElement(pageSelector);
+                location.X += coverPage.Location.X;
+                location.Y += coverPage.Location.Y;
+
                 //screenshot and download the image
-                IMagickImage image = CoverService.GetCroppedScreenShot(driver, coverPage);
+                IMagickImage image = CoverService.GetCroppedScreenShot(driver, location, coverPage.Size);
                 CoverService.SaveCover(image, codex);
                 return true;
             }
             catch (Exception ex)
             {
-                string msg = $"Failed to get cover from {codex.SourceURL}";
+                string msg = $"Failed to get cover from {codex.Sources.SourceURL}";
                 Logger.Error(msg, ex);
                 ProgressVM.AddLogEntry(new(Severity.Error, msg));
                 return false;
@@ -89,6 +121,5 @@ namespace COMPASS.ViewModels.Sources
                 driver.Quit();
             }
         }
-
     }
 }

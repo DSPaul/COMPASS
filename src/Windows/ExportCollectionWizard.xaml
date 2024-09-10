@@ -240,7 +240,7 @@
                                                                     <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" DockPanel.Dock="Right"
                                                                      Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}"
                                                                      ToolTip="This file could not be found" Style="{StaticResource ToolTipIcon}"/>
-                                                                    <TextBlock Text ="{Binding Codex.FileName}" Style="{StaticResource default}"/>
+                                                                    <TextBlock Text ="{Binding Codex.Sources.FileName}" Style="{StaticResource default}"/>
                                                                 </DockPanel>
                                                             </DataTemplate>
                                                         </DataGridTemplateColumn.CellTemplate>
@@ -248,7 +248,7 @@
                                                     <DataGridTemplateColumn Header="URL" Width="*" MinWidth="100" CanUserSort="True">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
-                                                                <TextBlock Text ="{Binding Codex.SourceURL}" Style="{StaticResource default}"/>
+                                                                <TextBlock Text ="{Binding Codex.Sources.SourceURL}" Style="{StaticResource default}"/>
                                                             </DataTemplate>
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>

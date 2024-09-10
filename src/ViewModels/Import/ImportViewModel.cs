@@ -72,7 +72,7 @@ namespace COMPASS.ViewModels.Import
             targetCollection ??= MainViewModel.CollectionVM.CurrentCollection;
 
             //filter out codices already in collection & banned paths
-            IEnumerable<string> existingPaths = targetCollection.AllCodices.Select(codex => codex.Path);
+            IEnumerable<string> existingPaths = targetCollection.AllCodices.Select(codex => codex.Sources.Path);
             paths = paths
                 .Except(existingPaths)
                 .Except(targetCollection.Info.BanishedPaths)
@@ -93,7 +93,8 @@ namespace COMPASS.ViewModels.Import
             {
                 ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                Codex newCodex = new(targetCollection) { Path = path };
+                Codex newCodex = new(targetCollection);
+                newCodex.Sources.Path = path;
                 newCodices.Add(newCodex);
                 targetCollection.AllCodices.Add(newCodex);
 

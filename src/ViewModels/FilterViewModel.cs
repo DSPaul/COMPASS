@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
+using COMPASS.Models.Filters;
 using COMPASS.Services;
 using COMPASS.Tools;
-using FuzzySharp;
 using GongSolutions.Wpf.DragDrop;
 using System;
 using System.Collections.Generic;
@@ -91,11 +91,11 @@ namespace COMPASS.ViewModels
 
         public List<Filter> BooleanFilters { get; } = new()
             {
-                new(Filter.FilterType.OfflineSource),
-                new(Filter.FilterType.OnlineSource),
-                new(Filter.FilterType.PhysicalSource),
-                new(Filter.FilterType.HasISBN),
-                new(Filter.FilterType.Favorite),
+                new OfflineSourceFilter(),
+                new OnlineSourceFilter(),
+                new PhysicalSourceFilter(),
+                new HasISBNFilter(),
+                new FavoriteFilter(),
             };
 
         public string SelectedAuthor
@@ -103,7 +103,7 @@ namespace COMPASS.ViewModels
             set
             {
                 if (String.IsNullOrEmpty(value)) return;
-                Filter authorFilter = new(Filter.FilterType.Author, value);
+                Filter authorFilter = new AuthorFilter(value);
                 AddFilter(authorFilter, Include);
             }
         }
@@ -120,7 +120,7 @@ namespace COMPASS.ViewModels
             set
             {
                 if (String.IsNullOrEmpty(value)) return;
-                Filter publisherFilter = new(Filter.FilterType.Publisher, value);
+                Filter publisherFilter = new PublisherFilter(value);
                 AddFilter(publisherFilter, Include);
             }
         }
@@ -137,7 +137,7 @@ namespace COMPASS.ViewModels
             set
             {
                 if (String.IsNullOrEmpty(value)) return;
-                Filter fileExtensionFilter = new(Filter.FilterType.FileExtension, value);
+                Filter fileExtensionFilter = new FileExtensionFilter(value);
                 AddFilter(fileExtensionFilter, Include);
             }
         }
@@ -153,7 +153,7 @@ namespace COMPASS.ViewModels
             set
             {
                 if (String.IsNullOrEmpty(value)) return;
-                Filter domainFilter = new(Filter.FilterType.Domain, value);
+                Filter domainFilter = new DomainFilter(value);
                 AddFilter(domainFilter, Include);
             }
         }
@@ -175,7 +175,7 @@ namespace COMPASS.ViewModels
             {
                 SetProperty(ref _startReleaseDate, value);
                 if (value is null) return;
-                Filter startDateFilter = new(Filter.FilterType.StartReleaseDate, value);
+                Filter startDateFilter = new StartReleaseDateFilter(value.Value);
                 AddFilter(startDateFilter, Include);
             }
         }
@@ -188,7 +188,7 @@ namespace COMPASS.ViewModels
                 SetProperty(ref _stopReleaseDate, value);
                 if (value != null)
                 {
-                    Filter stopDateFilter = new(Filter.FilterType.StopReleaseDate, value);
+                    Filter stopDateFilter = new StopReleaseDateFilter(value.Value);
                     AddFilter(stopDateFilter, Include);
                 }
             }
@@ -204,7 +204,7 @@ namespace COMPASS.ViewModels
                 SetProperty(ref _minRating, value);
                 if (value is > 0 and < 6)
                 {
-                    Filter minRatFilter = new(Filter.FilterType.MinimumRating, value);
+                    Filter minRatFilter = new MinimumRatingFilter(value);
                     AddFilter(minRatFilter, Include);
                 }
             }
@@ -281,14 +281,14 @@ namespace COMPASS.ViewModels
                 if (!String.IsNullOrEmpty(c.Publisher)) PublisherList.AddIfMissing(c.Publisher);
 
                 //Populate FileType Collection
-                if (!String.IsNullOrEmpty(c.FileType)) FileTypeList.AddIfMissing(c.FileType);
+                if (!String.IsNullOrEmpty(c.Sources.FileType)) FileTypeList.AddIfMissing(c.Sources.FileType);
 
                 //Populate Domain Collection
-                if (c.HasOnlineSource())
+                if (c.Sources.HasOnlineSource())
                 {
-                    string domain = Uri.IsWellFormedUriString(c.SourceURL, UriKind.Absolute) ? 
-                        new Uri(c.SourceURL).Host : 
-                        c.SourceURL;
+                    string domain = Uri.IsWellFormedUriString(c.Sources.SourceURL, UriKind.Absolute) ?
+                        new Uri(c.Sources.SourceURL).Host :
+                        c.Sources.SourceURL;
                     if (!string.IsNullOrEmpty(domain)) DomainList.AddIfMissing(domain);
                 }
             }
@@ -312,7 +312,7 @@ namespace COMPASS.ViewModels
             IncludedFilters.Remove(filter);
             ExcludedFilters.Remove(filter);
         }
-        public void RemoveFilterType(Filter.FilterType filterType)
+        public void RemoveFilterType(FilterType filterType)
         {
             IncludedFilters.RemoveAll(filter => filter.Type == filterType);
             ExcludedFilters.RemoveAll(filter => filter.Type == filterType);
@@ -333,8 +333,8 @@ namespace COMPASS.ViewModels
             ObservableCollection<Filter> target = include ? IncludedFilters : ExcludedFilters;
             ObservableCollection<Filter> other = !include ? IncludedFilters : ExcludedFilters;
 
-            //if Filter is unique, remove previous instance(s) of that Filter before adding
-            if (filter.Unique && target.Any(f => f.Type == filter.Type))
+            //if Filter does not allow multiple instances, remove previous instance(s) of that Filter before adding
+            if (!filter.AllowMultiple && target.Any(f => f.Type == filter.Type))
             {
                 target.RemoveAll(f => f.Type == filter.Type);
             }
@@ -347,14 +347,14 @@ namespace COMPASS.ViewModels
         public RelayCommand<string> SearchCommand => _searchCommand ??= new(SearchCommandHelper);
         private void SearchCommandHelper(string? searchTerm)
         {
-            Filter searchFilter = new(Filter.FilterType.Search, searchTerm);
             if (!String.IsNullOrEmpty(searchTerm))
             {
+                Filter searchFilter = new SearchFilter(searchTerm);
                 AddFilter(searchFilter);
             }
             else
             {
-                RemoveFilterType(Filter.FilterType.Search);
+                RemoveFilterType(FilterType.Search);
             }
         }
 
@@ -377,7 +377,7 @@ namespace COMPASS.ViewModels
         private void UpdateIncludedCodices(bool apply = true)
         {
             _includedCodices = new(_allCodices);
-            foreach (Filter.FilterType filterType in Enum.GetValues(typeof(Filter.FilterType)))
+            foreach (FilterType filterType in Enum.GetValues(typeof(FilterType)))
             {
                 // Included codices must match filters of all types so IntersectWith()
                 _includedCodices.IntersectWith(GetFilteredCodicesByType(IncludedFilters, filterType, true));
@@ -387,7 +387,7 @@ namespace COMPASS.ViewModels
         private void UpdateExcludedCodices(bool apply = true)
         {
             _excludedCodices = new();
-            foreach (Filter.FilterType filterType in Enum.GetValues(typeof(Filter.FilterType)))
+            foreach (FilterType filterType in Enum.GetValues(typeof(FilterType)))
             {
                 // Codex is excluded as soon as it matches any excluded filter so UnionWith()
                 _excludedCodices.UnionWith(GetFilteredCodicesByType(ExcludedFilters, filterType, false));
@@ -402,7 +402,7 @@ namespace COMPASS.ViewModels
         /// <param name="filterType"></param>
         /// <param name="include"> Determines whether returned codices should be included or excluded </param>
         /// <returns></returns>
-        private IEnumerable<Codex> GetFilteredCodicesByType(IEnumerable<Filter> filters, Filter.FilterType filterType, bool include)
+        private IEnumerable<Codex> GetFilteredCodicesByType(IEnumerable<Filter> filters, FilterType filterType, bool include)
         {
             List<Filter> relevantFilters = new(filters.Where(filter => filter.Type == filterType));
 
@@ -410,30 +410,9 @@ namespace COMPASS.ViewModels
 
             return filterType switch
             {
-                Filter.FilterType.Search => GetFilteredCodicesBySearch(relevantFilters.First()),
-                Filter.FilterType.Tag => GetFilteredCodicesByTags(relevantFilters, include),
-                _ => _allCodices.Where(codex => relevantFilters.Any(filter => filter.Method(codex)))
+                FilterType.Tag => GetFilteredCodicesByTags(relevantFilters, include),
+                _ => _allCodices.Where(codex => relevantFilters.Any(filter => filter.Apply(codex)))
             };
-        }
-
-        private HashSet<Codex> GetFilteredCodicesBySearch(Filter searchFilter)
-        {
-            string? searchTerm = searchFilter.FilterValue as string;
-
-            if (String.IsNullOrEmpty(searchTerm)) return new(_allCodices);
-
-            HashSet<Codex> includedCodicesBySearch = new();
-            //include acronyms
-            includedCodicesBySearch.UnionWith(_allCodices
-                .Where(f => Fuzz.TokenInitialismRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
-            //include string fragments
-            includedCodicesBySearch.UnionWith(_allCodices
-                .Where(f => f.Title.Contains(SearchTerm, StringComparison.InvariantCultureIgnoreCase)));
-            //include spelling errors
-            includedCodicesBySearch.UnionWith(_allCodices
-                .Where(f => Fuzz.PartialRatio(f.Title.ToLowerInvariant(), SearchTerm) > 80));
-
-            return includedCodicesBySearch;
         }
 
         private HashSet<Codex> GetFilteredCodicesByTags(IEnumerable<Filter> filters, bool include)
@@ -480,7 +459,7 @@ namespace COMPASS.ViewModels
             {
                 // If parent is excluded, so should all the children
                 excludedTags = excludedTags.Flatten().ToList();
-                excludedCodices = new(_allCodices.Where(f => excludedTags.Intersect(f.Tags).Any()));
+                excludedCodices = new(_allCodices.Where(c => excludedTags.Intersect(c.Tags).Any()));
             }
 
             return excludedCodices;
@@ -517,9 +496,16 @@ namespace COMPASS.ViewModels
 
         public void ReFilter(bool force = false)
         {
-            UpdateIncludedCodices(false);
-            UpdateExcludedCodices(false);
-            ApplyFilters(force);
+            try
+            {
+                UpdateIncludedCodices(false);
+                UpdateExcludedCodices(false);
+                ApplyFilters(force);
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn("Something when wrong during filtering", ex);
+            }
         }
         public void RemoveCodex(Codex c)
         {
@@ -564,14 +550,14 @@ namespace COMPASS.ViewModels
             {
                 //Tree to Filter Box
                 case TreeViewNode draggedTreeViewNode:
-                    AddFilter(new(Filter.FilterType.Tag, draggedTreeViewNode.Tag), toIncluded);
+                    AddFilter(new TagFilter(draggedTreeViewNode.Tag), toIncluded);
                     break;
                 //Between include and exclude
                 case Filter draggedFilter:
                     AddFilter(draggedFilter, toIncluded);
                     break;
                 case Tag draggedTag:
-                    AddFilter(new(Filter.FilterType.Tag, draggedTag), toIncluded);
+                    AddFilter(new TagFilter(draggedTag), toIncluded);
                     break;
             }
         }

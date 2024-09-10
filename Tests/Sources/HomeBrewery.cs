@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.XmlDtos;
 using COMPASS.ViewModels;
 using COMPASS.ViewModels.Sources;
 
@@ -29,12 +30,15 @@ namespace Tests.Sources
         {
             Codex codex = new()
             {
-                SourceURL = @"https://homebrewery.naturalcrit.com/share/FegJIEB2KUUo"
+                Sources = new()
+                {
+                    SourceURL = @"https://homebrewery.naturalcrit.com/share/FegJIEB2KUUo"
+                }
             };
 
             var vm = SourceViewModel.GetSourceVM(MetaDataSource.Homebrewery);
 
-            Codex response = await vm!.GetMetaData(codex);
+            CodexDto response = await vm!.GetMetaData(codex.Sources);
 
             Assert.IsNotNull(response);
             Assert.IsFalse(String.IsNullOrEmpty(response.Title));
@@ -47,11 +51,15 @@ namespace Tests.Sources
             //Setup
             var vm = SourceViewModel.GetSourceVM(MetaDataSource.Homebrewery);
             CodexCollection cc = new(TEST_COLLECTION);
+            cc.InitAsNew();
             cc.Load();
 
             Codex codex = new(cc)
             {
-                SourceURL = @"https://homebrewery.naturalcrit.com/share/FegJIEB2KUUo"
+                Sources = new()
+                {
+                    SourceURL = @"https://homebrewery.naturalcrit.com/share/FegJIEB2KUUo"
+                }
             };
 
             //Clear existing data

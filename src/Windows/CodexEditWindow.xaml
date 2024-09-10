@@ -226,9 +226,10 @@
 
                         <StackPanel Orientation="Horizontal" Grid.Row="10">
                             <TextBlock Text="Tags:"/>
-                            <ItemsControl ItemsSource="{Binding TempCodex.Tags}" Background="{x:Null}" BorderBrush="{x:Null}" 
-                                Foreground="Black" FontSize="15" VerticalAlignment="Center" 
-                                ItemTemplate="{StaticResource TagTemplate}">
+                            <ItemsControl ItemsSource="{Binding TempCodex.OrderedTags, Mode=OneWay}" 
+                                          Background="{x:Null}" BorderBrush="{x:Null}" 
+                                          Foreground="Black" FontSize="15" VerticalAlignment="Center" 
+                                          ItemTemplate="{StaticResource TagTemplate}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <WrapPanel Orientation="Horizontal"/>
@@ -298,19 +299,19 @@
                     </Grid.Resources>
                     
                     <TextBlock Text="Path:" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding TempCodex.Path, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" 
+                    <TextBox Text="{Binding TempCodex.Sources.Path, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" 
                              TextWrapping="Wrap" Padding="3" Margin="10"/>
                     <Button Grid.Row="0" Grid.Column="2" Command="{Binding BrowsePathCommand}" 
                             ToolTip="Choose a new Path..." tools:AP.IconKind="FolderOpen"/>
 
                     <TextBlock Text="Source URL:" Grid.Column="0" Grid.Row="1"/>
-                    <TextBox Text="{Binding TempCodex.SourceURL, Mode=TwoWay}" Grid.Column="1" Grid.Row="1" 
+                    <TextBox Text="{Binding TempCodex.Sources.SourceURL, Mode=TwoWay}" Grid.Column="1" Grid.Row="1" 
                              TextWrapping="Wrap" Padding="3"  Margin="10" />
                     <Button Grid.Row="1" Grid.Column="2" Command="{Binding BrowseURLCommand}" 
                             ToolTip="Open URL in Browser" tools:AP.IconKind="Compass"/>
 
                     <TextBlock Text="ISBN:" Grid.Column="0" Grid.Row="2"/>
-                    <TextBox Text="{Binding TempCodex.ISBN, Mode=TwoWay}" Grid.Column="1" Grid.Row="2"
+                    <TextBox Text="{Binding TempCodex.Sources.ISBN, Mode=TwoWay}" Grid.Column="1" Grid.Row="2"
                              TextWrapping="Wrap" Padding="3"  Margin="10"/>
                     <Button  Grid.Row="2" Grid.Column="2" Command="{Binding BrowseISBNCommand}" 
                              ToolTip="Show in Open Library"  tools:AP.IconKind="Library"/>

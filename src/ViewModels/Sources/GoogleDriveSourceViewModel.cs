@@ -1,5 +1,6 @@
 ﻿using COMPASS.Models;
 using COMPASS.Models.Enums;
+using COMPASS.Models.XmlDtos;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
@@ -13,27 +14,30 @@ namespace COMPASS.ViewModels.Sources
     public class GoogleDriveSourceViewModel : SourceViewModel
     {
         public override MetaDataSource Source => MetaDataSource.GoogleDrive;
-        public override bool IsValidSource(Codex codex) =>
-            codex.HasOnlineSource() && codex.SourceURL.Contains(new ImportURLViewModel(ImportSource.GoogleDrive).ExampleURL);
+        public override bool IsValidSource(SourceSet soures) =>
+            soures.HasOnlineSource() && soures.SourceURL.Contains(new ImportURLViewModel(ImportSource.GoogleDrive).ExampleURL);
 
-        public override Task<Codex> GetMetaData(Codex codex)
+        public override Task<CodexDto> GetMetaData(SourceSet sources)
         {
-            // Work on a copy
-            codex = new Codex(codex);
-            Debug.Assert(IsValidSource(codex), "Invalid Codex was used in Google drive source");
-            codex.Publisher = "Google Drive";
+            Debug.Assert(IsValidSource(sources), "Invalid Codex was used in Google drive source");
+
+            // Use a codex dto to tranfer the data
+            CodexDto codex = new()
+            {
+                Publisher = "Google Drive"
+            };
 
             return Task.FromResult(codex);
         }
 
         public override async Task<bool> FetchCover(Codex codex)
         {
-            if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
+            if (String.IsNullOrEmpty(codex.Sources.SourceURL)) { return false; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Google Drive"));
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument? doc = await IOService.ScrapeSite(codex.SourceURL);
+                HtmlDocument? doc = await IOService.ScrapeSite(codex.Sources.SourceURL);
                 HtmlNode? src = doc?.DocumentNode;
                 if (src is null) return false;
 
@@ -45,7 +49,7 @@ namespace COMPASS.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                string msg = $"Failed to get cover from {codex.SourceURL}";
+                string msg = $"Failed to get cover from {codex.Sources.SourceURL}";
                 Logger.Error(msg, ex);
                 ProgressVM.AddLogEntry(new(Severity.Error, msg));
                 return false;

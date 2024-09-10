@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.Preferences;
 using System.Text;
 using System.Windows.Media;
 
@@ -72,19 +73,23 @@ namespace Tests.DataGenerators
             {
                 ID = random.Next(),
                 Title = GetRandomString(),
+                SortingTitle = GetRandomString(),
                 Authors = new(GetRandomList<string>(maxLength: 3)),
                 Publisher = GetRandomString(),
                 Description = GetRandomString(10, 500),
-                Favorite = GetRandomBool(falseFreq: 10),
-                OpenedCount = random.Next(100),
-                ISBN = GetRandomISBN(),
                 ReleaseDate = GetRandomDate(),
-                Path = GetRandomBool() ? GetRandomPath() : String.Empty,       //randomly decide if it has a path
-                SourceURL = GetRandomBool() ? GetRandomUrl() : String.Empty,   //randomly decide if it has a url
                 PageCount = random.Next(1, 400),
                 Version = GetRandomString(minLength: 1, maxLength: 3),
                 PhysicallyOwned = GetRandomBool(),
                 Rating = random.Next(0, 6),
+                Favorite = GetRandomBool(falseFreq: 10),
+                OpenedCount = random.Next(100),
+                Sources = new()
+                {
+                    ISBN = GetRandomISBN(),
+                    Path = GetRandomBool() ? GetRandomPath() : String.Empty,       //randomly decide if it has a path
+                    SourceURL = GetRandomBool() ? GetRandomUrl() : String.Empty,   //randomly decide if it has a url
+                }
             };
 
             codex.DateAdded = GetRandomDate((DateTime)codex.ReleaseDate);
@@ -92,6 +97,59 @@ namespace Tests.DataGenerators
 
             return codex;
         }
+
+        public static Preferences GetRandomPreferences() => new()
+        {
+            AutoLinkFolderTagSameName = true,
+            CodexProperties = Codex.MedataProperties,
+            CardLayoutPreferences = new CardLayoutPreferences()
+            {
+                ShowAuthor = GetRandomBool(),
+                ShowVersion = GetRandomBool(),
+                ShowRating = GetRandomBool(),
+                ShowFileIcons = GetRandomBool(),
+                ShowPublisher = GetRandomBool(),
+                ShowReleaseDate = GetRandomBool(),
+                ShowTags = GetRandomBool(),
+                ShowTitle = GetRandomBool()
+            },
+            HomeLayoutPreferences = new HomeLayoutPreferences()
+            {
+                ShowTitle = GetRandomBool(),
+                TileWidth = 123.456
+            },
+            ListLayoutPreferences = new ListLayoutPreferences()
+            {
+                ShowAuthor = GetRandomBool(),
+                ShowVersion = GetRandomBool(),
+                ShowRating = GetRandomBool(),
+                ShowFileIcons = GetRandomBool(),
+                ShowPublisher = GetRandomBool(),
+                ShowReleaseDate = GetRandomBool(),
+                ShowTags = GetRandomBool(),
+                ShowTitle = GetRandomBool(),
+                ShowDateAdded = GetRandomBool(),
+                ShowEditIcon = GetRandomBool(),
+                ShowISBN = GetRandomBool()
+            },
+            OpenCodexPriority = new(Preferences.OpenCodexFunctions),
+            TileLayoutPreferences = new TileLayoutPreferences()
+            {
+                DisplayedData = TileLayoutPreferences.DataOption.Title,
+                ShowExtraData = true,
+                TileWidth = 654.321
+            },
+            UIState = new UIState()
+            {
+                AutoHideCodexInfoPanel = GetRandomBool(),
+                ShowCodexInfoPanel = GetRandomBool(),
+                SortDirection = System.ComponentModel.ListSortDirection.Descending,
+                SortProperty = "Title",
+                StartupCollection = GetRandomString(),
+                StartupLayout = COMPASS.ViewModels.Layouts.LayoutViewModel.Layout.Card,
+                StartupTab = 3
+            }
+        };
 
         #endregion
 

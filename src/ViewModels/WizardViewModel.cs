@@ -74,7 +74,10 @@ namespace COMPASS.ViewModels
 
         private AsyncRelayCommand? _finishCommand;
         public AsyncRelayCommand FinishCommand => _finishCommand ??= new(Finish, ShowFinishButton);
-        public abstract Task Finish();
+        public virtual Task Finish()
+        {
+            return Task.CompletedTask;
+        }
         public virtual bool ShowFinishButton() => StepCounter == Steps.Count - 1;
 
         public Action? CloseAction;
