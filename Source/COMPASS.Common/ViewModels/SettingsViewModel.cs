@@ -528,7 +528,7 @@ namespace COMPASS.Common.ViewModels
                         }
                         progressVM.IncrementCounter();
                         Dispatcher.UIThread.Invoke(() =>
-                            progressVM.Log.Add(new LogEntry(LogEntry.MsgType.Info, $"Copied {sourcePath}")));
+                            progressVM.Log.Add(new LogEntry(Models.Enums.Severity.Info, $"Copied {sourcePath}")));
                     }
                 });
             }
