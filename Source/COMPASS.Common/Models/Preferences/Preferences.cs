@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Models.XmlDtos;
+using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.ViewModels;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,8 +11,8 @@ namespace COMPASS.Common.Models.Preferences
     {
         public Preferences()
         {
-            _openCodexPriority = new(_openCodexFunctions);
-            CodexProperties = Codex.Properties.ToList();
+            _openCodexPriority = new(OpenCodexFunctions);
+            CodexProperties = Codex.MedataProperties.ToList();
             ListLayoutPreferences = new();
             CardLayoutPreferences = new();
             TileLayoutPreferences = new();
@@ -21,26 +21,16 @@ namespace COMPASS.Common.Models.Preferences
             AutoLinkFolderTagSameName = true;
         }
 
-        public Preferences(PreferencesDto dto)
-        {
-            _openCodexPriority = MapCodexPriority(dto.OpenFilePriorityIDs);
-            CodexProperties = MapCodexProperties(dto.CodexProperties);
-            ListLayoutPreferences = dto.ListLayoutPreferences;
-            CardLayoutPreferences = dto.CardLayoutPreferences;
-            TileLayoutPreferences = dto.TileLayoutPreferences;
-            HomeLayoutPreferences = dto.HomeLayoutPreferences;
-            AutoLinkFolderTagSameName = dto.AutoLinkFolderTagSameName;
-            UIState = dto.UIState;
-        }
-
         #region Constants
 
         //list with possible functions to open a file
-        private static readonly List<PreferableFunction<Codex>> _openCodexFunctions = new()
+        public static readonly ReadOnlyCollection<PreferableFunction<Codex>> OpenCodexFunctions =
+            new List<PreferableFunction<Codex>>()
             {
-                new PreferableFunction<Codex>("Web Version", CodexViewModel.OpenCodexOnline,0),
-                new PreferableFunction<Codex>("Local File", CodexViewModel.OpenCodexLocally,1)
-            };
+                new("Web Version", CodexViewModel.OpenCodexOnline,0),
+                new("Local File", CodexViewModel.OpenCodexLocally,1)
+            }.AsReadOnly();
+
         #endregion
 
         #region Properties
@@ -69,98 +59,6 @@ namespace COMPASS.Common.Models.Preferences
         {
             get => _autoLinkFolderTagSameName;
             set => SetProperty(ref _autoLinkFolderTagSameName, value);
-        }
-
-        #endregion
-
-        #region Mapping
-
-        /// <summary>
-        /// Map Codex open priority from dto
-        /// </summary>
-        /// <param name="priorityIds"></param>
-        /// <returns></returns>
-        private static ObservableCollection<PreferableFunction<Codex>> MapCodexPriority(List<int>? priorityIds)
-        {
-            if (priorityIds is null)
-            {
-                return new(_openCodexFunctions);
-            }
-
-            return new(_openCodexFunctions.OrderBy(pf =>
-            {
-                //if preferences doesn't have file priorities, put them in default order
-                if (priorityIds is null)
-                {
-                    return pf.ID;
-                }
-
-                //get index in user preference
-                int index = priorityIds.IndexOf(pf.ID);
-
-                //if it was not found in preference, use its default ID
-                if (index < 0)
-                {
-                    return pf.ID;
-                }
-
-                return index;
-            }));
-        }
-
-        /// <summary>
-        /// Map codex metadata properties from dto
-        /// </summary>
-        /// <param name="propertyDtos"></param>
-        /// <returns></returns>
-        private static List<CodexProperty> MapCodexProperties(List<CodexPropertyDto> propertyDtos)
-        {
-#pragma warning disable CS0612 // Type or member "Label" is obsolete
-
-            //In versions 1.6.0 and lower, label was stored instead of name
-            var useLabel = propertyDtos.All(prop => string.IsNullOrEmpty(prop.Name) && !string.IsNullOrEmpty(prop.Label));
-            if (useLabel)
-            {
-                for (int i = 0; i < propertyDtos.Count; i++)
-                {
-                    CodexPropertyDto propDto = propertyDtos[i];
-                    var foundProp = Codex.Properties.Find(p => p.Label == propDto.Label);
-                    if (foundProp != null)
-                    {
-                        propDto.Name = foundProp.Name;
-                    }
-                }
-            }
-#pragma warning restore CS0612 // Type or member "Label" is obsolete
-
-            var props = new List<CodexProperty>();
-
-            foreach (var defaultProp in Codex.Properties)
-            {
-                CodexPropertyDto? propDto = propertyDtos.Find(p => p.Name == defaultProp.Name);
-                // Add Preferences from defaults if they weren't found on the loaded Preferences
-                CodexProperty prop = propDto is null ? defaultProp : new(propDto, defaultProp);
-                props.Add(prop);
-            }
-
-            return props;
-        }
-
-        public PreferencesDto ToDto()
-        {
-            PreferencesDto dto = new()
-            {
-                OpenFilePriorityIDs = OpenCodexPriority.Select(pf => pf.ID).ToList(),
-                CodexProperties = CodexProperties.Select(prop => prop.ToDto()).ToList(),
-                ListLayoutPreferences = ListLayoutPreferences,
-                CardLayoutPreferences = CardLayoutPreferences,
-                TileLayoutPreferences = TileLayoutPreferences,
-                HomeLayoutPreferences = HomeLayoutPreferences,
-                UIState = UIState,
-                AutoLinkFolderTagSameName = AutoLinkFolderTagSameName,
-            };
-
-            return dto;
         }
 
         #endregion

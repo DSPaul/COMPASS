@@ -40,7 +40,7 @@ using System.Windows;
                                               // app, or any theme specific resource dictionaries)
 )]
 
-[assembly: AssemblyVersion("1.7.5")]
+[assembly: AssemblyVersion("1.7.6")]
 [assembly: System.Runtime.Versioning.SupportedOSPlatform("windows")]
 
 

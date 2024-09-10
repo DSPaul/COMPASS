@@ -3,6 +3,8 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
@@ -221,8 +223,8 @@ namespace COMPASS.Common.ViewModels
         private void DetectFolderTagPairs()
         {
             var splitFolders = MainViewModel.CollectionVM.CurrentCollection.AllCodices
-                .Where(codex => codex.HasOfflineSource())
-                .Select(codex => codex.Path)
+                .Where(codex => codex.Sources.HasOfflineSource())
+                .Select(codex => codex.Sources.Path)
                 .SelectMany(path => path.Split("\\"))
                 .ToHashSet()
                 .Select(folder => @"\" + folder + @"\");
@@ -230,8 +232,8 @@ namespace COMPASS.Common.ViewModels
             foreach (string folder in splitFolders)
             {
                 var codicesInFolder = MainViewModel.CollectionVM.CurrentCollection.AllCodices
-                    .Where(codex => codex.HasOfflineSource())
-                    .Where(codex => codex.Path.Contains(folder))
+                    .Where(codex => codex.Sources.HasOfflineSource())
+                    .Where(codex => codex.Sources.Path.Contains(folder))
                     .ToList();
 
                 if (codicesInFolder.Count < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
@@ -280,8 +282,8 @@ namespace COMPASS.Common.ViewModels
         #region Fix Broken refs
 
         public IEnumerable<Codex> BrokenCodices => MainViewModel.CollectionVM.CurrentCollection.AllCodices
-               .Where(codex => codex.HasOfflineSource()) //do this check so message doesn't count codices that never had a path to begin with
-               .Where(codex => !Path.Exists(codex.Path));
+               .Where(codex => codex.Sources.HasOfflineSource()) //do this check so message doesn't count codices that never had a path to begin with
+               .Where(codex => !Path.Exists(codex.Sources.Path));
         public int BrokenCodicesAmount => BrokenCodices.Count();
         public string BrokenCodicesMessage => $"Broken references detected: {BrokenCodicesAmount}.";
 
@@ -294,7 +296,7 @@ namespace COMPASS.Common.ViewModels
 
         private RelayCommand? _showBrokenCodicesCommand;
         public RelayCommand ShowBrokenCodicesCommand => _showBrokenCodicesCommand ??= new(ShowBrokenCodices);
-        private void ShowBrokenCodices() => MainViewModel.CollectionVM.FilterVM.AddFilter(new(Filter.FilterType.HasBrokenPath));//Application.Current.MainWindow!.Activate(); //TODO focus window
+        private void ShowBrokenCodices() => MainViewModel.CollectionVM.FilterVM.AddFilter(new HasBrokenPathFilter());
 
         //Rename the refs
         private int _amountRenamed = 0;
@@ -327,13 +329,13 @@ namespace COMPASS.Common.ViewModels
             AmountRenamed = 0;
             foreach (Codex codex in MainViewModel.CollectionVM.CurrentCollection.AllCodices)
             {
-                if (codex.HasOfflineSource() && codex.Path.Contains(oldpath))
+                if (codex.Sources.HasOfflineSource() && codex.Sources.Path.Contains(oldpath))
                 {
-                    string updatedPath = codex.Path.Replace(oldpath, newpath);
+                    string updatedPath = codex.Sources.Path.Replace(oldpath, newpath);
                     //only replace path if old one was broken and new one exists
-                    if (!File.Exists(codex.Path) && File.Exists(updatedPath))
+                    if (!File.Exists(codex.Sources.Path) && File.Exists(updatedPath))
                     {
-                        codex.Path = updatedPath;
+                        codex.Sources.Path = updatedPath;
                         AmountRenamed++;
                     }
                 }
@@ -348,7 +350,7 @@ namespace COMPASS.Common.ViewModels
         {
             foreach (Codex codex in BrokenCodices)
             {
-                codex.Path = "";
+                codex.Sources.Path = "";
             }
             BrokenCodicesChanged();
             MainViewModel.CollectionVM.CurrentCollection.SaveCodices();

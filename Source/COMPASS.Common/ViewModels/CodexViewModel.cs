@@ -40,18 +40,18 @@ namespace COMPASS.Common.ViewModels
         public static bool OpenCodexLocally(Codex? toOpen)
         {
             if (toOpen is null) return false;
-            if (!toOpen.HasOfflineSource()) return false;
+            if (!toOpen.Sources.HasOfflineSource()) return false;
             try
             {
-                Process.Start(new ProcessStartInfo(toOpen.Path) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(toOpen.Sources.Path) { UseShellExecute = true });
                 toOpen.LastOpened = DateTime.Now;
                 toOpen.OpenedCount++;
-                Logger.Info($"Opened {toOpen.Path}");
+                Logger.Info($"Opened {toOpen.Sources.Path}");
                 return true;
             }
             catch (Exception ex)
             {
-                Logger.Warn($"Failed to open {toOpen.Path}", ex);
+                Logger.Warn($"Failed to open {toOpen.Sources.Path}", ex);
 
                 FileNotFoundWindow fileNotFoundWindow = new(new(toOpen))
                 {
@@ -64,7 +64,7 @@ namespace COMPASS.Common.ViewModels
         {
             if (toOpen == null) return false;
 
-            return toOpen.HasOfflineSource();
+            return toOpen.Sources.HasOfflineSource();
         }
 
         //Open codex Online
@@ -75,15 +75,15 @@ namespace COMPASS.Common.ViewModels
             if (!CanOpenCodexOnline(toOpen)) return false;
             try
             {
-                Process.Start(new ProcessStartInfo(toOpen!.SourceURL) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(toOpen!.Sources.SourceURL) { UseShellExecute = true });
                 toOpen.LastOpened = DateTime.Now;
                 toOpen.OpenedCount++;
-                Logger.Info($"Opened {toOpen.SourceURL}");
+                Logger.Info($"Opened {toOpen.Sources.SourceURL}");
                 return true;
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to open {toOpen!.SourceURL}", ex);
+                Logger.Error($"Failed to open {toOpen!.Sources.SourceURL}", ex);
                 //fails if no internet, pinging 8.8.8.8 DNS instead of server because some sites like gm binder block ping
                 if (!IOService.PingURL()) Logger.Warn($"Cannot open this item online when not connected to the internet", ex);
                 return false;
@@ -94,7 +94,7 @@ namespace COMPASS.Common.ViewModels
         {
             if (toOpen is null) return false;
 
-            return toOpen.HasOnlineSource();
+            return toOpen.Sources.HasOnlineSource();
         }
 
         //Open Multiple Files
@@ -204,8 +204,8 @@ namespace COMPASS.Common.ViewModels
         public RelayCommand<Codex> ShowInExplorerCommand => _showInExplorerCommand ??= new(ShowInExplorer, CanOpenCodexLocally);
         public static void ShowInExplorer(Codex? toShow)
         {
-            if (String.IsNullOrEmpty(toShow?.Path) || !File.Exists(toShow.Path)) return;
-            string? folderPath = Path.GetDirectoryName(toShow.Path);
+            if (String.IsNullOrEmpty(toShow?.Sources.Path) || !File.Exists(toShow.Sources.Path)) return;
+            string? folderPath = Path.GetDirectoryName(toShow.Sources.Path);
             if (String.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath)) return;
             IOService.ShowInExplorer(folderPath);
         }
@@ -380,24 +380,14 @@ namespace COMPASS.Common.ViewModels
         private static async Task GetMetaData(Codex codex, ChooseMetaDataViewModel chooseMetaDataVM)
         {
             // Lazy load metadata from all the sources, use dict to store
-            Dictionary<MetaDataSource, Codex> metaDataFromSource = new();
-
-            //Make Codex with only sources which can be filled with new data
-            Codex metaDatalessCodex = new()
-            {
-                Path = codex.Path,
-                SourceURL = codex.SourceURL,
-                ISBN = codex.ISBN
-            };
+            Dictionary<MetaDataSource, CodexDto> metaDataFromSource = new();
 
             //First try to get sources from other sources
             //Pdf can contain ISBN number
             PdfSourceViewModel pdfSourceVM = new();
-            if (pdfSourceVM.IsValidSource(codex) && String.IsNullOrEmpty(codex.ISBN))
+            if (pdfSourceVM.IsValidSource(codex.Sources) && String.IsNullOrEmpty(codex.Sources.ISBN))
             {
-                var pdfData = await pdfSourceVM.GetMetaData(metaDatalessCodex);
-                codex.ISBN = pdfData.ISBN;
-                metaDatalessCodex.ISBN = pdfData.ISBN;
+                CodexDto pdfData = await pdfSourceVM.GetMetaData(codex.Sources);
 
                 //already store this so pdf doesn't need to be opened twice
                 metaDataFromSource.Add(MetaDataSource.PDF, pdfData);
@@ -406,7 +396,7 @@ namespace COMPASS.Common.ViewModels
 
             // Now use bits and pieces of the Codices in MetaDataFromSource to set the actual metadata based on preferences
             //Codex with metadata that will be shown to the user, and asked if they want to use it
-            Codex toAsk = new();
+            CodexDto toAsk = new();
             bool shouldAsk = false;
 
             //Iterate over all the properties and set them
@@ -415,10 +405,10 @@ namespace COMPASS.Common.ViewModels
 
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
                 if (prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(codex)) continue;
-                if (prop.Name == nameof(Codex.CoverArt)) continue; //Covers are done separately
+                if (prop is CoverArtProperty) continue; //Covers are done separately
 
-                //propHolder will hold the property from the top preferred source
-                Codex propHolder = new();
+                //preferedMetadata will hold the metadata from the top preferred source
+                CodexDto preferedMetadata = new();
 
                 //iterate over the sources in reverse because overwriting causes the last ones to remain
                 foreach (var source in prop.SourcePriority.AsEnumerable().Reverse())
@@ -426,47 +416,40 @@ namespace COMPASS.Common.ViewModels
                     ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                     // Check if there is metadata from this source to use
-                    if (!metaDataFromSource.ContainsKey(source))
+                    if (!metaDataFromSource.TryGetValue(source, out CodexDto? metadata))
                     {
                         SourceViewModel? sourceVM = SourceViewModel.GetSourceVM(source);
                         if (sourceVM is null) continue;
-                        if (!sourceVM.IsValidSource(codex)) continue;
-                        var metaDataHolder = await sourceVM.GetMetaData(metaDatalessCodex);
-                        metaDataFromSource.Add(source, metaDataHolder);
+                        if (!sourceVM.IsValidSource(codex.Sources)) continue;
+                        metadata = await sourceVM.GetMetaData(codex.Sources);
+                        metaDataFromSource.Add(source, metadata);
                     }
                     // Set the prop Data from this source in propHolder
                     // if the new value is not null/default/empty
-                    if (!prop.IsEmpty(metaDataFromSource[source]))
+                    if (!prop.IsEmpty(metadata))
                     {
-                        prop.SetProp(propHolder, metaDataFromSource[source]);
+                        prop.SetProp(preferedMetadata, metadata);
                     }
                 }
 
                 //if no value was found for this prop, do nothing
-                if (prop.IsEmpty(propHolder)) continue;
+                if (prop.IsEmpty(preferedMetadata)) continue;
 
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Always || prop.IsEmpty(codex))
                 {
-                    prop.SetProp(codex, propHolder);
+                    prop.SetProp(codex, preferedMetadata.ToModel(MainViewModel.CollectionVM.CurrentCollection.AllTags));
                 }
-                else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask)
+                else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask && prop.HasNewValue(preferedMetadata, codex))
                 {
-                    bool isDifferent = prop.Name == nameof(Codex.Tags) ?
-                    // in case of tags, check if source adds tags that aren't there yet
-                    ((IList<Tag>)prop.GetProp(propHolder)!).Except((IList<Tag>)prop.GetProp(codex)!).Any()
-                    //check if ToString() representations are different, doesn't work for tags
-                    : prop.GetProp(codex)?.ToString() != prop.GetProp(propHolder)?.ToString();
-                    if (isDifferent)
-                    {
-                        prop.SetProp(toAsk, propHolder);
-                        shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked
-                    }
+                    prop.SetProp(toAsk, preferedMetadata);
+                    shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked
                 }
             }
 
             if (shouldAsk)
             {
-                chooseMetaDataVM.AddCodexPair(codex, toAsk);
+                var allTags = MainViewModel.CollectionVM.CurrentCollection.AllTags;
+                chooseMetaDataVM.AddCodexPair(codex, toAsk.ToModel(allTags));
             }
 
             ProgressViewModel.GetInstance().IncrementCounter();

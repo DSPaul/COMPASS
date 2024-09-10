@@ -150,7 +150,8 @@
                                  Visibility="{Binding CurrentPair.Item2, Converter={StaticResource PropIsEmptyToVisibilityConverter}, ConverterParameter=Tags}">
                         <RadioButton.Content>
                             <ItemsControl Grid.Row="2" Grid.Column="0" Foreground="Black" Margin="3"
-                                    ItemsSource="{Binding CurrentPair.Item1.Tags}" Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}">
+                                          ItemsSource="{Binding CurrentPair.Item1.OrderedTags, Mode=OneWay}" 
+                                          Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <WrapPanel/>
@@ -166,8 +167,8 @@
                                     Background="{x:Null}" BorderBrush="{x:Null}" ItemTemplate="{StaticResource TagTemplate}">
                                 <ItemsControl.ItemsSource>
                                     <MultiBinding Converter="{StaticResource CompositeCollectionConverter}">
-                                        <Binding Path="CurrentPair.Item1.Tags" />
-                                        <Binding Path="CurrentPair.Item2.Tags" />
+                                        <Binding Path="CurrentPair.Item1.OrderedTags" Mode="OneWay" />
+                                        <Binding Path="CurrentPair.Item2.OrderedTags" Mode="OneWay" />
                                     </MultiBinding>
                                 </ItemsControl.ItemsSource>
                                 <ItemsControl.ItemsPanel>

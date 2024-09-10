@@ -3,7 +3,6 @@ using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Tools;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
@@ -20,7 +19,7 @@ namespace COMPASS.Common.Services
 
         public string PreferencesFilePath => Path.Combine(EnvironmentVarsService.CompassDataPath, "Preferences.xml");
 
-        public static object writeLocker = new object();
+        public static object writeLocker = new();
 
         private Preferences? _preferences;
         public Preferences Preferences => _preferences ??= LoadPreferences() ?? new Preferences();
@@ -58,7 +57,7 @@ namespace COMPASS.Common.Services
             catch (Exception ex)
             {
                 Logger.Error($"Failed to save Preferences to {PreferencesFilePath}", ex);
-            }            
+            }
         }
 
         public Preferences? LoadPreferences()
@@ -74,7 +73,7 @@ namespace COMPASS.Common.Services
                 XmlSerializer serializer = new(typeof(PreferencesDto), overrides);
                 if (serializer.Deserialize(reader) is PreferencesDto prefsDto)
                 {
-                    return prefsDto is null ? new() : new(prefsDto);
+                    return prefsDto is null ? new() : prefsDto.ToModel();
                 }
                 else
                 {

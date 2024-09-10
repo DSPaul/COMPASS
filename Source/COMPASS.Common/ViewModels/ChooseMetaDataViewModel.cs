@@ -1,4 +1,5 @@
 ﻿using COMPASS.Common.Models;
+using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using System;
@@ -107,12 +108,7 @@ namespace COMPASS.Common.ViewModels
                 Dictionary<string, bool> dict = new();
                 foreach (var prop in PropsToAsk)
                 {
-                    bool useNew = prop.Name == nameof(Codex.Tags) ?
-                     //for tags, new value was chosen when there are more tags in the list
-                     ((IList<Tag>)prop.GetProp(_codicesWithMadeChoices[StepCounter])!).Count > ((IList<Tag>)prop.GetProp(CurrentPair.Item1)!).Count
-                     // for all the other, do a string compare to see if the new options was chosen
-                     : prop.GetProp(CurrentPair.Item1)?.ToString() != prop.GetProp(_codicesWithMadeChoices[StepCounter])?.ToString();
-
+                    bool useNew = prop.HasNewValue(_codicesWithMadeChoices[StepCounter], CurrentPair.Item1);
                     dict.Add(prop.Name, useNew);
                 }
                 return dict;

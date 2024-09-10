@@ -46,11 +46,7 @@ namespace COMPASS.Common.Models
         public string Content
         {
             get => _content;
-            set
-            {
-                value = IOService.SanitizeXmlString(value);
-                SetProperty(ref _content, value, true); //needs to broadcast so TagEdit can validate the input
-            }
+            set => SetProperty(ref _content, value, true); //needs to broadcast so TagEdit can validate the input
         }
 
         // Add [XmlIgnoreAttribute] in a future update and delete the setter

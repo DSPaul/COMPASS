@@ -1,4 +1,5 @@
 ﻿using Avalonia.Media;
+using System;
 using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.Models
@@ -24,5 +25,37 @@ namespace COMPASS.Common.Models
     {
         public int SelectedTab { get; set; }
         public bool Collapsed { get; set; }
+    }
+
+    public interface IHasCodexMetadata
+    {
+        #region COMPASS related Metadata
+        public int ID { get; set; }
+        public string CoverArt { get; set; }
+        public string Thumbnail { get; set; }
+        #endregion
+
+        #region Codex related Metadata
+
+        public string Title { get; set; }
+        public string SortingTitle { get; set; }
+
+        //public IList<string> Authors { get; set; }
+
+        public string Publisher { get; set; }
+        public string Description { get; set; }
+        public DateTime? ReleaseDate { get; set; }
+        public int PageCount { get; set; }
+        public string Version { get; set; }
+
+        #endregion
+
+        #region User related Metadata
+        public bool PhysicallyOwned { get; set; }
+        public int Rating { get; set; }
+        public bool Favorite { get; set; }
+
+        #endregion
+
     }
 }

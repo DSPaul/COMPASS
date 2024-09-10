@@ -136,7 +136,8 @@
 
                     <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.ColumnSpan="2" Grid.Column="0">
                         <TextBlock Text="Tags:" VerticalAlignment="Top" Margin="5,5,10,5"/>
-                        <ItemsControl ItemsSource="{Binding Tags}" Background="{x:Null}" BorderBrush="{x:Null}" dd:DragDrop.IsDragSource="True"
+                        <ItemsControl ItemsSource="{Binding OrderedTags, Mode=OneWay}" 
+                                      Background="{x:Null}" BorderBrush="{x:Null}" dd:DragDrop.IsDragSource="True"
                                     Foreground="Black" FontSize="15" VerticalAlignment="Bottom">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>

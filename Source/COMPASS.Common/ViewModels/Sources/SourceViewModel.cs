@@ -1,4 +1,5 @@
 ﻿using COMPASS.Common.Models;
+using COMPASS.Common.Models.XmlDtos;
 using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels.Sources
@@ -33,9 +34,9 @@ namespace COMPASS.Common.ViewModels.Sources
 
         public abstract MetaDataSource Source { get; }
 
-        public abstract bool IsValidSource(Codex codex);
+        public abstract bool IsValidSource(SourceSet sources);
 
-        public abstract Task<Codex> GetMetaData(Codex codex);
+        public abstract Task<CodexDto> GetMetaData(SourceSet sources);
 
         public abstract Task<bool> FetchCover(Codex codex);
         #endregion

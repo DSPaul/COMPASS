@@ -1,5 +1,6 @@
 ﻿using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using Newtonsoft.Json.Linq;
@@ -14,27 +15,24 @@ namespace COMPASS.Common.ViewModels.Sources
     public class ISBNSourceViewModel : SourceViewModel
     {
         public override MetaDataSource Source => MetaDataSource.ISBN;
-        public override bool IsValidSource(Codex codex) => !String.IsNullOrWhiteSpace(codex.ISBN);
+        public override bool IsValidSource(SourceSet sources) => !String.IsNullOrWhiteSpace(sources.ISBN);
 
-        public override async Task<Codex> GetMetaData(Codex codex)
+        public override async Task<CodexDto> GetMetaData(SourceSet sources)
         {
-            // Work on a copy
-            codex = new Codex(codex);
-
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading Metadata from openlibrary.org"));
-            Debug.Assert(IsValidSource(codex), "Codex without ISBN was used in ISBN Source");
-            string uri = $"https://openlibrary.org/api/books?bibkeys=ISBN:{codex.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
+            Debug.Assert(IsValidSource(sources), "Codex without ISBN was used in ISBN Source");
+            string uri = $"https://openlibrary.org/api/books?bibkeys=ISBN:{sources.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
 
             JObject? metadata = await IOService.GetJsonAsync(uri);
 
             if (metadata is null || !metadata.HasValues)
             {
-                string message = $"ISBN {codex.ISBN} was not found on openlibrary.org \n" +
+                string message = $"ISBN {sources.ISBN} was not found on openlibrary.org \n" +
                     $"You can contribute by submitting this book at \n" +
                     $"https://openlibrary.org/books/add";
                 ProgressVM.AddLogEntry(new(Severity.Warning, message));
-                Logger.Warn($"Could not find ISBN {codex.ISBN} on openlibrary.org");
-                return codex;
+                Logger.Warn($"Could not find ISBN {sources.ISBN} on openlibrary.org");
+                return new();
             }
 
             // Start parsing json
@@ -42,13 +40,16 @@ namespace COMPASS.Common.ViewModels.Sources
             if (details is null)
             {
                 Logger.Warn("Unable to parse metadata from openlibrary");
-                return codex;
+                return new();
             }
 
             // Title
             string fullTitle = details.SelectToken("full_title")?.ToString() ?? "";
             string title = details.SelectToken("title")?.ToString() ?? "";
             string subTitle = details.SelectToken("subtitle")?.ToString() ?? "";
+
+            // Use a codex dto to tranfer the data
+            CodexDto codex = new();
 
             if (!String.IsNullOrWhiteSpace(fullTitle))
             {
@@ -90,20 +91,20 @@ namespace COMPASS.Common.ViewModels.Sources
 
         public override async Task<bool> FetchCover(Codex codex)
         {
-            if (String.IsNullOrEmpty(codex.ISBN)) return false;
+            if (String.IsNullOrEmpty(codex.Sources.ISBN)) return false;
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from openlibrary.org"));
             try
             {
-                string uri = $"https://openlibrary.org/isbn/{codex.ISBN}.json";
+                string uri = $"https://openlibrary.org/isbn/{codex.Sources.ISBN}.json";
                 JObject? metadata = await IOService.GetJsonAsync(uri);
 
                 if (metadata == null || !metadata.HasValues)
                 {
-                    string message = $"ISBN {codex.ISBN} was not found on openlibrary.org \n" +
+                    string message = $"ISBN {codex.Sources.ISBN} was not found on openlibrary.org \n" +
                         $"You can contribute by submitting this book at \n" +
                         $"https://openlibrary.org/books/add";
                     ProgressVM.AddLogEntry(new(Severity.Warning, message));
-                    Logger.Warn($"Could not find ISBN {codex.ISBN} on openlibrary.org");
+                    Logger.Warn($"Could not find ISBN {codex.Sources.ISBN} on openlibrary.org");
                     return false;
                 }
 
@@ -115,7 +116,7 @@ namespace COMPASS.Common.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                string msg = $"Failed to get cover from OpenLibrary for ISBN {codex.ISBN}";
+                string msg = $"Failed to get cover from OpenLibrary for ISBN {codex.Sources.ISBN}";
                 Logger.Error(msg, ex);
                 ProgressVM.AddLogEntry(new(Severity.Warning, msg));
                 return false;

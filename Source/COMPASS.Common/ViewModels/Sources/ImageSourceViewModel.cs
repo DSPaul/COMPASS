@@ -1,4 +1,5 @@
 ﻿using COMPASS.Common.Models;
+using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
 using System.IO;
 using System.Threading.Tasks;
@@ -9,12 +10,12 @@ namespace COMPASS.Common.ViewModels.Sources
     {
         public override MetaDataSource Source => MetaDataSource.Image;
 
-        public override bool IsValidSource(Codex codex) => File.Exists(codex.Path) && IOService.IsImageFile(codex.Path);
+        public override bool IsValidSource(SourceSet sources) => File.Exists(sources.Path) && IOService.IsImageFile(sources.Path);
 
-        public override Task<Codex> GetMetaData(Codex codex)
+        public override Task<CodexDto> GetMetaData(SourceSet sources)
         {
             // Work on a copy
-            codex = new Codex(codex)
+            CodexDto codex = new()
             {
                 PageCount = 1
             };
@@ -22,6 +23,6 @@ namespace COMPASS.Common.ViewModels.Sources
             return Task.FromResult(codex);
         }
         public override async Task<bool> FetchCover(Codex codex) =>
-            await Task.Run(() => CoverService.GetCoverFromImage(codex.Path, codex));
+            await Task.Run(() => CoverService.GetCoverFromImage(codex.Sources.Path, codex));
     }
 }

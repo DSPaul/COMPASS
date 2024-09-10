@@ -26,12 +26,12 @@ namespace COMPASS.Common.ViewModels.Import
             //if files were included in compass file, set paths of codices to those files
             if (Directory.Exists(CollectionToImport.UserFilesPath))
             {
-                foreach (Codex codex in CollectionToImport.AllCodices.Where(c => c.HasOfflineSource()))
+                foreach (Codex codex in CollectionToImport.AllCodices.Where(c => c.Sources.HasOfflineSource()))
                 {
-                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath, codex.Path); //TODO, what it this path becomes too long?
+                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath, codex.Sources.Path); //TODO, what it this path becomes too long?
                     if (File.Exists(includedFilePath))
                     {
-                        codex.Path = includedFilePath;
+                        codex.Sources.Path = includedFilePath;
                     }
                 }
             }
@@ -154,7 +154,7 @@ namespace COMPASS.Common.ViewModels.Import
             }
 
             //Apply the selection
-            await ContentSelectorVM.Finish();
+            ContentSelectorVM.ApplyAllSelections();
 
             //Save the changes to a permanent collection
             var targetCollection = MergeIntoCollection ?

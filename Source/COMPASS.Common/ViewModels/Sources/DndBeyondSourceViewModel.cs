@@ -1,5 +1,6 @@
 ﻿using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using HtmlAgilityPack;
@@ -12,35 +13,30 @@ namespace COMPASS.Common.ViewModels.Sources
     {
         public override MetaDataSource Source => MetaDataSource.DnDBeyond;
 
-        public override async Task<Codex> GetMetaData(Codex codex)
+        public override async Task<CodexDto> GetMetaData(SourceSet sources)
         {
-            // Work on a copy
-            codex = new Codex(codex);
-
             //Scrape metadata by going to store page, get to store page by using that /credits redirects there
             ProgressVM.AddLogEntry(new(Severity.Info, $"Connecting to DnD Beyond"));
-            HtmlDocument? doc = await IOService.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
+            HtmlDocument? doc = await IOService.ScrapeSite(String.Concat(sources.SourceURL, "/credits"));
             HtmlNode? src = doc?.DocumentNode;
 
-            if (src is null)
-            {
-                return codex;
-            }
-
             //Set known metadata
-            codex.Publisher = "D&D Beyond";
-            codex.Authors = new() { "Wizards of the Coast" };
+            CodexDto codex = new()
+            {
+                Publisher = "D&D Beyond",
+                Authors = new() { "Wizards of the Coast" }
+            };
 
             return codex;
         }
 
         public override async Task<bool> FetchCover(Codex codex)
         {
-            if (String.IsNullOrEmpty(codex.SourceURL)) { return false; }
+            if (String.IsNullOrEmpty(codex.Sources.SourceURL)) { return false; }
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument? doc = await IOService.ScrapeSite(String.Concat(codex.SourceURL, "/credits"));
+                HtmlDocument? doc = await IOService.ScrapeSite(String.Concat(codex.Sources.SourceURL, "/credits"));
                 HtmlNode? src = doc?.DocumentNode;
                 if (src is null) return false;
 
@@ -57,6 +53,6 @@ namespace COMPASS.Common.ViewModels.Sources
             }
         }
 
-        public override bool IsValidSource(Codex codex) => false;
+        public override bool IsValidSource(SourceSet sources) => false;
     }
 }

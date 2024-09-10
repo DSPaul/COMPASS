@@ -29,24 +29,24 @@ namespace COMPASS.Common.ViewModels
             if (openFileDialog.ShowDialog() == true)
             {
                 //find the replaced parh of the path
-                string oldPath = _codex.Path;
+                string oldPath = _codex.Sources.Path;
                 string newPath = openFileDialog.FileName;
                 var (toReplace, replaceWith) = IOService.GetDifferingRoot(oldPath, newPath);
 
                 //fix the path of this codex
-                _codex.Path = openFileDialog.FileName;
+                _codex.Sources.Path = openFileDialog.FileName;
                 int fixedRefs = 1;
 
                 //try to fix the path of all codices
                 var codicesWithBrokenPaths = MainViewModel.CollectionVM.CurrentCollection.AllCodices
-                    .Where(c => c.HasOfflineSource() && !File.Exists(c.Path))
+                    .Where(c => c.Sources.HasOfflineSource() && !File.Exists(c.Sources.Path))
                     .ToList();
                 foreach (var c in codicesWithBrokenPaths)
                 {
-                    string possiblePath = Path.Combine(replaceWith, c.Path[toReplace.Length..]);
+                    string possiblePath = Path.Combine(replaceWith, c.Sources.Path[toReplace.Length..]);
                     if (File.Exists(possiblePath))
                     {
-                        c.Path = possiblePath;
+                        c.Sources.Path = possiblePath;
                         fixedRefs++;
                     }
                 }
@@ -66,7 +66,7 @@ namespace COMPASS.Common.ViewModels
         public RelayCommand RemovePathCommand => _removePathCommand ??= new(RemovePath);
         private void RemovePath()
         {
-            _codex.Path = "";
+            _codex.Sources.Path = "";
             CloseAction?.Invoke();
         }
 

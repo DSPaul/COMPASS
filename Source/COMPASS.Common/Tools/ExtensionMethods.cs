@@ -129,7 +129,7 @@ namespace COMPASS.Common.Tools
             return result;
         }
 
-        public static void SetProperty(this object obj, string propName, object value)
+        public static void SetProperty(this object obj, string propName, object? value)
         {
             var propInfo = obj.GetPropertyInfo(propName);
 
@@ -172,6 +172,8 @@ namespace COMPASS.Common.Tools
                     }
             }
         }
+
+        public static bool SafeAny<T>(this IEnumerable<T>? l) => l is not null && l.Any();
         #endregion
 
         #region Drag & Drop

@@ -1,5 +1,6 @@
 ﻿using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using ImageMagick;
@@ -17,20 +18,20 @@ namespace COMPASS.Common.ViewModels.Sources
     public class PdfSourceViewModel : SourceViewModel
     {
         public override MetaDataSource Source => MetaDataSource.PDF;
-        public override bool IsValidSource(Codex codex) => IOService.IsPDFFile(codex.Path);
+        public override bool IsValidSource(SourceSet sources) => IOService.IsPDFFile(sources.Path);
 
-        public override async Task<Codex> GetMetaData(Codex codex)
+        public override async Task<CodexDto> GetMetaData(SourceSet sources)
         {
-            // Work on a copy
-            codex = new Codex(codex);
-
-            Debug.Assert(IsValidSource(codex), "Codex without pdf found in pdf source");
+            Debug.Assert(IsValidSource(sources), "Codex without pdf found in pdf source");
             PdfDocument? pdfDoc = null;
+
+            // Use a codex dto to tranfer the data
+            CodexDto codex = new();
             try
             {
                 var info = await Task.Run(() =>
                 {
-                    PdfReader pdfReader = new(codex.Path);
+                    PdfReader pdfReader = new(sources.Path);
                     pdfDoc = new PdfDocument(pdfReader);
                     return pdfDoc.GetDocumentInfo();
                 });
@@ -43,7 +44,7 @@ namespace COMPASS.Common.ViewModels.Sources
                 codex.PageCount = pdfDoc!.GetNumberOfPages();
 
                 // If it already has an ISBN, no need to check again
-                if (!String.IsNullOrEmpty(codex.ISBN)) return codex;
+                if (!String.IsNullOrEmpty(sources.ISBN)) return codex;
 
                 //Search for ISBN number in first 5 pages
                 for (int page = 1; page <= Math.Min(5, pdfDoc.GetNumberOfPages()); page++)
@@ -56,7 +57,7 @@ namespace COMPASS.Common.ViewModels.Sources
                     string isbn = Constants.RegexISBN().Match(pageContent).Value;
                     if (!String.IsNullOrEmpty(isbn))
                     {
-                        codex.ISBN = isbn;
+                        sources.ISBN = isbn;
                         break;
                     }
                 }
@@ -66,7 +67,7 @@ namespace COMPASS.Common.ViewModels.Sources
             {
                 //in case pdf is corrupt: PdfReader will throw error
                 //in those cases: import the pdf without opening it
-                Logger.Error($"Failed to read metadata from {Path.GetFileName(codex.Path)}", ex);
+                Logger.Error($"Failed to read metadata from {Path.GetFileName(sources.Path)}", ex);
                 LogEntry logEntry = new(Severity.Warning, $"Failed to read metadata from {codex.Title}");
                 ProgressVM.AddLogEntry(logEntry);
             }
@@ -80,8 +81,8 @@ namespace COMPASS.Common.ViewModels.Sources
         public override async Task<bool> FetchCover(Codex codex)
         {
             //return false if file doesn't exist
-            if (!IOService.IsPDFFile(codex.Path) ||
-                !File.Exists(codex.Path))
+            if (!IOService.IsPDFFile(codex.Sources.Path) ||
+                !File.Exists(codex.Sources.Path))
             {
                 return false;
             }
@@ -89,7 +90,7 @@ namespace COMPASS.Common.ViewModels.Sources
             try //image.Read can throw exception if file can not be opened/read
             {
                 using MagickImage image = new();
-                await image.ReadAsync(codex.Path, ReadSettings);
+                await image.ReadAsync(codex.Sources.Path, ReadSettings);
                 image.Format = MagickFormat.Png;
                 image.BackgroundColor = new MagickColor("#000000"); //set background color as transparent
                 image.Trim(); //cut off all transparency
@@ -100,7 +101,7 @@ namespace COMPASS.Common.ViewModels.Sources
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to generate cover from {Path.GetFileName(codex.Path)}", ex);
+                Logger.Error($"Failed to generate cover from {Path.GetFileName(codex.Sources.Path)}", ex);
                 LogEntry logEntry = new(Severity.Warning, $"Failed to generate cover from {codex.Title}");
                 ProgressVM.AddLogEntry(logEntry);
                 return false;

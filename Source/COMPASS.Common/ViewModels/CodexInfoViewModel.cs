@@ -47,14 +47,14 @@ namespace COMPASS.Common.ViewModels
 
         private RelayCommand<string>? _addAuthorFilterCommand;
         public RelayCommand<string> AddAuthorFilterCommand => _addAuthorFilterCommand ??= new(AddAuthorFilter);
-        private void AddAuthorFilter(string? author) => MainViewModel.CollectionVM.FilterVM.AddFilter(new(Filter.FilterType.Author, author));
+        private void AddAuthorFilter(string? author) => MainViewModel.CollectionVM.FilterVM.AddFilter(new AuthorFilter(author ?? ""));
 
         private RelayCommand<string>? _addPublisherFilterCommand;
         public RelayCommand<string> AddPublisherFilterCommand => _addPublisherFilterCommand ??= new(AddPublisherFilter);
-        private void AddPublisherFilter(string? publisher) => MainViewModel.CollectionVM.FilterVM.AddFilter(new(Filter.FilterType.Publisher, publisher));
+        private void AddPublisherFilter(string? publisher) => MainViewModel.CollectionVM.FilterVM.AddFilter(new PublisherFilter(publisher ?? ""));
 
         private RelayCommand<Tag>? _addTagFilterCommand;
         public RelayCommand<Tag> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilter);
-        private void AddTagFilter(Tag? tag) => MainViewModel.CollectionVM.FilterVM.AddFilter(new(Filter.FilterType.Tag, tag));
+        private void AddTagFilter(Tag? tag) => MainViewModel.CollectionVM.FilterVM.AddFilter(new TagFilter(tag!));
     }
 }

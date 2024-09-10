@@ -69,11 +69,11 @@ namespace COMPASS.Common.ViewModels
             OpenFileDialog openFileDialog = new()
             {
                 AddExtension = false,
-                InitialDirectory = Path.GetDirectoryName(TempCodex.Path) ?? String.Empty
+                InitialDirectory = Path.GetDirectoryName(TempCodex.Sources.Path) ?? String.Empty
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                TempCodex.Path = openFileDialog.FileName;
+                TempCodex.Sources.Path = openFileDialog.FileName;
             }
         }
 
@@ -91,7 +91,7 @@ namespace COMPASS.Common.ViewModels
         public RelayCommand BrowseISBNCommand => _browseISBNCommand ??= new(BrowseISBN);
         private void BrowseISBN()
         {
-            string url = $"https://openlibrary.org/search?q={TempCodex.ISBN}&mode=everything";
+            string url = $"https://openlibrary.org/search?q={TempCodex.Sources.ISBN}&mode=everything";
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
 

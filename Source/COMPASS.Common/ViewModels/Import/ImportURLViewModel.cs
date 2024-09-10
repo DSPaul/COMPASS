@@ -130,11 +130,11 @@ namespace COMPASS.Common.ViewModels.Import
             Codex newCodex = new(MainViewModel.CollectionVM.CurrentCollection);
             if (_importSource == ImportSource.ISBN)
             {
-                newCodex.ISBN = InputURL;
+                newCodex.Sources.ISBN = InputURL;
             }
             else
             {
-                newCodex.SourceURL = InputURL;
+                newCodex.Sources.SourceURL = InputURL;
             }
             MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
             progressVM.IncrementCounter();

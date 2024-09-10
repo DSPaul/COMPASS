@@ -1,4 +1,14 @@
 # CHANGELOG
+## COMPASS v1.7.6 (10 September 2024)
+
+### Fixes
+
+- URLs beginning with "www." are now automatically prefixed with "https://", resolving associated bugs.
+- Fixed crash occurring during tag assignment via metadata import.
+- Fixed Homebrewery Cover Art fetching, which was broken by recent website changes.
+- Errors during filtering will no longer result in a crash.
+- Fix the "Delete Collection" button not working.
+- Fixed folder import dialog displaying despite cancelled selection.
 
 ## COMPASS v1.7.5 (01 September 2024)
 
