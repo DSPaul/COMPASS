@@ -1,5 +1,6 @@
 ﻿using COMPASS.Models;
 using COMPASS.Models.CodexProperties;
+using COMPASS.Models.Preferences;
 using COMPASS.Models.XmlDtos;
 using System.Text.Json;
 using Tests.DataGenerators;
@@ -30,9 +31,7 @@ namespace Tests.UnitTests.Models
         [TestMethod]
         public void MapCodexProperty()
         {
-            int expectedDiff = 0;
-
-            AssertAllPropMapped(typeof(CodexProperty), typeof(CodexPropertyDto), expectedDiff);
+            AssertAllPropMapped(typeof(CodexProperty), typeof(CodexPropertyDto));
 
             CodexProperty codexProp = CodexProperty.GetInstance(nameof(Codex.Title))!;
 
@@ -44,7 +43,27 @@ namespace Tests.UnitTests.Models
                 JsonSerializer.Serialize(codexProp));
         }
 
-        private void AssertAllPropMapped(Type modelType, Type dtoType, int expectedDiff)
+        [TestMethod]
+        public void MapPreferences()
+        {
+            AssertAllPropMapped(typeof(Preferences), typeof(PreferencesDto));
+
+            Preferences prefs = RandomGenerator.GetRandomPreferences();
+
+            PreferencesDto dto = prefs.ToDto();
+            Preferences reconstrution = dto.ToModel()!;
+
+            //Funcs cannot be serialized
+            Assert.IsTrue(prefs.OpenCodexPriority.SequenceEqual(reconstrution.OpenCodexPriority));
+            prefs.OpenCodexPriority = new System.Collections.ObjectModel.ObservableCollection<PreferableFunction<Codex>>();
+            reconstrution.OpenCodexPriority = new System.Collections.ObjectModel.ObservableCollection<PreferableFunction<Codex>>();
+
+            Assert.AreEqual(
+                JsonSerializer.Serialize(reconstrution),
+                JsonSerializer.Serialize(prefs));
+        }
+
+        private void AssertAllPropMapped(Type modelType, Type dtoType, int expectedDiff = 0)
         {
             var modelPropsCount = modelType
                .GetProperties()

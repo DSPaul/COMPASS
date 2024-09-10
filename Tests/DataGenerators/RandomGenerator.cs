@@ -1,4 +1,5 @@
 ﻿using COMPASS.Models;
+using COMPASS.Models.Preferences;
 using System.Text;
 using System.Windows.Media;
 
@@ -96,6 +97,59 @@ namespace Tests.DataGenerators
 
             return codex;
         }
+
+        public static Preferences GetRandomPreferences() => new()
+        {
+            AutoLinkFolderTagSameName = true,
+            CodexProperties = Codex.MedataProperties,
+            CardLayoutPreferences = new CardLayoutPreferences()
+            {
+                ShowAuthor = GetRandomBool(),
+                ShowVersion = GetRandomBool(),
+                ShowRating = GetRandomBool(),
+                ShowFileIcons = GetRandomBool(),
+                ShowPublisher = GetRandomBool(),
+                ShowReleaseDate = GetRandomBool(),
+                ShowTags = GetRandomBool(),
+                ShowTitle = GetRandomBool()
+            },
+            HomeLayoutPreferences = new HomeLayoutPreferences()
+            {
+                ShowTitle = GetRandomBool(),
+                TileWidth = 123.456
+            },
+            ListLayoutPreferences = new ListLayoutPreferences()
+            {
+                ShowAuthor = GetRandomBool(),
+                ShowVersion = GetRandomBool(),
+                ShowRating = GetRandomBool(),
+                ShowFileIcons = GetRandomBool(),
+                ShowPublisher = GetRandomBool(),
+                ShowReleaseDate = GetRandomBool(),
+                ShowTags = GetRandomBool(),
+                ShowTitle = GetRandomBool(),
+                ShowDateAdded = GetRandomBool(),
+                ShowEditIcon = GetRandomBool(),
+                ShowISBN = GetRandomBool()
+            },
+            OpenCodexPriority = new(Preferences.OpenCodexFunctions),
+            TileLayoutPreferences = new TileLayoutPreferences()
+            {
+                DisplayedData = TileLayoutPreferences.DataOption.Title,
+                ShowExtraData = true,
+                TileWidth = 654.321
+            },
+            UIState = new UIState()
+            {
+                AutoHideCodexInfoPanel = GetRandomBool(),
+                ShowCodexInfoPanel = GetRandomBool(),
+                SortDirection = System.ComponentModel.ListSortDirection.Descending,
+                SortProperty = "Title",
+                StartupCollection = GetRandomString(),
+                StartupLayout = COMPASS.ViewModels.Layouts.LayoutViewModel.Layout.Card,
+                StartupTab = 3
+            }
+        };
 
         #endregion
 
