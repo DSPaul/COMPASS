@@ -22,9 +22,13 @@ namespace COMPASS.Converters
             {
                 bi.UriSource = new Uri(path);
                 bi.EndInit();
+                if (bi.CanFreeze)
+                {
+                    bi.Freeze();
+                }
                 return bi;
             }
-            catch 
+            catch
             {
                 return null;
             }

@@ -687,6 +687,7 @@ namespace COMPASS.ViewModels
             {
                 //codex.Thumbnail = codex.CoverArt.Replace("CoverArt", "Thumbnails");
                 CoverService.CreateThumbnail(codex);
+                codex.RefreshThumbnail();
             }
         }
 

@@ -89,14 +89,17 @@ namespace COMPASS.ViewModels.Sources
 
             try //image.Read can throw exception if file can not be opened/read
             {
-                using MagickImage image = new();
-                await image.ReadAsync(codex.Sources.Path, ReadSettings);
-                image.Format = MagickFormat.Png;
-                image.BackgroundColor = new MagickColor("#000000"); //set background color as transparent
-                image.Trim(); //cut off all transparency
+                using (MagickImage image = new())
+                {
+                    await image.ReadAsync(codex.Sources.Path, ReadSettings);
+                    image.Format = MagickFormat.Png;
+                    image.BackgroundColor = new MagickColor("#000000"); //set background color as transparent
+                    image.Trim(); //cut off all transparency
 
-                await image.WriteAsync(codex.CoverArt);
-                CoverService.CreateThumbnail(codex);
+                    await image.WriteAsync(codex.CoverArt);
+                    CoverService.CreateThumbnail(codex, image);
+                }
+                codex.RefreshThumbnail();
                 return true;
             }
             catch (Exception ex)
