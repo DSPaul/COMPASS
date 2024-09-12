@@ -1,6 +1,7 @@
 ﻿//https://bengribaudo.com/blog/2012/03/14/1942/saving-restoring-wpf-datagrid-columns-size-sorting-and-order
 
 using COMPASS.Services;
+using COMPASS.Tools;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -67,9 +68,16 @@ namespace COMPASS.Resources.Controls
                 prefsService.Preferences.UIState.SortDirection = sd.Direction;
             }
 
-            Properties.Settings.Default["DataGridCollumnInfo"] = json;
-            Properties.Settings.Default.Save();
-            updatingColumnInfo = false;
+            try
+            {
+                Properties.Settings.Default["DataGridCollumnInfo"] = json;
+                Properties.Settings.Default.Save();
+                updatingColumnInfo = false;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to save Preferences", ex);
+            }
         }
         protected override void OnColumnReordered(DataGridColumnEventArgs e)
         {

@@ -425,9 +425,16 @@ namespace COMPASS.ViewModels
 
             set
             {
-                Properties.Settings.Default.CompassDataPath = value;
-                EnvironmentVarsService.CompassDataPath = value;
-                Properties.Settings.Default.Save();
+                try
+                {
+                    Properties.Settings.Default.CompassDataPath = value;
+                    EnvironmentVarsService.CompassDataPath = value;
+                    Properties.Settings.Default.Save();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Failed to update Compass Data Path", ex);
+                }
             }
         }
 
