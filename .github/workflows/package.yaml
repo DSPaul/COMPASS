@@ -50,12 +50,12 @@ jobs:
 
     - name: Sign app
       id: signing-app
-      uses: signpath/github-action-submit-signing-request@v0.4
+      uses: signpath/github-action-submit-signing-request@v1
       with:
         api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
         organization-id: 2f2c8b60-b250-4dd2-8827-045fa9cc65e6
         project-slug: COMPASS
-        signing-policy-slug: test-signing
+        signing-policy-slug: release-signing 
         github-artifact-id: ${{steps.upload-exe.outputs.artifact-id}}
         wait-for-completion: true
         output-artifact-directory: .\src\bin\Publish\win-x64\
