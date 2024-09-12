@@ -16,6 +16,7 @@
         FileExtension,
         HasBrokenPath,
         HasISBN,
-        Domain
+        Domain,
+        Empty
     }
 }

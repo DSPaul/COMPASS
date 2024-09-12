@@ -105,6 +105,7 @@ namespace COMPASS.Models.CodexProperties
             nameof(Codex.Description) => new StringProperty(nameof(Codex.Description)),
             nameof(Codex.ReleaseDate) => new DateTimeProperty(nameof(Codex.ReleaseDate), label: "Release Date"),
             nameof(Codex.CoverArt) => new CoverArtProperty(nameof(Codex.CoverArt), label: "Cover Art"),
+            nameof(Codex.Rating) => new NumberProperty<int>(nameof(Codex.Rating)),
             _ => null //could occur when a new preference file with new props is loaded into an older version of compass
         };
 
