@@ -475,12 +475,12 @@
                                           SelectedValue="{Binding SelectedDomain,  Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" />
                             </Grid>
 
-                            <TextBlock Text="No value for:" Margin="0,5"/>
+                            <TextBlock Text="Has a value for:" Margin="0,5"/>
                             <Grid>
                                 <TextBlock Text="-- Select Property --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
                                 <ComboBox ItemsSource="{Binding PossibleEmptyProperties}" DisplayMemberPath="Label"
                                           FontSize="15" Style="{StaticResource ContentLess}"
-                                          SelectedValue="{Binding SelectedEmptyProperty,  Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" />
+                                          SelectedValue="{Binding SelectedNotEmptyProperty,  Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" />
                             </Grid>
                         </StackPanel>
                         <Button Content="Clear All" Grid.Row="4" Margin="10" Command="{Binding ClearFiltersCommand}"

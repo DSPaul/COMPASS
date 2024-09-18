@@ -15,7 +15,6 @@
         Favorite,
         FileExtension,
         HasBrokenPath,
-        HasISBN,
         Domain,
         Empty
     }
