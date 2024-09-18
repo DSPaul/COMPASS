@@ -63,11 +63,11 @@ If you would like to support the project, you can do so in multiple ways.
 ![Tile Layout](Docs/Screenshots/Tile_Layout.png)
 ![Codex Properties](Docs/Screenshots/Codex_Properties.png)
 
-## Others
+## Other
 
 ### Code signing
 
-This program uses free code signing provided by [SignPath.io](https://signpath.io), and a free code signing certificate by the [SignPath Foundation](https://signpath.org).
+This program uses a free code signing provided by [SignPath.io](https://signpath.io), and a free code signing certificate by the [SignPath Foundation](https://signpath.org).
 
 ### Privacy Policy
 
