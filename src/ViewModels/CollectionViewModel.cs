@@ -32,14 +32,32 @@ namespace COMPASS.ViewModels
             _tagsVM = new(new("__tmp"), _filterVM);
 
             //Create Collections Directory
-            Directory.CreateDirectory(CodexCollection.CollectionsPath);
+            try
+            {
+                Directory.CreateDirectory(CodexCollection.CollectionsPath);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
+                string msg = $"Failed to create a folder to store user data at {SettingsViewModel.CompassDataPath}, " +
+                             $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
+                IOService.AskNewCodexFilePath(msg);
+            }
 
-            //Get all collections by folder name
-            AllCodexCollections = new(Directory
-                .GetDirectories(CodexCollection.CollectionsPath)
-                .Select(dir => Path.GetFileName(dir))
-                .Where(IsLegalCollectionName)
-                .Select(dir => new CodexCollection(dir)));
+            try
+            {
+                //Get all collections by folder name
+                AllCodexCollections = new(Directory
+                    .GetDirectories(CodexCollection.CollectionsPath)
+                    .Select(dir => Path.GetFileName(dir))
+                    .Where(IsLegalCollectionName)
+                    .Select(dir => new CodexCollection(dir)));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to find existing collections in {CodexCollection.CollectionsPath}", ex);
+                AllCodexCollections = new();
+            }
 
             LoadInitialCollection();
 
@@ -112,7 +130,20 @@ namespace COMPASS.ViewModels
         #region Methods and Commands
         private void LoadInitialCollection()
         {
-            Directory.CreateDirectory(CodexCollection.CollectionsPath);
+            while (!Directory.Exists(CodexCollection.CollectionsPath))
+            {
+                try
+                {
+                    Directory.CreateDirectory(CodexCollection.CollectionsPath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
+                    string msg = $"Failed to create a folder to store user data at {SettingsViewModel.CompassDataPath}, " +
+                                 $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
+                    IOService.AskNewCodexFilePath(msg);
+                }
+            }
 
             bool initSuccess = false;
             while (!initSuccess)

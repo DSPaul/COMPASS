@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Tools;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -55,13 +57,18 @@ namespace COMPASS.Models
         {
             if (Directory.Exists(FullPath))
             {
-                var directories = Directory.GetDirectories(FullPath);
-                return directories.Select(dir => new Folder(dir));
+                try
+                {
+                    var directories = Directory.GetDirectories(FullPath);
+                    return directories.Select(dir => new Folder(dir));
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Failed to get subfolders of {FullPath}", ex);
+                }
             }
-            else
-            {
-                return Enumerable.Empty<Folder>();
-            }
+
+            return Enumerable.Empty<Folder>();
         }
 
         /// <summary>

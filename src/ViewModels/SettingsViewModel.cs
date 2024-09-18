@@ -461,25 +461,38 @@ namespace COMPASS.ViewModels
         private RelayCommand? _resetDataPathCommand;
         public RelayCommand ResetDataPathCommand => _resetDataPathCommand ??= new(() => SetNewDataPath(_defaultDataPath));
 
-        private void SetNewDataPath(string newPath)
+        public bool SetNewDataPath(string newPath)
         {
-            if (String.IsNullOrWhiteSpace(newPath) || !Path.Exists(newPath)) { return; }
+            if (String.IsNullOrWhiteSpace(newPath) || !Path.Exists(newPath)) { return false; }
 
             //make sure new folder ends on /COMPASS
             string foldername = new DirectoryInfo(newPath).Name;
             if (foldername != "COMPASS")
             {
                 newPath = Path.Combine(newPath, "COMPASS");
-                Directory.CreateDirectory(newPath);
+                try
+                {
+                    Directory.CreateDirectory(newPath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Failed to create the COMPASS folder at new data path location {newPath}", ex);
+                    return false;
+                }
             }
 
-            if (newPath == CompassDataPath) { return; }
+            if (newPath == CompassDataPath) { return false; }
 
             NewDataPath = newPath;
 
             //Give users choice between moving or copying
-            ChangeDataLocationWindow window = new(this);
-            window.ShowDialog();
+            if (Path.Exists(CompassDataPath))
+            {
+                ChangeDataLocationWindow window = new(this);
+                window.ShowDialog();
+            }
+
+            return true;
         }
 
         private AsyncRelayCommand? _moveToNewDataPathCommand;
