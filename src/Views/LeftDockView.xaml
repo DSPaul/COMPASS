@@ -460,21 +460,31 @@
                             <TextBlock Text="Minimum Rating:" Margin="0,10,0,0"/>
                             <materialDesign:RatingBar Value="{Binding MinRating, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
                                                           IsPreviewValueEnabled="True" Margin="5 3"/>
+                            
                             <TextBlock Text="File Type:" Margin="0,5"/>
                             <Grid>
                                 <TextBlock Text="-- Select File Type --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
-                                <ComboBox ItemsSource="{Binding FileTypeList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedFileType, Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
+                                <ComboBox ItemsSource="{Binding FileTypeList}" FontSize="15" Style="{StaticResource ContentLess}"
+                                          SelectedValue="{Binding SelectedFileType, Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" />
                             </Grid>
+                            
                             <TextBlock Text="Source Website:" Margin="0,5"/>
                             <Grid>
                                 <TextBlock Text="-- Select Website --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
-                                <ComboBox ItemsSource="{Binding DomainList}" FontSize="15"
-                                      SelectedValue="{Binding SelectedDomain,  Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" Style="{StaticResource ContentLess}"/>
+                                <ComboBox ItemsSource="{Binding DomainList}" FontSize="15" Style="{StaticResource ContentLess}"
+                                          SelectedValue="{Binding SelectedDomain,  Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" />
+                            </Grid>
+
+                            <TextBlock Text="Has a value for:" Margin="0,5"/>
+                            <Grid>
+                                <TextBlock Text="-- Select Property --" HorizontalAlignment="Center" Margin="0,0,20,0"/>
+                                <ComboBox ItemsSource="{Binding PossibleEmptyProperties}" DisplayMemberPath="Label"
+                                          FontSize="15" Style="{StaticResource ContentLess}"
+                                          SelectedValue="{Binding SelectedNotEmptyProperty,  Mode=OneWayToSource, UpdateSourceTrigger=LostFocus}" />
                             </Grid>
                         </StackPanel>
                         <Button Content="Clear All" Grid.Row="4" Margin="10" Command="{Binding ClearFiltersCommand}"
-                            Style="{StaticResource IconTextButton}" tools:AP.IconKind="FilterRemove" Background="Red"/>
+                                Style="{StaticResource IconTextButton}" tools:AP.IconKind="FilterRemove" Background="Red"/>
                     </Grid>
                 </ScrollViewer>
             </ContentControl>

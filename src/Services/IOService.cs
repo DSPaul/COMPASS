@@ -338,6 +338,34 @@ namespace COMPASS.Services
                 return null;
             }
         }
+
+        /// <summary>
+        /// If the exsting codex path is inaccessable for any reason, prompt the user to pick another one
+        /// </summary>
+        /// <returns></returns>
+        public static void AskNewCodexFilePath(string msg)
+        {
+            var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+
+            Notification pickNewPath = new("Pick a location to save your data", msg, Severity.Warning);
+            pickNewPath.ConfirmText = "Continue";
+            windowedNotificationService.Show(pickNewPath);
+
+            bool success = false;
+            while (!success)
+            {
+                string? newPath = PickFolder();
+                if (!string.IsNullOrWhiteSpace(newPath) && Path.Exists(newPath))
+                {
+                    success = SettingsViewModel.GetInstance().SetNewDataPath(newPath);
+                }
+                else
+                {
+                    Notification notValid = new("Invalid path", $"{newPath} is not a valid path, please try again", Severity.Warning);
+                    windowedNotificationService.Show(notValid);
+                }
+            }
+        }
         #endregion
 
         /// <summary>

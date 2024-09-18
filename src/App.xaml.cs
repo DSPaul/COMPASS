@@ -2,7 +2,9 @@
 using COMPASS.Interfaces;
 using COMPASS.Models.Enums;
 using COMPASS.Services;
+using COMPASS.Tools;
 using COMPASS.ViewModels;
+using System;
 using System.IO;
 using System.Windows;
 
@@ -15,7 +17,20 @@ namespace COMPASS
     {
         public App()
         {
-            Directory.CreateDirectory(SettingsViewModel.CompassDataPath);
+            try
+            {
+                if (!Directory.Exists(SettingsViewModel.CompassDataPath))
+                {
+                    Directory.CreateDirectory(SettingsViewModel.CompassDataPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to create folder at compass data path, so data cannot be saved", ex);
+                string msg = $"Failed to create a folder to store user data at {SettingsViewModel.CompassDataPath}, " +
+                             $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
+                IOService.AskNewCodexFilePath(msg);
+            }
         }
 
         private static IContainer? _container;

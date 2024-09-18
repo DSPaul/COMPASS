@@ -47,9 +47,16 @@ namespace COMPASS.ViewModels
         {
             if (Properties.Settings.Default.justUpdated)
             {
-                Properties.Settings.Default.Upgrade();
-                Properties.Settings.Default.justUpdated = false;
-                Properties.Settings.Default.Save();
+                try
+                {
+                    Properties.Settings.Default.Upgrade();
+                    Properties.Settings.Default.justUpdated = false;
+                    Properties.Settings.Default.Save();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Failed to Update & Save Preferences", ex);
+                }
             }
         }
 

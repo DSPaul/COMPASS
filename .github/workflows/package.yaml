@@ -4,17 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version number that will appear in the exe name'
+        description: 'Version number (*.*.*), no prefix'
         required: true
         type: string
       branch:
-        description: 'the branch used to create the installer'
+        description: 'the branch to checkout'
         required: true
         type: string
 
 jobs:
-  create-installer:
-    name: Build
+  build:
+    name: Build, package and Sign
     runs-on: windows-latest
 
     steps:
@@ -33,17 +33,53 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
-    - name: publish
+    - name: Publish
       run: dotnet publish -p:PublishProfile=FolderProfile.pubxml
-    
-    - name: package
+      
+      #upload the main exe so it can be signed
+    - name: Upload app exe
+      id: upload-exe
+      uses: actions/upload-artifact@v4
+      with:
+        name: COMPASS_exe
+        path: .\src\bin\Publish\win-x64\COMPASS.exe
+
+    - name: remove unsigned exe
+      shell: pwsh
+      run: rm .\src\bin\Publish\win-x64\COMPASS.exe
+
+    - name: Sign app
+      id: signing-app
+      uses: signpath/github-action-submit-signing-request@v1
+      with:
+        api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+        organization-id: 2f2c8b60-b250-4dd2-8827-045fa9cc65e6
+        project-slug: COMPASS
+        signing-policy-slug: release-signing 
+        github-artifact-id: ${{steps.upload-exe.outputs.artifact-id}}
+        wait-for-completion: true
+        output-artifact-directory: .\src\bin\Publish\win-x64\
+
+    - name: Package
       run: iscc Deployment/install.iss
 
     - name: Upload installer
+      id: upload-installer
       uses: actions/upload-artifact@v4
       with:
         name: COMPASS_Installer
         path: .\Deployment\Versions\${{ inputs.version }}\COMPASS_Setup_${{ inputs.version }}.exe
+
+    - name: Sign installer
+      uses: signpath/github-action-submit-signing-request@v1
+      with:
+        api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+        organization-id: 2f2c8b60-b250-4dd2-8827-045fa9cc65e6
+        project-slug: COMPASS
+        signing-policy-slug: release-signing
+        github-artifact-id: ${{steps.upload-installer.outputs.artifact-id}}
+        wait-for-completion: false
+
 
     
 

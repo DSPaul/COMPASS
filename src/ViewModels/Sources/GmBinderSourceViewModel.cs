@@ -58,8 +58,11 @@ namespace COMPASS.ViewModels.Sources
                 await Task.Run(() => driver.Navigate().GoToUrl(codex.Sources.SourceURL));
                 var coverPage = driver.FindElement(OpenQA.Selenium.By.Id("p1"));
                 //screenshot and download the image
-                IMagickImage image = CoverService.GetCroppedScreenShot(driver, coverPage);
-                CoverService.SaveCover(image, codex);
+                using (IMagickImage image = CoverService.GetCroppedScreenShot(driver, coverPage))
+                {
+                    CoverService.SaveCover(codex, image);
+                }
+                codex.RefreshThumbnail();
                 return true;
             }
             catch (Exception ex)

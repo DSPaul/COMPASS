@@ -105,8 +105,11 @@ namespace COMPASS.ViewModels.Sources
                 location.Y += coverPage.Location.Y;
 
                 //screenshot and download the image
-                IMagickImage image = CoverService.GetCroppedScreenShot(driver, location, coverPage.Size);
-                CoverService.SaveCover(image, codex);
+                using (IMagickImage image = CoverService.GetCroppedScreenShot(driver, location, coverPage.Size))
+                {
+                    CoverService.SaveCover(codex, image);
+                }
+                codex.RefreshThumbnail();
                 return true;
             }
             catch (Exception ex)

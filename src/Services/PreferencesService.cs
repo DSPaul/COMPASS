@@ -27,13 +27,13 @@ namespace COMPASS.Services
 
         public void SavePreferences()
         {
-            Properties.Settings.Default.Save();
-
-            if (_preferences == null) return; //don't save when they aren't loaded
-            PreferencesDto dto = _preferences.ToDto();
-
             try
             {
+                Properties.Settings.Default.Save();
+
+                if (_preferences == null) return; //don't save when they aren't loaded
+                PreferencesDto dto = _preferences.ToDto();
+
                 string tempFileName = PreferencesFilePath + ".tmp";
 
                 lock (writeLocker)

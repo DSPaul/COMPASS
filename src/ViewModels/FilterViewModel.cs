@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Models;
+using COMPASS.Models.CodexProperties;
 using COMPASS.Models.Filters;
 using COMPASS.Services;
 using COMPASS.Tools;
@@ -94,7 +95,6 @@ namespace COMPASS.ViewModels
                 new OfflineSourceFilter(),
                 new OnlineSourceFilter(),
                 new PhysicalSourceFilter(),
-                new HasISBNFilter(),
                 new FavoriteFilter(),
             };
 
@@ -163,6 +163,33 @@ namespace COMPASS.ViewModels
             get => _domainList;
             set => SetProperty(ref _domainList, value);
         }
+
+        public CodexProperty SelectedNotEmptyProperty
+        {
+            set
+            {
+                if (value is not null)
+                {
+                    Filter notEmptyFilter = new NotEmptyFilter(value);
+                    AddFilter(notEmptyFilter, Include);
+                }
+            }
+        }
+
+        public List<CodexProperty> PossibleEmptyProperties { get; } = new()
+        {
+            CodexProperty.GetInstance(nameof(Codex.Authors))!,
+            CodexProperty.GetInstance(nameof(Codex.CoverArt))!,
+            CodexProperty.GetInstance(nameof(Codex.Description))!,
+            CodexProperty.GetInstance(nameof(Codex.Sources.ISBN))!,
+            CodexProperty.GetInstance(nameof(Codex.PageCount))!,
+            CodexProperty.GetInstance(nameof(Codex.Publisher))!,
+            CodexProperty.GetInstance(nameof(Codex.Rating))!,
+            CodexProperty.GetInstance(nameof(Codex.ReleaseDate))!,
+            CodexProperty.GetInstance(nameof(Codex.Tags))!,
+            CodexProperty.GetInstance(nameof(Codex.Title))!,
+            CodexProperty.GetInstance(nameof(Codex.Version))!,
+        };
 
         //Selected Start and Stop Release Dates
         private DateTime? _startReleaseDate;
