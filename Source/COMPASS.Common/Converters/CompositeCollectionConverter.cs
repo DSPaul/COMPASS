@@ -1,6 +1,5 @@
 ﻿using Avalonia.Data.Converters;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -10,15 +9,18 @@ namespace COMPASS.Common.Converters
     {
         public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
         {
-            CompositeCollection compositeCollection = new();
+            //TODO
+            object? compositeCollection = null;
 
-            foreach (var collection in values)
-            {
-                if (collection is IEnumerable enumerable)
-                {
-                    compositeCollection.Add(new CollectionContainer { Collection = enumerable });
-                }
-            }
+            //CompositeCollection compositeCollection = new();
+
+            //foreach (var collection in values)
+            //{
+            //    if (collection is IEnumerable enumerable)
+            //    {
+            //        compositeCollection.Add(new CollectionContainer { Collection = enumerable });
+            //    }
+            //}
 
             return compositeCollection;
         }

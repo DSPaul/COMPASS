@@ -29,8 +29,6 @@ namespace COMPASS.Common.Services
         {
             try
             {
-                Properties.Settings.Default.Save();
-
                 if (_preferences == null) return; //don't save when they aren't loaded
                 PreferencesDto dto = _preferences.ToDto();
 

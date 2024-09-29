@@ -351,10 +351,12 @@ namespace COMPASS.Common.ViewModels
         public void AddFilter(Filter? filter, bool include = true)
         {
             if (filter is null) return;
-            if (Keyboard.Modifiers == ModifierKeys.Alt)
-            {
-                include = false;
-            }
+
+            //TODO: check how keyboard shortcuts are done in avalonia
+            //if (Keyboard.Modifiers == ModifierKeys.Alt)
+            //{
+            //    include = false;
+            //}
 
             ObservableCollection<Filter> target = include ? IncludedFilters : ExcludedFilters;
             ObservableCollection<Filter> other = !include ? IncludedFilters : ExcludedFilters;
@@ -494,10 +496,12 @@ namespace COMPASS.Common.ViewModels
 
         private void ApplySorting()
         {
-            var sortDescr = CollectionViewSource.GetDefaultView(FilteredCodices).SortDescriptions;
-            sortDescr.Clear();
-            if (string.IsNullOrEmpty(SortProperty)) return;
-            sortDescr.Add(new SortDescription(SortProperty, SortDirection));
+            //TODO: check what the avalonia equivalent is for collectionViewSource and sorting
+
+            //var sortDescr = CollectionViewSource.GetDefaultView(FilteredCodices).SortDescriptions;
+            //sortDescr.Clear();
+            //if (string.IsNullOrEmpty(SortProperty)) return;
+            //sortDescr.Add(new SortDescription(SortProperty, SortDirection));
         }
         private void ApplyFilters(bool force = false)
         {

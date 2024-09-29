@@ -12,7 +12,7 @@ namespace COMPASS.Common.Models.Preferences
         public Preferences()
         {
             _openCodexPriority = new(OpenCodexFunctions);
-            CodexProperties = Codex.MedataProperties.ToList();
+            CodexProperties = Codex.MetadataProperties.ToList();
             ListLayoutPreferences = new();
             CardLayoutPreferences = new();
             TileLayoutPreferences = new();

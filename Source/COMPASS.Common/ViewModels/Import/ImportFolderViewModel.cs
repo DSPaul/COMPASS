@@ -187,13 +187,11 @@ namespace COMPASS.Common.ViewModels.Import
             //Show the wizard
             if (Steps.Any())
             {
-                ImportFolderWizard importFolderWindow = new(this)
-                {
-                    Owner = Application.Current.MainWindow
-                };
+                ImportFolderWizard importFolderWindow = new(this);
 
-                var dialogResult = importFolderWindow.ShowDialog();
-                if (dialogResult == false) return new();
+                //TODO, ShowDialog is now async, find out how we wait untill completion
+                var dialogResult = importFolderWindow.ShowDialog(App.MainWindow);
+                if (!dialogResult.IsCompletedSuccessfully) return new();
             }
 
             //filer toImport so it only contains files from checked subfolders

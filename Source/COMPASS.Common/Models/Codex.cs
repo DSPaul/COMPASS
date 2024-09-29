@@ -277,7 +277,7 @@ namespace COMPASS.Common.Models
         }
         #endregion
 
-        public static readonly List<CodexProperty> MedataProperties = new()
+        public static readonly List<CodexProperty> MetadataProperties = new()
         {
             CodexProperty.GetInstance(nameof(Title))!,
             CodexProperty.GetInstance(nameof(Authors))!,

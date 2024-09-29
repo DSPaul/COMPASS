@@ -91,11 +91,8 @@ namespace COMPASS.Common.ViewModels.Import
             progressVM.ResetCounter();
             progressVM.TotalAmount = 1;
 
-            ProgressWindow progressWindow = new(3)
-            {
-                Owner = Application.Current.MainWindow
-            };
-            progressWindow.Show();
+            ProgressWindow progressWindow = new(3);
+            progressWindow.Show(App.MainWindow);
 
             Codex newCodex = await ImportURLAsync();
 
@@ -104,18 +101,18 @@ namespace COMPASS.Common.ViewModels.Import
                 CodexEditWindow editWindow = new(new CodexEditViewModel(newCodex))
                 {
                     Topmost = true,
-                    Owner = Application.Current.MainWindow
                 };
-                editWindow.ShowDialog();
+                await editWindow.ShowDialog(App.MainWindow);
             }
         }
 
-        private RelayCommand? _openBarcodeScannerCommand;
-        public RelayCommand OpenBarcodeScannerCommand => _openBarcodeScannerCommand ??= new(OpenBarcodeScanner);
-        private void OpenBarcodeScanner()
+        private AsyncRelayCommand? _openBarcodeScannerCommand;
+        public AsyncRelayCommand OpenBarcodeScannerCommand => _openBarcodeScannerCommand ??= new(OpenBarcodeScanner);
+        private async Task OpenBarcodeScanner()
         {
             BarcodeScanWindow bcScanWindow = new();
-            if (bcScanWindow.ShowDialog() == true)
+            await bcScanWindow.ShowDialog(App.MainWindow);
+            if (!string.IsNullOrEmpty(bcScanWindow.DecodedString))
             {
                 InputURL = bcScanWindow.DecodedString;
             }

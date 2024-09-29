@@ -264,7 +264,7 @@ namespace COMPASS.Common.Services.FileSystem
 
             FilePickerOpenOptions options = new()
             {
-                FileTypeFilter = filesService.SatchelExtensionFilter,
+                FileTypeFilter = [filesService.SatchelExtensionFilter],
                 AllowMultiple = false,
                 Title = "Choose a COMPASS Satchel file to import",
             };
@@ -275,9 +275,8 @@ namespace COMPASS.Common.Services.FileSystem
                 var files = await filesService.OpenFilesAsync(options);
 
                 if (!files.Any()) return null;
-                var file = files.Single();
+                using var file = files.Single();
                 path = file.Path.AbsolutePath;
-                file.Dispose();
             }
 
             var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
@@ -369,7 +368,7 @@ namespace COMPASS.Common.Services.FileSystem
         /// If the exsting codex path is inaccessable for any reason, prompt the user to pick another one
         /// </summary>
         /// <returns></returns>
-        public static void AskNewCodexFilePath(string msg)
+        public static async Task AskNewCodexFilePath(string msg)
         {
             var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
 
@@ -380,10 +379,10 @@ namespace COMPASS.Common.Services.FileSystem
             bool success = false;
             while (!success)
             {
-                string? newPath = PickFolder();
+                string? newPath = await PickFolder();
                 if (!string.IsNullOrWhiteSpace(newPath) && Path.Exists(newPath))
                 {
-                    success = SettingsViewModel.GetInstance().SetNewDataPath(newPath);
+                    success = await SettingsViewModel.GetInstance().SetNewDataPath(newPath);
                 }
                 else
                 {

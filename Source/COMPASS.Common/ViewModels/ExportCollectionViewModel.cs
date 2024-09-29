@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Autofac;
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
@@ -69,7 +71,7 @@ namespace COMPASS.Common.ViewModels
 
             CloseAction?.Invoke();
 
-            string? targetPath = ChooseDestination();
+            string? targetPath = await ChooseDestination();
             if (targetPath is null) return;
 
             await ExportToFile(targetPath);
@@ -103,18 +105,20 @@ namespace COMPASS.Common.ViewModels
             ContentSelectorVM.ApplyAllSelections();
         }
 
-        private string? ChooseDestination()
+        private async Task<string?> ChooseDestination()
         {
-            SaveFileDialog saveFileDialog = new()
-            {
-                Filter = Constants.SatchelExtensionFilter,
-                FileName = CollectionToExport.DirectoryName,
-                DefaultExt = Constants.SatchelExtension
-            };
+            var filesService = App.Container.Resolve<IFilesService>();
 
-            if (saveFileDialog.ShowDialog() == true)
+            using var saveFile = await filesService.SaveFileAsync(new()
             {
-                return saveFileDialog.FileName;
+                FileTypeChoices = [filesService.SatchelExtensionFilter],
+                SuggestedFileName = CollectionToExport.DirectoryName,
+                DefaultExtension = Constants.SatchelExtension
+            });
+
+            if (saveFile != null)
+            {
+                return saveFile.Path.AbsolutePath;
             }
             return null;
         }

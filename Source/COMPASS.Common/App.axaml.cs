@@ -25,7 +25,8 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow();
+            MainWindow = new MainWindow();
+            desktop.MainWindow = MainWindow;
 
             Container = BuildContainer(desktop.MainWindow);
 
@@ -34,6 +35,8 @@ public partial class App : Application
 
         base.OnFrameworkInitializationCompleted();
     }
+
+    public static Window MainWindow { get; private set; }
 
     public static IContainer Container { get; set; }
 

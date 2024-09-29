@@ -28,9 +28,10 @@ namespace COMPASS.Common.ViewModels
 
             if (files.Any())
             {
+                using var file = files.Single();
                 //find the replaced part of the path
                 string oldPath = _codex.Sources.Path;
-                string newPath = files.Single().Path.AbsolutePath;
+                string newPath = file.Path.AbsolutePath;
                 var (toReplace, replaceWith) = IOService.GetDifferingRoot(oldPath, newPath);
 
                 //fix the path of this codex

@@ -1,4 +1,6 @@
-﻿using COMPASS.Common.Models;
+﻿using Autofac;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
@@ -18,7 +20,7 @@ namespace COMPASS.Common.ViewModels.Import
             switch (source)
             {
                 case ImportSource.File:
-                    pathsToImport = ChooseFiles();
+                    pathsToImport = await ChooseFiles();
                     await ImportFilesAsync(pathsToImport, targetCollection);
                     break;
                 case ImportSource.Folder:
@@ -26,43 +28,52 @@ namespace COMPASS.Common.ViewModels.Import
                     await importFolderVM.Import();
                     break;
                 case ImportSource.Manual:
-                    ImportManual();
+                    await ImportManual();
                     break;
                 case ImportSource.GmBinder:
                 case ImportSource.Homebrewery:
                 case ImportSource.GoogleDrive:
                 case ImportSource.GenericURL:
                 case ImportSource.ISBN:
-                    ImportURL(source);
+                    await ImportURL(source);
                     break;
             }
         }
 
-        public static List<string> ChooseFiles()
+        public static async Task<List<string>> ChooseFiles()
         {
-            OpenFileDialog openFileDialog = new()
-            {
-                AddExtension = false,
-                Multiselect = true
-            };
+            var filesService = App.Container.Resolve<IFilesService>();
 
-            if (openFileDialog.ShowDialog() == false) return new();
-            return openFileDialog.FileNames.ToList();
+            var files = await filesService.OpenFilesAsync(new()
+            {
+                AllowMultiple = true,
+            });
+
+            if (!files.Any()) return [];
+
+            var paths = files.Select(f => f.Path.AbsolutePath).ToList();
+
+            foreach (var file in files)
+            {
+                file.Dispose();
+            }
+
+            return paths;
         }
 
-        public static void ImportManual()
+        public static async Task ImportManual()
         {
             CodexEditWindow editWindow = new(new CodexEditViewModel(null));
-            editWindow.ShowDialog();
             editWindow.Topmost = true;
+            await editWindow.ShowDialog(App.MainWindow);
         }
 
-        public static void ImportURL(ImportSource source)
+        public static async Task ImportURL(ImportSource source)
         {
             ImportURLViewModel importVM = new(source);
             ImportURLWindow window = new(importVM);
             importVM.Window = window;
-            window.Show();
+            await window.ShowDialog(App.MainWindow);
         }
 
         public static async Task ImportFilesAsync(List<string> paths, CodexCollection? targetCollection = null)

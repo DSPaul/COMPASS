@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
@@ -215,9 +216,9 @@ namespace COMPASS.Common.ViewModels
         #endregion
 
         #region Tag Context Menu
-        private RelayCommand? _createChildCommand;
-        public RelayCommand CreateChildCommand => _createChildCommand ??= new(CreateChildTag);
-        private void CreateChildTag()
+        private AsyncRelayCommand? _createChildCommand;
+        public AsyncRelayCommand CreateChildCommand => _createChildCommand ??= new(CreateChildTag);
+        private async Task CreateChildTag()
         {
             if (ContextTag is not null)
             {
@@ -226,9 +227,11 @@ namespace COMPASS.Common.ViewModels
                     Parent = ContextTag,
                     SerializableBackgroundColor = null,
                 };
-                TagPropWindow tpw = new(new TagEditViewModel(newTag, true));
-                tpw.ShowDialog();
-                tpw.Topmost = true;
+                TagPropWindow tpw = new(new TagEditViewModel(newTag, true))
+                {
+                    Topmost = true
+                };
+                await tpw.ShowDialog(App.MainWindow);
             }
         }
 
@@ -264,15 +267,17 @@ namespace COMPASS.Common.ViewModels
             BuildTagTreeView();
         }
 
-        private RelayCommand? _editTagCommand;
-        public RelayCommand EditTagCommand => _editTagCommand ??= new(EditTag);
-        public void EditTag()
+        private AsyncRelayCommand? _editTagCommand;
+        public AsyncRelayCommand EditTagCommand => _editTagCommand ??= new(EditTag);
+        public async Task EditTag()
         {
             if (ContextTag is not null)
             {
-                TagPropWindow tpw = new(new TagEditViewModel(ContextTag, false));
-                tpw.ShowDialog();
-                tpw.Topmost = true;
+                TagPropWindow tpw = new(new TagEditViewModel(ContextTag, false))
+                {
+                    Topmost = true
+                };
+                await tpw.ShowDialog(App.MainWindow);
             }
         }
 

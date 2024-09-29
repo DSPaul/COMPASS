@@ -37,12 +37,17 @@ namespace COMPASS.Common.Services.FileSystem
             return await _target.StorageProvider.SaveFilePickerAsync(options);
         }
 
-        public static List<FilePickerFileType> SatchelExtensionFilter =>
-            [
-                new ("COMPASS Satchel File")
-                {
-                    Patterns = [$"*.{Constants.SatchelExtension}"]
-                }
-            ];
+        public FilePickerFileType SatchelExtensionFilter =>
+            new("COMPASS Satchel File")
+            {
+                Patterns = [$"*.{Constants.SatchelExtension}"]
+            };
+
+
+        public FilePickerFileType ZipExtensionFilter =>
+            new("Zip file")
+            {
+                Patterns = [$"*.zip"]
+            };
     }
 }

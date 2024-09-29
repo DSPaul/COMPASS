@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Services;
 
 namespace COMPASS.Common.ViewModels

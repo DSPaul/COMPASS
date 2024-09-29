@@ -5,10 +5,10 @@ namespace COMPASS.Common.Services
 {
     public class WindowedNotificationService : INotificationService
     {
-        public void Show(Notification notification)
+        public async void Show(Notification notification)
         {
             var window = new NotificationWindow(notification);
-            _ = window.ShowDialog();
+            await window.ShowDialog(App.MainWindow);
         }
     }
 }

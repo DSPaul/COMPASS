@@ -1,6 +1,10 @@
-﻿using Avalonia.Input;
+﻿using Autofac;
+using Avalonia.Input;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
@@ -8,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -63,18 +66,22 @@ namespace COMPASS.Common.ViewModels
 
         #region Methods and Commands
 
-        private RelayCommand? _browsePathCommand;
-        public RelayCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
-        private void BrowsePath()
+        private AsyncRelayCommand? _browsePathCommand;
+        public AsyncRelayCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
+        private async Task BrowsePath()
         {
-            OpenFileDialog openFileDialog = new()
+            var filesService = App.Container.Resolve<IFilesService>();
+
+            var files = await filesService.OpenFilesAsync(new()
             {
-                AddExtension = false,
-                InitialDirectory = Path.GetDirectoryName(TempCodex.Sources.Path) ?? String.Empty
-            };
-            if (openFileDialog.ShowDialog() == true)
+                //TODO, this needs to be a folder, not a path
+                //SuggestedStartLocation = Path.GetDirectoryName(TempCodex.Sources.Path) ?? string.Empty)
+            });
+
+            if (files.Any())
             {
-                TempCodex.Sources.Path = openFileDialog.FileName;
+                using var file = files.Single();
+                TempCodex.Sources.Path = file.Path.AbsolutePath;
             }
         }
 
@@ -110,9 +117,9 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        private RelayCommand? _quickCreateTagCommand;
-        public RelayCommand QuickCreateTagCommand => _quickCreateTagCommand ??= new(QuickCreateTag);
-        public void QuickCreateTag()
+        private AsyncRelayCommand? _quickCreateTagCommand;
+        public AsyncRelayCommand QuickCreateTagCommand => _quickCreateTagCommand ??= new(QuickCreateTag);
+        public async Task QuickCreateTag()
         {
             //keep track of count to check of tags were created
             int tagCount = MainViewModel.CollectionVM.CurrentCollection.RootTags.Count;
@@ -122,7 +129,7 @@ namespace COMPASS.Common.ViewModels
             {
                 Topmost = true
             };
-            _ = tpw.ShowDialog();
+            await tpw.ShowDialog(App.MainWindow);
 
             if (MainViewModel.CollectionVM.CurrentCollection.RootTags.Count > tagCount) //new tag was created
             {
@@ -173,19 +180,21 @@ namespace COMPASS.Common.ViewModels
             RefreshCover();
         }
 
-        private RelayCommand? _chooseCoverCommand;
-        public RelayCommand ChooseCoverCommand => _chooseCoverCommand ??= new(ChooseCover);
-        private void ChooseCover()
+        private AsyncRelayCommand? _chooseCoverCommand;
+        public AsyncRelayCommand ChooseCoverCommand => _chooseCoverCommand ??= new(ChooseCover);
+        private async Task ChooseCover()
         {
-            OpenFileDialog openFileDialog = new()
+            var filesService = App.Container.Resolve<IFilesService>();
+
+            var files = await filesService.OpenFilesAsync(new()
             {
-                AddExtension = false,
-                Multiselect = false,
-                Filter = "Image files (*.jpg, *.jpeg, *.png) | *.jpg; *.jpeg; *.png"
-            };
-            if (openFileDialog.ShowDialog() == true)
+                FileTypeFilter = [FilePickerFileTypes.ImageAll],
+            });
+
+            if (files.Any())
             {
-                CoverService.GetCoverFromImage(openFileDialog.FileName, TempCodex);
+                using var file = files.Single();
+                CoverService.GetCoverFromImage(file.Path.AbsolutePath, TempCodex);
                 RefreshCover();
             }
         }

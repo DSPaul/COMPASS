@@ -1,6 +1,5 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
@@ -41,35 +40,37 @@ namespace COMPASS.Common.ViewModels
 
         private void InitAutoUpdates()
         {
-            //Set URL of xml file
-            AutoUpdater.AppCastURL = Constants.AutoUpdateXMLPath;
-            //Disable skip
-            AutoUpdater.ShowSkipButton = false;
-            //Set Icon
-            string? runningExePath = Process.GetCurrentProcess().MainModule?.FileName;
-            if (!String.IsNullOrWhiteSpace(runningExePath))
-            {
-                AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath)?.ToBitmap();
-            }
-#if DEBUG
-            //AutoUpdater.InstalledVersion = new("0.2.0"); //for testing only
-#endif
-            //set remind later time so users can go back to the app in one click
-            AutoUpdater.LetUserSelectRemindLater = false;
-            AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
-            AutoUpdater.RemindLaterAt = 1;
-            //Set download directory
-            AutoUpdater.DownloadPath = Constants.InstallersPath;
-            //check updates every 4 hours
-            DispatcherTimer timer = new() { Interval = TimeSpan.FromHours(4) };
-            timer.Tick += delegate
-            {
-                AutoUpdater.Mandatory = false;
-                AutoUpdater.Start();
-            };
-            timer.Start();
-            //check at startup
-            AutoUpdater.Start();
+            //TODO: this will all need to be replaced
+
+            //            //Set URL of xml file
+            //            AutoUpdater.AppCastURL = Constants.AutoUpdateXMLPath;
+            //            //Disable skip
+            //            AutoUpdater.ShowSkipButton = false;
+            //            //Set Icon
+            //            string? runningExePath = Process.GetCurrentProcess().MainModule?.FileName;
+            //            if (!String.IsNullOrWhiteSpace(runningExePath))
+            //            {
+            //                AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath)?.ToBitmap();
+            //            }
+            //#if DEBUG
+            //            //AutoUpdater.InstalledVersion = new("0.2.0"); //for testing only
+            //#endif
+            //            //set remind later time so users can go back to the app in one click
+            //            AutoUpdater.LetUserSelectRemindLater = false;
+            //            AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
+            //            AutoUpdater.RemindLaterAt = 1;
+            //            //Set download directory
+            //            AutoUpdater.DownloadPath = Constants.InstallersPath;
+            //            //check updates every 4 hours
+            //            DispatcherTimer timer = new() { Interval = TimeSpan.FromHours(4) };
+            //            timer.Tick += delegate
+            //            {
+            //                AutoUpdater.Mandatory = false;
+            //                AutoUpdater.Start();
+            //            };
+            //            timer.Start();
+            //            //check at startup
+            //            AutoUpdater.Start();
         }
 
         private void InitConnectionTimer()
@@ -127,10 +128,7 @@ namespace COMPASS.Common.ViewModels
         public RelayCommand<string> OpenSettingsCommand => _openSettingsCommand ??= new(OpenSettings);
         public void OpenSettings(string? tab = "")
         {
-            var settingsWindow = new SettingsWindow(SettingsViewModel.GetInstance(), tab ?? "")
-            {
-                Owner = Application.Current.MainWindow
-            };
+            var settingsWindow = new SettingsWindow(SettingsViewModel.GetInstance(), tab ?? "");
             settingsWindow.Show();
         }
 

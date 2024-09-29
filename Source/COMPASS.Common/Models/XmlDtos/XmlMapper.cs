@@ -211,7 +211,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 for (int i = 0; i < propertyDtos.Count; i++)
                 {
                     CodexPropertyDto propDto = propertyDtos[i];
-                    var foundProp = Codex.MedataProperties.Find(p => p.Label == propDto.Label);
+                    var foundProp = Codex.MetadataProperties.Find(p => p.Label == propDto.Label);
                     if (foundProp != null)
                     {
                         propDto.Name = foundProp.Name;
@@ -222,7 +222,7 @@ namespace COMPASS.Common.Models.XmlDtos
 
             var props = new List<CodexProperty>();
 
-            foreach (var defaultProp in Codex.MedataProperties)
+            foreach (var defaultProp in Codex.MetadataProperties)
             {
                 CodexPropertyDto? propDto = propertyDtos.Find(p => p.Name == defaultProp.Name);
                 // Add Preferences from defaults if they weren't found on the loaded Preferences

@@ -75,18 +75,16 @@ namespace COMPASS.Common.Tools
             string restartOption = "Restart COMPASS.";
             string submitOption = "Submit an anonymous crash report.";
             crashNotification.Options.Add(new(restartOption, true));
-            crashNotification.Options.Add(new(submitOption, true)); 
+            crashNotification.Options.Add(new(submitOption, true));
 
             App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(crashNotification);
 
             if (crashNotification.IsOptionSelected(submitOption))
             {
-                var report = new CrashReport(e.Exception);
+                var report = new CrashReport(e);
                 var result = new ApiClientService().PostAsync(report, "submit/crash").Result;
                 Info(result.ToString());
             }
-
-            e.Handled = true;
 
             //Restart
             if (crashNotification.IsOptionSelected(restartOption))

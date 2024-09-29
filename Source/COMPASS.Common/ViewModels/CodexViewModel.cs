@@ -4,7 +4,9 @@ using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
@@ -54,11 +56,8 @@ namespace COMPASS.Common.ViewModels
             {
                 Logger.Warn($"Failed to open {toOpen.Sources.Path}", ex);
 
-                FileNotFoundWindow fileNotFoundWindow = new(new(toOpen))
-                {
-                    Owner = Application.Current.MainWindow
-                };
-                return fileNotFoundWindow.ShowDialog() ?? false;
+                FileNotFoundWindow fileNotFoundWindow = new(new(toOpen));
+                return fileNotFoundWindow.ShowDialog(App.MainWindow).IsCompletedSuccessfully; //TODO, this should be async
             }
         }
         public static bool CanOpenCodexLocally(Codex? toOpen)
@@ -131,33 +130,35 @@ namespace COMPASS.Common.ViewModels
         #region Edit Codex
 
         //Edit File
-        private RelayCommand<Codex>? _editCodexCommand;
-        public RelayCommand<Codex> EditCodexCommand => _editCodexCommand ??= new(EditCodex);
-        public static void EditCodex(Codex? toEdit)
+        private AsyncRelayCommand<Codex>? _editCodexCommand;
+        public AsyncRelayCommand<Codex> EditCodexCommand => _editCodexCommand ??= new(EditCodex);
+        public static async Task EditCodex(Codex? toEdit)
         {
             if (toEdit is null) return;
             CodexEditWindow editWindow = new(new CodexEditViewModel(toEdit));
-            editWindow.ShowDialog();
             editWindow.Topmost = true;
+            await editWindow.ShowDialog(App.MainWindow);
         }
 
         //Edit Multiple files
-        private RelayCommand<IList>? _editCodicesCommand;
-        public RelayCommand<IList> EditCodicesCommand => _editCodicesCommand ??= new(EditCodices);
-        public static void EditCodices(IList? toEdit)
+        private AsyncRelayCommand<IList>? _editCodicesCommand;
+        public AsyncRelayCommand<IList> EditCodicesCommand => _editCodicesCommand ??= new(EditCodices);
+        public static async Task EditCodices(IList? toEdit)
         {
             List<Codex>? toEditList = toEdit?.Cast<Codex>().ToList();
             if (toEditList is null) return;
 
             if (toEditList.Count == 1)
             {
-                EditCodex(toEditList.First());
+                await EditCodex(toEditList.First());
                 return;
             }
 
-            CodexBulkEditWindow window = new(new CodexBulkEditViewModel(toEditList));
-            window.ShowDialog();
-            window.Topmost = true;
+            CodexBulkEditWindow window = new(new CodexBulkEditViewModel(toEditList))
+            {
+                Topmost = true
+            };
+            await window.ShowDialog(App.MainWindow);
         }
 
         #endregion
@@ -493,45 +494,48 @@ namespace COMPASS.Common.ViewModels
         {
             List<Codex> codices = selectedItems.Cast<Codex>().ToList();
             int count = selectedItems.Count;
-            if (count > 0)
-            {
-                switch (e.Key)
-                {
-                    case Key.Delete:
-                        if (Keyboard.Modifiers == ModifierKeys.Alt)
-                        {
-                            //Alt + Delete
-                            BanishCodices(codices);
-                        }
-                        else
-                        {
-                            //Delete
-                            DeleteCodices(codices);
-                        }
-                        e.Handled = true;
-                        break;
-                    case Key.Enter:
-                        OpenSelectedCodices(codices);
-                        e.Handled = true;
-                        break;
-                    case Key.E:
-                        if (Keyboard.Modifiers == ModifierKeys.Control)
-                        {
-                            //CTRL + E
-                            EditCodices(codices);
-                            e.Handled = true;
-                        }
-                        break;
-                    case Key.F:
-                        if (Keyboard.Modifiers == ModifierKeys.Control)
-                        {
-                            //CTRL + F
-                            FavoriteCodices(codices);
-                            e.Handled = true;
-                        }
-                        break;
-                }
-            }
+
+            //TODO, check how keybinds are handled in avalonia
+
+            //if (count > 0)
+            //{
+            //    switch (e.Key)
+            //    {
+            //        case Key.Delete:
+            //            if (Keyboard.Modifiers == ModifierKeys.Alt)
+            //            {
+            //                //Alt + Delete
+            //                BanishCodices(codices);
+            //            }
+            //            else
+            //            {
+            //                //Delete
+            //                DeleteCodices(codices);
+            //            }
+            //            e.Handled = true;
+            //            break;
+            //        case Key.Enter:
+            //            OpenSelectedCodices(codices);
+            //            e.Handled = true;
+            //            break;
+            //        case Key.E:
+            //            if (Keyboard.Modifiers == ModifierKeys.Control)
+            //            {
+            //                //CTRL + E
+            //                EditCodices(codices);
+            //                e.Handled = true;
+            //            }
+            //            break;
+            //        case Key.F:
+            //            if (Keyboard.Modifiers == ModifierKeys.Control)
+            //            {
+            //                //CTRL + F
+            //                FavoriteCodices(codices);
+            //                e.Handled = true;
+            //            }
+            //            break;
+            //    }
+            //}
         }
 
         #region Drag & Drop

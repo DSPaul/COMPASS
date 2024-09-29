@@ -40,7 +40,7 @@ namespace COMPASS.Common.ViewModels
                 Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
                 string msg = $"Failed to create a folder to store user data at {EnvironmentVarsService.CompassDataPath}, " +
                              $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
-                IOService.AskNewCodexFilePath(msg);
+                IOService.AskNewCodexFilePath(msg).Wait();
             }
 
             try
@@ -140,7 +140,7 @@ namespace COMPASS.Common.ViewModels
                     Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
                     string msg = $"Failed to create a folder to store user data at {EnvironmentVarsService.CompassDataPath}, " +
                                  $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
-                    IOService.AskNewCodexFilePath(msg);
+                    IOService.AskNewCodexFilePath(msg).Wait();
                 }
             }
 
@@ -398,9 +398,10 @@ namespace COMPASS.Common.ViewModels
         public AsyncRelayCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags);
         public async Task ExportTags()
         {
-            var savedFile = await App.Container.Resolve<IFilesService>().SaveFileAsync(new()
+            var filesService = App.Container.Resolve<IFilesService>();
+            var savedFile = await filesService.SaveFileAsync(new()
             {
-                FileTypeChoices = FilesService.SatchelExtensionFilter,
+                FileTypeChoices = [filesService.SatchelExtensionFilter],
                 SuggestedFileName = $"{CurrentCollection.DirectoryName}_Tags",
                 DefaultExtension = Constants.SatchelExtension,
             });

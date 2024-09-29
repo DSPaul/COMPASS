@@ -10,6 +10,7 @@ namespace COMPASS.Common.Interfaces
         Task<IList<IStorageFolder>> OpenFoldersAsync(FolderPickerOpenOptions? options = null);
         Task<IStorageFile?> SaveFileAsync(FilePickerSaveOptions? options = null);
 
-        List<FilePickerFileType> SatchelExtensionFilter { get; }
+        FilePickerFileType SatchelExtensionFilter { get; }
+        FilePickerFileType ZipExtensionFilter { get; }
     }
 }

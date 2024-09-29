@@ -1,7 +1,8 @@
-﻿using Avalonia;
+﻿using Autofac;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Filters;
@@ -377,26 +378,28 @@ namespace COMPASS.Common.ViewModels
 
         public string NewDataPath { get; set; } = "";
 
-        private RelayCommand? _changeDataPathCommand;
-        public RelayCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
-        private void ChooseNewDataPath()
+        private AsyncRelayCommand? _changeDataPathCommand;
+        public AsyncRelayCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
+        private async Task ChooseNewDataPath()
         {
-            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog folderBrowserDialog = new()
+            var folders = await App.Container.Resolve<IFilesService>().OpenFoldersAsync(new()
             {
-                Description = "Choose a new data location",
-                //InitialDirectory = CompassDataPath
-            };
-            if (folderBrowserDialog.ShowDialog() == true)
+                Title = "Choose a new data location",
+            });
+
+            if (folders.Any() == true)
             {
-                string newPath = folderBrowserDialog.SelectedPath;
-                SetNewDataPath(newPath);
+                var folder = folders.Single();
+                string newPath = folder.Path.AbsolutePath;
+                folder.Dispose();
+                await SetNewDataPath(newPath);
             }
         }
 
-        private RelayCommand? _resetDataPathCommand;
-        public RelayCommand ResetDataPathCommand => _resetDataPathCommand ??= new(() => SetNewDataPath(EnvironmentVarsService.DefaultDataPath));
+        private AsyncRelayCommand? _resetDataPathCommand;
+        public AsyncRelayCommand ResetDataPathCommand => _resetDataPathCommand ??= new(() => SetNewDataPath(EnvironmentVarsService.DefaultDataPath));
 
-        public bool SetNewDataPath(string newPath)
+        public async Task<bool> SetNewDataPath(string newPath)
         {
             if (String.IsNullOrWhiteSpace(newPath) || !Path.Exists(newPath)) { return false; }
 
@@ -416,15 +419,15 @@ namespace COMPASS.Common.ViewModels
                 }
             }
 
-            if (newPath == EnvironmentVarsService.CompassDataPath) { return; }
+            if (newPath == EnvironmentVarsService.CompassDataPath) { return false; }
 
             NewDataPath = newPath;
 
             //Give users choice between moving or copying
-            if (Path.Exists(CompassDataPath))
+            if (Path.Exists(EnvironmentVarsService.CompassDataPath))
             {
                 ChangeDataLocationWindow window = new(this);
-                window.ShowDialog();
+                await window.ShowDialog(App.MainWindow);
             }
 
             return true;
@@ -507,10 +510,7 @@ namespace COMPASS.Common.ViewModels
         public static async Task<bool> CopyDataAsync(string sourceDir, string destDir)
         {
             ProgressViewModel progressVM = ProgressViewModel.GetInstance();
-            ProgressWindow progressWindow = new()
-            {
-                Owner = Application.Current.MainWindow,
-            };
+            ProgressWindow progressWindow = new();
 
             var toCopy = Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories);
 
@@ -573,14 +573,16 @@ namespace COMPASS.Common.ViewModels
         public AsyncRelayCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
         public async Task BackupLocalFiles()
         {
-            SaveFileDialog saveFileDialog = new()
+            var filesService = App.Container.Resolve<IFilesService>();
+            var saveFile = await filesService.SaveFileAsync(new()
             {
-                Filter = "Zip file (*.zip)|*.zip"
-            };
+                FileTypeChoices = [filesService.ZipExtensionFilter]
+            });
 
-            if (saveFileDialog.ShowDialog() == true)
+            if (saveFile != null)
             {
-                string targetPath = saveFileDialog.FileName;
+                string targetPath = saveFile.Path.AbsolutePath;
+                saveFile.Dispose();
                 _lw = new("Compressing to Zip File");
                 _lw.Show();
 
@@ -602,14 +604,16 @@ namespace COMPASS.Common.ViewModels
         public AsyncRelayCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
         public async Task RestoreBackup()
         {
-            OpenFileDialog openFileDialog = new()
+            var filesService = App.Container.Resolve<IFilesService>();
+            var files = await filesService.OpenFilesAsync(new()
             {
-                Filter = "Zip file (*.zip)|*.zip"
-            };
+                FileTypeFilter = [filesService.ZipExtensionFilter]
+            });
 
-            if (openFileDialog.ShowDialog() == true)
+            if (files.Any())
             {
-                string targetPath = openFileDialog.FileName;
+                using var file = files.Single();
+                string targetPath = file.Path.AbsolutePath;
                 _lw = new("Restoring Backup");
                 _lw.Show();
 
@@ -659,8 +663,9 @@ namespace COMPASS.Common.ViewModels
         public RelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);
         private void CheckForUpdates()
         {
-            AutoUpdater.Mandatory = true;
-            AutoUpdater.Start();
+            //TODO
+            //AutoUpdater.Mandatory = true;
+            //AutoUpdater.Start();
         }
         #endregion
     }
