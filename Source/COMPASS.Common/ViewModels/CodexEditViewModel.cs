@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
+using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using System;
 using System.Collections.Generic;

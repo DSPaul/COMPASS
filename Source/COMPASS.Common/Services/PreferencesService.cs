@@ -1,6 +1,7 @@
-﻿using COMPASS.Common.Models;
+﻿using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Models.XmlDtos;
+using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using System;
 using System.IO;

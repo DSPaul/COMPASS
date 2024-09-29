@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Avalonia.Platform.Storage;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -19,7 +20,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace COMPASS.Common.Services
+namespace COMPASS.Common.Services.FileSystem
 {
     public static class IOService
     {
@@ -165,7 +166,7 @@ namespace COMPASS.Common.Services
         #region File formats
         public static bool IsImageFile(string path)
         {
-            if (String.IsNullOrEmpty(path)) { return false; }
+            if (string.IsNullOrEmpty(path)) { return false; }
             string extension = Path.GetExtension(path).ToLower();
             List<string> imgExtensions = new()
             {
@@ -180,7 +181,7 @@ namespace COMPASS.Common.Services
 
         public static bool IsPDFFile(string path)
         {
-            if (String.IsNullOrEmpty(path)) { return false; }
+            if (string.IsNullOrEmpty(path)) { return false; }
             return Path.GetExtension(path).ToLower() == ".pdf";
         }
 
@@ -202,7 +203,7 @@ namespace COMPASS.Common.Services
             ProcessStartInfo startInfo = new()
             {
                 Arguments = path,
-                FileName = "explorer.exe"
+                FileName = "explorer.exe" //TODO THIS IS WINDOWS ONLY
             };
             Process.Start(startInfo);
         }
@@ -211,45 +212,72 @@ namespace COMPASS.Common.Services
         /// Allow the user to select a single folder using a dialog
         /// </summary>
         /// <returns> the selected path, null if canceled/failed / whatever </returns>
-        public static string? PickFolder()
+        public static async Task<string?> PickFolder()
         {
-            VistaFolderBrowserDialog openFolderDialog = new();
-            var dialogResult = openFolderDialog.ShowDialog();
-            if (dialogResult == false) return null;
-            return openFolderDialog.SelectedPath;
+            var filesService = App.Container.Resolve<IFilesService>();
+
+            IList<IStorageFolder> folders = await filesService.OpenFoldersAsync();
+
+            if (folders is null) return null;
+            else if (folders.Count == 0) return null;
+
+            var folder = folders.Single();
+            string path = folder.Path.AbsolutePath;
+
+            //Dispose the handle for now and just keep the path, might need to hold on to this later
+            folder.Dispose();
+
+            return path;
         }
 
         /// <summary>
         /// Allow the user to select multiple folders using a dialog
         /// </summary>
-        /// <param name="selectedPaths"> the selected Paths </param>
         /// <returns> Ilist with selected paths, empty list if canceled/failed / whatever </returns>
-        public static bool TryPickFolders(out string[] selectedPaths)
+        public static async Task<IList<string>> TryPickFolders()
         {
-            VistaFolderBrowserDialog openFolderDialog = new()
+            var filesService = App.Container.Resolve<IFilesService>();
+
+            FolderPickerOpenOptions options = new()
             {
-                Multiselect = true,
+                AllowMultiple = true,
             };
-            var dialogResult = openFolderDialog.ShowDialog();
-            selectedPaths = openFolderDialog.SelectedPaths;
-            return dialogResult == true;
+
+            IList<IStorageFolder> folders = await filesService.OpenFoldersAsync(options);
+
+            if (folders is null) return [];
+            else if (folders.Count == 0) return [];
+            var paths = folders.Select(f => f.Path.AbsolutePath).ToList();
+
+            //Dispose the handles for now and just keep the paths, might need to hold on to this later
+            foreach (var folder in folders)
+            {
+                folder.Dispose();
+            }
+
+            return paths;
         }
 
         public static async Task<CodexCollection?> OpenSatchel(string? path = null)
         {
+            var filesService = App.Container.Resolve<IFilesService>();
+
+            FilePickerOpenOptions options = new()
+            {
+                FileTypeFilter = filesService.SatchelExtensionFilter,
+                AllowMultiple = false,
+                Title = "Choose a COMPASS Satchel file to import",
+            };
+
             if (path == null)
             {
                 //ask for satchel file using fileDialog
-                OpenFileDialog openFileDialog = new()
-                {
-                    Filter = Constants.SatchelExtensionFilter,
-                    CheckFileExists = true,
-                    Multiselect = false,
-                    Title = "Choose a COMPASS Satchel file to import",
-                };
+                var files = await filesService.OpenFilesAsync(options);
 
-                if (openFileDialog.ShowDialog() != true) return null;
-                path = openFileDialog.FileName;
+                if (!files.Any()) return null;
+                var file = files.Single();
+                path = file.Path.AbsolutePath;
+                file.Dispose();
             }
 
             var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
@@ -400,8 +428,8 @@ namespace COMPASS.Common.Services
                 commonDirs++;
             }
 
-            string remainingPath1 = String.Join(Path.DirectorySeparatorChar, dirs1.Take(dirs1.Length - commonDirs));
-            string remainingPath2 = String.Join(Path.DirectorySeparatorChar, dirs2.Take(dirs2.Length - commonDirs));
+            string remainingPath1 = string.Join(Path.DirectorySeparatorChar, dirs1.Take(dirs1.Length - commonDirs));
+            string remainingPath2 = string.Join(Path.DirectorySeparatorChar, dirs2.Take(dirs2.Length - commonDirs));
 
             return (remainingPath1, remainingPath2);
         }

@@ -1,5 +1,6 @@
 ﻿using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Sources;

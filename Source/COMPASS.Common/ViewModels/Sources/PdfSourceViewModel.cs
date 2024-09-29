@@ -2,6 +2,7 @@
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
+using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using ImageMagick;
 using ImageMagick.Formats;

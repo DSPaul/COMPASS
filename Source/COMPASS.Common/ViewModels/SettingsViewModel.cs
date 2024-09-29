@@ -7,6 +7,7 @@ using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services;
+using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using SharpCompress.Archives;
@@ -160,7 +161,7 @@ namespace COMPASS.Common.ViewModels
         private AsyncRelayCommand? _pickAutoImportDirectoryCommand;
         public AsyncRelayCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(PickAutoImportDirectory);
 
-        private async Task PickAutoImportDirectory() => await AddAutoImportDirectory(IOService.PickFolder());
+        private async Task PickAutoImportDirectory() => await AddAutoImportDirectory(await IOService.PickFolder().ConfigureAwait(false));
         private async Task AddAutoImportDirectory(string? dir)
         {
             if (!String.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))

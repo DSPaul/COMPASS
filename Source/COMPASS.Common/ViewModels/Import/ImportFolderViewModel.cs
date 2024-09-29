@@ -1,12 +1,13 @@
-﻿using COMPASS.Common.Models;
-using COMPASS.Common.Services;
+﻿using Autofac;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
-using COMPASS.Common.Views.Windows;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace COMPASS.Common.ViewModels.Import
 {
@@ -44,7 +45,7 @@ namespace COMPASS.Common.ViewModels.Import
             //if no files are given to import, don't
             if (_manuallyTriggered && RecursiveDirectories.Count + NonRecursiveDirectories.Count + ExistingFolders.Count + Files.Count == 0)
             {
-                bool success = LetUserSelectFolders();
+                bool success = await LetUserSelectFolders();
                 if (!success) return;
             }
 
@@ -67,11 +68,11 @@ namespace COMPASS.Common.ViewModels.Import
         /// and stores them in RecursiveDirectories
         /// </summary>
         /// <returns> A bool indicating whether the user successfully chose a set of folders </returns>
-        private bool LetUserSelectFolders()
+        private async Task<bool> LetUserSelectFolders()
         {
-            bool success = IOService.TryPickFolders(out string[] selectedPaths);
-            RecursiveDirectories = selectedPaths.ToList();
-            return success;
+            var selectedPaths = await IOService.TryPickFolders().ConfigureAwait(false);
+            RecursiveDirectories = [.. selectedPaths];
+            return selectedPaths.Any();
         }
 
         /// <summary>

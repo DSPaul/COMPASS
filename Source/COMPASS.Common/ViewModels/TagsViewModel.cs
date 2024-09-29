@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
+using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using System.Collections.Generic;
