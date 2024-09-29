@@ -110,7 +110,7 @@ namespace COMPASS.Common.Services
             }
         }
 
-        public static void SaveCover(IMagickImage image, Codex destCodex)
+        public static void SaveCover(Codex destCodex, IMagickImage image)
         {
             if (String.IsNullOrEmpty(destCodex.CoverArt))
             {
@@ -121,8 +121,7 @@ namespace COMPASS.Common.Services
             if (image.Width > 850) image.Resize(850, 0);
 
             image.Write(destCodex.CoverArt);
-            image.Dispose();
-            CreateThumbnail(destCodex);
+            CreateThumbnail(destCodex, image);
         }
 
         public static async Task SaveCover(string imgURL, Codex destCodex)
@@ -136,6 +135,7 @@ namespace COMPASS.Common.Services
             var imgBytes = await IOService.DownloadFileAsync(imgURL);
             await File.WriteAllBytesAsync(destCodex.CoverArt, imgBytes);
             CreateThumbnail(destCodex);
+            destCodex.RefreshThumbnail();
         }
 
         public static bool GetCoverFromImage(string imagePath, Codex destCodex)
@@ -156,10 +156,13 @@ namespace COMPASS.Common.Services
 
             try
             {
-                using MagickImage image = new(imagePath);
-                if (image.Width > 1000) image.Resize(1000, 0);
-                image.Write(destCodex.CoverArt);
-                CreateThumbnail(destCodex);
+                using (MagickImage image = new(imagePath))
+                {
+                    if (image.Width > 1000) image.Resize(1000, 0);
+                    image.Write(destCodex.CoverArt);
+                    CreateThumbnail(destCodex, image);
+                }
+                destCodex.RefreshThumbnail();
                 return true;
             }
             catch (Exception ex)
@@ -170,25 +173,41 @@ namespace COMPASS.Common.Services
             }
         }
 
-        public static void CreateThumbnail(Codex c)
+        public static void CreateThumbnail(Codex c, IMagickImage? image = null)
         {
-            if (String.IsNullOrEmpty(c.CoverArt))
+            if (String.IsNullOrEmpty(c.Thumbnail))
             {
                 Logger.Error("Trying to write thumbnail to empty path", new InvalidOperationException());
                 return;
             }
 
             uint newWidth = 200; //sets resolution of thumbnail in pixels
-            if (!Path.Exists(c.CoverArt)) return;
-            using MagickImage image = new(c.CoverArt);
-            //preserve aspect ratio
-            uint width = image.Width;
-            uint height = image.Height;
-            uint newHeight = newWidth / width * height;
-            //create thumbnail
-            image.Thumbnail(newWidth, newHeight);
-            image.Write(c.Thumbnail);
-            c.RefreshThumbnail();
+            bool ownsImage = false;
+
+            if (image is null)
+            {
+                if (!Path.Exists(c.CoverArt)) return;
+                image = new MagickImage(c.CoverArt);
+                ownsImage = true;
+            }
+
+            try
+            {
+                //preserve aspect ratio
+                uint width = image.Width;
+                uint height = image.Height;
+                uint newHeight = newWidth / width * height;
+                //create thumbnail
+                image.Thumbnail(newWidth, newHeight);
+                image.Write(c.Thumbnail);
+            }
+            finally
+            {
+                if (ownsImage)
+                {
+                    image?.Dispose();
+                }
+            }
         }
 
         //Take screenshot of specific html element 

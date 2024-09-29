@@ -222,18 +222,39 @@ namespace COMPASS.Common.Models
 
         private void CreateDirectories()
         {
-            //top folder
-            Directory.CreateDirectory(FullDataPath);
-            //subfolders
-            Directory.CreateDirectory(CoverArtPath);
-            Directory.CreateDirectory(ThumbnailsPath);
-            Directory.CreateDirectory(UserFilesPath);
+            try
+            {
+                //top folder
+                Directory.CreateDirectory(FullDataPath);
+                //subfolders
+                Directory.CreateDirectory(CoverArtPath);
+                Directory.CreateDirectory(ThumbnailsPath);
+                Directory.CreateDirectory(UserFilesPath);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to create folders to store user data for this collection.", ex);
+                var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+
+                string msg = $"Failed to create the necessary folders to store data about this collection. The following error occured: {ex.Message}";
+                Notification failedFolderCreation = new("Failed to save collection", msg, Severity.Error);
+                windowedNotificationService.Show(failedFolderCreation);
+            }
         }
 
         public void Save()
         {
             OnPropertyChanged(nameof(AllCodices));
-            Directory.CreateDirectory(UserFilesPath);
+
+            try
+            {
+                Directory.CreateDirectory(UserFilesPath);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to create the folder to save the data for this collection", ex);
+            }
+
             bool savedTags = SaveTags();
             bool savedCodices = SaveCodices();
             bool savedInfo = SaveInfo();
@@ -457,7 +478,14 @@ namespace COMPASS.Common.Models
             //if import includes files, make sure directory exists to copy files into
             if (Path.Exists(source.UserFilesPath))
             {
-                Directory.CreateDirectory(UserFilesPath);
+                try
+                {
+                    Directory.CreateDirectory(UserFilesPath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Failed to create a folder to store the imported files", ex);
+                }
             }
 
             foreach (var codex in source.AllCodices)
@@ -509,7 +537,14 @@ namespace COMPASS.Common.Models
                         string? newDir = Path.GetDirectoryName(newPath);
                         if (newDir != null)
                         {
-                            Directory.CreateDirectory(newDir);
+                            try
+                            {
+                                Directory.CreateDirectory(newDir);
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Error("Failed to create a folder to store the imported files", ex);
+                            }
                         }
                         File.Copy(codex.Sources.Path, newPath, true);
                         codex.Sources.Path = newPath;

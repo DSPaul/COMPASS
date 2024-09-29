@@ -96,15 +96,17 @@ namespace COMPASS.Common.Models.CodexProperties
 
         public static CodexProperty? GetInstance(string propName) => propName switch
         {
-            nameof(Codex.Title) => new StringProperty(nameof(Codex.Title)),
-            nameof(Codex.Authors) => new EnumerableProperty<string>(nameof(Codex.Authors)),
-            nameof(Codex.Publisher) => new StringProperty(nameof(Codex.Publisher)),
-            nameof(Codex.Version) => new StringProperty(nameof(Codex.Version)),
-            nameof(Codex.PageCount) => new NumberProperty<int>(nameof(Codex.PageCount), label: "Pagecount"),
-            nameof(Codex.Tags) => new TagsProperty(nameof(Codex.Tags)),
-            nameof(Codex.Description) => new StringProperty(nameof(Codex.Description)),
-            nameof(Codex.ReleaseDate) => new DateTimeProperty(nameof(Codex.ReleaseDate), label: "Release Date"),
-            nameof(Codex.CoverArt) => new CoverArtProperty(nameof(Codex.CoverArt), label: "Cover Art"),
+            nameof(Codex.Title) => new StringProperty(propName),
+            nameof(Codex.Authors) => new EnumerableProperty<string>(propName),
+            nameof(Codex.Publisher) => new StringProperty(propName),
+            nameof(Codex.Version) => new StringProperty(propName),
+            nameof(Codex.PageCount) => new NumberProperty<int>(propName, label: "Pagecount"),
+            nameof(Codex.Tags) => new TagsProperty(propName),
+            nameof(Codex.Description) => new StringProperty(propName),
+            nameof(Codex.ReleaseDate) => new DateTimeProperty(propName, label: "Release Date"),
+            nameof(Codex.CoverArt) => new CoverArtProperty(propName, label: "Cover Art"),
+            nameof(Codex.Rating) => new NumberProperty<int>(propName),
+            nameof(Codex.Sources.ISBN) => new StringProperty($"{nameof(Codex.Sources)}.{nameof(Codex.Sources.ISBN)}", label: "ISBN"),
             _ => null //could occur when a new preference file with new props is loaded into an older version of compass
         };
 
@@ -188,7 +190,7 @@ namespace COMPASS.Common.Models.CodexProperties
 
         public virtual T? GetProp(IHasCodexMetadata codex)
         {
-            object? value = codex.GetPropertyValue(Name);
+            object? value = codex.GetDeepPropertyValue(Name);
             return value == null ? default : (T)value;
         }
 

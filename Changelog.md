@@ -1,5 +1,22 @@
 # CHANGELOG
-## COMPASS v1.7.6 (10 September 2024)
+## COMPASS v1.8.0 (18 September 2024)
+
+### New Features
+
+- Added new "Has value for ..." filter that lets you see items that do or do not have a value for a specific property such as Title, tags, release date, ect. 
+
+### Improvements
+
+- Performance improvemnts when generating thumbnails
+- COMPASS is now digitally signed with a code signing certificate
+
+### Fixes
+
+- Fix crash when loading images
+- Fix crash when disk is full
+- Fix crash when writing to a folder without authorization
+- Fix crash when resolving broken paths
+## COMPASS v1.7.6 (10 September 2024)
 
 ### Fixes
 

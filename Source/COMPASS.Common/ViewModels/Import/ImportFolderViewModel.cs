@@ -92,7 +92,17 @@ namespace COMPASS.Common.ViewModels.Import
                 if (Directory.Exists(currentFolder))
                 {
                     NonRecursiveDirectories.Add(currentFolder);
-                    foreach (string dir in Directory.GetDirectories(currentFolder))
+                    IEnumerable<string> subfolders;
+                    try
+                    {
+                        subfolders = Directory.GetDirectories(currentFolder);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error($"Failed to get subfolders of {currentFolder}", ex);
+                        subfolders = Enumerable.Empty<string>();
+                    }
+                    foreach (string dir in subfolders)
                     {
                         toSearch.Enqueue(dir);
                     }
@@ -105,7 +115,17 @@ namespace COMPASS.Common.ViewModels.Import
             {
                 if (Directory.Exists(folder))
                 {
-                    toImport.AddRange(Directory.GetFiles(folder));
+                    IEnumerable<string> files;
+                    try
+                    {
+                        files = Directory.GetFiles(folder);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error($"Failed to get files of folder {folder}", ex);
+                        files = Enumerable.Empty<string>();
+                    }
+                    toImport.AddRange(files);
                 }
             }
 

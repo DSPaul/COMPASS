@@ -92,13 +92,13 @@
             </ItemsControl>
             
             <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal">
-                <Button Style="{StaticResource TextButton}" Content="{Binding CancelText}" Margin="5" Padding="3" Width="80" Click="CancelClick"
+                <Button Style="{StaticResource TextButton}" Content="{Binding CancelText}" Margin="5" Padding="3" MinWidth="80" Click="CancelClick"
                         Visibility="{Binding Actions, Converter={StaticResource FlagsToVisibilityConverter}, ConverterParameter={x:Static enums:NotificationAction.Cancel}}"
                         BorderBrush="{StaticResource TextColor}" BorderThickness="2" Background="Transparent"/>
-                <Button Style="{StaticResource TextButton}" Content="{Binding DeclineText}" Margin="5" Padding="3" Width="80" Click="DeclineClick"
+                <Button Style="{StaticResource TextButton}" Content="{Binding DeclineText}" Margin="5" Padding="3" MinWidth="80" Click="DeclineClick"
                         Visibility="{Binding Actions, Converter={StaticResource FlagsToVisibilityConverter}, ConverterParameter={x:Static enums:NotificationAction.Decline}}"
                         BorderBrush="{StaticResource TextColor}" BorderThickness="2" Background="Transparent"/>
-                <Button Style="{StaticResource TextButton}" Content="{Binding ConfirmText}" Margin="5" Width="80" Click="ConfirmClick"
+                <Button Style="{StaticResource TextButton}" Content="{Binding ConfirmText}" Margin="5" MinWidth="80" Click="ConfirmClick"
                         Visibility="{Binding Actions, Converter={StaticResource FlagsToVisibilityConverter}, ConverterParameter={x:Static enums:NotificationAction.Confirm}}"
                         Background="{Binding Severity, Converter={StaticResource SeverityToColorConverter}}"
                         Foreground="{StaticResource Layer0}" IsDefault="True"/>

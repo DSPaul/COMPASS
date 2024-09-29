@@ -39,17 +39,13 @@ COMPASS solves this problem by bringing all of your resources together in one pl
 - Have **Quick Access** to your books thanks to the Home view which lists your favorites, recently opened, most opened and recently added books for your convenience.
 - **Group** your books into collections. Each collection has their own list of tags, authors, ect. and helps you keep an overview by reducing the amount of books that are on your screen at once.
 
-## :warning: Why am I getting warnings from Windows and Virus scanners when installing COMPASS?
-
-The COMPASS files are not digitally signed which results in these kinds of warnings. Signing code is expensive, requires a bunch of paperwork and is just not worth it for a small project like this. If this project ever takes off and gains a large amount of users, I will look into this again. If you do not trust the executable, you can always build the code from source. To do so, simply clone the repo, install Visual Studio, open the solution file and and either build in release mode or publish.
-
 ## :construction: Contributing
 
 I created this project to solve a problem I had and as a learning opportunity. I eventually chose to release it publicly and open source because I believe others might find it useful as well. If you like this project and would like to contribute, there are many ways you can do so.
 
 - If you find a bug, please open a github issue and report it there so it can be fixed. If you don't have a github account, you can also join the [discord](https://discord.gg/HawGMJgS9Y) and share it there. Please include a clear explanation of the nature of the bug and if possible steps to reproduce it.
 - If you have ideas for new features or improvements, you can put those in a github issue as well.
-- As for code contributions and pull requests, please check out the issues labeled with "help wanted". All pull requests should be made against the dev branch. Dev gets merged into master with every new release. I will not be accepting PR's for anyting besided those issues. There are many reasons for this but [this video](https://www.youtube.com/watch?v=YIL5fuAUPiA) summarizes it pretty well. 
+- As for code contributions and pull requests, please check out the issues labeled with "help wanted". All pull requests should be made against the dev branch. Dev gets merged into master with every new release. I will not be accepting PR's for anything besides those issues. If you really want to implement a feature, open a features request first and we can talk about it.
 
 ## :heart: Support the project
 
@@ -66,3 +62,13 @@ If you would like to support the project, you can do so in multiple ways.
 ![Card Layout](Docs/Screenshots/Card_Layout.png)
 ![Tile Layout](Docs/Screenshots/Tile_Layout.png)
 ![Codex Properties](Docs/Screenshots/Codex_Properties.png)
+
+## Other
+
+### Code signing
+
+This program uses a free code signing provided by [SignPath.io](https://signpath.io), and a free code signing certificate by the [SignPath Foundation](https://signpath.org).
+
+### Privacy Policy
+
+This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it.

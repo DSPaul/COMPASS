@@ -43,11 +43,14 @@ namespace COMPASS.Common.ViewModels
                     .ToList();
                 foreach (var c in codicesWithBrokenPaths)
                 {
-                    string possiblePath = Path.Combine(replaceWith, c.Sources.Path[toReplace.Length..]);
-                    if (File.Exists(possiblePath))
+                    if (c.Sources.Path.StartsWith(toReplace))
                     {
-                        c.Sources.Path = possiblePath;
-                        fixedRefs++;
+                        string possiblePath = Path.Combine(replaceWith, c.Sources.Path[toReplace.Length..]);
+                        if (File.Exists(possiblePath))
+                        {
+                            c.Sources.Path = possiblePath;
+                            fixedRefs++;
+                        }
                     }
                 }
 
