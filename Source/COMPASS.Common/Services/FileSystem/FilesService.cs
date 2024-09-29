@@ -37,7 +37,7 @@ namespace COMPASS.Common.Services.FileSystem
             return await _target.StorageProvider.SaveFilePickerAsync(options);
         }
 
-        public List<FilePickerFileType> SatchelExtensionFilter =>
+        public static List<FilePickerFileType> SatchelExtensionFilter =>
             [
                 new ("COMPASS Satchel File")
                 {

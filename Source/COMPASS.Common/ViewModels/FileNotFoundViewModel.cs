@@ -1,10 +1,13 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Autofac;
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -17,24 +20,21 @@ namespace COMPASS.Common.ViewModels
 
         private Codex _codex;
 
-        private RelayCommand? _findFileCommand;
-        public RelayCommand FindFileCommand => _findFileCommand ??= new(FindFile);
-        public void FindFile()
+        private AsyncRelayCommand? _findFileCommand;
+        public AsyncRelayCommand FindFileCommand => _findFileCommand ??= new(FindFile);
+        public async Task FindFile()
         {
-            OpenFileDialog openFileDialog = new()
-            {
-                AddExtension = false,
-            };
+            var files = await App.Container.Resolve<IFilesService>().OpenFilesAsync();
 
-            if (openFileDialog.ShowDialog() == true)
+            if (files.Any())
             {
-                //find the replaced parh of the path
+                //find the replaced part of the path
                 string oldPath = _codex.Sources.Path;
-                string newPath = openFileDialog.FileName;
+                string newPath = files.Single().Path.AbsolutePath;
                 var (toReplace, replaceWith) = IOService.GetDifferingRoot(oldPath, newPath);
 
                 //fix the path of this codex
-                _codex.Sources.Path = openFileDialog.FileName;
+                _codex.Sources.Path = newPath;
                 int fixedRefs = 1;
 
                 //try to fix the path of all codices

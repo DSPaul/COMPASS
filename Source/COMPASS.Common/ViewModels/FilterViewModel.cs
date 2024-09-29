@@ -2,9 +2,11 @@
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
+using COMPASS.Models.Filters;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

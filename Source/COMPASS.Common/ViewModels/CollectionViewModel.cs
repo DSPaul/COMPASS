@@ -38,7 +38,7 @@ namespace COMPASS.Common.ViewModels
             catch (Exception ex)
             {
                 Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
-                string msg = $"Failed to create a folder to store user data at {SettingsViewModel.CompassDataPath}, " +
+                string msg = $"Failed to create a folder to store user data at {EnvironmentVarsService.CompassDataPath}, " +
                              $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
                 IOService.AskNewCodexFilePath(msg);
             }
@@ -138,7 +138,7 @@ namespace COMPASS.Common.ViewModels
                 catch (Exception ex)
                 {
                     Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
-                    string msg = $"Failed to create a folder to store user data at {SettingsViewModel.CompassDataPath}, " +
+                    string msg = $"Failed to create a folder to store user data at {EnvironmentVarsService.CompassDataPath}, " +
                                  $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
                     IOService.AskNewCodexFilePath(msg);
                 }
@@ -253,8 +253,8 @@ namespace COMPASS.Common.ViewModels
                 //TODO
                 return;
             }
-
-            MainVM?.CurrentLayout?.UpdateDoVirtualization();
+            //TODO: check if this is still needed
+            //MainVM?.CurrentLayout?.UpdateDoVirtualization();
 
             FilterVM = new(CurrentCollection.AllCodices);
             TagsVM = new(CurrentCollection, FilterVM);
@@ -394,23 +394,24 @@ namespace COMPASS.Common.ViewModels
             wizard.Show();
         }
 
-        private RelayCommand? _exportTagsCommand;
-        public RelayCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags);
-        public void ExportTags()
+        private AsyncRelayCommand? _exportTagsCommand;
+        public AsyncRelayCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags);
+        public async Task ExportTags()
         {
-            SaveFileDialog saveFileDialog = new()
+            var savedFile = await App.Container.Resolve<IFilesService>().SaveFileAsync(new()
             {
-                Filter = Constants.SatchelExtensionFilter,
-                FileName = $"{CurrentCollection.DirectoryName}_Tags",
-                DefaultExt = Constants.SatchelExtension
-            };
+                FileTypeChoices = FilesService.SatchelExtensionFilter,
+                SuggestedFileName = $"{CurrentCollection.DirectoryName}_Tags",
+                DefaultExtension = Constants.SatchelExtension,
+            });
 
-            if (saveFileDialog.ShowDialog() != true) return;
+            if (savedFile == null) return;
 
             //make sure to save first
             CurrentCollection.SaveTags();
 
-            string targetPath = saveFileDialog.FileName;
+            string targetPath = savedFile.Path.AbsolutePath;
+            savedFile.Dispose();
             using var archive = ZipArchive.Create();
             archive.AddEntry(Constants.TagsFileName, CurrentCollection.TagsDataFilePath);
 

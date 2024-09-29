@@ -1,5 +1,7 @@
-﻿using COMPASS.Models.CodexProperties;
-using System.Windows.Media;
+﻿using Avalonia.Media;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Models.Filters;
 
 namespace COMPASS.Models.Filters
 {
