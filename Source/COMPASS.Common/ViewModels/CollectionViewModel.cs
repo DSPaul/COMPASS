@@ -25,6 +25,7 @@ namespace COMPASS.Common.ViewModels
         {
             MainVM = mainViewModel;
             _preferencesService = PreferencesService.GetInstance();
+            _environmentVarsService = App.Container.Resolve<IEnvironmentVarsService>();
 
             //only to avoid null references, should be overwritten as soon as the UI loads, which calls refresh
             _filterVM = new(new());
@@ -38,7 +39,7 @@ namespace COMPASS.Common.ViewModels
             catch (Exception ex)
             {
                 Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
-                string msg = $"Failed to create a folder to store user data at {EnvironmentVarsService.CompassDataPath}, " +
+                string msg = $"Failed to create a folder to store user data at {_environmentVarsService.CompassDataPath}, " +
                              $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
                 IOService.AskNewCodexFilePath(msg).Wait();
             }
@@ -64,6 +65,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         private PreferencesService _preferencesService;
+        private IEnvironmentVarsService _environmentVarsService;
 
         #region Properties
         public MainViewModel? MainVM { get; init; }
@@ -138,7 +140,7 @@ namespace COMPASS.Common.ViewModels
                 catch (Exception ex)
                 {
                     Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
-                    string msg = $"Failed to create a folder to store user data at {EnvironmentVarsService.CompassDataPath}, " +
+                    string msg = $"Failed to create a folder to store user data at {_environmentVarsService.CompassDataPath}, " +
                                  $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
                     IOService.AskNewCodexFilePath(msg).Wait();
                 }

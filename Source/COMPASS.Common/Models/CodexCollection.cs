@@ -29,7 +29,7 @@ namespace COMPASS.Common.Models
         private PreferencesService _preferencesService;
         private static readonly object writeLocker = new();
 
-        public static string CollectionsPath => Path.Combine(EnvironmentVarsService.CompassDataPath, "Collections");
+        public static string CollectionsPath => Path.Combine(App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath, "Collections");
         public string FullDataPath => Path.Combine(CollectionsPath, DirectoryName);
         public string CodicesDataFilePath => Path.Combine(FullDataPath, Constants.CodicesFileName);
         public string TagsDataFilePath => Path.Combine(FullDataPath, Constants.TagsFileName);

@@ -29,6 +29,9 @@ namespace COMPASS.Common.ViewModels
         private SettingsViewModel()
         {
             _preferencesService = PreferencesService.GetInstance();
+            _environmentVarsService = App.Container.Resolve<IEnvironmentVarsService>();
+
+            WebViewDataDir = Path.Combine(_environmentVarsService.CompassDataPath, "WebViewData");
         }
 
         #region singleton pattern
@@ -37,6 +40,8 @@ namespace COMPASS.Common.ViewModels
         #endregion
 
         PreferencesService _preferencesService;
+        IEnvironmentVarsService _environmentVarsService;
+
 
         public MainViewModel? MVM { get; set; }
 
@@ -374,7 +379,7 @@ namespace COMPASS.Common.ViewModels
 
         #region Data Path 
 
-        public string BindableDataPath => EnvironmentVarsService.CompassDataPath; // used because binding to static stuff has its problems
+        public string BindableDataPath => _environmentVarsService.CompassDataPath; // used because binding to static stuff has its problems
 
         public string NewDataPath { get; set; } = "";
 
@@ -397,7 +402,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         private AsyncRelayCommand? _resetDataPathCommand;
-        public AsyncRelayCommand ResetDataPathCommand => _resetDataPathCommand ??= new(() => SetNewDataPath(EnvironmentVarsService.DefaultDataPath));
+        public AsyncRelayCommand ResetDataPathCommand => _resetDataPathCommand ??= new(() => SetNewDataPath(IEnvironmentVarsService.DefaultDataPath));
 
         public async Task<bool> SetNewDataPath(string newPath)
         {
@@ -419,12 +424,12 @@ namespace COMPASS.Common.ViewModels
                 }
             }
 
-            if (newPath == EnvironmentVarsService.CompassDataPath) { return false; }
+            if (newPath == _environmentVarsService.CompassDataPath) { return false; }
 
             NewDataPath = newPath;
 
             //Give users choice between moving or copying
-            if (Path.Exists(EnvironmentVarsService.CompassDataPath))
+            if (Path.Exists(_environmentVarsService.CompassDataPath))
             {
                 ChangeDataLocationWindow window = new(this);
                 await window.ShowDialog(App.MainWindow);
@@ -440,7 +445,7 @@ namespace COMPASS.Common.ViewModels
             bool success;
             try
             {
-                success = await CopyDataAsync(EnvironmentVarsService.CompassDataPath, NewDataPath);
+                success = await CopyDataAsync(_environmentVarsService.CompassDataPath, NewDataPath);
             }
             catch (OperationCanceledException ex)
             {
@@ -460,7 +465,7 @@ namespace COMPASS.Common.ViewModels
         {
             try
             {
-                await CopyDataAsync(EnvironmentVarsService.CompassDataPath, NewDataPath);
+                await CopyDataAsync(_environmentVarsService.CompassDataPath, NewDataPath);
             }
             catch (OperationCanceledException ex)
             {
@@ -482,7 +487,7 @@ namespace COMPASS.Common.ViewModels
         {
             MainViewModel.CollectionVM.CurrentCollection.Save();
 
-            EnvironmentVarsService.CompassDataPath = NewDataPath;
+            _environmentVarsService.CompassDataPath = NewDataPath;
 
             //Restart COMPASS
             var currentExecutablePath = Environment.ProcessPath;
@@ -498,7 +503,7 @@ namespace COMPASS.Common.ViewModels
         {
             try
             {
-                Directory.Delete(EnvironmentVarsService.CompassDataPath, true);
+                Directory.Delete(_environmentVarsService.CompassDataPath, true);
             }
             catch (Exception ex)
             {
@@ -561,7 +566,7 @@ namespace COMPASS.Common.ViewModels
         {
             ProcessStartInfo startInfo = new()
             {
-                Arguments = EnvironmentVarsService.CompassDataPath,
+                Arguments = _environmentVarsService.CompassDataPath,
                 FileName = "explorer.exe"
             };
             Process.Start(startInfo);
@@ -633,7 +638,7 @@ namespace COMPASS.Common.ViewModels
                 return;
             }
             using ZipArchive archive = ZipArchive.Open(sourcePath);
-            archive.ExtractToDirectory(EnvironmentVarsService.CompassDataPath);
+            archive.ExtractToDirectory(_environmentVarsService.CompassDataPath);
         }
         #endregion
 
@@ -652,7 +657,7 @@ namespace COMPASS.Common.ViewModels
 
         #region Tab: What's New
 
-        public readonly string WebViewDataDir = Path.Combine(EnvironmentVarsService.CompassDataPath, "WebViewData");
+        public readonly string WebViewDataDir;
 
         #endregion
 

@@ -17,7 +17,7 @@ namespace COMPASS.Common.Tools
     {
         public static void Init()
         {
-            log4net.GlobalContext.Properties["CompassDataPath"] = EnvironmentVarsService.CompassDataPath;
+            log4net.GlobalContext.Properties["CompassDataPath"] = App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath;
             log4net.Config.XmlConfigurator.Configure(new FileInfo("log4net.config"));
             FileLog = log4net.LogManager.GetLogger(nameof(Logger));
             //if (Application.Current is not null)
@@ -69,7 +69,7 @@ namespace COMPASS.Common.Tools
             string message = $"An unexpected error ocurred.\n" +
                 $"{e.Message}" +
                 $"You can help improve COMPASS by opening an issue on {Constants.RepoURL} with the error message. \n" +
-                $"Please include the log file located at {EnvironmentVarsService.CompassDataPath}\\logs";
+                $"Please include the log file located at {App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath}\\logs";
 
             Notification crashNotification = new($"COMPASS ran into a critical error.", message, Severity.Error);
             string restartOption = "Restart COMPASS.";

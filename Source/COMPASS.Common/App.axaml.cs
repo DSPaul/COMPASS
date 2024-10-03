@@ -5,8 +5,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using COMPASS.Common.Interfaces;
-using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.Views.Windows;
@@ -38,18 +36,13 @@ public partial class App : Application
 
     public static Window MainWindow { get; private set; }
 
+    public static ContainerBuilder ContainerBuilder { get; set; }
     public static IContainer Container { get; set; }
 
     private IContainer BuildContainer(Window window)
     {
-        //init the container
-        var builder = new ContainerBuilder();
+        ContainerBuilder.RegisterInstance<IFilesService>(new FilesService(window));
 
-        builder.RegisterType<WindowedNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Windowed);
-        builder.RegisterType<WindowedNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Toast); //use windowed for everything for now
-
-        builder.RegisterInstance<IFilesService>(new FilesService(window));
-
-        return builder.Build();
+        return ContainerBuilder.Build();
     }
 }

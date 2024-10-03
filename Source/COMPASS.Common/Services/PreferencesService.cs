@@ -1,4 +1,6 @@
-﻿using COMPASS.Common.Models.CodexProperties;
+﻿using Autofac;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services.FileSystem;
@@ -18,7 +20,7 @@ namespace COMPASS.Common.Services
         public static PreferencesService GetInstance() => _prefService ??= new PreferencesService();
         #endregion
 
-        public string PreferencesFilePath => Path.Combine(EnvironmentVarsService.CompassDataPath, "Preferences.xml");
+        public string PreferencesFilePath => Path.Combine(App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath, "Preferences.xml");
 
         public static object writeLocker = new();
 

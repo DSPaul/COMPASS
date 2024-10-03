@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Services;
+﻿using Autofac;
+using COMPASS.Common.Interfaces;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -16,7 +17,7 @@ namespace COMPASS.Common.Models
         public const string TagsFileName = "Tags.xml";
         public const string CollectionInfoFileName = "CollectionInfo.xml";
 
-        public static string InstallersPath => Path.Combine(EnvironmentVarsService.CompassDataPath, "Installers");
+        public static string InstallersPath => Path.Combine(App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath, "Installers");
         public const string AutoUpdateXMLPath = "https://raw.githubusercontent.com/DSPAUL/COMPASS/master/versionInfo.xml";
 
         [GeneratedRegex("(978|979)[- ]?\\d{1,5}[- ]?\\d{1,7}[- ]?\\d{1,6}[- ]?\\d")]
