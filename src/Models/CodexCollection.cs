@@ -563,8 +563,16 @@ namespace COMPASS.Models
             AllCodices.Remove(toDelete);
 
             //Delete CoverArt & Thumbnail
-            File.Delete(toDelete.CoverArt);
-            File.Delete(toDelete.Thumbnail);
+            try
+            {
+                File.Delete(toDelete.CoverArt);
+                File.Delete(toDelete.Thumbnail);
+            }
+            catch
+            {
+                //deleting the thumbnail could fail because of many reasons,
+                //not a big deal as it will just get overwritten when a new codex gets the freed id
+            }
             Logger.Info($"Removed {toDelete.Title} from {DirectoryName}");
         }
 

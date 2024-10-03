@@ -67,10 +67,18 @@ namespace COMPASS.ViewModels
                     CodicesWithChoices[i].Item1.RefreshThumbnail();
                 }
                 //delete temp cover if it exists
-                if (CodicesWithChoices[i].Item2.CoverArt?.EndsWith(".tmp.png") == true)
-                    File.Delete(CodicesWithChoices[i].Item2.CoverArt);
-                if (CodicesWithChoices[i].Item2.Thumbnail?.EndsWith(".tmp.png") == true)
-                    File.Delete(CodicesWithChoices[i].Item2.Thumbnail);
+                try
+                {
+                    if (CodicesWithChoices[i].Item2.CoverArt?.EndsWith(".tmp.png") == true)
+                        File.Delete(CodicesWithChoices[i].Item2.CoverArt);
+                    if (CodicesWithChoices[i].Item2.Thumbnail?.EndsWith(".tmp.png") == true)
+                        File.Delete(CodicesWithChoices[i].Item2.Thumbnail);
+                }
+                catch (Exception ex)
+                {
+                    //no big deal if this fails
+                    Logger.Warn("Failed to clean up temporary files", ex);
+                }
 
                 //Set image paths back so that copy operation after this doesn't change them to the temp files
                 _codicesWithMadeChoices[i].SetImagePaths(MainViewModel.CollectionVM.CurrentCollection);
