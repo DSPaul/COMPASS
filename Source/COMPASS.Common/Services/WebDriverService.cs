@@ -1,35 +1,57 @@
-﻿using COMPASS.Common.Tools;
+﻿using COMPASS.Common.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Safari;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace COMPASS.Common.Services
 {
-    public static class WebDriverService
+    public abstract class WebDriverServiceBase : IWebDriverService
     {
-        private static Browser _browser;
-        public enum Browser
+        protected Browser _browser;
+        protected enum Browser
         {
+            /// <summary>
+            /// Not searched yet
+            /// </summary>
+            Unknown = 0,
+            /// <summary>
+            /// Searched and found nothing
+            /// </summary>
+            None,
             Chrome,
+            Chromium,
             Firefox,
-            Edge
+            Edge,
+            Safari
         }
 
+        protected abstract Browser DetectInstalledBrowser();
+
         //Get an initialised webdriver with right browser
-        private static WebDriver? _webDriver;
-        public static async Task<WebDriver> GetWebDriver()
+        protected WebDriver? _webDriver;
+        public async Task<WebDriver?> GetWebDriver()
         {
-            DriverService driverService = _browser switch
+            if (_browser == Browser.Unknown)
+            {
+                _browser = DetectInstalledBrowser();
+            }
+
+            DriverService? driverService = _browser switch
             {
                 Browser.Chrome => ChromeDriverService.CreateDefaultService(),
                 Browser.Firefox => FirefoxDriverService.CreateDefaultService(),
                 Browser.Edge => EdgeDriverService.CreateDefaultService(),
-                _ => throw new System.NotImplementedException()
+                Browser.Safari => SafariDriverService.CreateDefaultService(),
+                _ => null //not a supported browser
             };
+
+            //No supported driver found
+            if (driverService == null) return null;
+
             driverService.HideCommandPromptWindow = true;
 
             List<string> driverArguments = new()
@@ -54,45 +76,19 @@ namespace COMPASS.Common.Services
                     _webDriver = await Task.Run(() => new FirefoxDriver((FirefoxDriverService)driverService, fo));
                     break;
 
-                default:
+                case Browser.Edge:
                     EdgeOptions eo = new();
                     eo.AddArguments(driverArguments);
                     _webDriver = await Task.Run(() => new EdgeDriver((EdgeDriverService)driverService, eo));
                     break;
+
+                case Browser.Safari:
+                    SafariOptions so = new();
+                    //so.AddArguments(driverArguments); //method doesn't exist for safari
+                    _webDriver = await Task.Run(() => new SafariDriver((SafariDriverService)driverService, so));
+                    break;
             }
             return _webDriver;
-        }
-
-        public static void InitWebdriver()
-        {
-            if (IsInstalled("chrome.exe"))
-            {
-                _browser = Browser.Chrome;
-                Logger.Debug("Chrome install found");
-            }
-            else if (IsInstalled("firefox.exe"))
-            {
-                _browser = Browser.Firefox;
-                Logger.Debug("firefox install found");
-            }
-            else if (IsInstalled("msedge.exe"))
-            {
-                _browser = Browser.Edge;
-                Logger.Debug("edge install found");
-            }
-        }
-
-        //helper function to check if certain browsers are installed
-        private static bool IsInstalled(string name)
-        {
-            const string currentUserRegistryPathPattern = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\";
-            const string localMachineRegistryPathPattern = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\";
-
-            var currentUserPath = Microsoft.Win32.Registry.GetValue(currentUserRegistryPathPattern + name, "", null)?.ToString();
-            var localMachinePath = Microsoft.Win32.Registry.GetValue(localMachineRegistryPathPattern + name, "", null)?.ToString();
-
-            return (currentUserPath != null && Path.Exists(currentUserPath)) ||
-                  (localMachinePath != null && Path.Exists(localMachinePath));
         }
     }
 }

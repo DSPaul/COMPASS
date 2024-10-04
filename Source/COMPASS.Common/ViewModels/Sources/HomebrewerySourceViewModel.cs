@@ -1,4 +1,6 @@
-﻿using COMPASS.Common.Models;
+﻿using Autofac;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
@@ -72,7 +74,10 @@ namespace COMPASS.Common.ViewModels.Sources
         {
             if (String.IsNullOrEmpty(codex.Sources.SourceURL)) { return false; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Homebrewery"));
-            WebDriver driver = await WebDriverService.GetWebDriver();
+            WebDriver? driver = await App.Container.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
+
+            if (driver == null) { return false; }
+
             WebDriverWait wait = new(driver, TimeSpan.FromSeconds(5));
             try
             {
@@ -84,7 +89,7 @@ namespace COMPASS.Common.ViewModels.Sources
                 {
                     driver.Navigate().GoToUrl(url);
                     wait.Until(ExpectedConditions.ElementExists(frameSelector));
-                });
+                }).ConfigureAwait(false);
 
                 wait.Until(ExpectedConditions.ElementExists(frameSelector));
 
@@ -97,7 +102,7 @@ namespace COMPASS.Common.ViewModels.Sources
                 {
                     wait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(frameSelector));
                     wait.Until(ExpectedConditions.ElementExists(pageSelector));
-                });
+                }).ConfigureAwait(false);
 
                 Thread.Sleep(500);
 

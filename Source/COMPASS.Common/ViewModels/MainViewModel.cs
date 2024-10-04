@@ -1,6 +1,5 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Layouts;
@@ -27,7 +26,6 @@ namespace COMPASS.Common.ViewModels
             SettingsViewModel.GetInstance().MVM = this;
 
             //Update stuff
-            WebDriverService.InitWebdriver();
             InitAutoUpdates();
 
             //Start timer that periodically checks if there is an internet connection

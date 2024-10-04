@@ -1,4 +1,6 @@
-﻿using COMPASS.Common.Models;
+﻿using Autofac;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
@@ -53,10 +55,13 @@ namespace COMPASS.Common.ViewModels.Sources
         {
             if (String.IsNullOrEmpty(codex.Sources.SourceURL)) { return false; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from {codex.Sources.SourceURL}"));
-            OpenQA.Selenium.WebDriver driver = await WebDriverService.GetWebDriver();
+            OpenQA.Selenium.WebDriver? driver = await App.Container.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
+
+            if (driver is null) { return false; }
+
             try
             {
-                await Task.Run(() => driver.Navigate().GoToUrl(codex.Sources.SourceURL));
+                await Task.Run(() => driver.Navigate().GoToUrl(codex.Sources.SourceURL)).ConfigureAwait(false);
                 var coverPage = driver.FindElement(OpenQA.Selenium.By.Id("p1"));
                 //screenshot and download the image
                 using (IMagickImage image = CoverService.GetCroppedScreenShot(driver, coverPage))

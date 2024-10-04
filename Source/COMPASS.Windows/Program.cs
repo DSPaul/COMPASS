@@ -38,6 +38,7 @@ class Program
 
         //Register windows specific dependencies
         builder.RegisterType<EnvironmentVarsService>().As<IEnvironmentVarsService>().SingleInstance();
+        builder.RegisterInstance<IWebDriverService>(new WebDriverService());
 
         //Don't build yet, App will also add some registrations
         App.ContainerBuilder = builder;
