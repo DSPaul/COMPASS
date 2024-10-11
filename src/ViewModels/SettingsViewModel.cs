@@ -611,9 +611,16 @@ namespace COMPASS.ViewModels
                     }
                 });
             }
+            catch (OperationCanceledException ex)
+            {
+                Logger.Warn($"Transfer was cancelled", ex);
+                progressVM.ConfirmCancellation();
+                return false;
+            }
             catch (Exception ex)
             {
                 Logger.Error($"Could not move data to {destDir}", ex);
+                progressVM.Clear();
                 return false;
             }
             return true;

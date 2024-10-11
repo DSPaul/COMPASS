@@ -371,7 +371,14 @@ namespace COMPASS.ViewModels
 
             ChooseMetaDataViewModel chooseMetaDataVM = new();
 
-            await Parallel.ForEachAsync(codices, parallelOptions, async (codex, _) => await GetMetaData(codex, chooseMetaDataVM));
+            try
+            {
+                await Parallel.ForEachAsync(codices, parallelOptions, async (codex, _) => await GetMetaData(codex, chooseMetaDataVM));
+            }
+            catch (OperationCanceledException ex)
+            {
+                ProgressViewModel.GetInstance().ConfirmCancellation();
+            }
 
             if (chooseMetaDataVM.CodicesWithChoices.Any())
             {

@@ -19,6 +19,12 @@ namespace COMPASS.Services
 {
     public static class CoverService
     {
+        /// <summary>
+        /// Fethces a cover image for the given codex
+        /// </summary>
+        /// <param name="codex"></param>
+        /// <param name="chooseMetaDataViewModel"></param>
+        /// <exception cref="System.OperationCanceledException">The token has had cancellation requested.</exception>
         public static async Task GetCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null)
         {
             Codex MetaDatalessCodex = new()
