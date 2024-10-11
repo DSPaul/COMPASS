@@ -97,7 +97,7 @@ namespace COMPASS.ViewModels.Import
                 }
                 catch (OperationCanceledException)
                 {
-                    ProgressViewModel.GetInstance().ConfirmCancellation()
+                    ProgressViewModel.GetInstance().ConfirmCancellation();
                     break;
                 }
 
