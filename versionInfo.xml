@@ -2,6 +2,5 @@
 <item>
   <version>1.8.1</version>
   <url>https://github.com/DSPAUL/COMPASS/releases/download/v1.8.1/COMPASS_Setup_1.8.1.exe</url>
-  <changelog>https://www.compassapp.info/releases</changelog>
   <mandatory>false</mandatory>
 </item>
