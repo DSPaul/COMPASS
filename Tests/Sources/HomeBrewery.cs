@@ -43,6 +43,8 @@ namespace Tests.Sources
             Assert.IsNotNull(response);
             Assert.IsFalse(String.IsNullOrEmpty(response.Title));
             Assert.IsFalse(String.IsNullOrEmpty(response.Description));
+            Assert.IsFalse(response.ReleaseDate == null);
+            Assert.AreEqual(1, response.PageCount);
         }
 
         [TestMethod, Priority(2)]
