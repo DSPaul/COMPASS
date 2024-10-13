@@ -375,7 +375,7 @@ namespace COMPASS.ViewModels
             {
                 await Parallel.ForEachAsync(codices, parallelOptions, async (codex, _) => await GetMetaData(codex, chooseMetaDataVM));
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
                 ProgressViewModel.GetInstance().ConfirmCancellation();
             }
