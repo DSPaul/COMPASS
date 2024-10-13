@@ -34,8 +34,15 @@ namespace COMPASS.Services
             using HttpClient client = new();
 
             if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? _)) throw new InvalidOperationException("URI is invalid.");
-
-            return await client.GetByteArrayAsync(uri);
+            try
+            {
+                return await client.GetByteArrayAsync(uri);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to fetch data at {uri}", ex);
+                return Array.Empty<byte>();
+            }
         }
         public static async Task<JObject?> GetJsonAsync(string uri)
         {
@@ -44,12 +51,18 @@ namespace COMPASS.Services
             JObject? json = null;
 
             if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? _)) throw new InvalidOperationException("URI is invalid.");
-
-            HttpResponseMessage response = await client.GetAsync(uri);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = response.Content.ReadAsStringAsync();
-                json = JObject.Parse(data.Result);
+                HttpResponseMessage response = await client.GetAsync(uri);
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = response.Content.ReadAsStringAsync();
+                    json = JObject.Parse(data.Result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to fetch data at {uri}", ex);
             }
             return json;
         }

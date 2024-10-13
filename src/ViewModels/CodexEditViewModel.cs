@@ -170,10 +170,20 @@ namespace COMPASS.ViewModels
             MetaDataOverwriteMode curSetting = coverProp.OverwriteMode;
             coverProp.OverwriteMode = MetaDataOverwriteMode.Always;
             //get the cover
-            await CoverService.GetCover(TempCodex);
-            //Restore cover preference
-            coverProp.OverwriteMode = curSetting;
-            ShowLoading = false;
+            try
+            {
+                await CoverService.GetCover(TempCodex);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+            finally
+            {
+                //Restore cover preference
+                coverProp.OverwriteMode = curSetting;
+                ShowLoading = false;
+            }
             RefreshCover();
         }
 

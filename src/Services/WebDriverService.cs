@@ -35,6 +35,7 @@ namespace COMPASS.Services
             List<string> driverArguments = new()
                 {
                     "--headless",
+                    "--disable-notifications",
                     "--window-size=3000,3000",
                     "--width=3000",
                     "--height=3000"
@@ -45,6 +46,15 @@ namespace COMPASS.Services
                 case Browser.Chrome:
                     ChromeOptions co = new();
                     co.AddArguments(driverArguments);
+                    List<string> chromeArgs = new()
+                    {
+                        "--headless=old", //temp fix for https://issues.chromium.org/issues/367755364, 
+                        "--disable-search-engine-choice-screen",
+                        "--disable-features=OptimizationGuideModelDownloading,OptimizationHintsFetching,OptimizationTargetPrediction,OptimizationHints"
+                    };
+
+                    co.AddArguments(chromeArgs);
+
                     _webDriver = await Task.Run(() => new ChromeDriver((ChromeDriverService)driverService, co));
                     break;
 

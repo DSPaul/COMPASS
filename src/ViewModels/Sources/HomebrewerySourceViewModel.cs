@@ -4,7 +4,6 @@ using COMPASS.Models.XmlDtos;
 using COMPASS.Services;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
-using HtmlAgilityPack;
 using ImageMagick;
 using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
@@ -14,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,12 +28,17 @@ namespace COMPASS.ViewModels.Sources
         {
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from Homebrewery"));
             Debug.Assert(IsValidSource(sources), "Invalid Codex was used in Homebrewery source");
-            HtmlDocument? doc = await IOService.ScrapeSite(sources.SourceURL);
-            HtmlNode? src = doc?.DocumentNode;
 
-            if (src is null)
+            string uri = sources.SourceURL.Replace(@"/share/", @"/metadata/");
+
+            JObject? metadata = await IOService.GetJsonAsync(uri);
+
+            if (metadata is null || !metadata.HasValues)
             {
-                ProgressVM.AddLogEntry(new(Severity.Error, $"Could not reach {sources.SourceURL}"));
+                string message = $"homebrew {sources.SourceURL} was not found on homebrewery \n" +
+                    $"Please check the url and check if the homebrewery.naturalcrit.com website is up.";
+                ProgressVM.AddLogEntry(new(Severity.Warning, message));
+                Logger.Warn($"Could not find homebrew {sources.SourceURL} on homebrewery");
                 return new();
             }
 
@@ -45,24 +48,14 @@ namespace COMPASS.ViewModels.Sources
                 Publisher = "Homebrewery"
             };
 
-            //Scrape metadata
-            //Select script tag with all metadata in JSON format
-            string? script = src.SelectSingleNode("/html/body/script[2]")?.InnerText;
-            if (script is null || script.Length < 13)
+            codex.Title = metadata.SelectToken("title")?.ToString() ?? String.Empty;
+            if (metadata.SelectToken("authors")?.Values<string>() is IEnumerable<string> authors)
             {
-                ProgressVM.AddLogEntry(new(Severity.Error, $"Failed to read metadata from HomeBrewery"));
-                return codex;
+                codex.Authors = new(authors!);
             }
-            //json is encapsulated by "start_app() function, so cut that out
-            string rawData = script[10..^1];
-            JObject metadata = JObject.Parse(rawData);
-
-            codex.Title = metadata.SelectToken("brew.title")?.ToString() ?? String.Empty;
-            if (metadata.SelectToken("brew.authors")?.Values<string>() is IEnumerable<string> authors) { codex.Authors = new(authors!); }
-            codex.Version = metadata.SelectToken("brew.version")?.ToString() ?? String.Empty;
-            codex.PageCount = int.Parse(metadata.SelectToken("brew.pageCount")?.ToString() ?? "0");
-            codex.Description = metadata.SelectToken("brew.description")?.ToString() ?? String.Empty;
-            codex.ReleaseDate = DateTime.Parse(metadata.SelectToken("brew.createdAt")?.ToString().Split('T')[0] ?? String.Empty, CultureInfo.InvariantCulture);
+            codex.PageCount = int.Parse(metadata.SelectToken("pageCount")?.ToString() ?? "0");
+            codex.Description = metadata.SelectToken("description")?.ToString() ?? String.Empty;
+            codex.ReleaseDate = metadata.SelectToken("createdAt")?.Value<DateTime>();
 
             return codex;
         }
