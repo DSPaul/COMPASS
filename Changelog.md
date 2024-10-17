@@ -1,5 +1,19 @@
 # CHANGELOG
-## COMPASS v1.8.0 (18 September 2024)
+## COMPASS v1.8.1 (13 October 2024)
+
+### New Features
+
+### Improvements
+
+- Use new homebrewery metadata endpoint instead of webscraping
+
+### Fixes
+
+- Fix crash when deleting a codex
+- Fix crash when trying to reach to reach openLibrary while it is down
+- Fix crash when cancelling an operation
+- Fix flashbang when fetching a cover in chrome 129
+## COMPASS v1.8.0 (18 September 2024)
 
 ### New Features
 

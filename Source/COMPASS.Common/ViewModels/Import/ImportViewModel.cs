@@ -100,7 +100,15 @@ namespace COMPASS.Common.ViewModels.Import
             //make new codices synchronously so they all have a valid ID
             foreach (string path in paths)
             {
-                ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
+                try
+                {
+                    ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
+                }
+                catch (OperationCanceledException)
+                {
+                    ProgressViewModel.GetInstance().ConfirmCancellation();
+                    break;
+                }
 
                 Codex newCodex = new(targetCollection);
                 newCodex.Sources.Path = path;
