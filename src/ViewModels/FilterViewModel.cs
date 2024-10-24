@@ -176,7 +176,7 @@ namespace COMPASS.ViewModels
             }
         }
 
-        public List<CodexProperty> PossibleEmptyProperties { get; } = new()
+        public static List<CodexProperty> PossibleEmptyProperties { get; } = new()
         {
             CodexProperty.GetInstance(nameof(Codex.Authors))!,
             CodexProperty.GetInstance(nameof(Codex.CoverArt))!,

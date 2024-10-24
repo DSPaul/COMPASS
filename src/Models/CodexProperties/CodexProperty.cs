@@ -1,13 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Tools;
 using COMPASS.ViewModels.Sources;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace COMPASS.Models.CodexProperties
 {
-    public abstract class CodexProperty : ObservableObject
+    public abstract class CodexProperty : ObservableObject, IDisposable
     {
         protected CodexProperty(string propName, string? label = null)
         {
@@ -15,7 +16,13 @@ namespace COMPASS.Models.CodexProperties
             Label = label ?? propName;
             _defaultSourcePriority = GetDefaultSources(propName);
             UpdateSources();
+
+            SourcePriorityNamed = new(SourcePriority.Select(source => new NamedMetaDataSource(source)));
+            SourcePriorityNamed.CollectionChanged += SourcePriorityNamed_CollectionChanged;
         }
+
+        private void SourcePriorityNamed_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+            => SourcePriority = SourcePriorityNamed.Select(spn => spn.Source).ToList();
 
         #region Properties
 
@@ -45,12 +52,10 @@ namespace COMPASS.Models.CodexProperties
 
         private readonly List<MetaDataSource> _defaultSourcePriority;
 
-        private ObservableCollection<NamedMetaDataSource>? _sourcePriorityNamed;
         /// <summary>
         /// Ordered List of sources that can set this prop, named for data binding
         /// </summary>
-        public ObservableCollection<NamedMetaDataSource> SourcePriorityNamed =>
-            _sourcePriorityNamed ??= new(SourcePriority.Select(source => new NamedMetaDataSource(source)));
+        public ObservableCollection<NamedMetaDataSource> SourcePriorityNamed { get; }
 
         private List<MetaDataSource> _sourcePriority = new();
         /// <summary>
@@ -176,6 +181,7 @@ namespace COMPASS.Models.CodexProperties
                 },
             _ => new(),
         };
+        public void Dispose() => SourcePriorityNamed.CollectionChanged -= SourcePriorityNamed_CollectionChanged;
 
         #endregion
     }
