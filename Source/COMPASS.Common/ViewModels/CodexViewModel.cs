@@ -282,10 +282,10 @@ namespace COMPASS.Common.ViewModels
                     Codex tempCodex = new(toMove);
                     tempCodex.SetImagePaths(targetCollection);
 
-                    if (Path.Exists(toMove.CoverArt))
-                        File.Copy(toMove.CoverArt, tempCodex.CoverArt);
-                    if (Path.Exists(toMove.CoverArt))
-                        File.Copy(toMove.Thumbnail, tempCodex.Thumbnail);
+                    if (Path.Exists(toMove.CoverArtPath))
+                        File.Copy(toMove.CoverArtPath, tempCodex.CoverArtPath);
+                    if (Path.Exists(toMove.CoverArtPath))
+                        File.Copy(toMove.ThumbnailPath, tempCodex.ThumbnailPath);
 
                     //Delete codex in original collection
                     MainViewModel.CollectionVM.CurrentCollection.DeleteCodex(toMove);
@@ -493,56 +493,56 @@ namespace COMPASS.Common.ViewModels
         private static async Task GetCoverBulk(IList? codices) =>
             await CoverService.GetCover(codices?.Cast<Codex>().ToList() ?? new());
 
-        public static void DataGridHandleKeyDown(object sender, KeyEventArgs e)
-            => HandleKeyDownOnCodex(((DataGrid)sender).SelectedItems, e);
-        public static void ListBoxHandleKeyDown(object sender, KeyEventArgs e)
-            => HandleKeyDownOnCodex(((ListBox)sender).SelectedItems, e);
-        public static void HandleKeyDownOnCodex(IList selectedItems, KeyEventArgs e)
+        public static void DataGridHandleKeyDown(object? sender, KeyEventArgs e)
+            => HandleKeyDownOnCodex((sender as DataGrid)?.SelectedItems, e);
+        public static void ListBoxHandleKeyDown(object? sender, KeyEventArgs e)
+            => HandleKeyDownOnCodex((sender as ListBox)?.SelectedItems, e);
+        public static async void HandleKeyDownOnCodex(IList? selectedItems, KeyEventArgs e)
         {
+            if (selectedItems is null) return;
+
             List<Codex> codices = selectedItems.Cast<Codex>().ToList();
             int count = selectedItems.Count;
 
-            //TODO, check how keybinds are handled in avalonia
-
-            //if (count > 0)
-            //{
-            //    switch (e.Key)
-            //    {
-            //        case Key.Delete:
-            //            if (Keyboard.Modifiers == ModifierKeys.Alt)
-            //            {
-            //                //Alt + Delete
-            //                BanishCodices(codices);
-            //            }
-            //            else
-            //            {
-            //                //Delete
-            //                DeleteCodices(codices);
-            //            }
-            //            e.Handled = true;
-            //            break;
-            //        case Key.Enter:
-            //            OpenSelectedCodices(codices);
-            //            e.Handled = true;
-            //            break;
-            //        case Key.E:
-            //            if (Keyboard.Modifiers == ModifierKeys.Control)
-            //            {
-            //                //CTRL + E
-            //                EditCodices(codices);
-            //                e.Handled = true;
-            //            }
-            //            break;
-            //        case Key.F:
-            //            if (Keyboard.Modifiers == ModifierKeys.Control)
-            //            {
-            //                //CTRL + F
-            //                FavoriteCodices(codices);
-            //                e.Handled = true;
-            //            }
-            //            break;
-            //    }
-            //}
+            if (count > 0)
+            {
+                switch (e.Key)
+                {
+                    case Key.Delete:
+                        if (e.KeyModifiers == KeyModifiers.Alt)
+                        {
+                            //Alt + Delete
+                            BanishCodices(codices);
+                        }
+                        else
+                        {
+                            //Delete
+                            DeleteCodices(codices);
+                        }
+                        e.Handled = true;
+                        break;
+                    case Key.Enter:
+                        OpenSelectedCodices(codices);
+                        e.Handled = true;
+                        break;
+                    case Key.E:
+                        if (e.KeyModifiers == KeyModifiers.Control)
+                        {
+                            //CTRL + E
+                            await EditCodices(codices);
+                            e.Handled = true;
+                        }
+                        break;
+                    case Key.F:
+                        if (e.KeyModifiers == KeyModifiers.Control)
+                        {
+                            //CTRL + F
+                            FavoriteCodices(codices);
+                            e.Handled = true;
+                        }
+                        break;
+                }
+            }
         }
 
         #region Drag & Drop

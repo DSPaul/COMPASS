@@ -60,19 +60,19 @@ namespace COMPASS.Common.ViewModels
             for (var i = 0; i < CodicesWithChoices.Count; i++)
             {
                 //cover art needs to copy the file, rather than path
-                if (_codicesWithMadeChoices[i].CoverArt != CodicesWithChoices[i].Item1.CoverArt)
+                if (_codicesWithMadeChoices[i].CoverArtPath != CodicesWithChoices[i].Item1.CoverArtPath)
                 {
-                    File.Copy(_codicesWithMadeChoices[i].CoverArt, CodicesWithChoices[i].Item1.CoverArt, true);
+                    File.Copy(_codicesWithMadeChoices[i].CoverArtPath, CodicesWithChoices[i].Item1.CoverArtPath, true);
                     CoverService.CreateThumbnail(CodicesWithChoices[i].Item1);
                     CodicesWithChoices[i].Item1.RefreshThumbnail();
                 }
                 //delete temp cover if it exists
                 try
                 {
-                    if (CodicesWithChoices[i].Item2.CoverArt?.EndsWith(".tmp.png") == true)
-                        File.Delete(CodicesWithChoices[i].Item2.CoverArt);
-                    if (CodicesWithChoices[i].Item2.Thumbnail?.EndsWith(".tmp.png") == true)
-                        File.Delete(CodicesWithChoices[i].Item2.Thumbnail);
+                    if (CodicesWithChoices[i].Item2.CoverArtPath?.EndsWith(".tmp.png") == true)
+                        File.Delete(CodicesWithChoices[i].Item2.CoverArtPath);
+                    if (CodicesWithChoices[i].Item2.ThumbnailPath?.EndsWith(".tmp.png") == true)
+                        File.Delete(CodicesWithChoices[i].Item2.ThumbnailPath);
                 }
                 catch (Exception ex)
                 {

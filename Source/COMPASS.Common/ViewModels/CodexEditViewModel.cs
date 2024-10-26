@@ -26,6 +26,8 @@ namespace COMPASS.Common.ViewModels
             _tempCodex = new(MainViewModel.CollectionVM.CurrentCollection);
             if (!CreateNewCodex) TempCodex.Copy(_editedCodex!);
 
+            TempCodex.LoadCover();
+
             //Apply right checkboxes in AllTags
             foreach (TreeViewNode t in AllTreeViewNodes)
             {
@@ -169,7 +171,7 @@ namespace COMPASS.Common.ViewModels
         {
             ShowLoading = true;
             //make it so cover always gets overwritten if this case, store old value first
-            CodexProperty coverProp = PreferencesService.GetInstance().Preferences.CodexProperties.First(prop => prop.Name == nameof(Codex.CoverArt));
+            CodexProperty coverProp = PreferencesService.GetInstance().Preferences.CodexProperties.First(prop => prop.Name == nameof(Codex.CoverArtPath));
             MetaDataOverwriteMode curSetting = coverProp.OverwriteMode;
             coverProp.OverwriteMode = MetaDataOverwriteMode.Always;
             //get the cover
@@ -187,7 +189,7 @@ namespace COMPASS.Common.ViewModels
                 coverProp.OverwriteMode = curSetting;
                 ShowLoading = false;
             }
-            RefreshCover();
+            TempCodex.LoadCover();
         }
 
         private AsyncRelayCommand? _chooseCoverCommand;
@@ -205,20 +207,10 @@ namespace COMPASS.Common.ViewModels
             {
                 using var file = files.Single();
                 CoverService.GetCoverFromImage(file.Path.AbsolutePath, TempCodex);
-                RefreshCover();
+                TempCodex.LoadCover();
             }
         }
 
-        private void RefreshCover()
-        {
-            //force refresh because image is cached
-            string covArt = TempCodex.CoverArt;
-            string thumbnail = TempCodex.Thumbnail;
-            TempCodex.CoverArt = String.Empty;
-            TempCodex.Thumbnail = String.Empty;
-            TempCodex.CoverArt = covArt;
-            TempCodex.Thumbnail = thumbnail;
-        }
 
         public Action CloseAction { get; set; } = () => { };
 
@@ -273,7 +265,7 @@ namespace COMPASS.Common.ViewModels
             {
                 string path = data.GetFiles()!.Select(f => f.Path.AbsolutePath).First();
                 CoverService.GetCoverFromImage(path, TempCodex);
-                RefreshCover();
+                TempCodex.LoadCover();
             }
         }
         #endregion

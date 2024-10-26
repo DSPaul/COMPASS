@@ -1,15 +1,17 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 
 namespace COMPASS.Common.Models
 {
-    public class Codex : ObservableObject, IHasID, IHasCodexMetadata
+    public class Codex : ObservableObject, IHasID, IHasCodexMetadata, IDisposable
     {
         #region Constructors
 
@@ -23,6 +25,8 @@ namespace COMPASS.Common.Models
         {
             ID = Utils.GetAvailableID(cc.AllCodices);
             SetImagePaths(cc);
+
+            LoadThumbnail();
         }
 
         public Codex(Codex codex) : this()
@@ -34,8 +38,14 @@ namespace COMPASS.Common.Models
 
         public void SetImagePaths(CodexCollection collection)
         {
-            CoverArt = System.IO.Path.Combine(collection.CoverArtPath, $"{ID}.png");
-            Thumbnail = System.IO.Path.Combine(collection.ThumbnailsPath, $"{ID}.png");
+            CoverArtPath = Path.Combine(collection.CoverArtPath, $"{ID}.png");
+            ThumbnailPath = Path.Combine(collection.ThumbnailsPath, $"{ID}.png");
+
+            Thumbnail?.Dispose();
+            _thumbnail = null;
+
+            Cover?.Dispose();
+            Cover = null;
         }
 
         #region Properties
@@ -44,19 +54,35 @@ namespace COMPASS.Common.Models
 
         public int ID { get; set; }
 
-        private string _coverArt = "";
-        public string CoverArt
+        private string _coverArtPath = "";
+        public string CoverArtPath
         {
-            get => _coverArt;
-            set => SetProperty(ref _coverArt, value);
+            get => _coverArtPath;
+            set => SetProperty(ref _coverArtPath, value);
         }
 
-        private string _thumbnail = "";
-        public string Thumbnail
+        private string _thumbnailPath = "";
+        public string ThumbnailPath
         {
-            get => _thumbnail;
-            set => SetProperty(ref _thumbnail, value);
+            get => _thumbnailPath;
+            set => SetProperty(ref _thumbnailPath, value);
         }
+
+        public Bitmap? _thumbnail;
+        public Bitmap? Thumbnail
+        {
+            get
+            {
+                if (_thumbnail == null)
+                {
+                    LoadThumbnail();
+                }
+
+                return _thumbnail;
+            }
+        }
+
+        public Bitmap? Cover { get; private set; }
 
         #endregion
 
@@ -244,8 +270,7 @@ namespace COMPASS.Common.Models
             Publisher = c.Publisher;
             Version = c.Version;
             ID = c.ID;
-            CoverArt = c.CoverArt;
-            Thumbnail = c.Thumbnail;
+            CoverArtPath = c.CoverArtPath;
             PhysicallyOwned = c.PhysicallyOwned;
             Description = c.Description;
             ReleaseDate = c.ReleaseDate;
@@ -270,10 +295,33 @@ namespace COMPASS.Common.Models
             Rating = 0;
         }
 
+        public void LoadCover()
+        {
+            if (File.Exists(CoverArtPath))
+            {
+                Cover = new(CoverArtPath);
+            }
+        }
+
+        public void LoadThumbnail()
+        {
+            if (File.Exists(ThumbnailPath))
+            {
+                _thumbnail = new(ThumbnailPath);
+            }
+        }
+
         private void OnCollectionChanged(object? o, NotifyCollectionChangedEventArgs args)
         {
             if (o == Tags) OnPropertyChanged(nameof(OrderedTags));
             if (o == Authors) OnPropertyChanged(nameof(AuthorsAsString));
+        }
+
+        public void Dispose()
+        {
+            Thumbnail?.Dispose();
+            Authors.CollectionChanged -= OnCollectionChanged;
+            Tags.CollectionChanged -= OnCollectionChanged;
         }
         #endregion
 
@@ -287,7 +335,7 @@ namespace COMPASS.Common.Models
             CodexProperty.GetInstance(nameof(Tags))!,
             CodexProperty.GetInstance(nameof(Description))!,
             CodexProperty.GetInstance(nameof(ReleaseDate))!,
-            CodexProperty.GetInstance(nameof(CoverArt))!,
+            CodexProperty.GetInstance(nameof(CoverArtPath))!,
         };
     }
 }

@@ -10,8 +10,12 @@ namespace COMPASS.Common.Models.XmlDtos
 
         #region COMPASS related Metadata
         public int ID { get; set; }
-        public string CoverArt { get; set; } = "";
-        public string Thumbnail { get; set; } = "";
+
+        [XmlElement("CoverArt")]//Backwards compatibility
+        public string CoverArtPath { get; set; } = "";
+
+        [XmlElement("Thumbnail")]//Backwards compatibility
+        public string ThumbnailPath { get; set; } = "";
         #endregion
 
         #region Codex related Metadata

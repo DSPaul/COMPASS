@@ -49,8 +49,8 @@ namespace COMPASS.Common.Models.XmlDtos
             {
                 // COMPASS related Metadata
                 ID = dto.ID,
-                CoverArt = dto.CoverArt,
-                Thumbnail = dto.Thumbnail,
+                ThumbnailPath = dto.ThumbnailPath,
+                CoverArtPath = dto.CoverArtPath,
 
                 //Codex related Metadata
                 Title = dto.Title,
@@ -92,8 +92,8 @@ namespace COMPASS.Common.Models.XmlDtos
             {
                 // COMPASS related Metadata
                 ID = model.ID,
-                CoverArt = model.CoverArt.Sanitize(),
-                Thumbnail = model.Thumbnail.Sanitize(),
+                ThumbnailPath = model.ThumbnailPath.Sanitize(),
+                CoverArtPath = model.CoverArtPath.Sanitize(),
 
                 //Codex related Metadata
                 Title = model.Title.Sanitize(),

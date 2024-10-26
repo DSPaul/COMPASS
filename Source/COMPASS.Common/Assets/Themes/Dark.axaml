@@ -1,0 +1,67 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  
+  <Color x:Key="LightGray">#999999</Color>
+  <Color x:Key="KindaDarkGray">#717171</Color>
+  <Color x:Key="DarkGray">#5E5E5E</Color>
+  <Color x:Key="DarkerGray">#505152</Color>
+  <Color x:Key="DarkererGray">#424242</Color>
+  <Color x:Key="DarkestGray">#242528</Color>
+  <Color x:Key="ReallyDarkGray">#171717</Color>
+
+  <Color x:Key="OnlineGreen">#00B000</Color>
+
+  <Color x:Key="CompassJade">#16D68A</Color>
+  <Color x:Key="CompassJadeDark">#13a886</Color>
+
+  <Color x:Key="ScrollbarColor">#686868</Color>
+
+  <!--Like transparent but bacause it is black, cursor on this transparant background will be white-->
+  <SolidColorBrush x:Key="TransparentBlack" Color="Black" Opacity="0"/>
+
+  <SolidColorBrush x:Key="Layer0" Color="{StaticResource ReallyDarkGray}"/>
+  <SolidColorBrush x:Key="Layer1" Color="{StaticResource DarkestGray}"/>
+  <SolidColorBrush x:Key="Layer2" Color="{StaticResource DarkererGray}"/>
+  <SolidColorBrush x:Key="Layer3" Color="{StaticResource DarkerGray}"/>
+  <SolidColorBrush x:Key="Layer4" Color="{StaticResource DarkGray}"/>
+  <SolidColorBrush x:Key="Layer5" Color="{StaticResource KindaDarkGray}"/>
+  <SolidColorBrush x:Key="Layer6" Color="Gray"/>
+  <SolidColorBrush x:Key="Layer7" Color="{StaticResource LightGray}"/>
+
+  <SolidColorBrush x:Key="WindowBackground" Color="{StaticResource DarkestGray}"/>
+  <SolidColorBrush x:Key="LeftDockBackground" Color="{StaticResource DarkestGray}"/>
+  <SolidColorBrush x:Key="FiltersBackground" Color="{StaticResource DarkerGray}"/>
+  <SolidColorBrush x:Key="LogBackground" Color="{StaticResource ReallyDarkGray}"/>
+  <SolidColorBrush x:Key="LogBorder" Color="{StaticResource DarkerGray}"/>
+  <SolidColorBrush x:Key="CardBackground" Color="{StaticResource DarkererGray}"/>
+
+  <SolidColorBrush x:Key="TitlebarBackground" Color="{StaticResource DarkGray}"/>
+  <SolidColorBrush x:Key="UIElementBackground" Color="{StaticResource LightGray}"/>
+  <SolidColorBrush x:Key="DarkUIElementBackground" Color="{StaticResource DarkGray}"/>
+  <SolidColorBrush x:Key="TitlebarElementHoverBackground" Color="DimGray"/>
+  <SolidColorBrush x:Key="Separator" Color="{StaticResource KindaDarkGray}"/>
+  <SolidColorBrush x:Key="DisabledButton" Color="{StaticResource KindaDarkGray}"/>
+
+  <SolidColorBrush x:Key="CollectionIconFill" Color="{StaticResource DarkerGray}"/>
+  <SolidColorBrush x:Key="AcceptFill" Color="Green"/>
+  <SolidColorBrush x:Key="CancelFill" Color="Red"/>
+  <SolidColorBrush x:Key="OnlineFill" Color="{StaticResource OnlineGreen}"/>
+  <SolidColorBrush x:Key="OfflineFill" Color="Red"/>
+  <SolidColorBrush x:Key="WarningFill" Color="Goldenrod"/>
+
+  <SolidColorBrush x:Key="TextColor" Color="White"/>
+  <SolidColorBrush x:Key="TextMutedColor" Color="LightGray"/>
+
+  <SolidColorBrush x:Key="AccentColor" Color="{StaticResource CompassJade}"/>
+  <SolidColorBrush x:Key="AccentColorMuted" Color="{StaticResource CompassJadeDark}"/>
+
+  <SolidColorBrush x:Key="ButtonBackground" Color="Gray"/>
+  <SolidColorBrush x:Key="ButtonFocus" Color="{StaticResource CompassJadeDark}"/>
+  <SolidColorBrush x:Key="TabFocus" Color="{StaticResource DarkerGray}"/>
+  <SolidColorBrush x:Key="ListHover" Color="{StaticResource DarkerGray}"/>
+  <SolidColorBrush x:Key="ListSelected" Color="{StaticResource KindaDarkGray}"/>
+  <SolidColorBrush x:Key="PopupOutline" Color="{StaticResource DarkerGray}"/>
+
+  <SolidColorBrush x:Key="ScrollBar" Color="{StaticResource ScrollbarColor}"/>
+  
+</ResourceDictionary>

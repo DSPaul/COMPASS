@@ -109,7 +109,7 @@ namespace COMPASS.Common.Models.CodexProperties
             nameof(Codex.Tags) => new TagsProperty(propName),
             nameof(Codex.Description) => new StringProperty(propName),
             nameof(Codex.ReleaseDate) => new DateTimeProperty(propName, label: "Release Date"),
-            nameof(Codex.CoverArt) => new CoverArtProperty(propName, label: "Cover Art"),
+            nameof(Codex.CoverArtPath) => new CoverArtProperty(propName, label: "Cover Art"),
             nameof(Codex.Rating) => new NumberProperty<int>(propName),
             nameof(Codex.Sources.ISBN) => new StringProperty($"{nameof(Codex.Sources)}.{nameof(Codex.Sources.ISBN)}", label: "ISBN"),
             _ => null //could occur when a new preference file with new props is loaded into an older version of compass
@@ -170,7 +170,7 @@ namespace COMPASS.Common.Models.CodexProperties
                     MetaDataSource.Homebrewery,
                     MetaDataSource.ISBN,
                 },
-            nameof(Codex.CoverArt) => new()
+            nameof(Codex.CoverArtPath) => new()
                 {
                     MetaDataSource.Image,
                     MetaDataSource.PDF,

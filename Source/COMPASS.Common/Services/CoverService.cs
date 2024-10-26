@@ -33,7 +33,7 @@ namespace COMPASS.Common.Services
                 ID = codex.ID,
             };
 
-            CodexProperty coverProp = PreferencesService.GetInstance().Preferences.CodexProperties.First(prop => prop.Name == nameof(Codex.CoverArt));
+            CodexProperty coverProp = PreferencesService.GetInstance().Preferences.CodexProperties.First(prop => prop.Name == nameof(Codex.CoverArtPath));
 
             if (coverProp.OverwriteMode == MetaDataOverwriteMode.Ask)
             {
@@ -54,8 +54,8 @@ namespace COMPASS.Common.Services
             if (shouldAsk)
             {
                 //set img paths to temp path
-                MetaDatalessCodex.CoverArt = codex.CoverArt.Insert(codex.CoverArt.Length - 4, ".tmp");
-                MetaDatalessCodex.Thumbnail = codex.Thumbnail.Insert(codex.Thumbnail.Length - 4, ".tmp");
+                MetaDatalessCodex.CoverArtPath = codex.CoverArtPath.Insert(codex.CoverArtPath.Length - 4, ".tmp");
+                MetaDatalessCodex.ThumbnailPath = codex.ThumbnailPath.Insert(codex.ThumbnailPath.Length - 4, ".tmp");
             }
 
             bool getCoverSuccessful = false;
@@ -72,8 +72,8 @@ namespace COMPASS.Common.Services
             if (shouldAsk)
             {
                 //check if the image is different from the existing one
-                using MagickImage origCover = new(codex.CoverArt);
-                using MagickImage newCover = new(MetaDatalessCodex.CoverArt);
+                using MagickImage origCover = new(codex.CoverArtPath);
+                using MagickImage newCover = new(MetaDatalessCodex.CoverArtPath);
                 var isEqual = origCover.Compare(newCover).MeanErrorPerPixel == 0;
                 if (!isEqual)
                 {
@@ -118,7 +118,7 @@ namespace COMPASS.Common.Services
 
         public static void SaveCover(Codex destCodex, IMagickImage image)
         {
-            if (String.IsNullOrEmpty(destCodex.CoverArt))
+            if (String.IsNullOrEmpty(destCodex.CoverArtPath))
             {
                 Logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
                 return;
@@ -126,27 +126,27 @@ namespace COMPASS.Common.Services
 
             if (image.Width > 850) image.Resize(850, 0);
 
-            image.Write(destCodex.CoverArt);
+            image.Write(destCodex.CoverArtPath);
             CreateThumbnail(destCodex, image);
         }
 
         public static async Task SaveCover(string imgURL, Codex destCodex)
         {
-            if (String.IsNullOrEmpty(destCodex.CoverArt))
+            if (String.IsNullOrEmpty(destCodex.CoverArtPath))
             {
                 Logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
                 return;
             }
 
             var imgBytes = await IOService.DownloadFileAsync(imgURL);
-            await File.WriteAllBytesAsync(destCodex.CoverArt, imgBytes);
+            await File.WriteAllBytesAsync(destCodex.CoverArtPath, imgBytes);
             CreateThumbnail(destCodex);
             destCodex.RefreshThumbnail();
         }
 
         public static bool GetCoverFromImage(string imagePath, Codex destCodex)
         {
-            if (String.IsNullOrEmpty(destCodex.CoverArt))
+            if (String.IsNullOrEmpty(destCodex.CoverArtPath))
             {
                 Logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
                 return false;
@@ -165,7 +165,7 @@ namespace COMPASS.Common.Services
                 using (MagickImage image = new(imagePath))
                 {
                     if (image.Width > 1000) image.Resize(1000, 0);
-                    image.Write(destCodex.CoverArt);
+                    image.Write(destCodex.CoverArtPath);
                     CreateThumbnail(destCodex, image);
                 }
                 destCodex.RefreshThumbnail();
@@ -181,7 +181,7 @@ namespace COMPASS.Common.Services
 
         public static void CreateThumbnail(Codex c, IMagickImage? image = null)
         {
-            if (String.IsNullOrEmpty(c.Thumbnail))
+            if (String.IsNullOrEmpty(c.ThumbnailPath))
             {
                 Logger.Error("Trying to write thumbnail to empty path", new InvalidOperationException());
                 return;
@@ -192,8 +192,8 @@ namespace COMPASS.Common.Services
 
             if (image is null)
             {
-                if (!Path.Exists(c.CoverArt)) return;
-                image = new MagickImage(c.CoverArt);
+                if (!Path.Exists(c.CoverArtPath)) return;
+                image = new MagickImage(c.CoverArtPath);
                 ownsImage = true;
             }
 
@@ -205,7 +205,7 @@ namespace COMPASS.Common.Services
                 uint newHeight = newWidth / width * height;
                 //create thumbnail
                 image.Thumbnail(newWidth, newHeight);
-                image.Write(c.Thumbnail);
+                image.Write(c.ThumbnailPath);
             }
             finally
             {

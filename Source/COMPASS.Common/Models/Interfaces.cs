@@ -31,8 +31,8 @@ namespace COMPASS.Common.Models
     {
         #region COMPASS related Metadata
         public int ID { get; set; }
-        public string CoverArt { get; set; }
-        public string Thumbnail { get; set; }
+        public string CoverArtPath { get; set; }
+        public string ThumbnailPath { get; set; }
         #endregion
 
         #region Codex related Metadata

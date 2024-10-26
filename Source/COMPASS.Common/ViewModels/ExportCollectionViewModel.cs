@@ -159,9 +159,9 @@ namespace COMPASS.Common.ViewModels
                     }
 
                     //Add cover art
-                    if (IncludeCoverArt && File.Exists(codex.CoverArt))
+                    if (IncludeCoverArt && File.Exists(codex.CoverArtPath))
                     {
-                        archive.AddEntry(Path.Combine("CoverArt", Path.GetFileName(codex.CoverArt)), codex.CoverArt);
+                        archive.AddEntry(Path.Combine("CoverArt", Path.GetFileName(codex.CoverArtPath)), codex.CoverArtPath);
                     }
                 }
 

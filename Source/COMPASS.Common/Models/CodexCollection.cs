@@ -160,6 +160,7 @@ namespace COMPASS.Common.Models
             }
 
             AllCodices = new(dtos.Select(dto => dto.ToModel(AllTags)));
+
             _loadedCodices = true;
             return true;
         }
@@ -494,11 +495,11 @@ namespace COMPASS.Common.Models
                 codex.ID = Utils.GetAvailableID(AllCodices);
 
                 //Move Cover file
-                if (File.Exists(codex.CoverArt))
+                if (File.Exists(codex.CoverArtPath))
                 {
                     try
                     {
-                        File.Copy(codex.CoverArt, Path.Combine(CoverArtPath, $"{codex.ID}.png"), true);
+                        File.Copy(codex.CoverArtPath, Path.Combine(CoverArtPath, $"{codex.ID}.png"), true);
                     }
                     catch (Exception ex)
                     {
@@ -507,11 +508,11 @@ namespace COMPASS.Common.Models
                 }
 
                 //Move Thumbnail file
-                if (File.Exists(codex.Thumbnail))
+                if (File.Exists(codex.ThumbnailPath))
                 {
                     try
                     {
-                        File.Copy(codex.Thumbnail, Path.Combine(ThumbnailsPath, $"{codex.ID}.png"), true);
+                        File.Copy(codex.ThumbnailPath, Path.Combine(ThumbnailsPath, $"{codex.ID}.png"), true);
                     }
                     catch (Exception ex)
                     {
@@ -523,7 +524,7 @@ namespace COMPASS.Common.Models
                 codex.SetImagePaths(this);
 
                 //if no thumbnail file was moved, create one
-                if (!File.Exists(codex.Thumbnail))
+                if (!File.Exists(codex.ThumbnailPath))
                 {
                     CoverService.CreateThumbnail(codex);
                 }
@@ -566,8 +567,8 @@ namespace COMPASS.Common.Models
             //Delete CoverArt & Thumbnail
             try
             {
-                File.Delete(toDelete.CoverArt);
-                File.Delete(toDelete.Thumbnail);
+                File.Delete(toDelete.CoverArtPath);
+                File.Delete(toDelete.ThumbnailPath);
             }
             catch
             {

@@ -1,0 +1,150 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Layouts"
+             xmlns:model="using:COMPASS.Common.Models"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="vm:TileLayoutViewModel"
+             x:Class="COMPASS.Common.Views.Layouts.TileLayout">
+  
+  <ListBox x:Name="TileLayoutListBox"
+            ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}"
+            Margin="10,0" SelectionMode="Multiple"
+            SelectedItem="{Binding SelectedCodex, Mode=TwoWay}"
+            KeyDown="ListBox_KeyDown">
+    
+    <!--<ListBox.ItemContainerTheme>
+      <ControlTheme TargetType="ListBoxItem">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="ContextMenu" Value="{DynamicResource MultiCodexContextMenu}"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+              <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                      Background="{TemplateBinding Background}" 
+                      Padding="{TemplateBinding Padding}" CornerRadius="5">
+                <ContentPresenter/>
+              </Border>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+        --><!--<Style.Triggers>
+          <Trigger Property="IsSelected" Value="True">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+          </Trigger>
+          <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}, FallbackValue=1, TargetNullValue=1}" Value="1">
+            <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/>
+          </DataTrigger>
+        </Style.Triggers>--><!--
+      </ControlTheme>
+    </ListBox.ItemContainerTheme>-->
+    <ListBox.ItemsPanel>
+      <ItemsPanelTemplate>
+        <WrapPanel/>
+      </ItemsPanelTemplate>
+    </ListBox.ItemsPanel>
+    <ListBox.ItemTemplate>
+      <DataTemplate DataType="model:Codex">
+        <Grid VerticalAlignment="Top" 
+              RowDefinitions="Auto, Auto"
+              DoubleTapped="Codex_DoubleTapped"
+              Margin="0,10"
+              Background="Transparent">
+          <!--<Grid.Style>
+            <Style TargetType="Grid">
+              <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                  <Setter Property="RenderTransform">
+                    <Setter.Value>
+                      <TransformGroup>
+                        <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
+                      </TransformGroup>
+                    </Setter.Value>
+                  </Setter>
+                </Trigger>
+              </Style.Triggers>
+            </Style>
+          </Grid.Style>-->
+          <Border CornerRadius="5" Margin="10,5" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
+                  BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                  Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
+                  Height="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileHeight}">
+            <Border.Background>
+              <ImageBrush Source="{Binding Thumbnail, Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png}^"/>
+            </Border.Background>
+
+            <!--<Border.Effect>
+              <DropShadowDirectionEffect BlurRadius="15" Direction="300"/>
+            </Border.Effect>-->
+          </Border>
+          <!--<Grid Grid.Row="1" Margin="0,5"
+                Width="{Binding DataContext.Preferences.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.ShowExtraData}">
+            <Grid.Resources>
+              <Style TargetType="TextBlock">
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Visibility" Value="Collapsed"/>
+              </Style>
+            </Grid.Resources>
+            <TextBlock Text="{Binding Title}" TextTrimming="WordEllipsis" Height="60">
+              <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.Preferences.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                 Value="{x:Static preferences:TileLayoutPreferences+DataOption.Title}">
+                      <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </TextBlock.Style>
+            </TextBlock>
+            <TextBlock Text="{Binding AuthorsAsString}" TextTrimming="WordEllipsis" Height="60">
+              <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.Preferences.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                 Value="{x:Static preferences:TileLayoutPreferences+DataOption.Author}">
+                      <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </TextBlock.Style>
+            </TextBlock>
+            <TextBlock Text="{Binding Publisher}" TextTrimming="WordEllipsis" Height="60">
+              <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.Preferences.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                 Value="{x:Static preferences:TileLayoutPreferences+DataOption.Publisher}">
+                      <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </TextBlock.Style>
+            </TextBlock>
+            --><!--<materialDesign:RatingBar Value="{Binding Rating, Mode=TwoWay}" HorizontalAlignment="Center">
+              <materialDesign:RatingBar.Style>
+                <Style TargetType="materialDesign:RatingBar">
+                  <Setter Property="Visibility" Value="Collapsed"/>
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.Preferences.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                 Value="{x:Static preferences:TileLayoutPreferences+DataOption.Rating}">
+                      <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </materialDesign:RatingBar.Style>
+            </materialDesign:RatingBar>--><!--
+          </Grid>-->
+        </Grid>
+      </DataTemplate>
+    </ListBox.ItemTemplate>
+  </ListBox>
+</UserControl>

@@ -7,6 +7,6 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.MainWindow"
         Icon="/Assets/COMPASS.ico"
-        Title="COMPASS">
+        Title="COMPASS" Background="{StaticResource WindowBackground}">
         <views:MainView />
 </Window>
