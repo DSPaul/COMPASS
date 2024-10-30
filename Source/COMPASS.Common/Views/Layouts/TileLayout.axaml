@@ -73,7 +73,7 @@
                   Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
                   Height="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileHeight}">
             <Border.Background>
-              <ImageBrush Source="{Binding Thumbnail, Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png}^"/>
+              <ImageBrush Source="{Binding Thumbnail^, Mode=OneWay}"/>
             </Border.Background>
 
             <!--<Border.Effect>

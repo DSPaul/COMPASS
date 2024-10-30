@@ -1,6 +1,7 @@
 ﻿using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace COMPASS.Common.Models
 {
@@ -26,7 +28,7 @@ namespace COMPASS.Common.Models
             ID = Utils.GetAvailableID(cc.AllCodices);
             SetImagePaths(cc);
 
-            LoadThumbnail();
+            _thumbnail = LoadThumbnail().Result;
         }
 
         public Codex(Codex codex) : this()
@@ -69,16 +71,16 @@ namespace COMPASS.Common.Models
         }
 
         public Bitmap? _thumbnail;
-        public Bitmap? Thumbnail
+        public Task<Bitmap?> Thumbnail
         {
             get
             {
                 if (_thumbnail == null)
                 {
-                    LoadThumbnail();
+                    return LoadThumbnail();
                 }
 
-                return _thumbnail;
+                return Task.FromResult<Bitmap?>(_thumbnail);
             }
         }
 
@@ -297,17 +299,40 @@ namespace COMPASS.Common.Models
 
         public void LoadCover()
         {
-            if (File.Exists(CoverArtPath))
+            try
             {
-                Cover = new(CoverArtPath);
+                if (File.Exists(CoverArtPath))
+                {
+                    Cover = new(CoverArtPath);
+                }
+                else
+                {
+                    Cover = AssetsService.GetPlaceholder(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to load thumbnail", ex);
             }
         }
 
-        public void LoadThumbnail()
+        public async Task<Bitmap?> LoadThumbnail()
         {
-            if (File.Exists(ThumbnailPath))
+            try
             {
-                _thumbnail = new(ThumbnailPath);
+                if (File.Exists(ThumbnailPath))
+                {
+                    return await Task.Run(() => _thumbnail = new Bitmap(ThumbnailPath));
+                }
+                else
+                {
+                    return _thumbnail = AssetsService.GetPlaceholder(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to load thumbnail", ex);
+                return null;
             }
         }
 
