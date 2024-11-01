@@ -56,21 +56,22 @@
     <!-- <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.12" /> -->
     <PackageReference Include="Autofac" Version="8.1.1" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
-    <PackageReference Include="Avalonia" Version="11.1.4" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.4" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.4" />
+    <PackageReference Include="Avalonia" Version="11.2.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.0" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.1.4" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.0" />
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
     <PackageReference Include="FuzzySharp" Version="2.0.2" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.67" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.70" />
     <PackageReference Include="itext7" Version="8.0.5" />
-    <PackageReference Include="log4net" Version="3.0.1" />
+    <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.5" />
+    <PackageReference Include="log4net" Version="3.0.2" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.0.0" />
     <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Selenium.WebDriver" Version="4.25.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.26.1" />
     <PackageReference Include="SharpCompress" Version="0.38.0" />
   </ItemGroup>
   <ItemGroup>
