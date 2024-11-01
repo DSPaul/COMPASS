@@ -1,5 +1,15 @@
 # CHANGELOG
-## COMPASS v1.8.1 (13 October 2024)
+## COMPASS v1.8.2 (01 November 2024)
+
+### New Features
+
+### Improvements
+
+### Fixes
+- Fix metadata priority only applying after restart
+- Fix crash when fetching data from openLibrary
+- Fix crash on 'Move to Collection'
+## COMPASS v1.8.1 (13 October 2024)
 
 ### New Features
 
