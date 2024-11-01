@@ -537,10 +537,13 @@ namespace COMPASS.Common.ViewModels
                 Logger.Warn("Something when wrong during filtering", ex);
             }
         }
+
         public void RemoveCodex(Codex c)
         {
             _excludedCodices.Remove(c);
-            FilteredCodices?.Remove(c);
+
+            //Changes to CollectionView Should always be done from dispatcher thread
+            App.SafeDispatcher.Invoke(() => FilteredCodices?.Remove(c));
         }
 
         #endregion
