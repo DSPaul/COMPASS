@@ -35,9 +35,13 @@
   <DockPanel Name="MainGrid" Focusable="True">
     
     <!--  Title bar -->
-    <Grid DockPanel.Dock="Top" x:Name="TitleBar" Height="30" 
+    <Grid 
+      DockPanel.Dock="Top" 
+      x:Name="TitleBar" 
+      Height="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}">
+      <!-- Should be this but bugged rn https://github.com/AvaloniaUI/Avalonia/issues/16066
           IsHitTestVisible="False"
-          Background="{StaticResource TitlebarBackground}">
+          Background="{StaticResource TitlebarBackground}">-->
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width ="auto"/>
         <ColumnDefinition Width ="*"/>
@@ -50,7 +54,9 @@
       </Grid.ColumnDefinitions>
 
       <!--<Grid.Resources>
-        --><!--#region DropdownBox Style--><!--
+        -->
+      <!--#region DropdownBox Style-->
+      <!--
         <ControlTemplate x:Key="RpgArrow" TargetType="{x:Type ToggleButton}">
           <Grid>
             <Grid.ColumnDefinitions>
@@ -118,7 +124,9 @@
             </Setter.Value>
           </Setter>
         </Style>
-        --><!--#endregion--><!--
+        -->
+      <!--#endregion-->
+      <!--
       </Grid.Resources>-->
 
       <!--<ContentControl Content="{StaticResource CompassLogo}" Grid.Column="0" Margin="10,0" HorizontalAlignment="Left"/>-->
@@ -141,12 +149,13 @@
       </Border>-->
 
       <!--Collection Selection-->
-      <Border Background="{StaticResource UIElementBackground}" IsHitTestVisible="False"
+      <Border Background="{StaticResource UIElementBackground}" IsHitTestVisible="True"
               CornerRadius="4" Grid.Column="3" Margin="0,5" Height="35"
               DataContext="{Binding CollectionVM}">
         <StackPanel Orientation="Horizontal">
           <!--Collection Dropdown-->
           <ComboBox SelectedItem="{Binding CurrentCollection, Mode=TwoWay}"
+                    IsHitTestVisible="True"
                     DisplayMemberBinding="{Binding DirectoryName}" ItemsSource="{Binding AllCodexCollections}"
                     SelectionChanged="CollectionComboBox_SelectionChanged"/>
           <!--<Rectangle Fill="{StaticResource Separator}" Width="2" Height="auto"/>-->
@@ -240,7 +249,9 @@
             <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New" tools:AP.IconKind="AlertDecagram"/>
             <MenuItem Header="Report A Bug" tools:AP.IconKind="Bug" Command="{Binding NavigateToLinkTree}"/>
 
-            --><!--<MenuItem Header="About" Command="{Binding OpenSettingsCommand}" CommandParameter="About"/>--><!--
+            -->
+      <!--<MenuItem Header="About" Command="{Binding OpenSettingsCommand}" CommandParameter="About"/>-->
+      <!--
           </ContextMenu>
         </Button.ContextMenu>
         <Button.Style>
@@ -267,14 +278,15 @@
       </Button>-->
     </Grid>
 
-    <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}"/>
-
-    <UserControl DockPanel.Dock="Right" Content="{Binding CodexInfoVM}"/>
-
     <!-- Bottom bar-->
     <Grid DockPanel.Dock="Bottom" Height="25" Background="{StaticResource TitlebarBackground}">
 
     </Grid>
+    
+    <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}"/>
+
+    <UserControl DockPanel.Dock="Right" Content="{Binding CodexInfoVM}"/>
+
 
     <Grid x:Name="ViewsGrid" 
           RowDefinitions="15, Auto, Auto, *, 10"
