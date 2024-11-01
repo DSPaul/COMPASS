@@ -68,9 +68,10 @@ namespace COMPASS.ViewModels.Sources
                            .Where(author => author != ""));
             }
             //PageCount
-            if (details.SelectToken("pagination") is JToken pagination)
+            if (details.SelectToken("pagination") is JToken pagination &&
+                Int32.TryParse(Regex.Match(pagination.ToString(), @"\d+").Value, out int pageCount))
             {
-                codex.PageCount = Int32.Parse(Regex.Match(pagination.ToString(), @"\d+").Value);
+                codex.PageCount = pageCount;
             }
             codex.PageCount = (int?)details.SelectToken("number_of_pages") ?? codex.PageCount;
 
