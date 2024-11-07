@@ -1,13 +1,17 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="COMPASS.Common.App" RequestedThemeVariant="Dark">
   <Application.Styles>
     <FluentTheme />
+    <materialIcons:MaterialIconStyles />
+    <StyleInclude Source="avares://COMPASS.Common/Themes/Styles.axaml" />
   </Application.Styles>
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <MergeResourceInclude Source="/Assets/Themes/Dark.axaml"/>
+        <MergeResourceInclude Source="avares://COMPASS.Common/Themes/Dark.axaml"/>
+        <!--<MergeResourceInclude Source="Themes/Styles.axaml"/>-->
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>

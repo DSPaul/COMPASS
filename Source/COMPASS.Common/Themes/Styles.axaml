@@ -1,0 +1,23 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <!-- Add Controls for Previewer Here -->
+    </Border>
+  </Design.PreviewWith>
+
+  <Style Selector="Grid.ZoomOnHover">
+    <Setter Property="Transitions">
+      <Setter.Value>
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" 
+                                         Duration="0:0:0.05" Easing="CubicEaseOut"/>
+        </Transitions>
+      </Setter.Value>
+    </Setter>
+    <Style Selector="^:pointerover">
+      <Setter Property="RenderTransform" Value="scale(1.1)"/>
+    </Style>
+  </Style>
+
+</Styles>

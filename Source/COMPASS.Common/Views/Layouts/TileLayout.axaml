@@ -7,40 +7,29 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:TileLayoutViewModel"
              x:Class="COMPASS.Common.Views.Layouts.TileLayout">
-  
+
   <ListBox x:Name="TileLayoutListBox"
             ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}"
             Margin="10,0" SelectionMode="Multiple"
             SelectedItem="{Binding SelectedCodex, Mode=TwoWay}"
             KeyDown="ListBox_KeyDown">
     
-    <!--<ListBox.ItemContainerTheme>
+    <ListBox.ItemContainerTheme>
       <ControlTheme TargetType="ListBoxItem">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="ContextMenu" Value="{DynamicResource MultiCodexContextMenu}"/>
-        <Setter Property="Template">
-          <Setter.Value>
-            <ControlTemplate TargetType="{x:Type ListBoxItem}">
-              <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
-                      Background="{TemplateBinding Background}" 
-                      Padding="{TemplateBinding Padding}" CornerRadius="5">
-                <ContentPresenter/>
-              </Border>
-            </ControlTemplate>
-          </Setter.Value>
-        </Setter>
-        --><!--<Style.Triggers>
-          <Trigger Property="IsSelected" Value="True">
-            <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
-          </Trigger>
+        <Style Selector="^:selected">
+          <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+        </Style>
+        <!--<Setter Property="ContextMenu" Value="{DynamicResource MultiCodexContextMenu}"/>-->
+        <!--<Style.Triggers>
           <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}, FallbackValue=1, TargetNullValue=1}" Value="1">
             <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/>
           </DataTrigger>
-        </Style.Triggers>--><!--
+        </Style.Triggers>-->
       </ControlTheme>
-    </ListBox.ItemContainerTheme>-->
+    </ListBox.ItemContainerTheme>
     <ListBox.ItemsPanel>
       <ItemsPanelTemplate>
         <WrapPanel/>
@@ -48,27 +37,12 @@
     </ListBox.ItemsPanel>
     <ListBox.ItemTemplate>
       <DataTemplate DataType="model:Codex">
-        <Grid VerticalAlignment="Top" 
+        <Grid VerticalAlignment="Top"
               RowDefinitions="Auto, Auto"
               DoubleTapped="Codex_DoubleTapped"
-              Margin="0,10"
-              Background="Transparent">
-          <!--<Grid.Style>
-            <Style TargetType="Grid">
-              <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="true">
-                  <Setter Property="RenderTransform">
-                    <Setter.Value>
-                      <TransformGroup>
-                        <ScaleTransform ScaleY="1.1" ScaleX="1.1"/>
-                      </TransformGroup>
-                    </Setter.Value>
-                  </Setter>
-                </Trigger>
-              </Style.Triggers>
-            </Style>
-          </Grid.Style>-->
-          <Border CornerRadius="5" Margin="10,5" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
+              Background="Transparent"
+              Classes="ZoomOnHover">
+          <Border CornerRadius="5" Margin="25,15" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
                   BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
                   Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
                   Height="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileHeight}">
@@ -76,9 +50,9 @@
               <ImageBrush Source="{Binding Thumbnail^, Mode=OneWay}"/>
             </Border.Background>
 
-            <!--<Border.Effect>
-              <DropShadowDirectionEffect BlurRadius="15" Direction="300"/>
-            </Border.Effect>-->
+            <Border.Effect>
+              <DropShadowDirectionEffect BlurRadius="15"/>
+            </Border.Effect>
           </Border>
           <!--<Grid Grid.Row="1" Margin="0,5"
                 Width="{Binding DataContext.Preferences.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -129,7 +103,8 @@
                 </Style>
               </TextBlock.Style>
             </TextBlock>
-            --><!--<materialDesign:RatingBar Value="{Binding Rating, Mode=TwoWay}" HorizontalAlignment="Center">
+            -->
+          <!--<materialDesign:RatingBar Value="{Binding Rating, Mode=TwoWay}" HorizontalAlignment="Center">
               <materialDesign:RatingBar.Style>
                 <Style TargetType="materialDesign:RatingBar">
                   <Setter Property="Visibility" Value="Collapsed"/>
@@ -141,7 +116,8 @@
                   </Style.Triggers>
                 </Style>
               </materialDesign:RatingBar.Style>
-            </materialDesign:RatingBar>--><!--
+            </materialDesign:RatingBar>-->
+          <!--
           </Grid>-->
         </Grid>
       </DataTemplate>

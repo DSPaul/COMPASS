@@ -15,6 +15,10 @@
     <None Remove="Tools\BarcodeReader\**" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaResource Include="Themes\Dark.axaml" />
+    <AvaloniaResource Include="Themes\Light.axaml" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Assets\COMPASS.ico" />
     <Content Include="Assets\CompassFull.png" />
     <Resource Include="Assets\CompassLogo.png">
@@ -70,6 +74,7 @@
     <PackageReference Include="log4net" Version="3.0.2" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.0.0" />
     <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.0" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.1.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Selenium.WebDriver" Version="4.26.1" />
     <PackageReference Include="SharpCompress" Version="0.38.0" />
