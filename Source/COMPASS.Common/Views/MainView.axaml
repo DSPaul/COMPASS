@@ -6,6 +6,8 @@
              xmlns:layoutVms="using:COMPASS.Common.ViewModels.Layouts"
              xmlns:vm="using:COMPASS.Common.ViewModels"
              xmlns:views="using:COMPASS.Common.Views"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.MainView" FontSize="20"
              x:DataType="vm:MainViewModel"
@@ -279,8 +281,85 @@
     </Grid>
 
     <!-- Bottom bar-->
-    <Grid DockPanel.Dock="Bottom" Height="25" Background="{StaticResource TitlebarBackground}">
+    <Grid DockPanel.Dock="Bottom" Height="25"
+          Background="{StaticResource TitlebarBackground}"
+          ColumnDefinitions="auto,auto, *, auto,auto,auto">
+      <Grid.Styles>
+        <Style Selector="StackPanel">
+          <Setter Property="VerticalAlignment" Value="Stretch"/>
+          <Setter Property="Orientation" Value="Horizontal"/>
+        </Style>
+        <Style Selector="TextBlock">
+          <Setter Property="VerticalAlignment" Value="Center"/>
+          <Setter  Property="FontSize" Value="14"/>
+          <Setter  Property="FontFamily" Value="Segoe UI"/>
+        </Style>
+      </Grid.Styles>
 
+      <!--Items shown counter-->
+      <StackPanel Grid.Column="0">
+        <TextBlock Margin="10,0">
+          Items Shown:
+          <Run Text="{Binding BindableCollectionVM.FilterVM.FilteredCodices.Count, Mode=OneWay, FallbackValue=0}"/>
+          /
+          <Run Text="{Binding BindableCollectionVM.CurrentCollection.AllCodices.Count, Mode=OneWay, FallbackValue=0}"/>
+        </TextBlock>
+      </StackPanel>
+
+      <Rectangle Grid.Column="1" Width="2" Fill="{StaticResource Separator}"/>
+
+      <!--Tasks in Progress Indicator-->
+      <StackPanel Grid.Column="2" HorizontalAlignment="Center"
+                  IsVisible="{Binding ProgressVM.WorkInProgress}">
+        <TextBlock Text="{Binding ProgressVM.FullText, FallbackValue=Stuff in Progress, Mode=OneWay}" Margin="20,0"
+                    FontFamily="Segoe UI"/>
+        <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" Height="12" Width="200"
+                      Value="{Binding ProgressVM.Percentage, FallbackValue=100, Mode=OneWay}"
+                      Classes="Rounded"
+                      Foreground="{StaticResource AccentColor}"
+                      Background="{StaticResource UIElementBackground}"/>
+        <controls:IconButton Icon="CloseCircleOutline" Margin="5,0"
+                             Height="18"
+                             Theme="{StaticResource IconOnly}"
+                             Command="{Binding ProgressVM.CancelTasksCommand}" 
+                             ToolTip.Tip="Cancel Task"/>
+      </StackPanel>
+
+      <!--Internet status indicator-->
+      <materialIcons:MaterialIcon Grid.Column="3" Margin="5,0" Padding="0" Kind="WebOff"
+                                  Foreground="{StaticResource OfflineFill}"
+                                  ToolTip.Tip="No Internet Connection Found"
+                                  IsVisible="{Binding !IsOnline}"/>
+
+      <Rectangle Grid.Column="4" Width="2" Fill="{StaticResource Separator}"/>
+
+      <!--Version-->
+      <Button Grid.Column="5"
+              Command="{Binding OpenSettingsCommand}"
+              CommandParameter="About"
+              Content="{Binding VersionName, FallbackValue=v0.0.0}"
+              ToolTip.Tip="Go to 'About'"
+              Cursor="Hand"
+              VerticalAlignment="Stretch"
+              Padding="10,0">
+        <Button.Styles>
+          <Style Selector="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Style Selector="^:pointerover">
+              <Setter Property="Background" Value="{StaticResource UIElementBackground}"/>
+            </Style>
+          </Style>
+        </Button.Styles>
+        <Button.Template>
+          <ControlTemplate>
+            <!--Might expand this with an indicator if there is a new version available-->
+            <Border Background="{TemplateBinding Background}">
+              <TextBlock Margin="{TemplateBinding Padding}"
+                         Text="{TemplateBinding Content}"/>
+            </Border>
+          </ControlTemplate>
+        </Button.Template>
+      </Button>
     </Grid>
     
     <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}"/>

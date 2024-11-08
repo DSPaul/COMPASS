@@ -7,14 +7,6 @@
     /// </summary>
     //public sealed class AP : DependencyObject
     //{
-    //    #region IconKind
-    //    public static PackIconKind GetIconKind(DependencyObject obj) => (PackIconKind)obj.GetValue(IconKindProperty);
-
-    //    public static void SetIconKind(DependencyObject obj, PackIconKind value) => obj.SetValue(IconKindProperty, value);
-
-    //    public static readonly DependencyProperty IconKindProperty =
-    //        DependencyProperty.RegisterAttached("IconKind", typeof(PackIconKind), typeof(AP));
-    //    #endregion
 
     //    #region PlaceHolderText
     //    public static string GetPlaceHolderText(DependencyObject obj) => (string)obj.GetValue(PlaceHolderTextProperty);

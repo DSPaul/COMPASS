@@ -10,8 +10,8 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <MergeResourceInclude Source="avares://COMPASS.Common/Themes/Dark.axaml"/>
-        <!--<MergeResourceInclude Source="Themes/Styles.axaml"/>-->
+        <ResourceInclude Source="avares://COMPASS.Common/Themes/Dark.axaml"/>
+        <ResourceInclude Source="Themes/IconButton.axaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
