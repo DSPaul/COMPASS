@@ -1,12 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace COMPASS.Common.Tools
 {
     public static class Reflection
     {
-        public static string Version { get; } = Assembly.GetExecutingAssembly().GetName().Version!.ToString(3);
+        public static string Version { get; } = GetVersion();
+
+        public static string GetVersion()
+        {
+            string? assemblyName = Process.GetCurrentProcess().MainModule?.FileName;
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assemblyName!);
+            return fvi!.FileVersion![..5];
+        }
 
         public static List<string> GetObsoleteProperties(Type type)
         {

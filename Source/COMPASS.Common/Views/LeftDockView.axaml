@@ -4,39 +4,143 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels"
              xmlns:controls="using:COMPASS.Common.Controls"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:models="using:COMPASS.Common.Models"
+             xmlns:import="using:COMPASS.Common.ViewModels.Import"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.LeftDockView"
              x:DataType="vm:LeftDockViewModel">
+  <UserControl.Styles>
+    <Style Selector="controls|CollapsableTabItem ContentControl">
+      <Setter Property="HorizontalAlignment" Value="Left"/>
+      <Setter Property="Template">
+        <ControlTemplate TargetType="ContentControl">
+            <Border BorderBrush="{StaticResource Separator}" BorderThickness="3" Width="250"
+                    Background="{Binding $parent[controls:CollapsableTabItem].Background}">
+              <Grid RowDefinitions="auto, auto, *">
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                  <materialIcons:MaterialIcon Height="25" Width="25" HorizontalAlignment="Center"
+                        Margin="5" Kind="{Binding $parent[controls:CollapsableTabItem].Icon}"
+                                              VerticalAlignment="Center"/>
+                  <TextBlock Text="{Binding $parent[controls:CollapsableTabItem].Header}" 
+                             VerticalAlignment="Center" FontSize="20"/>
+                </StackPanel>
+                <ToggleButton Grid.Row="0" ToolTip.Tip="Collapse"
+                              Cursor="Hand"
+                              IsChecked="{Binding $parent[TabControl].((vm:LeftDockViewModel)DataContext).Collapsed}"
+                              Height="35" Width="35" HorizontalAlignment="Right">
+                <ToggleButton.Template>
+                  <ControlTemplate>
+                    <materialIcons:MaterialIcon Height="25" Width="25" Margin="5" Background="Transparent" Kind="ArrowCollapseLeft"/>
+                  </ControlTemplate>
+                </ToggleButton.Template>
+              </ToggleButton>
+                <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource Separator}"/>
+                <ScrollViewer Grid.Row="2" Padding="10">
+                  <ContentPresenter Content="{TemplateBinding Content}"/>
+                </ScrollViewer>
+              </Grid>
+            </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+    <Style Selector="TextBlock.Categorizer">
+      <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <!--<Setter Property="Typography.Capitals" Value="AllSmallCaps"/>-->
+      <Setter Property="FontWeight" Value="Medium"/>
+    </Style>
+  </UserControl.Styles>
+  
   
   <TabControl Background="{StaticResource ButtonBackground}" 
               BorderThickness="0" 
               TabStripPlacement="Left" 
               Padding="0"
               SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
-
+    
     <TabItem IsVisible="False"/> <!--This tab is selected when collapsing-->
-    <controls:CollapsableTabItem Header="Tags" Icon="TagMultiple" IsSelected="True">
-      
+    
+    <controls:CollapsableTabItem Header="Tags" Icon="TagMultiple">
+      <ContentControl>
+        this is tag content
+      </ContentControl>
     </controls:CollapsableTabItem>
     
-    <controls:CollapsableTabItem Header="Filters" Icon="Filter" IsSelected="True">
+    <controls:CollapsableTabItem Header="Filters" Icon="Filter">
+      <ContentControl>
+        this is filter content
+      </ContentControl>
+    </controls:CollapsableTabItem>
 
+    <controls:CollapsableTabItem Header="Layouts" Icon="ViewDashboardEdit">
+      <ContentControl>
+        this is layout content
+      </ContentControl>
+    </controls:CollapsableTabItem>
+
+    <controls:CollapsableTabItem Header="Sorting" Icon="Sort">
+      <ContentControl>
+        this is sorting content
+      </ContentControl>
     </controls:CollapsableTabItem>
     
-    <controls:CollapsableTabItem Header="Layouts" Icon="ViewDashboardEdit" IsSelected="True">
+    <controls:CollapsableTabItem Header="Add Items" Icon="BookAdd">
+      <ContentControl>
+        <StackPanel Grid.IsSharedSizeScope="True">
+          <StackPanel.Styles>
+            <Style Selector="controls|IconButton">
+              <Setter Property="Padding" Value="15,7"/>
+            </Style>
+          </StackPanel.Styles>
+          <TextBlock Text="Physical Books" Classes="Categorizer"/>
+          <controls:IconButton Icon="BookPlusOutline" Content="Add Manually"
+              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.Manual}"/>
+          <controls:IconButton Icon="Barcode" Content="From ISBN"
+              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.ISBN}"/>
 
+          <TextBlock Text="Add Local Files" Classes="Categorizer"/>
+          <controls:IconButton Icon="FilePlusOutline" Content="Import File(s)"
+              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.File}"/>
+          <controls:IconButton Icon="FolderPlusOutline" Content="Import Folder"
+              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.Folder}"/>
+
+
+          <TextBlock Text="Add Online Files" Classes="Categorizer"/>
+          <controls:IconButton Icon="GoogleDrive" Content="Google Drive"
+              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GoogleDrive}"/>
+          <!--<Button Margin="20,5"
+              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.Homebrewery}">
+            <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}"
+                BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="7,2">
+              <StackPanel Orientation="Horizontal">
+                <ContentControl Content="{StaticResource HomebreweryLogo}"/>
+                <TextBlock Text="Homebrewery"/>
+              </StackPanel>
+            </Border>
+          </Button>-->
+          <!--<Button Margin="20,5"
+                  Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GmBinder}">
+            <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}"
+                    BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="30,2">
+              <ContentControl Content="{StaticResource GMBinderLogo}" HorizontalContentAlignment="Center"/>
+            </Border>
+          </Button>-->
+          <controls:IconButton Icon="Web" Content="Other Website"
+              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GenericURL}"/>
+
+          <TextBlock Text="Other" Classes="Categorizer"/>
+          <controls:IconButton Icon="Sack" Content="From a .satchel file"
+                  Command="{Binding ImportBooksFromSatchelCommand}"/>
+        </StackPanel>
+      </ContentControl>
     </controls:CollapsableTabItem>
-    
-    <controls:CollapsableTabItem Header="Sorting" Icon="Sort" IsSelected="True">
 
-    </controls:CollapsableTabItem>
-    
-    <controls:CollapsableTabItem Header="Add Items" Icon="BookAdd" IsSelected="True">
-
-    </controls:CollapsableTabItem>
-
-    <controls:CollapsableTabItem Header="Logs" Icon="TextLong" IsSelected="True">
-
+    <controls:CollapsableTabItem Header="Logs" Icon="TextLong">
+      <ContentControl>
+        this is logs content
+      </ContentControl>
     </controls:CollapsableTabItem>
   </TabControl>
 </UserControl>

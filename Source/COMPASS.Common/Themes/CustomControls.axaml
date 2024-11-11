@@ -7,9 +7,11 @@
     <Border Padding="20">
       <StackPanel>
         <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}"/>
+        <controls:IconButton Icon="About" Content="About"/>
         <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">
-          <controls:CollapsableTabItem/>
-          <controls:CollapsableTabItem/>
+          <controls:CollapsableTabItem Header="Tags" Icon="Tags">
+            Some Tab content
+          </controls:CollapsableTabItem>
         </TabControl>
       </StackPanel>
     </Border>
@@ -40,9 +42,34 @@
       </ControlTemplate>
     </Setter>
   </ControlTheme>
+
+  <!--Icon Button With text-->
+  <ControlTheme TargetType="controls:IconButton" x:Key="{x:Type controls:IconButton}">
+    <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="{TemplateBinding Background}" 
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="7" HorizontalAlignment="Stretch" 
+                  Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
+            <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                  VerticalAlignment="{TemplateBinding VerticalAlignment}">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon"/>
+                <ColumnDefinition Width="*" SharedSizeGroup="ButtonText"/>
+              </Grid.ColumnDefinitions>
+              <materialIcons:MaterialIcon Height="20" Width="20" Margin="0,0,10,0" Kind="{TemplateBinding Icon}"/>
+              <ContentPresenter Grid.Column="1" 
+                                VerticalAlignment="{TemplateBinding VerticalAlignment}" 
+                                Content="{TemplateBinding Content}"/>
+            </Grid>
+          </Border>
+        </ControlTemplate>
+    </Setter>
+  </ControlTheme>
   
-  <!--CollapsableTabItem-->
-  <ControlTheme TargetType="controls:CollapsableTabItem" x:Key="{x:Type controls:CollapsableTabItem}">
+  <!--#CollapsableTabItem-->
+  <ControlTheme TargetType="controls:CollapsableTabItem" 
+                x:Key="{x:Type controls:CollapsableTabItem}">
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Cursor" Value="Hand"/>
@@ -62,39 +89,4 @@
       </ControlTemplate>
     </Setter>
   </ControlTheme>
-  <!--<Style TargetType="ContentControl" x:Key="TabContentWrapper">
-    <Setter Property="Width" Value="250"/>
-    <Setter Property="Visibility" Value="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}, 
-        Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate>
-          <Border BorderBrush="{StaticResource Separator}" BorderThickness="3">
-            <Grid>
-              <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="*"/>
-              </Grid.RowDefinitions>
-              <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                <materialDesign:PackIcon Height="25" Width="25" HorizontalAlignment="Center"
-                     Margin="5"  Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}"/>
-                <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.Header)}" FontSize="20"/>
-              </StackPanel>
-              <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource Separator}"/>
-              <ContentPresenter Grid.Row="2" Cursor="Arrow" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"/>
-              <ToggleButton Grid.Row="0" ToolTip="Collapse" IsChecked="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}}"
-                            Height="35" Width="35" HorizontalAlignment="Right">
-                <ToggleButton.Template>
-                  <ControlTemplate>
-                    <materialDesign:PackIcon Height="25" Width="25" Margin="5"  Kind="ArrowCollapseLeft"/>
-                  </ControlTemplate>
-                </ToggleButton.Template>
-              </ToggleButton>
-            </Grid>
-          </Border>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-  </Style>-->
 </ResourceDictionary>

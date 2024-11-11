@@ -34,7 +34,7 @@
     </ListBox.ItemContainerTheme>
     <ListBox.ItemsPanel>
       <ItemsPanelTemplate>
-        <WrapPanel/>
+        <WrapPanel HorizontalAlignment="Center"/>
       </ItemsPanelTemplate>
     </ListBox.ItemsPanel>
     <ListBox.ItemTemplate>

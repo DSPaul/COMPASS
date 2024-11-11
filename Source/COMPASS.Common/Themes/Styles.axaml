@@ -1,13 +1,13 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="using:COMPASS.Common.Views"
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
   <Design.PreviewWith>
     <StackPanel>
 
       <!-- Icons -->
-      <materialIcons:MaterialIcon Kind="About" Classes="Clickable">
-        
-      </materialIcons:MaterialIcon>
+      <materialIcons:MaterialIcon Kind="About" Classes="Clickable"/>
+      <Button> This is a button</Button>
       
     </StackPanel>
   </Design.PreviewWith>
@@ -20,6 +20,7 @@
     </ResourceDictionary>
   </Styles.Resources>
 
+  <!--General Classes-->
   <Style Selector=":is(Control).ZoomOnHover">
     <Setter Property="Transitions">
       <Setter.Value>
@@ -34,6 +35,18 @@
     </Style>
   </Style>
   
+  <!--TextBlock-->
+  <Style Selector="TextBlock">
+    <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="FontSize" Value="15"/>
+  </Style>
+  
+  <!--HyperLink-->
+  <Style Selector="HyperlinkButton">
+    <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+  </Style>
+  
   <!-- Icons -->
   <Style Selector="materialIcons|MaterialIcon.Clickable">
     <Setter Property="Background" Value="Transparent"/>
@@ -41,6 +54,21 @@
     <Setter Property="IsVisible" Value="{Binding $self.IsEnabled}"/>
     <Style Selector="^:pointerover">
       <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+    </Style>
+  </Style>
+
+  <!--Button base-->
+  <Style Selector="views|MainView :is(Button)">
+    <Setter Property="Background" Value="{StaticResource ButtonBackground}"/>
+    <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+    <Setter Property="BorderBrush" Value="{x:Null}"/>
+    <Setter Property="Margin" Value="10,3"/>
+    <Setter Property="Padding" Value="15,5"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Style Selector="^:pointerover">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Background" Value="{StaticResource ButtonFocus}"/>
     </Style>
   </Style>
 </Styles>

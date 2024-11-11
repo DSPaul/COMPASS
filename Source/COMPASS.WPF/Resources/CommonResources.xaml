@@ -16,13 +16,6 @@
     <converters:UriToBitmapConverter x:Key="UriToBitmapConverter"/>
     <converters:EqualityToVisibilityConverter x:Key="ShowInStepConverter"/>
 
-    <!--TextBlock Style-->
-    <Style TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="FontSize" Value="16"/>
-    </Style>
-
     <!--TextBox Style with placeholder Text-->
     <Style TargetType="{x:Type TextBox}">
         <Setter Property="Template">
@@ -54,22 +47,6 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
         <Setter Property="Background" Value="{StaticResource DarkUIElementBackground}"/>
-    </Style>
-
-    <Style TargetType="{x:Type Hyperlink}">
-        <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
-    </Style>
-    
-    <Style TargetType="materialDesign:PackIcon" x:Key="ClickableIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
-        <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Visibility" Value="Collapsed"/>
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
     <!--#region Button Styles and Templates-->
