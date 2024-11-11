@@ -283,6 +283,9 @@ namespace COMPASS.Common.ViewModels
 
         private RelayCommand? _deleteTagCommand;
         public RelayCommand DeleteTagCommand => _deleteTagCommand ??= new(DeleteTag);
+
+        public int PrevSelectedTab { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
         public void DeleteTag()
         {
             //tag to delete is context, because DeleteTag is called from context menu

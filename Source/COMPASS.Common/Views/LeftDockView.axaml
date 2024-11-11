@@ -2,7 +2,41 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.ViewModels"
+             xmlns:controls="using:COMPASS.Common.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="COMPASS.Common.Views.LeftDockView">
-  Left Dock
+             x:Class="COMPASS.Common.Views.LeftDockView"
+             x:DataType="vm:LeftDockViewModel">
+  
+  <TabControl Background="{StaticResource ButtonBackground}" 
+              BorderThickness="0" 
+              TabStripPlacement="Left" 
+              Padding="0"
+              SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
+
+    <TabItem IsVisible="False"/> <!--This tab is selected when collapsing-->
+    <controls:CollapsableTabItem Header="Tags" Icon="TagMultiple" IsSelected="True">
+      
+    </controls:CollapsableTabItem>
+    
+    <controls:CollapsableTabItem Header="Filters" Icon="Filter" IsSelected="True">
+
+    </controls:CollapsableTabItem>
+    
+    <controls:CollapsableTabItem Header="Layouts" Icon="ViewDashboardEdit" IsSelected="True">
+
+    </controls:CollapsableTabItem>
+    
+    <controls:CollapsableTabItem Header="Sorting" Icon="Sort" IsSelected="True">
+
+    </controls:CollapsableTabItem>
+    
+    <controls:CollapsableTabItem Header="Add Items" Icon="BookAdd" IsSelected="True">
+
+    </controls:CollapsableTabItem>
+
+    <controls:CollapsableTabItem Header="Logs" Icon="TextLong" IsSelected="True">
+
+    </controls:CollapsableTabItem>
+  </TabControl>
 </UserControl>

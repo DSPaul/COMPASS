@@ -318,11 +318,12 @@
                       Classes="Rounded"
                       Foreground="{StaticResource AccentColor}"
                       Background="{StaticResource UIElementBackground}"/>
-        <controls:IconButton Icon="CloseCircleOutline" Margin="5,0"
-                             Height="18"
-                             Theme="{StaticResource IconOnly}"
-                             Command="{Binding ProgressVM.CancelTasksCommand}" 
-                             ToolTip.Tip="Cancel Task"/>
+        <controls:IconButton
+          Icon="CloseCircleOutline" Margin="5,0"
+          Height="18"
+          Theme="{StaticResource IconOnly}"
+          Command="{Binding ProgressVM.CancelTasksCommand}" 
+          ToolTip.Tip="Cancel Task"/>
       </StackPanel>
 
       <!--Internet status indicator-->
@@ -337,7 +338,7 @@
       <Button Grid.Column="5"
               Command="{Binding OpenSettingsCommand}"
               CommandParameter="About"
-              Content="{Binding VersionName, FallbackValue=v0.0.0}"
+              Content="{Binding VersionName, FallbackValue=v2.0.0}"
               ToolTip.Tip="Go to 'About'"
               Cursor="Hand"
               VerticalAlignment="Stretch"

@@ -33,11 +33,14 @@ namespace COMPASS.Common.ViewModels
             get => _preferencesService.Preferences.UIState.StartupTab;
             set
             {
+                PrevSelectedTab = _preferencesService.Preferences.UIState.StartupTab;
                 _preferencesService.Preferences.UIState.StartupTab = value;
                 OnPropertyChanged();
                 if (value > 0) Collapsed = false;
             }
         }
+
+        public int PrevSelectedTab { get; set; }
 
         private bool _collapsed = false;
         public bool Collapsed

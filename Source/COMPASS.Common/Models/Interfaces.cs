@@ -25,6 +25,7 @@ namespace COMPASS.Common.Models
     {
         public int SelectedTab { get; set; }
         public bool Collapsed { get; set; }
+        public int PrevSelectedTab { get; set; }
     }
 
     public interface IHasCodexMetadata

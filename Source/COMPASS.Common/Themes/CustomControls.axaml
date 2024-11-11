@@ -1,0 +1,100 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                    xmlns:controls="using:COMPASS.Common.Controls">
+
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel>
+        <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}"/>
+        <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">
+          <controls:CollapsableTabItem/>
+          <controls:CollapsableTabItem/>
+        </TabControl>
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+  
+  <!--Icon Button-->
+  <ControlTheme TargetType="controls:IconButton" x:Key="IconOnly">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Margin" Value="3"/>
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Template">
+      <ControlTemplate TargetType="controls:IconButton">
+        <Border Padding="{TemplateBinding Padding}"
+                Background="{TemplateBinding Background}"
+                Classes="ZoomOnHover"
+                CornerRadius="5">
+          <materialIcons:MaterialIcon
+              Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"
+              Classes="Clickable"
+              Kind="{TemplateBinding Icon}"
+              Foreground="{TemplateBinding Foreground}"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              IsVisible="{TemplateBinding IsVisible}">
+          </materialIcons:MaterialIcon>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+  
+  <!--CollapsableTabItem-->
+  <ControlTheme TargetType="controls:CollapsableTabItem" x:Key="{x:Type controls:CollapsableTabItem}">
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Margin" Value="0"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Style Selector="^:selected">
+      <Setter Property="Background" Value="{StaticResource TabFocus}"/>
+    </Style>
+    <Setter Property="Template">
+      <ControlTemplate TargetType="controls:CollapsableTabItem">
+        <Border CornerRadius="5,0,0,5" Margin="2,2,0,2"
+                Background="{TemplateBinding Background}"
+                ToolTip.Tip="{TemplateBinding Header}">          
+          <materialIcons:MaterialIcon Height="35" Width="35" Margin="10"
+                                      HorizontalAlignment="Center"
+                                      Kind="{TemplateBinding Icon}"/>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+  <!--<Style TargetType="ContentControl" x:Key="TabContentWrapper">
+    <Setter Property="Width" Value="250"/>
+    <Setter Property="Visibility" Value="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}, 
+        Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Border BorderBrush="{StaticResource Separator}" BorderThickness="3">
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+              <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                <materialDesign:PackIcon Height="25" Width="25" HorizontalAlignment="Center"
+                     Margin="5"  Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}"/>
+                <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.Header)}" FontSize="20"/>
+              </StackPanel>
+              <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource Separator}"/>
+              <ContentPresenter Grid.Row="2" Cursor="Arrow" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"/>
+              <ToggleButton Grid.Row="0" ToolTip="Collapse" IsChecked="{Binding Data.Collapsed, Source={StaticResource CollapsedProxy}}"
+                            Height="35" Width="35" HorizontalAlignment="Right">
+                <ToggleButton.Template>
+                  <ControlTemplate>
+                    <materialDesign:PackIcon Height="25" Width="25" Margin="5"  Kind="ArrowCollapseLeft"/>
+                  </ControlTemplate>
+                </ToggleButton.Template>
+              </ToggleButton>
+            </Grid>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>-->
+</ResourceDictionary>

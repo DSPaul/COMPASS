@@ -3,7 +3,7 @@
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="COMPASS.Common.App" RequestedThemeVariant="Dark">
   <Application.Styles>
-    <FluentTheme />
+    <FluentTheme/>
     <materialIcons:MaterialIconStyles />
     <StyleInclude Source="avares://COMPASS.Common/Themes/Styles.axaml" />
   </Application.Styles>
@@ -11,7 +11,7 @@
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="avares://COMPASS.Common/Themes/Dark.axaml"/>
-        <ResourceInclude Source="Themes/IconButton.axaml"/>
+        <ResourceInclude Source="Themes/CustomControls.axaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>

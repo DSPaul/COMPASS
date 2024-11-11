@@ -71,7 +71,7 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.11.70" />
     <PackageReference Include="itext7" Version="8.0.5" />
     <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.5" />
-    <PackageReference Include="log4net" Version="3.0.2" />
+    <PackageReference Include="log4net" Version="3.0.3" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.0.0" />
     <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.0" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.1.10" />
