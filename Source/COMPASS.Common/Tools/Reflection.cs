@@ -11,9 +11,17 @@ namespace COMPASS.Common.Tools
 
         public static string GetVersion()
         {
-            string? assemblyName = Process.GetCurrentProcess().MainModule?.FileName;
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assemblyName!);
-            return fvi!.FileVersion![..5];
+            try
+            {
+                //TODO Make this work on Linux
+                string? assemblyName = Process.GetCurrentProcess().MainModule?.FileName;
+                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assemblyName!);
+                return fvi!.FileVersion![..5];
+            }
+            catch
+            {
+                return "2.0.0";
+            }
         }
 
         public static List<string> GetObsoleteProperties(Type type)
