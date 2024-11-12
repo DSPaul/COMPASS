@@ -7,6 +7,7 @@
              xmlns:models="using:COMPASS.Common.Models"
              xmlns:import="using:COMPASS.Common.ViewModels.Import"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:panels="using:COMPASS.Common.Views.SidePanels"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.LeftDockView"
              x:DataType="vm:LeftDockViewModel">
@@ -88,52 +89,7 @@
     
     <controls:CollapsableTabItem Header="Add Items" Icon="BookAdd">
       <ContentControl>
-        <StackPanel Grid.IsSharedSizeScope="True">
-          <StackPanel.Styles>
-            <Style Selector="controls|IconButton">
-              <Setter Property="Padding" Value="15,7"/>
-            </Style>
-          </StackPanel.Styles>
-          <TextBlock Text="Physical Books" Classes="Categorizer"/>
-          <controls:IconButton Icon="BookPlusOutline" Content="Add Manually"
-              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.Manual}"/>
-          <controls:IconButton Icon="Barcode" Content="From ISBN"
-              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.ISBN}"/>
-
-          <TextBlock Text="Add Local Files" Classes="Categorizer"/>
-          <controls:IconButton Icon="FilePlusOutline" Content="Import File(s)"
-              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.File}"/>
-          <controls:IconButton Icon="FolderPlusOutline" Content="Import Folder"
-              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.Folder}"/>
-
-
-          <TextBlock Text="Add Online Files" Classes="Categorizer"/>
-          <controls:IconButton Icon="GoogleDrive" Content="Google Drive"
-              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GoogleDrive}"/>
-          <!--<Button Margin="20,5"
-              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.Homebrewery}">
-            <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}"
-                BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="7,2">
-              <StackPanel Orientation="Horizontal">
-                <ContentControl Content="{StaticResource HomebreweryLogo}"/>
-                <TextBlock Text="Homebrewery"/>
-              </StackPanel>
-            </Border>
-          </Button>-->
-          <!--<Button Margin="20,5"
-                  Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GmBinder}">
-            <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}"
-                    BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="30,2">
-              <ContentControl Content="{StaticResource GMBinderLogo}" HorizontalContentAlignment="Center"/>
-            </Border>
-          </Button>-->
-          <controls:IconButton Icon="Web" Content="Other Website"
-              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GenericURL}"/>
-
-          <TextBlock Text="Other" Classes="Categorizer"/>
-          <controls:IconButton Icon="Sack" Content="From a .satchel file"
-                  Command="{Binding ImportBooksFromSatchelCommand}"/>
-        </StackPanel>
+        <panels:AddCodexSidePanel DataContext ="{Binding AddCodexPanelVM}"/>
       </ContentControl>
     </controls:CollapsableTabItem>
 

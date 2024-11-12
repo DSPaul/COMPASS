@@ -67,7 +67,7 @@
     </Setter>
   </ControlTheme>
   
-  <!--#CollapsableTabItem-->
+  <!--CollapsableTabItem-->
   <ControlTheme TargetType="controls:CollapsableTabItem" 
                 x:Key="{x:Type controls:CollapsableTabItem}">
     <Setter Property="BorderThickness" Value="0"/>
