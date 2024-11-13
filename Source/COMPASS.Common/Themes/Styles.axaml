@@ -18,9 +18,14 @@
         <ResourceInclude Source="avares://COMPASS.Common/Themes/Dark.axaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
+    <FontFamily x:Key="HostGroteskFont">avares://COMPASS.Common/Assets/Fonts#Host Grotesk</FontFamily>
   </Styles.Resources>
 
   <!--General Classes-->
+  <Style Selector="ContentPresenter">
+    <Setter Property="FontFamily" Value="{StaticResource HostGroteskFont}" />
+  </Style>
+
   <Style Selector=":is(Control).ZoomOnHover">
     <Setter Property="Transitions">
       <Setter.Value>
