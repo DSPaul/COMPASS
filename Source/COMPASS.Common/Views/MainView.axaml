@@ -498,7 +498,7 @@
       <!--Layout-->
       <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="5" 
                       Content="{Binding CurrentLayout}"
-                      IsVisible="{Binding CollectionVM.CurrentCollection.AllCodices.Count}"
+                      IsVisible="{Binding !!CollectionVM.CurrentCollection.AllCodices.Count}"
                       DragDrop.AllowDrop="True"/>
 
       <!--Welcome screen-->

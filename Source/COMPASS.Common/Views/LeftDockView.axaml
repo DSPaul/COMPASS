@@ -65,7 +65,7 @@
     
     <controls:CollapsableTabItem Header="Tags" Icon="TagMultiple">
       <ContentControl>
-        this is tag content
+        <panels:TagsSidePanel DataContext="{Binding MainVM.CollectionVM.TagsVM}"/>
       </ContentControl>
     </controls:CollapsableTabItem>
     
@@ -89,7 +89,7 @@
     
     <controls:CollapsableTabItem Header="Add Items" Icon="BookAdd">
       <ContentControl>
-        <panels:AddCodexSidePanel DataContext ="{Binding AddCodexPanelVM}"/>
+        <panels:AddCodexSidePanel DataContext="{Binding AddCodexPanelVM}"/>
       </ContentControl>
     </controls:CollapsableTabItem>
 

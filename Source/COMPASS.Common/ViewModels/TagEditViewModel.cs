@@ -52,6 +52,12 @@ namespace COMPASS.Common.ViewModels
 
         #region Functions and Commands
 
+        private void Clear()
+        {
+            _editedTag = new();
+            TempTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+        }
+
         /// <inheritdoc/>
         public void Receive(PropertyChangedMessage<string> message)
         {
@@ -88,8 +94,7 @@ namespace COMPASS.Common.ViewModels
             MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
 
             //reset fields
-            TempTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
-            _editedTag = new();
+            Clear();
             CloseAction();
         }
         public bool CanOkBtn() => !String.IsNullOrWhiteSpace(TempTag.Content);
@@ -98,11 +103,7 @@ namespace COMPASS.Common.ViewModels
         public RelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel()
         {
-            if (CreateNewTag)
-            {
-                TempTag = new Tag(MainViewModel.CollectionVM.CurrentCollection.AllTags);
-            }
-            _editedTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+            Clear();
             CloseAction();
         }
 
@@ -113,7 +114,7 @@ namespace COMPASS.Common.ViewModels
         public RelayCommand ColorSameAsParentCommand => _colorSameAsParentCommand ??= new(SetColorSameAsParent);
         private void SetColorSameAsParent()
         {
-            TempTag.SerializableBackgroundColor = null;
+            TempTag.InternalBackgroundColor = null;
             CloseColorSelection();
         }
 

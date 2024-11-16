@@ -1,18 +1,15 @@
 ﻿using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Xml.Serialization;
 
 namespace COMPASS.Common.Models
 {
     public sealed class Tag : ObservableRecipient, ITag, IHasID, IHasChildren<Tag>, IEquatable<Tag>
     {
-        //Empty Constructor needed for serialization
         public Tag() { }
 
         public Tag(Tag tag)
@@ -22,8 +19,7 @@ namespace COMPASS.Common.Models
 
         public Tag(List<Tag> allTags)
         {
-            AllTags = allTags;
-            ID = Utils.GetAvailableID(allTags.ToList<IHasID>());
+            ID = Utils.GetAvailableID(allTags.Cast<IHasID>());
         }
 
         //Implement IHasChildren
@@ -49,21 +45,17 @@ namespace COMPASS.Common.Models
             set => SetProperty(ref _content, value, true); //needs to broadcast so TagEdit can validate the input
         }
 
-        // Add [XmlIgnoreAttribute] in a future update and delete the setter
-        // these are only needed to load tags.xml files created before the 1.1.0 update
-        public Color BackgroundColor
-        {
-            get => _serializableBackgroundColor ?? Parent?.BackgroundColor ?? Colors.DarkGray;
-            set => _serializableBackgroundColor = value;
-        }
+        //Color bound to the UI
+        public Color BackgroundColor => _internalBackgroundColor ?? Parent?.BackgroundColor ?? Colors.DarkGray;
 
-        private Color? _serializableBackgroundColor = Colors.DarkGray;
-        public Color? SerializableBackgroundColor
+        //Internally stored color, can be null to indicate it should follow the color of the parent tag
+        private Color? _internalBackgroundColor;
+        public Color? InternalBackgroundColor
         {
-            get => _serializableBackgroundColor;
+            get => _internalBackgroundColor;
             set
             {
-                SetProperty(ref _serializableBackgroundColor, value);
+                SetProperty(ref _internalBackgroundColor, value);
                 OnPropertyChanged(nameof(BackgroundColor));
             }
         }
@@ -73,28 +65,15 @@ namespace COMPASS.Common.Models
         public int ID
         {
             get => _id;
-            set
-            {
-                SetProperty(ref _id, value);
-                foreach (var child in Children)
-                {
-                    child.ParentID = value;
-                }
-            }
+            set => SetProperty(ref _id, value);
         }
 
-        // can't save parent itself, would cause infinite loop when serializing
-        // so save ID instead
-        public int ParentID { get; set; } = -1;
-        [XmlIgnore]
+        private Tag? _parent;
         public Tag? Parent
         {
-            get => ParentID == -1 ? null : AllTags.Find(tag => tag.ID == ParentID);
-            set => ParentID = value?.ID ?? -1;
+            get => _parent;
+            set => SetProperty(ref _parent, value);
         }
-
-        [XmlIgnore]
-        public List<Tag> AllTags { get; set; } = new(); //needed to get parent tag from parent ID
 
         // Group tags are important for filtering
         // when filtering, Tags in same group get OR relation
@@ -124,9 +103,8 @@ namespace COMPASS.Common.Models
             Content = t.Content;
             Parent = t.Parent;
             IsGroup = t.IsGroup;
-            SerializableBackgroundColor = t.SerializableBackgroundColor;
+            InternalBackgroundColor = t.InternalBackgroundColor;
             Children = new ObservableCollection<Tag>(t.Children);
-            AllTags = t.AllTags;
         }
 
         //Overwrite Equal operator

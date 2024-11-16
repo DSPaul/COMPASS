@@ -1,4 +1,5 @@
 ﻿using Avalonia.Data.Converters;
+using Avalonia.Media;
 
 namespace COMPASS.Common.Converters
 {
@@ -8,5 +9,9 @@ namespace COMPASS.Common.Converters
            new FuncValueConverter<object?, object?, bool>(areEqual);
 
         private static bool areEqual(object? value, object? param) => value?.Equals(param) ?? false;
+
+        public static FuncValueConverter<Color, SolidColorBrush> ColorToBrush { get; } =
+            new FuncValueConverter<Color, SolidColorBrush>(color => new(color));
+
     }
 }

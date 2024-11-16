@@ -13,11 +13,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.SidePanels
 {
-    public class TagsViewModel : ViewModelBase, IDealsWithTabControl
+    public class TagsPanelVM : ViewModelBase, IDealsWithTabControl
     {
-        public TagsViewModel(CodexCollection codexCollection, FilterViewModel filterVM)
+        public TagsPanelVM(CodexCollection codexCollection, FilterViewModel filterVM)
         {
             _codexCollection = codexCollection;
             _filterVM = filterVM;
@@ -224,8 +224,7 @@ namespace COMPASS.Common.ViewModels
             {
                 Tag newTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags)
                 {
-                    Parent = ContextTag,
-                    SerializableBackgroundColor = null,
+                    Parent = ContextTag
                 };
                 TagPropWindow tpw = new(new TagEditViewModel(newTag, true))
                 {

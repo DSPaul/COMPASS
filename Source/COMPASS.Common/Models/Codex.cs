@@ -15,6 +15,8 @@ namespace COMPASS.Common.Models
 {
     public class Codex : ObservableObject, IHasID, IHasCodexMetadata, IDisposable
     {
+        private CodexCollection _cc;
+
         #region Constructors
 
         public Codex()
@@ -25,6 +27,7 @@ namespace COMPASS.Common.Models
 
         public Codex(CodexCollection cc) : this()
         {
+            _cc = cc;
             ID = Utils.GetAvailableID(cc.AllCodices);
             SetImagePaths(cc);
 
@@ -204,7 +207,8 @@ namespace COMPASS.Common.Models
         }
 
         //order them in same order as alltags by starting with alltags and keeping the ones we need using intersect
-        public IEnumerable<Tag> OrderedTags => _tags.FirstOrDefault()?.AllTags.Intersect(_tags) ?? Enumerable.Empty<Tag>();
+        //TODO: codexCollection will currently not always be set, ideally we get rid of this dependency
+        public IEnumerable<Tag> OrderedTags => _cc?.AllTags.Intersect(_tags) ?? Enumerable.Empty<Tag>();
 
         private bool _physicallyOwned;
         public bool PhysicallyOwned

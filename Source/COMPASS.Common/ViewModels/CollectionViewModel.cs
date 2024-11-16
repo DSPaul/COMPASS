@@ -7,6 +7,7 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.ViewModels.SidePanels;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
@@ -103,8 +104,8 @@ namespace COMPASS.Common.ViewModels
             private set => SetProperty(ref _filterVM, value);
         }
 
-        private TagsViewModel _tagsVM;
-        public TagsViewModel TagsVM
+        private TagsPanelVM _tagsVM;
+        public TagsPanelVM TagsVM
         {
             get => _tagsVM;
             set => SetProperty(ref _tagsVM, value);

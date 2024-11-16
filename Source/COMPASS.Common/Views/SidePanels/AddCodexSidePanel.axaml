@@ -7,7 +7,7 @@
              xmlns:models="using:COMPASS.Common.Models"
              xmlns:import="using:COMPASS.Common.ViewModels.Import"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
              x:DataType="vm:AddCodexPanelVM"
              x:Class="COMPASS.Common.Views.SidePanels.AddCodexSidePanel">
   
@@ -34,15 +34,27 @@
     <controls:IconButton Icon="GoogleDrive" Content="Google Drive"
         Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GoogleDrive}"/>
     <!--<Button Margin="20,5"
-              Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.Homebrewery}">
-            <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}"
-                BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="7,2">
-              <StackPanel Orientation="Horizontal">
-                <ContentControl Content="{StaticResource HomebreweryLogo}"/>
-                <TextBlock Text="Homebrewery"/>
-              </StackPanel>
-            </Border>
-          </Button>-->
+            Command="{Binding ImportCommand}" 
+            CommandParameter="{x:Static import:ImportSource.Homebrewery}">
+      <Button.Template>
+        <ControlTemplate>
+          <Border Background="{TemplateBinding Background}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="7" HorizontalAlignment="Stretch"
+                  Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
+            <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                  VerticalAlignment="{TemplateBinding VerticalAlignment}">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon"/>
+                <ColumnDefinition Width="*" SharedSizeGroup="ButtonText"/>
+              </Grid.ColumnDefinitions>
+              <ContentControl Height="20" Width="20" Margin="0,0,10,0" Content="{StaticResource HomebreweryLogo}"/>
+              <TextBlock Grid.Column="1" Text="Homebrewery"/>
+            </Grid>
+          </Border>
+        </ControlTemplate>
+      </Button.Template>
+    </Button>-->
     <!--<Button Margin="20,5"
                   Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GmBinder}">
             <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}"

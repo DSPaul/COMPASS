@@ -105,14 +105,15 @@ namespace COMPASS.Common.Models
         //Loads the RootTags from a file and constructs the AllTags list from it
         public bool LoadTags()
         {
+            List<TagDto> loadedTags = new();
             if (File.Exists(TagsDataFilePath))
             {
                 //loading root tags          
                 using var reader = new StreamReader(TagsDataFilePath);
-                XmlSerializer serializer = new(typeof(List<Tag>));
+                XmlSerializer serializer = new(typeof(List<TagDto>));
                 try
                 {
-                    RootTags = serializer.Deserialize(reader) as List<Tag> ?? new();
+                    loadedTags = serializer.Deserialize(reader) as List<TagDto> ?? new();
                 }
                 catch (Exception ex)
                 {
@@ -120,25 +121,15 @@ namespace COMPASS.Common.Models
                     return false;
                 }
             }
-            else
-            {
-                RootTags = new();
-            }
+
+            RootTags = loadedTags.Select(dto => dto.ToModel()).ToList();
 
             CompleteLoadingTags();
             _loadedTags = true;
             return true;
         }
 
-        private void CompleteLoadingTags()
-        {
-            //Constructing AllTags and pass it to all the tags
-            AllTags = RootTags.Flatten().ToList();
-            foreach (Tag t in AllTags)
-            {
-                t.AllTags = AllTags;
-            }
-        }
+        private void CompleteLoadingTags() => AllTags = RootTags.Flatten().ToList();
 
         //Loads AllCodices list from Files
         public bool LoadCodices()
@@ -275,6 +266,8 @@ namespace COMPASS.Common.Models
                 return false;
             }
 
+            var toSave = RootTags.Select(c => c.ToDto()).ToList();
+
             try
             {
                 string tempFileName = TagsDataFilePath + ".tmp";
@@ -283,8 +276,8 @@ namespace COMPASS.Common.Models
                 {
                     using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
                     {
-                        XmlSerializer serializer = new(typeof(List<Tag>));
-                        serializer.Serialize(writer, RootTags);
+                        XmlSerializer serializer = new(typeof(List<TagDto>));
+                        serializer.Serialize(writer, toSave);
                     }
 
                     //if successfully written to the tmp file, move to actual path
@@ -467,7 +460,6 @@ namespace COMPASS.Common.Models
             foreach (Tag tag in tagsToImport)
             {
                 tag.ID = Utils.GetAvailableID(AllTags);
-                tag.AllTags = AllTags;
                 AllTags.Add(tag);
             }
             RootTags.AddRange(tagsList);

@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Models.CodexProperties;
+﻿using Avalonia.Media;
+using COMPASS.Common.Models.CodexProperties;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -266,6 +267,50 @@ namespace COMPASS.Common.Models.XmlDtos
         }
 
         #endregion
+
+        #endregion
+
+        #region Tag
+
+        public static Tag ToModel(this TagDto dto, Tag? parentTag = null)
+        {
+            var model = new Tag()
+            {
+                ID = dto.ID,
+                Content = dto.Content,
+                InternalBackgroundColor = dto.BackgroundColor?.ToModel(),
+                IsGroup = dto.IsGroup,
+                Parent = parentTag,
+            };
+
+            model.Children = new ObservableCollection<Tag>(dto.Children.Select(child => child.ToModel(model)));
+            return model;
+        }
+
+        public static TagDto ToDto(this Tag model) => new()
+        {
+            ID = model.ID,
+            Content = model.Content,
+            BackgroundColor = model.InternalBackgroundColor?.ToDto(),
+            IsGroup = model.IsGroup,
+            Children = model.Children.Select(ToDto).ToList()
+        };
+
+        #endregion
+
+        #region Color
+
+        public static Color ToModel(this ColorDto dto) =>
+            Color.FromArgb((byte)dto.A, (byte)dto.R, (byte)dto.G, (byte)dto.B);
+
+
+        public static ColorDto ToDto(this Color model) => new()
+        {
+            A = model.A,
+            R = model.R,
+            G = model.G,
+            B = model.B,
+        };
 
         #endregion
     }
