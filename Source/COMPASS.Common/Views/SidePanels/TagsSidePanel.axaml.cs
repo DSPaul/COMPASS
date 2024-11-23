@@ -3,7 +3,7 @@ using Avalonia.Input;
 
 namespace COMPASS.Common.Views.SidePanels;
 
-public partial class TagsSidePanel : UserControl
+public partial class TagsSidePanel : SidePanel
 {
     public TagsSidePanel()
     {

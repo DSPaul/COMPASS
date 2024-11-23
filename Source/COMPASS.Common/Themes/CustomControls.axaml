@@ -27,7 +27,6 @@
       <ControlTemplate TargetType="controls:IconButton">
         <Border Padding="{TemplateBinding Padding}"
                 Background="{TemplateBinding Background}"
-                Classes="ZoomOnHover"
                 CornerRadius="5">
           <materialIcons:MaterialIcon
               Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"
@@ -45,6 +44,7 @@
 
   <!--Icon Button With text-->
   <ControlTheme TargetType="controls:IconButton" x:Key="{x:Type controls:IconButton}">
+    <Setter Property="Padding" Value="15,5"/>
     <Setter Property="Template">
         <ControlTemplate>
           <Border Background="{TemplateBinding Background}" 

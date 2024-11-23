@@ -1,8 +1,6 @@
-using Avalonia.Controls;
-
 namespace COMPASS.Common.Views.SidePanels;
 
-public partial class AddCodexSidePanel : UserControl
+public partial class AddCodexSidePanel : SidePanel
 {
     public AddCodexSidePanel()
     {

@@ -163,31 +163,50 @@
     <!--<Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="2"/>-->
 
     <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
-      <StackPanel.Resources>
-        <!--<Style TargetType="Border" x:Key="RadioBtnContainer">
-          <Setter Property="Opacity" Value="0.3"/>
+      <StackPanel.Styles>
+        <Style Selector="RadioButton > Border">
           <Setter Property="Padding" Value="10,0"/>
           <Setter Property="Height" Value="30"/>
-          <Style.Triggers>
-            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=RadioButton}, Path=IsChecked}" Value="true">
-              <Setter Property="Opacity" Value="1"/>
-            </DataTrigger>
-          </Style.Triggers>
-        </Style>-->
-      </StackPanel.Resources>
-      <RadioButton x:Name="IncludeRadioButton" GroupName="IncludeGroup" IsChecked="True">
-        <!--<Border CornerRadius="5,0,0,5" Style="{StaticResource RadioBtnContainer}" Background="{StaticResource AcceptFill}">
-          <TextBlock Text="Include" Style="{StaticResource RadioBtnTextBox}"/>
-        </Border>-->
+        </Style>
+        <Style Selector="RadioButton">
+          <Setter Property="Opacity" Value="0.3"/>
+          <Style Selector="^:checked">
+            <Setter Property="Opacity" Value="1"/>
+          </Style>
+          <Setter Property="Template">
+            <ControlTemplate>
+              <ContentPresenter Content="{TemplateBinding Content}"/>
+            </ControlTemplate>
+          </Setter>
+        </Style>
+        <Style Selector="RadioButton TextBlock">
+          <Setter Property="HorizontalAlignment" Value="Center"/>
+          <Setter Property="VerticalAlignment" Value="Center"/>
+          <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+          <Setter Property="Margin" Value="5,2"/>
+          <Setter Property="FontSize" Value="18"/>
+        </Style>
+      </StackPanel.Styles>
+      
+      <RadioButton x:Name="IncludeRadioButton" GroupName="IncludeGroup" IsChecked="True"
+                   Margin="0">
+        <Border CornerRadius="5,0,0,5" Background="{StaticResource AcceptFill}">
+          <TextBlock Text="Include"/>
+        </Border>
       </RadioButton>
-      <RadioButton GroupName="IncludeGroup">
-        <!--<Border CornerRadius="0,5,5,0" Style="{StaticResource RadioBtnContainer}" Background="IndianRed">
-          <TextBlock Text="Exclude" Style="{StaticResource RadioBtnTextBox}"/>
-        </Border>-->
+      <RadioButton GroupName="IncludeGroup" Margin="0">
+        <Border CornerRadius="0,5,5,0" Background="IndianRed">
+          <TextBlock Text="Exclude"/>
+        </Border>
       </RadioButton>
-      <controls:IconButton Icon="DotsVertical" Margin="10,0,0,0"
-              Width="30" Height="30" Foreground="{StaticResource TextMutedColor}" Tapped="Toggle_ContextMenu" ContextMenu="{StaticResource AllTagsContextMenu}"
-              ToolTip.Tip="Additional Actions" Background="{StaticResource Layer4}"/>
+      <controls:IconButton Icon="DotsVertical"
+                           Theme="{StaticResource IconOnly}"
+                           Width="30" Height="30" Margin="10,0,0,0"
+                           Background="{StaticResource Layer4}"
+                           Foreground="{StaticResource TextMutedColor}" 
+                           Tapped="Toggle_ContextMenu" 
+                           ContextMenu="{StaticResource AllTagsContextMenu}"
+                           ToolTip.Tip="Additional Actions" />
     </StackPanel>
 
     <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"  Grid.Row="4"

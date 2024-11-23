@@ -319,8 +319,10 @@
                       Foreground="{StaticResource AccentColor}"
                       Background="{StaticResource UIElementBackground}"/>
         <controls:IconButton
-          Icon="CloseCircleOutline" Margin="5,0"
-          Height="18"
+          Icon="CloseCircleOutline" 
+          Margin="5,0"
+          Background="Transparent"
+          Height="18" Width="20"
           Theme="{StaticResource IconOnly}"
           Command="{Binding ProgressVM.CancelTasksCommand}" 
           ToolTip.Tip="Cancel Task"/>
@@ -342,7 +344,8 @@
               ToolTip.Tip="Go to 'About'"
               Cursor="Hand"
               VerticalAlignment="Stretch"
-              Padding="10,0">
+              Padding="10,0"
+              Margin="0">
         <Button.Styles>
           <Style Selector="Button">
             <Setter Property="Background" Value="Transparent"/>
