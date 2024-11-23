@@ -227,7 +227,7 @@ namespace COMPASS.Common.Services
             var mf = new MagickImageFactory();
             using var img = mf.Create(ss.AsByteArray);
             img.Resize(3000, 3000); //same size as headless window
-            return img.Clone(location.X, location.Y, (uint)size.Width, (uint)size.Height);
+            return img.CloneArea(location.X, location.Y, (uint)size.Width, (uint)size.Height);
         }
     }
 }
