@@ -96,7 +96,7 @@ namespace COMPASS.Services
 
             ParallelOptions parallelOptions = new()
             {
-                MaxDegreeOfParallelism = Environment.ProcessorCount / 2
+                MaxDegreeOfParallelism = Math.Max(Environment.ProcessorCount / 2, 1)
             };
 
             try
