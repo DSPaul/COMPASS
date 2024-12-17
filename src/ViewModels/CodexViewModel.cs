@@ -274,6 +274,9 @@ namespace COMPASS.ViewModels
                     windowedNotificationService.Show(errorNotification);
                     return;
                 }
+
+                //Make sure the directories exist before copying cover art into it
+                targetCollection.CreateDirectories();
                 foreach (Codex toMove in toMoveList)
                 {
                     toMove.Tags.Clear();

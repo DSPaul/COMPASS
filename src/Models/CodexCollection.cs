@@ -219,7 +219,7 @@ namespace COMPASS.Models
             CreateDirectories();
         }
 
-        private void CreateDirectories()
+        public void CreateDirectories()
         {
             try
             {
