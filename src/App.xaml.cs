@@ -23,7 +23,7 @@ namespace COMPASS
                     Directory.CreateDirectory(SettingsViewModel.CompassDataPath);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Cannot show notification here because app needs to finish its constructor before any UI can be shown,
                 //Cannot log either because the log file is located in the CompassDataPath directory
