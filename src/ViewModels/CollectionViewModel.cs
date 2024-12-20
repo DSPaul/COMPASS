@@ -40,7 +40,7 @@ namespace COMPASS.ViewModels
             {
                 Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
                 string msg = $"Failed to create a folder to store user data at {SettingsViewModel.CompassDataPath}, " +
-                             $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
+                             $"please pick a new location to save your data. Creation failed with the following error: '{ex.Message}'";
                 IOService.AskNewCodexFilePath(msg);
             }
 
@@ -140,7 +140,7 @@ namespace COMPASS.ViewModels
                 {
                     Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
                     string msg = $"Failed to create a folder to store user data at {SettingsViewModel.CompassDataPath}, " +
-                                 $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
+                                 $"please pick a new location to save your data. Creation failed with the following error: '{ex.Message}'";
                     IOService.AskNewCodexFilePath(msg);
                 }
             }
@@ -160,7 +160,7 @@ namespace COMPASS.ViewModels
                     else
                     {
                         //If no collections are found and creation fails, we are stuck in an infinite loop which is bad so throw and crash
-                        throw new IOException("Could not create the default collection");
+                        throw new IOException($"Could not create the default collection at {Path.Combine(CodexCollection.CollectionsPath, name)}");
                     }
                 }
 

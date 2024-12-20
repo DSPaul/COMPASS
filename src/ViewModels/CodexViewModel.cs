@@ -274,6 +274,9 @@ namespace COMPASS.ViewModels
                     windowedNotificationService.Show(errorNotification);
                     return;
                 }
+
+                //Make sure the directories exist before copying cover art into it
+                targetCollection.CreateDirectories();
                 foreach (Codex toMove in toMoveList)
                 {
                     toMove.Tags.Clear();
@@ -287,9 +290,9 @@ namespace COMPASS.ViewModels
                     tempCodex.SetImagePaths(targetCollection);
 
                     if (Path.Exists(toMove.CoverArt))
-                        File.Copy(toMove.CoverArt, tempCodex.CoverArt);
+                        File.Copy(toMove.CoverArt, tempCodex.CoverArt, true);
                     if (Path.Exists(toMove.CoverArt))
-                        File.Copy(toMove.Thumbnail, tempCodex.Thumbnail);
+                        File.Copy(toMove.Thumbnail, tempCodex.Thumbnail, true);
 
                     //Delete codex in original collection
                     MainViewModel.CollectionVM.CurrentCollection.DeleteCodex(toMove);
@@ -366,7 +369,7 @@ namespace COMPASS.ViewModels
 
             ParallelOptions parallelOptions = new()
             {
-                MaxDegreeOfParallelism = Environment.ProcessorCount / 2
+                MaxDegreeOfParallelism = Math.Max(Environment.ProcessorCount / 2, 1)
             };
 
             ChooseMetaDataViewModel chooseMetaDataVM = new();

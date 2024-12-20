@@ -34,7 +34,7 @@ namespace COMPASS.Windows
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             ProgressViewModel.GetInstance().CancelBackgroundTask();
-            MainViewModel.CollectionVM.CurrentCollection.Save();
+            MainViewModel.CollectionVM?.CurrentCollection.Save();
             PreferencesService.GetInstance().SavePreferences();
         }
 

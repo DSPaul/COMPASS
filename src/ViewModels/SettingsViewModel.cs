@@ -1,6 +1,8 @@
-﻿using AutoUpdaterDotNET;
+﻿using Autofac;
+using AutoUpdaterDotNET;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Interfaces;
 using COMPASS.Models;
 using COMPASS.Models.CodexProperties;
 using COMPASS.Models.Enums;
@@ -485,11 +487,16 @@ namespace COMPASS.ViewModels
 
             NewDataPath = newPath;
 
-            //Give users choice between moving or copying
+            //If there is existing data, Give users choice between moving or copying
             if (Path.Exists(CompassDataPath))
             {
                 ChangeDataLocationWindow window = new(this);
                 window.ShowDialog();
+            }
+            //If not, just change over
+            else
+            {
+                ChangeToNewDataPath();
             }
 
             return true;
@@ -542,9 +549,12 @@ namespace COMPASS.ViewModels
         /// </summary>
         public void ChangeToNewDataPath()
         {
-            MainViewModel.CollectionVM.CurrentCollection.Save();
+            MainViewModel.CollectionVM?.CurrentCollection.Save();
 
             CompassDataPath = NewDataPath;
+
+            Notification changeSuccessful = new("Data path changed succesfully", $"Data path was successfully changed to {CompassDataPath}. COMPASS will now restart.");
+            App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(changeSuccessful);
 
             //Restart COMPASS
             var currentExecutablePath = Environment.ProcessPath;

@@ -71,10 +71,16 @@ namespace COMPASS.ViewModels
         public RelayCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
         private void BrowsePath()
         {
+            string? initialDir = Path.GetDirectoryName(TempCodex.Sources.Path);
+            if (!Path.Exists(initialDir))
+            {
+                initialDir = string.Empty;
+            }
+
             OpenFileDialog openFileDialog = new()
             {
                 AddExtension = false,
-                InitialDirectory = Path.GetDirectoryName(TempCodex.Sources.Path) ?? String.Empty
+                InitialDirectory = initialDir
             };
             if (openFileDialog.ShowDialog() == true)
             {
