@@ -1,5 +1,15 @@
 # CHANGELOG
-## COMPASS v1.8.2 (01 November 2024)
+## COMPASS v1.8.3 (20 December 2024)
+
+### Fixes
+ - Fix recovery flow if COMPASS cannot write to default appdata location
+ - Fix a crash when browsing a file on a drive that no longer exists
+ - Fix two potential crashes when moving an item between collections
+ - Fix a potentional crash when runnen COMPASS on a single core CPU
+
+### Other 
+ Upgrade to .NET 9
+## COMPASS v1.8.2 (01 November 2024)
 
 ### New Features
 
