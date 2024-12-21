@@ -428,11 +428,16 @@ namespace COMPASS.Common.ViewModels
 
             NewDataPath = newPath;
 
-            //Give users choice between moving or copying
+            //If there is existing data, Give users choice between moving or copying
             if (Path.Exists(_environmentVarsService.CompassDataPath))
             {
                 ChangeDataLocationWindow window = new(this);
                 await window.ShowDialog(App.MainWindow);
+            }
+            //If not, just change over
+            else
+            {
+                ChangeToNewDataPath();
             }
 
             return true;
@@ -485,9 +490,12 @@ namespace COMPASS.Common.ViewModels
         /// </summary>
         public void ChangeToNewDataPath()
         {
-            MainViewModel.CollectionVM.CurrentCollection.Save();
+            MainViewModel.CollectionVM?.CurrentCollection.Save();
 
             _environmentVarsService.CompassDataPath = NewDataPath;
+
+            Notification changeSuccessful = new("Data path changed succesfully", $"Data path was successfully changed to {CompassDataPath}. COMPASS will now restart.");
+            App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(changeSuccessful);
 
             //Restart COMPASS
             var currentExecutablePath = Environment.ProcessPath;
