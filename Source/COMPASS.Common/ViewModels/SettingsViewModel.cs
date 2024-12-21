@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using COMPASS.Common.Models.Enums;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -494,7 +495,7 @@ namespace COMPASS.Common.ViewModels
 
             _environmentVarsService.CompassDataPath = NewDataPath;
 
-            Notification changeSuccessful = new("Data path changed succesfully", $"Data path was successfully changed to {CompassDataPath}. COMPASS will now restart.");
+            Notification changeSuccessful = new("Data path changed succesfully", $"Data path was successfully changed to {_environmentVarsService.CompassDataPath}. COMPASS will now restart.");
             App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(changeSuccessful);
 
             //Restart COMPASS
