@@ -1,19 +1,4 @@
-﻿using Autofac;
-using Avalonia.Threading;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Interfaces;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.Models.Filters;
-using COMPASS.Common.Models.Preferences;
-using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Import;
-using SharpCompress.Archives;
-using SharpCompress.Archives.Zip;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -21,7 +6,23 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Autofac;
+using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Filters;
+using COMPASS.Common.Models.Preferences;
+using COMPASS.Common.Services;
+using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.Views.Windows;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
 
 namespace COMPASS.Common.ViewModels
 {

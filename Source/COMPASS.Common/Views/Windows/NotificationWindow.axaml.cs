@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using COMPASS.Common.Models;
 
-namespace COMPASS.Common;
+namespace COMPASS.Common.Views.Windows;
 
 public partial class NotificationWindow : Window
 {

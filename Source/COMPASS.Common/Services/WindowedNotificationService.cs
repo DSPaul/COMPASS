@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
+using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.Services
 {

@@ -1,4 +1,8 @@
-﻿using Autofac;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using Autofac;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
@@ -8,10 +12,7 @@ using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
+using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.SidePanels
 {

@@ -1,19 +1,20 @@
-﻿using COMPASS.Common.Models;
-using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels;
-using COMPASS.Common.ViewModels.Sources;
-using ImageMagick;
-using ImageMagick.Factories;
-using OpenQA.Selenium;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels;
+using COMPASS.Common.ViewModels.Sources;
+using COMPASS.Common.Views.Windows;
+using ImageMagick;
+using ImageMagick.Factories;
+using OpenQA.Selenium;
 
 namespace COMPASS.Common.Services
 {

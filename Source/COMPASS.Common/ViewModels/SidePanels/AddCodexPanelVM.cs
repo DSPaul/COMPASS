@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Threading.Tasks;
+using Autofac;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
@@ -6,7 +7,7 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
-using System.Threading.Tasks;
+using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.SidePanels
 {
