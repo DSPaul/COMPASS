@@ -80,7 +80,7 @@ namespace COMPASS.Common.ViewModels.Sources
                 return false;
             return Source == other.Source;
         }
-        public static bool operator ==(NamedMetaDataSource lhs, NamedMetaDataSource rhs)
+        public static bool operator ==(NamedMetaDataSource? lhs, NamedMetaDataSource? rhs)
         {
             if (lhs is null)
             {
@@ -89,7 +89,7 @@ namespace COMPASS.Common.ViewModels.Sources
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(NamedMetaDataSource lhs, NamedMetaDataSource rhs)
+        public static bool operator !=(NamedMetaDataSource? lhs, NamedMetaDataSource? rhs)
         {
             return !(lhs == rhs);
         }

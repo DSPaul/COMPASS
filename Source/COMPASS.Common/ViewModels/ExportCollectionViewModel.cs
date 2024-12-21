@@ -50,8 +50,8 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        private RelayCommand? _applyActiveFiltesCommand;
-        public RelayCommand ApplyActiveFiltersCommand => _applyActiveFiltesCommand ??=
+        private RelayCommand? _applyActiveFiltersCommand;
+        public RelayCommand ApplyActiveFiltersCommand => _applyActiveFiltersCommand ??=
             new(ApplyActiveFilters, () => MainViewModel.CollectionVM.FilterVM.HasActiveFilters);
         private void ApplyActiveFilters()
         {

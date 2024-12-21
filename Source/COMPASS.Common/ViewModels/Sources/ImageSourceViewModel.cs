@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels.Sources
 {
-    class ImageSourceViewModel : SourceViewModel
+    public class ImageSourceViewModel : SourceViewModel
     {
         public override MetaDataSource Source => MetaDataSource.Image;
 

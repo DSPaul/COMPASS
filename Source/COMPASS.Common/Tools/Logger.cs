@@ -31,7 +31,7 @@ namespace COMPASS.Common.Tools
         public static log4net.ILog? FileLog { get; private set; }
 
         // Log to Log Tab
-        public static ObservableCollection<LogEntry> ActivityLog { get; } = new ObservableCollection<LogEntry>();
+        public static ObservableCollection<LogEntry> ActivityLog { get; } = [];
 
         public static void Info(string message) =>
             Dispatcher.UIThread.Invoke(()

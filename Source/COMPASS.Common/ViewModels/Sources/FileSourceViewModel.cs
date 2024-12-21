@@ -17,7 +17,7 @@ namespace COMPASS.Common.ViewModels.Sources
             _preferencesService = PreferencesService.GetInstance();
         }
 
-        private PreferencesService _preferencesService;
+        private readonly PreferencesService _preferencesService;
         public override MetaDataSource Source => MetaDataSource.File;
 
         public override Task<bool> FetchCover(Codex codex) => throw new System.NotImplementedException();
@@ -25,17 +25,17 @@ namespace COMPASS.Common.ViewModels.Sources
 
         public override Task<CodexDto> GetMetaData(SourceSet sources)
         {
-            // Use a codex dto to tranfer the data
-            CodexDto codex = new();
-
-            // Title
-            codex.Title = Path.GetFileNameWithoutExtension(sources.Path);
+            // Use a codex dto to transfer the data
+            CodexDto codex = new()
+            {
+                Title = Path.GetFileNameWithoutExtension(sources.Path)
+            };
 
             // Tags based on file path
             foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)
             {
                 Debug.Assert(IsValidSource(sources), "Codex without path was referenced in file source");
-                if (sources.Path!.Contains(folderTagPair.Folder))
+                if (sources.Path.Contains(folderTagPair.Folder))
                 {
                     codex.TagIDs.AddIfMissing(folderTagPair.Tag!.ID);
                 }
@@ -45,7 +45,7 @@ namespace COMPASS.Common.ViewModels.Sources
             {
                 foreach (Tag tag in MainViewModel.CollectionVM.CurrentCollection.AllTags)
                 {
-                    var splitFolders = sources.Path!.Split("\\");
+                    var splitFolders = sources.Path.Split("\\");
                     if (splitFolders.Any(folder => Fuzz.Ratio(folder.ToLowerInvariant(), tag.Content.ToLowerInvariant()) > 90))
                     {
                         codex.TagIDs.AddIfMissing(tag.ID);

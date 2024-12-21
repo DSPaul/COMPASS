@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Interfaces;
+﻿using System.Threading.Tasks;
+using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 
 namespace COMPASS.Common.Services

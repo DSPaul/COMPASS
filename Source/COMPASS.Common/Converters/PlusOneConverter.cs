@@ -9,7 +9,7 @@ namespace COMPASS.Common.Converters
     /// Converter that displays one more than the actual value, perfect for converting indices/counter that start at 0 to
     /// "normal" counting that starts at 1
     /// </summary>
-    class PlusOneConverter : IValueConverter
+    public class PlusOneConverter : IValueConverter
     {
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {

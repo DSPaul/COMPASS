@@ -27,7 +27,7 @@ namespace COMPASS.Common.Models
         public NotificationAction Actions { get; set; }
         public NotificationAction Result { get; set; }
 
-        public List<ObservableKeyValuePair<string, bool>> Options { get; set; } = new List<ObservableKeyValuePair<string, bool>>();
+        public List<ObservableKeyValuePair<string, bool>> Options { get; set; } = [];
 
         #region Templates
         public static Notification AreYouSureNotification => new("Are you Sure?", severity: Severity.Warning, actions: NotificationAction.Cancel | NotificationAction.Confirm)

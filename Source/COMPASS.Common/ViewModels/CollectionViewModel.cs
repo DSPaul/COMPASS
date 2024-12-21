@@ -29,7 +29,7 @@ namespace COMPASS.Common.ViewModels
             _environmentVarsService = App.Container.Resolve<IEnvironmentVarsService>();
 
             //only to avoid null references, should be overwritten as soon as the UI loads, which calls refresh
-            _filterVM = new(new());
+            _filterVM = new([]);
             _tagsVM = new(new("__tmp"), _filterVM);
 
             //Create Collections Directory
@@ -57,7 +57,7 @@ namespace COMPASS.Common.ViewModels
             catch (Exception ex)
             {
                 Logger.Error($"Failed to find existing collections in {CodexCollection.CollectionsPath}", ex);
-                AllCodexCollections = new();
+                AllCodexCollections = [];
             }
 
             LoadInitialCollection();
@@ -65,8 +65,8 @@ namespace COMPASS.Common.ViewModels
             Debug.Assert(_currentCollection is not null, "Current Collection should never be null after loading Initial Collection");
         }
 
-        private PreferencesService _preferencesService;
-        private IEnvironmentVarsService _environmentVarsService;
+        private readonly PreferencesService _preferencesService;
+        private readonly IEnvironmentVarsService _environmentVarsService;
 
         #region Properties
         public MainViewModel? MainVM { get; init; }
@@ -87,7 +87,7 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        private ObservableCollection<CodexCollection> _allCodexCollections = new();
+        private ObservableCollection<CodexCollection> _allCodexCollections = [];
         public ObservableCollection<CodexCollection> AllCodexCollections
         {
             get => _allCodexCollections;
@@ -238,7 +238,7 @@ namespace COMPASS.Common.ViewModels
             //Start Auto Imports
             ImportFolderViewModel folderImportVM = new(manuallyTriggered: false)
             {
-                NonRecursiveDirectories = CurrentCollection?.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList() ?? new(),
+                NonRecursiveDirectories = CurrentCollection?.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList() ?? [],
             };
             await Task.Delay(TimeSpan.FromSeconds(2));
             await folderImportVM.Import();
@@ -468,7 +468,7 @@ namespace COMPASS.Common.ViewModels
 
             CodexCollection targetCollection = new(collectionToMergeInto);
 
-            targetCollection.Load(MakeStartupCollection: false);
+            targetCollection.Load(makeStartupCollection: false);
             await targetCollection.MergeWith(CurrentCollection);
 
             Notification doneNotification = new("Merge Success", $"Successfully merged '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'");

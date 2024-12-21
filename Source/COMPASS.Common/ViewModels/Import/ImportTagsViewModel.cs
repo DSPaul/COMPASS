@@ -8,7 +8,7 @@ namespace COMPASS.Common.ViewModels.Import
 {
     public class ImportTagsViewModel : ViewModelBase
     {
-        public ImportTagsViewModel(CodexCollection collection) : this(new List<CodexCollection> { collection }) { }
+        public ImportTagsViewModel(CodexCollection collection) : this([collection]) { }
 
         public ImportTagsViewModel(List<CodexCollection> collections)
         {

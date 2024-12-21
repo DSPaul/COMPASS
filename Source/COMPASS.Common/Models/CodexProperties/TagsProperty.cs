@@ -12,25 +12,21 @@ namespace COMPASS.Common.Models.CodexProperties
             base(propName, label)
         { }
 
-        public override IEnumerable<int>? GetProp(IHasCodexMetadata codex)
+        protected override IEnumerable<int>? GetProp(IHasCodexMetadata codex)
         {
-            if (codex is Codex c)
+            return codex switch
             {
-                return c.ToDto().TagIDs;
-            }
-            else if (codex is CodexDto dto)
-            {
-                return dto.TagIDs;
-            }
-
-            throw new InvalidOperationException("Unknown implementation of IHasCodexMetadata");
+                Codex c => c.ToDto().TagIDs,
+                CodexDto dto => dto.TagIDs,
+                _ => throw new InvalidOperationException("Unknown implementation of IHasCodexMetadata")
+            };
         }
 
         public override void SetProp(IHasCodexMetadata target, IHasCodexMetadata source)
         {
             if (source is Codex sourceCodex && target is Codex targetCodex)
             {
-                foreach (var tag in sourceCodex.Tags.ToList())
+                foreach (Tag tag in sourceCodex.Tags.ToList())
                 {
                     targetCodex.Tags.AddIfMissing(tag);
                 }

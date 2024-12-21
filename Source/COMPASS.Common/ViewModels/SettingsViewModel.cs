@@ -40,8 +40,8 @@ namespace COMPASS.Common.ViewModels
         public static SettingsViewModel GetInstance() => _settingsVM ??= new SettingsViewModel();
         #endregion
 
-        PreferencesService _preferencesService;
-        IEnvironmentVarsService _environmentVarsService;
+        private readonly PreferencesService _preferencesService;
+        private readonly IEnvironmentVarsService _environmentVarsService;
 
 
         public MainViewModel? MVM { get; set; }
@@ -50,9 +50,9 @@ namespace COMPASS.Common.ViewModels
 
         public Preferences Preferences => _preferencesService.Preferences;
 
-        public void ApplyPreferences()
+        private void ApplyPreferences()
         {
-            //Convert list back to dict because dict does not support two way binding
+            //Convert list back to dict because dict does not support two-way binding
             MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences = FiletypePreferences.ToDictionary(x => x.Key, x => x.Value);
 
             _preferencesService.SavePreferences();
@@ -175,7 +175,7 @@ namespace COMPASS.Common.ViewModels
             {
                 var importFolderVM = new ImportFolderViewModel(true)
                 {
-                    RecursiveDirectories = new List<string> { dir },
+                    RecursiveDirectories = [dir],
                 };
                 await importFolderVM.Import();
             }
@@ -186,7 +186,7 @@ namespace COMPASS.Common.ViewModels
             if (folder is null) return;
             var importFolderVM = new ImportFolderViewModel(true)
             {
-                ExistingFolders = new List<Folder> { folder },
+                ExistingFolders = [folder],
             };
             await importFolderVM.Import();
         }
@@ -330,16 +330,16 @@ namespace COMPASS.Common.ViewModels
             RenameFolderReferences(args[0] as string, args[1] as string);
         }
 
-        private void RenameFolderReferences(string? oldpath, string? newpath)
+        private void RenameFolderReferences(string? oldPath, string? newPath)
         {
-            if (String.IsNullOrWhiteSpace(oldpath) || newpath is null) return;
+            if (String.IsNullOrWhiteSpace(oldPath) || newPath is null) return;
 
             AmountRenamed = 0;
             foreach (Codex codex in MainViewModel.CollectionVM.CurrentCollection.AllCodices)
             {
-                if (codex.Sources.HasOfflineSource() && codex.Sources.Path.Contains(oldpath))
+                if (codex.Sources.HasOfflineSource() && codex.Sources.Path.Contains(oldPath))
                 {
-                    string updatedPath = codex.Sources.Path.Replace(oldpath, newpath);
+                    string updatedPath = codex.Sources.Path.Replace(oldPath, newPath);
                     //only replace path if old one was broken and new one exists
                     if (!File.Exists(codex.Sources.Path) && File.Exists(updatedPath))
                     {
@@ -393,7 +393,7 @@ namespace COMPASS.Common.ViewModels
                 Title = "Choose a new data location",
             });
 
-            if (folders.Any() == true)
+            if (folders.Any())
             {
                 var folder = folders.Single();
                 string newPath = folder.Path.AbsolutePath;
@@ -410,8 +410,8 @@ namespace COMPASS.Common.ViewModels
             if (String.IsNullOrWhiteSpace(newPath) || !Path.Exists(newPath)) { return false; }
 
             //make sure new folder ends on /COMPASS
-            string foldername = new DirectoryInfo(newPath).Name;
-            if (foldername != "COMPASS")
+            string folderName = new DirectoryInfo(newPath).Name;
+            if (folderName != "COMPASS")
             {
                 newPath = Path.Combine(newPath, "COMPASS");
                 try
@@ -495,7 +495,7 @@ namespace COMPASS.Common.ViewModels
 
             _environmentVarsService.CompassDataPath = NewDataPath;
 
-            Notification changeSuccessful = new("Data path changed succesfully", $"Data path was successfully changed to {_environmentVarsService.CompassDataPath}. COMPASS will now restart.");
+            Notification changeSuccessful = new("Data path changed successfully", $"Data path was successfully changed to {_environmentVarsService.CompassDataPath}. COMPASS will now restart.");
             App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(changeSuccessful);
 
             //Restart COMPASS
@@ -536,7 +536,7 @@ namespace COMPASS.Common.ViewModels
 
             try
             {
-                //Create all of the directories
+                //Create all the directories
                 foreach (string dirPath in Directory.GetDirectories(sourceDir, "*", SearchOption.AllDirectories))
                 {
                     Directory.CreateDirectory(dirPath.Replace(sourceDir, destDir));
@@ -556,7 +556,7 @@ namespace COMPASS.Common.ViewModels
                         }
                         progressVM.IncrementCounter();
                         Dispatcher.UIThread.Invoke(() =>
-                            progressVM.Log.Add(new LogEntry(Models.Enums.Severity.Info, $"Copied {sourcePath}")));
+                            progressVM.Log.Add(new LogEntry(Severity.Info, $"Copied {sourcePath}")));
                     }
                 });
             }

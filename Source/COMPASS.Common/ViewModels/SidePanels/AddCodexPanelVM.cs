@@ -27,7 +27,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
                 return;
             }
 
-            //Create importcollection ready to merge into existing collection
+            //Create importCollection ready to merge into existing collection
             //set in advanced mode as a sort of preview
             var vm = new ImportCollectionViewModel(collectionToImport)
             {

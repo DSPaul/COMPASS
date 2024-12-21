@@ -26,11 +26,11 @@ namespace COMPASS.Common.ViewModels.Sources
             Debug.Assert(IsValidSource(sources), "Codex without pdf found in pdf source");
             PdfDocument? pdfDoc = null;
 
-            // Use a codex dto to tranfer the data
+            // Use a codex dto to transfer the data
             CodexDto codex = new();
             try
             {
-                var info = await Task.Run(() =>
+                PdfDocumentInfo? info = await Task.Run(() =>
                 {
                     PdfReader pdfReader = new(sources.Path);
                     pdfDoc = new PdfDocument(pdfReader);
@@ -40,14 +40,14 @@ namespace COMPASS.Common.ViewModels.Sources
                 codex.Title = info.GetTitle() ?? String.Empty;
                 if (info.GetAuthor() is not null)
                 {
-                    codex.Authors = new() { info.GetAuthor() };
+                    codex.Authors = [info.GetAuthor()];
                 }
                 codex.PageCount = pdfDoc!.GetNumberOfPages();
 
                 // If it already has an ISBN, no need to check again
                 if (!String.IsNullOrEmpty(sources.ISBN)) return codex;
 
-                //Search for ISBN number in first 5 pages
+                //Search for an ISBN in first 5 pages
                 for (int page = 1; page <= Math.Min(5, pdfDoc.GetNumberOfPages()); page++)
                 {
                     ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
@@ -56,7 +56,7 @@ namespace COMPASS.Common.ViewModels.Sources
                     pageContent = Constants.RegexWhitespace().Replace(pageContent, "");
                     //search ISBN
                     string isbn = Constants.RegexISBN().Match(pageContent).Value;
-                    if (!String.IsNullOrEmpty(isbn))
+                    if (!string.IsNullOrEmpty(isbn))
                     {
                         sources.ISBN = isbn;
                         break;

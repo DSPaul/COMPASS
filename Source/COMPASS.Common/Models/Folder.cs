@@ -20,7 +20,7 @@ namespace COMPASS.Common.Models
         }
 
         /// <summary>
-        /// Indicates wheter or not this folder has all the existing subfolders, or only the ones specified in <see cref="SubFolders"/>
+        /// Indicates whether this folder has all the existing subfolders, or only the ones specified in <see cref="SubFolders"/>
         /// If this is true, and a new subfolder was created, it will be added to the subfolders, if not, subfolders remains unchanged.
         /// </summary>
         public bool HasAllSubFolders { get; set; } = true;
@@ -68,7 +68,7 @@ namespace COMPASS.Common.Models
                 }
             }
 
-            return Enumerable.Empty<Folder>();
+            return [];
         }
 
         /// <summary>

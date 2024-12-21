@@ -31,7 +31,7 @@ namespace COMPASS.Common.DataTemplates
             }
             else
             {
-                CheckableTreeNode<Tag>? checkNode = param as CheckableTreeNode<Tag>;
+                var checkNode = param as CheckableTreeNode<Tag>;
                 isGroup = checkNode?.Item.IsGroup ?? false;
             }
 

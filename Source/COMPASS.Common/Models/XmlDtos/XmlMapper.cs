@@ -14,7 +14,7 @@ namespace COMPASS.Common.Models.XmlDtos
         /// <summary>
         /// Remove illegal XML characters from a string.
         /// </summary>
-        private static string Sanitize(this string str)
+        private static string Sanitize(this string? str)
         {
             if (str is null) return "";
 
@@ -170,6 +170,7 @@ namespace COMPASS.Common.Models.XmlDtos
         /// <returns></returns>
         private static ObservableCollection<PreferableFunction<Codex>> MapCodexPriorities(List<int>? priorityIds)
         {
+            //if preferences doesn't have file priorities, put them in default order
             if (priorityIds is null)
             {
                 return new(Preferences.Preferences.OpenCodexFunctions);
@@ -177,12 +178,6 @@ namespace COMPASS.Common.Models.XmlDtos
 
             return new(Preferences.Preferences.OpenCodexFunctions.OrderBy(pf =>
             {
-                //if preferences doesn't have file priorities, put them in default order
-                if (priorityIds is null)
-                {
-                    return pf.ID;
-                }
-
                 //get index in user preference
                 int index = priorityIds.IndexOf(pf.ID);
 
@@ -209,9 +204,8 @@ namespace COMPASS.Common.Models.XmlDtos
             var useLabel = propertyDtos.All(prop => string.IsNullOrEmpty(prop.Name) && !string.IsNullOrEmpty(prop.Label));
             if (useLabel)
             {
-                for (int i = 0; i < propertyDtos.Count; i++)
+                foreach (CodexPropertyDto propDto in propertyDtos)
                 {
-                    CodexPropertyDto propDto = propertyDtos[i];
                     var foundProp = Codex.MetadataProperties.Find(p => p.Label == propDto.Label);
                     if (foundProp != null)
                     {

@@ -5,21 +5,15 @@ namespace COMPASS.Common.Models
 {
     public class SatchelInfo
     {
-        public SatchelInfo()
-        {
-            CreationVersion = Reflection.Version;
-            CreationDate = DateTime.Now;
-        }
-
         /// <summary>
         /// Version of Compass used to create the satchel
         /// </summary>
-        public string CreationVersion { get; init; }
+        public string CreationVersion { get; init; } = Reflection.Version;
 
         /// <summary>
         /// Date when the satchel was created
         /// </summary>
-        public DateTime CreationDate { get; init; }
+        public DateTime CreationDate { get; init; } = DateTime.Now;
 
         /// <summary>
         /// Minimum version required to read the codexInfo file

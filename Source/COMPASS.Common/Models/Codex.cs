@@ -15,7 +15,7 @@ namespace COMPASS.Common.Models
 {
     public class Codex : ObservableObject, IHasID, IHasCodexMetadata, IDisposable
     {
-        private CodexCollection _cc;
+        private readonly CodexCollection? _cc;
 
         #region Constructors
 
@@ -46,7 +46,7 @@ namespace COMPASS.Common.Models
             CoverArtPath = Path.Combine(collection.CoverArtPath, $"{ID}.png");
             ThumbnailPath = Path.Combine(collection.ThumbnailsPath, $"{ID}.png");
 
-            Thumbnail?.Dispose();
+            _thumbnail?.Dispose();
             _thumbnail = null;
 
             Cover?.Dispose();
@@ -73,7 +73,7 @@ namespace COMPASS.Common.Models
             set => SetProperty(ref _thumbnailPath, value);
         }
 
-        public Bitmap? _thumbnail;
+        private Bitmap? _thumbnail;
         public Task<Bitmap?> Thumbnail
         {
             get
@@ -128,7 +128,7 @@ namespace COMPASS.Common.Models
             "Without zero-padding, they would be sorted alphabetically as 1, 13, 2, 20. \n" +
             "However, with zero-padding, the order becomes 01, 02, 13, 20. \n";
 
-        private ObservableCollection<string> _authors = new();
+        private ObservableCollection<string> _authors = [];
         public ObservableCollection<string> Authors
         {
             get => _authors;
@@ -193,7 +193,7 @@ namespace COMPASS.Common.Models
 
         #region User related Metadata
 
-        private ObservableCollection<Tag> _tags = new();
+        private ObservableCollection<Tag> _tags = [];
         public ObservableCollection<Tag> Tags
         {
             get => _tags;
@@ -206,9 +206,9 @@ namespace COMPASS.Common.Models
             }
         }
 
-        //order them in same order as alltags by starting with alltags and keeping the ones we need using intersect
+        //order them in same order as allTags by starting with allTags and keeping the ones we need using intersect
         //TODO: codexCollection will currently not always be set, ideally we get rid of this dependency
-        public IEnumerable<Tag> OrderedTags => _cc?.AllTags.Intersect(_tags) ?? Enumerable.Empty<Tag>();
+        public IEnumerable<Tag> OrderedTags => _cc?.AllTags.Intersect(_tags) ?? [];
 
         private bool _physicallyOwned;
         public bool PhysicallyOwned
@@ -305,14 +305,9 @@ namespace COMPASS.Common.Models
         {
             try
             {
-                if (File.Exists(CoverArtPath))
-                {
-                    Cover = new(CoverArtPath);
-                }
-                else
-                {
-                    Cover = AssetsService.GetPlaceholder(this);
-                }
+                Cover = File.Exists(CoverArtPath) ? 
+                    new(CoverArtPath) : 
+                    AssetsService.GetPlaceholder(this);
             }
             catch (Exception ex)
             {
@@ -320,7 +315,7 @@ namespace COMPASS.Common.Models
             }
         }
 
-        public async Task<Bitmap?> LoadThumbnail()
+        private async Task<Bitmap?> LoadThumbnail()
         {
             try
             {
@@ -348,14 +343,14 @@ namespace COMPASS.Common.Models
 
         public void Dispose()
         {
-            Thumbnail?.Dispose();
+            _thumbnail?.Dispose();
             Authors.CollectionChanged -= OnCollectionChanged;
             Tags.CollectionChanged -= OnCollectionChanged;
         }
         #endregion
 
-        public static readonly List<CodexProperty> MetadataProperties = new()
-        {
+        public static readonly List<CodexProperty> MetadataProperties =
+        [
             CodexProperty.GetInstance(nameof(Title))!,
             CodexProperty.GetInstance(nameof(Authors))!,
             CodexProperty.GetInstance(nameof(Publisher))!,
@@ -364,8 +359,8 @@ namespace COMPASS.Common.Models
             CodexProperty.GetInstance(nameof(Tags))!,
             CodexProperty.GetInstance(nameof(Description))!,
             CodexProperty.GetInstance(nameof(ReleaseDate))!,
-            CodexProperty.GetInstance(nameof(CoverArtPath))!,
-        };
+            CodexProperty.GetInstance(nameof(CoverArtPath))!
+        ];
     }
 }
 

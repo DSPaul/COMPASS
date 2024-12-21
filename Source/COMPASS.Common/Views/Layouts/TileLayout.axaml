@@ -11,6 +11,7 @@
              x:Class="COMPASS.Common.Views.Layouts.TileLayout">
 
   <ListBox x:Name="TileLayoutListBox"
+           Background="Transparent"
             ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}"
             Margin="10,0" SelectionMode="Multiple"
             SelectedItem="{Binding SelectedCodex, Mode=TwoWay}"

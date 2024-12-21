@@ -37,15 +37,15 @@ namespace COMPASS.Common.ViewModels.Sources
                 return new();
             }
 
-            // Use a codex dto to tranfer the data
+            // Use a codex dto to transfer the data
             CodexDto codex = new()
             {
                 Publisher = "GM Binder"
             };
 
-            //get pagecount
+            //get page count
             HtmlNode? previewDiv = doc.GetElementbyId("preview");
-            IEnumerable<HtmlNode> pages = previewDiv?.ChildNodes.Where(node => node.Id.Contains('p')) ?? Enumerable.Empty<HtmlNode>();
+            IEnumerable<HtmlNode> pages = previewDiv?.ChildNodes.Where(node => node.Id.Contains('p')) ?? [];
             codex.PageCount = pages.Count();
 
             return codex;

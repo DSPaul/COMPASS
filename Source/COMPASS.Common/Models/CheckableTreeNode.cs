@@ -33,7 +33,7 @@ namespace COMPASS.Common.Models
 
         /// <summary>
         /// Indicates that the node only exists as a container for its children,
-        /// cannot be checked on it's own. Will be unchecked if all children are unchecked.
+        /// cannot be checked on its own. Will be unchecked if all children are unchecked.
         /// </summary>
         public bool ContainerOnly { get; set; }
 
@@ -60,7 +60,7 @@ namespace COMPASS.Common.Models
         /// <param name="value"></param>
         private void InternalSetChecked(bool? value) => SetProperty(ref _isChecked, value, nameof(IsChecked));
 
-        private ObservableCollection<CheckableTreeNode<T>> _children = new();
+        private ObservableCollection<CheckableTreeNode<T>> _children = [];
         public ObservableCollection<CheckableTreeNode<T>> Children
         {
             get => _children;

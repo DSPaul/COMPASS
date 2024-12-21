@@ -14,6 +14,6 @@ namespace COMPASS.Common.Models.XmlDtos
         public ColorDto? BackgroundColor;
 
         public bool IsGroup { get; set; }
-        public List<TagDto> Children { get; set; } = new();
+        public List<TagDto> Children { get; set; } = [];
     }
 }

@@ -20,14 +20,14 @@ namespace COMPASS.Common.Services
     public static class CoverService
     {
         /// <summary>
-        /// Fethces a cover image for the given codex
+        /// Fetches a cover image for the given codex
         /// </summary>
         /// <param name="codex"></param>
         /// <param name="chooseMetaDataViewModel"></param>
         /// <exception cref="System.OperationCanceledException">The token has had cancellation requested.</exception>
         public static async Task GetCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null)
         {
-            Codex MetaDatalessCodex = new()
+            Codex metaDatalessCodex = new()
             {
                 Sources = codex.Sources,
                 ID = codex.ID,
@@ -48,14 +48,14 @@ namespace COMPASS.Common.Services
             }
 
             //copy img paths over this way
-            MetaDatalessCodex.SetImagePaths(MainViewModel.CollectionVM.CurrentCollection);
+            metaDatalessCodex.SetImagePaths(MainViewModel.CollectionVM.CurrentCollection);
 
             bool shouldAsk = coverProp.OverwriteMode == MetaDataOverwriteMode.Ask && !coverProp.IsEmpty(codex);
             if (shouldAsk)
             {
                 //set img paths to temp path
-                MetaDatalessCodex.CoverArtPath = codex.CoverArtPath.Insert(codex.CoverArtPath.Length - 4, ".tmp");
-                MetaDatalessCodex.ThumbnailPath = codex.ThumbnailPath.Insert(codex.ThumbnailPath.Length - 4, ".tmp");
+                metaDatalessCodex.CoverArtPath = codex.CoverArtPath.Insert(codex.CoverArtPath.Length - 4, ".tmp");
+                metaDatalessCodex.ThumbnailPath = codex.ThumbnailPath.Insert(codex.ThumbnailPath.Length - 4, ".tmp");
             }
 
             bool getCoverSuccessful = false;
@@ -65,7 +65,7 @@ namespace COMPASS.Common.Services
 
                 SourceViewModel? sourceVM = SourceViewModel.GetSourceVM(source);
                 if (sourceVM == null || !sourceVM.IsValidSource(codex.Sources)) continue;
-                getCoverSuccessful = await sourceVM.FetchCover(MetaDatalessCodex);
+                getCoverSuccessful = await sourceVM.FetchCover(metaDatalessCodex);
                 if (getCoverSuccessful) break;
             }
 
@@ -73,11 +73,11 @@ namespace COMPASS.Common.Services
             {
                 //check if the image is different from the existing one
                 using MagickImage origCover = new(codex.CoverArtPath);
-                using MagickImage newCover = new(MetaDatalessCodex.CoverArtPath);
+                using MagickImage newCover = new(metaDatalessCodex.CoverArtPath);
                 var isEqual = origCover.Compare(newCover).MeanErrorPerPixel == 0;
                 if (!isEqual)
                 {
-                    chooseMetaDataViewModel?.AddCodexPair(codex, MetaDatalessCodex);
+                    chooseMetaDataViewModel?.AddCodexPair(codex, metaDatalessCodex);
                 }
             }
 
@@ -211,7 +211,7 @@ namespace COMPASS.Common.Services
             {
                 if (ownsImage)
                 {
-                    image?.Dispose();
+                    image.Dispose();
                 }
             }
         }

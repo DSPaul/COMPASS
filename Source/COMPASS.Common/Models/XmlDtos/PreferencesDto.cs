@@ -15,7 +15,7 @@ namespace COMPASS.Common.Models.XmlDtos
 
         [XmlArray(ElementName = "CodexProperties")]
         [XmlArrayItem(ElementName = "CodexProperty")]
-        public List<CodexPropertyDto> CodexProperties { get; set; } = new();
+        public List<CodexPropertyDto> CodexProperties { get; set; } = [];
 
 
         public ListLayoutPreferences ListLayoutPreferences { get; set; } = new();

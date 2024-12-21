@@ -7,6 +7,7 @@ using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using System;
 using System.IO;
+using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -22,7 +23,7 @@ namespace COMPASS.Common.Services
 
         public string PreferencesFilePath => Path.Combine(App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath, "Preferences.xml");
 
-        public static object writeLocker = new();
+        public static readonly Lock _writeLocker = new();
 
         private Preferences? _preferences;
         public Preferences Preferences => _preferences ??= LoadPreferences() ?? new Preferences();
@@ -36,7 +37,7 @@ namespace COMPASS.Common.Services
 
                 string tempFileName = PreferencesFilePath + ".tmp";
 
-                lock (writeLocker)
+                lock (_writeLocker)
                 {
                     using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
                     {
@@ -76,7 +77,7 @@ namespace COMPASS.Common.Services
                 XmlSerializer serializer = new(typeof(PreferencesDto), overrides);
                 if (serializer.Deserialize(reader) is PreferencesDto prefsDto)
                 {
-                    return prefsDto is null ? new() : prefsDto.ToModel();
+                    return prefsDto.ToModel();
                 }
                 else
                 {

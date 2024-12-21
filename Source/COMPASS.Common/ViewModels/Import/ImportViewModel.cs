@@ -40,7 +40,7 @@ namespace COMPASS.Common.ViewModels.Import
             }
         }
 
-        public static async Task<List<string>> ChooseFiles()
+        private static async Task<List<string>> ChooseFiles()
         {
             var filesService = App.Container.Resolve<IFilesService>();
 
@@ -61,14 +61,14 @@ namespace COMPASS.Common.ViewModels.Import
             return paths;
         }
 
-        public static async Task ImportManual()
+        private static async Task ImportManual()
         {
             CodexEditWindow editWindow = new(new CodexEditViewModel(null));
             editWindow.Topmost = true;
             await editWindow.ShowDialog(App.MainWindow);
         }
 
-        public static async Task ImportURL(ImportSource source)
+        private static async Task ImportURL(ImportSource source)
         {
             ImportURLViewModel importVM = new(source);
             ImportURLWindow window = new(importVM);
@@ -95,7 +95,7 @@ namespace COMPASS.Common.ViewModels.Import
 
             if (paths.Count == 0) return;
 
-            List<Codex> newCodices = new();
+            List<Codex> newCodices = [];
 
             //make new codices synchronously so they all have a valid ID
             foreach (string path in paths)
@@ -125,7 +125,7 @@ namespace COMPASS.Common.ViewModels.Import
             await FinishImport(newCodices);
         }
 
-        public static async Task FinishImport(List<Codex> newCodices)
+        private static async Task FinishImport(List<Codex> newCodices)
         {
             try
             {

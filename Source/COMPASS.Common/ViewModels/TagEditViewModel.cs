@@ -61,7 +61,7 @@ namespace COMPASS.Common.ViewModels
         /// <inheritdoc/>
         public void Receive(PropertyChangedMessage<string> message)
         {
-            if (message.Sender.GetType() == typeof(Tag) && message.PropertyName == nameof(Tag.Content))
+            if (message is { Sender: Tag, PropertyName: nameof(Tag.Content) })
             {
                 OKCommand.NotifyCanExecuteChanged();
             }

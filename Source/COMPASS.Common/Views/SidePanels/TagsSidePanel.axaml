@@ -12,6 +12,7 @@
              x:Class="COMPASS.Common.Views.SidePanels.TagsSidePanel"
              x:DataType="vm:TagsPanelVM">
   <UserControl.Resources>
+    <Thickness x:Key="TreeViewItemExpandCollapseChevronMargin"> 0, 0, 0, 0 </Thickness>
     <!--<ContextMenu x:Key="TagContextMenu">
       <MenuItem Header="New Tag" tools:AP.IconKind="TagPlusOutline" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.CreateChildCommand}"/>
       <MenuItem Header="Edit" tools:AP.IconKind="Edit" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.EditTagCommand}"/>
@@ -42,9 +43,8 @@
           Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.ExportTagsCommand}"/>
     </ContextMenu>-->
   </UserControl.Resources>
-  
   <Grid Grid.IsSharedSizeScope="True">
-    <!-- Grid instead of stackpanel so height is capped and scrolling works -->
+    <!-- Grid instead of StackPanel so height is capped and scrolling works -->
     <Grid.RowDefinitions>
       <RowDefinition Height="auto"/>
       <RowDefinition Height="auto"/>
@@ -208,7 +208,7 @@
                            ContextMenu="{StaticResource AllTagsContextMenu}"
                            ToolTip.Tip="Additional Actions" />
     </StackPanel>
-
+    
     <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"  Grid.Row="4"
         ItemsSource="{Binding Path=TreeViewSource, Mode=TwoWay}"  
         Margin="5" Cursor="Arrow"

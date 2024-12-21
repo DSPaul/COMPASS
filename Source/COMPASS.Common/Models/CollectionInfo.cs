@@ -25,10 +25,10 @@ namespace COMPASS.Common.Models
         #region Folders to Auto Import
 
         [Obsolete("Replaced by AutoImportFolders")]
-        public ObservableCollection<string>? AutoImportDirectories { get; set; } = new();
-        public ObservableCollection<Folder> AutoImportFolders { get; set; } = new();
+        public ObservableCollection<string>? AutoImportDirectories { get; set; } = [];
+        public ObservableCollection<Folder> AutoImportFolders { get; set; } = [];
 
-        public ObservableCollection<string> BanishedPaths { get; set; } = new();
+        public ObservableCollection<string> BanishedPaths { get; set; } = [];
         #endregion
 
         #region File Type preferences for auto import
@@ -42,7 +42,7 @@ namespace COMPASS.Common.Models
 
         [XmlArray(ElementName = "FiletypePreferences")]
         [XmlArrayItem(ElementName = "FileType")]
-        public List<ObservableKeyValuePair<string, bool>> SerializableFiletypePreferences { get; set; } = new(); //needed because Dictionaries cannot be serialized
+        public List<ObservableKeyValuePair<string, bool>> SerializableFiletypePreferences { get; set; } = []; //needed because Dictionaries cannot be serialized
 
         //Copies the dict into the serializable version
         public void PrepareSave() => SerializableFiletypePreferences = FiletypePreferences.Select(x => new ObservableKeyValuePair<string, bool>(x)).ToList();
@@ -50,7 +50,7 @@ namespace COMPASS.Common.Models
         #endregion
 
         #region Folder -> Tag mapping
-        public ObservableCollection<FolderTagPair> FolderTagPairs { get; set; } = new();
+        public ObservableCollection<FolderTagPair> FolderTagPairs { get; set; } = [];
 
         public void CompleteLoading(CodexCollection owner)
         {

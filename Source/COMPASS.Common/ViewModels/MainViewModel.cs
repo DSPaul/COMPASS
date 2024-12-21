@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels
 {
-    public partial class MainViewModel : ViewModelBase
+    public class MainViewModel : ViewModelBase
     {
         public MainViewModel()
         {

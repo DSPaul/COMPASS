@@ -23,7 +23,7 @@ namespace COMPASS.Common.Models
         }
 
         //Implement IHasChildren
-        private ObservableCollection<Tag> _children = new();
+        private ObservableCollection<Tag> _children = [];
         public ObservableCollection<Tag> Children
         {
             get => _children;
@@ -86,7 +86,7 @@ namespace COMPASS.Common.Models
         }
 
         /// <summary>
-        /// Does an upwards search untill it find either a group tag or a root tag
+        /// Does an upwards search until it find either a group tag or a root tag
         /// </summary>
         /// <returns></returns>
         public Tag GetGroup()
@@ -120,7 +120,7 @@ namespace COMPASS.Common.Models
                 return false;
             return ID == other.ID;
         }
-        public static bool operator ==(Tag lhs, Tag rhs)
+        public static bool operator ==(Tag? lhs, Tag? rhs)
         {
             if (lhs is null)
             {
@@ -129,7 +129,7 @@ namespace COMPASS.Common.Models
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(Tag lhs, Tag rhs)
+        public static bool operator !=(Tag? lhs, Tag? rhs)
         {
             return !(lhs == rhs);
         }

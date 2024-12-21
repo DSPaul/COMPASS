@@ -14,8 +14,8 @@ namespace COMPASS.Common.ViewModels
 {
     public class ChooseMetaDataViewModel : WizardViewModel
     {
-        public List<Tuple<Codex, Codex>> CodicesWithChoices { get; init; } = new();
-        private List<Codex> _codicesWithMadeChoices = new();
+        public List<Tuple<Codex, Codex>> CodicesWithChoices { get; init; } = [];
+        private List<Codex> _codicesWithMadeChoices = [];
 
         public List<CodexProperty> PropsToAsk =>
             PreferencesService.GetInstance().Preferences.CodexProperties
@@ -69,9 +69,9 @@ namespace COMPASS.Common.ViewModels
                 //delete temp cover if it exists
                 try
                 {
-                    if (CodicesWithChoices[i].Item2.CoverArtPath?.EndsWith(".tmp.png") == true)
+                    if (CodicesWithChoices[i].Item2.CoverArtPath.EndsWith(".tmp.png"))
                         File.Delete(CodicesWithChoices[i].Item2.CoverArtPath);
-                    if (CodicesWithChoices[i].Item2.ThumbnailPath?.EndsWith(".tmp.png") == true)
+                    if (CodicesWithChoices[i].Item2.ThumbnailPath.EndsWith(".tmp.png"))
                         File.Delete(CodicesWithChoices[i].Item2.ThumbnailPath);
                 }
                 catch (Exception ex)

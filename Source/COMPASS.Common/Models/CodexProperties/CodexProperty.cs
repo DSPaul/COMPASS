@@ -57,7 +57,7 @@ namespace COMPASS.Common.Models.CodexProperties
         /// </summary>
         public ObservableCollection<NamedMetaDataSource> SourcePriorityNamed { get; }
 
-        private List<MetaDataSource> _sourcePriority = new();
+        private List<MetaDataSource> _sourcePriority = [];
         /// <summary>
         /// Ordered List of sources that can set this prop, used for logic
         /// </summary>
@@ -82,7 +82,7 @@ namespace COMPASS.Common.Models.CodexProperties
 
         #region Mapping
 
-        public void UpdateSources()
+        private void UpdateSources()
         {
             // If a new possible source was not found in the save, add it
             foreach (var source in _defaultSourcePriority)
@@ -105,7 +105,7 @@ namespace COMPASS.Common.Models.CodexProperties
             nameof(Codex.Authors) => new EnumerableProperty<string>(propName),
             nameof(Codex.Publisher) => new StringProperty(propName),
             nameof(Codex.Version) => new StringProperty(propName),
-            nameof(Codex.PageCount) => new NumberProperty<int>(propName, label: "Pagecount"),
+            nameof(Codex.PageCount) => new NumberProperty<int>(propName, label: "Page count"),
             nameof(Codex.Tags) => new TagsProperty(propName),
             nameof(Codex.Description) => new StringProperty(propName),
             nameof(Codex.ReleaseDate) => new DateTimeProperty(propName, label: "Release Date"),
@@ -186,15 +186,15 @@ namespace COMPASS.Common.Models.CodexProperties
         #endregion
     }
 
-    public class CodexProperty<T> : CodexProperty
+    public abstract class CodexProperty<T> : CodexProperty
     {
-        public CodexProperty(string propName, string? label = null) :
+        protected CodexProperty(string propName, string? label = null) :
             base(propName, label)
         { }
 
         public override bool IsEmpty(IHasCodexMetadata codex) => EqualityComparer<T>.Default.Equals(GetProp(codex), default);
 
-        public virtual T? GetProp(IHasCodexMetadata codex)
+        protected virtual T? GetProp(IHasCodexMetadata codex)
         {
             object? value = codex.GetDeepPropertyValue(Name);
             return value == null ? default : (T)value;

@@ -10,6 +10,7 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://COMPASS.Common/Themes/Constants.axaml"/>
         <ResourceInclude Source="avares://COMPASS.Common/Themes/Dark.axaml"/>
         <ResourceInclude Source="avares://COMPASS.Common/Themes/CustomControls.axaml"/>
         <ResourceInclude Source="avares://COMPASS.Common/Themes/Converters.axaml"/>

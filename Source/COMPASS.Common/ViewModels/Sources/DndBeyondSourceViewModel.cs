@@ -25,7 +25,7 @@ namespace COMPASS.Common.ViewModels.Sources
             CodexDto codex = new()
             {
                 Publisher = "D&D Beyond",
-                Authors = new() { "Wizards of the Coast" }
+                Authors = ["Wizards of the Coast"]
             };
 
             return codex;

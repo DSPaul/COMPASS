@@ -16,7 +16,7 @@ namespace COMPASS.Common.Tools
                 //TODO Make this work on Linux
                 string? assemblyName = Process.GetCurrentProcess().MainModule?.FileName;
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assemblyName!);
-                return fvi!.FileVersion![..5];
+                return fvi.FileVersion![..5];
             }
             catch
             {
@@ -26,7 +26,7 @@ namespace COMPASS.Common.Tools
 
         public static List<string> GetObsoleteProperties(Type type)
         {
-            List<string> obsoleteProperties = new();
+            List<string> obsoleteProperties = [];
 
             // Check each property for the presence of the Obsolete attribute
             PropertyInfo[] properties = type.GetProperties();

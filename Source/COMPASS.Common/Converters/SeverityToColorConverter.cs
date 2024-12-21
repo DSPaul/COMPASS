@@ -7,11 +7,11 @@ using System.Globalization;
 
 namespace COMPASS.Common.Converters
 {
-    class SeverityToColorConverter : IValueConverter
+    public class SeverityToColorConverter : IValueConverter
     {
-        public Color InfoColor { get; set; } = Colors.LightGray;
-        public Color WarningColor { get; set; } = Color.Parse("#FFB800");
-        public Color ErrorColor { get; set; } = Colors.Red;
+        public Color InfoColor { get; } = Colors.LightGray;
+        public Color WarningColor { get; } = Color.Parse("#FFB800");
+        public Color ErrorColor { get; } = Colors.Red;
 
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {

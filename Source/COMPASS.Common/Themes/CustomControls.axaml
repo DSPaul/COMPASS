@@ -2,21 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
                     xmlns:controls="using:COMPASS.Common.Controls">
-
-  <Design.PreviewWith>
-    <Border Padding="20">
-      <StackPanel>
-        <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}"/>
-        <controls:IconButton Icon="About" Content="About"/>
-        <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">
-          <controls:CollapsableTabItem Header="Tags" Icon="Tags">
-            Some Tab content
-          </controls:CollapsableTabItem>
-        </TabControl>
-      </StackPanel>
-    </Border>
-  </Design.PreviewWith>
-  
   <!--Icon Button-->
   <ControlTheme TargetType="controls:IconButton" x:Key="IconOnly">
     <Setter Property="Background" Value="Transparent"/>
@@ -89,4 +74,18 @@
       </ControlTemplate>
     </Setter>
   </ControlTheme>
+  
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel>
+        <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}"/>
+        <controls:IconButton Icon="About" Content="About"/>
+        <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">
+          <controls:CollapsableTabItem Header="Tags" Icon="Tags">
+            Some Tab content
+          </controls:CollapsableTabItem>
+        </TabControl>
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
 </ResourceDictionary>

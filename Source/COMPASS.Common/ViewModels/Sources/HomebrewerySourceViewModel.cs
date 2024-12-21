@@ -7,7 +7,6 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
-using HtmlAgilityPack;
 using ImageMagick;
 using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
@@ -17,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,16 +46,20 @@ namespace COMPASS.Common.ViewModels.Sources
                 return new();
             }
 
-            // Use a codex dto to tranfer the data
+            // Use a codex dto to transfer the data
             CodexDto codex = new()
             {
-                Publisher = "Homebrewery"
+                Publisher = "Homebrewery",
+                Title = metadata.SelectToken("title")?.ToString() ?? string.Empty
             };
 
-            codex.Title = metadata.SelectToken("title")?.ToString() ?? String.Empty;
-            if (metadata.SelectToken("authors")?.Values<string>() is IEnumerable<string> authors)
+            var authors = metadata.SelectToken("authors")?.Values<string>();
+            if (authors is not null)
             {
-                codex.Authors = new(authors!);
+                codex.Authors = authors
+                    .Cast<string>()
+                    .Where(author => !string.IsNullOrWhiteSpace(author))
+                    .ToList();
             }
             codex.PageCount = int.Parse(metadata.SelectToken("pageCount")?.ToString() ?? "0");
             codex.Description = metadata.SelectToken("description")?.ToString() ?? String.Empty;

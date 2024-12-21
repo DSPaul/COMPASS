@@ -135,8 +135,10 @@ namespace COMPASS.Common.ViewModels
         public static async Task EditCodex(Codex? toEdit)
         {
             if (toEdit is null) return;
-            CodexEditWindow editWindow = new(new CodexEditViewModel(toEdit));
-            editWindow.Topmost = true;
+            CodexEditWindow editWindow = new(new CodexEditViewModel(toEdit))
+            {
+                Topmost = true
+            };
             await editWindow.ShowDialog(App.MainWindow);
         }
 
@@ -221,7 +223,7 @@ namespace COMPASS.Common.ViewModels
 
             //par contains 2 parameters
             CodexCollection targetCollection = new((string)par[0]);
-            List<Codex> toMoveList = new();
+            List<Codex> toMoveList = [];
 
             //extract Codex parameter
             if (par[1] is Codex codex)
@@ -320,7 +322,7 @@ namespace COMPASS.Common.ViewModels
         public RelayCommand<IList> DeleteCodicesCommand => _deleteCodicesCommand ??= new(DeleteCodices);
         public static void DeleteCodices(IList? toDelete)
         {
-            MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(toDelete?.Cast<Codex>().ToList() ?? new());
+            MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(toDelete?.Cast<Codex>().ToList() ?? []);
             MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
 
@@ -337,7 +339,7 @@ namespace COMPASS.Common.ViewModels
         public RelayCommand<IList> BanishCodicesCommand => _banishCodicesCommand ??= new(BanishCodices);
         public static void BanishCodices(IList? toBanish)
         {
-            MainViewModel.CollectionVM.CurrentCollection.BanishCodices(toBanish?.Cast<Codex>().ToList() ?? new());
+            MainViewModel.CollectionVM.CurrentCollection.BanishCodices(toBanish?.Cast<Codex>().ToList() ?? []);
             DeleteCodices(toBanish);
         }
 
@@ -419,8 +421,8 @@ namespace COMPASS.Common.ViewModels
                 if (prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(codex)) continue;
                 if (prop is CoverArtProperty) continue; //Covers are done separately
 
-                //preferedMetadata will hold the metadata from the top preferred source
-                CodexDto preferedMetadata = new();
+                //preferredMetadata will hold the metadata from the top preferred source
+                CodexDto preferredMetadata = new();
 
                 //iterate over the sources in reverse because overwriting causes the last ones to remain
                 foreach (var source in prop.SourcePriority.AsEnumerable().Reverse())
@@ -440,20 +442,20 @@ namespace COMPASS.Common.ViewModels
                     // if the new value is not null/default/empty
                     if (!prop.IsEmpty(metadata))
                     {
-                        prop.SetProp(preferedMetadata, metadata);
+                        prop.SetProp(preferredMetadata, metadata);
                     }
                 }
 
                 //if no value was found for this prop, do nothing
-                if (prop.IsEmpty(preferedMetadata)) continue;
+                if (prop.IsEmpty(preferredMetadata)) continue;
 
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Always || prop.IsEmpty(codex))
                 {
-                    prop.SetProp(codex, preferedMetadata.ToModel(MainViewModel.CollectionVM.CurrentCollection.AllTags));
+                    prop.SetProp(codex, preferredMetadata.ToModel(MainViewModel.CollectionVM.CurrentCollection.AllTags));
                 }
-                else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask && prop.HasNewValue(preferedMetadata, codex))
+                else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask && prop.HasNewValue(preferredMetadata, codex))
                 {
-                    prop.SetProp(toAsk, preferedMetadata);
+                    prop.SetProp(toAsk, preferredMetadata);
                     shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked
                 }
             }
@@ -474,7 +476,7 @@ namespace COMPASS.Common.ViewModels
         {
             try
             {
-                await StartGetMetaDataProcess(codices?.Cast<Codex>().ToList() ?? new());
+                await StartGetMetaDataProcess(codices?.Cast<Codex>().ToList() ?? []);
             }
             catch (OperationCanceledException ex)
             {
@@ -488,13 +490,13 @@ namespace COMPASS.Common.ViewModels
         private static async Task GetCover(Codex? codex)
         {
             if (codex is null) return;
-            await CoverService.GetCover(new List<Codex>() { codex });
+            await CoverService.GetCover([codex]);
         }
 
         private AsyncRelayCommand<IList>? _getCoverBulkCommand;
         public AsyncRelayCommand<IList> GetCoverBulkCommand => _getCoverBulkCommand ??= new(GetCoverBulk);
         private static async Task GetCoverBulk(IList? codices) =>
-            await CoverService.GetCover(codices?.Cast<Codex>().ToList() ?? new());
+            await CoverService.GetCover(codices?.Cast<Codex>().ToList() ?? []);
 
         public static void DataGridHandleKeyDown(object? sender, KeyEventArgs e)
             => HandleKeyDownOnCodex((sender as DataGrid)?.SelectedItems, e);
@@ -554,12 +556,10 @@ namespace COMPASS.Common.ViewModels
 
         public void OnDragOver(object sender, DragEventArgs e)
         {
-            if ((e.Data.GetValue<TreeViewNode>() is TreeViewNode node &&
-                !node.Tag.IsGroup)
-                ||
-                (e.Data.GetValue<Tag>() is Tag { IsGroup: false }))
+            if (e.Data.GetValue<TreeViewNode>() is { Tag.IsGroup: false } ||
+                e.Data.GetValue<Tag>() is { IsGroup: false })
             {
-                //TODO Hanlde adorner manually
+                //TODO Handle adorner manually
                 //dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                 e.DragEffects = DragDropEffects.Copy;
             }

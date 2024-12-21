@@ -55,7 +55,7 @@ namespace COMPASS.Common.Models
                 && other.Tag is not null
                 && Tag! == other.Tag!;
         }
-        public static bool operator ==(FolderTagPair lhs, FolderTagPair rhs)
+        public static bool operator ==(FolderTagPair? lhs, FolderTagPair? rhs)
         {
             if (lhs is null)
             {
@@ -64,7 +64,7 @@ namespace COMPASS.Common.Models
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(FolderTagPair lhs, FolderTagPair rhs)
+        public static bool operator !=(FolderTagPair? lhs, FolderTagPair? rhs)
         {
             return !(lhs == rhs);
         }

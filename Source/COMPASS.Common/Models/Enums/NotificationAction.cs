@@ -14,7 +14,7 @@ namespace COMPASS.Common.Models.Enums
         /// </summary>
         Cancel = 2,
         /// <summary>
-        /// Continues with with some option refused
+        /// Continues with some option refused
         /// </summary>
         Decline = 4
     }

@@ -37,14 +37,14 @@ namespace COMPASS.Common.ViewModels
         public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
 
 
-        private ObservableCollection<Tag> _tagsToAdd = new();
+        private ObservableCollection<Tag> _tagsToAdd = [];
         public ObservableCollection<Tag> TagsToAdd
         {
             get => _tagsToAdd;
             set => SetProperty(ref _tagsToAdd, value);
         }
 
-        private ObservableCollection<Tag> _tagsToRemove = new();
+        private ObservableCollection<Tag> _tagsToRemove = [];
         public ObservableCollection<Tag> TagsToRemove
         {
             get => _tagsToRemove;
@@ -145,7 +145,7 @@ namespace COMPASS.Common.ViewModels
                 }
             }
 
-            if (TempCodex.Version != null)
+            if (!string.IsNullOrEmpty(TempCodex.Version))
             {
                 foreach (Codex f in _editedCodices)
                 {

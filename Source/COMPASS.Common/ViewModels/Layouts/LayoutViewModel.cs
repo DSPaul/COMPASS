@@ -19,7 +19,7 @@ namespace COMPASS.Common.ViewModels.Layouts
             Home
         }
 
-        // Should put this function separate Factory class for proper factory pattern
+        // Should put this function separate Factory class for proper factory pattern,
         // but I don't see the point, seems a lot of boilerplate without real advantages
         public static LayoutViewModel GetLayout(Layout? layout = null)
         {
@@ -73,8 +73,10 @@ namespace COMPASS.Common.ViewModels.Layouts
         {
             if (e.Data is DataObject data)
             {
-                var paths = data.GetFiles()?
-                    .Select(f => f.Path.AbsolutePath);
+                var paths = data
+                    .GetFiles()?
+                    .Select(f => f.Path.AbsolutePath)
+                    .ToList();
 
                 if (paths is null) return;
 
@@ -91,20 +93,19 @@ namespace COMPASS.Common.ViewModels.Layouts
                     };
                     await folderImportVM.Import();
                 }
-                //If no files or folders, to nothing
-                else if (files.Count == 0)
+                else switch (files.Count)
                 {
-                    return;
-                }
-                //Check if its a cmpss file, do import if so
-                else if (files.Count == 1 && files.First().EndsWith(Constants.SatchelExtension))
-                {
-                    await MainViewModel.CollectionVM.ImportSatchelAsync(files.First());
-                }
-                //If none of the above, just import the files
-                else
-                {
-                    await ImportViewModel.ImportFilesAsync(files);
+                    //If no files or folders, to nothing
+                    case 0:
+                        return;
+                    //Check if it's a cmpss file, do import if so
+                    case 1 when files.First().EndsWith(Constants.SatchelExtension):
+                        await MainViewModel.CollectionVM.ImportSatchelAsync(files.First());
+                        break;
+                    //If none of the above, just import the files
+                    default:
+                        await ImportViewModel.ImportFilesAsync(files);
+                        break;
                 }
             }
         }

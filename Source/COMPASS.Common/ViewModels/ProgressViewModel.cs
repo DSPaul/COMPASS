@@ -17,7 +17,7 @@ namespace COMPASS.Common.ViewModels
 
         #endregion
 
-        private ObservableCollection<LogEntry> _log = new();
+        private ObservableCollection<LogEntry> _log = [];
         public ObservableCollection<LogEntry> Log
         {
             get => _log;
@@ -52,7 +52,7 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        public float Percentage
+        public int Percentage
         {
             get
             {

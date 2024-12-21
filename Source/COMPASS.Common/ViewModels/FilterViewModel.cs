@@ -6,7 +6,6 @@ using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
-using COMPASS.Models.Filters;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,8 +23,8 @@ namespace COMPASS.Common.ViewModels
             // Load sorting from settings
             InitSortingProperties();
 
-            _includedCodices = new(_allCodices);
-            _excludedCodices = new();
+            _includedCodices = [.._allCodices];
+            _excludedCodices = [];
 
             IncludedFilters.CollectionChanged += (_, _) => UpdateIncludedCodices();
             ExcludedFilters.CollectionChanged += (_, _) => UpdateExcludedCodices();
@@ -61,8 +60,8 @@ namespace COMPASS.Common.ViewModels
             set => SetProperty(ref _include, value);
         }
 
-        public ObservableCollection<Filter> IncludedFilters { get; set; } = new();
-        public ObservableCollection<Filter> ExcludedFilters { get; set; } = new();
+        public ObservableCollection<Filter> IncludedFilters { get; set; } = [];
+        public ObservableCollection<Filter> ExcludedFilters { get; set; } = [];
         public bool HasActiveFilters => IncludedFilters.Any() || ExcludedFilters.Any();
 
 
@@ -75,11 +74,14 @@ namespace COMPASS.Common.ViewModels
 
         public ObservableCollection<Codex> Favorites => FilteredCodices is null ? new() :
             new(FilteredCodices.Where(c => c.Favorite));
-        public List<Codex> RecentCodices => FilteredCodices is null ? new() :
+        public List<Codex> RecentCodices => FilteredCodices is null ? []
+            :
             FilteredCodices.OrderByDescending(c => c.LastOpened).ToList().GetRange(0, ItemsShown);
-        public List<Codex> MostOpenedCodices => FilteredCodices is null ? new() :
+        public List<Codex> MostOpenedCodices => FilteredCodices is null ? []
+            :
             FilteredCodices.OrderByDescending(c => c.OpenedCount).ToList().GetRange(0, ItemsShown);
-        public List<Codex> RecentlyAddedCodices => FilteredCodices is null ? new() :
+        public List<Codex> RecentlyAddedCodices => FilteredCodices is null ? []
+            :
             FilteredCodices.OrderByDescending(c => c.DateAdded).ToList().GetRange(0, ItemsShown);
 
         private string _searchTerm = "";
@@ -89,13 +91,13 @@ namespace COMPASS.Common.ViewModels
             set => SetProperty(ref _searchTerm, value);
         }
 
-        public List<Filter> BooleanFilters { get; } = new()
-            {
-                new OfflineSourceFilter(),
-                new OnlineSourceFilter(),
-                new PhysicalSourceFilter(),
-                new FavoriteFilter(),
-            };
+        public List<Filter> BooleanFilters { get; } =
+        [
+            new OfflineSourceFilter(),
+            new OnlineSourceFilter(),
+            new PhysicalSourceFilter(),
+            new FavoriteFilter()
+        ];
 
         public string SelectedAuthor
         {
@@ -107,7 +109,7 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        private ObservableCollection<string> _authorList = new();
+        private ObservableCollection<string> _authorList = [];
         public ObservableCollection<string> AuthorList
         {
             get => _authorList;
@@ -124,7 +126,7 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        private ObservableCollection<string> _publisherList = new();
+        private ObservableCollection<string> _publisherList = [];
         public ObservableCollection<string> PublisherList
         {
             get => _publisherList;
@@ -140,7 +142,7 @@ namespace COMPASS.Common.ViewModels
                 AddFilter(fileExtensionFilter, Include);
             }
         }
-        private ObservableCollection<string> _fileTypeList = new();
+        private ObservableCollection<string> _fileTypeList = [];
         public ObservableCollection<string> FileTypeList
         {
             get => _fileTypeList;
@@ -156,7 +158,7 @@ namespace COMPASS.Common.ViewModels
                 AddFilter(domainFilter, Include);
             }
         }
-        private ObservableCollection<string> _domainList = new();
+        private ObservableCollection<string> _domainList = [];
         public ObservableCollection<string> DomainList
         {
             get => _domainList;
@@ -175,8 +177,8 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        public static List<CodexProperty> PossibleEmptyProperties { get; } = new()
-        {
+        public static List<CodexProperty> PossibleEmptyProperties { get; } =
+        [
             CodexProperty.GetInstance(nameof(Codex.Authors))!,
             CodexProperty.GetInstance(nameof(Codex.CoverArtPath))!,
             CodexProperty.GetInstance(nameof(Codex.Description))!,
@@ -187,8 +189,8 @@ namespace COMPASS.Common.ViewModels
             CodexProperty.GetInstance(nameof(Codex.ReleaseDate))!,
             CodexProperty.GetInstance(nameof(Codex.Tags))!,
             CodexProperty.GetInstance(nameof(Codex.Title))!,
-            CodexProperty.GetInstance(nameof(Codex.Version))!,
-        };
+            CodexProperty.GetInstance(nameof(Codex.Version))!
+        ];
 
         //Selected Start and Stop Release Dates
         private DateTime? _startReleaseDate;
@@ -368,7 +370,7 @@ namespace COMPASS.Common.ViewModels
             }
 
             target.AddIfMissing(filter);
-            other.Remove(filter); //filter should never occurr in both include and exclude so remove from other
+            other.Remove(filter); //filter should never occur in both include and exclude so remove from other
         }
 
         private RelayCommand<string>? _searchCommand;
@@ -404,7 +406,7 @@ namespace COMPASS.Common.ViewModels
         //------------- Filter Logic ------------//
         private void UpdateIncludedCodices(bool apply = true)
         {
-            _includedCodices = new(_allCodices);
+            _includedCodices = [.._allCodices];
             foreach (FilterType filterType in Enum.GetValues(typeof(FilterType)))
             {
                 // Included codices must match filters of all types so IntersectWith()
@@ -414,7 +416,7 @@ namespace COMPASS.Common.ViewModels
         }
         private void UpdateExcludedCodices(bool apply = true)
         {
-            _excludedCodices = new();
+            _excludedCodices = [];
             foreach (FilterType filterType in Enum.GetValues(typeof(FilterType)))
             {
                 // Codex is excluded as soon as it matches any excluded filter so UnionWith()
@@ -432,7 +434,7 @@ namespace COMPASS.Common.ViewModels
         /// <returns></returns>
         private IEnumerable<Codex> GetFilteredCodicesByType(IEnumerable<Filter> filters, FilterType filterType, bool include)
         {
-            List<Filter> relevantFilters = new(filters.Where(filter => filter.Type == filterType));
+            List<Filter> relevantFilters = [..filters.Where(filter => filter.Type == filterType)];
 
             if (relevantFilters.Count == 0) return include ? _allCodices : Enumerable.Empty<Codex>();
 
@@ -447,7 +449,7 @@ namespace COMPASS.Common.ViewModels
             => include ? GetIncludedCodicesByTags(filters) : GetExcludedCodicesByTags(filters);
         private HashSet<Codex> GetIncludedCodicesByTags(IEnumerable<Filter> filters)
         {
-            HashSet<Codex> includedCodices = new(_allCodices);
+            HashSet<Codex> includedCodices = [.._allCodices];
 
             List<Tag> includedTags = filters
                 .Select(filter => (Tag)filter.FilterValue!)
@@ -470,7 +472,8 @@ namespace COMPASS.Common.ViewModels
                     }
 
                     //List of codices that match filters in one group
-                    HashSet<Codex> singleGroupFilteredCodices = new(_allCodices.Where(codex => singleGroupTags.Intersect(codex.Tags).Any()));
+                    HashSet<Codex> singleGroupFilteredCodices =
+                        [.._allCodices.Where(codex => singleGroupTags.Intersect(codex.Tags).Any())];
 
                     includedCodices = includedCodices.Intersect(singleGroupFilteredCodices).ToHashSet();
                 }
@@ -479,7 +482,7 @@ namespace COMPASS.Common.ViewModels
         }
         private HashSet<Codex> GetExcludedCodicesByTags(IEnumerable<Filter> filters)
         {
-            HashSet<Codex> excludedCodices = new();
+            HashSet<Codex> excludedCodices = [];
 
             var excludedTags = filters.Select(filter => (Tag)filter.FilterValue!).ToList();
 
@@ -487,7 +490,7 @@ namespace COMPASS.Common.ViewModels
             {
                 // If parent is excluded, so should all the children
                 excludedTags = excludedTags.Flatten().ToList();
-                excludedCodices = new(_allCodices.Where(c => excludedTags.Intersect(c.Tags).Any()));
+                excludedCodices = [.._allCodices.Where(c => excludedTags.Intersect(c.Tags).Any())];
             }
 
             return excludedCodices;
@@ -553,17 +556,17 @@ namespace COMPASS.Common.ViewModels
         void OnDragOver(object sender, DragEventArgs e)
         {
             //Move From Treeview
-            if (e.Data.GetValue<TreeViewNode>() is TreeViewNode tvn && !tvn.Tag.IsGroup)
+            if (e.Data.GetValue<TreeViewNode>() is { Tag.IsGroup: false })
             {
                 e.DragEffects = DragDropEffects.Copy;
             }
             //Move Filter to included/excluded
-            else if (e.Data.GetValue<Filter>() is Filter)
+            else if (e.Data.GetValue<Filter>() != null)
             {
                 e.DragEffects = DragDropEffects.Move;
             }
             //Move Tag between included/excluded
-            else if (e.Data.GetValue<Tag>() is Tag tag)
+            else if (e.Data.GetValue<Tag>() != null)
             {
                 e.DragEffects = DragDropEffects.Move;
             }
@@ -581,7 +584,7 @@ namespace COMPASS.Common.ViewModels
             bool toIncluded = false;
 
             //Move From Treeview
-            if (e.Data.GetValue<TreeViewNode>() is TreeViewNode tvn && !tvn.Tag.IsGroup)
+            if (e.Data.GetValue<TreeViewNode>() is { Tag.IsGroup: false } tvn)
             {
                 AddFilter(new TagFilter(tvn.Tag), toIncluded);
             }

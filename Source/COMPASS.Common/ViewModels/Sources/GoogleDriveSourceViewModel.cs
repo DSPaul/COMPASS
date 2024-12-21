@@ -22,7 +22,7 @@ namespace COMPASS.Common.ViewModels.Sources
         {
             Debug.Assert(IsValidSource(sources), "Invalid Codex was used in Google drive source");
 
-            // Use a codex dto to tranfer the data
+            // Use a codex dto to transfer the data
             CodexDto codex = new()
             {
                 Publisher = "Google Drive"

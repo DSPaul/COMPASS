@@ -5,7 +5,7 @@ namespace COMPASS.Common.Models.Filters
 {
     public abstract class Filter : ITag, IEquatable<Filter>
     {
-        public Filter(FilterType filterType, object? filterValue = null)
+        protected Filter(FilterType filterType, object? filterValue = null)
         {
             Type = filterType;
             FilterValue = filterValue;
@@ -41,7 +41,7 @@ namespace COMPASS.Common.Models.Filters
                 return false;
             return Type == other.Type && FilterValue == other.FilterValue;
         }
-        public static bool operator ==(Filter lhs, Filter rhs)
+        public static bool operator ==(Filter? lhs, Filter? rhs)
         {
             if (lhs is null)
             {
@@ -50,7 +50,7 @@ namespace COMPASS.Common.Models.Filters
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(Filter lhs, Filter rhs)
+        public static bool operator !=(Filter? lhs, Filter? rhs)
         {
             return !(lhs == rhs);
         }

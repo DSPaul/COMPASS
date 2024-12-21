@@ -5,13 +5,11 @@ namespace COMPASS.Common.Converters
 {
     public static class FuncConverters
     {
-        public static FuncValueConverter<object?, object?, bool> AreEqual { get; } =
-           new FuncValueConverter<object?, object?, bool>(areEqual);
+        public static FuncValueConverter<object?, object?, bool> AreEqual { get; } = 
+            new((value, param) => value?.Equals(param) ?? false);
 
-        private static bool areEqual(object? value, object? param) => value?.Equals(param) ?? false;
-
-        public static FuncValueConverter<Color, SolidColorBrush> ColorToBrush { get; } =
-            new FuncValueConverter<Color, SolidColorBrush>(color => new(color));
+        public static FuncValueConverter<Color, SolidColorBrush> ColorToBrush { get; } = 
+            new (color => new SolidColorBrush(color));
 
     }
 }

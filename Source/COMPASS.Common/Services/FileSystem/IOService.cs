@@ -40,7 +40,7 @@ namespace COMPASS.Common.Services.FileSystem
             catch (Exception ex)
             {
                 Logger.Error($"Failed to fetch data at {uri}", ex);
-                return Array.Empty<byte>();
+                return [];
             }
         }
         public static async Task<JObject?> GetJsonAsync(string uri)
@@ -106,18 +106,15 @@ namespace COMPASS.Common.Services.FileSystem
             try
             {
                 PingReply reply = p.Send(url, 3000);
-                if (reply?.Status == IPStatus.Success)
+                if (reply.Status != IPStatus.Success) return false;
+                if (_showedOfflineWarning)
                 {
-                    if (_showedOfflineWarning)
-                    {
-                        const string msg = "Internet connection restored";
-                        Logger.Info(msg);
-                        Logger.FileLog?.Info(msg);
-                        _showedOfflineWarning = false;
-                    }
-                    return true;
+                    const string msg = "Internet connection restored";
+                    Logger.Info(msg);
+                    Logger.FileLog?.Info(msg);
+                    _showedOfflineWarning = false;
                 }
-                return false;
+                return true;
             }
             catch (Exception ex)
             {
@@ -136,7 +133,7 @@ namespace COMPASS.Common.Services.FileSystem
         /// <summary>
         /// Unzips a collection stored in a satchel file
         /// </summary>
-        /// <param name="path">Path to the sathcel file</param>
+        /// <param name="path">Path to the satchel file</param>
         /// <returns>Path to unzipped folder</returns>
         public static async Task<string> UnZipCollection(string path)
         {
@@ -156,7 +153,7 @@ namespace COMPASS.Common.Services.FileSystem
             progressVM.TotalAmount = 1;
 
             //extract
-            await Task.Run(() => archive.ExtractToDirectory(tmpCollectionPath, progressReport: new Action<double>(progressVM.UpdateFromPercentage)));
+            await Task.Run(() => archive.ExtractToDirectory(tmpCollectionPath, progressReport: progressVM.UpdateFromPercentage));
 
             progressVM.IncrementCounter();
             return tmpCollectionPath;
@@ -181,13 +178,13 @@ namespace COMPASS.Common.Services.FileSystem
         {
             if (string.IsNullOrEmpty(path)) { return false; }
             string extension = Path.GetExtension(path).ToLower();
-            List<string> imgExtensions = new()
-            {
+            List<string> imgExtensions =
+            [
                 ".png",
                 ".jpg",
                 ".jpeg",
                 ".webp"
-            };
+            ];
 
             return imgExtensions.Contains(extension);
         }
@@ -231,8 +228,7 @@ namespace COMPASS.Common.Services.FileSystem
 
             IList<IStorageFolder> folders = await filesService.OpenFoldersAsync();
 
-            if (folders is null) return null;
-            else if (folders.Count == 0) return null;
+            if (folders.Count == 0) return null;
 
             var folder = folders.Single();
             string path = folder.Path.AbsolutePath;
@@ -246,7 +242,7 @@ namespace COMPASS.Common.Services.FileSystem
         /// <summary>
         /// Allow the user to select multiple folders using a dialog
         /// </summary>
-        /// <returns> Ilist with selected paths, empty list if canceled/failed / whatever </returns>
+        /// <returns> IList with selected paths, empty list if canceled/failed / whatever </returns>
         public static async Task<IList<string>> TryPickFolders()
         {
             var filesService = App.Container.Resolve<IFilesService>();
@@ -258,8 +254,7 @@ namespace COMPASS.Common.Services.FileSystem
 
             IList<IStorageFolder> folders = await filesService.OpenFoldersAsync(options);
 
-            if (folders is null) return [];
-            else if (folders.Count == 0) return [];
+            if (folders.Count == 0) return [];
             var paths = folders.Select(f => f.Path.AbsolutePath).ToList();
 
             //Dispose the handles for now and just keep the paths, might need to hold on to this later
@@ -313,7 +308,7 @@ namespace COMPASS.Common.Services.FileSystem
                 satchelInfoFile.WriteTo(stream);
                 stream.Seek(0, SeekOrigin.Begin);
                 using StreamReader reader = new(stream);
-                string json = reader.ReadToEnd();
+                string json = await reader.ReadToEndAsync();
 
                 var satchelInfo = JsonSerializer.Deserialize<SatchelInfo>(json);
                 if (satchelInfo == null)
@@ -378,15 +373,17 @@ namespace COMPASS.Common.Services.FileSystem
         }
 
         /// <summary>
-        /// If the exsting codex path is inaccessable for any reason, prompt the user to pick another one
+        /// If the existing codex path is inaccessible for any reason, prompt the user to pick another one
         /// </summary>
         /// <returns></returns>
         public static async Task AskNewCodexFilePath(string msg)
         {
             var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
 
-            Notification pickNewPath = new("Pick a location to save your data", msg, Severity.Warning);
-            pickNewPath.ConfirmText = "Continue";
+            Notification pickNewPath = new("Pick a location to save your data", msg, Severity.Warning)
+                {
+                    ConfirmText = "Continue"
+                };
             windowedNotificationService.Show(pickNewPath);
 
             bool success = false;

@@ -14,9 +14,9 @@ namespace COMPASS.Common.ViewModels
             SelectedTagCollection = TagCollections.FirstOrDefault();
         }
 
-        public TagsSelectorViewModel(CodexCollection collection) : this(new List<CodexCollection> { collection }) { }
+        public TagsSelectorViewModel(CodexCollection collection) : this([collection]) { }
 
-        private List<TagCollection> _tagCollections = new();
+        private List<TagCollection> _tagCollections = [];
         public List<TagCollection> TagCollections
         {
             get => _tagCollections;
@@ -63,7 +63,7 @@ namespace COMPASS.Common.ViewModels
                         Children = new(_collection.RootTags
                             .Select(t => new CheckableTreeNode<Tag>(t, containerOnly: t.IsGroup)))
                     };
-                    //init expanded, checked and containr only
+                    //init expanded, checked and container only
                     foreach (var node in _tagsRoot.Children.Flatten())
                     {
                         node.Expanded = node.Item.IsGroup;
@@ -75,14 +75,7 @@ namespace COMPASS.Common.ViewModels
                 }
             }
 
-            public int ImportCount
-            {
-                get
-                {
-                    if (TagsRoot == null) return 0;
-                    return CheckableTreeNode<Tag>.GetCheckedItems(TagsRoot.Children).Flatten().Count();
-                }
-            }
+            public int ImportCount => CheckableTreeNode<Tag>.GetCheckedItems(TagsRoot.Children).Flatten().Count();
         }
     }
 }

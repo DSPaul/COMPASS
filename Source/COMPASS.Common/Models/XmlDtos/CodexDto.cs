@@ -23,7 +23,7 @@ namespace COMPASS.Common.Models.XmlDtos
         public string Title { get; set; } = "";
         [XmlElement("SerializableSortingTitle")] //Backwards compatibility
         public string SortingTitle { get; set; } = "";
-        public List<string> Authors { get; set; } = new List<string>();
+        public List<string> Authors { get; set; } = [];
         public string Publisher { get; set; } = "";
         public string Description { get; set; } = "";
         public DateTime? ReleaseDate { get; set; }
@@ -33,7 +33,7 @@ namespace COMPASS.Common.Models.XmlDtos
         #endregion
 
         #region User related Metadata
-        public List<int> TagIDs { get; set; } = new();
+        public List<int> TagIDs { get; set; } = [];
         public bool PhysicallyOwned { get; set; }
         public int Rating { get; set; }
         public bool Favorite { get; set; }

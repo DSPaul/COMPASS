@@ -14,9 +14,9 @@ namespace COMPASS.Common.ViewModels
             _preferencesService = PreferencesService.GetInstance();
         }
 
-        private PreferencesService _preferencesService;
+        private readonly PreferencesService _preferencesService;
 
-        //whether or not the codex info panel is active
+        //whether the codex info panel is active
         public bool ShowCodexInfo
         {
             get => _preferencesService.Preferences.UIState.ShowCodexInfoPanel;

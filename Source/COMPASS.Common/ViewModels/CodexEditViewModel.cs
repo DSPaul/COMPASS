@@ -77,7 +77,7 @@ namespace COMPASS.Common.ViewModels
             var files = await filesService.OpenFilesAsync(new()
             {
                 //TODO, this needs to be a folder, not a path
-                //SuggestedStartLocation = Path.GetDirectoryName(TempCodex.Sources.Path) ?? string.Empty)
+                //SuggestedStartLocation = Path.GetDirectoryName(TempCodex.Sources.Path) ?? string.Empty
             });
 
             if (files.Any())

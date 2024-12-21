@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -26,8 +27,8 @@ namespace COMPASS.Common.Models
             _preferencesService = PreferencesService.GetInstance();
         }
 
-        private PreferencesService _preferencesService;
-        private static readonly object writeLocker = new();
+        private readonly PreferencesService _preferencesService;
+        private static readonly Lock _writeLocker = new();
 
         public static string CollectionsPath => Path.Combine(App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath, "Collections");
         public string FullDataPath => Path.Combine(CollectionsPath, DirectoryName);
@@ -47,9 +48,9 @@ namespace COMPASS.Common.Models
             set => SetProperty(ref _directoryName, value);
         }
 
-        public List<Tag> AllTags { get; private set; } = new();
+        public List<Tag> AllTags { get; private set; } = [];
 
-        private List<Tag> _rootTags = new();
+        private List<Tag> _rootTags = [];
         public List<Tag> RootTags
         {
             get => _rootTags;
@@ -63,7 +64,7 @@ namespace COMPASS.Common.Models
             }
         }
 
-        private ObservableCollection<Codex> _allCodices = new();
+        private ObservableCollection<Codex> _allCodices = [];
         public ObservableCollection<Codex> AllCodices
         {
             get => _allCodices;
@@ -85,7 +86,7 @@ namespace COMPASS.Common.Models
         /// Loads the collection and unless MakeStartupCollection, sets it as the new default to load on startup
         /// </summary>
         /// <returns>int that gives status: 0 for success, -1 for failed tags, -2 for failed codices, -4 for failed info, or combination of those</returns>
-        public int Load(bool MakeStartupCollection = true)
+        public int Load(bool makeStartupCollection = true)
         {
             int result = 0;
             bool loadedTags = LoadTags();
@@ -94,7 +95,7 @@ namespace COMPASS.Common.Models
             if (!loadedTags) { result -= 1; }
             if (!loadedCodices) { result -= 2; }
             if (!loadedInfo) { result -= 4; }
-            if (MakeStartupCollection)
+            if (makeStartupCollection)
             {
                 _preferencesService.Preferences.UIState.StartupCollection = DirectoryName;
                 Logger.Info($"Loaded {DirectoryName}");
@@ -105,7 +106,7 @@ namespace COMPASS.Common.Models
         //Loads the RootTags from a file and constructs the AllTags list from it
         public bool LoadTags()
         {
-            List<TagDto> loadedTags = new();
+            List<TagDto> loadedTags = [];
             if (File.Exists(TagsDataFilePath))
             {
                 //loading root tags          
@@ -113,7 +114,7 @@ namespace COMPASS.Common.Models
                 XmlSerializer serializer = new(typeof(List<TagDto>));
                 try
                 {
-                    loadedTags = serializer.Deserialize(reader) as List<TagDto> ?? new();
+                    loadedTags = serializer.Deserialize(reader) as List<TagDto> ?? [];
                 }
                 catch (Exception ex)
                 {
@@ -134,14 +135,14 @@ namespace COMPASS.Common.Models
         //Loads AllCodices list from Files
         public bool LoadCodices()
         {
-            CodexDto[] dtos = Array.Empty<CodexDto>();
+            CodexDto[] dtos = [];
             if (File.Exists(CodicesDataFilePath))
             {
                 using var reader = new StreamReader(CodicesDataFilePath);
                 XmlSerializer serializer = new(typeof(CodexDto[]));
                 try
                 {
-                    dtos = serializer.Deserialize(reader) as CodexDto[] ?? Array.Empty<CodexDto>();
+                    dtos = serializer.Deserialize(reader) as CodexDto[] ?? [];
                 }
                 catch (Exception ex)
                 {
@@ -272,7 +273,7 @@ namespace COMPASS.Common.Models
             {
                 string tempFileName = TagsDataFilePath + ".tmp";
 
-                lock (writeLocker)
+                lock (_writeLocker)
                 {
                     using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
                     {
@@ -317,7 +318,7 @@ namespace COMPASS.Common.Models
             {
                 string tempFileName = CodicesDataFilePath + ".tmp";
 
-                lock (writeLocker)
+                lock (_writeLocker)
                 {
                     using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
                     {
@@ -360,7 +361,7 @@ namespace COMPASS.Common.Models
             {
                 string tempFileName = CollectionInfoFilePath + ".tmp";
 
-                lock (writeLocker)
+                lock (_writeLocker)
                 {
                     using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
                     {
@@ -409,7 +410,7 @@ namespace COMPASS.Common.Models
                     Content = toMergeFrom.DirectoryName.Trim('_'),
                     Children = new(toMergeFrom.RootTags)
                 };
-                toMergeFrom.RootTags = new() { rootTag };
+                toMergeFrom.RootTags = [rootTag];
             }
             AddTags(toMergeFrom.RootTags);
 
@@ -591,12 +592,11 @@ namespace COMPASS.Common.Models
 
         public void BanishCodices(IList<Codex> toBanish)
         {
-            if (toBanish is null) return;
             IEnumerable<string> toBanishPaths = toBanish.Select(codex => codex.Sources.Path);
             IEnumerable<string> toBanishURLs = toBanish.Select(codex => codex.Sources.SourceURL);
             IEnumerable<string> toBanishStrings = toBanishPaths
                 .Concat(toBanishURLs)
-                .Where(s => !String.IsNullOrWhiteSpace(s))
+                .Where(s => !string.IsNullOrWhiteSpace(s))
                 .ToHashSet();
 
             Info.BanishedPaths.AddRange(toBanishStrings);

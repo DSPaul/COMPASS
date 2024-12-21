@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels
@@ -9,17 +10,20 @@ namespace COMPASS.Common.ViewModels
     {
         protected WizardViewModel()
         {
-            Steps.CollectionChanged += (_, _) => OnStepsChanged();
+            _steps.CollectionChanged += StepChangeHandler;
         }
 
-        private ObservableCollection<string> _steps = new();
+        private ObservableCollection<string> _steps = [];
         public virtual ObservableCollection<string> Steps
         {
             get => _steps;
             set
             {
+                //unsubscribe old one
+                _steps.CollectionChanged -= StepChangeHandler;
+                
                 SetProperty(ref _steps, value);
-                _steps.CollectionChanged += (_, _) => OnStepsChanged();
+                _steps.CollectionChanged += StepChangeHandler;
                 OnStepsChanged();
             }
         }
@@ -50,6 +54,11 @@ namespace COMPASS.Common.ViewModels
             RefreshNavigationBtns();
         }
 
+        private void StepChangeHandler(object? sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            OnStepsChanged();
+        }
+
         protected void RefreshNavigationBtns()
         {
             PrevStepCommand.NotifyCanExecuteChanged();
@@ -60,7 +69,7 @@ namespace COMPASS.Common.ViewModels
         public string CurrentStep => StepCounter >= Steps.Count ? "" : Steps[StepCounter];
 
         private RelayCommand? _cancelCommand;
-        public virtual RelayCommand CancelCommand => _cancelCommand ??= new((CancelAction ?? CloseAction) ?? new Action(() => { }));
+        public virtual RelayCommand CancelCommand => _cancelCommand ??= new((CancelAction ?? CloseAction) ?? (() => { }));
 
         private RelayCommand? _nextStepCommand;
         public RelayCommand NextStepCommand => _nextStepCommand ??= new(NextStep, ShowNextButton);

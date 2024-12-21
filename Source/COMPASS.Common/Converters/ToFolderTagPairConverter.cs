@@ -6,15 +6,9 @@ using System.Globalization;
 
 namespace COMPASS.Common.Converters
 {
-    class ToFolderTagPairConverter : IMultiValueConverter
+    public class ToFolderTagPairConverter : IMultiValueConverter
     {
-        public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
-        {
-            if (values is not null && values.Count == 2 && values[0] is string folder && values[1] is Tag tag)
-            {
-                return new FolderTagPair(folder, tag);
-            }
-            return null;
-        }
+        public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture) 
+            => values is [string folder, Tag tag] ? new FolderTagPair(folder, tag) : null;
     }
 }

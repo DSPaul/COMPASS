@@ -42,11 +42,11 @@ namespace COMPASS.Common.ViewModels.Import
         public CodexCollection CollectionToImport { get; set; } //collection that was in the satchel
 
         /// <summary>
-        /// Indicates that the tags should all be imported in a new, seperate group
+        /// Indicates that the tags should all be imported in a new, separate group
         /// </summary>
-        public bool ImportTagsSeperatly { get; set; } = false;
+        public bool ImportTagsSeparatly { get; set; } = false;
 
-        public bool _deleteSatchelOnWizardClosing = true; //Delete the satchel if the wizard closes for any reason
+        private bool _deleteSatchelOnWizardClosing = true; //Delete the satchel if the wizard closes for any reason
 
         //OVERVIEW STEP
         private bool _mergeIntoCollection = false;
@@ -143,7 +143,7 @@ namespace COMPASS.Common.ViewModels.Import
                     case NotificationAction.Cancel:
                         return;
                     case NotificationAction.Confirm:
-                        ImportTagsSeperatly = true;
+                        ImportTagsSeparatly = true;
                         ContentSelectorVM.OnlyTagsOnCodices = true;
                         break;
                     case NotificationAction.Decline:
@@ -161,14 +161,14 @@ namespace COMPASS.Common.ViewModels.Import
                 MainViewModel.CollectionVM.CurrentCollection :
                 MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
 
-            //if create an load fails
+            //if create and load fails
             if (targetCollection is null)
             {
-                //TODO idk, show an error of some kind
+                //TODO IDK, show an error of some kind
                 return;
             }
 
-            await targetCollection.MergeWith(ContentSelectorVM.CuratedCollection, ImportTagsSeperatly);
+            await targetCollection.MergeWith(ContentSelectorVM.CuratedCollection, ImportTagsSeparatly);
 
             Cleanup();
         }

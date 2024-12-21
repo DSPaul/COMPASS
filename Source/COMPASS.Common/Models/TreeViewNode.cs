@@ -20,7 +20,7 @@ namespace COMPASS.Common.Models
             set => SetProperty(ref _tag, value);
         }
 
-        private ObservableCollection<TreeViewNode> _children = new();
+        private ObservableCollection<TreeViewNode> _children = [];
         public ObservableCollection<TreeViewNode> Children
         {
             get => _children;

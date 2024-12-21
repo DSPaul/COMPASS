@@ -8,7 +8,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels.Sources
@@ -49,7 +48,7 @@ namespace COMPASS.Common.ViewModels.Sources
             string title = details.SelectToken("title")?.ToString() ?? "";
             string subTitle = details.SelectToken("subtitle")?.ToString() ?? "";
 
-            // Use a codex dto to tranfer the data
+            // Use a codex dto to transfer the data
             CodexDto codex = new();
 
             if (!String.IsNullOrWhiteSpace(fullTitle))
@@ -64,13 +63,13 @@ namespace COMPASS.Common.ViewModels.Sources
             //Authors
             if (details.SelectToken("authors") is JToken authors)
             {
-                codex.Authors = new(
-                    authors.Select(item => item.SelectToken("name")?.ToString() ?? "")
-                           .Where(author => author != ""));
+                codex.Authors = authors.Select(item => item.SelectToken("name")?.ToString() ?? "")
+                                       .Where(author => author != "")
+                                       .ToList();
             }
             //PageCount
             if (details.SelectToken("pagination") is JToken pagination &&
-                Int32.TryParse(Regex.Match(pagination.ToString(), @"\d+").Value, out int pageCount))
+                int.TryParse(Constants.RegexNumbersOnly().Match(pagination.ToString()).Value, out int pageCount))
             {
                 codex.PageCount = pageCount;
             }
@@ -100,7 +99,7 @@ namespace COMPASS.Common.ViewModels.Sources
                 string uri = $"https://openlibrary.org/isbn/{codex.Sources.ISBN}.json";
                 JObject? metadata = await IOService.GetJsonAsync(uri);
 
-                if (metadata == null || !metadata.HasValues)
+                if (metadata is not { HasValues: true })
                 {
                     string message = $"ISBN {codex.Sources.ISBN} was not found on openlibrary.org \n" +
                         $"You can contribute by submitting this book at \n" +

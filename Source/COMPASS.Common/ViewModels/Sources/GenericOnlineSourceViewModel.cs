@@ -32,7 +32,7 @@ namespace COMPASS.Common.ViewModels.Sources
                 return new();
             }
 
-            // Use a codex dto to tranfer the data
+            // Use a codex dto to transfer the data
             CodexDto codex = new();
 
             // Title 
@@ -42,7 +42,7 @@ namespace COMPASS.Common.ViewModels.Sources
             string? author = src.SelectSingleNode("//meta[@property='og:author']")?.GetAttributeValue("content", String.Empty);
             if (!String.IsNullOrEmpty(author))
             {
-                codex.Authors = new() { author };
+                codex.Authors = [author];
             }
 
             // Description

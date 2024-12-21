@@ -52,8 +52,8 @@ namespace COMPASS.Common.Models
 
                 else if (HasOnlineSource())
                 {
-                    // online sources can also also point to file 
-                    // either hosted on cloud service like Google drive 
+                    // online sources can also point to file 
+                    // either hosted on cloud service like Google Drive 
                     // or services like homebrewery are always .pdf
                     // skip this for now though
                     return "webpage";

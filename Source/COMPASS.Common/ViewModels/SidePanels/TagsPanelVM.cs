@@ -72,7 +72,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         }
 
         //TreeViewSource with hierarchy
-        private ObservableCollection<TreeViewNode> _treeViewSource = new();
+        private ObservableCollection<TreeViewNode> _treeViewSource = [];
         public ObservableCollection<TreeViewNode> TreeViewSource
         {
             get => _treeViewSource;

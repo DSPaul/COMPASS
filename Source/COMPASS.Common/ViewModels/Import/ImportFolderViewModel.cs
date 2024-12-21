@@ -24,14 +24,14 @@ namespace COMPASS.Common.ViewModels.Import
         #endregion
 
         private readonly CodexCollection _targetCollection;
-        private bool _manuallyTriggered = true;
+        private readonly bool _manuallyTriggered;
 
         public string WindowTitle => _manuallyTriggered ? "Import Folder(s)" : "AutoImport";
 
-        public List<string> RecursiveDirectories { get; set; } = new();
-        public List<string> NonRecursiveDirectories { get; set; } = new();
-        public List<string> Files { get; set; } = new();
-        public List<Folder> ExistingFolders { get; set; } = new();
+        public List<string> RecursiveDirectories { get; set; } = [];
+        public List<string> NonRecursiveDirectories { get; set; } = [];
+        public List<string> Files { get; set; } = [];
+        public List<Folder> ExistingFolders { get; set; } = [];
 
 
         private bool _autoImportFolders = true;
@@ -78,13 +78,13 @@ namespace COMPASS.Common.ViewModels.Import
 
         /// <summary>
         /// Get a list of all the file paths that are not banned
-        /// because of banishent or due to file extension preference
+        /// because of banishment or due to file extension preference
         /// That are either in FileName or in a folder in RecursiveDirectories
         /// </summary>
         /// <returns></returns>
         private List<string> GetPathsToImport()
         {
-            // 1. Unroll the recursive folders and add them to non recursive folders
+            // 1. Unroll the recursive folders and add them to non-recursive folders
             Queue<string> toSearch = new(RecursiveDirectories);
             while (toSearch.Any())
             {
@@ -101,7 +101,7 @@ namespace COMPASS.Common.ViewModels.Import
                     catch (Exception ex)
                     {
                         Logger.Error($"Failed to get subfolders of {currentFolder}", ex);
-                        subfolders = Enumerable.Empty<string>();
+                        subfolders = [];
                     }
                     foreach (string dir in subfolders)
                     {
@@ -111,7 +111,7 @@ namespace COMPASS.Common.ViewModels.Import
             }
 
             //2. Build a list with all the files to import
-            List<string> toImport = new(Files);
+            List<string> toImport = [..Files];
             foreach (var folder in NonRecursiveDirectories)
             {
                 if (Directory.Exists(folder))
@@ -124,7 +124,7 @@ namespace COMPASS.Common.ViewModels.Import
                     catch (Exception ex)
                     {
                         Logger.Error($"Failed to get files of folder {folder}", ex);
-                        files = Enumerable.Empty<string>();
+                        files = [];
                     }
                     toImport.AddRange(files);
                 }
@@ -189,15 +189,15 @@ namespace COMPASS.Common.ViewModels.Import
             {
                 ImportFolderWizard importFolderWindow = new(this);
 
-                //TODO, ShowDialog is now async, find out how we wait untill completion
+                //TODO, ShowDialog is now async, find out how we wait until completion
                 var dialogResult = importFolderWindow.ShowDialog(App.MainWindow);
-                if (!dialogResult.IsCompletedSuccessfully) return new();
+                if (!dialogResult.IsCompletedSuccessfully) return [];
             }
 
             //filer toImport so it only contains files from checked subfolders
             if (CheckableFolders.Any())
             {
-                List<string> toImportBySubFolders = new();
+                List<string> toImportBySubFolders = [];
                 var checkedFolders = CheckableTreeNode<Folder>.GetCheckedItems(CheckableFolders).Flatten();
                 foreach (var folder in checkedFolders)
                 {
@@ -213,18 +213,18 @@ namespace COMPASS.Common.ViewModels.Import
         #region Subfolder Select Step
         public int ImportAmount { get; set; }
 
-        public List<CheckableTreeNode<Folder>> CheckableFolders { get; set; } = new();
+        public List<CheckableTreeNode<Folder>> CheckableFolders { get; set; } = [];
         #endregion
 
         #region File Type Selection Step
-        private IEnumerable<FileTypeInfo> _knownFileTypes = Enumerable.Empty<FileTypeInfo>();
+        private IEnumerable<FileTypeInfo> _knownFileTypes = [];
         public IEnumerable<FileTypeInfo> KnownFileTypes
         {
             get => _knownFileTypes;
             set => SetProperty(ref _knownFileTypes, value);
         }
 
-        private IEnumerable<FileTypeInfo> _unknownFileTypes = Enumerable.Empty<FileTypeInfo>();
+        private IEnumerable<FileTypeInfo> _unknownFileTypes = [];
         public IEnumerable<FileTypeInfo> UnknownFileTypes
         {
             get => _unknownFileTypes;
@@ -271,7 +271,7 @@ namespace COMPASS.Common.ViewModels.Import
                 var checkedFolders = CheckableTreeNode<Folder>.GetCheckedItems(CheckableFolders);
                 foreach (Folder folder in checkedFolders)
                 {
-                    if (!_targetCollection.Info.AutoImportFolders.Any(f => f.FullPath == folder.FullPath))
+                    if (_targetCollection.Info.AutoImportFolders.All(f => f.FullPath != folder.FullPath))
                     {
                         _targetCollection.Info.AutoImportFolders.Add(folder);
                     }

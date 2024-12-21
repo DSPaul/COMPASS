@@ -33,12 +33,11 @@ namespace COMPASS.Common.Controls
         private void TabItemClicked(object? sender, TappedEventArgs e)
         {
             var c = sender as Control;
-            var vm = c!.DataContext as IDealsWithTabControl;
-            if (vm is null) return;
+            if (c!.DataContext is not IDealsWithTabControl vm) return;
 
             if (vm.PrevSelectedTab == TabIndex)
             {
-                vm!.SelectedTab = 0;
+                vm.SelectedTab = 0;
             }
             vm.PrevSelectedTab = TabIndex;
         }

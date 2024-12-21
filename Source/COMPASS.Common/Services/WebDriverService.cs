@@ -54,13 +54,13 @@ namespace COMPASS.Common.Services
 
             driverService.HideCommandPromptWindow = true;
 
-            List<string> driverArguments = new()
-                {
-                    "--headless",
-                    "--window-size=3000,3000",
-                    "--width=3000",
-                    "--height=3000"
-                };
+            List<string> driverArguments =
+            [
+                "--headless",
+                "--window-size=3000,3000",
+                "--width=3000",
+                "--height=3000"
+            ];
 
             switch (_browser)
             {

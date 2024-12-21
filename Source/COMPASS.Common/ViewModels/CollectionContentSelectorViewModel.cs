@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -25,7 +24,7 @@ namespace COMPASS.Common.ViewModels
             }
             else
             {
-                CompleteCollection.Load(MakeStartupCollection: false);
+                CompleteCollection.Load(makeStartupCollection: false);
             }
 
             //Checks which steps need to be included in wizard
@@ -57,7 +56,7 @@ namespace COMPASS.Common.ViewModels
         public const string SettingsStep = "Settings";
 
         /// <summary>
-        /// Complete collections whose content will be subselected
+        /// Complete collections whose content will be sub selected
         /// </summary>
         public CodexCollection CompleteCollection { get; set; }
 
@@ -80,13 +79,13 @@ namespace COMPASS.Common.ViewModels
         public IEnumerable<CheckableTreeNode<Tag>> SelectableTags => TagsSelectorVM.SelectedTagCollection?.TagsRoot.Children ?? Enumerable.Empty<CheckableTreeNode<Tag>>();
 
         /// <summary>
-        /// Indicates that only tags that are persent on codices should be imported
+        /// Indicates that only tags that are present on codices should be imported
         /// </summary>
         public bool OnlyTagsOnCodices { get; set; } = false;
 
         // CODICES STEP
         public List<SelectableCodex> SelectableCodices { get; set; }
-        public int SelectedCodicesCount => SelectableCodices.Where(s => s.Selected).Count();
+        public int SelectedCodicesCount => SelectableCodices.Count(s => s.Selected);
         public void RaiseSelectedCodicesCountChanged() => OnPropertyChanged(nameof(SelectedCodicesCount));
 
         public bool RemovePersonalData { get; set; } = true;
@@ -192,12 +191,12 @@ namespace COMPASS.Common.ViewModels
             if (OnlyTagsOnCodices) //indicates that we should keep all the tags that occur on the chosen codices
             {
                 var assignedTags = CuratedCollection.AllCodices.SelectMany(c => c.Tags).Distinct().ToList(); //get all the tags that are assigned to a codex
-                                                                                                             //delesect all tags
+                //deselect all tags
                 TagsSelectorVM.SelectedTagCollection!.TagsRoot.IsChecked = false;
-                var allselectableTags = SelectableTags.Flatten().ToList();
+                var allSelectableTags = SelectableTags.Flatten().ToList();
                 foreach (var tag in assignedTags)
                 {
-                    allselectableTags.Single(st => st.Item == tag).IsChecked = true;
+                    allSelectableTags.Single(st => st.Item == tag).IsChecked = true;
                 }
                 CuratedCollection.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).ToList();
 
@@ -261,7 +260,7 @@ namespace COMPASS.Common.ViewModels
             if (SelectFolderTagLinks)
             {
                 CuratedCollection.Info.FolderTagPairs = new(FolderTagLinks.Where(linkHelper => linkHelper.Selected && linkHelper.TagExists)
-                                                                                   .Select(linkHelper => new FolderTagPair(linkHelper.Path, linkHelper.Tag)));
+                                                                          .Select(linkHelper => new FolderTagPair(linkHelper.Path, linkHelper.Tag)));
             }
         }
 

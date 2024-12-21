@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace COMPASS.Common.Converters
 {
-    class HasFlagConverter : IValueConverter
+    public class HasFlagConverter : IValueConverter
     {
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
