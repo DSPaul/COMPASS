@@ -75,6 +75,56 @@
     </Setter>
   </ControlTheme>
   
+  <ControlTheme TargetType="controls:FilterModeSelector" 
+                x:Key="{x:Type controls:FilterModeSelector}">
+    <Setter Property="Template">
+      <ControlTemplate TargetType="controls:FilterModeSelector">
+        <StackPanel Orientation="Horizontal">
+          <StackPanel.Styles>
+            <Style Selector="RadioButton">
+              <Setter Property="Opacity" Value="0.3"/>
+              <Setter Property="Template">
+                <ControlTemplate>
+                  <ContentPresenter Content="{TemplateBinding Content}"/>
+                </ControlTemplate>
+              </Setter>
+            
+              <Style Selector="^:checked">
+                <Setter Property="Opacity" Value="1"/>
+              </Style>
+              
+              <Style Selector="^ > Border">
+                <Setter Property="Padding" Value="10,0"/>
+                <Setter Property="Height" Value="30"/>
+              </Style>
+              
+              <Style Selector="^ TextBlock">
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                <Setter Property="Margin" Value="5,2"/>
+                <Setter Property="FontSize" Value="18"/>
+              </Style>
+            </Style>
+          </StackPanel.Styles>
+          
+          <RadioButton GroupName="IncludeGroup" IsChecked="{TemplateBinding Include, Mode=TwoWay}"
+                       Margin="0">
+            <Border CornerRadius="5,0,0,5" Background="{StaticResource AcceptFill}">
+              <TextBlock Text="Include"/>
+            </Border>
+          </RadioButton>
+          
+          <RadioButton GroupName="IncludeGroup" Margin="0">
+            <Border CornerRadius="0,5,5,0" Background="IndianRed">
+              <TextBlock Text="Exclude"/>
+            </Border>
+          </RadioButton>
+        </StackPanel>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+  
   <Design.PreviewWith>
     <Border Padding="20">
       <StackPanel>

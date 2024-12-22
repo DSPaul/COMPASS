@@ -162,47 +162,12 @@
     </TabControl>-->
     <!--<Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="2"/>-->
 
-    <!-- Ilucde Exclude selection -->
+    <!-- Include Exclude selection -->
     <StackPanel Grid.Row="3" Orientation="Horizontal" 
                 HorizontalAlignment="Center" VerticalAlignment="Top" 
                 Margin="0,10,0,0">
-      <StackPanel.Styles>
-        <Style Selector="RadioButton > Border">
-          <Setter Property="Padding" Value="10,0"/>
-          <Setter Property="Height" Value="30"/>
-        </Style>
-        <Style Selector="RadioButton">
-          <Setter Property="Opacity" Value="0.3"/>
-          <Style Selector="^:checked">
-            <Setter Property="Opacity" Value="1"/>
-          </Style>
-          <Setter Property="Template">
-            <ControlTemplate>
-              <ContentPresenter Content="{TemplateBinding Content}"/>
-            </ControlTemplate>
-          </Setter>
-        </Style>
-        <Style Selector="RadioButton TextBlock">
-          <Setter Property="HorizontalAlignment" Value="Center"/>
-          <Setter Property="VerticalAlignment" Value="Center"/>
-          <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-          <Setter Property="Margin" Value="5,2"/>
-          <Setter Property="FontSize" Value="18"/>
-        </Style>
-      </StackPanel.Styles>
       
-      <RadioButton x:Name="IncludeRadioButton" GroupName="IncludeGroup" IsChecked="{Binding ModeIsInclude}"
-                   Margin="0">
-        <Border CornerRadius="5,0,0,5" Background="{StaticResource AcceptFill}">
-          <TextBlock Text="Include"/>
-        </Border>
-      </RadioButton>
-      
-      <RadioButton GroupName="IncludeGroup" Margin="0">
-        <Border CornerRadius="0,5,5,0" Background="IndianRed">
-          <TextBlock Text="Exclude"/>
-        </Border>
-      </RadioButton>
+      <controls:FilterModeSelector Include="{Binding ModeIsInclude}"/>
       
       <controls:IconButton Icon="DotsVertical"
                            Theme="{StaticResource IconOnly}"

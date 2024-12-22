@@ -99,6 +99,25 @@ namespace COMPASS.Common.ViewModels
             new FavoriteFilter()
         ];
 
+        #region Clear selection on comboboxes
+        
+        private string? _noneSelection;
+        public string? NoneSelection
+        {
+            get => _noneSelection;
+            set => SetProperty(ref _noneSelection, value);
+        }
+
+        private void ClearSelelection()
+        {
+            //Just setting it to null doesnt work due to one way binding, 
+            //value actually needs to change
+            NoneSelection = "";
+            NoneSelection = null;
+        }
+        
+        #endregion
+        
         public string SelectedAuthor
         {
             set
@@ -106,6 +125,7 @@ namespace COMPASS.Common.ViewModels
                 if (String.IsNullOrEmpty(value)) return;
                 Filter authorFilter = new AuthorFilter(value);
                 AddFilter(authorFilter, Include);
+                ClearSelelection();
             }
         }
 
@@ -123,6 +143,7 @@ namespace COMPASS.Common.ViewModels
                 if (String.IsNullOrEmpty(value)) return;
                 Filter publisherFilter = new PublisherFilter(value);
                 AddFilter(publisherFilter, Include);
+                ClearSelelection();
             }
         }
 
@@ -140,6 +161,7 @@ namespace COMPASS.Common.ViewModels
                 if (String.IsNullOrEmpty(value)) return;
                 Filter fileExtensionFilter = new FileExtensionFilter(value);
                 AddFilter(fileExtensionFilter, Include);
+                ClearSelelection();
             }
         }
         private ObservableCollection<string> _fileTypeList = [];
@@ -156,6 +178,7 @@ namespace COMPASS.Common.ViewModels
                 if (String.IsNullOrEmpty(value)) return;
                 Filter domainFilter = new DomainFilter(value);
                 AddFilter(domainFilter, Include);
+                ClearSelelection();
             }
         }
         private ObservableCollection<string> _domainList = [];
@@ -173,6 +196,7 @@ namespace COMPASS.Common.ViewModels
                 {
                     Filter notEmptyFilter = new NotEmptyFilter(value);
                     AddFilter(notEmptyFilter, Include);
+                    ClearSelelection();
                 }
             }
         }
