@@ -72,6 +72,13 @@ namespace COMPASS.Common.ViewModels.SidePanels
             }
         }
 
+        private bool _modeIsInclude = true;
+        public bool ModeIsInclude
+        {
+            get => _modeIsInclude;
+            set => SetProperty(ref _modeIsInclude, value);
+        }
+        
         //TreeViewSource with hierarchy
         private ObservableCollection<TreeViewNode> _treeViewSource = [];
         public ObservableCollection<TreeViewNode> TreeViewSource
@@ -130,15 +137,14 @@ namespace COMPASS.Common.ViewModels.SidePanels
             AddGroupViewModel = new TagEditViewModel(newTag, true);
         }
 
-        private RelayCommand<object[]>? _addTagFilterCommand;
-        public RelayCommand<object[]> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
-        public void AddTagFilterHelper(object[]? par)
+        private RelayCommand<Tag>? _addTagFilterCommand;
+        public RelayCommand<Tag> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
+        public void AddTagFilterHelper(Tag? tag)
         {
-            if (par == null) return;
-            //needed because relay command only takes functions with one arg
-            Tag tag = (Tag)par[0];
-            bool include = (bool)par[1];
-            _filterVM.AddFilter(new TagFilter(tag), include);
+            if (tag != null)
+            {
+                _filterVM.AddFilter(new TagFilter(tag), ModeIsInclude);
+            }
         }
 
         private RelayCommand? _importTagsFromOtherCollectionsCommand;

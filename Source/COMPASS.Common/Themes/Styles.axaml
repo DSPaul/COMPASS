@@ -81,7 +81,53 @@
   </Style>
   
   <!-- Tree view Items -->
-  <Style Selector="TreeViewItem /template/ Panel#PART_ExpandCollapseChevronContainer">
-    <Setter Property="Margin" Value="0"/>
+  <Style Selector="TreeViewItem">
+    <Style.Resources>
+      <x:Double x:Key="TreeViewItemExpandCollapseChevronSize">30</x:Double>
+    </Style.Resources>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <StackPanel>
+          <Border Name="PART_LayoutRoot"
+                  Classes="TreeViewItemLayoutRoot"
+                  Focusable="True"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="{TemplateBinding CornerRadius}"
+                  MinHeight="{TemplateBinding MinHeight}"
+                  TemplatedControl.IsTemplateFocusTarget="True">
+            <Grid Name="PART_Header"
+                  IsHitTestVisible="True"
+                  ColumnDefinitions="Auto, *"
+                  Margin="{TemplateBinding Level, Mode=OneWay, Converter={StaticResource TreeViewItemLeftMarginConverter}}">
+              <Panel Name="PART_ExpandCollapseChevronContainer"
+                     Margin="{StaticResource TreeViewItemExpandCollapseChevronMargin}"
+                     Width="{StaticResource TreeViewItemExpandCollapseChevronSize}">
+                <ToggleButton Name="PART_ExpandCollapseChevron"
+                              Theme="{StaticResource FluentTreeViewExpandCollapseChevron}"
+                              Focusable="False"
+                              IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}" />
+              </Panel>
+              <ContentPresenter Name="PART_HeaderPresenter"
+                                Grid.Column="1"
+                                Focusable="False"
+                                Background="Transparent"
+                                Content="{TemplateBinding Header}"
+                                ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                Margin="{TemplateBinding Padding}" />
+            </Grid>
+          </Border>
+          <ItemsPresenter Name="PART_ItemsPresenter"
+                          IsVisible="{TemplateBinding IsExpanded}"
+                          ItemsPanel="{TemplateBinding ItemsPanel}" />
+        </StackPanel>
+      </ControlTemplate>
+    </Setter>
+    <Style Selector="^:empty /template/ Panel#PART_ExpandCollapseChevronContainer">
+      <Setter Property="Width" Value="{StaticResource TreeViewItemExpandCollapseChevronSize}" />
+    </Style>
   </Style>
 </Styles>
