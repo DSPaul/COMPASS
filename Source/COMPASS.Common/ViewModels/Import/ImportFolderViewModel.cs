@@ -115,20 +115,7 @@ namespace COMPASS.Common.ViewModels.Import
             List<string> toImport = [..Files];
             foreach (var folder in NonRecursiveDirectories)
             {
-                if (Directory.Exists(folder))
-                {
-                    IEnumerable<string> files;
-                    try
-                    {
-                        files = Directory.GetFiles(folder);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error($"Failed to get files of folder {folder}", ex);
-                        files = [];
-                    }
-                    toImport.AddRange(files);
-                }
+                toImport.AddRange(IOService.TryGetFilesInFolder(folder));
             }
 
             //3. Filter out doubles and banished paths
@@ -202,7 +189,7 @@ namespace COMPASS.Common.ViewModels.Import
                 var checkedFolders = CheckableTreeNode<Folder>.GetCheckedItems(CheckableFolders).Flatten();
                 foreach (var folder in checkedFolders)
                 {
-                    toImportBySubFolders.AddRange(Directory.GetFiles(folder.FullPath));
+                    toImportBySubFolders.AddRange(IOService.TryGetFilesInFolder(folder.FullPath));
                 }
                 toImport = toImport.Intersect(toImportBySubFolders).ToList();
             }
