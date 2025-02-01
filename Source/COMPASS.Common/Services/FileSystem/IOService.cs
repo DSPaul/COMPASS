@@ -476,7 +476,7 @@ namespace COMPASS.Common.Services.FileSystem
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static IEnumerable<string> GetFilesInFolder(string path)
+        public static IEnumerable<string> TryGetFilesInFolder(string path)
         {
             IEnumerable<string> files = Enumerable.Empty<string>();
             if (Directory.Exists(path))
