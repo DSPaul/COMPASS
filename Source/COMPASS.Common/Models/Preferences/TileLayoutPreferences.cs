@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace COMPASS.Common.Models.Preferences
 {
@@ -38,5 +40,7 @@ namespace COMPASS.Common.Models.Preferences
             get => _displayedData;
             set => SetProperty(ref _displayedData, value);
         }
+
+        public DataOption[] DataOptions { get; } = Enum.GetValues<DataOption>();
     }
 }

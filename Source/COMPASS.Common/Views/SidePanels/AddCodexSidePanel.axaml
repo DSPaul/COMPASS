@@ -4,10 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels.SidePanels"
              xmlns:controls="using:COMPASS.Common.Controls"
-             xmlns:models="using:COMPASS.Common.Models"
              xmlns:import="using:COMPASS.Common.ViewModels.Import"
-             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:DataType="vm:AddCodexPanelVM"
              x:Class="COMPASS.Common.Views.SidePanels.AddCodexSidePanel">
   <ScrollViewer Padding="10">

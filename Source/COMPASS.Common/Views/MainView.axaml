@@ -9,7 +9,7 @@
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="COMPASS.Common.Views.MainView" FontSize="20"
+             x:Class="COMPASS.Common.Views.MainView" FontSize="16"
              x:DataType="vm:MainViewModel"
              KeyDown="UserControl_KeyDown">
   <UserControl.DataTemplates>

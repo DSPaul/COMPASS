@@ -4,8 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels"
              xmlns:controls="using:COMPASS.Common.Controls"
-             xmlns:models="using:COMPASS.Common.Models"
-             xmlns:import="using:COMPASS.Common.ViewModels.Import"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:panels="using:COMPASS.Common.Views.SidePanels"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
@@ -70,7 +68,7 @@
     </controls:CollapsableTabItem>
 
     <controls:CollapsableTabItem Header="Layouts" Icon="ViewDashboardEdit">
-        this is layout content
+        <panels:LayoutsSidePanel DataContext="{Binding MainVM}"/>
     </controls:CollapsableTabItem>
 
     <controls:CollapsableTabItem Header="Sorting" Icon="Sort">

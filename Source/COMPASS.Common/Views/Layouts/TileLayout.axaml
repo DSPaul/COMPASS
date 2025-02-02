@@ -45,7 +45,7 @@
               DoubleTapped="Codex_DoubleTapped"
               Background="Transparent"
               Classes="ZoomOnHover">
-          <Border CornerRadius="5" Margin="25,15" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
+          <Border CornerRadius="5" Margin="25,15,25,5" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
                   BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
                   Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
                   Height="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileHeight}">
