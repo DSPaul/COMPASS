@@ -35,7 +35,7 @@ namespace COMPASS.Tools
         public static ObservableCollection<LogEntry> ActivityLog { get; } = new ObservableCollection<LogEntry>();
 
         public static void Info(string message) =>
-            App.SafeDispatcher.Invoke(()
+            App.SafeDispatcher.BeginInvoke(()
                 => ActivityLog.Add(new(Severity.Info, message)));
 
         public static void Debug(string message) => FileLog?.Debug(message);
@@ -43,7 +43,7 @@ namespace COMPASS.Tools
 
         public static void Warn(string message, Exception? ex = null)
         {
-            App.SafeDispatcher.Invoke(() => ActivityLog.Add(new(Severity.Warning, message)));
+            App.SafeDispatcher.BeginInvoke(() => ActivityLog.Add(new(Severity.Warning, message)));
             if (ex is null)
             {
                 FileLog?.Warn(message);
@@ -56,7 +56,7 @@ namespace COMPASS.Tools
 
         public static void Error(string message, Exception ex)
         {
-            App.SafeDispatcher.Invoke(() => ActivityLog.Add(new(Severity.Error, message)));
+            App.SafeDispatcher.BeginInvoke(() => ActivityLog.Add(new(Severity.Error, message)));
             FileLog?.Error(message, ex);
         }
 
@@ -74,7 +74,7 @@ namespace COMPASS.Tools
             string restartOption = "Restart COMPASS.";
             string submitOption = "Submit an anonymous crash report.";
             crashNotification.Options.Add(new(restartOption, true));
-            crashNotification.Options.Add(new(submitOption, true)); 
+            crashNotification.Options.Add(new(submitOption, true));
 
             App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(crashNotification);
 

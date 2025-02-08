@@ -91,18 +91,36 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <Border CornerRadius="5" Margin="10,5" SnapsToDevicePixels="True" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
-                                BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
-                                    Width="{Binding DataContext.Preferences.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                    Height="{Binding DataContext.Preferences.TileHeight, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                    <Border.Background>
-                        <ImageBrush ImageSource="{Binding Thumbnail, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png}"/>
-                    </Border.Background>
 
+                <!-- selection border-->
+                <Border CornerRadius="7" Margin="10,5" Grid.Row="0" BorderThickness="3" SnapsToDevicePixels="True"
+                        BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                        Width="{Binding DataContext.Preferences.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                        Height="{Binding DataContext.Preferences.TileHeight, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                    <!-- nested border to clip rounded corners from image-->
+                    <Border CornerRadius="5">
+                        <Border.OpacityMask>
+                            <VisualBrush>
+                                <VisualBrush.Visual>
+                                    <Border 
+                                        Background="Black"
+                                        SnapsToDevicePixels="True"
+                                        CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=Border}}"
+                                        Width="{Binding ActualWidth, ElementName=thumbnail}"
+                                        Height="{Binding ActualHeight, ElementName=thumbnail}"/>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Border.OpacityMask>
+                        <Image Stretch="UniformToFill" HorizontalAlignment="Center" x:Name="thumbnail" SnapsToDevicePixels="True"
+                               Source="{Binding Thumbnail, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, Mode=OneWay, 
+                               FallbackValue=Media\\CoverPlaceholder.png, TargetNullValue=Media\\CoverPlaceholder.png}"
+                               ImageFailed="Thumbnail_ImageFailed"/>
+                    </Border>
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="15" Direction="300"/>
                     </Border.Effect>
                 </Border>
+
                 <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,5" FontSize="14" TextTrimming="WordEllipsis" MaxHeight="60"
                         MaxWidth="{Binding DataContext.Preferences.TileWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         Text="{Binding Title}" Foreground="#FFB7B7B7" HorizontalAlignment="Center" TextAlignment="Center"

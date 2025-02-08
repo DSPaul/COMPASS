@@ -12,6 +12,7 @@ namespace COMPASS.Converters
             if (value is not string path) return null;
             if (!File.Exists(path)) return null;
             bool fullRes = System.Convert.ToBoolean(getFullRes);
+
             BitmapImage bi = new();
             bi.BeginInit();
 
