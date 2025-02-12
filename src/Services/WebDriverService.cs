@@ -48,7 +48,6 @@ namespace COMPASS.Services
                     co.AddArguments(driverArguments);
                     List<string> chromeArgs = new()
                     {
-                        "--headless=old", //temp fix for https://issues.chromium.org/issues/367755364, 
                         "--disable-search-engine-choice-screen",
                         "--disable-features=OptimizationGuideModelDownloading,OptimizationHintsFetching,OptimizationTargetPrediction,OptimizationHints"
                     };
