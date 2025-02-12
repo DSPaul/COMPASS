@@ -540,7 +540,7 @@ namespace COMPASS.ViewModels
             _excludedCodices.Remove(c);
 
             //Changes to CollectionView Should always be done from dispatcher thread
-            App.SafeDispatcher.Invoke(() => FilteredCodices?.Remove(c));
+            App.SafeDispatcher.BeginInvoke(() => FilteredCodices?.Remove(c));
         }
 
         #endregion

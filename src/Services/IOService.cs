@@ -448,5 +448,27 @@ namespace COMPASS.Services
 
             return (remainingPath1, remainingPath2);
         }
+
+        /// <summary>
+        /// Safe alternative of <see cref="Directory.GetFiles(string)"/> that catches all exceptions
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> TryGetFilesInFolder(string path)
+        {
+            IEnumerable<string> files = Enumerable.Empty<string>();
+            if (Directory.Exists(path))
+            {
+                try
+                {
+                    files = Directory.GetFiles(path);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Failed to get files of folder {path}", ex);
+                }
+            }
+            return files;
+        }
     }
 }

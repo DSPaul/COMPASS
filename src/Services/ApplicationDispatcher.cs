@@ -9,6 +9,9 @@ namespace COMPASS.Services
         public void Invoke(Delegate method) => UnderlyingDispatcher.Invoke(method);
         public void Invoke(Delegate method, object[] args) => UnderlyingDispatcher.Invoke(method, args);
 
+        public void BeginInvoke(Delegate method) => UnderlyingDispatcher.BeginInvoke(method);
+        public void beginInvoke(Delegate method, object[] args) => UnderlyingDispatcher.BeginInvoke(method, args);
+
         private static Dispatcher UnderlyingDispatcher
         {
             get
