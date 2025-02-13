@@ -58,7 +58,6 @@ namespace COMPASS.Common.Tools
         {
             Dispatcher.UIThread.Invoke(() => ActivityLog.Add(new(Severity.Error, message)));
             FileLog?.Error(message, ex);
-            FileLog?.Error(message, ex);
         }
 
         public static void LogUnhandledException(object sender, Exception e)

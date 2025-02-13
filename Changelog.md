@@ -1,5 +1,10 @@
 # CHANGELOG
-## COMPASS v1.8.3 (20 December 2024)
+## COMPASS v1.8.4 (12 February 2025)
+
+### Fixes
+- Fix crash when trying to import an unauthorized folder
+- Fix crash when thumbnail fails to load for any reason
+## COMPASS v1.8.3 (20 December 2024)
 
 ### Fixes
  - Fix recovery flow if COMPASS cannot write to default appdata location

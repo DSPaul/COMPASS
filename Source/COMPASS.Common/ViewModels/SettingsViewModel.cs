@@ -556,8 +556,7 @@ namespace COMPASS.Common.ViewModels
                             File.Copy(sourcePath, sourcePath.Replace(sourceDir, destDir), true);
                         }
                         progressVM.IncrementCounter();
-                        Dispatcher.UIThread.Invoke(() =>
-                            progressVM.Log.Add(new LogEntry(Severity.Info, $"Copied {sourcePath}")));
+                        progressVM.AddLogEntry(new LogEntry(Severity.Info, $"Copied {sourcePath}"));
                     }
                 });
             }

@@ -76,7 +76,8 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
-                    <Border CornerRadius="5" SnapsToDevicePixels="True" Grid.ColumnSpan="2"  Width="200" Height="270" Margin="10">
+                    <Border CornerRadius="5" SnapsToDevicePixels="True" Grid.ColumnSpan="2"  
+                            Width="200" Height="270" Margin="10">
                         <Border.Background>
                             <ImageBrush ImageSource="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, 
                                 Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png}"/>

@@ -67,6 +67,14 @@ namespace COMPASS.Common.Services
                 case Browser.Chrome:
                     ChromeOptions co = new();
                     co.AddArguments(driverArguments);
+                    List<string> chromeArgs = new()
+                    {
+                        "--disable-search-engine-choice-screen",
+                        "--disable-features=OptimizationGuideModelDownloading,OptimizationHintsFetching,OptimizationTargetPrediction,OptimizationHints"
+                    };
+
+                    co.AddArguments(chromeArgs);
+
                     _webDriver = await Task.Run(() => new ChromeDriver((ChromeDriverService)driverService, co));
                     break;
 
