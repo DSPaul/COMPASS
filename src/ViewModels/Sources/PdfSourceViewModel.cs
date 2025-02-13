@@ -93,8 +93,6 @@ namespace COMPASS.ViewModels.Sources
                 {
                     await image.ReadAsync(codex.Sources.Path, ReadSettings);
                     image.Format = MagickFormat.Png;
-                    image.BackgroundColor = new MagickColor("#000000"); //set background color as transparent
-                    image.Trim(); //cut off all transparency
 
                     await image.WriteAsync(codex.CoverArt);
                     CoverService.CreateThumbnail(codex, image);
