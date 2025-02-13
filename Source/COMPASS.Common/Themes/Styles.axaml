@@ -3,11 +3,14 @@
         xmlns:views="using:COMPASS.Common.Views"
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
   <Design.PreviewWith>
-    <StackPanel>
+    <StackPanel Spacing="10">
 
       <!-- Icons -->
       <materialIcons:MaterialIcon Kind="About" Classes="Clickable"/>
       <Button> This is a button</Button>
+      <CheckBox IsThreeState="True">This is a checkbox</CheckBox>
+      <CheckBox IsHitTestVisible="False">unchecked readonly checkbox</CheckBox>
+      <CheckBox IsHitTestVisible="False" IsChecked="True">checked readonly checkbox</CheckBox>
       
     </StackPanel>
   </Design.PreviewWith>
@@ -130,4 +133,61 @@
       <Setter Property="Width" Value="{StaticResource TreeViewItemExpandCollapseChevronSize}" />
     </Style>
   </Style>
+  
+  <!-- Checkbox -->
+   <!--#region Checkbox style-->
+    <Style Selector="CheckBox">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Grid ColumnDefinitions="Auto, *" Background="Transparent">
+                        <materialIcons:MaterialIcon Height="20" Width="20" Kind="CheckboxBlankOutline"/>
+                        <ContentPresenter Content="{TemplateBinding Content}" 
+                                          Margin="5,0" Grid.Column="1" 
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        
+        <!-- readonly unchecked -->
+        <Style Selector="^[IsHitTestVisible=false]">
+          <Style Selector="^/template/ materialIcons|MaterialIcon">
+            <Setter Property="Kind" Value="Close"/>
+            <Setter Property="Foreground" Value="Red"/>
+          </Style>
+        </Style>
+        
+        <!-- checked -->
+        <Style Selector="^:checked">
+          <Style Selector="^/template/ materialIcons|MaterialIcon">
+            <Setter Property="Kind" Value="CheckboxMarkedOutline"/>
+          </Style>
+          
+          <!-- readonly checked -->
+          <Style Selector="^[IsHitTestVisible=false]">
+            <Style Selector="^/template/ materialIcons|MaterialIcon">
+              <Setter Property="Kind" Value="Check"/> 
+              <Setter Property="Foreground" Value="Green"/> 
+            </Style>
+          </Style>
+        </Style>
+        
+        <!-- indeterminate -->
+        <Style Selector="^:indeterminate">
+          <Style Selector="^/template/ materialIcons|MaterialIcon">
+            <Setter Property="Kind" Value="CheckboxIntermediateVariant"/>
+          </Style>
+          
+          <!-- readonly indeterminate -->
+          <Style Selector="^[IsHitTestVisible=false]">
+            <Style Selector="^/template/ materialIcons|MaterialIcon">
+              <Setter Property="Kind" Value="Minus"/>
+              <Setter Property="Foreground" Value="Gray"/>
+            </Style>
+          </Style>
+        </Style>
+    </Style>
 </Styles>

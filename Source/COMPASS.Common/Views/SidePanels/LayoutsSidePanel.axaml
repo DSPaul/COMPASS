@@ -73,11 +73,6 @@
             <Rectangle Height="3" Fill="{StaticResource Separator}" Margin="0,10"/>
             <TextBlock Classes="Categorizer" Text="Customize layout"/>
             <ContentControl DataContext="{Binding CurrentLayout}" Content="{Binding}" Margin="10">
-                <ContentControl.Styles>
-                    <Style Selector="CheckBox">
-                        <Setter Property="Margin" Value="5"/>
-                    </Style>
-                </ContentControl.Styles>
                 <ContentControl.DataTemplates>
                     <DataTemplate DataType="{x:Type layouts:ListLayoutViewModel}">
                         <StackPanel DataContext="{Binding Preferences}">
