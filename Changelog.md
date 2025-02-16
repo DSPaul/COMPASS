@@ -1,5 +1,12 @@
 # CHANGELOG
-## COMPASS v1.8.4 (12 February 2025)
+## COMPASS v1.8.5 (16 February 2025)
+
+### Fixes
+- Fix transparency issues then generating thumbnail from pdf (thanks @anthony-bernaert)
+- Fix issues with downloading cover for google drive files
+- Fix title scraped from websites containing html codes
+- Fix crash when selecting an item with a corrupt cover art file
+## COMPASS v1.8.4 (12 February 2025)
 
 ### Fixes
 - Fix crash when trying to import an unauthorized folder
