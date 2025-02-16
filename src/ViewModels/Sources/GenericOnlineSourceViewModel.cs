@@ -6,6 +6,7 @@ using COMPASS.Tools;
 using HtmlAgilityPack;
 using System;
 using System.Diagnostics;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace COMPASS.ViewModels.Sources
@@ -36,17 +37,17 @@ namespace COMPASS.ViewModels.Sources
             CodexDto codex = new();
 
             // Title 
-            codex.Title = src.SelectSingleNode("//meta[@property='og:title']")?.GetAttributeValue("content", null) ?? codex.Title;
+            codex.Title = WebUtility.HtmlDecode(src.SelectSingleNode("//meta[@property='og:title']")?.GetAttributeValue("content", null) ?? codex.Title);
 
             // Authors
-            string? author = src.SelectSingleNode("//meta[@property='og:author']")?.GetAttributeValue("content", String.Empty);
+            string? author = WebUtility.HtmlDecode(src.SelectSingleNode("//meta[@property='og:author']")?.GetAttributeValue("content", String.Empty));
             if (!String.IsNullOrEmpty(author))
             {
                 codex.Authors = new() { author };
             }
 
             // Description
-            codex.Description = src.SelectSingleNode("//meta[@property='og:description']")?.GetAttributeValue("content", null) ?? codex.Description;
+            codex.Description = WebUtility.HtmlDecode(src.SelectSingleNode("//meta[@property='og:description']")?.GetAttributeValue("content", null) ?? codex.Description);
 
             // Tags
             foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)
