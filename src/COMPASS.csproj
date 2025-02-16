@@ -15,8 +15,6 @@
   <ItemGroup>
     <None Remove="Media\CompassLogo.png" />
     <None Remove="gs\gsdll64.dll" />
-    <None Remove="gs\gsdll64.lib" />
-    <None Remove="gs\gswin64.exe" />
     <None Remove="gs\gswin64c.exe" />
   </ItemGroup>
 
@@ -25,14 +23,6 @@
     <Content Include="COMPASS.ico" />
 
     <Content Include="gs\gsdll64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Content Include="gs\gsdll64.lib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Content Include="gs\gswin64.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
