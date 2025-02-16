@@ -42,11 +42,26 @@ namespace COMPASS.Common.ViewModels.Sources
                 HtmlNode? src = doc?.DocumentNode;
                 if (src is null) return false;
 
-                string imgURL = src.SelectSingleNode("//meta[@property='og:image']").GetAttributeValue("content", String.Empty);
-                //cut of "=W***-h***-p" from URL that crops the image if it is present
-                if (imgURL.Contains('=')) imgURL = imgURL.Split('=')[0];
-                await CoverService.SaveCover(imgURL, codex);
-                return true;
+                string imgURL = "";
+                if (src.SelectSingleNode("//meta[@property='og:image']") is HtmlNode imgNode)
+                {
+                    imgURL = imgNode.GetAttributeValue("content", String.Empty);
+                    //cut of "=W***-h***-p" from URL that crops the image if it is present
+                    if (imgURL.Contains('=')) imgURL = imgURL.Split('=')[0];
+                }
+
+                else if (src.SelectSingleNode("//link[@id='texmex-thumb']") is HtmlNode linkNode)
+                {
+                    imgURL = linkNode.GetAttributeValue("href", String.Empty);
+                }
+
+                if (!string.IsNullOrEmpty(imgURL))
+                {
+                    await CoverService.SaveCover(imgURL, codex);
+                    return true;
+                }
+
+                return false;
             }
             catch (Exception ex)
             {

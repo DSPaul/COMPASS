@@ -80,7 +80,7 @@
                             Width="200" Height="270" Margin="10">
                         <Border.Background>
                             <ImageBrush ImageSource="{Binding CoverArt, IsAsync=True ,Converter={StaticResource UriToBitmapConverter}, 
-                                Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png}"/>
+                                ConverterParameter=True, Mode=OneWay, TargetNullValue=Media\\CoverPlaceholder.png}"/>
                         </Border.Background>
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="10" ShadowDepth="0"/>

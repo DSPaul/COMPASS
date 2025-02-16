@@ -31,6 +31,8 @@ namespace COMPASS.Common.Services.FileSystem
         public static async Task<byte[]> DownloadFileAsync(string uri)
         {
             using HttpClient client = new();
+            // Set headers to mimic a browser, gets around some auth issues
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
 
             if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? _)) throw new InvalidOperationException("URI is invalid.");
             try

@@ -94,8 +94,10 @@ namespace COMPASS.Common.ViewModels.Sources
                 {
                     await image.ReadAsync(codex.Sources.Path, ReadSettings);
                     image.Format = MagickFormat.Png;
-                    image.BackgroundColor = new MagickColor("#000000"); //set background color as transparent
-                    image.Trim(); //cut off all transparency
+
+                    //some pdf's are transparent, expecting a white page underneath
+                    image.BackgroundColor = new MagickColor("#FFFFFF");
+                    image.Alpha(AlphaOption.Remove);
 
                     await image.WriteAsync(codex.CoverArtPath);
                     CoverService.CreateThumbnail(codex, image);
