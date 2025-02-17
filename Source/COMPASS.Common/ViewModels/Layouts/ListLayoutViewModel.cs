@@ -5,7 +5,7 @@ namespace COMPASS.Common.ViewModels.Layouts
 {
     public class ListLayoutViewModel : LayoutViewModel
     {
-        public ListLayoutViewModel()
+        public ListLayoutViewModel() : base()
         {
             LayoutType = Layout.List;
             Preferences = PreferencesService.GetInstance().Preferences.ListLayoutPreferences;

@@ -23,7 +23,6 @@ namespace COMPASS.Common.ViewModels
             CollectionVM = new(this);
             _currentLayout = LayoutViewModel.GetLayout();
             LeftDockVM = new(this);
-            CodexInfoVM = new(this);
             SettingsViewModel.GetInstance().MVM = this;
 
             //Update stuff
@@ -115,8 +114,6 @@ namespace COMPASS.Common.ViewModels
         }
 
         public LeftDockViewModel LeftDockVM { get; init; }
-
-        public CodexInfoViewModel CodexInfoVM { get; init; }
 
         #endregion
 

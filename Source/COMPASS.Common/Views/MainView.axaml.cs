@@ -28,7 +28,7 @@ public partial class MainView : UserControl
                 // Ctrl + I toggle info
                 if (e.KeyModifiers == KeyModifiers.Control && DataContext is MainViewModel mvm)
                 {
-                    mvm.CodexInfoVM.ShowCodexInfo = !((MainViewModel)DataContext).CodexInfoVM.ShowCodexInfo;
+                    mvm.CurrentLayout.CodexInfoVM.ShowCodexInfo = !((MainViewModel)DataContext).CurrentLayout.CodexInfoVM.ShowCodexInfo;
                     e.Handled = true;
                 }
                 break;

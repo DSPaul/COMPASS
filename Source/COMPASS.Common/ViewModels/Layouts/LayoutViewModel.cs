@@ -19,6 +19,11 @@ namespace COMPASS.Common.ViewModels.Layouts
             Home
         }
 
+        public LayoutViewModel()
+        {
+            CodexInfoVM = new CodexInfoViewModel();
+        }
+
         // Should put this function separate Factory class for proper factory pattern,
         // but I don't see the point, seems a lot of boilerplate without real advantages
         public static LayoutViewModel GetLayout(Layout? layout = null)
@@ -41,13 +46,20 @@ namespace COMPASS.Common.ViewModels.Layouts
         #region Properties
 
         public CodexViewModel CodexVM { get; init; } = new();
+        public CodexInfoViewModel CodexInfoVM { get; init; }
 
         //Selected File
         private Codex? _selectedCodex;
         public Codex? SelectedCodex
         {
             get => _selectedCodex;
-            set => SetProperty(ref _selectedCodex, value);
+            set
+            {
+                if (SetProperty(ref _selectedCodex, value))
+                {
+                    CodexInfoVM.DisplayedCodex = _selectedCodex;
+                }
+            }
         }
 
         //TODO check if this is still needed, remove abstract for now so derived classes can skip it

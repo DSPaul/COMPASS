@@ -368,7 +368,7 @@
     
     <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}"/>
 
-    <UserControl DockPanel.Dock="Right" Content="{Binding CodexInfoVM}" IsVisible="{Binding CodexInfoVM.ShowInfo}"/>
+    <UserControl DockPanel.Dock="Right" Content="{Binding CurrentLayout.CodexInfoVM}" IsVisible="{Binding CurrentLayout.CodexInfoVM.ShowInfo}"/>
 
 
     <Grid x:Name="ViewsGrid" 

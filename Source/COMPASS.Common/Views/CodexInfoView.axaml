@@ -2,7 +2,150 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="COMPASS.Common.Views.CodexInfoView">
-  Codex Info
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:vm="clr-namespace:COMPASS.Common.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="270" d:DesignHeight="850"
+             x:Class="COMPASS.Common.Views.CodexInfoView"
+             x:DataType="vm:CodexInfoViewModel">
+  <Border BorderBrush="{StaticResource Separator}" 
+          BorderThickness="3" x:Name="CodexInfoContainer"
+          IsVisible="{Binding ShowInfo}">
+        <Grid RowDefinitions="Auto, Auto, *">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                <materialIcons:MaterialIcon Height="25" Width="25" HorizontalAlignment="Center"
+                                            Margin="5"  Kind="BookInformationVariant"/>
+                <TextBlock Text="Book Info" FontSize="20"/>
+            </StackPanel>
+            <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource Separator}"/>
+
+            <ToggleButton Grid.Row="0" ToolTip.Tip="Collapse" Height="35" Width="35" 
+                          HorizontalAlignment="Left" 
+                          IsChecked="{Binding ShowCodexInfo, Mode=TwoWay}" Cursor="Hand">
+                <ToggleButton.Template>
+                    <ControlTemplate>
+                        <materialIcons:MaterialIcon Height="25" Width="25" Margin="5"  Kind="ArrowCollapseRight"/>
+                    </ControlTemplate>
+                </ToggleButton.Template>
+            </ToggleButton>
+
+            <ScrollViewer Grid.Row="2" >
+                <Grid DataContext="{Binding DisplayedCodex}"
+                      Name="MainGrid" Focusable="True" Margin="5" Width="270"
+                      ColumnDefinitions="100,170"
+                      RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto">
+                    <Grid.Styles>
+                        <Style Selector="TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                            <Setter Property="FontSize" Value="14"/>
+                            <Setter Property="Margin" Value="5"/>
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                        
+                        <Style Selector="TextBlock.Link">
+                            <Setter Property="TextDecorations" Value="Underline"/>
+                        </Style>
+                        
+                        <Style Selector="CheckBox">
+                            <Setter Property="IsHitTestVisible" Value="False"/>
+                        </Style>
+                    </Grid.Styles>
+                    
+                    <Border CornerRadius="5" Grid.ColumnSpan="2"
+                            Width="200" Height="270" Margin="10">
+                        <Border.Background>
+                            <ImageBrush Source="{Binding Cover}"/>
+                        </Border.Background>
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="10"/>
+                        </Border.Effect>
+                    </Border>
+                    <TextBlock Text="Title:" Grid.Column="0" Grid.Row="1"/>
+                    <TextBlock Text="{Binding Title}" Grid.Column="1" Grid.Row="1"/>
+
+                    <TextBlock Text="Authors:"  Grid.Column="0" Grid.Row="2" VerticalAlignment="Top"/>
+                    <ItemsControl ItemsSource="{Binding Authors}" Grid.Column="1" Grid.Row="2"
+                                  Margin="5">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" Width="170"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Classes="BlankButton"
+                                        Command="{Binding #CodexInfoContainer.((vm:CodexInfoViewModel)DataContext).AddAuthorFilterCommand}" CommandParameter="{Binding}">
+                                    <TextBlock Text="{Binding}" Classes="Link" Margin="5,2"/>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <!--<TextBlock Text="{Binding AuthorsAsString}" Grid.Column="1" Grid.Row="2"/>-->
+
+                    <TextBlock Text="Publisher:"  Grid.Column="0" Grid.Row="3"/>
+                    <Button Classes="BlankButton" Grid.Column="1" Grid.Row="3"
+                            Command="{Binding #CodexInfoContainer.((vm:CodexInfoViewModel)DataContext).AddPublisherFilterCommand}" CommandParameter="{Binding Publisher}">
+                        <TextBlock Text="{Binding Publisher}" Classes="Link" Margin="5,2"/>
+                    </Button>
+
+                    <TextBlock Text="Version:"  Grid.Column="0" Grid.Row="4"/>
+                    <TextBlock Text="{Binding Version}"  Grid.Column="1" Grid.Row="4"/>
+
+                    <TextBlock Text="Release Date:" Grid.Column="0" Grid.Row="5"/>
+                    <TextBlock Text="{Binding ReleaseDate, StringFormat=dd/MM/yyyy}"
+                                    Grid.Column="1" Grid.Row="5"/>
+
+                    <TextBlock Text="PageCount:"  Grid.Column="0" Grid.Row="6"/>
+                    <TextBlock Text="{Binding PageCount}" Grid.Column="1" Grid.Row="6"/>
+
+                    <TextBlock Text="Hard Copy:" Grid.Column="0" Grid.Row="7"/>
+                    <CheckBox IsChecked="{Binding PhysicallyOwned, Mode=OneWay}" Grid.Column="1" Grid.Row="7" Margin="5"/>
+
+                    <TextBlock Text="Rating:"  Grid.Column="0" Grid.Row="8"/>
+                    <!-- TODO rating bar-->
+                    <!-- <materialDesign:RatingBar Value="{Binding Rating, Mode=OneWay}" Margin="5" Grid.Column="1" Grid.Row="8"/> -->
+
+                    <TextBlock Text="Favorite:" Grid.Column="0" Grid.Row="9"/>
+                    <CheckBox Name="FileFavoriteCb" IsChecked="{Binding Favorite, Mode=OneWay}"
+                                       Grid.Column="1" Grid.Row="9" Margin="5"/>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.ColumnSpan="2" Grid.Column="0">
+                        <TextBlock Text="Tags:" VerticalAlignment="Top" Margin="5,5,10,5"/>
+                        <!-- TODO: make itemsSource OrderedTags again once that is figured out -->
+                        <ItemsControl ItemsSource="{Binding Tags, Mode=OneWay}" 
+                                      Background="{x:Null}" BorderBrush="{x:Null}"  
+                                      Foreground="Black" FontSize="15" VerticalAlignment="Bottom">
+                            <!-- TODO: keep functionality of dd:DragDrop.IsDragSource="True" -->
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" Width="170"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Classes="BlankButton" 
+                                            Command="{Binding #CodexInfoContainer.((vm:CodexInfoViewModel)DataContext).AddTagFilterCommand}" 
+                                            CommandParameter="{Binding}">
+                                        <Border CornerRadius="5" Margin="2,3">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding BackgroundColor}" Opacity=".8"/>
+                                            </Border.Background>
+                                            <TextBlock Text="{Binding Content}" Margin="7,2" Foreground="White" FontSize="14"/>
+                                        </Border>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <TextBlock Text="Description:" Grid.Row="11" Grid.Column="0" />
+                    <Border CornerRadius="3" Grid.Row="12" Grid.ColumnSpan="2" Grid.Column="0"
+                            BorderBrush="{StaticResource LogBorder}" BorderThickness="2">
+                        <TextBlock Text="{Binding Description}" MinHeight="50"
+                                   TextWrapping="Wrap" Background="Transparent"/>
+                    </Border>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+    </Border>
 </UserControl>

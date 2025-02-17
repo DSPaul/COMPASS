@@ -5,7 +5,7 @@ namespace COMPASS.Common.ViewModels.Layouts
 {
     public class TileLayoutViewModel : LayoutViewModel
     {
-        public TileLayoutViewModel()
+        public TileLayoutViewModel() : base()
         {
             LayoutType = Layout.Tile;
             Preferences = PreferencesService.GetInstance().Preferences.TileLayoutPreferences;

@@ -87,7 +87,12 @@ namespace COMPASS.Common.Models
             }
         }
 
-        public Bitmap? Cover { get; private set; }
+        private Bitmap? _cover;
+        public Bitmap? Cover
+        {
+            get => _cover; 
+            private set => SetProperty(ref _cover, value);
+        }
 
         #endregion
 

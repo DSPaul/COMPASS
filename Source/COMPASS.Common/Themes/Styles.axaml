@@ -2,192 +2,216 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="using:COMPASS.Common.Views"
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
-  <Design.PreviewWith>
-    <StackPanel Spacing="10">
+    <Design.PreviewWith>
+        <StackPanel Spacing="10">
 
-      <!-- Icons -->
-      <materialIcons:MaterialIcon Kind="About" Classes="Clickable"/>
-      <Button> This is a button</Button>
-      <CheckBox IsThreeState="True">This is a checkbox</CheckBox>
-      <CheckBox IsHitTestVisible="False">unchecked readonly checkbox</CheckBox>
-      <CheckBox IsHitTestVisible="False" IsChecked="True">checked readonly checkbox</CheckBox>
-      
-    </StackPanel>
-  </Design.PreviewWith>
+            <!-- Icons -->
+            <materialIcons:MaterialIcon Kind="About" Classes="Clickable" />
+            <Button> This is a button</Button>
+            <CheckBox IsThreeState="True">This is a checkbox</CheckBox>
+            <CheckBox IsHitTestVisible="False">unchecked readonly checkbox</CheckBox>
+            <CheckBox IsHitTestVisible="False" IsChecked="True">checked readonly checkbox</CheckBox>
 
-  <Styles.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="avares://COMPASS.Common/Themes/Dark.axaml"/>
-      </ResourceDictionary.MergedDictionaries>
-    </ResourceDictionary>
-    <FontFamily x:Key="HostGroteskFont">avares://COMPASS.Common/Assets/Fonts#Host Grotesk</FontFamily>
-  </Styles.Resources>
-
-  <!--General Classes-->
-  <Style Selector="ContentPresenter">
-    <Setter Property="FontFamily" Value="{StaticResource HostGroteskFont}" />
-  </Style>
-
-  <Style Selector=":is(Control).ZoomOnHover">
-    <Setter Property="Transitions">
-      <Setter.Value>
-        <Transitions>
-          <TransformOperationsTransition Property="RenderTransform" 
-                                         Duration="0:0:0.05" Easing="CubicEaseOut"/>
-        </Transitions>
-      </Setter.Value>
-    </Setter>
-    <Style Selector="^:pointerover">
-      <Setter Property="RenderTransform" Value="scale(1.1)"/>
-    </Style>
-  </Style>
-  
-  <!--TextBlock-->
-  <Style Selector="TextBlock">
-    <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-    <Setter Property="VerticalAlignment" Value="Center"/>
-    <Setter Property="FontSize" Value="15"/>
-  </Style>
-  
-  <!--HyperLink-->
-  <Style Selector="HyperlinkButton">
-    <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
-  </Style>
-  
-  <!-- Icons -->
-  <Style Selector="materialIcons|MaterialIcon.Clickable">
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
-    <Setter Property="IsVisible" Value="{Binding $self.IsEnabled}"/>
-    <Style Selector="^:pointerover">
-      <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-    </Style>
-  </Style>
-
-  <!--Button base-->
-  <Style Selector="views|MainView :is(Button)">
-    <Setter Property="Background" Value="{StaticResource ButtonBackground}"/>
-    <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-    <Setter Property="BorderBrush" Value="{x:Null}"/>
-    <Setter Property="Margin" Value="10,3"/>
-    <Setter Property="VerticalAlignment" Value="Center"/>
-    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-    <Style Selector="^:pointerover">
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Background" Value="{StaticResource ButtonFocus}"/>
-    </Style>
-  </Style>
-
-  <Style Selector="views|MainView Button">
-    <Setter Property="Padding" Value="15,5"/>
-  </Style>
-  
-  <!-- Tree view Items -->
-  <Style Selector="TreeViewItem">
-    <Style.Resources>
-      <x:Double x:Key="TreeViewItemExpandCollapseChevronSize">30</x:Double>
-    </Style.Resources>
-    <Setter Property="Template">
-      <ControlTemplate>
-        <StackPanel>
-          <Border Name="PART_LayoutRoot"
-                  Classes="TreeViewItemLayoutRoot"
-                  Focusable="True"
-                  Background="{TemplateBinding Background}"
-                  BorderBrush="{TemplateBinding BorderBrush}"
-                  BorderThickness="{TemplateBinding BorderThickness}"
-                  CornerRadius="{TemplateBinding CornerRadius}"
-                  MinHeight="{TemplateBinding MinHeight}"
-                  TemplatedControl.IsTemplateFocusTarget="True">
-            <Grid Name="PART_Header"
-                  IsHitTestVisible="True"
-                  ColumnDefinitions="Auto, *"
-                  Margin="{TemplateBinding Level, Mode=OneWay, Converter={StaticResource TreeViewItemLeftMarginConverter}}">
-              <Panel Name="PART_ExpandCollapseChevronContainer"
-                     Margin="{StaticResource TreeViewItemExpandCollapseChevronMargin}"
-                     Width="{StaticResource TreeViewItemExpandCollapseChevronSize}">
-                <ToggleButton Name="PART_ExpandCollapseChevron"
-                              Theme="{StaticResource FluentTreeViewExpandCollapseChevron}"
-                              Focusable="False"
-                              IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}" />
-              </Panel>
-              <ContentPresenter Name="PART_HeaderPresenter"
-                                Grid.Column="1"
-                                Focusable="False"
-                                Background="Transparent"
-                                Content="{TemplateBinding Header}"
-                                ContentTemplate="{TemplateBinding HeaderTemplate}"
-                                HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                                VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                                Margin="{TemplateBinding Padding}" />
-            </Grid>
-          </Border>
-          <ItemsPresenter Name="PART_ItemsPresenter"
-                          IsVisible="{TemplateBinding IsExpanded}"
-                          ItemsPanel="{TemplateBinding ItemsPanel}" />
         </StackPanel>
-      </ControlTemplate>
-    </Setter>
-    <Style Selector="^:empty /template/ Panel#PART_ExpandCollapseChevronContainer">
-      <Setter Property="Width" Value="{StaticResource TreeViewItemExpandCollapseChevronSize}" />
+    </Design.PreviewWith>
+
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://COMPASS.Common/Themes/Dark.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+        <FontFamily x:Key="HostGroteskFont">avares://COMPASS.Common/Assets/Fonts#Host Grotesk</FontFamily>
+    </Styles.Resources>
+
+    <!--General Classes-->
+    <Style Selector="ContentPresenter">
+        <Setter Property="FontFamily" Value="{StaticResource HostGroteskFont}" />
     </Style>
-  </Style>
-  
-  <!-- Checkbox -->
-   <!--#region Checkbox style-->
-    <Style Selector="CheckBox">
+
+    <Style Selector=":is(Control).ZoomOnHover">
+        <Setter Property="Transitions">
+            <Setter.Value>
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform"
+                                                   Duration="0:0:0.05" Easing="CubicEaseOut" />
+                </Transitions>
+            </Setter.Value>
+        </Setter>
+        <Style Selector="^:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.1)" />
+        </Style>
+    </Style>
+    
+    <Style Selector="materialIcons|MaterialIcon">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="Height" Value="20"/>
+    </Style>
+
+    <!--TextBlock-->
+    <Style Selector="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="15" />
+    </Style>
+
+    <!--HyperLink-->
+    <Style Selector="HyperlinkButton">
+        <Setter Property="Foreground" Value="{StaticResource AccentColor}" />
+    </Style>
+
+    <!-- Icons -->
+    <Style Selector="materialIcons|MaterialIcon.Clickable">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource TextMutedColor}" />
+        <Setter Property="IsVisible" Value="{Binding $self.IsEnabled}" />
+        <Style Selector="^:pointerover">
+            <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+        </Style>
+    </Style>
+
+    <!--Button base-->
+    <Style Selector="views|MainView :is(Button)">
+        <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
+        <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+        <Setter Property="BorderBrush" Value="{x:Null}" />
+        <Setter Property="Margin" Value="10,3" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Style Selector="^:pointerover">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Background" Value="{StaticResource ButtonFocus}" />
+        </Style>
+    </Style>
+
+    <Style Selector="views|MainView Button">
+        <Setter Property="Padding" Value="15,5" />
+    </Style>
+    
+    <!--Blank button-->
+    <Style Selector="Button.BlankButton">
+        <Setter Property="Background" Value="{StaticResource TransparentBlack}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Margin" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <ContentPresenter Content="{TemplateBinding Content}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Tree view Items -->
+    <Style Selector="TreeViewItem">
+        <Style.Resources>
+            <x:Double x:Key="TreeViewItemExpandCollapseChevronSize">30</x:Double>
+        </Style.Resources>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel>
+                    <Border Name="PART_LayoutRoot"
+                            Classes="TreeViewItemLayoutRoot"
+                            Focusable="True"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            MinHeight="{TemplateBinding MinHeight}"
+                            TemplatedControl.IsTemplateFocusTarget="True">
+                        <Grid Name="PART_Header"
+                              IsHitTestVisible="True"
+                              ColumnDefinitions="Auto, *"
+                              Margin="{TemplateBinding Level, Mode=OneWay, Converter={StaticResource TreeViewItemLeftMarginConverter}}">
+                            <Panel Name="PART_ExpandCollapseChevronContainer"
+                                   Margin="{StaticResource TreeViewItemExpandCollapseChevronMargin}"
+                                   Width="{StaticResource TreeViewItemExpandCollapseChevronSize}">
+                                <ToggleButton Name="PART_ExpandCollapseChevron"
+                                              Theme="{StaticResource FluentTreeViewExpandCollapseChevron}"
+                                              Focusable="False"
+                                              IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}" />
+                            </Panel>
+                            <ContentPresenter Name="PART_HeaderPresenter"
+                                              Grid.Column="1"
+                                              Focusable="False"
+                                              Background="Transparent"
+                                              Content="{TemplateBinding Header}"
+                                              ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                              Margin="{TemplateBinding Padding}" />
+                        </Grid>
+                    </Border>
+                    <ItemsPresenter Name="PART_ItemsPresenter"
+                                    IsVisible="{TemplateBinding IsExpanded}"
+                                    ItemsPanel="{TemplateBinding ItemsPanel}" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:empty /template/ Panel#PART_ExpandCollapseChevronContainer">
+            <Setter Property="Width" Value="{StaticResource TreeViewItemExpandCollapseChevronSize}" />
+        </Style>
+    </Style>
+
+    <!-- Checkbox -->
+    <Style Selector="CheckBox">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Margin" Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
                     <Grid ColumnDefinitions="Auto, *" Background="Transparent">
-                        <materialIcons:MaterialIcon Height="20" Width="20" Kind="CheckboxBlankOutline"/>
-                        <ContentPresenter Content="{TemplateBinding Content}" 
-                                          Margin="5,0" Grid.Column="1" 
-                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                        <materialIcons:MaterialIcon Height="20" Width="20" Kind="CheckboxBlankOutline" />
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          Margin="5,0" Grid.Column="1"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        
+
         <!-- readonly unchecked -->
         <Style Selector="^[IsHitTestVisible=false]">
-          <Style Selector="^/template/ materialIcons|MaterialIcon">
-            <Setter Property="Kind" Value="Close"/>
-            <Setter Property="Foreground" Value="Red"/>
-          </Style>
+            <Style Selector="^/template/ materialIcons|MaterialIcon">
+                <Setter Property="Kind" Value="Close" />
+                <Setter Property="Foreground" Value="Red" />
+            </Style>
         </Style>
-        
+
         <!-- checked -->
         <Style Selector="^:checked">
-          <Style Selector="^/template/ materialIcons|MaterialIcon">
-            <Setter Property="Kind" Value="CheckboxMarkedOutline"/>
-          </Style>
-          
-          <!-- readonly checked -->
-          <Style Selector="^[IsHitTestVisible=false]">
             <Style Selector="^/template/ materialIcons|MaterialIcon">
-              <Setter Property="Kind" Value="Check"/> 
-              <Setter Property="Foreground" Value="Green"/> 
+                <Setter Property="Kind" Value="CheckboxMarkedOutline" />
             </Style>
-          </Style>
+
+            <!-- readonly checked -->
+            <Style Selector="^[IsHitTestVisible=false]">
+                <Style Selector="^/template/ materialIcons|MaterialIcon">
+                    <Setter Property="Kind" Value="Check" />
+                    <Setter Property="Foreground" Value="Green" />
+                </Style>
+            </Style>
         </Style>
-        
+
         <!-- indeterminate -->
         <Style Selector="^:indeterminate">
-          <Style Selector="^/template/ materialIcons|MaterialIcon">
-            <Setter Property="Kind" Value="CheckboxIntermediateVariant"/>
-          </Style>
-          
-          <!-- readonly indeterminate -->
-          <Style Selector="^[IsHitTestVisible=false]">
             <Style Selector="^/template/ materialIcons|MaterialIcon">
-              <Setter Property="Kind" Value="Minus"/>
-              <Setter Property="Foreground" Value="Gray"/>
+                <Setter Property="Kind" Value="CheckboxIntermediateVariant" />
             </Style>
-          </Style>
+
+            <!-- readonly indeterminate -->
+            <Style Selector="^[IsHitTestVisible=false]">
+                <Style Selector="^/template/ materialIcons|MaterialIcon">
+                    <Setter Property="Kind" Value="Minus" />
+                    <Setter Property="Foreground" Value="Gray" />
+                </Style>
+            </Style>
         </Style>
     </Style>
 </Styles>

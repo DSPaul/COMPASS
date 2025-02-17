@@ -9,13 +9,6 @@
         <ResourceDictionary Source="Themes/DarkTheme.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <!--Converters-->
-    <converters:ToVisibilityConverter x:Key="ToVisibilityConverter"/>
-    <converters:ColorToBrushConverter x:Key="ColorToBrushConverter"/>
-    <converters:PlusOneConverter x:Key="PlusOneConverter"/>
-    <converters:UriToBitmapConverter x:Key="UriToBitmapConverter"/>
-    <converters:EqualityToVisibilityConverter x:Key="ShowInStepConverter"/>
-
     <!--TextBox Style with placeholder Text-->
     <Style TargetType="{x:Type TextBox}">
         <Setter Property="Template">
@@ -141,20 +134,6 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <ContentPresenter VerticalAlignment="Center"/>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="Button" x:Key="BlankButton">
-        <Setter Property="Background" Value="{StaticResource TransparentBlack}"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <ContentPresenter Content="{TemplateBinding Content}"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -896,92 +875,7 @@
     </Style>
     <!--#endregion-->
 
-    <!--#region Checkbox style-->
-    <Style TargetType="{x:Type CheckBox}">
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type CheckBox}">
-                    <Border Background="Transparent">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <materialDesign:PackIcon x:Name="checkboxIcon" Kind="CheckboxBlankOutline"/>
-                            <ContentPresenter Margin="5,0" Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
-                        </Grid>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsChecked" Value="True"/>
-                                <Condition Property="IsHitTestVisible" Value="False"/>
-                            </MultiTrigger.Conditions>
-                            <MultiTrigger.Setters>
-                                <Setter TargetName="checkboxIcon" Property="Kind" Value="Check"/>
-                                <Setter TargetName="checkboxIcon" Property="Foreground" Value="Green"/>
-                            </MultiTrigger.Setters>
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsChecked" Value="True"/>
-                                <Condition Property="IsHitTestVisible" Value="True"/>
-                            </MultiTrigger.Conditions>
-                            <MultiTrigger.Setters>
-                                <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckboxMarkedOutline"/>
-                            </MultiTrigger.Setters>
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsChecked" Value="False"/>
-                                <Condition Property="IsHitTestVisible" Value="False"/>
-                            </MultiTrigger.Conditions>
-                            <MultiTrigger.Setters>
-                                <Setter TargetName="checkboxIcon" Property="Kind" Value="Close"/>
-                                <Setter TargetName="checkboxIcon" Property="Foreground" Value="Red"/>
-                            </MultiTrigger.Setters>
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsChecked" Value="False"/>
-                                <Condition Property="IsHitTestVisible" Value="True"/>
-                            </MultiTrigger.Conditions>
-                            <MultiTrigger.Setters>
-                                <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckboxBlankOutline"/>
-                            </MultiTrigger.Setters>
-                        </MultiTrigger>
-                        <Trigger Property="IsChecked" Value="{x:Null}">
-                            <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckBoxIntermediateVariant"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="{x:Type CheckBox}" x:Key="WrappingCheckBox">
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type CheckBox}">
-                    <Border Background="Transparent">
-                        <DockPanel>
-                            <materialDesign:PackIcon DockPanel.Dock="Left" x:Name="checkboxIcon" Margin="5,2"
-                                Kind="CheckboxBlankOutline" VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
-                            <TextBlock Text="{TemplateBinding Content}" TextWrapping="Wrap"
-                                       VerticalAlignment="{TemplateBinding VerticalAlignment}"/>
-                        </DockPanel>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="checkboxIcon" Property="Kind" Value="CheckboxMarkedOutline"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+    
 
     <ControlTemplate TargetType="CheckBox" x:Key="BorderedCheckbox">
         <Grid>
@@ -1246,14 +1140,6 @@
         </StackPanel>
     </ControlTemplate>
     <!--#endregion-->
-
-    <Style TargetType="materialDesign:PackIcon">
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Width" Value="20"/>
-        <Setter Property="Height" Value="20"/>
-    </Style>
 
     <Style TargetType="materialDesign:PackIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}" x:Key="ToolTipIcon">
         <Setter Property="ToolTipService.InitialShowDelay" Value="0"/>
