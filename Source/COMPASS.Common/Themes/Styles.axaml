@@ -11,7 +11,7 @@
             <CheckBox IsThreeState="True">This is a checkbox</CheckBox>
             <CheckBox IsHitTestVisible="False">unchecked readonly checkbox</CheckBox>
             <CheckBox IsHitTestVisible="False" IsChecked="True">checked readonly checkbox</CheckBox>
-
+            <Slider Value="200" Minimum="50" Maximum="400" TickFrequency="5" Margin="5"/>
         </StackPanel>
     </Design.PreviewWith>
 
@@ -85,6 +85,14 @@
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Background" Value="{StaticResource ButtonFocus}" />
         </Style>
+    </Style>
+    
+    <Style Selector="Slider">
+        <Setter Property="Foreground" Value="{StaticResource AccentColorMuted}"/>
+        <Style Selector="^ /template/ RepeatButton">
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+        
     </Style>
 
     <Style Selector="views|MainView Button">

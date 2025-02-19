@@ -63,5 +63,10 @@
   <SolidColorBrush x:Key="PopupOutline" Color="{StaticResource DarkerGray}"/>
 
   <SolidColorBrush x:Key="ScrollBar" Color="{StaticResource ScrollbarColor}"/>
+  <SolidColorBrush x:Key="SliderThumbBackground" Color="{StaticResource CompassJadeDark}"/>
+  <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="{StaticResource CompassJade}"/>
+  <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="{StaticResource CompassJade}"/>
+  <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="{StaticResource CompassJade}"/>
+  <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="{StaticResource CompassJade}"/>
   
 </ResourceDictionary>
