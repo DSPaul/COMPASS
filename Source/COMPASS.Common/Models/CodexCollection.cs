@@ -625,7 +625,7 @@ namespace COMPASS.Common.Models
             }
 
             //Remove folder-tag links that contain this tag
-            Info.FolderTagPairs.RemoveAll(pair => pair.Tag is not null && pair.Tag == toDelete);
+            Info.FolderTagPairs.RemoveWhere(pair => pair.Tag is not null && pair.Tag == toDelete);
 
             SaveTags();
         }

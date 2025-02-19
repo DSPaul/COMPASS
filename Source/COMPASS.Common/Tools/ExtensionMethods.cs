@@ -3,6 +3,7 @@ using COMPASS.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -19,7 +20,7 @@ namespace COMPASS.Common.Tools
         /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
         /// <param name="condition"></param>
-        public static void RemoveAll<T>(
+        public static void RemoveWhere<T>(
         this ObservableCollection<T> collection, Func<T, bool> condition)
         {
             var itemsToRemove = collection.Where(condition).ToList();
@@ -53,6 +54,29 @@ namespace COMPASS.Common.Tools
             }
         }
 
+        /// <summary>
+        /// Sort an obervable collection in place
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <param name="keySelector"></param>
+        /// <param name="sortDirection"></param>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        public static void Sort<TSource,TKey>(this ObservableCollection<TSource> collection, Func<TSource, TKey> keySelector, ListSortDirection sortDirection = ListSortDirection.Ascending)
+        {
+            List<TSource> sorted = sortDirection switch
+            {
+                ListSortDirection.Ascending => collection.OrderBy(keySelector).ToList(),
+                ListSortDirection.Descending => collection.OrderByDescending(keySelector).ToList(),
+                _ => throw new ArgumentOutOfRangeException(nameof(sortDirection), sortDirection, null)
+            };
+
+            for (int i = 0; i < sorted.Count(); i++)
+            {
+                collection.Move(collection.IndexOf(sorted[i]), i);
+            }
+        }
+        
         /// <summary>
         /// Add an object to the end of the list if it is not yet in the list.
         /// </summary>

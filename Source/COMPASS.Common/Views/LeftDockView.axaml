@@ -72,11 +72,11 @@
     </controls:CollapsableTabItem>
 
     <controls:CollapsableTabItem Header="Sorting" Icon="Sort">
-        this is sorting content
+        <panels:SortingSidePanel DataContext="{Binding MainVM.CollectionVM.FilterVM}"/>
     </controls:CollapsableTabItem>
     
     <controls:CollapsableTabItem Header="Add Items" Icon="BookAdd">
-      <panels:AddCodexSidePanel DataContext="{Binding AddCodexPanelVM}"/>
+        <panels:AddCodexSidePanel DataContext="{Binding AddCodexPanelVM}"/>
     </controls:CollapsableTabItem>
 
     <controls:CollapsableTabItem Header="Logs" Icon="TextLong">

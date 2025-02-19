@@ -262,14 +262,23 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
+        public bool SortAscending
+        {
+            get => SortDirection == ListSortDirection.Ascending;
+            set => SortDirection = value ? ListSortDirection.Ascending : ListSortDirection.Descending;
+        }
+        
         public ListSortDirection SortDirection
         {
             get => _preferencesService.Preferences.UIState.SortDirection;
             set
             {
-                _preferencesService.Preferences.UIState.SortDirection = value;
-                ApplySorting();
-                OnPropertyChanged();
+                if (value != _preferencesService.Preferences.UIState.SortDirection)
+                {
+                    _preferencesService.Preferences.UIState.SortDirection = value;
+                    ApplySorting();
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -278,9 +287,12 @@ namespace COMPASS.Common.ViewModels
             get => _preferencesService.Preferences.UIState.SortProperty;
             set
             {
-                _preferencesService.Preferences.UIState.SortProperty = value;
-                ApplySorting();
-                OnPropertyChanged();
+                if (!string.IsNullOrEmpty(value) && _preferencesService.Preferences.UIState.SortProperty != value)
+                {
+                    _preferencesService.Preferences.UIState.SortProperty = value;
+                    ApplySorting();
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -366,8 +378,8 @@ namespace COMPASS.Common.ViewModels
         }
         public void RemoveFilterType(FilterType filterType)
         {
-            IncludedFilters.RemoveAll(filter => filter.Type == filterType);
-            ExcludedFilters.RemoveAll(filter => filter.Type == filterType);
+            IncludedFilters.RemoveWhere(filter => filter.Type == filterType);
+            ExcludedFilters.RemoveWhere(filter => filter.Type == filterType);
         }
 
         // Add Filter
@@ -390,7 +402,7 @@ namespace COMPASS.Common.ViewModels
             //if Filter does not allow multiple instances, remove previous instance(s) of that Filter before adding
             if (!filter.AllowMultiple && target.Any(f => f.Type == filter.Type))
             {
-                target.RemoveAll(f => f.Type == filter.Type);
+                target.RemoveWhere(f => f.Type == filter.Type);
             }
 
             target.AddIfMissing(filter);
@@ -523,13 +535,9 @@ namespace COMPASS.Common.ViewModels
 
         private void ApplySorting()
         {
-            //TODO: check what the avalonia equivalent is for collectionViewSource and sorting
-
-            //var sortDescr = CollectionViewSource.GetDefaultView(FilteredCodices).SortDescriptions;
-            //sortDescr.Clear();
-            //if (string.IsNullOrEmpty(SortProperty)) return;
-            //sortDescr.Add(new SortDescription(SortProperty, SortDirection));
+            FilteredCodices?.Sort(c => c.GetPropertyValue(SortProperty), SortDirection);
         }
+        
         private void ApplyFilters(bool force = false)
         {
             IList<Codex> filteredCodices = _allCodices
@@ -545,8 +553,6 @@ namespace COMPASS.Common.ViewModels
                 OnPropertyChanged(nameof(RecentCodices));
                 OnPropertyChanged(nameof(MostOpenedCodices));
                 OnPropertyChanged(nameof(RecentlyAddedCodices));
-
-                FilteredCodices.CollectionChanged += (_, _) => ApplySorting();
             }
             ApplySorting();
         }

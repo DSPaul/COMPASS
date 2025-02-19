@@ -100,7 +100,7 @@
                     <DataTemplate DataType="{x:Type layouts:TileLayoutViewModel}">
                         <StackPanel Margin="10" DataContext="{Binding Preferences}">
                             <TextBlock Text="Cover Size" Margin="5"/>
-                            <Slider Value="{Binding TileWidth}" Minimum="50" Maximum="400" TickFrequency="5" Margin="5,0"/>
+                            <Slider x:Name="TileSizeSlider" Value="{Binding TileWidth}" Minimum="50" Maximum="400" TickFrequency="5" Margin="5,0"/>
                             <CheckBox x:Name="ShowExtraDataCheckbox" Content="Show Extra Data" IsChecked="{Binding ShowExtraData}"/>
                             <ComboBox IsVisible="{Binding #ShowExtraDataCheckbox.IsChecked}" HorizontalAlignment="Stretch"
                                       ItemsSource="{Binding DataOptions}" SelectedItem="{Binding DisplayedData, Mode=TwoWay}"/>
