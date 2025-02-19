@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.ExceptionServices;
+using COMPASS.Common.ViewModels.SidePanels;
 
 namespace COMPASS.Common.Tools
 {
@@ -29,34 +30,28 @@ namespace COMPASS.Common.Tools
 
         // Log To file
         public static log4net.ILog? FileLog { get; private set; }
-
-        // Log to Log Tab
-        public static ObservableCollection<LogEntry> ActivityLog { get; } = [];
-
-        public static void Info(string message) =>
-            Dispatcher.UIThread.Invoke(()
-                => ActivityLog.Add(new(Severity.Info, message)));
+        
+        public static void Info(string message) => LogsVM.AddLog(new(Severity.Info, message));
 
         public static void Debug(string message) => FileLog?.Debug(message);
 
 
         public static void Warn(string message, Exception? ex = null)
         {
-            Dispatcher.UIThread.Invoke(() => ActivityLog.Add(new(Severity.Warning, message)));
+            LogsVM.AddLog(new(Severity.Warning, message));
             if (ex is null)
-                if (ex is null)
-                {
-                    FileLog?.Warn(message);
-                }
-                else
-                {
-                    FileLog?.Warn(message, ex);
-                }
+            {
+                FileLog?.Warn(message);
+            }
+            else
+            {
+                FileLog?.Warn(message, ex);
+            }
         }
 
         public static void Error(string message, Exception ex)
         {
-            Dispatcher.UIThread.Invoke(() => ActivityLog.Add(new(Severity.Error, message)));
+            LogsVM.AddLog(new(Severity.Error, message));
             FileLog?.Error(message, ex);
         }
 

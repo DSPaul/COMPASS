@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels"
              xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:tools="using:COMPASS.Common.Tools"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:panels="using:COMPASS.Common.Views.SidePanels"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
@@ -49,8 +50,7 @@
       <Setter Property="FontWeight" Value="Medium"/>
     </Style>
   </UserControl.Styles>
-  
-  
+    
   <TabControl Background="{StaticResource ButtonBackground}" 
               BorderThickness="0" 
               TabStripPlacement="Left" 
@@ -79,8 +79,10 @@
         <panels:AddCodexSidePanel DataContext="{Binding AddCodexPanelVM}"/>
     </controls:CollapsableTabItem>
 
-    <controls:CollapsableTabItem Header="Logs" Icon="TextLong">
-        this is logs content
+    <controls:CollapsableTabItem Header="Logs" Icon="TextLong" 
+                                 AttentionSeverity="{Binding LogsVM.LastSeverity}"
+                                 ShowAttention="{Binding LogsVM.ShowAttention}">
+        <panels:LogsSidePanel DataContext="{Binding LogsVM}"/>
     </controls:CollapsableTabItem>
   </TabControl>
 </UserControl>

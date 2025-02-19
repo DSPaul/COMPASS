@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.SidePanels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Views.SidePanels.LogsSidePanel"
+             x:DataType="vm:LogsVM" >
+    <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto" Background="{StaticResource LogBackground}">
+        <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{Binding ActivityLog}" Padding="0,5">
+            <ItemsControl.Styles>
+                <Style Selector="ContentPresenter:nth-child(even) > Border">
+                    <Setter Property="Background" Value="{StaticResource Layer2}"/>
+                </Style>
+            </ItemsControl.Styles>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="10,3">
+                        <Grid IsSharedSizeScope="True" ColumnDefinitions="Auto,10,*">
+                            <TextBlock Text="{Binding Time, StringFormat=HH:mm:ss}" FontSize="12" VerticalAlignment="Top"
+                                       Foreground="{Binding Severity, Mode=OneWay,Converter={StaticResource SeverityToColorConverter}}"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Msg}" TextWrapping="Wrap" FontSize="12"
+                                       Foreground="{Binding Severity, Mode=OneWay,Converter={StaticResource SeverityToColorConverter}}"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>

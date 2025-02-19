@@ -66,10 +66,17 @@
       <ControlTemplate TargetType="controls:CollapsableTabItem">
         <Border CornerRadius="5,0,0,5" Margin="2,2,0,2"
                 Background="{TemplateBinding Background}"
-                ToolTip.Tip="{TemplateBinding Header}">          
-          <materialIcons:MaterialIcon Height="35" Width="35" Margin="10"
-                                      HorizontalAlignment="Center"
-                                      Kind="{TemplateBinding Icon}"/>
+                ToolTip.Tip="{TemplateBinding Header}">
+          <Panel>
+            <materialIcons:MaterialIcon Height="35" Width="35" Margin="10"
+                                        HorizontalAlignment="Center"
+                                        Kind="{TemplateBinding Icon}"/>
+            
+            <Ellipse Fill="{TemplateBinding AttentionSeverity, Converter={StaticResource SeverityToColorConverter}}" 
+                     Width="10" Height="10" VerticalAlignment="Top" 
+                     HorizontalAlignment="Right" Margin="5"
+                     IsVisible="{TemplateBinding ShowAttention}"/>
+          </Panel>          
         </Border>
       </ControlTemplate>
     </Setter>

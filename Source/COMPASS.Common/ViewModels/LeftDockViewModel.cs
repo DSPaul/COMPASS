@@ -12,12 +12,14 @@ namespace COMPASS.Common.ViewModels
             _preferencesService = PreferencesService.GetInstance();
 
             AddCodexPanelVM = new();
+            LogsVM = new();
         }
 
         private MainViewModel _mainVM;
         private PreferencesService _preferencesService;
 
         public AddCodexPanelVM AddCodexPanelVM { get; }
+        public LogsVM LogsVM { get; }
 
         public MainViewModel MainVM
         {

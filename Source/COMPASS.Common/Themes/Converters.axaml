@@ -3,4 +3,5 @@
                     xmlns:conv="using:COMPASS.Common.Converters">
 
   <conv:MultiParamConverter x:Key="MultiParamConverter"/>
+  <conv:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
 </ResourceDictionary>
