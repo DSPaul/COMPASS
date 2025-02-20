@@ -6,19 +6,13 @@ using COMPASS.Common.ViewModels.Import;
 using System;
 using System.IO;
 using System.Linq;
+using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Operations;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
     public abstract class LayoutViewModel : ViewModelBase
     {
-        public enum Layout
-        {
-            List,
-            Card,
-            Tile,
-            Home
-        }
-
         public LayoutViewModel()
         {
             CodexInfoVM = new CodexInfoViewModel();
@@ -26,16 +20,16 @@ namespace COMPASS.Common.ViewModels.Layouts
 
         // Should put this function separate Factory class for proper factory pattern,
         // but I don't see the point, seems a lot of boilerplate without real advantages
-        public static LayoutViewModel GetLayout(Layout? layout = null)
+        public static LayoutViewModel GetLayout(CodexLayout? layout = null)
         {
             layout ??= PreferencesService.GetInstance().Preferences.UIState.StartupLayout;
-            PreferencesService.GetInstance().Preferences.UIState.StartupLayout = (Layout)layout;
+            PreferencesService.GetInstance().Preferences.UIState.StartupLayout = (CodexLayout)layout;
             return layout switch
             {
-                Layout.Home => new HomeLayoutViewModel(),
-                Layout.List => new ListLayoutViewModel(),
-                Layout.Card => new CardLayoutViewModel(),
-                Layout.Tile => new TileLayoutViewModel(),
+                CodexLayout.Home => new HomeLayoutViewModel(),
+                CodexLayout.List => new ListLayoutViewModel(),
+                CodexLayout.Card => new CardLayoutViewModel(),
+                CodexLayout.Tile => new TileLayoutViewModel(),
                 _ => throw new NotImplementedException(layout.ToString())
             };
         }
@@ -45,7 +39,8 @@ namespace COMPASS.Common.ViewModels.Layouts
 
         #region Properties
 
-        public CodexViewModel CodexVM { get; init; } = new();
+        //TODO: commands should be in a viewmodel rather than operations
+        public CodexOperations CodexCommands { get; init; } = new();
         public CodexInfoViewModel CodexInfoVM { get; init; }
 
         //Selected File
@@ -67,7 +62,7 @@ namespace COMPASS.Common.ViewModels.Layouts
         public bool DoVirtualization { get; }
 
         //Set Type of view
-        public Layout LayoutType { get; init; }
+        public CodexLayout LayoutType { get; init; }
         #endregion
 
         public void OnDragOver(object? sender, DragEventArgs e)

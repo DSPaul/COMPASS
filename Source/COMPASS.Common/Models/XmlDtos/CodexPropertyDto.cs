@@ -1,7 +1,7 @@
-﻿using COMPASS.Common.ViewModels.Sources;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using COMPASS.Common.Models.Enums;
 
 namespace COMPASS.Common.Models.XmlDtos
 {

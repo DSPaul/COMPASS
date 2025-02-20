@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Sources;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

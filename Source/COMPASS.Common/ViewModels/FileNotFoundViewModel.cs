@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using System;
@@ -60,7 +61,7 @@ namespace COMPASS.Common.ViewModels
                 Logger.Debug(message);
 
                 MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
-                CodexViewModel.OpenCodexLocally(_codex);
+                CodexOperations.OpenCodexLocally(_codex);
                 SetDialogResult?.Invoke(true);
                 CloseAction?.Invoke();
             }
@@ -78,7 +79,7 @@ namespace COMPASS.Common.ViewModels
         public RelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
         private void DeleteCodex()
         {
-            CodexViewModel.DeleteCodex(_codex);
+            CodexOperations.DeleteCodex(_codex);
             SetDialogResult?.Invoke(true);
             CloseAction?.Invoke();
         }

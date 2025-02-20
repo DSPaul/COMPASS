@@ -75,6 +75,8 @@ namespace COMPASS.Common.Models
 
         #endregion
 
+        //TODO: move loading and saving logic to a service
+        
         #region Load Data From File
 
         //To prevent saving a collection that hasn't loaded yet, which would wipe all your data

@@ -1,12 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.ViewModels.Layouts;
 using System.ComponentModel;
+using COMPASS.Common.Models.Enums;
 
 namespace COMPASS.Common.Models.Preferences
 {
     public class UIState : ObservableObject
     {
-        public LayoutViewModel.Layout StartupLayout { get; set; } = LayoutViewModel.Layout.Home;
+        public CodexLayout StartupLayout { get; set; } = CodexLayout.Home;
         public string StartupCollection { get; set; } = "DefaultCollection";
         public int StartupTab { get; set; } = 0;
 

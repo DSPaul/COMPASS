@@ -1,5 +1,6 @@
 ﻿using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using System;

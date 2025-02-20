@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
@@ -144,7 +145,7 @@ namespace COMPASS.Common.ViewModels.Import
 
             try
             {
-                await CodexViewModel.StartGetMetaDataProcess(newCodex)
+                await CodexOperations.StartGetMetaDataProcess(newCodex)
                 .ContinueWith(_ =>
                 {
                     progressVM.AddLogEntry(new(Severity.Info, "Metadata loaded."));

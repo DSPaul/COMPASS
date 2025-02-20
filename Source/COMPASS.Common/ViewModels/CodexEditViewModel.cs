@@ -11,6 +11,8 @@ using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
@@ -92,9 +94,9 @@ namespace COMPASS.Common.ViewModels
         public RelayCommand BrowseURLCommand => _browseURLCommand ??= new(BrowseURL);
         private void BrowseURL()
         {
-            if (CodexViewModel.CanOpenCodexOnline(TempCodex))
+            if (CodexOperations.CanOpenCodexOnline(TempCodex))
             {
-                CodexViewModel.OpenCodexOnline(TempCodex);
+                CodexOperations.OpenCodexOnline(TempCodex);
             }
         }
 
@@ -161,7 +163,7 @@ namespace COMPASS.Common.ViewModels
         {
             if (!CreateNewCodex)
             {
-                CodexViewModel.DeleteCodex(_editedCodex);
+                CodexOperations.DeleteCodex(_editedCodex);
             }
             CloseAction();
         }

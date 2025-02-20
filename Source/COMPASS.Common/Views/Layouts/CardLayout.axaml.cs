@@ -3,7 +3,7 @@ using COMPASS.Common.Controls;
 
 namespace COMPASS.Common.Views.Layouts;
 
-public partial class CardLayout : CodexLayout
+public partial class CardLayout : CodexLayoutView
 {
     public CardLayout()
     {

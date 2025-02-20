@@ -17,12 +17,13 @@ using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Sources;
 using COMPASS.Common.Views.Windows;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.Operations
 {
-    public class CodexViewModel : ViewModelBase
+    public class CodexOperations
     {
         #region Open Codex
 
@@ -495,10 +496,9 @@ namespace COMPASS.Common.ViewModels
         private static async Task GetCoverBulk(IList? codices) =>
             await CoverService.GetCover(codices?.Cast<Codex>().ToList() ?? []);
 
+        //TODO remove this, HandleKeyDownOnCodex should be called directly
         public static void DataGridHandleKeyDown(object? sender, KeyEventArgs e)
             => HandleKeyDownOnCodex((sender as DataGrid)?.SelectedItems, e);
-        public static void ListBoxHandleKeyDown(object? sender, KeyEventArgs e)
-            => HandleKeyDownOnCodex((sender as ListBox)?.SelectedItems, e);
         public static async void HandleKeyDownOnCodex(IList? selectedItems, KeyEventArgs e)
         {
             if (selectedItems is null) return;

@@ -6,6 +6,7 @@ using Autofac;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.Views.Windows;
@@ -130,7 +131,7 @@ namespace COMPASS.Common.ViewModels.Import
         {
             try
             {
-                await CodexViewModel.StartGetMetaDataProcess(newCodices);
+                await CodexOperations.StartGetMetaDataProcess(newCodices);
                 await CoverService.GetCover(newCodices);
             }
             catch (OperationCanceledException ex)

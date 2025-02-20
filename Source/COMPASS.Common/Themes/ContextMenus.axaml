@@ -12,14 +12,14 @@
     
     <ContextMenu x:Key="CodexContextMenu" x:DataType="model:Codex">
         <MenuItem Header="Open Locally" 
-                  Command="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).CodexVM.OpenCodexLocallyCommand}"
+                  Command="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).CodexCommands.OpenCodexLocallyCommand}"
                   CommandParameter="{Binding}">
             <MenuItem.Icon>
                 <materialIcons:MaterialIcon Kind="FileOutline"/>
             </MenuItem.Icon>
         </MenuItem>
         <MenuItem Header="Open Online"
-                  Command="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).CodexVM.OpenCodexOnlineCommand}"
+                  Command="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).CodexCommands.OpenCodexOnlineCommand}"
                   CommandParameter="{Binding}">
             <MenuItem.Icon>
                 <materialIcons:MaterialIcon Kind="Web"/>
@@ -27,14 +27,14 @@
         </MenuItem>
         <Separator/>
         <MenuItem Header="Edit..." InputGesture="Ctrl + E"
-                  Command="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).CodexVM.EditCodexCommand}"
+                  Command="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).CodexCommands.EditCodexCommand}"
                   CommandParameter="{Binding}">
             <MenuItem.Icon>
                 <materialIcons:MaterialIcon Kind="Edit"/>
             </MenuItem.Icon>
         </MenuItem>
         <MenuItem IsChecked="{Binding Favorite}" InputGesture="Ctrl + F"
-                  Command="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).CodexVM.FavoriteCodexCommand}"
+                  Command="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).CodexCommands.FavoriteCodexCommand}"
                   CommandParameter="{Binding}">
             <MenuItem.Icon>
                 <materialIcons:MaterialIcon Kind="Favorite" Foreground="{Binding $parent[MenuItem].Tag}"/>
@@ -51,8 +51,8 @@
             </MenuItem.Theme>
         </MenuItem>
         <MenuItem InputGesture="Ctrl + I" 
-                  IsChecked="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).CodexInfoVM.ShowCodexInfo}"
-                  Command="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).CodexInfoVM.ToggleCodexInfoCommand}">
+                  IsChecked="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).CodexInfoVM.ShowCodexInfo}"
+                  Command="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).CodexInfoVM.ToggleCodexInfoCommand}">
             <MenuItem.Icon>
                 <materialIcons:MaterialIcon Kind="BookInformationVariant"/>
             </MenuItem.Icon>
@@ -67,14 +67,14 @@
         </MenuItem>
         <Separator/>
         <MenuItem Header="Renew MetaData"
-                  Command="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).CodexVM.GetMetaDataCommand}"
+                  Command="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).CodexCommands.GetMetaDataCommand}"
                   CommandParameter="{Binding}">
             <MenuItem.Icon>
                 <materialIcons:MaterialIcon Kind="FileRefreshOutline"/>
             </MenuItem.Icon>
         </MenuItem>
         <MenuItem Header="Renew Cover"
-                  Command="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).CodexVM.GetCoverCommand}"
+                  Command="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).CodexCommands.GetCoverCommand}"
                   CommandParameter="{Binding}">
             <MenuItem.Icon>
                 <materialIcons:MaterialIcon Kind="ImageRefreshOutline"/>
@@ -82,20 +82,20 @@
         </MenuItem>
         <Separator/>
         <MenuItem Header="Show in Explorer"
-                  Command="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).CodexVM.ShowInExplorerCommand}"
+                  Command="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).CodexCommands.ShowInExplorerCommand}"
                   CommandParameter="{Binding}">
             <MenuItem.Icon>
                 <materialIcons:MaterialIcon Kind="FolderEyeOutline"/>
             </MenuItem.Icon>
         </MenuItem>
         <MenuItem Header="Move to Collection"
-                  ItemsSource="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).MVM.CollectionVM.CollectionDirectories}">
+                  ItemsSource="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).MVM.CollectionVM.CollectionDirectories}">
             <MenuItem.Icon>
                 <materialIcons:MaterialIcon Kind="FolderMoveOutline"/>
             </MenuItem.Icon>
             <MenuItem.Styles>
                 <Style Selector="MenuItem">
-                    <Setter Property="Command" Value="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).CodexVM.MoveToCollectionCommand}"/>
+                    <Setter Property="Command" Value="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).CodexCommands.MoveToCollectionCommand}"/>
                     <Setter Property="CommandParameter">
                         <Setter.Value>
                             <MultiBinding Converter="{StaticResource MultiParamConverter}">
@@ -109,14 +109,14 @@
         </MenuItem>
         <MenuItem Header="Remove" InputGesture="Delete"
                   ToolTip.Tip="Removes the item from COMPASS"
-                  Command="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).CodexVM.DeleteCodexCommand}"
+                  Command="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).CodexCommands.DeleteCodexCommand}"
                   CommandParameter="{Binding}">
             <MenuItem.Icon>
                 <materialIcons:MaterialIcon Kind="Delete"/>
             </MenuItem.Icon>
         </MenuItem>
         <MenuItem Header="Remove Forever" InputGesture="Alt+Delete"
-                  Command="{Binding $parent[controls:CodexLayout].((vm:LayoutViewModel)DataContext).CodexVM.BanishCodexCommand}"
+                  Command="{Binding $parent[controls:CodexLayoutView].((vm:LayoutViewModel)DataContext).CodexCommands.BanishCodexCommand}"
                   CommandParameter="{Binding}"
                   ToolTip.Tip="Removes the item from COMPASS and excludes it from future imports.">
             <MenuItem.Icon>

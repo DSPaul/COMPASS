@@ -1,5 +1,4 @@
 ﻿using System;
-using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.Enums;
 
 namespace COMPASS.Common.Models

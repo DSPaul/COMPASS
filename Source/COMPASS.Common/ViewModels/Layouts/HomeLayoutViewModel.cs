@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Models.Preferences;
+﻿using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services;
 
 namespace COMPASS.Common.ViewModels.Layouts
@@ -7,7 +8,7 @@ namespace COMPASS.Common.ViewModels.Layouts
     {
         public HomeLayoutViewModel() : base()
         {
-            LayoutType = Layout.Home;
+            LayoutType = CodexLayout.Home;
             Preferences = PreferencesService.GetInstance().Preferences.HomeLayoutPreferences;
         }
 

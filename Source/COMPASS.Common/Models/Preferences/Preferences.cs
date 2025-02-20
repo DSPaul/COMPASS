@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.ViewModels;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using COMPASS.Common.Operations;
 
 namespace COMPASS.Common.Models.Preferences
 {
@@ -27,8 +27,8 @@ namespace COMPASS.Common.Models.Preferences
         public static readonly ReadOnlyCollection<PreferableFunction<Codex>> OpenCodexFunctions =
             new List<PreferableFunction<Codex>>()
             {
-                new("Web Version", CodexViewModel.OpenCodexOnline,0),
-                new("Local File", CodexViewModel.OpenCodexLocally,1)
+                new("Web Version", CodexOperations.OpenCodexOnline,0),
+                new("Local File", CodexOperations.OpenCodexLocally,1)
             }.AsReadOnly();
 
         #endregion

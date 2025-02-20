@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace COMPASS.Common.Models.Preferences
