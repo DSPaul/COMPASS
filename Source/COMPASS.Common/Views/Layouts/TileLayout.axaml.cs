@@ -1,11 +1,12 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using COMPASS.Common.Controls;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels;
 
 namespace COMPASS.Common.Views.Layouts;
 
-public partial class TileLayout : UserControl
+public partial class TileLayout : CodexLayout
 {
     public TileLayout()
     {

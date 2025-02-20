@@ -1,8 +1,9 @@
 using Avalonia.Controls;
+using COMPASS.Common.Controls;
 
 namespace COMPASS.Common.Views.Layouts;
 
-public partial class CardLayout : UserControl
+public partial class CardLayout : CodexLayout
 {
     public CardLayout()
     {

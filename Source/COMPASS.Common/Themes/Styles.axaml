@@ -12,6 +12,9 @@
             <CheckBox IsHitTestVisible="False">unchecked readonly checkbox</CheckBox>
             <CheckBox IsHitTestVisible="False" IsChecked="True">checked readonly checkbox</CheckBox>
             <Slider Value="200" Minimum="50" Maximum="400" TickFrequency="5" Margin="5"/>
+            <ContextMenu>
+                <MenuItem Header="MenuItem" Tag="Filter"></MenuItem>
+            </ContextMenu>
         </StackPanel>
     </Design.PreviewWith>
 
@@ -221,5 +224,14 @@
                 </Style>
             </Style>
         </Style>
+    </Style>
+    
+    <!-- contextmenu -->
+    <Style Selector="MenuItem">
+       <Style Selector="^ materialIcons|MaterialIcon">
+           <Style Selector="^:disabled">
+               <Setter Property="Foreground" Value="{StaticResource TextControlForegroundDisabled}"/>
+           </Style>
+       </Style>
     </Style>
 </Styles>

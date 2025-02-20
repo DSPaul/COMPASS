@@ -217,25 +217,20 @@ namespace COMPASS.Common.ViewModels
         }
 
         //Move Codex to other CodexCollection
-        private RelayCommand<object[]>? _moveToCollectionCommand;
-        public RelayCommand<object[]> MoveToCollectionCommand => _moveToCollectionCommand ??= new(MoveToCollection);
-        public void MoveToCollection(object[]? par)
+        private RelayCommand<IList<object>>? _moveToCollectionCommand;
+        public RelayCommand<IList<object>> MoveToCollectionCommand => _moveToCollectionCommand ??= new(MoveToCollection);
+        public void MoveToCollection(IList<object>? par)
         {
             if (par == null) return;
 
             //par contains 2 parameters
             CodexCollection targetCollection = new((string)par[0]);
-            List<Codex> toMoveList = [];
-
-            //extract Codex parameter
-            if (par[1] is Codex codex)
+            List<Codex> toMoveList = par[1] switch
             {
-                toMoveList.Add(codex);
-            }
-            else
-            {
-                if (par[1] as IList is { } list) toMoveList = list.Cast<Codex>().ToList();
-            }
+                Codex codex => [codex],
+                IList list => list.Cast<Codex>().ToList(),
+                _ => []
+            };
 
             MoveToCollection(targetCollection, toMoveList);
         }

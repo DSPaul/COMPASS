@@ -6,6 +6,7 @@
              xmlns:model="using:COMPASS.Common.Models"
              xmlns:conv="using:COMPASS.Common.Converters"
              xmlns:preferences="using:COMPASS.Common.Models.Preferences"
+             xmlns:controls="clr-namespace:COMPASS.Common.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:TileLayoutViewModel"
              x:Class="COMPASS.Common.Views.Layouts.TileLayout">
@@ -44,7 +45,8 @@
               RowDefinitions="Auto, Auto"
               DoubleTapped="Codex_DoubleTapped"
               Background="Transparent"
-              Classes="ZoomOnHover">
+              Classes="ZoomOnHover"
+              ContextMenu="{StaticResource CodexContextMenu}">
           <Border CornerRadius="5" Margin="25,15,25,5" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
                   BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
                   Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"

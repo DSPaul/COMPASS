@@ -12,8 +12,9 @@
       <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="avares://COMPASS.Common/Themes/Constants.axaml"/>
         <ResourceInclude Source="avares://COMPASS.Common/Themes/Dark.axaml"/>
-        <ResourceInclude Source="avares://COMPASS.Common/Themes/CustomControls.axaml"/>
         <ResourceInclude Source="avares://COMPASS.Common/Themes/Converters.axaml"/>
+        <ResourceInclude Source="avares://COMPASS.Common/Themes/CustomControls.axaml"/>
+        <ResourceInclude Source="avares://COMPASS.Common/Themes/ContextMenus.axaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
