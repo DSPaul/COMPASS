@@ -14,7 +14,7 @@ namespace COMPASS.Common.DataTemplates
     {
         // This Dictionary should store our templates. We mark this as [Content], so we can directly add elements to it later.
         [Content]
-        public Dictionary<string, ITreeDataTemplate> AvailableTemplates { get; } = new Dictionary<string, ITreeDataTemplate>();
+        public Dictionary<string, ITreeDataTemplate> AvailableTemplates { get; } = [];
 
         public Control? Build(object? param) => GetTemplate(param).Build(param);
         public InstancedBinding? ItemsSelector(object item) => GetTemplate(item).ItemsSelector(item);

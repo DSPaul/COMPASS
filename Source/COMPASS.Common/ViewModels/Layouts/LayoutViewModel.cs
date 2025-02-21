@@ -4,6 +4,8 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Import;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using COMPASS.Common.Models.Enums;
@@ -42,8 +44,7 @@ namespace COMPASS.Common.ViewModels.Layouts
         //TODO: commands should be in a viewmodel rather than operations
         public CodexOperations CodexCommands { get; init; } = new();
         public CodexInfoViewModel CodexInfoVM { get; init; }
-
-        //Selected File
+        
         private Codex? _selectedCodex;
         public Codex? SelectedCodex
         {
@@ -55,6 +56,13 @@ namespace COMPASS.Common.ViewModels.Layouts
                     CodexInfoVM.DisplayedCodex = _selectedCodex;
                 }
             }
+        }
+        
+        private IList<Codex> _selectedCodices;
+        public IList<Codex> SelectedCodices
+        {
+            get => _selectedCodices;
+            set => SetProperty(ref _selectedCodices, value);
         }
 
         //TODO check if this is still needed, remove abstract for now so derived classes can skip it
