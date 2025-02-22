@@ -96,8 +96,8 @@
                 <materialIcons:MaterialIcon Kind="FolderMoveOutline"/>
             </MenuItem.Icon>
             <MenuItem.Styles>
-                <Style Selector="MenuItem">
-                    <Setter Property="Command" Value="{Binding CodexCommands.MoveToCollectionCommand}"/>
+                <Style Selector="MenuItem MenuItem">
+                    <Setter Property="Command" Value="{Binding $parent[MenuItem].((vm:LayoutViewModel)DataContext).CodexCommands.MoveToCollectionCommand}"/>
                     <Setter Property="CommandParameter">
                         <Setter.Value>
                             <MultiBinding Converter="{StaticResource MultiParamConverter}">
@@ -171,8 +171,8 @@
                 <materialIcons:MaterialIcon Kind="FolderMoveOutline"/>
             </MenuItem.Icon>
             <MenuItem.Styles>
-                <Style Selector="MenuItem">
-                    <Setter Property="Command" Value="{Binding CodexCommands.MoveToCollectionCommand}"/>
+                <Style Selector="MenuItem MenuItem">
+                    <Setter Property="Command" Value="{Binding $parent[MenuItem].((vm:LayoutViewModel)DataContext).CodexCommands.MoveToCollectionCommand}"/>
                     <Setter Property="CommandParameter">
                         <Setter.Value>
                             <MultiBinding Converter="{StaticResource MultiParamConverter}">
