@@ -58,8 +58,8 @@ namespace COMPASS.Common.ViewModels.Layouts
             }
         }
         
-        private IList<Codex> _selectedCodices;
-        public IList<Codex> SelectedCodices
+        private IList<Codex>? _selectedCodices;
+        public IList<Codex>? SelectedCodices
         {
             get => _selectedCodices;
             set => SetProperty(ref _selectedCodices, value);
