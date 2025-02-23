@@ -63,10 +63,18 @@
   <SolidColorBrush x:Key="PopupOutline" Color="{StaticResource DarkerGray}"/>
 
   <SolidColorBrush x:Key="ScrollBar" Color="{StaticResource ScrollbarColor}"/>
+  
+  <!-- Avalonia Slider overwrites-->
   <SolidColorBrush x:Key="SliderThumbBackground" Color="{StaticResource CompassJadeDark}"/>
   <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="{StaticResource CompassJade}"/>
   <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="{StaticResource CompassJade}"/>
   <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="{StaticResource CompassJade}"/>
   <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="{StaticResource CompassJade}"/>
+  
+  <StaticResource x:Key="SystemControlHighlightAccentBrush" ResourceKey="AccentColor"/>
+  
+  <!-- Avalonia Textbox overwrites-->
+  <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{StaticResource DarkerGray}"/>
+  <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{StaticResource CompassJadeDark}"/>
   
 </ResourceDictionary>

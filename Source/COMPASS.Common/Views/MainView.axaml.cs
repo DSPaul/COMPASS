@@ -1,5 +1,8 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
+using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 
 namespace COMPASS.Common.Views;
@@ -19,7 +22,7 @@ public partial class MainView : UserControl
                 // Ctrl + S to search
                 if (e.KeyModifiers == KeyModifiers.Control)
                 {
-                    //Searchbar.Focus();
+                    Searchbar.Focus();
                     e.Handled = true;
                 }
                 break;
@@ -47,6 +50,22 @@ public partial class MainView : UserControl
         if (e.AddedItems.Count > 0)
         {
             await MainViewModel.CollectionVM.Refresh();
+        }
+    }
+    
+    private void Toggle_ContextMenu(object sender, RoutedEventArgs e)
+    {
+        if (sender is Control control && control.ContextMenu != null)
+        {
+            if (control.ContextMenu.IsOpen)
+            {
+                control.ContextMenu.Close();
+            }
+            else
+            {
+                control.ContextMenu.PlacementTarget = control;
+                control.ContextMenu.Open();
+            }
         }
     }
 }

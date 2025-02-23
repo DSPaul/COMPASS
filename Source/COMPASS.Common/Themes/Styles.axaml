@@ -7,14 +7,27 @@
 
             <!-- Icons -->
             <materialIcons:MaterialIcon Kind="About" Classes="Clickable" />
+            <!-- Button -->
             <Button> This is a button</Button>
+            <!-- Checkbox -->
             <CheckBox IsThreeState="True">This is a checkbox</CheckBox>
             <CheckBox IsHitTestVisible="False">unchecked readonly checkbox</CheckBox>
             <CheckBox IsHitTestVisible="False" IsChecked="True">checked readonly checkbox</CheckBox>
+            <!-- Slider -->
             <Slider Value="200" Minimum="50" Maximum="400" TickFrequency="5" Margin="5"/>
+            <!-- Context Menu -->
             <ContextMenu>
                 <MenuItem Header="MenuItem" Tag="Filter"></MenuItem>
+                <Separator></Separator>
+                <MenuItem Header="Second MenuItem" Tag="Filter"></MenuItem>
             </ContextMenu>
+            <!-- Combobox -->
+            <ComboBox>
+                <ComboBox.Items>
+                    <ComboBoxItem> Item1 </ComboBoxItem>
+                    <ComboBoxItem> Item1 </ComboBoxItem>
+                </ComboBox.Items>
+            </ComboBox>
         </StackPanel>
     </Design.PreviewWith>
 
@@ -46,6 +59,7 @@
         </Style>
     </Style>
     
+    <!--Material Icon-->
     <Style Selector="materialIcons|MaterialIcon">
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
@@ -89,15 +103,7 @@
             <Setter Property="Background" Value="{StaticResource ButtonFocus}" />
         </Style>
     </Style>
-    
-    <Style Selector="Slider">
-        <Setter Property="Foreground" Value="{StaticResource AccentColorMuted}"/>
-        <Style Selector="^ /template/ RepeatButton">
-            <Setter Property="Margin" Value="0"/>
-        </Style>
-        
-    </Style>
-
+    <!-- Button -->
     <Style Selector="views|MainView Button">
         <Setter Property="Padding" Value="15,5" />
     </Style>
@@ -119,6 +125,16 @@
         </Setter>
     </Style>
 
+    <!-- Slider -->
+    <Style Selector="Slider">
+        <Setter Property="Foreground" Value="{StaticResource AccentColorMuted}"/>
+        <Style Selector="^ /template/ RepeatButton">
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+        
+    </Style>
+
+    
     <!-- Tree view Items -->
     <Style Selector="TreeViewItem">
         <Style.Resources>
