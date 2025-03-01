@@ -5,8 +5,10 @@
              xmlns:layoutViews="using:COMPASS.Common.Views.Layouts"
              xmlns:layoutVms="using:COMPASS.Common.ViewModels.Layouts"
              xmlns:vm="using:COMPASS.Common.ViewModels"
+             xmlns:models="using:COMPASS.Common.Models"
              xmlns:views="using:COMPASS.Common.Views"
              xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:converters="using:COMPASS.Common.Converters"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="1800" d:DesignHeight="800"
              x:Class="COMPASS.Common.Views.MainView" FontSize="16"
@@ -119,7 +121,8 @@
                      BorderBrush="{StaticResource DarkUIElementBackground}" 
                      Margin="0" BorderThickness="0" MinWidth="150" MaxLength="50"
                      Background="Transparent">
-            <!--   <TextBox.Style> -->
+              <!-- TODO: reimplement set focus on textbox when it becomes visible -->
+              <!--   <TextBox.Style> -->
             <!--     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"> -->
             <!--       <Style.Triggers> -->
             <!--         <DataTrigger Binding="{Binding ElementName=CollectionCreation, Path=IsVisible}" Value="true"> -->
@@ -155,6 +158,7 @@
                      Text="{Binding CurrentCollection.DirectoryName, Mode=OneWay}"
                      VerticalAlignment="Center" MaxLength="50"
                      Margin="0" BorderThickness="0" MinWidth="150">
+              <!-- TODO: reimplement set focus on textbox when it becomes visible -->
               <!-- <TextBox.Style> -->
               <!--   <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"> -->
               <!--     <Style.Triggers> -->
@@ -330,67 +334,87 @@
       </Button>
     </Grid>
     
+    <!-- Left Dock -->
     <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}"/>
 
-    <UserControl DockPanel.Dock="Right" Content="{Binding CurrentLayout.CodexInfoVM}" IsVisible="{Binding CurrentLayout.CodexInfoVM.ShowInfo}"/>
+    <!-- Info panel -->
+    <UserControl DockPanel.Dock="Right" Content="{Binding CurrentLayout.CodexInfoVM}" 
+                 IsVisible="{Binding CurrentLayout.CodexInfoVM.ShowInfo}"/>
     
-    <Grid x:Name="ViewsGrid" 
+    <!-- Codex View -->
+    <Grid x:Name="ViewsGrid"
           RowDefinitions="15, Auto, Auto, *, 10"
-          ColumnDefinitions="Auto, *, *, Auto, Auto, Auto, Auto">
+          ColumnDefinitions="*, *, Auto, Auto, Auto, Auto">
+      <Grid.DataTemplates>
+        <DataTemplate DataType="{x:Type models:ITag}">
+          <Button Classes="BlankButton" Command="{Binding $parent[ItemsControl].((vm:FilterViewModel)DataContext).RemoveFromItemsControlCommand}"
+                  CommandParameter="{Binding}" Cursor="Hand">
+            <Button.Styles>
+              <Style Selector="Border:pointerover > StackPanel">
+                <Style Selector="^ > TextBlock">
+                  <Setter Property="TextDecorations" Value="Strikethrough"/>
+                </Style>
+                <Style Selector="^ > materialIcons|MaterialIcon">
+                  <Setter Property="IsVisible" Value="True"/>
+                </Style>
+              </Style>
+            </Button.Styles>
+            <Button.Template>
+              <ControlTemplate>
+                <Border CornerRadius="5" Margin="2,3" 
+                        Background="{Binding BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}">
+                  <StackPanel Orientation="Horizontal" Margin="7,2">
+                    <TextBlock x:Name="DeletableTagTextBlock" Text="{Binding Content}" Foreground="White" FontSize="14" Margin="2,0"/>
+                    <materialIcons:MaterialIcon Kind="Trash" IsVisible="False" Width="14" Height="14" VerticalAlignment="Bottom" Margin="0,1"/>
+                  </StackPanel>
+                </Border>
+              </ControlTemplate>
+            </Button.Template>
+          </Button>
+        </DataTemplate>
+      </Grid.DataTemplates>
 
-      <!--#region Current Filters-->
-      <!--<TextBlock Grid.Column="0" Grid.Row="1" Text="Filters:"
-                 Margin="20,0,0,0" VerticalAlignment="Center" FontSize="20"/>
-      <Border CornerRadius="5" Grid.Column="1" Grid.Row ="1" BorderBrush="ForestGreen" BorderThickness="3" VerticalAlignment="Center"
+      <!-- Current Filters-->
+      <Border CornerRadius="5" Grid.Column="0" Grid.Row ="1" BorderBrush="ForestGreen" BorderThickness="3" VerticalAlignment="Center"
               MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}" DataContext="{Binding CollectionVM.FilterVM}">
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
-          </Grid.ColumnDefinitions>
-          <TextBlock Text="INCLUDE:" VerticalAlignment="Center" Margin="5 2" Foreground="Gray" FontSize="20"/>
-          <ItemsControl x:Name="CurrentTagList" ItemTemplate="{StaticResource TagDeletableTemplate}" MinHeight="30"
-                Grid.Column="1" VerticalContentAlignment="Center" VerticalAlignment="Center" Background="Transparent"
-                DragDrop.AllowDrop="True" ItemsSource="{Binding IncludedFilters}">
+        <Panel>
+          <TextBlock Text="INCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
+                     Margin="5, 2" Foreground="Gray" FontSize="20" IsVisible="{Binding !IncludedFilters.Count}"/>
+          <ItemsControl MinHeight="30" Margin="5,2" VerticalAlignment="Center" Background="Transparent"
+                        DragDrop.AllowDrop="True" ItemsSource="{Binding IncludedFilters}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <WrapPanel Orientation="Horizontal" Width="{Binding ActualWidth, ElementName=CurrentTagList}"/>
+                <WrapPanel Orientation="Horizontal"/>
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
           </ItemsControl>
-        </Grid>
+        </Panel>
 
-      </Border>-->
-      <!--<Border CornerRadius="5" Grid.Column="2" Grid.Row ="1" BorderBrush="OrangeRed" BorderThickness="3" VerticalAlignment="Center"
-              MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}"  DataContext="{Binding CollectionVM.FilterVM}">
-        <Border.Resources>
-          <CollectionViewSource x:Key="NegFilters" Source="{Binding ExcludedFilters}"/>
-        </Border.Resources>
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
-          </Grid.ColumnDefinitions>
-          <TextBlock Text="EXCLUDE:" VerticalAlignment="Center" Margin="5 2" Foreground="Gray" FontSize="20"/>
-          <ItemsControl x:Name="CurrentExcludedFilterList" ItemTemplate="{StaticResource TagDeletableTemplate}" MinHeight="30"
-               Grid.Column="1" VerticalAlignment="Center" VerticalContentAlignment="Center" Background="Transparent"
-              DragDrop.AllowDrop="True" ItemsSource="{Binding ExcludedFilters}">
+      </Border>
+      <Border CornerRadius="5" Grid.Column="1" Grid.Row ="1" BorderBrush="OrangeRed" BorderThickness="3" VerticalAlignment="Center"
+              MinHeight="40" Margin="10,0,5,0" Background="{StaticResource FiltersBackground}"  DataContext="{Binding CollectionVM.FilterVM}">
+        <Panel>
+          <TextBlock Text="EXCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                     Margin="5 2" Foreground="Gray" FontSize="20" IsVisible="{Binding !ExcludedFilters.Count}"/>
+          <ItemsControl MinHeight="30" Margin="5,2" VerticalAlignment="Center" Background="Transparent"
+                        DragDrop.AllowDrop="True" ItemsSource="{Binding ExcludedFilters}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <WrapPanel Orientation="Horizontal" Width="{Binding ActualWidth, ElementName=CurrentExcludedFilterList}"/>
+                <WrapPanel Orientation="Horizontal"/>
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
           </ItemsControl>
-        </Grid>
-      </Border>-->
-      <!--<Button Command="{Binding CollectionVM.FilterVM.ClearFiltersCommand}" Classes="IconOnly" Icon="FilterRemove"
-              Grid.Column="3" Grid.Row ="1" Width="30" Margin="0" ToolTip.Tip="Clear Filters"/>-->
+        </Panel>
+      </Border>
+      <controls:IconButton Icon="FilterRemove" Command="{Binding CollectionVM.FilterVM.ClearFiltersCommand}" 
+                           Theme="{StaticResource IconOnly}" Classes="ZoomOnHover" Background="Transparent"
+                           Grid.Column="2" Grid.Row ="1" Width="30" Height="30" ToolTip.Tip="Clear Filters"/>
       <!--#endregion-->
 
       <!--#region View Selection-->
-      <!--<Border Grid.Column="4" Grid.Row="1" Margin="10,0" BorderThickness="0" BorderBrush="Gray" CornerRadius="5">
-        <StackPanel  Orientation="Horizontal" Margin="0,0,15,0">
-          <StackPanel.Resources>
+      <Border Grid.Column="4" Grid.Row="1" BorderThickness="0" BorderBrush="Gray" CornerRadius="5">
+        <StackPanel  Orientation="Horizontal">
+          <!--<StackPanel.Resources>
             <Style TargetType="Button">
               <Setter Property="Background" Value="Transparent"/>
               <Setter Property="BorderBrush" Value="{x:Null}"/>
@@ -436,29 +460,25 @@
             </Button.RenderTransform>
           </Button>
           <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.Tile}"
-              Icon="ViewModule" Height="43" ToolTip.Tip="Tile Layout"/>
+              Icon="ViewModule" Height="43" ToolTip.Tip="Tile Layout"/> -->
           <Rectangle Width="3" Fill="Gray" Margin="3,0"
-                     IsVisible="{Binding CodexInfoVM.ShowInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
-          <ToggleButton ToolTip.Tip="Show Book Info" IsChecked="{Binding CodexInfoVM.ShowCodexInfo, Mode=TwoWay}" Cursor="Hand"
-                        IsVisible="{Binding CodexInfoVM.ShowInfo, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}">
+                     IsVisible="{Binding !CurrentLayout.CodexInfoVM.ShowInfo}"/>
+          <ToggleButton ToolTip.Tip="Show Book Info" Cursor="Hand"
+                        IsChecked="{Binding CurrentLayout.CodexInfoVM.ShowCodexInfo, Mode=TwoWay}" 
+                        IsVisible="{Binding !CurrentLayout.CodexInfoVM.ShowInfo}">
+            <ToggleButton.Styles>
+              <Style Selector="ToggleButton:checked materialIcons|MaterialIcon">
+                <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+              </Style>
+            </ToggleButton.Styles>
             <ToggleButton.Template>
               <ControlTemplate>
-                <materialDesign:PackIcon Height="30" Width="30" Kind="BookInformationVariant">
-                  <materialDesign:PackIcon.Style>
-                    <Style TargetType="materialDesign:PackIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
-                      <Style.Triggers>
-                        <DataTrigger Binding="{Binding CodexInfoVM.ShowCodexInfo}" Value="True">
-                          <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
-                        </DataTrigger>
-                      </Style.Triggers>
-                    </Style>
-                  </materialDesign:PackIcon.Style>
-                </materialDesign:PackIcon>
+                <materialIcons:MaterialIcon Height="30" Width="30" Kind="BookInformationVariant"/>
               </ControlTemplate>
             </ToggleButton.Template>
           </ToggleButton>
         </StackPanel>
-      </Border>-->
+      </Border>
       <!--#endregion-->
 
       <!--Layout-->
