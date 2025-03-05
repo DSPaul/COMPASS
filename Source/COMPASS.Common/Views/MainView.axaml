@@ -183,21 +183,13 @@
                                ToolTip.Tip="More Actions" Width="15" Click="Toggle_ContextMenu">
             <Button.ContextMenu>
               <ContextMenu>
-                <MenuItem Header="Import..." ToolTip.Tip="Import a Collection" Command="{Binding ImportCommand}">
-                  <MenuItem.Icon>
-                    <materialIcons:MaterialIcon Kind="FolderDownload"/>
-                  </MenuItem.Icon>
-                </MenuItem>
+                <MenuItem Header="Import..." ToolTip.Tip="Import a Collection" Command="{Binding ImportCommand}"
+                          Icon="{materialIcons:MaterialIconExt FolderDownload}"/>
                 <MenuItem Header="Export..." ToolTip.Tip="Share this Collection with other COMPASS users" 
-                          Command="{Binding ExportCommand}">
-                  <MenuItem.Icon>
-                    <materialIcons:MaterialIcon Kind="FolderUpload"/>
-                  </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Merge into " ItemsSource="{Binding CollectionDirectories}">
-                  <MenuItem.Icon>
-                    <materialIcons:MaterialIcon Kind="FolderMove"/>
-                  </MenuItem.Icon>
+                          Command="{Binding ExportCommand}"
+                          Icon="{materialIcons:MaterialIconExt FolderUpload}"/>
+                <MenuItem Header="Merge into " ItemsSource="{Binding CollectionDirectories}" 
+                          Icon="{materialIcons:MaterialIconExt FolderMove}">
                   <MenuItem.Styles>
                     <Style Selector="MenuItem MenuItem">
                       <Setter Property="Command" Value="{Binding Path=$parent[MenuItem].((vm:CollectionViewModel)DataContext).MergeCollectionIntoCommand}"/>
@@ -205,11 +197,9 @@
                     </Style>
                   </MenuItem.Styles>
                 </MenuItem>
-                <MenuItem Header="Delete" ToolTip.Tip="Delete this Collection" Command="{Binding DeleteCollectionCommand}">
-                  <MenuItem.Icon>
-                    <materialIcons:MaterialIcon Kind="Delete"/>
-                  </MenuItem.Icon>
-                </MenuItem>
+                <MenuItem Header="Delete" ToolTip.Tip="Delete this Collection" 
+                          Command="{Binding DeleteCollectionCommand}"
+                          Icon="{materialIcons:MaterialIconExt Delete}"/>
               </ContextMenu>
             </Button.ContextMenu>
           </controls:IconButton>
@@ -223,26 +213,14 @@
                            ToolTip.Tip="Settings">
         <Button.ContextMenu>
           <ContextMenu Placement="Bottom">
-            <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}">
-              <MenuItem.Icon>
-                <materialIcons:MaterialIcon Kind="Cog"/>
-              </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}">
-              <MenuItem.Icon>
-                <materialIcons:MaterialIcon Kind="Autorenew"/>
-              </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New">
-              <MenuItem.Icon>
-                <materialIcons:MaterialIcon Kind="AlertDecagram"/>
-              </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Report A Bug" Command="{Binding NavigateToLinkTree}">
-              <MenuItem.Icon>
-                <materialIcons:MaterialIcon Kind="Bug"/>
-              </MenuItem.Icon>
-            </MenuItem>
+            <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}"
+                      Icon="{materialIcons:MaterialIconExt Cog}"/>
+            <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}"
+                      Icon="{materialIcons:MaterialIconExt Autorenew}"/>
+            <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New"
+                      Icon="{materialIcons:MaterialIconExt AlertDecagram}"/>
+            <MenuItem Header="Report A Bug" Command="{Binding NavigateToLinkTree}"
+                      Icon="{materialIcons:MaterialIconExt Bug}"/>
           </ContextMenu>
         </Button.ContextMenu>
       </controls:IconButton>
