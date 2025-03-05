@@ -31,8 +31,8 @@
       <TextBlock Text="Add Online Files" Classes="Categorizer"/>
       <controls:IconButton Icon="GoogleDrive" Content="Google Drive"
           Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GoogleDrive}"/>
-      <!--<Button Margin="20,5"
-              Command="{Binding ImportCommand}" 
+      
+      <Button Command="{Binding ImportCommand}" 
               CommandParameter="{x:Static import:ImportSource.Homebrewery}">
         <Button.Template>
           <ControlTemplate>
@@ -46,20 +46,34 @@
                   <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon"/>
                   <ColumnDefinition Width="*" SharedSizeGroup="ButtonText"/>
                 </Grid.ColumnDefinitions>
-                <ContentControl Height="20" Width="20" Margin="0,0,10,0" Content="{StaticResource HomebreweryLogo}"/>
-                <TextBlock Grid.Column="1" Text="Homebrewery"/>
+                  <Svg Path="/Assets/homebrewery.svg" Width="20" Height="20" HorizontalAlignment="Left"/>
+                  <TextBlock Grid.Column="1" Text="Homebrewery"/>
               </Grid>
             </Border>
           </ControlTemplate>
         </Button.Template>
-      </Button>-->
-      <!--<Button Margin="20,5"
-                    Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GmBinder}">
-              <Border Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Path=Background}"
-                      BorderThickness="0" CornerRadius="7" HorizontalAlignment="Stretch" Padding="30,2">
-                <ContentControl Content="{StaticResource GMBinderLogo}" HorizontalContentAlignment="Center"/>
-              </Border>
-            </Button>-->
+      </Button>
+      <Button Command="{Binding ImportCommand}" 
+              CommandParameter="{x:Static import:ImportSource.GmBinder}">
+          <Button.Template>
+              <ControlTemplate>
+                  <Border Background="{TemplateBinding Background}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          CornerRadius="7" HorizontalAlignment="Stretch"
+                          Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
+                      <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                          <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon"/>
+                              <ColumnDefinition Width="*" SharedSizeGroup="ButtonText"/>
+                          </Grid.ColumnDefinitions>
+                          <Svg Path="/Assets/gmbinder.svg" Width="20" Height="20" HorizontalAlignment="Left"/>
+                          <TextBlock Grid.Column="1" Text="GM Binder"/>
+                      </Grid>
+                  </Border>
+              </ControlTemplate>
+          </Button.Template>
+        </Button>
       <controls:IconButton Icon="Web" Content="Other Website"
           Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GenericURL}"/>
 

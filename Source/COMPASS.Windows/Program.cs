@@ -5,6 +5,7 @@ using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Windows.Services;
 using System;
+using Avalonia.Svg.Skia;
 
 namespace COMPASS.Windows;
 
@@ -24,10 +25,14 @@ class Program
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .WithInterFont()
-            .LogToTrace();
+    {
+        GC.KeepAlive(typeof(SvgImageExtension).Assembly);
+        GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
+        return AppBuilder.Configure<App>()
+                         .UsePlatformDetect()
+                         .WithInterFont()
+                         .LogToTrace();
+    }
 
     private static void ConfigureContainer()
     {

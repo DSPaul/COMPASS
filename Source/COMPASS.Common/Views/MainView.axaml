@@ -48,42 +48,21 @@
           Background="{StaticResource TitlebarBackground}">-->
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width ="auto"/> <!-- Logo -->
-        <ColumnDefinition Width ="*"/>    <!-- Spacing -->
-        <ColumnDefinition Width ="auto"/> <!-- Searchbar -->
         <ColumnDefinition Width ="auto"/> <!-- Collections -->
         <ColumnDefinition Width ="*"/>    <!-- Spacing -->
+        <ColumnDefinition Width ="auto"/> <!-- Searchbar -->
+        <ColumnDefinition Width ="*"/>    <!-- Spacing -->
         <ColumnDefinition Width ="auto"/> <!-- Settings -->
-        <ColumnDefinition Width ="100"/>   <!-- Window controls TODO make this dynamic for differnt platforms-->
+        <ColumnDefinition Width ="135"/>   <!-- Window controls TODO make this dynamic for differnt platforms-->
       </Grid.ColumnDefinitions>
 
       <!-- <ContentControl Content="{StaticResource CompassLogo}" Grid.Column="0" Margin="10,0" HorizontalAlignment="Left"/> -->
-
-      <!--Search Bar-->
-      <Border Grid.Column="2" IsHitTestVisible="True"
-              Width="300" MinWidth="100" Height="35" CornerRadius="4" 
-              Background="{StaticResource UIElementBackground}" 
-              OpacityMask="#FF222222" Margin="30,5" 
-              DataContext="{Binding CollectionVM.FilterVM}">
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width ="*"/>
-            <ColumnDefinition Width="auto"/>
-          </Grid.ColumnDefinitions>
-          <TextBox Grid.Column="0" x:Name="Searchbar" Watermark="Search (Ctrl+S)" Margin="0"
-                   Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
-                   Background="Transparent" BorderBrush="{x:Null}"/>
-          <controls:IconButton  Grid.Column="1" Classes="ZoomOnHover" 
-                                Margin="5,0" Icon="Search"
-                                Command="{Binding SearchCommand}" 
-                                Background="Transparent"
-                                Width="30" Padding="0"
-                                CommandParameter="{Binding #Searchbar.Text}"
-                                IsDefault="{Binding #Searchbar.IsKeyboardFocusWithin}" ToolTip.Tip="Search"/>
-        </Grid>
-      </Border>
+      <Image Source="/Assets/CompassLogo.png" Height="30" Width="30" Margin="15, 0" 
+             IsHitTestVisible="False"
+             VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality"/>
 
       <!--Collection Selection-->
-      <Border Grid.Column="3" IsHitTestVisible="True"
+      <Border Grid.Column="1" IsHitTestVisible="True"
               Background="{StaticResource UIElementBackground}" 
               CornerRadius="4" Margin="0,5" Height="35"
               DataContext="{Binding CollectionVM}">
@@ -205,11 +184,36 @@
           </controls:IconButton>
         </StackPanel>
       </Border>
-
+      
+      <!--Search Bar-->
+      <Border Grid.Column="3" IsHitTestVisible="True"
+              Width="300" MinWidth="100" Height="35" CornerRadius="4" 
+              Background="{StaticResource UIElementBackground}" 
+              OpacityMask="#FF222222" Margin="10,5" 
+              DataContext="{Binding CollectionVM.FilterVM}">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width ="*"/>
+            <ColumnDefinition Width="auto"/>
+          </Grid.ColumnDefinitions>
+          <TextBox Grid.Column="0" x:Name="Searchbar" Watermark="Search (Ctrl+S)" Margin="0"
+                   Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+                   Background="Transparent" BorderBrush="{x:Null}"/>
+          <controls:IconButton  Grid.Column="1" Classes="ZoomOnHover" 
+                                Margin="5,0" Icon="Search"
+                                Command="{Binding SearchCommand}" 
+                                Background="Transparent"
+                                Width="30" Padding="0"
+                                CommandParameter="{Binding #Searchbar.Text}"
+                                IsDefault="{Binding #Searchbar.IsKeyboardFocusWithin}" ToolTip.Tip="Search"/>
+        </Grid>
+      </Border>
+      
       <!--Settings button-->
       <controls:IconButton Grid.Column="5" IsHitTestVisible="True" 
+                           Theme="{StaticResource IconOnly}"
                            Click="Toggle_ContextMenu" Icon="Settings" 
-                           Height="25" Margin="15,0" Background="Transparent"
+                           Height="25" Padding="0" Background="Transparent"
                            ToolTip.Tip="Settings">
         <Button.ContextMenu>
           <ContextMenu Placement="Bottom">
