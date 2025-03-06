@@ -1,6 +1,7 @@
 ﻿using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services;
+using Material.Icons;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
@@ -8,7 +9,6 @@ namespace COMPASS.Common.ViewModels.Layouts
     {
         public ListLayoutViewModel() : base()
         {
-            LayoutType = CodexLayout.List;
             Preferences = PreferencesService.GetInstance().Preferences.ListLayoutPreferences;
         }
 
@@ -18,6 +18,9 @@ namespace COMPASS.Common.ViewModels.Layouts
         //    MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdList;
 
         public ListLayoutPreferences Preferences { get; }
+        public override CodexLayout LayoutType => CodexLayout.List;
+        public override string Name  => "List";
+        public override MaterialIconKind Icon  => MaterialIconKind.ViewHeadline;
 
     }
 }

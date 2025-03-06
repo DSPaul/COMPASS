@@ -3,74 +3,27 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:controls="clr-namespace:COMPASS.Common.Controls"
-             xmlns:conv="clr-namespace:COMPASS.Common.Converters"
-             xmlns:enums="using:COMPASS.Common.Models.Enums"
              xmlns:layouts="using:COMPASS.Common.ViewModels.Layouts"
              xmlns:vm="using:COMPASS.Common.ViewModels"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.SidePanels.LayoutsSidePanel"
              x:DataType="vm:MainViewModel">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel>
-            <UniformGrid Rows="2" Columns="2" Margin="5">
-                <UniformGrid.Styles>
-                    <Style Selector="controls|IconRadioButton">
-                        <Setter Property="Background" Value="{StaticResource UIElementBackground}"/>
-                        <Setter Property="BorderBrush" Value="{x:Null}"/>
-                        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-                        <Setter Property="Margin" Value="10"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="controls:IconRadioButton">
-                                    <Border HorizontalAlignment="Stretch" 
-                                            VerticalAlignment="Stretch" 
-                                            CornerRadius="5" 
-                                            Background="{TemplateBinding Background}">
-                                        <StackPanel VerticalAlignment="Center" Margin="0,10">
-                                            <materialIcons:MaterialIcon Foreground="{TemplateBinding Foreground}" 
-                                                                        Width="50" Height="50"
-                                                                        Kind="{TemplateBinding Icon}"
-                                                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                                            <TextBlock Text="{TemplateBinding Content}" HorizontalAlignment="Center" FontSize="20"
-                                                           Foreground="{TemplateBinding Foreground}"/>
-                                        </StackPanel>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style Selector="^:checked">
-                            <Setter Property="Background" Value="{StaticResource AccentColorMuted}"/>
-                        </Style>
-                    </Style>
-                </UniformGrid.Styles>
-                <controls:IconRadioButton Content="Home" Icon="Home"
-                                          Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static enums:CodexLayout.Home}" 
-                                          ToolTip.Tip="Home Layout" 
-                                          IsChecked="{Binding CurrentLayout.LayoutType, 
-                                            ConverterParameter={x:Static enums:CodexLayout.Home},
-                                            Converter={x:Static conv:FuncConverters.AreEqual}}"/>
-                <controls:IconRadioButton Content="List" Icon="ViewHeadline" 
-                                          Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static enums:CodexLayout.List}" 
-                                          ToolTip.Tip="List Layout"
-                                          IsChecked="{Binding CurrentLayout.LayoutType, 
-                                            ConverterParameter={x:Static enums:CodexLayout.List},
-                                            Converter={x:Static conv:FuncConverters.AreEqual}}"/>
-                <controls:IconRadioButton Content="Card" Icon="FormatListText" 
-                                          Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static enums:CodexLayout.Card}" 
-                                          ToolTip.Tip="Card Layout"
-                                          IsChecked="{Binding CurrentLayout.LayoutType, 
-                                            ConverterParameter={x:Static enums:CodexLayout.Card},
-                                            Converter={x:Static conv:FuncConverters.AreEqual}}"/>
-                <controls:IconRadioButton Content="Grid" Icon="ViewGrid" 
-                                          Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static enums:CodexLayout.Tile}" 
-                                          ToolTip.Tip="Grid Layout"
-                                          IsChecked="{Binding CurrentLayout.LayoutType, 
-                                            ConverterParameter={x:Static enums:CodexLayout.Tile},
-                                            Converter={x:Static conv:FuncConverters.AreEqual}}"/>
-            </UniformGrid>
+        <StackPanel >
+            <ComboBox HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                      Margin="15,10,15,0"
+                      ItemsSource="{Binding AllLayouts, Mode=OneTime}"
+                      SelectedIndex="{Binding CurrentLayout.LayoutType, Mode=OneWay}"
+                      SelectionChanged="LayoutSelection_OnSelectionChanged">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <materialIcons:MaterialIcon Kind="{Binding Icon}"/>
+                            <TextBlock Text="{Binding LongName}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
             <Rectangle Height="3" Fill="{StaticResource Separator}" Margin="0,10"/>
             <TextBlock Classes="Categorizer" Text="Customize layout"/>
             <ContentControl DataContext="{Binding CurrentLayout}" Content="{Binding}" Margin="10">

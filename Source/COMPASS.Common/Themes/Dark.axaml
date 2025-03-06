@@ -77,4 +77,11 @@
   <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{StaticResource DarkerGray}"/>
   <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{StaticResource CompassJadeDark}"/>
   
+  <!-- Avalonia Combobox overwrites-->
+  <StaticResource x:Key="ComboBoxBackground" ResourceKey="UIElementBackground"/>
+  <StaticResource x:Key="ComboBoxBackgroundPointerOver" ResourceKey="DarkUIElementBackground"/>
+  <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="White" Opacity="0"/>
+  <StaticResource x:Key="ComboBoxBorderBrushPointerOver" ResourceKey="TextMutedColor"/>
+  
+  
 </ResourceDictionary>

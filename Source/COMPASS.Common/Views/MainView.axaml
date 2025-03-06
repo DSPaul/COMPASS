@@ -84,7 +84,7 @@
           <!--Collection Dropdown-->
           <ComboBox SelectedItem="{Binding CurrentCollection, Mode=TwoWay}"
                     IsHitTestVisible="True" VerticalAlignment="Stretch"
-                    Background="Transparent" BorderThickness="0" MinWidth="100"
+                    Background="Transparent" MinWidth="100"
                     DisplayMemberBinding="{Binding DirectoryName}" ItemsSource="{Binding AllCodexCollections}"
                     SelectionChanged="CollectionComboBox_SelectionChanged"/>
           <Rectangle Fill="{StaticResource Separator}" Width="2"/>
@@ -396,56 +396,29 @@
       <!--#region View Selection-->
       <Border Grid.Column="4" Grid.Row="1" BorderThickness="0" BorderBrush="Gray" CornerRadius="5">
         <StackPanel  Orientation="Horizontal">
-          <!--<StackPanel.Resources>
-            <Style TargetType="Button">
-              <Setter Property="Background" Value="Transparent"/>
-              <Setter Property="BorderBrush" Value="{x:Null}"/>
-              <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-              <Setter Property="Template">
-                <Setter.Value>
-                  <ControlTemplate TargetType="Button">
-                    <materialDesign:PackIcon Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" Foreground="{TemplateBinding Foreground}"
-                Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Icon)}"
-                Background="{TemplateBinding Background}"/>
-                  </ControlTemplate>
-                </Setter.Value>
-              </Setter>
-              <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                  <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
-                </Trigger>
-                <DataTrigger Value="True">
-                  <DataTrigger.Binding>
-                    <MultiBinding>
-                      <MultiBinding.Converter>
-                        <converters:EqualityConverter/>
-                      </MultiBinding.Converter>
-                      <Binding Path="CommandParameter" RelativeSource="{RelativeSource Self}" />
-                      <Binding Path="CurrentLayout.LayoutType" />
-                    </MultiBinding>
-                  </DataTrigger.Binding>
-                  <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
-                </DataTrigger>
-
-              </Style.Triggers>
-            </Style>
-          </StackPanel.Resources>
+         
           <Rectangle Width="3" Fill="Gray" Margin="3,0"/>
-          <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.Home}"
-              Icon="Home" Height="30" ToolTip.Tip="Home Layout"/>
-          <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.List}"
-              Icon="ViewHeadline" Height="40" ToolTip.Tip="List Layout"/>
-          <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.Card}"
-              Icon="ViewCompact" Height="40" RenderTransformOrigin="0.5 0.5" ToolTip.Tip="Card Layout">
-            <Button.RenderTransform>
-              <ScaleTransform ScaleY="-1"/>
-            </Button.RenderTransform>
-          </Button>
-          <Button Command="{Binding ChangeLayoutCommand}" CommandParameter="{x:Static layouts:LayoutViewModel+Layout.Tile}"
-              Icon="ViewModule" Height="43" ToolTip.Tip="Tile Layout"/> -->
+          
+          <ComboBox MinWidth="120" VerticalAlignment="Center" 
+                    BorderThickness="0" Margin="5,0"
+                    Background="{StaticResource UIElementBackground}"
+                    ItemsSource="{Binding AllLayouts, Mode=OneTime}"
+                    SelectedIndex="{Binding CurrentLayout.LayoutType, Mode=OneWay}"
+                    SelectionChanged="LayoutSelection_OnSelectionChanged">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                  <materialIcons:MaterialIcon Kind="{Binding Icon}"/>
+                  <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                </StackPanel>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          
           <Rectangle Width="3" Fill="Gray" Margin="3,0"
                      IsVisible="{Binding !CurrentLayout.CodexInfoVM.ShowInfo}"/>
           <ToggleButton ToolTip.Tip="Show Book Info" Cursor="Hand"
+                        Margin="0,0,10,0"
                         IsChecked="{Binding CurrentLayout.CodexInfoVM.ShowCodexInfo, Mode=TwoWay}" 
                         IsVisible="{Binding !CurrentLayout.CodexInfoVM.ShowInfo}">
             <ToggleButton.Styles>

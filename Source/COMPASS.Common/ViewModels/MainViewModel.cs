@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
@@ -20,6 +23,8 @@ namespace COMPASS.Common.ViewModels
             Logger.Init();
             ViewModelBase.MVM = this;
 
+            InitLayouts();
+            
             //Load everything
             CollectionVM = new(this);
             _currentLayout = LayoutViewModel.GetLayout();
@@ -36,7 +41,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         #region Init Functions
-
+        
         private void InitAutoUpdates()
         {
             //TODO: this will all need to be replaced
@@ -83,6 +88,17 @@ namespace COMPASS.Common.ViewModels
             Task.Run(() => IsOnline = IOService.PingURL());
         }
 
+        private void InitLayouts()
+        {
+            AllLayouts = Assembly.GetExecutingAssembly()
+                                 .GetTypes()
+                                 .Where(t => !t.IsAbstract && typeof(LayoutViewModel).IsAssignableFrom(t))
+                                 .Select(t => Activator.CreateInstance(t))
+                                 .OfType<LayoutViewModel>()
+                                 .OrderBy(l => l!.LayoutType)
+                                 .ToList();
+        }
+
         #endregion
 
         #region Properties
@@ -106,14 +122,16 @@ namespace COMPASS.Common.ViewModels
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public CollectionViewModel BindableCollectionVM => CollectionVM; //because binding to static properties sucks
-
+        
         private LayoutViewModel _currentLayout;
         public LayoutViewModel CurrentLayout
         {
             get => _currentLayout;
             set => SetProperty(ref _currentLayout, value);
         }
-
+        
+        public IList<LayoutViewModel> AllLayouts { get; private set; }
+        
         public LeftDockViewModel LeftDockVM { get; init; }
 
         #endregion

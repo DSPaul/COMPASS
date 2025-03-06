@@ -1,15 +1,15 @@
-﻿
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Import;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
+using Material.Icons;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
@@ -40,10 +40,16 @@ namespace COMPASS.Common.ViewModels.Layouts
         //public void UpdateDoVirtualization() => OnPropertyChanged(nameof(DoVirtualization));
 
         #region Properties
+        
+        public abstract CodexLayout LayoutType { get; }
+        public abstract string Name { get; }
+        public abstract MaterialIconKind Icon { get; }
+        
+        public string LongName => $"{Name} Layout";
 
         //TODO: commands should be in a viewmodel rather than operations
         public CodexOperations CodexCommands { get; init; } = new();
-        public CodexInfoViewModel CodexInfoVM { get; init; }
+        public CodexInfoViewModel CodexInfoVM { get; }
         
         private Codex? _selectedCodex;
         public Codex? SelectedCodex
@@ -68,11 +74,10 @@ namespace COMPASS.Common.ViewModels.Layouts
         //TODO check if this is still needed, remove abstract for now so derived classes can skip it
         //public abstract bool DoVirtualization { get; }
         public bool DoVirtualization { get; }
-
-        //Set Type of view
-        public CodexLayout LayoutType { get; init; }
+        
+            
         #endregion
-
+        
         public void OnDragOver(object? sender, DragEventArgs e)
         {
             if (e.Data is DataObject)

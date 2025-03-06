@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
+using COMPASS.Common.ViewModels.Layouts;
 
 namespace COMPASS.Common.Views;
 
@@ -66,6 +68,17 @@ public partial class MainView : UserControl
                 control.ContextMenu.PlacementTarget = control;
                 control.ContextMenu.Open();
             }
+        }
+    }
+
+    private void LayoutSelection_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox cb && 
+            cb.DataContext is MainViewModel vm &&
+            e.AddedItems.Count > 0 &&
+            e.AddedItems[0] is LayoutViewModel layoutVm)
+        {
+            vm.ChangeLayoutCommand.Execute(layoutVm.LayoutType);
         }
     }
 }
