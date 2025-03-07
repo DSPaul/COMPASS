@@ -60,7 +60,7 @@ namespace COMPASS.Common.ViewModels.Import
             {
                 Notification noFilesFound = new("No files found", "The selected folder did not contain any files.");
                 var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
-                windowedNotificationService.Show(noFilesFound);
+                await windowedNotificationService.Show(noFilesFound);
             }
             await ImportViewModel.ImportFilesAsync(toImport, _targetCollection);
         }

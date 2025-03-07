@@ -101,9 +101,9 @@ namespace COMPASS.Common.Operations
         }
 
         //Open Multiple Files
-        private RelayCommand<IList>? _openSelectedCodicesCommand;
-        public RelayCommand<IList> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(l => OpenSelectedCodices(l?.Cast<Codex>().ToList()));
-        public static bool OpenSelectedCodices(IList<Codex>? toOpen)
+        private AsyncRelayCommand<IList>? _openSelectedCodicesCommand;
+        public AsyncRelayCommand<IList> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(async l => await OpenSelectedCodices(l?.Cast<Codex>().ToList()));
+        public static async Task<bool> OpenSelectedCodices(IList<Codex>? toOpen)
         {
             if (toOpen is null) return false;
 
@@ -114,7 +114,7 @@ namespace COMPASS.Common.Operations
 
             Notification notification = Notification.AreYouSureNotification;
             notification.Body = "You are about to open " + toOpen.Count + " items. Are you sure you wish to continue?";
-            App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(notification);
+            await App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(notification);
 
             if (notification.Result == NotificationAction.Confirm)
             {
@@ -218,9 +218,9 @@ namespace COMPASS.Common.Operations
         }
 
         //Move Codex to other CodexCollection
-        private RelayCommand<IList<object>>? _moveToCollectionCommand;
-        public RelayCommand<IList<object>> MoveToCollectionCommand => _moveToCollectionCommand ??= new(MoveToCollection);
-        public void MoveToCollection(IList<object>? par)
+        private AsyncRelayCommand<IList<object>>? _moveToCollectionCommand;
+        public AsyncRelayCommand<IList<object>> MoveToCollectionCommand => _moveToCollectionCommand ??= new(MoveToCollection);
+        public async Task MoveToCollection(IList<object>? par)
         {
             if (par == null) return;
 
@@ -233,7 +233,7 @@ namespace COMPASS.Common.Operations
                 _ => []
             };
 
-            MoveToCollection(targetCollection, toMoveList);
+            await MoveToCollection(targetCollection, toMoveList);
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace COMPASS.Common.Operations
         /// </summary>
         /// <param name="targetCollection"></param>
         /// <param name="toMoveList"></param>
-        public static void MoveToCollection(CodexCollection targetCollection, List<Codex> toMoveList)
+        public static async Task MoveToCollection(CodexCollection targetCollection, List<Codex> toMoveList)
         {
             //Check if target Collection is valid
             if (targetCollection.DirectoryName == MainViewModel.CollectionVM.CurrentCollection.DirectoryName)
@@ -259,7 +259,7 @@ namespace COMPASS.Common.Operations
 
             Notification areYouSureNotification = Notification.AreYouSureNotification;
             areYouSureNotification.Body = toMoveList.Count == 1 ? messageSingle : messageMultiple;
-            windowedNotificationService.Show(areYouSureNotification);
+            await windowedNotificationService.Show(areYouSureNotification);
 
             if (areYouSureNotification.Result == NotificationAction.Confirm)
             {
@@ -267,7 +267,7 @@ namespace COMPASS.Common.Operations
                 if (!success)
                 {
                     Notification errorNotification = new("Target collection could not be loaded.", $"Could not move items to {targetCollection.DirectoryName}", Severity.Error);
-                    windowedNotificationService.Show(errorNotification);
+                    await windowedNotificationService.Show(errorNotification);
                     return;
                 }
 
@@ -307,38 +307,38 @@ namespace COMPASS.Common.Operations
         }
 
         //Delete Codex
-        private RelayCommand<Codex>? _deleteCodexCommand;
-        public RelayCommand<Codex> DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
-        public static void DeleteCodex(Codex? toDelete)
+        private AsyncRelayCommand<Codex>? _deleteCodexCommand;
+        public AsyncRelayCommand<Codex> DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
+        public static async Task DeleteCodex(Codex? toDelete)
         {
             if (toDelete == null) return;
-            DeleteCodices(new List<Codex>() { toDelete });
+            await DeleteCodices(new List<Codex>() { toDelete });
         }
 
         //Delete Codices
-        private RelayCommand<IList>? _deleteCodicesCommand;
-        public RelayCommand<IList> DeleteCodicesCommand => _deleteCodicesCommand ??= new(DeleteCodices);
-        public static void DeleteCodices(IList? toDelete)
+        private AsyncRelayCommand<IList>? _deleteCodicesCommand;
+        public AsyncRelayCommand<IList> DeleteCodicesCommand => _deleteCodicesCommand ??= new(DeleteCodices);
+        public static async Task DeleteCodices(IList? toDelete)
         {
-            MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(toDelete?.Cast<Codex>().ToList() ?? []);
+            await MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(toDelete?.Cast<Codex>().ToList() ?? []);
             MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
 
         //Banish Codex
-        private RelayCommand<Codex>? _banishCodexCommand;
-        public RelayCommand<Codex> BanishCodexCommand => _banishCodexCommand ??= new((codex) =>
+        private AsyncRelayCommand<Codex>? _banishCodexCommand;
+        public AsyncRelayCommand<Codex> BanishCodexCommand => _banishCodexCommand ??= new(async (codex) =>
         {
             if (codex == null) return;
-            BanishCodices(new List<Codex>() { codex });
+            await BanishCodices(new List<Codex>() { codex });
         });
 
         //Banish Codices
-        private RelayCommand<IList>? _banishCodicesCommand;
-        public RelayCommand<IList> BanishCodicesCommand => _banishCodicesCommand ??= new(BanishCodices);
-        public static void BanishCodices(IList? toBanish)
+        private AsyncRelayCommand<IList>? _banishCodicesCommand;
+        public AsyncRelayCommand<IList> BanishCodicesCommand => _banishCodicesCommand ??= new(BanishCodices);
+        public static async Task BanishCodices(IList? toBanish)
         {
             MainViewModel.CollectionVM.CurrentCollection.BanishCodices(toBanish?.Cast<Codex>().ToList() ?? []);
-            DeleteCodices(toBanish);
+            await DeleteCodices(toBanish);
         }
 
         private AsyncRelayCommand<Codex>? _getMetaDataCommand;
@@ -514,17 +514,17 @@ namespace COMPASS.Common.Operations
                         if (e.KeyModifiers == KeyModifiers.Alt)
                         {
                             //Alt + Delete
-                            BanishCodices(codices);
+                            await BanishCodices(codices);
                         }
                         else
                         {
                             //Delete
-                            DeleteCodices(codices);
+                            await DeleteCodices(codices);
                         }
                         e.Handled = true;
                         break;
                     case Key.Enter:
-                        OpenSelectedCodices(codices);
+                        await OpenSelectedCodices(codices);
                         e.Handled = true;
                         break;
                     case Key.E:

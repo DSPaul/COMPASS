@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 
 namespace COMPASS.Common.Interfaces
 {
     public interface INotificationService
     {
-        void Show(Notification notification);
+        Task Show(Notification notification);
     }
 }

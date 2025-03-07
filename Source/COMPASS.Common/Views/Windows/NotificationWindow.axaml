@@ -2,8 +2,90 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="using:COMPASS.Common.Models" 
+        xmlns:enums="using:COMPASS.Common.Models.Enums" 
+        xmlns:converters="using:COMPASS.Common.Converters"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.NotificationWindow"
-        Title="NotificationWindow">
-  Welcome to Avalonia!
+        WindowStartupLocation="CenterOwner" SystemDecorations="None"
+        SizeToContent="Height" Background="{StaticResource WindowBackground}"
+        Title="Notification" MinHeight="200" Width="450"
+        x:DataType="models:Notification">
+  <Border BorderBrush="DimGray" BorderThickness="1" CornerRadius="10">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="{StaticResource Layer2}"
+                    BorderThickness="0,0,0,3" CornerRadius="10, 10, 0, 0"
+                    BorderBrush="{Binding Severity, Converter={StaticResource SeverityToColorConverter}}" >
+                <TextBlock Text="{Binding Title}" d:Text="Are you sure?" TextWrapping="Wrap"
+                           TextAlignment="Left" FontSize="20"
+                           Margin="100, 0, 20, 0"/>
+            </Border>
+            <Panel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Margin="20, 20, 0, 0" Width="60" Height="60">
+                <Svg Path="/Assets/Info.svg"
+                     IsVisible="{Binding Severity, Converter={x:Static converters:FuncConverters.AreEqual},
+                     ConverterParameter={x:Static enums:Severity.Info}}"/>
+                <Svg Path="/Assets/Warning.svg"
+                     IsVisible="{Binding Severity, Converter={x:Static converters:FuncConverters.AreEqual},
+                     ConverterParameter={x:Static enums:Severity.Warning}}"/>
+                <Svg Path="/Assets/Error.svg"
+                     IsVisible="{Binding Severity, Converter={x:Static converters:FuncConverters.AreEqual},
+                     ConverterParameter={x:Static enums:Severity.Error}}"/>
+            </Panel>
+            
+            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" 
+                       Text="{Binding Body}" Margin="20,15" TextWrapping="Wrap" 
+                       HorizontalAlignment="Center" TextAlignment="Left"
+                       d:Text="You are about to delete 5 files, &#x0a;are you sure you want to continue?"/>
+
+            <ItemsControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" 
+                          ItemsSource="{Binding Options}" Margin="50,5">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding Key}" IsChecked="{Binding Value}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
+            <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal" Margin="15">
+                <StackPanel.Styles>
+                    <Style Selector="Button">
+                        <Setter Property="Margin" Value="5"/>
+                        <Setter Property="Padding" Value="3"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="MinWidth" Value="80"/>
+                    </Style>
+                </StackPanel.Styles>
+                <Button Content="{Binding CancelText}" Click="CancelClick"
+                        IsVisible="{Binding Actions, Converter={x:Static converters:FuncConverters.HasFlagConverter}, 
+                        ConverterParameter={x:Static enums:NotificationAction.Cancel}}"
+                        BorderBrush="{StaticResource TextColor}" BorderThickness="2" Background="Transparent"/>
+                <Button Content="{Binding DeclineText}" Click="DeclineClick"
+                        IsVisible="{Binding Actions, Converter={x:Static converters:FuncConverters.HasFlagConverter}, 
+                        ConverterParameter={x:Static enums:NotificationAction.Decline}}"
+                        BorderBrush="{StaticResource TextColor}" BorderThickness="2" Background="Transparent"/>
+                <Button Content="{Binding ConfirmText}" Click="ConfirmClick"
+                        IsVisible="{Binding Actions, Converter={x:Static converters:FuncConverters.HasFlagConverter}, 
+                        ConverterParameter={x:Static enums:NotificationAction.Confirm}}"
+                        Background="{Binding Severity, Converter={StaticResource SeverityToColorConverter}}"
+                        Foreground="{StaticResource Layer0}" IsDefault="True"/>
+            </StackPanel>
+        </Grid>
+    </Border>
 </Window>

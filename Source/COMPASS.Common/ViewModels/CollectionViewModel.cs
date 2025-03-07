@@ -344,9 +344,9 @@ namespace COMPASS.Common.ViewModels
         }
 
         // Delete Collection
-        private RelayCommand? _deleteCollectionCommand;
-        public RelayCommand DeleteCollectionCommand => _deleteCollectionCommand ??= new(RaiseDeleteCollectionWarning);
-        public void RaiseDeleteCollectionWarning()
+        private AsyncRelayCommand? _deleteCollectionCommand;
+        public AsyncRelayCommand DeleteCollectionCommand => _deleteCollectionCommand ??= new(RaiseDeleteCollectionWarning);
+        public async Task RaiseDeleteCollectionWarning()
         {
             if (CurrentCollection.AllCodices.Count > 0)
             {
@@ -359,7 +359,7 @@ namespace COMPASS.Common.ViewModels
                 areYouSure.Body = CurrentCollection.AllCodices.Count == 1 ? messageSingle : messageMultiple;
 
                 var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
-                windowedNotificationService.Show(areYouSure);
+                await windowedNotificationService.Show(areYouSure);
 
                 if (areYouSure.Result == NotificationAction.Confirm)
                 {
@@ -463,7 +463,7 @@ namespace COMPASS.Common.ViewModels
                            $"This will copy all items, tags and preferences to the chosen collection. \n" +
                            $"Are you sure you want to continue?";
 
-            App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(areYouSure);
+            await App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(areYouSure);
 
             if (areYouSure.Result != NotificationAction.Confirm) return;
 
@@ -473,7 +473,7 @@ namespace COMPASS.Common.ViewModels
             await targetCollection.MergeWith(CurrentCollection);
 
             Notification doneNotification = new("Merge Success", $"Successfully merged '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'");
-            App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Toast).Show(doneNotification);
+            await App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Toast).Show(doneNotification);
         }
         #endregion
     }

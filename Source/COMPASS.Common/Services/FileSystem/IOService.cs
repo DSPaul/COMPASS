@@ -301,7 +301,7 @@ namespace COMPASS.Common.Services.FileSystem
                     string message = $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
                     Logger.Warn(message);
                     Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message, Severity.Warning);
-                    windowedNotificationService.Show(warnNotification);
+                    await windowedNotificationService.Show(warnNotification);
                     return null;
                 }
 
@@ -319,7 +319,7 @@ namespace COMPASS.Common.Services.FileSystem
                     string message = $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
                     Logger.Warn(message);
                     Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message, Severity.Warning);
-                    windowedNotificationService.Show(warnNotification);
+                    await windowedNotificationService.Show(warnNotification);
                     return null;
                 }
 
@@ -356,7 +356,7 @@ namespace COMPASS.Common.Services.FileSystem
                         $"and has indicated to be incompatible with your version v{Reflection.Version}. Please update and try again.";
                     Logger.Warn(message);
                     Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message, Severity.Warning);
-                    windowedNotificationService.Show(warnNotification);
+                    await windowedNotificationService.Show(warnNotification);
                     return null;
                 }
             }
@@ -386,7 +386,7 @@ namespace COMPASS.Common.Services.FileSystem
                 {
                     ConfirmText = "Continue"
                 };
-            windowedNotificationService.Show(pickNewPath);
+            await windowedNotificationService.Show(pickNewPath);
 
             bool success = false;
             while (!success)
@@ -399,7 +399,7 @@ namespace COMPASS.Common.Services.FileSystem
                 else
                 {
                     Notification notValid = new("Invalid path", $"{newPath} is not a valid path, please try again", Severity.Warning);
-                    windowedNotificationService.Show(notValid);
+                    await windowedNotificationService.Show(notValid);
                 }
             }
         }

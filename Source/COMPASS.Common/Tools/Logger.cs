@@ -9,7 +9,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 using COMPASS.Common.ViewModels.SidePanels;
 
 namespace COMPASS.Common.Tools
@@ -55,7 +57,7 @@ namespace COMPASS.Common.Tools
             FileLog?.Error(message, ex);
         }
 
-        public static void LogUnhandledException(object sender, Exception e)
+        public static async Task LogUnhandledException(object sender, Exception e)
         {
             FileLog?.Fatal(e.ToString(), e);
 
@@ -71,12 +73,12 @@ namespace COMPASS.Common.Tools
             crashNotification.Options.Add(new(restartOption, true));
             crashNotification.Options.Add(new(submitOption, true));
 
-            App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(crashNotification);
+            await App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(crashNotification);
 
             if (crashNotification.IsOptionSelected(submitOption))
             {
                 var report = new CrashReport(e);
-                var result = new ApiClientService().PostAsync(report, "submit/crash").Result;
+                using HttpResponseMessage result = await new ApiClientService().PostAsync(report, "submit/crash");
                 Info(result.ToString());
             }
 

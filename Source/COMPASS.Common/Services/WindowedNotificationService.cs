@@ -7,7 +7,7 @@ namespace COMPASS.Common.Services
 {
     public class WindowedNotificationService : INotificationService
     {
-        public async void Show(Notification notification)
+        public async Task Show(Notification notification)
         {
             var window = new NotificationWindow(notification);
             await window.ShowDialog(App.MainWindow);

@@ -59,6 +59,10 @@
         </Style>
     </Style>
     
+    <Style Selector="Window">
+        <Setter Property="Icon" Value="/Assets/COMPASS.ico"/>
+    </Style>
+    
     <!--Material Icon-->
     <Style Selector="materialIcons|MaterialIcon">
         <Setter Property="VerticalAlignment" Value="Center"/>

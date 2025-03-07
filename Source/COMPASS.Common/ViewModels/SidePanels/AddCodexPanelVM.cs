@@ -39,7 +39,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
             if (!vm.ContentSelectorVM.HasCodices)
             {
                 Notification noItemsFound = new("No items found", $"{collectionToImport.DirectoryName[2..]} does not contain items to import");
-                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(noItemsFound);
+                await App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(noItemsFound);
                 return;
             }
 

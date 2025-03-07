@@ -136,7 +136,7 @@ namespace COMPASS.Common.ViewModels.Import
                     $"They will be put in a new tag group called {CollectionName}.";
 
                 Notification notification = new("Tags found", message, Severity.Info, NotificationAction.Cancel | NotificationAction.Decline | NotificationAction.Confirm);
-                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(notification);
+                await App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(notification);
 
                 switch (notification.Result)
                 {

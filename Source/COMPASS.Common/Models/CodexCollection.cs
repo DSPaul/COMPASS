@@ -573,14 +573,14 @@ namespace COMPASS.Common.Models
             Logger.Info($"Removed {toDelete.Title} from {DirectoryName}");
         }
 
-        public void DeleteCodices(IList<Codex> toDelete)
+        public async Task DeleteCodices(IList<Codex> toDelete)
         {
             Notification deleteWarnNotification = Notification.AreYouSureNotification;
             deleteWarnNotification.Body = $"You are about to remove {toDelete.Count} item{(toDelete.Count > 1 ? @"s" : @"")}. " +
                            $"This cannot be undone. " +
                            $"Are you sure you want to continue?";
             var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
-            windowedNotificationService.Show(deleteWarnNotification);
+            await windowedNotificationService.Show(deleteWarnNotification);
 
             if (deleteWarnNotification.Result == NotificationAction.Confirm)
             {
