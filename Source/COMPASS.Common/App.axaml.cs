@@ -1,10 +1,19 @@
-﻿using Autofac;
+﻿using System;
+using System.Diagnostics;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Autofac;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.ApiDtos;
+using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.Views.Windows;
@@ -23,26 +32,51 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            MainWindow = new MainWindow();
-            desktop.MainWindow = MainWindow;
-
-            Container = BuildContainer(desktop.MainWindow);
-
-            desktop.MainWindow.DataContext = new MainViewModel();
+            // Open splash screen
+            _splashScreenWindow = new SplashScreenWindow();
+            desktop.MainWindow = _splashScreenWindow;
         }
+        
+        // delegate actual application start to when UI thread has time again
+        Dispatcher.UIThread.Post(() => CompleteApplicationStart(), DispatcherPriority.Background);
 
         base.OnFrameworkInitializationCompleted();
     }
 
+    private SplashScreenWindow? _splashScreenWindow;
+    
     public static Window MainWindow { get; private set; }
 
-    public static ContainerBuilder ContainerBuilder { get; set; }
+    public static ContainerBuilder? ContainerBuilder { get; set; }
     public static IContainer Container { get; set; }
 
     private IContainer BuildContainer(Window window)
     {
+        if(ContainerBuilder == null) throw new InvalidOperationException("Container builder should be constructed by platform specific project");
+        
         ContainerBuilder.RegisterInstance<IFilesService>(new FilesService(window));
-
         return ContainerBuilder.Build();
+    }
+    
+    private void CompleteApplicationStart()
+    {
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            //Build container
+            MainWindow = new MainWindow();
+            Container = BuildContainer(MainWindow);
+            
+            //load and set vm
+            var mainVm =  new MainViewModel();
+            MainWindow.DataContext = mainVm;
+
+            desktop.MainWindow = MainWindow;
+
+            // Show main window to avoid framework shutdown when closing splash screen
+            MainWindow.Show();
+
+            // Finally, close the splash screen
+            _splashScreenWindow?.Close();
+        }
     }
 }
