@@ -1,13 +1,12 @@
 ﻿using COMPASS.Common.Tools;
-using System;
 
 namespace COMPASS.Common.Models.ApiDtos
 {
     public class CrashReport
     {
-        public CrashReport(Exception exception)
+        public CrashReport(string exceptionMessage)
         {
-            Error = exception.ToString();
+            Error = exceptionMessage;
         }
 
         public string Version => Reflection.Version;

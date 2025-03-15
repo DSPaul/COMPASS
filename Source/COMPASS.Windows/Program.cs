@@ -1,11 +1,14 @@
 ﻿using Autofac;
 using Avalonia;
+using Avalonia.Svg.Skia;
 using COMPASS.Common;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
 using COMPASS.Windows.Services;
 using System;
-using Avalonia.Svg.Skia;
+using System.Threading.Tasks;
 
 namespace COMPASS.Windows;
 
@@ -20,14 +23,30 @@ class Program
         // Create the Autofac container
         ConfigureContainer();
 
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        // Set up global exception handlers
+        AppDomain.CurrentDomain.UnhandledException += CrashHandler.CurrentDomain_UnhandledException;
+        TaskScheduler.UnobservedTaskException += CrashHandler.TaskScheduler_UnobservedTaskException;
+        
+        try
+        {
+            CmdLineArgumentService.ParseArgs(args);
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception ex)
+        {
+            Logger.Fatal("Unhandled exception caught" ,ex);
+            CrashHandler.HandleCrash(ex);
+        }
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
     {
+        //makes svg preview work
         GC.KeepAlive(typeof(SvgImageExtension).Assembly);
         GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
+        ////////////////////////
+        
         return AppBuilder.Configure<App>()
                          .UsePlatformDetect()
                          .WithInterFont()

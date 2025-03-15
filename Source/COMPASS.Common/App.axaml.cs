@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Autofac;
 using Avalonia;
@@ -10,11 +8,9 @@ using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using COMPASS.Common.Interfaces;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.ApiDtos;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.Views.Windows;
 
@@ -32,13 +28,26 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Open splash screen
-            _splashScreenWindow = new SplashScreenWindow();
-            desktop.MainWindow = _splashScreenWindow;
+            //if crash, show crash dialog instead
+            string? crashMsg = CmdLineArgumentService.Args?.CrashMessage;
+            if (!string.IsNullOrEmpty(crashMsg))
+            {
+                Container = ContainerBuilder!.Build();
+                var crashNotification = CrashHandler.GetCrashNotification(crashMsg);
+                MainWindow = new NotificationWindow(crashNotification);
+                MainWindow.Closing += (s,e) => CrashHandler.OnCrashNotificationClosing(e, crashNotification, crashMsg);
+                desktop.MainWindow = MainWindow;
+            }
+            else
+            {
+                // Open splash screen
+                _splashScreenWindow = new SplashScreenWindow();
+                desktop.MainWindow = _splashScreenWindow;
+                
+                // delegate actual application start to when UI thread has time again
+                Dispatcher.UIThread.Post(() => CompleteApplicationStart(), DispatcherPriority.Background);
+            }
         }
-        
-        // delegate actual application start to when UI thread has time again
-        Dispatcher.UIThread.Post(() => CompleteApplicationStart(), DispatcherPriority.Background);
 
         base.OnFrameworkInitializationCompleted();
     }

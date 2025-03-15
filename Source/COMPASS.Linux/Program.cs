@@ -3,8 +3,11 @@ using Avalonia;
 using COMPASS.Common;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
 using COMPASS.Linux.Services;
 using System;
+using System.Threading.Tasks;
 
 namespace COMPASS.Linux;
 
@@ -19,7 +22,20 @@ class Program
         // Create the Autofac container
         ConfigureContainer();
 
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        // Set up global exception handlers
+        AppDomain.CurrentDomain.UnhandledException += CrashHandler.CurrentDomain_UnhandledException;
+        TaskScheduler.UnobservedTaskException += CrashHandler.TaskScheduler_UnobservedTaskException;
+        
+        try
+        {
+            CmdLineArgumentService.ParseArgs(args);
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception ex)
+        {
+            Logger.Fatal("Unhandled exception caught" ,ex);
+            CrashHandler.HandleCrash(ex);
+        }
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

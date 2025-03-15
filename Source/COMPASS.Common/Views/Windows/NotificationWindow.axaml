@@ -44,10 +44,19 @@
                      ConverterParameter={x:Static enums:Severity.Error}}"/>
             </Panel>
             
-            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" 
-                       Text="{Binding Body}" Margin="20,15" TextWrapping="Wrap" 
-                       HorizontalAlignment="Center" TextAlignment="Left"
-                       d:Text="You are about to delete 5 files, &#x0a;are you sure you want to continue?"/>
+            <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="20,15" Spacing="10">
+                <TextBlock Text="{Binding Body}" TextWrapping="Wrap" 
+                           HorizontalAlignment="Center" TextAlignment="Left"
+                           d:Text="You are about to delete 5 files, &#x0a;are you sure you want to continue?"/>
+                
+                <Expander Header="Details" HorizontalAlignment="Stretch" 
+                          IsVisible="{Binding Details, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" >
+                        <ScrollViewer MaxHeight="200">
+                            <SelectableTextBlock Text="{Binding Details}" TextWrapping="Wrap"
+                                                 HorizontalAlignment="Stretch" TextAlignment="Left"/>
+                        </ScrollViewer>
+                </Expander>
+            </StackPanel>
 
             <ItemsControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" 
                           ItemsSource="{Binding Options}" Margin="50,5">
