@@ -18,7 +18,8 @@
                 <StackPanel.Styles>
                     <Style Selector="ComboBox">
                         <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                        <Setter Property="Background" Value="Transparent"></Setter>
+                        <Setter Property="BorderBrush" Value="{StaticResource Layer5}"/>
+                        <Setter Property="Background" Value="Transparent"/>
                         <Style Selector="^ /template/ ContentControl#ContentPresenter TextBlock">
                             <Setter Property="IsVisible" Value="False" />
                         </Style>
@@ -47,6 +48,7 @@
 
                 <TextBlock Text="Has Property:" Margin="0,10,0,0"/>
 
+                <!-- TODO -->
                 <!-- <ItemsControl ItemTemplate="{StaticResource FilterTagTemplate}" ItemsSource="{Binding BooleanFilters}"  -->
                 <!--               HorizontalContentAlignment="Left" HorizontalAlignment="Left" Margin="5"  -->
                 <!--         dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding}"/> -->
@@ -63,8 +65,7 @@
                 </Grid>
 
                 <TextBlock Text="Minimum Rating:" Margin="0,10,0,0"/>
-                <!-- <materialDesign:RatingBar Value="{Binding MinRating, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  -->
-                <!--                               IsPreviewValueEnabled="True" Margin="5 3"/> -->
+                <controls:RatingControl Value="{Binding MinRating, UpdateSourceTrigger=PropertyChanged}" Margin="5 3"/>
                 
                 <TextBlock Text="File Type:" Margin="0,5"/>
                 <Panel>

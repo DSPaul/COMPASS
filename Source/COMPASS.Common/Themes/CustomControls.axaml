@@ -132,9 +132,68 @@
     </Setter>
   </ControlTheme>
   
+  <!--This is the ControlTheme for our RatingControl-->
+	<ControlTheme x:Key="{x:Type controls:RatingControl}" TargetType="controls:RatingControl">
+		<!--Every TemplatedControl needs to have a ControlTemplate applied. In this setter we define it.-->
+		<Setter Property="Template">
+			<ControlTemplate>
+
+				<!--We wrap our content inside a DataValidationErrors-control, so error messages are displayed properly-->
+				<DataValidationErrors>
+					<DataValidationErrors.Styles>
+						<!--This Style is for a Path which has the Class "star" applied.-->
+						<Style Selector="Path.star" >
+							<Setter Property="Data" Value="M 3.9687501,0 5.1351364,2.3633569 7.7432556,2.7423389 5.8560028,4.5819556 6.3015226,7.1795363 3.96875,5.953125 1.6359772,7.1795361 2.0814972,4.5819556 0.19424448,2.7423387 2.8023636,2.3633569 Z" />
+							<Setter Property="Width" Value="20" />
+							<Setter Property="Height" Value="20" />
+							<Setter Property="Fill" Value="{StaticResource RatingControlUnselectedBrush}" />
+							<Setter Property="Stretch" Value="Uniform" />
+						</Style>
+
+						<Style Selector="Path.selected" >
+							<Setter Property="Fill" Value="{StaticResource RatingControlSelectedBrush}" />
+						</Style>
+
+						<Style Selector="Path.star:pointerover" >
+							<Setter Property="RenderTransform" Value="scale(1.1)" />
+						</Style>
+                        
+					</DataValidationErrors.Styles>
+					<!--This is our stars-presenter. Make sure to set the name, so the control can be found.-->
+					<ItemsControl x:Name="PART_StarsPresenter"
+								ItemsSource="{TemplateBinding Stars}">
+						<!--We want to have the stars drawn horizontally. Therefore we change the ItemsPanel accordingly-->
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Horizontal" Spacing="5" />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<!--Items is an array if integer. Let's add a Path as the DataTemplate-->
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Path Classes="star">
+									<!--We enable or disable classes through a boolean value. We use our IsSmallerOrEqualConverter to do so. -->
+									<Classes.selected>
+										<MultiBinding Converter="{StaticResource IsSmallerOrEqualConverter}">
+											<!--This is our dataContext, so the number of this item-->
+											<Binding />
+											<!--This is the binding to the RatingControls current value-->
+											<Binding RelativeSource="{RelativeSource AncestorType=controls:RatingControl}" Path="Value" />
+										</MultiBinding>
+									</Classes.selected>
+								</Path>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</DataValidationErrors>
+			</ControlTemplate>
+		</Setter>
+	</ControlTheme>
+  
   <Design.PreviewWith>
     <Border Padding="20">
-      <StackPanel>
+      <StackPanel Spacing="10">
         <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}"/>
         <controls:IconButton Icon="About" Content="About"/>
         <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">
@@ -142,6 +201,11 @@
             Some Tab content
           </controls:CollapsableTabItem>
         </TabControl>
+        
+          <controls:RatingControl Value="0" NumberOfStars="5" />
+          <controls:RatingControl Value="2" NumberOfStars="5" />
+          <controls:RatingControl Value="6" NumberOfStars="6" />
+
       </StackPanel>
     </Border>
   </Design.PreviewWith>

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:COMPASS.Common.ViewModels"
+             xmlns:controls="clr-namespace:COMPASS.Common.Controls"
              mc:Ignorable="d" d:DesignWidth="270" d:DesignHeight="850"
              x:Class="COMPASS.Common.Views.CodexInfoView"
              x:DataType="vm:CodexInfoViewModel">
@@ -102,8 +103,7 @@
                     <CheckBox IsChecked="{Binding PhysicallyOwned, Mode=OneWay}" Grid.Column="1" Grid.Row="7" Margin="5"/>
 
                     <TextBlock Text="Rating:"  Grid.Column="0" Grid.Row="8"/>
-                    <!-- TODO rating bar-->
-                    <!-- <materialDesign:RatingBar Value="{Binding Rating, Mode=OneWay}" Margin="5" Grid.Column="1" Grid.Row="8"/> -->
+                    <controls:RatingControl Value="{Binding Rating, Mode=OneWay}" IsEnabled="False" Margin="5" Grid.Column="1" Grid.Row="8"/>
 
                     <TextBlock Text="Favorite:" Grid.Column="0" Grid.Row="9"/>
                     <CheckBox Name="FileFavoriteCb" IsChecked="{Binding Favorite, Mode=OneWay}"

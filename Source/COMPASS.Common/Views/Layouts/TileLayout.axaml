@@ -7,6 +7,7 @@
              xmlns:behav="using:COMPASS.Common.Behaviours"
              xmlns:conv="using:COMPASS.Common.Converters"
              xmlns:preferences="using:COMPASS.Common.Models.Preferences"
+             xmlns:controls="using:COMPASS.Common.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="vm:TileLayoutViewModel"
              x:Class="COMPASS.Common.Views.Layouts.TileLayout">
@@ -82,19 +83,10 @@
                        IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
                         Converter={x:Static conv:FuncConverters.AreEqual}, 
                         ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Publisher}}"/>
-          <!--<materialDesign:RatingBar Value="{Binding Rating, Mode=TwoWay}" HorizontalAlignment="Center">
-              <materialDesign:RatingBar.Style>
-                <Style TargetType="materialDesign:RatingBar">
-                  <Setter Property="Visibility" Value="Collapsed"/>
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding DataContext.Preferences.DisplayedData, RelativeSource={RelativeSource AncestorType=ListBox}}"
-                                 Value="{x:Static preferences:TileLayoutPreferences+DataOption.Rating}">
-                      <Setter Property="Visibility" Value="Visible"/>
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </materialDesign:RatingBar.Style>
-            </materialDesign:RatingBar>-->
+          <controls:RatingControl Value="{Binding Rating}" HorizontalAlignment="Center" Margin="0,0,0,5"
+                                        IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
+                                          Converter={x:Static conv:FuncConverters.AreEqual}, 
+                                          ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Rating}}"/>
           </Panel>
             
         </Grid>

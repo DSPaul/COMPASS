@@ -83,5 +83,9 @@
   <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="White" Opacity="0"/>
   <StaticResource x:Key="ComboBoxBorderBrushPointerOver" ResourceKey="TextMutedColor"/>
   
+  <!-- Rating control -->
+  <SolidColorBrush x:Key="RatingControlSelectedBrush" Color="White"/>
+  <SolidColorBrush x:Key="RatingControlUnselectedBrush" Color="Gray"/>
+  
   
 </ResourceDictionary>
