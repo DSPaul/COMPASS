@@ -23,6 +23,7 @@ using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.Views.Windows;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
+using ZstdSharp.Unsafe;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -617,9 +618,26 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        private void CompressUserDataToZip(string zipPath) =>
+        private void CompressUserDataToZip(string zipPath)
+        {
+            //In caes zip already exists with same name, delete it first
+            if (File.Exists(zipPath))
+            {
+                try
+                {
+                    File.Delete(zipPath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("A backup with the same name already exists and could not be removed", ex);
+                    return;
+                }
+            }
+            
             //zip up collections, easiest with system.IO.Compression
-            System.IO.Compression.ZipFile.CreateFromDirectory(CodexCollection.CollectionsPath, zipPath, System.IO.Compression.CompressionLevel.Optimal, true);
+            System.IO.Compression.ZipFile.CreateFromDirectory(CodexCollection.CollectionsPath, zipPath,
+                System.IO.Compression.CompressionLevel.Optimal, true);
+        }
 
         private AsyncRelayCommand? _restoreBackupCommand;
         public AsyncRelayCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
