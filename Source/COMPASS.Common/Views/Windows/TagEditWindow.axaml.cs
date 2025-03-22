@@ -3,9 +3,9 @@ using COMPASS.Common.ViewModels;
 
 namespace COMPASS.Common.Views.Windows;
 
-public partial class TagPropWindow : Window
+public partial class TagEditWindow : Window
 {
-    public TagPropWindow(TagEditViewModel vm)
+    public TagEditWindow(TagEditViewModel vm)
     {
         InitializeComponent();
         DataContext = vm;

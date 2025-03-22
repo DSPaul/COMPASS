@@ -130,7 +130,7 @@ namespace COMPASS.Common.ViewModels
             int tagCount = MainViewModel.CollectionVM.CurrentCollection.RootTags.Count;
 
             TagEditViewModel tagEditVM = new(null, createNew: true);
-            TagPropWindow tpw = new(tagEditVM)
+            TagEditWindow tpw = new(tagEditVM)
             {
                 Topmost = true
             };

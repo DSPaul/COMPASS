@@ -223,7 +223,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
                 {
                     Parent = referenceTag
                 };
-                TagPropWindow tpw = new(new TagEditViewModel(newTag, true))
+                TagEditWindow tpw = new(new TagEditViewModel(newTag, true))
                 {
                     Topmost = true
                 };
@@ -269,7 +269,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         {
             if (toEdit is not null)
             {
-                TagPropWindow tpw = new(new TagEditViewModel(toEdit, false))
+                TagEditWindow tpw = new(new TagEditViewModel(toEdit, false))
                 {
                     Topmost = true
                 };
