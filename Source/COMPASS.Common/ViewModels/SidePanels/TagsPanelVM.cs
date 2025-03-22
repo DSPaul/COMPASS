@@ -94,16 +94,16 @@ namespace COMPASS.Common.ViewModels.SidePanels
         }
 
         //Tag Creation ViewModel
-        private IEditViewModel? _addTagViewModel;
-        public IEditViewModel? AddTagViewModel
+        private TagEditViewModel? _addTagViewModel;
+        public TagEditViewModel? AddTagViewModel
         {
             get => _addTagViewModel;
             set => SetProperty(ref _addTagViewModel, value);
         }
 
         //Group Creation ViewModel
-        private IEditViewModel? _addGroupViewModel;
-        public IEditViewModel? AddGroupViewModel
+        private TagEditViewModel? _addGroupViewModel;
+        public TagEditViewModel? AddGroupViewModel
         {
             get => _addGroupViewModel;
             set => SetProperty(ref _addGroupViewModel, value);
@@ -223,11 +223,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
                 {
                     Parent = referenceTag
                 };
-                TagEditWindow tpw = new(new TagEditViewModel(newTag, true))
-                {
-                    Topmost = true
-                };
-                await tpw.ShowDialog(App.MainWindow);
+                ModalWindow modal = new(new TagEditViewModel(newTag, true));
+                await modal.ShowDialog(App.MainWindow);
             }
         }
 
@@ -267,14 +264,9 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public AsyncRelayCommand<Tag?> EditTagCommand => _editTagCommand ??= new(EditTag);
         public async Task EditTag(Tag? toEdit)
         {
-            if (toEdit is not null)
-            {
-                TagEditWindow tpw = new(new TagEditViewModel(toEdit, false))
-                {
-                    Topmost = true
-                };
-                await tpw.ShowDialog(App.MainWindow);
-            }
+            if (toEdit is null) return;
+            ModalWindow modal = new(new TagEditViewModel(toEdit, false));
+            await modal.ShowDialog(App.MainWindow);
         }
 
         private RelayCommand<Tag?>? _deleteTagCommand;

@@ -190,7 +190,7 @@
       <TreeView.ItemTemplate>
         <dataTemplates:TagTemplateSelector>
           <TreeDataTemplate x:Key="RegularTag" DataType="models:TreeViewNode" ItemsSource="{Binding Children}">
-              <Button ContextMenu="{StaticResource TagContextMenu}"
+              <Button ContextMenu="{StaticResource TagContextMenu}" Margin="0"
                       Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).AddTagFilterCommand}"
                       CommandParameter="{Binding Tag}">
                 <Button.Template>

@@ -17,11 +17,11 @@ namespace COMPASS.Common.Models
 
         public string Title { get; set; }
         public string Body { get; set; }
-        
+
         /// <summary>
         /// For bigger text dumps, is shown in a collapsable, scrollable control
         /// </summary>
-        public string Details { get; set; }
+        public string Details { get; set; } = "";
 
         public string ConfirmText { get; set; } = "Ok";
         public string CancelText { get; set; } = "Cancel";

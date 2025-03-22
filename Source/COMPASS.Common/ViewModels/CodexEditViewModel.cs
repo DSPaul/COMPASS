@@ -129,12 +129,9 @@ namespace COMPASS.Common.ViewModels
             //keep track of count to check of tags were created
             int tagCount = MainViewModel.CollectionVM.CurrentCollection.RootTags.Count;
 
-            TagEditViewModel tagEditVM = new(null, createNew: true);
-            TagEditWindow tpw = new(tagEditVM)
-            {
-                Topmost = true
-            };
-            await tpw.ShowDialog(App.MainWindow);
+            TagEditViewModel tagEditVm = new(null, createNew: true);
+            var modal = new ModalWindow(tagEditVm);
+            await modal.ShowDialog(App.MainWindow);
 
             if (MainViewModel.CollectionVM.CurrentCollection.RootTags.Count > tagCount) //new tag was created
             {
@@ -157,13 +154,13 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
-        private RelayCommand? _deleteCodexCommand;
-        public RelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
-        private void DeleteCodex()
+        private AsyncRelayCommand? _deleteCodexCommand;
+        public AsyncRelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
+        private async Task DeleteCodex()
         {
             if (!CreateNewCodex)
             {
-                CodexOperations.DeleteCodex(_editedCodex);
+                await CodexOperations.DeleteCodex(_editedCodex);
             }
             CloseAction();
         }

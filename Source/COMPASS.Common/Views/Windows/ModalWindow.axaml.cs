@@ -1,13 +1,15 @@
 using Avalonia.Controls;
+using COMPASS.Common.Interfaces;
 using COMPASS.Common.ViewModels;
 
 namespace COMPASS.Common.Views.Windows;
 
-public partial class TagEditWindow : Window
+public partial class ModalWindow : Window
 {
-    public TagEditWindow(TagEditViewModel vm)
+    public ModalWindow(IModalViewModel vm)
     {
         InitializeComponent();
         DataContext = vm;
+        vm.CloseAction = Close;
     }
 }

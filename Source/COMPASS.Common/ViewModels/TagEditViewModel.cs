@@ -5,10 +5,11 @@ using CommunityToolkit.Mvvm.Messaging.Messages;
 using COMPASS.Common.Models;
 using COMPASS.Common.Tools;
 using System;
+using COMPASS.Common.Interfaces;
 
 namespace COMPASS.Common.ViewModels
 {
-    public class TagEditViewModel : ObservableRecipient, IEditViewModel, IRecipient<PropertyChangedMessage<string>>
+    public class TagEditViewModel : ObservableRecipient, IEditViewModel, IModalViewModel, IRecipient<PropertyChangedMessage<string>>
     {
         public TagEditViewModel(Tag? toEdit, bool createNew) : base()
         {
@@ -32,22 +33,7 @@ namespace COMPASS.Common.ViewModels
             get => _tempTag;
             set => SetProperty(ref _tempTag, value);
         }
-
-        //visibility of Color Selection
-        private bool _showColorSelection = false;
-        public bool ShowColorSelection
-        {
-            get => _showColorSelection;
-            set
-            {
-                SetProperty(ref _showColorSelection, value);
-                OnPropertyChanged(nameof(ShowInfoGrid));
-            }
-        }
-
-        //visibility of General Info Selection
-        public bool ShowInfoGrid => !ShowColorSelection;
-
+        
         #endregion
 
         #region Functions and Commands
@@ -107,19 +93,23 @@ namespace COMPASS.Common.ViewModels
             CloseAction();
         }
 
-        private RelayCommand? _closeColorSelectionCommand;
-        public RelayCommand CloseColorSelectionCommand => _closeColorSelectionCommand ??= new(CloseColorSelection);
-
         private RelayCommand? _colorSameAsParentCommand;
         public RelayCommand ColorSameAsParentCommand => _colorSameAsParentCommand ??= new(SetColorSameAsParent);
         private void SetColorSameAsParent()
         {
             TempTag.InternalBackgroundColor = null;
-            CloseColorSelection();
         }
 
-        private void CloseColorSelection() => ShowColorSelection = false;
+        #region  IModelViewModel
+
+        public string WindowTitle => CreateNewTag ? "Create new tag" : "Edit tag";
+
+        public int? WindowWidth => null;
+        public int? WindowHeight => null;
+        
         public Action CloseAction { get; set; } = () => { };
+
+        #endregion
 
         #endregion
     }

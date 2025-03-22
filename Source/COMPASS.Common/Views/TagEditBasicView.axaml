@@ -5,57 +5,64 @@
              xmlns:vm="using:COMPASS.Common.ViewModels"
              xmlns:conv="using:COMPASS.Common.Converters"
              xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:view="using:COMPASS.Common.Views"
              Background="{StaticResource WindowBackground}"
-             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="250"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="250"
              x:Class="COMPASS.Common.Views.TagEditBasicView"
+             Focusable="True"
              x:DataType="vm:TagEditViewModel">
-    <Grid ColumnDefinitions="Auto, Auto, Auto">
-        <StackPanel x:Name="InfoGrid" IsVisible="{Binding ShowInfoGrid}" 
-                    Grid.Column ="0" Margin="10,5,10,10">
-            <Label Content="Name:"/>
+
+    <StackPanel x:Name="InfoGrid" Margin="10,5,10,10" Spacing="10">
+        <StackPanel Orientation="Vertical">
+            <Label Content="Name:" />
             <TextBox Text="{Binding TempTag.Content, UpdateSourceTrigger=PropertyChanged}"
-                     Loaded="TagNameTextBox_OnLoaded"/>
-            <StackPanel Orientation="Horizontal" Margin="0,5"
-                        IsVisible="{Binding !CreateNewTag}">
-                <CheckBox Content="Is tag group" IsChecked="{Binding TempTag.IsGroup}"/>
-                <!-- TODO add Info icon to explain groups-->
-            </StackPanel>
-            <WrapPanel Orientation="Horizontal"  Margin="0,5">
-                <Label Content="Color:" VerticalAlignment="Center"/>
-                <ToggleButton x:Name="ShowColorSelection" IsChecked="{Binding ShowColorSelection, Mode=TwoWay}" Margin="5,0"
-                              Background="{Binding TempTag.InternalBackgroundColor, Converter={x:Static conv:FuncConverters.ColorToBrush}}">
-                    <ToggleButton.Template>
-                        <ControlTemplate>
-                            <Border Background="{TemplateBinding Background}" 
-                                    BorderBrush="{Binding TempTag.BackgroundColor, Converter={x:Static conv:FuncConverters.ColorToBrush}}" 
-                                    BorderThickness="2" MinWidth="60" MinHeight="15" CornerRadius="8" VerticalAlignment="Center">
-                                <TextBlock Text="Same as Parent" TextWrapping="Wrap" Margin="15,0"
-                                           IsVisible="{Binding !TempTag.InternalBackgroundColor}" />
-                            </Border>
-                        </ControlTemplate>
-                    </ToggleButton.Template>
-                </ToggleButton>
-            </WrapPanel>
-            <UniformGrid Margin="5" Rows="1" Columns="2">
-                <controls:IconButton Command="{Binding CancelCommand}" Icon="WindowClose" 
-                                     Margin="5" Height="25" IsDefault="True" 
-                                     Theme="{StaticResource IconOnly}"
-                                     Background="{StaticResource CancelFill}"/>
-                <controls:IconButton Command="{Binding OKCommand}" Icon="Check" 
-                                     Margin="5" Height="25" IsDefault="True"
-                                     Theme="{StaticResource IconOnly}"
-                                     Background="{StaticResource AcceptFill}"/>
-            </UniformGrid>
+                     Loaded="TagNameTextBox_OnLoaded" />
         </StackPanel>
-        <!-- TODO -->
-        <!-- <StackPanel x:Name="ColorSelection" Grid.Column="2"  -->
-        <!--             Visibility="{Binding ShowColorSelection, Converter= {StaticResource ToVisibilityConverter}}"> -->
-        <!--     <customControls:ColorPicker Height="135" Width="166"  -->
-        <!--                                 SelectedColor="{Binding TempTag.SerializableBackgroundColor, Mode=TwoWay, TargetNullValue=Black}"/> -->
-        <!--     <Button Style="{StaticResource IconTextButton}" Background="{StaticResource AcceptFill}" Margin="10,0" -->
-        <!--             Command="{Binding CloseColorSelectionCommand}" Content="Select Color" tools:AP.IconKind="Check"/> -->
-        <!--     <Button Style="{StaticResource TextButton}" Content="Same as Parent" BorderBrush="{StaticResource DarkUIElementBackground}" BorderThickness="2" -->
-        <!--             Command="{Binding ColorSameAsParentCommand}"/> -->
-        <!-- </StackPanel> -->
-    </Grid>
+        <StackPanel Orientation="Horizontal"
+                    IsVisible="{Binding !CreateNewTag}">
+            <CheckBox Content="Is tag group" IsChecked="{Binding TempTag.IsGroup}" />
+            <!-- TODO add Info icon to explain groups-->
+        </StackPanel>
+        <Grid ColumnDefinitions="Auto, *">
+            <Label Content="Color:" VerticalAlignment="Center" />
+            <ToggleButton Grid.Column="1"
+                          Margin="5,0"
+                          HorizontalAlignment="Stretch"
+                          Background="{Binding TempTag.InternalBackgroundColor, Converter={x:Static conv:FuncConverters.ColorToBrush}}">
+                <ToggleButton.Flyout>
+                    <Flyout Placement="Right" HorizontalOffset="10">
+                        <StackPanel>
+                            <view:ColorPicker Height="135" Width="166"
+                                              SelectedColor="{Binding TempTag.InternalBackgroundColor, Mode=TwoWay, TargetNullValue=Black}" />
+                            <Button Content="Same as Parent" HorizontalAlignment="Center" Margin="0,5"
+                                    Command="{Binding ColorSameAsParentCommand}" FontSize="12" />
+                        </StackPanel>
+                    </Flyout>
+                </ToggleButton.Flyout>
+                <ToggleButton.Template>
+                    <ControlTemplate>
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{Binding TempTag.BackgroundColor, Converter={x:Static conv:FuncConverters.ColorToBrush}}"
+                                BorderThickness="2" MinWidth="60" MinHeight="15" CornerRadius="8"
+                                VerticalAlignment="Center">
+                            <TextBlock Text="Same as Parent" TextWrapping="Wrap" Margin="15,0"
+                                       HorizontalAlignment="Center" FontSize="12"
+                                       IsVisible="{Binding TempTag.InternalBackgroundColor, Converter={x:Static ObjectConverters.IsNull}}" />
+                        </Border>
+                    </ControlTemplate>
+                </ToggleButton.Template>
+            </ToggleButton>
+        </Grid>
+        <Grid ColumnDefinitions="* 20 *">
+            <controls:IconButton Command="{Binding CancelCommand}" Icon="WindowClose"
+                                 Grid.Column="0" 
+                                 HorizontalContentAlignment="Center"
+                                 Background="{StaticResource CancelFill}" />
+            <controls:IconButton Command="{Binding OKCommand}" Icon="Check"
+                                 Grid.Column="2" IsDefault="True"
+                                 HorizontalContentAlignment="Center"
+                                 Background="{StaticResource AcceptFill}" />
+        </Grid>
+    </StackPanel>
+
 </UserControl>

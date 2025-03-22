@@ -2,214 +2,225 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
                     xmlns:controls="using:COMPASS.Common.Controls">
-  <!--Icon Button-->
-  <ControlTheme TargetType="controls:IconButton" x:Key="IconOnly">
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Margin" Value="3"/>
-    <Setter Property="Padding" Value="0"/>
-    <Setter Property="Height" Value="20"/>
-    <Setter Property="Template">
-      <ControlTemplate TargetType="controls:IconButton">
-        <Border Padding="{TemplateBinding Padding}"
-                Background="{TemplateBinding Background}"
-                CornerRadius="5">
-          <materialIcons:MaterialIcon
-              Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"
-              Classes="Clickable"
-              Kind="{TemplateBinding Icon}"
-              Foreground="{TemplateBinding Foreground}"
-              HorizontalAlignment="Center"
-              VerticalAlignment="Center"
-              IsVisible="{TemplateBinding IsVisible}">
-          </materialIcons:MaterialIcon>
-        </Border>
-      </ControlTemplate>
-    </Setter>
-  </ControlTheme>
-
-  <!--Icon Button With text-->
-  <ControlTheme TargetType="controls:IconButton" x:Key="{x:Type controls:IconButton}">
-    <Setter Property="Padding" Value="15,5"/>
-    <Setter Property="Template">
-        <ControlTemplate>
-          <Border Background="{TemplateBinding Background}" 
-                  BorderThickness="{TemplateBinding BorderThickness}"
-                  CornerRadius="7" HorizontalAlignment="Stretch" 
-                  Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
-            <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                  VerticalAlignment="{TemplateBinding VerticalAlignment}">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon"/>
-                <ColumnDefinition Width="*" SharedSizeGroup="ButtonText"/>
-              </Grid.ColumnDefinitions>
-              <materialIcons:MaterialIcon Height="20" Width="20" Margin="0,0,10,0" Kind="{TemplateBinding Icon}"/>
-              <ContentPresenter Grid.Column="1" 
-                                VerticalAlignment="{TemplateBinding VerticalAlignment}" 
-                                Content="{TemplateBinding Content}"/>
-            </Grid>
-          </Border>
-        </ControlTemplate>
-    </Setter>
-  </ControlTheme>
-  
-  <!--CollapsableTabItem-->
-  <ControlTheme TargetType="controls:CollapsableTabItem" 
-                x:Key="{x:Type controls:CollapsableTabItem}">
-    <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="Margin" Value="0"/>
-    <Setter Property="Cursor" Value="Hand"/>
-    <Setter Property="Background" Value="Transparent"/>
-    <Style Selector="^:selected">
-      <Setter Property="Background" Value="{StaticResource TabFocus}"/>
-    </Style>
-    <Setter Property="Template">
-      <ControlTemplate TargetType="controls:CollapsableTabItem">
-        <Border CornerRadius="5,0,0,5" Margin="2,2,0,2"
-                Background="{TemplateBinding Background}"
-                ToolTip.Tip="{TemplateBinding Header}">
-          <Panel>
-            <materialIcons:MaterialIcon Height="35" Width="35" Margin="10"
-                                        HorizontalAlignment="Center"
-                                        Kind="{TemplateBinding Icon}"/>
-            
-            <Ellipse Fill="{TemplateBinding AttentionSeverity, Converter={StaticResource SeverityToColorConverter}}" 
-                     Width="10" Height="10" VerticalAlignment="Top" 
-                     HorizontalAlignment="Right" Margin="5"
-                     IsVisible="{TemplateBinding ShowAttention}"/>
-          </Panel>          
-        </Border>
-      </ControlTemplate>
-    </Setter>
-  </ControlTheme>
-  
-  <ControlTheme TargetType="controls:FilterModeSelector" 
-                x:Key="{x:Type controls:FilterModeSelector}">
-    <Setter Property="Template">
-      <ControlTemplate TargetType="controls:FilterModeSelector">
-        <StackPanel Orientation="Horizontal">
-          <StackPanel.Styles>
-            <Style Selector="RadioButton">
-              <Setter Property="Opacity" Value="0.3"/>
-              <Setter Property="Template">
-                <ControlTemplate>
-                  <ContentPresenter Content="{TemplateBinding Content}"/>
-                </ControlTemplate>
-              </Setter>
-            
-              <Style Selector="^:checked">
-                <Setter Property="Opacity" Value="1"/>
-              </Style>
-              
-              <Style Selector="^ > Border">
-                <Setter Property="Padding" Value="10,0"/>
-                <Setter Property="Height" Value="30"/>
-              </Style>
-              
-              <Style Selector="^ TextBlock">
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-                <Setter Property="Margin" Value="5,2"/>
-                <Setter Property="FontSize" Value="18"/>
-              </Style>
+    <!--Icon Button-->
+    <ControlTheme TargetType="controls:IconButton" x:Key="IconOnly">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Margin" Value="3" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Height" Value="20" />
+        <Style Selector="^[Background=Transparent] /template/ materialIcons|MaterialIcon">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource TextMutedColor}" />
+            <Style Selector="^:pointerover">
+                <Setter Property="Foreground" Value="{StaticResource TextColor}" />
             </Style>
-          </StackPanel.Styles>
-          
-          <RadioButton GroupName="IncludeGroup" IsChecked="{TemplateBinding Include, Mode=TwoWay}"
-                       Margin="0">
-            <Border CornerRadius="5,0,0,5" Background="{StaticResource AcceptFill}">
-              <TextBlock Text="Include"/>
-            </Border>
-          </RadioButton>
-          
-          <RadioButton GroupName="IncludeGroup" Margin="0">
-            <Border CornerRadius="0,5,5,0" Background="IndianRed">
-              <TextBlock Text="Exclude"/>
-            </Border>
-          </RadioButton>
-        </StackPanel>
-      </ControlTemplate>
-    </Setter>
-  </ControlTheme>
-  
+        </Style>
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:IconButton">
+                <Border Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="5">
+                    <materialIcons:MaterialIcon
+                        Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"
+                        Kind="{TemplateBinding Icon}"
+                        Foreground="{TemplateBinding Foreground}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        IsVisible="{TemplateBinding IsVisible}">
+                    </materialIcons:MaterialIcon>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!--Icon Button With text-->
+    <ControlTheme TargetType="controls:IconButton" x:Key="{x:Type controls:IconButton}">
+        <Setter Property="Padding" Value="15,5" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="7" HorizontalAlignment="Stretch"
+                        Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
+                    <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                          VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon" />
+                            <ColumnDefinition Width="*" SharedSizeGroup="ButtonText" />
+                        </Grid.ColumnDefinitions>
+                        <materialIcons:MaterialIcon Height="20" Width="20" Margin="0,0,10,0"
+                                                    Kind="{TemplateBinding Icon}" />
+                        <ContentPresenter Grid.Column="1"
+                                          VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                          Content="{TemplateBinding Content}" />
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!--CollapsableTabItem-->
+    <ControlTheme TargetType="controls:CollapsableTabItem"
+                  x:Key="{x:Type controls:CollapsableTabItem}">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Background" Value="Transparent" />
+        <Style Selector="^:selected">
+            <Setter Property="Background" Value="{StaticResource TabFocus}" />
+        </Style>
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:CollapsableTabItem">
+                <Border CornerRadius="5,0,0,5" Margin="2,2,0,2"
+                        Background="{TemplateBinding Background}"
+                        ToolTip.Tip="{TemplateBinding Header}">
+                    <Panel>
+                        <materialIcons:MaterialIcon Height="35" Width="35" Margin="10"
+                                                    HorizontalAlignment="Center"
+                                                    Kind="{TemplateBinding Icon}" />
+
+                        <Ellipse
+                            Fill="{TemplateBinding AttentionSeverity, Converter={StaticResource SeverityToColorConverter}}"
+                            Width="10" Height="10" VerticalAlignment="Top"
+                            HorizontalAlignment="Right" Margin="5"
+                            IsVisible="{TemplateBinding ShowAttention}" />
+                    </Panel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!--Include/Exclude selector-->
+    <ControlTheme TargetType="controls:FilterModeSelector"
+                  x:Key="{x:Type controls:FilterModeSelector}">
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:FilterModeSelector">
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel.Styles>
+                        <Style Selector="RadioButton">
+                            <Setter Property="Opacity" Value="0.3" />
+                            <Setter Property="Template">
+                                <ControlTemplate>
+                                    <ContentPresenter Content="{TemplateBinding Content}" />
+                                </ControlTemplate>
+                            </Setter>
+
+                            <Style Selector="^:checked">
+                                <Setter Property="Opacity" Value="1" />
+                            </Style>
+
+                            <Style Selector="^ > Border">
+                                <Setter Property="Padding" Value="10,0" />
+                                <Setter Property="Height" Value="30" />
+                            </Style>
+
+                            <Style Selector="^ TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+                                <Setter Property="Margin" Value="5,2" />
+                                <Setter Property="FontSize" Value="18" />
+                            </Style>
+                        </Style>
+                    </StackPanel.Styles>
+
+                    <RadioButton GroupName="IncludeGroup" IsChecked="{TemplateBinding Include, Mode=TwoWay}"
+                                 Margin="0">
+                        <Border CornerRadius="5,0,0,5" Background="{StaticResource AcceptFill}">
+                            <TextBlock Text="Include" />
+                        </Border>
+                    </RadioButton>
+
+                    <RadioButton GroupName="IncludeGroup" Margin="0">
+                        <Border CornerRadius="0,5,5,0" Background="IndianRed">
+                            <TextBlock Text="Exclude" />
+                        </Border>
+                    </RadioButton>
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
     <!--RatingControl-->
-	<ControlTheme x:Key="{x:Type controls:RatingControl}" TargetType="controls:RatingControl">
-		<!--Every TemplatedControl needs to have a ControlTemplate applied. In this setter we define it.-->
-		<Setter Property="Template">
-			<ControlTemplate>
+    <ControlTheme x:Key="{x:Type controls:RatingControl}" TargetType="controls:RatingControl">
+        <!--Every TemplatedControl needs to have a ControlTemplate applied. In this setter we define it.-->
+        <Setter Property="Template">
+            <ControlTemplate>
 
-				<!--We wrap our content inside a DataValidationErrors-control, so error messages are displayed properly-->
-				<DataValidationErrors>
-					<DataValidationErrors.Styles>
-						<!--This Style is for a Path which has the Class "star" applied.-->
-						<Style Selector="Path.star" >
-							<Setter Property="Data" Value="M 3.9687501,0 5.1351364,2.3633569 7.7432556,2.7423389 5.8560028,4.5819556 6.3015226,7.1795363 3.96875,5.953125 1.6359772,7.1795361 2.0814972,4.5819556 0.19424448,2.7423387 2.8023636,2.3633569 Z" />
-							<Setter Property="Width" Value="20" />
-							<Setter Property="Height" Value="20" />
-							<Setter Property="Fill" Value="{StaticResource RatingControlUnselectedBrush}" />
-							<Setter Property="Stretch" Value="Uniform" />
-						</Style>
+                <!--We wrap our content inside a DataValidationErrors-control, so error messages are displayed properly-->
+                <DataValidationErrors>
+                    <DataValidationErrors.Styles>
+                        <!--This Style is for a Path which has the Class "star" applied.-->
+                        <Style Selector="Path.star">
+                            <Setter Property="Data"
+                                    Value="M 3.9687501,0 5.1351364,2.3633569 7.7432556,2.7423389 5.8560028,4.5819556 6.3015226,7.1795363 3.96875,5.953125 1.6359772,7.1795361 2.0814972,4.5819556 0.19424448,2.7423387 2.8023636,2.3633569 Z" />
+                            <Setter Property="Width" Value="20" />
+                            <Setter Property="Height" Value="20" />
+                            <Setter Property="Fill" Value="{StaticResource RatingControlUnselectedBrush}" />
+                            <Setter Property="Stretch" Value="Uniform" />
+                        </Style>
 
-						<Style Selector="Path.selected" >
-							<Setter Property="Fill" Value="{StaticResource RatingControlSelectedBrush}" />
-						</Style>
+                        <Style Selector="Path.selected">
+                            <Setter Property="Fill" Value="{StaticResource RatingControlSelectedBrush}" />
+                        </Style>
 
-						<Style Selector="Path.star:pointerover" >
-							<Setter Property="RenderTransform" Value="scale(1.1)" />
-						</Style>
-                        
-					</DataValidationErrors.Styles>
-					<!--This is our stars-presenter. Make sure to set the name, so the control can be found.-->
-					<ItemsControl x:Name="PART_StarsPresenter"
-								ItemsSource="{TemplateBinding Stars}">
-						<!--We want to have the stars drawn horizontally. Therefore we change the ItemsPanel accordingly-->
-						<ItemsControl.ItemsPanel>
-							<ItemsPanelTemplate>
-								<StackPanel Orientation="Horizontal" Spacing="5" />
-							</ItemsPanelTemplate>
-						</ItemsControl.ItemsPanel>
+                        <Style Selector="Path.star:pointerover">
+                            <Setter Property="RenderTransform" Value="scale(1.1)" />
+                        </Style>
 
-						<!--Items is an array if integer. Let's add a Path as the DataTemplate-->
-						<ItemsControl.ItemTemplate>
-							<DataTemplate>
-								<Path Classes="star">
-									<!--We enable or disable classes through a boolean value. We use our IsSmallerOrEqualConverter to do so. -->
-									<Classes.selected>
-										<MultiBinding Converter="{StaticResource IsSmallerOrEqualConverter}">
-											<!--This is our dataContext, so the number of this item-->
-											<Binding />
-											<!--This is the binding to the RatingControls current value-->
-											<Binding RelativeSource="{RelativeSource AncestorType=controls:RatingControl}" Path="Value" />
-										</MultiBinding>
-									</Classes.selected>
-								</Path>
-							</DataTemplate>
-						</ItemsControl.ItemTemplate>
-					</ItemsControl>
-				</DataValidationErrors>
-			</ControlTemplate>
-		</Setter>
-	</ControlTheme>
-  
-  <Design.PreviewWith>
-    <Border Padding="20">
-      <StackPanel Spacing="10">
-        <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}"/>
-        <controls:IconButton Icon="About" Content="About"/>
-        <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">
-          <controls:CollapsableTabItem Header="Tags" Icon="Tags">
-            tags context
-          </controls:CollapsableTabItem>
-            <controls:CollapsableTabItem Header="Filters" Icon="Filter">
-                filter content
-            </controls:CollapsableTabItem>
-        </TabControl>
-        
-          <controls:RatingControl Value="0" NumberOfStars="5" />
-          <controls:RatingControl Value="2" NumberOfStars="5" />
-          <controls:RatingControl Value="6" NumberOfStars="6" />
+                    </DataValidationErrors.Styles>
+                    <!--This is our stars-presenter. Make sure to set the name, so the control can be found.-->
+                    <ItemsControl x:Name="PART_StarsPresenter"
+                                  ItemsSource="{TemplateBinding Stars}">
+                        <!--We want to have the stars drawn horizontally. Therefore we change the ItemsPanel accordingly-->
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="5" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-      </StackPanel>
-    </Border>
-  </Design.PreviewWith>
+                        <!--Items is an array if integer. Let's add a Path as the DataTemplate-->
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Path Classes="star">
+                                    <!--We enable or disable classes through a boolean value. We use our IsSmallerOrEqualConverter to do so. -->
+                                    <Classes.selected>
+                                        <MultiBinding Converter="{StaticResource IsSmallerOrEqualConverter}">
+                                            <!--This is our dataContext, so the number of this item-->
+                                            <Binding />
+                                            <!--This is the binding to the RatingControls current value-->
+                                            <Binding
+                                                RelativeSource="{RelativeSource AncestorType=controls:RatingControl}"
+                                                Path="Value" />
+                                        </MultiBinding>
+                                    </Classes.selected>
+                                </Path>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DataValidationErrors>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+    
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="10">
+                <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}" />
+                <controls:IconButton Icon="About" Content="About" />
+                <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">
+                    <controls:CollapsableTabItem Header="Tags" Icon="Tags">
+                        tags context
+                    </controls:CollapsableTabItem>
+                    <controls:CollapsableTabItem Header="Filters" Icon="Filter">
+                        filter content
+                    </controls:CollapsableTabItem>
+                </TabControl>
+
+                <controls:RatingControl Value="0" NumberOfStars="5" />
+                <controls:RatingControl Value="2" NumberOfStars="5" />
+                <controls:RatingControl Value="6" NumberOfStars="6" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
 </ResourceDictionary>

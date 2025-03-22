@@ -13,6 +13,10 @@
     <Compile Remove="Tools\BarcodeReader\**" />
     <EmbeddedResource Remove="Tools\BarcodeReader\**" />
     <None Remove="Tools\BarcodeReader\**" />
+    <Compile Update="Views\Windows\ModalWindow.axaml.cs">
+      <DependentUpon>ModalWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Include="Themes\Dark.axaml" />

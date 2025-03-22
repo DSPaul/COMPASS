@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:conv="using:COMPASS.Common.Converters"
+             xmlns:view="using:COMPASS.Common.Views"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="200"
+             x:Class="COMPASS.Common.Views.ColorPicker">
+    <ItemsControl x:Name="ColorGrid">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <UniformGrid Columns="5" Margin="10"/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.Styles>
+            <Style Selector="RadioButton">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Style Selector="^:checked">
+                    <Setter Property="BorderThickness" Value="2"/>
+                </Style>
+            </Style>
+        </ItemsControl.Styles>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <RadioButton GroupName="ColorGroup" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="0"
+                             Background="{Binding $self.DataContext, Converter={x:Static conv:FuncConverters.ColorToBrush}}"
+                             IsChecked="{Binding $parent[view:ColorPicker].SelectedColor, 
+                                Converter={x:Static conv:FuncConverters.AreEqual}, Mode=OneWay}"
+                             IsCheckedChanged="ToggleButton_OnIsCheckedChanged">
+                    <RadioButton.Template>
+                        <ControlTemplate>
+                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="3" Margin="3" 
+                                    BorderBrush="White"
+                                    BorderThickness="{TemplateBinding BorderThickness}"/>
+                        </ControlTemplate>
+                    </RadioButton.Template>
+                </RadioButton>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>
