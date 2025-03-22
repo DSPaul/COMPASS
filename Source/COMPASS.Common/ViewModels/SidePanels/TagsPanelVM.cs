@@ -127,8 +127,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
             AddGroupViewModel = new TagEditViewModel(newTag, true);
         }
 
-        private RelayCommand<Tag>? _addTagFilterCommand;
-        public RelayCommand<Tag> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
+        private RelayCommand<Tag?>? _addTagFilterCommand;
+        public RelayCommand<Tag?> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
         public void AddTagFilterHelper(Tag? tag)
         {
             if (tag != null)

@@ -132,7 +132,7 @@
     </Setter>
   </ControlTheme>
   
-  <!--This is the ControlTheme for our RatingControl-->
+    <!--RatingControl-->
 	<ControlTheme x:Key="{x:Type controls:RatingControl}" TargetType="controls:RatingControl">
 		<!--Every TemplatedControl needs to have a ControlTemplate applied. In this setter we define it.-->
 		<Setter Property="Template">

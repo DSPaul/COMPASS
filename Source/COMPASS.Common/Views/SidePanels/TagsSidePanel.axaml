@@ -14,24 +14,24 @@
   <UserControl.Resources>
     <Thickness x:Key="TreeViewItemExpandCollapseChevronMargin"> 0, 0, 0, 0 </Thickness>
     
-    <ContextMenu x:Key="TagContextMenu" x:DataType="models:Tag">
+    <ContextMenu x:Key="TagContextMenu" x:DataType="models:TreeViewNode">
       <MenuItem Header="New Tag" 
                 Icon="{materialIcons:MaterialIconExt TagPlusOutline}" 
                 Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).CreateChildCommand}"
-                CommandParameter="{Binding}"/>
+                CommandParameter="{Binding Tag}"/>
       <MenuItem Header="Edit" 
                 Icon="{materialIcons:MaterialIconExt Edit}" 
                 Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).EditTagCommand}"
-                CommandParameter="{Binding}"/>
+                CommandParameter="{Binding Tag}"/>
       <MenuItem Header="Delete" 
                 Icon="{materialIcons:MaterialIconExt Delete}" 
                 Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).DeleteTagCommand}"
-                CommandParameter="{Binding}"/>
+                CommandParameter="{Binding Tag}"/>
       <Separator/>
       <MenuItem Header="Sort Children" 
                 Icon="{materialIcons:MaterialIconExt TagMultipleOutline}"
                 Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).SortChildrenCommand}"
-                CommandParameter="{Binding}"
+                CommandParameter="{Binding Tag}"
                 ToolTip.Tip="Sorts its children A->Z"/>
     </ContextMenu>
     
@@ -189,31 +189,26 @@
               ContextMenu="{StaticResource AllTagsContextMenu}">
       <TreeView.ItemTemplate>
         <dataTemplates:TagTemplateSelector>
-          <TreeDataTemplate x:Key="RegularTag" 
-                            DataType="models:TreeViewNode" 
-                            ItemsSource="{Binding Children}">
-            <Button Cursor="Hand"
-                    DataContext="{Binding Tag}"
-                    Content="{Binding Content}"
-                    ContextMenu="{StaticResource TagContextMenu}"
-                    Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).AddTagFilterCommand}"
-                    CommandParameter="{Binding}">
-              <Button.Template>
-                <ControlTemplate TargetType="Button">
-                  <Border CornerRadius="5" Margin="0,2"
-                          Background="{Binding BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}">
-                    <TextBlock Text="{Binding Content}" Margin="7,0" Foreground="White" FontSize="14"/>
-                  </Border>
-                </ControlTemplate>
-              </Button.Template>
-            </Button>
+          <TreeDataTemplate x:Key="RegularTag" DataType="models:TreeViewNode" ItemsSource="{Binding Children}">
+              <Button ContextMenu="{StaticResource TagContextMenu}"
+                      Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).AddTagFilterCommand}"
+                      CommandParameter="{Binding Tag}">
+                <Button.Template>
+                  <ControlTemplate TargetType="Button">
+                    <Border CornerRadius="5" Margin="0,2"
+                            Background="{Binding Tag.BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}">
+                      <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="14"/>
+                    </Border>
+                  </ControlTemplate>
+                </Button.Template>
+              </Button>
           </TreeDataTemplate>
           
           <TreeDataTemplate x:Key="GroupTag" DataType="models:TreeViewNode" ItemsSource="{Binding Children}">
-            <Border Margin="0,3, 20, 0" Background="Transparent">
-              <StackPanel Orientation="Vertical" DataContext="{Binding Tag}" ContextMenu="{StaticResource TagContextMenu}">
-                <TextBlock x:Name="Label" Text="{Binding Content}" Foreground="LightGray" FontSize="16" FontWeight="Bold" />
-                <Rectangle Fill="{Binding BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
+            <Border Margin="0,3, 20, 0" Background="Transparent" ContextMenu="{StaticResource TagContextMenu}">
+              <StackPanel Orientation="Vertical">
+                <TextBlock x:Name="Label" Text="{Binding Tag.Content}" Foreground="LightGray" FontSize="16" FontWeight="Bold" />
+                <Rectangle Fill="{Binding Tag.BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
                            Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
               </StackPanel>
             </Border>
@@ -224,6 +219,48 @@
         <Style Selector="TreeViewItem">
           <Setter Property="IsExpanded" Value="{Binding $self.((models:TreeViewNode)DataContext).Expanded, Mode=TwoWay}"/>
           <Setter Property="IsSelected" Value="{Binding $self.((models:TreeViewNode)DataContext).Selected, Mode=TwoWay}"/>
+          
+          <!--  PointerOver state  -->
+          <Style Selector="^ /template/ Border#PART_LayoutRoot:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+          </Style>           
+
+          <!--  Pressed state  -->
+          <Style Selector="^:pressed /template/ Border#PART_LayoutRoot:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+          </Style>
+        
+          <!--  Disabled state  -->
+          <Style Selector="^:disabled /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+          </Style>
+        
+          <!--  Selected state  -->
+          <Style Selector="^:selected /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+          </Style>
+        
+          <!--  Selected PointerOver state  -->
+          <Style Selector="^:selected /template/ Border#PART_LayoutRoot:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+          </Style>
+        
+          <!--  Selected Pressed state  -->
+          <Style Selector="^:pressed:selected /template/ Border#PART_LayoutRoot:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+          </Style>
+        
+          <!--  Disabled Selected state  -->
+          <Style Selector="^:disabled:selected /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+          </Style>
         </Style>
       </TreeView.Styles>
     </TreeView>

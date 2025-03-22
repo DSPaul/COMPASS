@@ -194,6 +194,7 @@
         <Style Selector="^:empty /template/ Panel#PART_ExpandCollapseChevronContainer">
             <Setter Property="Width" Value="{StaticResource TreeViewItemExpandCollapseChevronSize}" />
         </Style>
+        
     </Style>
 
     <!-- Checkbox -->
