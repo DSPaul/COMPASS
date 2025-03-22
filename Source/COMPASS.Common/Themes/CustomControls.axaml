@@ -198,8 +198,11 @@
         <controls:IconButton Icon="About" Content="About"/>
         <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">
           <controls:CollapsableTabItem Header="Tags" Icon="Tags">
-            Some Tab content
+            tags context
           </controls:CollapsableTabItem>
+            <controls:CollapsableTabItem Header="Filters" Icon="Filter">
+                filter content
+            </controls:CollapsableTabItem>
         </TabControl>
         
           <controls:RatingControl Value="0" NumberOfStars="5" />

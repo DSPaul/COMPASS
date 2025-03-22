@@ -2,46 +2,49 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="using:COMPASS.Common.ViewModels.SidePanels"
              xmlns:models="using:COMPASS.Common.Models"
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:converters="using:COMPASS.Common.Converters"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.SidePanels.TagsSidePanel"
              x:DataType="vm:TagsPanelVM">
   <UserControl.Resources>
     <Thickness x:Key="TreeViewItemExpandCollapseChevronMargin"> 0, 0, 0, 0 </Thickness>
-    <!--<ContextMenu x:Key="TagContextMenu">
-      <MenuItem Header="New Tag" tools:AP.IconKind="TagPlusOutline" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.CreateChildCommand}"/>
-      <MenuItem Header="Edit" tools:AP.IconKind="Edit" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.EditTagCommand}"/>
-      <MenuItem Header="Delete" tools:AP.IconKind="Delete" Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.DeleteTagCommand}"/>
-      <Separator>
-        <Separator.Style>
-          <Style TargetType="Separator" BasedOn="{StaticResource MarginlessSeparator}">
-            -->
-    <!--Translate down 3 pixels to hide it when there is no content under it-->
-    <!--
-            <Setter Property="RenderTransform">
-              <Setter.Value>
-                <TranslateTransform Y="3"/>
-              </Setter.Value>
-            </Setter>
-          </Style>
-        </Separator.Style>
-      </Separator>
-      <MenuItem Header="Sort Children" tools:AP.IconKind="TagMultipleOutline" ToolTip="Sorts its children A->Z"
-                Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortChildrenCommand}"
-                Visibility="{Binding IsEnabled, RelativeSource={RelativeSource Mode=Self},
-                              Converter={StaticResource ToVisibilityConverter}}"/>
-    </ContextMenu>-->
-    <!--<ContextMenu x:Key="AllTagsContextMenu">
-      <MenuItem Header="Sort All Tags" tools:AP.IconKind="TagMultipleOutline" ToolTip="Sorts all the Tags and Tag Groups A->Z"
-          Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.SortAllTagsCommand}"/>
-      <MenuItem Header="Export Tags" tools:AP.IconKind="TagArrowUpOutline" ToolTip="Export tags to a file"
-          Command="{Binding Source={StaticResource TagsVMProxy}, Path=Data.ExportTagsCommand}"/>
-    </ContextMenu>-->
+    
+    <ContextMenu x:Key="TagContextMenu" x:DataType="models:Tag">
+      <MenuItem Header="New Tag" 
+                Icon="{materialIcons:MaterialIconExt TagPlusOutline}" 
+                Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).CreateChildCommand}"
+                CommandParameter="{Binding}"/>
+      <MenuItem Header="Edit" 
+                Icon="{materialIcons:MaterialIconExt Edit}" 
+                Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).EditTagCommand}"
+                CommandParameter="{Binding}"/>
+      <MenuItem Header="Delete" 
+                Icon="{materialIcons:MaterialIconExt Delete}" 
+                Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).DeleteTagCommand}"
+                CommandParameter="{Binding}"/>
+      <Separator/>
+      <MenuItem Header="Sort Children" 
+                Icon="{materialIcons:MaterialIconExt TagMultipleOutline}"
+                Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).SortChildrenCommand}"
+                CommandParameter="{Binding}"
+                ToolTip.Tip="Sorts its children A->Z"/>
+    </ContextMenu>
+    
+    <ContextMenu x:Key="AllTagsContextMenu" x:DataType="vm:TagsPanelVM">
+      <MenuItem Header="Sort All Tags" 
+                Icon="{materialIcons:MaterialIconExt TagMultipleOutline}" 
+                Command="{Binding SortAllTagsCommand}" 
+                ToolTip.Tip="Sorts all the Tags and Tag Groups A->Z"/>
+      <MenuItem Header="Export Tags" 
+                Command="{Binding ExportTagsCommand}"
+                Icon="{materialIcons:MaterialIconExt TagArrowUpOutline}" 
+                ToolTip.Tip="Export tags to a file"/>
+    </ContextMenu>
   </UserControl.Resources>
   <Grid Grid.IsSharedSizeScope="True">
     <!-- Grid instead of StackPanel so height is capped and scrolling works -->
@@ -179,24 +182,27 @@
                            ToolTip.Tip="Additional Actions" />
     </StackPanel>
     
-    <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="{x:Null}"  
-              Grid.Row="4"
+    <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="Transparent"  
+              Grid.Row="4" Margin="5" Cursor="Arrow"
               ItemsSource="{Binding Path=TreeViewSource, Mode=TwoWay}"  
-              Margin="5" Cursor="Arrow"
-              DragDrop.AllowDrop="True">
+              DragDrop.AllowDrop="True"
+              ContextMenu="{StaticResource AllTagsContextMenu}">
       <TreeView.ItemTemplate>
         <dataTemplates:TagTemplateSelector>
-          <TreeDataTemplate x:Key="RegularTag" DataType="models:TreeViewNode" ItemsSource="{Binding Children}">
+          <TreeDataTemplate x:Key="RegularTag" 
+                            DataType="models:TreeViewNode" 
+                            ItemsSource="{Binding Children}">
             <Button Cursor="Hand"
-                    Content="{Binding Tag.Content}"
-                    Background="{Binding Tag.BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
+                    DataContext="{Binding Tag}"
+                    Content="{Binding Content}"
+                    ContextMenu="{StaticResource TagContextMenu}"
                     Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).AddTagFilterCommand}"
-                    CommandParameter="{Binding Tag}">
+                    CommandParameter="{Binding}">
               <Button.Template>
                 <ControlTemplate TargetType="Button">
                   <Border CornerRadius="5" Margin="0,2"
-                          Background="{TemplateBinding Background}">
-                    <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="14"/>
+                          Background="{Binding BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}">
+                    <TextBlock Text="{Binding Content}" Margin="7,0" Foreground="White" FontSize="14"/>
                   </Border>
                 </ControlTemplate>
               </Button.Template>
@@ -204,24 +210,20 @@
           </TreeDataTemplate>
           
           <TreeDataTemplate x:Key="GroupTag" DataType="models:TreeViewNode" ItemsSource="{Binding Children}">
-            <Border Margin="0,3, 20, 0" Background="{x:Null}">
-              <StackPanel Orientation="Vertical">
-                <TextBlock x:Name="Label" Text="{Binding Tag.Content}" Foreground="LightGray" FontSize="16" FontWeight="Bold" />
-                <Rectangle Fill="{Binding Tag.BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
-                           Height="2" HorizontalAlignment="Stretch" 
-                           VerticalAlignment="Bottom"/>
+            <Border Margin="0,3, 20, 0" Background="Transparent">
+              <StackPanel Orientation="Vertical" DataContext="{Binding Tag}" ContextMenu="{StaticResource TagContextMenu}">
+                <TextBlock x:Name="Label" Text="{Binding Content}" Foreground="LightGray" FontSize="16" FontWeight="Bold" />
+                <Rectangle Fill="{Binding BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
+                           Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
               </StackPanel>
             </Border>
           </TreeDataTemplate>
         </dataTemplates:TagTemplateSelector>
       </TreeView.ItemTemplate>
-      <!--ContextMenu="{StaticResource AllTagsContextMenu}"
-        MouseRightButtonDown="TagTree_MouseRightButtonDown">-->
       <TreeView.Styles>
         <Style Selector="TreeViewItem">
           <Setter Property="IsExpanded" Value="{Binding $self.((models:TreeViewNode)DataContext).Expanded, Mode=TwoWay}"/>
           <Setter Property="IsSelected" Value="{Binding $self.((models:TreeViewNode)DataContext).Selected, Mode=TwoWay}"/>
-          <!--<Setter Property="ContextMenu" Value="{StaticResource TagContextMenu}"/>-->
         </Style>
       </TreeView.Styles>
     </TreeView>

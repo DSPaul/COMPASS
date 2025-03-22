@@ -59,6 +59,12 @@
         </Style>
     </Style>
     
+    <Style Selector=":is(Control).HideIfDisabled">
+        <Style Selector="^:disabled">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+    </Style>
+    
     <Style Selector="Window">
         <Setter Property="Icon" Value="/Assets/COMPASS.ico"/>
     </Style>

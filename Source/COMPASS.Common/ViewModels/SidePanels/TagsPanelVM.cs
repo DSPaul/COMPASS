@@ -28,18 +28,6 @@ namespace COMPASS.Common.ViewModels.SidePanels
         private readonly CodexCollection _codexCollection;
         private readonly FilterViewModel _filterVM;
 
-        //Tag for Context Menu
-        private Tag? _contextTag;
-        public Tag? ContextTag
-        {
-            get => _contextTag;
-            set
-            {
-                SetProperty(ref _contextTag, value);
-                SortChildrenCommand.NotifyCanExecuteChanged();
-            }
-        }
-
         //Selected tab from tabControl with options to add tags
         private int _selectedTab = 0;
         public int SelectedTab
@@ -61,6 +49,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
             }
         }
 
+        public int PrevSelectedTab { get ; set ; }
+        
         private bool _collapsed = false;
         public bool Collapsed
         {
@@ -223,15 +213,15 @@ namespace COMPASS.Common.ViewModels.SidePanels
         #endregion
 
         #region Tag Context Menu
-        private AsyncRelayCommand? _createChildCommand;
-        public AsyncRelayCommand CreateChildCommand => _createChildCommand ??= new(CreateChildTag);
-        private async Task CreateChildTag()
+        private AsyncRelayCommand<Tag?>? _createChildCommand;
+        public AsyncRelayCommand<Tag?> CreateChildCommand => _createChildCommand ??= new(CreateChildTag);
+        private async Task CreateChildTag(Tag? referenceTag)
         {
-            if (ContextTag is not null)
+            if (referenceTag is not null)
             {
                 Tag newTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags)
                 {
-                    Parent = ContextTag
+                    Parent = referenceTag
                 };
                 TagPropWindow tpw = new(new TagEditViewModel(newTag, true))
                 {
@@ -241,23 +231,23 @@ namespace COMPASS.Common.ViewModels.SidePanels
             }
         }
 
-        private RelayCommand? _sortChildrenCommand;
-        public RelayCommand SortChildrenCommand => _sortChildrenCommand ??= new(SortChildren, CanSortChildren);
-        public void SortChildren()
+        private RelayCommand<Tag?>? _sortChildrenCommand;
+        public RelayCommand<Tag?> SortChildrenCommand => _sortChildrenCommand ??= new(SortChildren, CanSortChildren);
+        public void SortChildren(Tag? parentTag)
         {
-            SortChildren(ContextTag);
+            RecursiveSortChildren(parentTag);
             BuildTagTreeView();
         }
-        public void SortChildren(Tag? tag)
+        public void RecursiveSortChildren(Tag? tag)
         {
             if (tag is null) return;
             tag.Children = new(tag.Children.OrderBy(t => t.Content));
             foreach (Tag child in tag.Children)
             {
-                SortChildren(child);
+                RecursiveSortChildren(child);
             }
         }
-        public bool CanSortChildren() => CanSortChildren(ContextTag);
+        
         public bool CanSortChildren(Tag? tag) => tag?.Children.Any() == true;
 
         private RelayCommand? _sortAllTagsCommand;
@@ -268,18 +258,18 @@ namespace COMPASS.Common.ViewModels.SidePanels
             {
                 Children = new(MainViewModel.CollectionVM.CurrentCollection.RootTags)
             };
-            SortChildren(t);
+            RecursiveSortChildren(t);
             MainViewModel.CollectionVM.CurrentCollection.RootTags = t.Children.ToList();
             BuildTagTreeView();
         }
 
-        private AsyncRelayCommand? _editTagCommand;
-        public AsyncRelayCommand EditTagCommand => _editTagCommand ??= new(EditTag);
-        public async Task EditTag()
+        private AsyncRelayCommand<Tag?>? _editTagCommand;
+        public AsyncRelayCommand<Tag?> EditTagCommand => _editTagCommand ??= new(EditTag);
+        public async Task EditTag(Tag? toEdit)
         {
-            if (ContextTag is not null)
+            if (toEdit is not null)
             {
-                TagPropWindow tpw = new(new TagEditViewModel(ContextTag, false))
+                TagPropWindow tpw = new(new TagEditViewModel(toEdit, false))
                 {
                     Topmost = true
                 };
@@ -287,22 +277,20 @@ namespace COMPASS.Common.ViewModels.SidePanels
             }
         }
 
-        private RelayCommand? _deleteTagCommand;
-        public RelayCommand DeleteTagCommand => _deleteTagCommand ??= new(DeleteTag);
+        private RelayCommand<Tag?>? _deleteTagCommand;
+        public RelayCommand<Tag?> DeleteTagCommand => _deleteTagCommand ??= new(DeleteTag);
 
-        public int PrevSelectedTab { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
-        public void DeleteTag()
+        public void DeleteTag(Tag? toDelete)
         {
             //tag to delete is context, because DeleteTag is called from context menu
-            if (ContextTag is null) return;
-            MainViewModel.CollectionVM.CurrentCollection.DeleteTag(ContextTag);
-            _filterVM.RemoveFilter(new TagFilter(ContextTag));
+            if (toDelete is null) return;
+            MainViewModel.CollectionVM.CurrentCollection.DeleteTag(toDelete);
+            _filterVM.RemoveFilter(new TagFilter(toDelete));
 
             //Go over all files and remove the tag from tag list
             foreach (var f in _codexCollection.AllCodices)
             {
-                f.Tags.Remove(ContextTag);
+                f.Tags.Remove(toDelete);
             }
 
             BuildTagTreeView();
