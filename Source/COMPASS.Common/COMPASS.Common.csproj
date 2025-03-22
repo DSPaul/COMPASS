@@ -64,15 +64,15 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.5" />
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
     <PackageReference Include="FuzzySharp" Version="2.0.2" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.74" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.0" />
     <PackageReference Include="itext7" Version="9.1.0" />
     <PackageReference Include="itext7.bouncy-castle-adapter" Version="9.1.0" />
     <PackageReference Include="log4net" Version="3.0.4" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.5.0" />
     <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.5" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="2.3.0" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.3.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Selenium.WebDriver" Version="4.29.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.30.0" />
     <PackageReference Include="SharpCompress" Version="0.39.0" />
   </ItemGroup>
   <ItemGroup>
