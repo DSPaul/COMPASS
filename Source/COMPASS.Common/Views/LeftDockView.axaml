@@ -7,7 +7,7 @@
              xmlns:tools="using:COMPASS.Common.Tools"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:panels="using:COMPASS.Common.Views.SidePanels"
-             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.LeftDockView"
              x:DataType="vm:LeftDockViewModel">
   <UserControl.Styles>
@@ -47,7 +47,7 @@
       <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>
       <!--<Setter Property="Typography.Capitals" Value="AllSmallCaps"/>-->
-      <Setter Property="FontWeight" Value="Medium"/>
+      <Setter Property="FontWeight" Value="DemiBold"/>
     </Style>
   </UserControl.Styles>
     

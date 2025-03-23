@@ -6,7 +6,6 @@
              xmlns:conv="using:COMPASS.Common.Converters"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:view="using:COMPASS.Common.Views"
-             Background="{StaticResource WindowBackground}"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="250"
              x:Class="COMPASS.Common.Views.TagEditBasicView"
              Focusable="True"
@@ -29,7 +28,7 @@
                           Margin="5,0"
                           HorizontalAlignment="Stretch"
                           Background="{Binding TempTag.InternalBackgroundColor, Converter={x:Static conv:FuncConverters.ColorToBrush}}">
-                <ToggleButton.Flyout>
+                <Button.Flyout>
                     <Flyout Placement="Right" HorizontalOffset="10">
                         <StackPanel>
                             <view:ColorPicker Height="135" Width="166"
@@ -38,7 +37,7 @@
                                     Command="{Binding ColorSameAsParentCommand}" FontSize="12" />
                         </StackPanel>
                     </Flyout>
-                </ToggleButton.Flyout>
+                </Button.Flyout>
                 <ToggleButton.Template>
                     <ControlTemplate>
                         <Border Background="{TemplateBinding Background}"
@@ -58,10 +57,18 @@
                                  Grid.Column="0" 
                                  HorizontalContentAlignment="Center"
                                  Background="{StaticResource CancelFill}" />
-            <controls:IconButton Command="{Binding OKCommand}" Icon="Check"
+            <controls:IconButton Command="{Binding OKCommand}" Icon="Check" 
                                  Grid.Column="2" IsDefault="True"
-                                 HorizontalContentAlignment="Center"
-                                 Background="{StaticResource AcceptFill}" />
+                                 HorizontalContentAlignment="Center">
+                <controls:IconButton.Styles>
+                    <Style Selector="controls|IconButton">
+                        <Setter Property="Background" Value="{StaticResource AcceptFill}"></Setter>
+                        <Style Selector="^[IsEffectivelyEnabled=false]">
+                            <Setter Property="Background" Value="{StaticResource Layer5}"></Setter>
+                        </Style>
+                    </Style>
+                </controls:IconButton.Styles>
+            </controls:IconButton>
         </Grid>
     </StackPanel>
 

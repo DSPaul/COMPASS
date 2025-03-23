@@ -53,9 +53,8 @@ namespace COMPASS.Common.Controls
 
         private void TabItemClicked(object? sender, TappedEventArgs e)
         {
-            var c = sender as Control;
-            if (c!.DataContext is not IDealsWithTabControl vm) return;
-
+            if (DataContext is not IDealsWithTabControl vm) return;
+            
             //Click open tab -> collapse
             if (vm.PrevSelectedTab == TabIndex)
             {

@@ -9,7 +9,7 @@
              x:DataType="vm:AddCodexPanelVM"
              x:Class="COMPASS.Common.Views.SidePanels.AddCodexSidePanel">
   <ScrollViewer Padding="10">
-    <StackPanel Grid.IsSharedSizeScope="True">
+    <StackPanel Grid.IsSharedSizeScope="True" Spacing="10" Margin="15,0">
       <StackPanel.Styles>
         <Style Selector="controls|IconButton">
           <Setter Property="Padding" Value="15,7"/>
@@ -32,7 +32,7 @@
       <controls:IconButton Icon="GoogleDrive" Content="Google Drive"
           Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GoogleDrive}"/>
       
-      <Button Command="{Binding ImportCommand}" 
+      <Button Command="{Binding ImportCommand}"
               CommandParameter="{x:Static import:ImportSource.Homebrewery}">
         <Button.Template>
           <ControlTemplate>

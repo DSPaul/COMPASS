@@ -8,261 +8,206 @@
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:converters="using:COMPASS.Common.Converters"
+             xmlns:views="using:COMPASS.Common.Views"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.SidePanels.TagsSidePanel"
              x:DataType="vm:TagsPanelVM">
-  <UserControl.Resources>
-    <Thickness x:Key="TreeViewItemExpandCollapseChevronMargin"> 0, 0, 0, 0 </Thickness>
-    
-    <ContextMenu x:Key="TagContextMenu" x:DataType="models:TreeViewNode">
-      <MenuItem Header="New Tag" 
-                Icon="{materialIcons:MaterialIconExt TagPlusOutline}" 
-                Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).CreateChildCommand}"
-                CommandParameter="{Binding Tag}"/>
-      <MenuItem Header="Edit" 
-                Icon="{materialIcons:MaterialIconExt Edit}" 
-                Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).EditTagCommand}"
-                CommandParameter="{Binding Tag}"/>
-      <MenuItem Header="Delete" 
-                Icon="{materialIcons:MaterialIconExt Delete}" 
-                Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).DeleteTagCommand}"
-                CommandParameter="{Binding Tag}"/>
-      <Separator/>
-      <MenuItem Header="Sort Children" 
-                Icon="{materialIcons:MaterialIconExt TagMultipleOutline}"
-                Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).SortChildrenCommand}"
-                CommandParameter="{Binding Tag}"
-                ToolTip.Tip="Sorts its children A->Z"/>
-    </ContextMenu>
-    
-    <ContextMenu x:Key="AllTagsContextMenu" x:DataType="vm:TagsPanelVM">
-      <MenuItem Header="Sort All Tags" 
-                Icon="{materialIcons:MaterialIconExt TagMultipleOutline}" 
-                Command="{Binding SortAllTagsCommand}" 
-                ToolTip.Tip="Sorts all the Tags and Tag Groups A->Z"/>
-      <MenuItem Header="Export Tags" 
-                Command="{Binding ExportTagsCommand}"
-                Icon="{materialIcons:MaterialIconExt TagArrowUpOutline}" 
-                ToolTip.Tip="Export tags to a file"/>
-    </ContextMenu>
-  </UserControl.Resources>
-  <Grid Grid.IsSharedSizeScope="True">
-    <!-- Grid instead of StackPanel so height is capped and scrolling works -->
-    <Grid.RowDefinitions>
-      <RowDefinition Height="auto"/>
-      <RowDefinition Height="auto"/>
-      <RowDefinition Height="auto"/>
-      <RowDefinition Height="auto"/>
-      <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
-    <!--<TabControl Grid.Row="0" Margin="30,10,30,10" Background="Transparent"
-                BorderThickness="0" Padding="2,0,2,0"
-                SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
-      <TabControl.Resources>
-        <tools:BindingProxy x:Key="TagsTabsCollapsedProxy" Data="{Binding}"/>
-        <Style TargetType="TabItem">
-          <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="Margin" Value="0"/>
-          <Setter Property="Cursor" Value="Hand"/>
-          <Setter Property="Template">
-            <Setter.Value>
-              <ControlTemplate TargetType="TabItem">
-                <Border x:Name="TabBorder" MouseDown="TabItemClick" Width="60">
-                  <Border Background="Transparent" RenderTransformOrigin="0.5,0.5">
-                    <Border.Style>
-                      <Style TargetType="Border">
-                        <Style.Triggers>
-                          <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="RenderTransform">
-                              <Setter.Value>
-                                <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
-                              </Setter.Value>
-                            </Setter>
-                          </Trigger>
-                        </Style.Triggers>
-                      </Style>
-                    </Border.Style>
-                    <materialDesign:PackIcon Height="20" Width="20" Name="TabIcon" Margin="10,10,10,5"
-                                              HorizontalAlignment="Center" Kind="{TemplateBinding tools:AP.IconKind}"/>
-                  </Border>
-                </Border>
-                <ControlTemplate.Triggers>
-                  <Trigger Property="IsSelected" Value="True">
-                    <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource Layer6}"/>
-                  </Trigger>
-                  <Trigger Property="IsSelected" Value="False">
-                    <Setter TargetName="TabBorder" Property="Background" Value="{StaticResource Layer5}"/>
-                  </Trigger>
-                  <Trigger Property="Header" Value="New Tag">
-                    <Setter TargetName="TabBorder" Property="CornerRadius" Value="5,0,0,0"/>
-                  </Trigger>
-                  <Trigger Property="Header" Value="Import Tags">
-                    <Setter TargetName="TabBorder" Property="CornerRadius" Value="0,5,0,0"/>
-                  </Trigger>
-                </ControlTemplate.Triggers>
-              </ControlTemplate>
-            </Setter.Value>
-          </Setter>
-        </Style>
-        <Style TargetType="ContentControl" x:Key="TagsTabContentWrapper">
-          <Setter Property="Visibility" Value="{Binding Data.Collapsed, Source={StaticResource TagsTabsCollapsedProxy}, 
-                                  Converter={StaticResource ToVisibilityConverter}, ConverterParameter=True}"/>
-          <Setter Property="Cursor" Value="Arrow"/>
-          <Setter Property="Template">
-            <Setter.Value>
-              <ControlTemplate>
-                <Border CornerRadius="0,0,5,5" Background="{StaticResource Layer6}">
-                  <Grid>
-                    <Grid.RowDefinitions>
-                      <RowDefinition Height="auto"/>
-                      <RowDefinition Height="auto"/>
-                      <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                      <materialDesign:PackIcon Height="20" Width="20" HorizontalAlignment="Center"
-                              Margin="5"  Kind="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.IconKind)}"/>
-                      <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(tools:AP.Header)}" FontSize="16"/>
+    <UserControl.Resources>
+        <Thickness x:Key="TreeViewItemExpandCollapseChevronMargin"> 0, 0, 0, 0 </Thickness>
+
+        <ContextMenu x:Key="TagContextMenu" x:DataType="models:TreeViewNode">
+            <MenuItem Header="New Tag"
+                      Icon="{materialIcons:MaterialIconExt TagPlusOutline}"
+                      Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).CreateChildCommand}"
+                      CommandParameter="{Binding Tag}" />
+            <MenuItem Header="Edit"
+                      Icon="{materialIcons:MaterialIconExt Edit}"
+                      Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).EditTagCommand}"
+                      CommandParameter="{Binding Tag}" />
+            <MenuItem Header="Delete"
+                      Icon="{materialIcons:MaterialIconExt Delete}"
+                      Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).DeleteTagCommand}"
+                      CommandParameter="{Binding Tag}" />
+            <Separator />
+            <MenuItem Header="Sort Children"
+                      Icon="{materialIcons:MaterialIconExt TagMultipleOutline}"
+                      Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).SortChildrenCommand}"
+                      CommandParameter="{Binding Tag}"
+                      ToolTip.Tip="Sorts its children A->Z" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="AllTagsContextMenu" x:DataType="vm:TagsPanelVM">
+            <MenuItem Header="Sort All Tags"
+                      Icon="{materialIcons:MaterialIconExt TagMultipleOutline}"
+                      Command="{Binding SortAllTagsCommand}"
+                      ToolTip.Tip="Sorts all the Tags and Tag Groups A->Z" />
+            <MenuItem Header="Export Tags"
+                      Command="{Binding ExportTagsCommand}"
+                      Icon="{materialIcons:MaterialIconExt TagArrowUpOutline}"
+                      ToolTip.Tip="Export tags to a file" />
+        </ContextMenu>
+    </UserControl.Resources>
+    <Grid Grid.IsSharedSizeScope="True">
+        <!-- Grid instead of StackPanel so height is capped and scrolling works -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="0" Margin="20,10" Background="Transparent"
+                    BorderThickness="0" Padding="2,0" HorizontalAlignment="Stretch"
+                    SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
+            <TabControl.Resources>
+                <ControlTheme TargetType="controls:CollapsableTabItem" x:Key="{x:Type controls:CollapsableTabItem}">
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Cursor" Value="Hand" />
+                    <Setter Property="Background" Value="{StaticResource Layer5}" />
+                    <Style Selector="^:selected">
+                        <Setter Property="Background" Value="{StaticResource Layer6}" />
+                    </Style>
+                    <Setter Property="Template">
+                        <ControlTemplate TargetType="controls:CollapsableTabItem">
+                            <Border CornerRadius="{TemplateBinding CornerRadius}"
+                                    Background="{TemplateBinding Background}"
+                                    ToolTip.Tip="{TemplateBinding Header}">
+                                <Border Classes="ZoomOnHover" Background="Transparent">
+                                    <materialIcons:MaterialIcon Height="20" Width="20" Margin="10,10,10,5"
+                                                                HorizontalAlignment="Center"
+                                                                Kind="{TemplateBinding Icon}" />
+                                </Border>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter>
+                </ControlTheme>
+            </TabControl.Resources>
+            <TabControl.Styles>
+                <Style Selector="controls|CollapsableTabItem > ContentControl">
+                    <Setter Property="Margin" Value="-2,-2,-2,0"/>
+                    <Setter Property="Template">
+                        <ControlTemplate TargetType="ContentControl">
+                            <Border CornerRadius="0,0,5,5" MinHeight="5"
+                                    Background="{Binding $parent[controls:CollapsableTabItem].Background}">
+                                <StackPanel IsVisible="{Binding $parent[controls:CollapsableTabItem].Header, 
+                                                Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                        <materialIcons:MaterialIcon Height="20" Width="20" HorizontalAlignment="Center"
+                                                                    Margin="5"
+                                                                    Kind="{Binding $parent[controls:CollapsableTabItem].Icon}" />
+                                        <TextBlock Text="{Binding $parent[controls:CollapsableTabItem].Header}" FontSize="16" />
+                                    </StackPanel>
+                                    <Rectangle Height="3" Fill="{StaticResource Separator}" />
+                                    <ContentPresenter Content="{TemplateBinding Content}" Padding="5,0" />
+                                </StackPanel>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter>
+                </Style>
+            </TabControl.Styles>
+            <TabControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1"/>
+                </ItemsPanelTemplate>
+            </TabControl.ItemsPanel>
+            <controls:CollapsableTabItem Background="{StaticResource Layer5}" Header="" IsVisible="False"> <!-- Hidden tab for collapsed -->
+                <ContentControl />
+            </controls:CollapsableTabItem>
+
+            <controls:CollapsableTabItem Header="New Tag" Icon="TagPlusOutline" CornerRadius="5,0,0,0">
+                <ContentControl>
+                    <views:TagEditBasicView DataContext="{Binding AddTagViewModel}" />
+                </ContentControl>
+            </controls:CollapsableTabItem>
+            <controls:CollapsableTabItem Header="New Group" Icon="FolderPlusOutline">
+                <ContentControl>
+                    <views:TagEditBasicView DataContext="{Binding AddGroupViewModel}" />
+                </ContentControl>
+            </controls:CollapsableTabItem>
+            <controls:CollapsableTabItem Header="Import Tags" Icon="TagArrowDownOutline" CornerRadius="0,5,0,0">
+                <ContentControl>
+                    <StackPanel>
+                        <Button Background="{StaticResource Layer4}" Margin="5"
+                                Command="{Binding ImportTagsFromOtherCollectionsCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left">
+                            <TextBlock Text="From another collection..." TextWrapping="Wrap" />
+                        </Button>
+                        <Button Background="{StaticResource Layer4}" Margin="5,0,5,5"
+                                HorizontalAlignment="Stretch"
+                                Command="{Binding ImportTagsFromSatchelCommand}" HorizontalContentAlignment="Left">
+                            <TextBlock Text="From a .satchel file..." TextWrapping="Wrap" />
+                        </Button>
                     </StackPanel>
-                    <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource Separator}"/>
-                    <ContentPresenter Grid.Row="2" Cursor="Arrow" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"/>
-                  </Grid>
-                </Border>
-              </ControlTemplate>
-            </Setter.Value>
-          </Setter>
-        </Style>
-      </TabControl.Resources>
-      <TabItem Visibility="Collapsed">
-        <Border CornerRadius="0,0,5,5" Margin="0,-1,0,0" Height="5" Background="{StaticResource Layer5}"/>
-      </TabItem>
-      <TabItem Header="New Tag" tools:AP.IconKind="TagPlusOutline" ToolTip="Create a New Tag">
-        <ContentControl tools:AP.Header="New Tag" tools:AP.IconKind="TagPlusOutline"
-                        Style="{StaticResource TagsTabContentWrapper}">
-          <views:TagEditView DataContext="{Binding AddTagViewModel}"/>
-        </ContentControl>
-      </TabItem>
-      <TabItem Header="New Group" tools:AP.IconKind="FolderPlusOutline" ToolTip="Create a New Tag Group">
-        <ContentControl tools:AP.Header="New Group" tools:AP.IconKind="FolderPlusOutline"
-            Style="{StaticResource TagsTabContentWrapper}">
-          <views:TagEditView DataContext="{Binding AddGroupViewModel}"/>
-        </ContentControl>
-      </TabItem>
-      <TabItem Header="Import Tags" tools:AP.IconKind="TagArrowDownOutline" ToolTip="Import Tags">
-        <ContentControl tools:AP.Header="Import Tags" tools:AP.IconKind="TagArrowDownOutline"
-                Style="{StaticResource TagsTabContentWrapper}">
-          <StackPanel>
-            <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}" Margin="5"
-                    Command="{Binding ImportTagsFromOtherCollectionsCommand}" HorizontalContentAlignment="Left">
-              <TextBlock Text="From another collection..." TextWrapping="Wrap"/>
-            </Button>
-            <Button Style="{StaticResource TextButton}" Background="{StaticResource Layer4}" Margin="5,0,5,5"
-                    Command="{Binding ImportTagsFromSatchelCommand}" HorizontalContentAlignment="Left">
-              <TextBlock Text="From a .satchel file..." TextWrapping="Wrap"/>
-            </Button>
-          </StackPanel>
-        </ContentControl>
-      </TabItem>
-    </TabControl>-->
-    <!--<Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="2"/>-->
+                </ContentControl>
+            </controls:CollapsableTabItem>
+        </TabControl>
+        <Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="2" />
 
-    <!-- Include Exclude selection -->
-    <StackPanel Grid.Row="3" Orientation="Horizontal" 
-                HorizontalAlignment="Center" VerticalAlignment="Top" 
-                Margin="0,10,0,0">
-      
-      <controls:FilterModeSelector Include="{Binding ModeIsInclude}"/>
-      
-      <controls:IconButton Icon="DotsVertical"
-                           Theme="{StaticResource IconOnly}"
-                           Width="30" Height="30" Margin="10,0,0,0"
-                           Background="{StaticResource Layer4}"
-                           Foreground="{StaticResource TextMutedColor}" 
-                           Tapped="Toggle_ContextMenu" 
-                           ContextMenu="{StaticResource AllTagsContextMenu}"
-                           ToolTip.Tip="Additional Actions" />
-    </StackPanel>
-    
-    <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="Transparent"  
-              Grid.Row="4" Margin="5" Cursor="Arrow"
-              ItemsSource="{Binding Path=TreeViewSource, Mode=TwoWay}"  
-              DragDrop.AllowDrop="True"
-              ContextMenu="{StaticResource AllTagsContextMenu}">
-      <TreeView.ItemTemplate>
-        <dataTemplates:TagTemplateSelector>
-          <TreeDataTemplate x:Key="RegularTag" DataType="models:TreeViewNode" ItemsSource="{Binding Children}">
-              <Button ContextMenu="{StaticResource TagContextMenu}" Margin="0"
-                      Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).AddTagFilterCommand}"
-                      CommandParameter="{Binding Tag}">
-                <Button.Template>
-                  <ControlTemplate TargetType="Button">
-                    <Border CornerRadius="5" Margin="0,2"
-                            Background="{Binding Tag.BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}">
-                      <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="14"/>
-                    </Border>
-                  </ControlTemplate>
-                </Button.Template>
-              </Button>
-          </TreeDataTemplate>
-          
-          <TreeDataTemplate x:Key="GroupTag" DataType="models:TreeViewNode" ItemsSource="{Binding Children}">
-            <Border Margin="0,3, 20, 0" Background="Transparent" ContextMenu="{StaticResource TagContextMenu}">
-              <StackPanel Orientation="Vertical">
-                <TextBlock x:Name="Label" Text="{Binding Tag.Content}" Foreground="LightGray" FontSize="16" FontWeight="Bold" />
-                <Rectangle Fill="{Binding Tag.BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
-                           Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
-              </StackPanel>
-            </Border>
-          </TreeDataTemplate>
-        </dataTemplates:TagTemplateSelector>
-      </TreeView.ItemTemplate>
-      <TreeView.Styles>
-        <Style Selector="TreeViewItem">
-          <Setter Property="IsExpanded" Value="{Binding $self.((models:TreeViewNode)DataContext).Expanded, Mode=TwoWay}"/>
-          <Setter Property="IsSelected" Value="{Binding $self.((models:TreeViewNode)DataContext).Selected, Mode=TwoWay}"/>
-          
-          <!--  PointerOver state  -->
-          <Style Selector="^ /template/ Border#PART_LayoutRoot:pointerover">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-          </Style>           
+        <!-- Include Exclude selection -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal"
+                    HorizontalAlignment="Center" VerticalAlignment="Top"
+                    Margin="0,10,0,0">
 
-          <!--  Pressed state  -->
-          <Style Selector="^:pressed /template/ Border#PART_LayoutRoot:pointerover">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-          </Style>
-        
-          <!--  Disabled state  -->
-          <Style Selector="^:disabled /template/ Border#PART_LayoutRoot">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-          </Style>
-        
-          <!--  Selected state  -->
-          <Style Selector="^:selected /template/ Border#PART_LayoutRoot">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-          </Style>
-        
-          <!--  Selected PointerOver state  -->
-          <Style Selector="^:selected /template/ Border#PART_LayoutRoot:pointerover">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-          </Style>
-        
-          <!--  Selected Pressed state  -->
-          <Style Selector="^:pressed:selected /template/ Border#PART_LayoutRoot:pointerover">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-          </Style>
-        
-          <!--  Disabled Selected state  -->
-          <Style Selector="^:disabled:selected /template/ Border#PART_LayoutRoot">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-          </Style>
-        </Style>
-      </TreeView.Styles>
-    </TreeView>
-  </Grid>
+            <controls:FilterModeSelector Include="{Binding ModeIsInclude}" />
+
+            <controls:IconButton Icon="DotsVertical"
+                                 Theme="{StaticResource IconOnly}"
+                                 Width="30" Height="30" Margin="10,0,0,0"
+                                 Background="{StaticResource Layer4}"
+                                 Foreground="{StaticResource TextMutedColor}"
+                                 Tapped="Toggle_ContextMenu"
+                                 ContextMenu="{StaticResource AllTagsContextMenu}"
+                                 ToolTip.Tip="Additional Actions" />
+        </StackPanel>
+
+        <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="Transparent"
+                  Grid.Row="4" Margin="5" Classes="NoSelection"
+                  ItemsSource="{Binding Path=TreeViewSource, Mode=TwoWay}"
+                  DragDrop.AllowDrop="True"
+                  ContextMenu="{StaticResource AllTagsContextMenu}">
+            <TreeView.ItemTemplate>
+                <dataTemplates:TagTemplateSelector>
+                    <TreeDataTemplate x:Key="RegularTag" DataType="models:TreeViewNode"
+                                      ItemsSource="{Binding Children}">
+                        <Button ContextMenu="{StaticResource TagContextMenu}" Margin="0"
+                                Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).AddTagFilterCommand}"
+                                CommandParameter="{Binding Tag}">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border CornerRadius="5" Margin="0,2"
+                                            Background="{Binding Tag.BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}">
+                                        <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White"
+                                                   FontSize="14" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </TreeDataTemplate>
+
+                    <TreeDataTemplate x:Key="GroupTag" DataType="models:TreeViewNode" ItemsSource="{Binding Children}">
+                        <Border Margin="0,3, 20, 0" Background="Transparent"
+                                ContextMenu="{StaticResource TagContextMenu}">
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock x:Name="Label" Text="{Binding Tag.Content}" Foreground="LightGray"
+                                           FontSize="16" FontWeight="Bold" />
+                                <Rectangle
+                                    Fill="{Binding Tag.BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
+                                    Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+                            </StackPanel>
+                        </Border>
+                    </TreeDataTemplate>
+                </dataTemplates:TagTemplateSelector>
+            </TreeView.ItemTemplate>
+            <TreeView.Styles>
+                <Style Selector="TreeViewItem">
+                    <Setter Property="IsExpanded"
+                            Value="{Binding $self.((models:TreeViewNode)DataContext).Expanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected"
+                            Value="{Binding $self.((models:TreeViewNode)DataContext).Selected, Mode=TwoWay}" />
+                </Style>
+            </TreeView.Styles>
+        </TreeView>
+    </Grid>
 </UserControl>

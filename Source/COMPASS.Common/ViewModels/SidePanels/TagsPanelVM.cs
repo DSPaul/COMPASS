@@ -45,6 +45,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
                         AddGroup();
                         break;
                 }
+                PrevSelectedTab = _selectedTab;
                 SetProperty(ref _selectedTab, value);
             }
         }

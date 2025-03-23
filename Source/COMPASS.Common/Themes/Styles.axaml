@@ -14,7 +14,7 @@
             <CheckBox IsHitTestVisible="False">unchecked readonly checkbox</CheckBox>
             <CheckBox IsHitTestVisible="False" IsChecked="True">checked readonly checkbox</CheckBox>
             <!-- Slider -->
-            <Slider Value="200" Minimum="50" Maximum="400" TickFrequency="5" Margin="5"/>
+            <Slider Value="200" Minimum="50" Maximum="400" TickFrequency="5" Margin="5" />
             <!-- Context Menu -->
             <ContextMenu>
                 <MenuItem Header="MenuItem" Tag="Filter"></MenuItem>
@@ -43,6 +43,7 @@
     <!--General Classes-->
     <Style Selector="ContentPresenter">
         <Setter Property="FontFamily" Value="{StaticResource HostGroteskFont}" />
+        <Setter Property="FontWeight" Value="Light" />
     </Style>
 
     <Style Selector=":is(Control).ZoomOnHover">
@@ -58,24 +59,24 @@
             <Setter Property="RenderTransform" Value="scale(1.1)" />
         </Style>
     </Style>
-    
+
     <Style Selector=":is(Control).HideIfDisabled">
         <Style Selector="^:disabled">
             <Setter Property="IsVisible" Value="False" />
         </Style>
     </Style>
-    
+
     <Style Selector="Window">
-        <Setter Property="Icon" Value="/Assets/COMPASS.ico"/>
+        <Setter Property="Icon" Value="/Assets/COMPASS.ico" />
     </Style>
-    
+
     <!--Material Icon-->
     <Style Selector="materialIcons|MaterialIcon">
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Width" Value="20"/>
-        <Setter Property="Height" Value="20"/>
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
     </Style>
 
     <!--TextBlock-->
@@ -105,35 +106,34 @@
         <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
         <Setter Property="Foreground" Value="{StaticResource TextColor}" />
         <Setter Property="BorderBrush" Value="{x:Null}" />
-        <Setter Property="Margin" Value="10,3" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Style Selector="^:pointerover">
             <Setter Property="Background" Value="{StaticResource ButtonFocus}" />
         </Style>
     </Style>
-    
-    <Style Selector=":is(Button):pointerover">
+
+    <Style Selector=":is(Button)[IsEffectivelyEnabled=true]">
         <Setter Property="Cursor" Value="Hand" />
     </Style>
-    
+
     <!-- Button -->
     <Style Selector="views|MainView Button">
         <Setter Property="Padding" Value="15,5" />
     </Style>
-    
+
     <!--Blank button-->
     <Style Selector="Button.BlankButton">
-        <Setter Property="Background" Value="{StaticResource TransparentBlack}"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Background" Value="{StaticResource TransparentBlack}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <ContentPresenter Content="{TemplateBinding Content}"/>
+                    <ContentPresenter Content="{TemplateBinding Content}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -141,14 +141,14 @@
 
     <!-- Slider -->
     <Style Selector="Slider">
-        <Setter Property="Foreground" Value="{StaticResource AccentColorMuted}"/>
+        <Setter Property="Foreground" Value="{StaticResource AccentColorMuted}" />
         <Style Selector="^ /template/ RepeatButton">
-            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Margin" Value="0" />
         </Style>
-        
+
     </Style>
 
-    
+
     <!-- Tree view Items -->
     <Style Selector="TreeViewItem">
         <Style.Resources>
@@ -198,12 +198,55 @@
         <Style Selector="^:empty /template/ Panel#PART_ExpandCollapseChevronContainer">
             <Setter Property="Width" Value="{StaticResource TreeViewItemExpandCollapseChevronSize}" />
         </Style>
-        
+
+    </Style>
+
+    <Style Selector="TreeView.NoSelection TreeViewItem">
+        <!--  PointerOver state  -->
+        <Style Selector="^ /template/ Border#PART_LayoutRoot:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <!--  Pressed state  -->
+        <Style Selector="^:pressed /template/ Border#PART_LayoutRoot:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <!--  Disabled state  -->
+        <Style Selector="^:disabled /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <!--  Selected state  -->
+        <Style Selector="^:selected /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <!--  Selected PointerOver state  -->
+        <Style Selector="^:selected /template/ Border#PART_LayoutRoot:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <!--  Selected Pressed state  -->
+        <Style Selector="^:pressed:selected /template/ Border#PART_LayoutRoot:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <!--  Disabled Selected state  -->
+        <Style Selector="^:disabled:selected /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
     </Style>
 
     <!-- Checkbox -->
     <Style Selector="CheckBox">
-        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Template">
             <Setter.Value>
@@ -217,6 +260,10 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        
+        <Style Selector="^[IsEffectivelyEnabled=true]">
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
 
         <!-- readonly unchecked -->
         <Style Selector="^[IsHitTestVisible=false]">
@@ -256,13 +303,13 @@
             </Style>
         </Style>
     </Style>
-    
+
     <!-- contextmenu -->
     <Style Selector="MenuItem">
-       <Style Selector="^ materialIcons|MaterialIcon">
-           <Style Selector="^:disabled">
-               <Setter Property="Foreground" Value="{StaticResource TextControlForegroundDisabled}"/>
-           </Style>
-       </Style>
+        <Style Selector="^ materialIcons|MaterialIcon">
+            <Style Selector="^:disabled">
+                <Setter Property="Foreground" Value="{StaticResource TextControlForegroundDisabled}" />
+            </Style>
+        </Style>
     </Style>
 </Styles>

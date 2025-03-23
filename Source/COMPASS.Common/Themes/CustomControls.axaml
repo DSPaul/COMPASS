@@ -35,7 +35,7 @@
 
     <!--Icon Button With text-->
     <ControlTheme TargetType="controls:IconButton" x:Key="{x:Type controls:IconButton}">
-        <Setter Property="Padding" Value="15,5" />
+        <Setter Property="Padding" Value="5,5" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Border Background="{TemplateBinding Background}"
@@ -48,9 +48,10 @@
                             <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon" />
                             <ColumnDefinition Width="*" SharedSizeGroup="ButtonText" />
                         </Grid.ColumnDefinitions>
-                        <materialIcons:MaterialIcon Height="20" Width="20" Margin="0,0,10,0"
+                        <materialIcons:MaterialIcon Height="20" Width="20" Margin="5,0"
                                                     Kind="{TemplateBinding Icon}" />
-                        <ContentPresenter Grid.Column="1"
+                        <ContentPresenter Grid.Column="1" Margin="5,0" 
+                                          IsVisible="{TemplateBinding Content, Converter={x:Static ObjectConverters.IsNotNull}}"
                                           VerticalAlignment="{TemplateBinding VerticalAlignment}"
                                           Content="{TemplateBinding Content}" />
                     </Grid>
@@ -209,6 +210,15 @@
                 <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}" />
                 <controls:IconButton Icon="About" Content="About" />
                 <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">
+                    <controls:CollapsableTabItem Header="Tags" Icon="Tags">
+                        tags context
+                    </controls:CollapsableTabItem>
+                    <controls:CollapsableTabItem Header="Filters" Icon="Filter">
+                        filter content
+                    </controls:CollapsableTabItem>
+                </TabControl>
+                
+                <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Top">
                     <controls:CollapsableTabItem Header="Tags" Icon="Tags">
                         tags context
                     </controls:CollapsableTabItem>
