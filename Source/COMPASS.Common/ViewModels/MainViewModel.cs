@@ -129,8 +129,8 @@ namespace COMPASS.Common.ViewModels
             get => _currentLayout;
             set => SetProperty(ref _currentLayout, value);
         }
-        
-        public IList<LayoutViewModel> AllLayouts { get; private set; }
+
+        public IList<LayoutViewModel> AllLayouts { get; private set; } = [];
         
         public LeftDockViewModel LeftDockVM { get; init; }
 

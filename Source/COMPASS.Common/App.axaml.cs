@@ -41,8 +41,7 @@ public partial class App : Application
             else
             {
                 // Open splash screen
-                _splashScreenWindow = new SplashScreenWindow();
-                desktop.MainWindow = _splashScreenWindow;
+                desktop.MainWindow = MainWindow =_splashScreenWindow = new SplashScreenWindow();
                 
                 // delegate actual application start to when UI thread has time again
                 Dispatcher.UIThread.Post(() => CompleteApplicationStart(), DispatcherPriority.Background);
@@ -72,17 +71,21 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             //Build container
-            MainWindow = new MainWindow();
+            var mainWindow = new MainWindow();
             Container = BuildContainer(MainWindow);
             
             //load and set vm
             var mainVm =  new MainViewModel();
-            MainWindow.DataContext = mainVm;
+            mainWindow.DataContext = mainVm;
 
-            desktop.MainWindow = MainWindow;
+            desktop.MainWindow = mainWindow;
 
             // Show main window to avoid framework shutdown when closing splash screen
-            MainWindow.Show();
+            mainWindow.Show();
+            
+            //must be done after window is shown, as notification service will use it as parent
+            //and showing a notification on a non visible window causes a crash
+            MainWindow = mainWindow; 
 
             // Finally, close the splash screen
             _splashScreenWindow?.Close();

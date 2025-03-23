@@ -68,7 +68,6 @@ namespace COMPASS.Common.ViewModels
 
             MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.CollectionChanged += (_, _) => OnPropertyChanged(nameof(AutoImportFolders));
             MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.CollectionChanged += (_, _) => OnPropertyChanged(nameof(BanishedPaths));
-            MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.CollectionChanged += (_, _) => OnPropertyChanged(nameof(FolderTagPairs));
         }
         #endregion
 
@@ -209,66 +208,48 @@ namespace COMPASS.Common.ViewModels
         #endregion
 
         #region Link Folders to Tag
+        
 
-        public ObservableCollection<FolderTagPair> FolderTagPairs => new(MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.OrderBy(pair => pair.Folder));
-
-        public List<Tag> AllTags => MainViewModel.CollectionVM.CurrentCollection.AllTags;
-
-        //Remove a directory from auto import
-        private RelayCommand<FolderTagPair>? _removeFolderTagPairCommand;
-        public RelayCommand<FolderTagPair> RemoveFolderTagPairCommand => _removeFolderTagPairCommand ??= new(pair =>
-            MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Remove(pair!));
-
-        //Add a directory from auto import
-        private RelayCommand<FolderTagPair>? _addFolderTagPairCommand;
-        public RelayCommand<FolderTagPair> AddFolderTagPairCommand => _addFolderTagPairCommand ??= new(AddFolderTagPair);
-        private void AddFolderTagPair(FolderTagPair? pair)
-        {
-            if (pair is null || String.IsNullOrWhiteSpace(pair.Folder) || pair.Tag is null || pair.Tag.IsGroup) return;
-            MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.AddIfMissing(pair);
-        }
-
-        private RelayCommand? _detectFolderTagPairsCommand;
-        public RelayCommand DetectFolderTagPairsCommand => _detectFolderTagPairsCommand ??= new(DetectFolderTagPairs);
-        private void DetectFolderTagPairs()
-        {
-            var splitFolders = MainViewModel.CollectionVM.CurrentCollection.AllCodices
-                .Where(codex => codex.Sources.HasOfflineSource())
-                .Select(codex => codex.Sources.Path)
-                .SelectMany(path => path.Split("\\"))
-                .ToHashSet()
-                .Select(folder => @"\" + folder + @"\");
-
-            foreach (string folder in splitFolders)
-            {
-                var codicesInFolder = MainViewModel.CollectionVM.CurrentCollection.AllCodices
-                    .Where(codex => codex.Sources.HasOfflineSource())
-                    .Where(codex => codex.Sources.Path.Contains(folder))
-                    .ToList();
-
-                if (codicesInFolder.Count < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
-
-                var tagsToLink = codicesInFolder
-                    .Select(codex => codex.Tags)
-                    .Aggregate<IEnumerable<Tag>>((prev, next) => prev.Intersect(next))
-                    .ToList();
-
-                // if there are tags that aren't associated with any folder so far,
-                // do only those to try and avoid doubles
-                if (tagsToLink.Count > 1)
-                {
-                    var strippedTagsToLink = tagsToLink
-                        .Except(MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Select(pair => pair.Tag!))
-                        .ToList();
-                    if (strippedTagsToLink.Any()) tagsToLink = strippedTagsToLink;
-                }
-
-                foreach (var tag in tagsToLink)
-                {
-                    AddFolderTagPair(new FolderTagPair(folder, tag));
-                }
-            }
-        }
+        //TODO check which parts of this logic can be resused
+        // private void DetectFolderTagPairs()
+        // {
+        //     var splitFolders = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+        //         .Where(codex => codex.Sources.HasOfflineSource())
+        //         .Select(codex => codex.Sources.Path)
+        //         .SelectMany(path => path.Split("\\"))
+        //         .ToHashSet()
+        //         .Select(folder => @"\" + folder + @"\");
+        //
+        //     foreach (string folder in splitFolders)
+        //     {
+        //         var codicesInFolder = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+        //             .Where(codex => codex.Sources.HasOfflineSource())
+        //             .Where(codex => codex.Sources.Path.Contains(folder))
+        //             .ToList();
+        //
+        //         if (codicesInFolder.Count < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
+        //
+        //         var tagsToLink = codicesInFolder
+        //             .Select(codex => codex.Tags)
+        //             .Aggregate<IEnumerable<Tag>>((prev, next) => prev.Intersect(next))
+        //             .ToList();
+        //
+        //         // if there are tags that aren't associated with any folder so far,
+        //         // do only those to try and avoid doubles
+        //         if (tagsToLink.Count > 1)
+        //         {
+        //             var strippedTagsToLink = tagsToLink
+        //                 .Except(MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Select(pair => pair.Tag!))
+        //                 .ToList();
+        //             if (strippedTagsToLink.Any()) tagsToLink = strippedTagsToLink;
+        //         }
+        //
+        //         foreach (var tag in tagsToLink)
+        //         {
+        //             AddFolderTagPair(new FolderTagPair(folder, tag));
+        //         }
+        //     }
+        // }
 
         public bool AutoLinkFolderTagSameName
         {
@@ -367,11 +348,11 @@ namespace COMPASS.Common.ViewModels
         }
 
         //Remove Codices with broken refs
-        private RelayCommand? _deleteCodicesWithBrokenRefsCommand;
-        public RelayCommand DeleteCodicesWithBrokenRefsCommand => _deleteCodicesWithBrokenRefsCommand ??= new(RemoveCodicesWithBrokenRefs);
-        public void RemoveCodicesWithBrokenRefs()
+        private AsyncRelayCommand? _deleteCodicesWithBrokenRefsCommand;
+        public AsyncRelayCommand DeleteCodicesWithBrokenRefsCommand => _deleteCodicesWithBrokenRefsCommand ??= new(RemoveCodicesWithBrokenRefs);
+        public async Task RemoveCodicesWithBrokenRefs()
         {
-            MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(BrokenCodices.ToList());
+            await MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(BrokenCodices.ToList());
             BrokenCodicesChanged();
             MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
             MainViewModel.CollectionVM.FilterVM.ReFilter();

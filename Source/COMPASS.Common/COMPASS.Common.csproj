@@ -79,6 +79,7 @@
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.5.0" />
     <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.5" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.3.1" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="9.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Selenium.WebDriver" Version="4.30.0" />
     <PackageReference Include="SharpCompress" Version="0.39.0" />

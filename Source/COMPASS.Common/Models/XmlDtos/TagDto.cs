@@ -15,5 +15,7 @@ namespace COMPASS.Common.Models.XmlDtos
 
         public bool IsGroup { get; set; }
         public List<TagDto> Children { get; set; } = [];
+        
+        public List<string> LinkedGlobs { get; set; } = [];
     }
 }

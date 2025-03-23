@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Models.XmlDtos
 {
@@ -275,6 +276,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 InternalBackgroundColor = dto.BackgroundColor?.ToModel(),
                 IsGroup = dto.IsGroup,
                 Parent = parentTag,
+                LinkedGlobs = new(dto.LinkedGlobs)
             };
 
             model.Children = new ObservableCollection<Tag>(dto.Children.Select(child => child.ToModel(model)));
@@ -284,10 +286,11 @@ namespace COMPASS.Common.Models.XmlDtos
         public static TagDto ToDto(this Tag model) => new()
         {
             ID = model.ID,
-            Content = model.Content,
+            Content = Sanitize(model.Content),
             BackgroundColor = model.InternalBackgroundColor?.ToDto(),
             IsGroup = model.IsGroup,
-            Children = model.Children.Select(ToDto).ToList()
+            Children = model.Children.Select(ToDto).ToList(),
+            LinkedGlobs = model.LinkedGlobs.ToList()
         };
 
         #endregion
@@ -306,6 +309,77 @@ namespace COMPASS.Common.Models.XmlDtos
             B = model.B,
         };
 
+        #endregion
+
+        #region CollectionInfo
+
+        public static CollectionInfo ToModel(this CollectionInfoDto dto, IList<Tag> allTags)
+        {
+            var collectionInfo = new CollectionInfo()
+            {
+                BanishedPaths = new(dto.BanishedPaths),
+                AutoImportFolders = new(dto.AutoImportFolders.Select(ToModel)),
+                FiletypePreferences = dto.FiletypePreferences.DistinctBy(x => x.Key)
+                                                             .Where(x => !string.IsNullOrWhiteSpace(x.Key))
+                                                             .ToDictionary(x => x.Key!, x => x.Value),
+            };
+                
+            #region Migrate save data from previous versions
+#pragma warning disable CS0618 // Type or member is obsolete
+            
+            //(1.x -> 2.x) migrate Folder - Tag Links
+            foreach (FolderTagPairDto pair in dto.FolderTagPairs ?? [])
+            {
+                allTags.FirstOrDefault(t => t.ID == pair.TagID)?.LinkedGlobs.AddIfMissing(pair.Folder);
+            }
+
+            //(1.6.0 -> 1.7.0) migrate from AutoImportFoldersViewSource to AutoImportFolders 
+            if (dto.AutoImportDirectories.SafeAny() && !dto.AutoImportFolders.Any())
+            {
+                collectionInfo.AutoImportFolders = new(dto.AutoImportDirectories!.Select(dir => new Folder(dir)));
+            }
+
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            #endregion
+            
+            return collectionInfo;
+        }
+
+        public static CollectionInfoDto ToDto(this CollectionInfo model)
+        {
+            return new CollectionInfoDto()
+            {
+                AutoImportFolders = model.AutoImportFolders.Select(ToDto).ToList(),
+                BanishedPaths = model.BanishedPaths.Select(Sanitize).ToList(),
+                FiletypePreferences = model.FiletypePreferences.Select(x => new KeyValuePairDto<string, bool>(x)).ToList(),
+            };
+        }
+        
+        private static Folder ToModel(this FolderDto dto)
+        {
+            var folder = new Folder(dto.FullPath)
+            {
+                HasAllSubFolders = dto.HasAllSubFolders
+            };
+
+            if (dto.SubFolders != null)
+            {
+                folder.SubFolders = new(dto.SubFolders.Select(ToModel));
+            }
+            
+            return folder;
+        }
+
+        private static FolderDto ToDto(this Folder model)
+        {
+            return new FolderDto()
+            {
+                HasAllSubFolders = model.HasAllSubFolders,
+                FullPath = Sanitize(model.FullPath),
+                SubFolders = model.SubFolders.Select(ToDto).ToList(),
+            };
+        }
         #endregion
     }
 }

@@ -197,7 +197,7 @@ namespace COMPASS.Common.Tools
             }
         }
 
-        public static bool SafeAny<T>(this IEnumerable<T>? l) => l is not null && l.Any();
+        public static bool SafeAny<T>(this IEnumerable<T>? l) => l != null && l.Any();
         #endregion
 
         #region Drag & Drop

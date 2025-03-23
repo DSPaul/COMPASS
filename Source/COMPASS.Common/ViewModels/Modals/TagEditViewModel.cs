@@ -7,7 +7,7 @@ using COMPASS.Common.Tools;
 using System;
 using COMPASS.Common.Interfaces;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.Modals
 {
     public class TagEditViewModel : ObservableRecipient, IEditViewModel, IModalViewModel, IRecipient<PropertyChangedMessage<string>>
     {

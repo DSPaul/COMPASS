@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="250"
+             x:Class="COMPASS.Common.Controls.StringListControl">
+    <Border CornerRadius="5" Background="{Binding $parent[controls:StringListControl].Background}">
+        <Grid RowDefinitions="*, 10, Auto" Margin="5">
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding $parent[controls:StringListControl].Items}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="5"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="5" Background="{StaticResource AccentColorMuted}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0" Text="{Binding}" VerticalAlignment="Center" Padding="10,2" />
+                                    <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}" Icon="Delete"
+                                                         Command="{Binding $parent[controls:StringListControl].DeleteItemCommand}"
+                                                         CommandParameter="{Binding}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <Grid ColumnDefinitions="*,5,Auto" Grid.Row="2">
+                <TextBox Grid.Column="0" 
+                         Text="{Binding $parent[controls:StringListControl].NewItemText, 
+                                UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                         VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,2" />
+                <controls:IconButton Grid.Column="2" Theme="{StaticResource IconOnly}" Icon="Add"
+                                     Width="32" Height="32" Padding="5" Margin="0"
+                                     Command="{Binding $parent[controls:StringListControl].AddItemCommand}">
+                    <controls:IconButton.Styles>
+                        <Style Selector="controls|IconButton">
+                            <Setter Property="Background" Value="{StaticResource AccentColorMuted}"/>
+                            <Style Selector="^[IsEffectivelyEnabled=false]">
+                                <Setter Property="Background" Value="{StaticResource DarkUIElementBackground}"/>
+                            </Style>
+                        </Style>
+                    </controls:IconButton.Styles>
+                </controls:IconButton>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

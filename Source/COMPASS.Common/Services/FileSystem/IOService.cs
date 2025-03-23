@@ -19,12 +19,12 @@ using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace COMPASS.Common.Services.FileSystem
 {
     public static class IOService
     {
-
         #region Web related
 
         //Download data and put it in a byte[]
@@ -32,9 +32,11 @@ namespace COMPASS.Common.Services.FileSystem
         {
             using HttpClient client = new();
             // Set headers to mimic a browser, gets around some auth issues
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
 
-            if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? _)) throw new InvalidOperationException("URI is invalid.");
+            if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? _))
+                throw new InvalidOperationException("URI is invalid.");
             try
             {
                 return await client.GetByteArrayAsync(uri);
@@ -45,13 +47,15 @@ namespace COMPASS.Common.Services.FileSystem
                 return [];
             }
         }
+
         public static async Task<JObject?> GetJsonAsync(string uri)
         {
             using HttpClient client = new();
 
             JObject? json = null;
 
-            if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? _)) throw new InvalidOperationException("URI is invalid.");
+            if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? _))
+                throw new InvalidOperationException("URI is invalid.");
             try
             {
                 HttpResponseMessage response = await client.GetAsync(uri);
@@ -65,8 +69,10 @@ namespace COMPASS.Common.Services.FileSystem
             {
                 Logger.Error($"Failed to fetch data at {uri}", ex);
             }
+
             return json;
         }
+
         public static async Task<HtmlDocument?> ScrapeSite(string url)
         {
             HtmlWeb web = new();
@@ -102,6 +108,7 @@ namespace COMPASS.Common.Services.FileSystem
 
         //check internet connection
         private static bool _showedOfflineWarning = false;
+
         public static bool PingURL(string url = "8.8.8.8")
         {
             Ping p = new();
@@ -116,6 +123,7 @@ namespace COMPASS.Common.Services.FileSystem
                     Logger.FileLog?.Info(msg);
                     _showedOfflineWarning = false;
                 }
+
                 return true;
             }
             catch (Exception ex)
@@ -124,10 +132,13 @@ namespace COMPASS.Common.Services.FileSystem
                 {
                     Logger.Warn($"Could not ping {url}", ex);
                 }
+
                 _showedOfflineWarning = true;
             }
+
             return false;
         }
+
         #endregion
 
         #region (De)Serialization
@@ -155,7 +166,8 @@ namespace COMPASS.Common.Services.FileSystem
             progressVM.TotalAmount = 1;
 
             //extract
-            await Task.Run(() => archive.ExtractToDirectory(tmpCollectionPath, progressReport: progressVM.UpdateFromPercentage));
+            await Task.Run(() =>
+                archive.ExtractToDirectory(tmpCollectionPath, progressReport: progressVM.UpdateFromPercentage));
 
             progressVM.IncrementCounter();
             return tmpCollectionPath;
@@ -167,6 +179,7 @@ namespace COMPASS.Common.Services.FileSystem
             {
                 //TODO: find all paths with __ which are temp and delete them
             }
+
             if (Directory.Exists(tempPath))
             {
                 Directory.Delete(tempPath, true);
@@ -176,9 +189,14 @@ namespace COMPASS.Common.Services.FileSystem
         #endregion
 
         #region File formats
+
         public static bool IsImageFile(string path)
         {
-            if (string.IsNullOrEmpty(path)) { return false; }
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+
             string extension = Path.GetExtension(path).ToLower();
             List<string> imgExtensions =
             [
@@ -193,13 +211,18 @@ namespace COMPASS.Common.Services.FileSystem
 
         public static bool IsPDFFile(string path)
         {
-            if (string.IsNullOrEmpty(path)) { return false; }
+            if (string.IsNullOrEmpty(path))
+            {
+                return false;
+            }
+
             return Path.GetExtension(path).ToLower() == ".pdf";
         }
 
         #endregion
 
         #region Dialogs/explorer
+
         /// <summary>
         /// 
         /// </summary>
@@ -289,18 +312,22 @@ namespace COMPASS.Common.Services.FileSystem
                 path = file.Path.AbsolutePath;
             }
 
-            var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+            var windowedNotificationService =
+                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
 
             //Check compatibility
             using (ZipArchive archive = ZipArchive.Open(path))
             {
-                var satchelInfoFile = archive.Entries.SingleOrDefault(entry => entry.Key == Constants.SatchelInfoFileName);
+                var satchelInfoFile =
+                    archive.Entries.SingleOrDefault(entry => entry.Key == Constants.SatchelInfoFileName);
                 if (satchelInfoFile == null)
                 {
                     //No version information means we cannot ensure compatibility, so abort
-                    string message = $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
+                    string message =
+                        $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
                     Logger.Warn(message);
-                    Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message, Severity.Warning);
+                    Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message,
+                        Severity.Warning);
                     await windowedNotificationService.Show(warnNotification);
                     return null;
                 }
@@ -316,9 +343,11 @@ namespace COMPASS.Common.Services.FileSystem
                 if (satchelInfo == null)
                 {
                     //No version information means we cannot ensure compatibility, so abort
-                    string message = $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
+                    string message =
+                        $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
                     Logger.Warn(message);
-                    Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message, Severity.Warning);
+                    Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message,
+                        Severity.Warning);
                     await windowedNotificationService.Show(warnNotification);
                     return null;
                 }
@@ -352,10 +381,12 @@ namespace COMPASS.Common.Services.FileSystem
                 //current version must exceed all min versions
                 if (minVersions.Max() > currentVersion)
                 {
-                    string message = $"Cannot import {Path.GetFileName(path)} because it was created in a newer version of COMPASS (v{satchelInfo.CreationVersion}), " +
+                    string message =
+                        $"Cannot import {Path.GetFileName(path)} because it was created in a newer version of COMPASS (v{satchelInfo.CreationVersion}), " +
                         $"and has indicated to be incompatible with your version v{Reflection.Version}. Please update and try again.";
                     Logger.Warn(message);
-                    Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message, Severity.Warning);
+                    Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message,
+                        Severity.Warning);
                     await windowedNotificationService.Show(warnNotification);
                     return null;
                 }
@@ -380,12 +411,13 @@ namespace COMPASS.Common.Services.FileSystem
         /// <returns></returns>
         public static async Task AskNewCodexFilePath(string msg)
         {
-            var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+            var windowedNotificationService =
+                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
 
             Notification pickNewPath = new("Pick a location to save your data", msg, Severity.Warning)
-                {
-                    ConfirmText = "Continue"
-                };
+            {
+                ConfirmText = "Continue"
+            };
             await windowedNotificationService.Show(pickNewPath);
 
             bool success = false;
@@ -398,12 +430,16 @@ namespace COMPASS.Common.Services.FileSystem
                 }
                 else
                 {
-                    Notification notValid = new("Invalid path", $"{newPath} is not a valid path, please try again", Severity.Warning);
+                    Notification notValid = new("Invalid path", $"{newPath} is not a valid path, please try again",
+                        Severity.Warning);
                     await windowedNotificationService.Show(notValid);
                 }
             }
         }
+
         #endregion
+
+        #region Path matching
 
         /// <summary>
         /// Get the longest common path shared by all the given paths
@@ -431,6 +467,7 @@ namespace COMPASS.Common.Services.FileSystem
                     break;
                 }
             }
+
             return commonFolder;
         }
 
@@ -446,10 +483,12 @@ namespace COMPASS.Common.Services.FileSystem
             {
                 throw new ArgumentNullException(nameof(path1));
             }
+
             if (path2 is null)
             {
                 throw new ArgumentNullException(nameof(path2));
             }
+
             if (path1 == path2)
             {
                 return (path1, path2);
@@ -461,8 +500,9 @@ namespace COMPASS.Common.Services.FileSystem
             int shortestLength = Math.Min(dirs1.Length, dirs2.Length);
 
             int commonDirs = 0;
-            while (commonDirs < shortestLength                                    //while we have not iterated over the entire shortest array
-                && dirs1.TakeLast(commonDirs + 1).SequenceEqual(dirs2.TakeLast(commonDirs + 1)))  //and the last x elements are the same
+            while (commonDirs < shortestLength //while we have not iterated over the entire shortest array
+                   && dirs1.TakeLast(commonDirs + 1)
+                       .SequenceEqual(dirs2.TakeLast(commonDirs + 1))) //and the last x elements are the same
             {
                 commonDirs++;
             }
@@ -472,6 +512,15 @@ namespace COMPASS.Common.Services.FileSystem
 
             return (remainingPath1, remainingPath2);
         }
+
+        public static bool MatchesAnyGlob(string filePath, IList<string> globs )
+        {
+            var matcher = new Matcher();
+            matcher.AddIncludePatterns(globs);
+            return matcher.Match(filePath.Replace('\\', '/')).HasMatches;
+        }
+
+        #endregion
 
         /// <summary>
         /// Safe alternative of <see cref="Directory.GetFiles(string)"/> that catches all exceptions
@@ -492,6 +541,7 @@ namespace COMPASS.Common.Services.FileSystem
                     Logger.Error($"Failed to get files of folder {path}", ex);
                 }
             }
+
             return files;
         }
     }

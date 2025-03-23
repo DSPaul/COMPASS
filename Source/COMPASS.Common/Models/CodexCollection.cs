@@ -10,6 +10,7 @@ using COMPASS.Common.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -161,6 +162,8 @@ namespace COMPASS.Common.Models
 
         public bool LoadInfo()
         {
+            Debug.Assert(_loadedTags);
+            
             if (File.Exists(CollectionInfoFilePath))
             {
                 try
@@ -170,19 +173,19 @@ namespace COMPASS.Common.Models
                     //Obsolete properties should still be deserialized for backwards compatibility
                     var overrides = new XmlAttributeOverrides();
                     var obsoleteAttributes = new XmlAttributes { XmlIgnore = false };
-                    var obsoleteProperties = Reflection.GetObsoleteProperties(typeof(CollectionInfo));
+                    var obsoleteProperties = Reflection.GetObsoleteProperties(typeof(CollectionInfoDto));
                     foreach (string prop in obsoleteProperties)
                     {
-                        overrides.Add(typeof(CollectionInfo), prop, obsoleteAttributes);
+                        overrides.Add(typeof(CollectionInfoDto), prop, obsoleteAttributes);
                     }
 
-                    XmlSerializer serializer = new(typeof(CollectionInfo), overrides);
-                    if (serializer.Deserialize(reader) is not CollectionInfo loadedInfo)
+                    XmlSerializer serializer = new(typeof(CollectionInfoDto), overrides);
+                    if (serializer.Deserialize(reader) is not CollectionInfoDto loadedInfo)
                     {
                         Logger.Warn($"Could not load info for {CollectionInfoFilePath}");
                         return false;
                     }
-                    Info = loadedInfo;
+                    Info = loadedInfo.ToModel(AllTags);
                 }
                 catch (Exception ex)
                 {
@@ -194,8 +197,7 @@ namespace COMPASS.Common.Models
             {
                 Info = new();
             }
-
-            Info.CompleteLoading(this);
+            
             _loadedInfo = true;
             return true;
         }
@@ -358,7 +360,7 @@ namespace COMPASS.Common.Models
                 //Should always load a collection before it can be saved
                 return false;
             }
-            Info.PrepareSave();
+
             try
             {
                 string tempFileName = CollectionInfoFilePath + ".tmp";
@@ -367,8 +369,8 @@ namespace COMPASS.Common.Models
                 {
                     using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
                     {
-                        XmlSerializer serializer = new(typeof(CollectionInfo));
-                        serializer.Serialize(writer, Info);
+                        XmlSerializer serializer = new(typeof(CollectionInfoDto));
+                        serializer.Serialize(writer, Info.ToDto());
                     }
 
                     //if successfully written to the tmp file, move to actual path
@@ -625,9 +627,6 @@ namespace COMPASS.Common.Models
             {
                 toDelete.Parent.Children.Remove(toDelete);
             }
-
-            //Remove folder-tag links that contain this tag
-            Info.FolderTagPairs.RemoveWhere(pair => pair.Tag is not null && pair.Tag == toDelete);
 
             SaveTags();
         }

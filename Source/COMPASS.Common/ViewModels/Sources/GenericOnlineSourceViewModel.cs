@@ -50,11 +50,11 @@ namespace COMPASS.Common.ViewModels.Sources
             codex.Description = WebUtility.HtmlDecode(src.SelectSingleNode("//meta[@property='og:description']")?.GetAttributeValue("content", string.Empty) ?? codex.Description);
 
             // Tags
-            foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)
+            foreach (Tag tag in TargetCollection.AllTags)
             {
-                if (codex.SourceURL.Contains(folderTagPair.Folder))
+                if (IOService.MatchesAnyGlob(sources.SourceURL, tag.LinkedGlobs))
                 {
-                    codex.TagIDs.AddIfMissing(folderTagPair.Tag!.ID);
+                    codex.TagIDs.AddIfMissing(tag.ID);
                 }
             }
             return codex;

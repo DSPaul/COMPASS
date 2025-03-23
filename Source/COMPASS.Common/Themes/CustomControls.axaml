@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="using:System"
                     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
                     xmlns:controls="using:COMPASS.Common.Controls">
     <!--Icon Button-->
@@ -21,9 +22,10 @@
                         Background="{TemplateBinding Background}"
                         CornerRadius="5">
                     <materialIcons:MaterialIcon
-                        Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"
                         Kind="{TemplateBinding Icon}"
                         Foreground="{TemplateBinding Foreground}"
+                        Height="{x:Static sys:Double.NaN}"
+                        Width="{x:Static sys:Double.NaN}"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         IsVisible="{TemplateBinding IsVisible}">

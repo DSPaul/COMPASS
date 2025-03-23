@@ -16,6 +16,7 @@ using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels

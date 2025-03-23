@@ -84,6 +84,14 @@ namespace COMPASS.Common.Models
             get => _isGroup;
             set => SetProperty(ref _isGroup, value);
         }
+        
+        private ObservableCollection<string> _linkedGlobs = new ObservableCollection<string>();
+
+        public ObservableCollection<string> LinkedGlobs
+        {
+            get => _linkedGlobs;
+            set => SetProperty(ref _linkedGlobs, value);
+        }
 
         /// <summary>
         /// Does an upwards search until it find either a group tag or a root tag
@@ -104,7 +112,8 @@ namespace COMPASS.Common.Models
             Parent = t.Parent;
             IsGroup = t.IsGroup;
             InternalBackgroundColor = t.InternalBackgroundColor;
-            Children = new ObservableCollection<Tag>(t.Children);
+            Children = new(t.Children);
+            LinkedGlobs = new(t.LinkedGlobs);
         }
 
         //Overwrite Equal operator

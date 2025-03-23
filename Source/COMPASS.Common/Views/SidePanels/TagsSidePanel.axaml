@@ -152,6 +152,8 @@
 
             <controls:FilterModeSelector Include="{Binding ModeIsInclude}" />
 
+            <!-- A flyout would be better here than the hacky context menu and event to toggle it
+                 But this way I can reuse the context menu of the treeview -->
             <controls:IconButton Icon="DotsVertical"
                                  Theme="{StaticResource IconOnly}"
                                  Width="30" Height="30" Margin="10,0,0,0"

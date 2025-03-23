@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using COMPASS.Common.Services.FileSystem;
 
 namespace COMPASS.Common.ViewModels.Sources
 {
@@ -33,12 +34,11 @@ namespace COMPASS.Common.ViewModels.Sources
             };
 
             // Tags based on file path
-            foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)
+            foreach (Tag tag in TargetCollection.AllTags)
             {
-                Debug.Assert(IsValidSource(sources), "Codex without path was referenced in file source");
-                if (sources.Path.Contains(folderTagPair.Folder))
+                if (IOService.MatchesAnyGlob(sources.Path, tag.LinkedGlobs))
                 {
-                    codex.TagIDs.AddIfMissing(folderTagPair.Tag!.ID);
+                    codex.TagIDs.AddIfMissing(tag.ID);
                 }
             }
 

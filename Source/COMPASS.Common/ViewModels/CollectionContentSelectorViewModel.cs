@@ -46,9 +46,6 @@ namespace COMPASS.Common.ViewModels
                                                             .Select(x => new ObservableKeyValuePair<string, bool>(x))
                                                             .OrderByDescending(x => x.Value)
                                                             .ToList();
-            FolderTagLinks = CompleteCollection.Info.FolderTagPairs
-                .Select(link => new SelectableFolderTagLink(link.Folder, link.Tag!, CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).Flatten()))
-                .ToList();
         }
 
         public const string TagsStep = "Tags";
@@ -126,9 +123,6 @@ namespace COMPASS.Common.ViewModels
             get => _selectFolderTagLinks;
             set => SetProperty(ref _selectFolderTagLinks, value);
         }
-        public List<SelectableFolderTagLink> FolderTagLinks { get; init; }
-
-        public ObservableCollection<SelectableFolderTagLink> FolderTagLinksSorted => new(FolderTagLinks.OrderBy(link => link.Path));
 
         #region Helper classes
         public class SelectableWithPathHelper : ObservableObject
@@ -149,18 +143,6 @@ namespace COMPASS.Common.ViewModels
             public string Path { get; set; }
 
             public bool PathExits => !System.IO.Path.IsPathFullyQualified(Path) || System.IO.Path.Exists(Path);
-        }
-
-        public class SelectableFolderTagLink : SelectableWithPathHelper
-        {
-            public SelectableFolderTagLink(string path, Tag t, IEnumerable<Tag> existingTags) : base(path)
-            {
-                Tag = t;
-                _existingTags = existingTags;
-            }
-            private IEnumerable<Tag> _existingTags;
-            public Tag Tag { get; }
-            public bool TagExists => _existingTags.Contains(Tag);
         }
 
         public class SelectableCodex : SelectableWithPathHelper
@@ -254,13 +236,6 @@ namespace COMPASS.Common.ViewModels
             {
                 //for file types, select all or nothing because checking whether to select a checkbox becomes ridiculous
                 CuratedCollection.Info.FiletypePreferences = CompleteCollection.Info.FiletypePreferences;
-            }
-
-            CuratedCollection.Info.FolderTagPairs.Clear();
-            if (SelectFolderTagLinks)
-            {
-                CuratedCollection.Info.FolderTagPairs = new(FolderTagLinks.Where(linkHelper => linkHelper.Selected && linkHelper.TagExists)
-                                                                          .Select(linkHelper => new FolderTagPair(linkHelper.Path, linkHelper.Tag)));
             }
         }
 

@@ -218,7 +218,7 @@
             <controls:IconButton Grid.Column="5" IsHitTestVisible="True"
                                  Theme="{StaticResource IconOnly}"
                                  Icon="Settings" Margin="10,0"
-                                 Height="25" Padding="0" Background="Transparent"
+                                 Height="25" Background="Transparent"
                                  ToolTip.Tip="Settings">
                 <controls:IconButton.Flyout>
                     <MenuFlyout>
@@ -413,7 +413,7 @@
                             Margin="0,0,10,0" Height="32">
                     <controls:IconButton Icon="FilterRemove" Command="{Binding CollectionVM.FilterVM.ClearFiltersCommand}"
                                          Theme="{StaticResource IconOnly}" Classes="ZoomOnHover" Background="Transparent"
-                                         Width="30" Height="30" ToolTip.Tip="Clear Filters" />
+                                         Height="32" ToolTip.Tip="Clear Filters" />
                     
                     <Rectangle Width="2" Fill="Gray" />
 

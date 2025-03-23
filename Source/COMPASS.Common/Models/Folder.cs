@@ -11,9 +11,6 @@ namespace COMPASS.Common.Models
 {
     public class Folder : ObservableObject, IHasChildren<Folder>
     {
-        //Parameterless ctor for xml deserialization
-        public Folder() { }
-
         public Folder(string path)
         {
             _fullPath = path;
@@ -25,7 +22,7 @@ namespace COMPASS.Common.Models
         /// </summary>
         public bool HasAllSubFolders { get; set; } = true;
 
-        private string _fullPath = "";
+        private string _fullPath;
         public string FullPath
         {
             get => _fullPath;
@@ -45,14 +42,14 @@ namespace COMPASS.Common.Models
         }
 
         public string Name => Path.GetFileName(FullPath);
-
-        [XmlIgnore]
+        
+        //Proxy for Subfolder, to implement IHasChildren
         public ObservableCollection<Folder> Children
         {
             get => SubFolders;
             set => SubFolders = value;
         }
-
+        
         private IEnumerable<Folder> FindSubFolders()
         {
             if (Directory.Exists(FullPath))
