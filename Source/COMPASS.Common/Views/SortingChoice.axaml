@@ -4,14 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:COMPASS.Common.ViewModels"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
-             x:Class="COMPASS.Common.Views.SidePanels.SortingSidePanel"
+             x:Class="COMPASS.Common.Views.SortingChoice"
              x:DataType="vm:FilterViewModel">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel>
+        <StackPanel Spacing="10">
             <StackPanel Orientation="Horizontal" 
                         HorizontalAlignment="Center" 
-                        VerticalAlignment="Top" 
-                        Margin="0,10">
+                        VerticalAlignment="Top">
                 <StackPanel.Styles>
                     <Style Selector="RadioButton">
                         <Setter Property="Template">
@@ -23,7 +22,7 @@
                             <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="BorderBrush" Value="{StaticResource UIElementBackground}"/>
                             <Setter Property="BorderThickness" Value="1"/>
-                            <Setter Property="Height" Value="40"/>
+                            <Setter Property="Padding" Value="5,3"/>
                         </Style>
                         <Style Selector="^:checked > Border">
                             <Setter Property="Background" Value="{StaticResource AccentColorMuted}"/>
@@ -32,8 +31,6 @@
                             <Setter Property="HorizontalAlignment" Value="Center"/>
                             <Setter Property="VerticalAlignment" Value="Center"/>
                             <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
-                            <Setter Property="Margin" Value="5,2"/>
-                            <Setter Property="FontSize" Value="18"/>
                         </Style>
                     </Style>
                 </StackPanel.Styles>
@@ -50,7 +47,7 @@
             </StackPanel>
             <Rectangle Height="3" Fill="{StaticResource Separator}"/>
             <ListBox ItemsSource="{Binding SortOptions}" SelectedValue="{Binding SortProperty}"
-                     Background="{x:Null}" BorderThickness="0" Margin="10"
+                     Background="{x:Null}" BorderThickness="0"
                      SelectedValueBinding="{Binding Value}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>

@@ -26,7 +26,7 @@
             </ComboBox>
             <Rectangle Height="3" Fill="{StaticResource Separator}" Margin="0,10"/>
             <TextBlock Classes="Categorizer" Text="Customize layout"/>
-            <ContentControl DataContext="{Binding CurrentLayout}" Content="{Binding}" Margin="10">
+            <ContentControl DataContext="{Binding CurrentLayout}" Content="{Binding}" Margin="20,10">
                 <ContentControl.DataTemplates>
                     <DataTemplate DataType="{x:Type layouts:ListLayoutViewModel}">
                         <StackPanel DataContext="{Binding Preferences}">
@@ -52,7 +52,7 @@
                         </StackPanel>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type layouts:TileLayoutViewModel}">
-                        <StackPanel Margin="10" DataContext="{Binding Preferences}">
+                        <StackPanel DataContext="{Binding Preferences}">
                             <TextBlock Text="Cover Size" Margin="5"/>
                             <Slider x:Name="TileSizeSlider" Value="{Binding TileWidth}" Minimum="50" Maximum="400" TickFrequency="5" Margin="5,0"/>
                             <CheckBox x:Name="ShowExtraDataCheckbox" Content="Show Extra Data" IsChecked="{Binding ShowExtraData}"/>
@@ -61,7 +61,7 @@
                         </StackPanel>
                     </DataTemplate>
                     <DataTemplate DataType="{x:Type layouts:HomeLayoutViewModel}">
-                        <StackPanel Margin="10" DataContext="{Binding Preferences}">
+                        <StackPanel DataContext="{Binding Preferences}">
                             <TextBlock Text="Cover Size" Margin="5"/>
                             <Slider Value="{Binding TileWidth}" Minimum="50" Maximum="400" TickFrequency="5" Margin="5,0"/>
                             <CheckBox Content="Show Title" IsChecked="{Binding ShowTitle}"/>

@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.ViewModels"
+             xmlns:models="using:COMPASS.Common.Models"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="models:CodexCollection"
+             x:Class="COMPASS.Common.Views.WelcomeView">
+    <Border BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="20" Background="Transparent">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel.Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="TextAlignment" Value="Center" />
+                    <Setter Property="Margin" Value="5" />
+                    <Setter Property="TextWrapping" Value="Wrap" />
+                </Style>
+            </StackPanel.Styles>
+            <TextBlock>
+                Thank you for downloading COMPASS! <LineBreak />
+                <LineBreak />
+                The
+                <Run Foreground="{StaticResource AccentColor}" Text="C" />odex
+                <Run Foreground="{StaticResource AccentColor}" Text="O" />rganizer to
+                <Run Foreground="{StaticResource AccentColor}" Text="M" />ake
+                <Run Foreground="{StaticResource AccentColor}" Text="P" />en&amp;paper
+                <Run Foreground="{StaticResource AccentColor}" Text="A" />dventuring
+                <Run Foreground="{StaticResource AccentColor}" Text="S" />uper
+                <Run Foreground="{StaticResource AccentColor}" Text="S" />imple.
+                <LineBreak /><LineBreak />
+                You can start building your digital library by selecting the 'Add Books' tab on the left.
+                <LineBreak />
+                You can also drag and drop your files and folders right here!
+            </TextBlock>
+            <TextBlock TextAlignment="Center" Width="700">
+                COMPASS is a work in progress application that is made and maintained by a solo developer (Me).
+                <LineBreak />
+                This means that you might still occasionally run into problems or find some of its features lacking.
+                <LineBreak />
+                If this happens or if you have suggestions how to improve COMPASS, you can follow the links
+                in "About" section of the settings to share your feedback and support the project.
+
+            </TextBlock>
+        </StackPanel>
+    </Border>
+</UserControl>

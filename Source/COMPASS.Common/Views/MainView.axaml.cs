@@ -54,22 +54,6 @@ public partial class MainView : UserControl
             await MainViewModel.CollectionVM.Refresh();
         }
     }
-    
-    private void Toggle_ContextMenu(object sender, RoutedEventArgs e)
-    {
-        if (sender is Control control && control.ContextMenu != null)
-        {
-            if (control.ContextMenu.IsOpen)
-            {
-                control.ContextMenu.Close();
-            }
-            else
-            {
-                control.ContextMenu.PlacementTarget = control;
-                control.ContextMenu.Open();
-            }
-        }
-    }
 
     private void LayoutSelection_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {

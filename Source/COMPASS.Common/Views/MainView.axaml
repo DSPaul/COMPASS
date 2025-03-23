@@ -7,479 +7,469 @@
              xmlns:vm="using:COMPASS.Common.ViewModels"
              xmlns:models="using:COMPASS.Common.Models"
              xmlns:views="using:COMPASS.Common.Views"
+             xmlns:sidePanel="using:COMPASS.Common.Views.SidePanels"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:converters="using:COMPASS.Common.Converters"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             mc:Ignorable="d" d:DesignWidth="1800" d:DesignHeight="800"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="COMPASS.Common.Views.MainView" FontSize="16"
              x:DataType="vm:MainViewModel"
              KeyDown="UserControl_KeyDown">
-  <UserControl.DataTemplates>
-    <DataTemplate DataType="layoutVms:ListLayoutViewModel">
-      <layoutViews:ListLayout/>
-    </DataTemplate>
-    <DataTemplate DataType="layoutVms:CardLayoutViewModel">
-      <layoutViews:CardLayout/>
-    </DataTemplate>
-    <DataTemplate DataType="layoutVms:TileLayoutViewModel">
-      <layoutViews:TileLayout/>
-    </DataTemplate>
-    <DataTemplate DataType="layoutVms:HomeLayoutViewModel">
-      <layoutViews:HomeLayout/>
-    </DataTemplate>
-    
-    <DataTemplate DataType="vm:LeftDockViewModel">
-      <views:LeftDockView/>
-    </DataTemplate>
-    <DataTemplate DataType="vm:CodexInfoViewModel">
-      <views:CodexInfoView/>
-    </DataTemplate>
-  </UserControl.DataTemplates>
-  
-  <DockPanel Name="MainGrid" Focusable="True">
-    
-    <!--  Title bar -->
-    <Grid 
-      DockPanel.Dock="Top" 
-      x:Name="TitleBar" 
-      Height="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}">
-      <!-- Should be this but bugged rn https://github.com/AvaloniaUI/Avalonia/issues/16066
-          IsHitTestVisible="False"
-          Background="{StaticResource TitlebarBackground}">-->
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width ="auto"/> <!-- Logo -->
-        <ColumnDefinition Width ="auto"/> <!-- Collections -->
-        <ColumnDefinition Width ="*"/>    <!-- Spacing -->
-        <ColumnDefinition Width ="auto"/> <!-- Searchbar -->
-        <ColumnDefinition Width ="*"/>    <!-- Spacing -->
-        <ColumnDefinition Width ="auto"/> <!-- Settings -->
-        <ColumnDefinition Width ="135"/>   <!-- Window controls TODO make this dynamic for differnt platforms-->
-      </Grid.ColumnDefinitions>
-
-      <!-- <ContentControl Content="{StaticResource CompassLogo}" Grid.Column="0" Margin="10,0" HorizontalAlignment="Left"/> -->
-      <Image Source="/Assets/CompassLogo.png" Height="30" Width="30" Margin="15, 0" 
-             IsHitTestVisible="False"
-             VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality"/>
-
-      <!--Collection Selection-->
-      <Border Grid.Column="1" IsHitTestVisible="True"
-              Background="{StaticResource UIElementBackground}" 
-              CornerRadius="4" Margin="0,5" Height="35"
-              DataContext="{Binding CollectionVM}">
-        <Border.Styles>
-          <Style Selector="controls|IconButton">
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Margin" Value="3"/>
-            <Setter Property="Template">
-              <ControlTemplate>
-                <materialIcons:MaterialIcon Kind="{TemplateBinding Icon}" 
-                                            Height="25" Width="25"
-                                            Foreground="{TemplateBinding Foreground}"
-                                            Classes="ZoomOnHover"/>
-              </ControlTemplate>
-            </Setter>
-          </Style>
-        </Border.Styles>
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
-          <!--Collection Dropdown-->
-          <ComboBox SelectedItem="{Binding CurrentCollection, Mode=TwoWay}"
-                    IsHitTestVisible="True" VerticalAlignment="Stretch"
-                    Background="Transparent" MinWidth="100"
-                    DisplayMemberBinding="{Binding DirectoryName}" ItemsSource="{Binding AllCodexCollections}"
-                    SelectionChanged="CollectionComboBox_SelectionChanged"/>
-          <Rectangle Fill="{StaticResource Separator}" Width="2"/>
-          <!--Create Collection-->
-          <controls:IconButton Icon="FolderPlus"
-                               Foreground="{StaticResource CollectionIconFill}" 
-                               ToolTip.Tip="Create New Collection"
-                               IsVisible="{Binding !CreateCollectionVisibility}"
-                               Command="{Binding ToggleCreateCollectionCommand}"/>
-          <StackPanel Orientation="Horizontal" x:Name="CollectionCreation"
-                      IsVisible="{Binding CreateCollectionVisibility}">
-            <TextBox x:Name="NewCollectionName" Watermark="New Collection" VerticalAlignment="Center"
-                     BorderBrush="{StaticResource DarkUIElementBackground}" 
-                     Margin="0" BorderThickness="0" MinWidth="150" MaxLength="50"
-                     Background="Transparent">
-              <!-- TODO: reimplement set focus on textbox when it becomes visible -->
-              <!--   <TextBox.Style> -->
-            <!--     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"> -->
-            <!--       <Style.Triggers> -->
-            <!--         <DataTrigger Binding="{Binding ElementName=CollectionCreation, Path=IsVisible}" Value="true"> -->
-            <!--           <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=NewCollectionName}" /> -->
-            <!--         </DataTrigger> -->
-            <!--         <DataTrigger Binding="{Binding ElementName=CollectionCreation, Path=IsVisible}" Value="false"> -->
-            <!--           <Setter Property="Text" Value=""/> -->
-            <!--         </DataTrigger> -->
-            <!--       </Style.Triggers> -->
-            <!--     </Style> -->
-            <!--   </TextBox.Style> -->
-            </TextBox>
-            <controls:IconButton Icon="Check" Foreground="{StaticResource AcceptFill}" 
-                                 IsVisible="{Binding $self.IsEffectivelyEnabled}"
-                                 IsDefault="{Binding #NewCollectionName.IsFocused}"
-                                 Command="{Binding CreateCollectionCommand}" 
-                                 CommandParameter="{Binding #NewCollectionName.Text}"/>
-            <controls:IconButton Icon="Close" 
-                                 Foreground="{StaticResource CancelFill}" 
-                                 Command="{Binding ToggleCreateCollectionCommand}"/>
-          </StackPanel>
-          <Rectangle Fill="{StaticResource Separator}" Width="2"/>
-          <!--Edit Collection-->
-          <controls:IconButton Icon="FolderEdit" Foreground="{StaticResource CollectionIconFill}"
-                               ToolTip.Tip="Rename Collection" 
-                               Command="{Binding ToggleEditCollectionCommand}"
-                               IsVisible="{Binding !EditCollectionVisibility}"/>
-          <StackPanel Orientation="Horizontal" x:Name="CollectionEditing"
-                      VerticalAlignment="Stretch"
-                      IsVisible="{Binding EditCollectionVisibility}">
-            <TextBox x:Name="EditCollectionName" 
-                     Background="Transparent"
-                     Text="{Binding CurrentCollection.DirectoryName, Mode=OneWay}"
-                     VerticalAlignment="Center" MaxLength="50"
-                     Margin="0" BorderThickness="0" MinWidth="150">
-              <!-- TODO: reimplement set focus on textbox when it becomes visible -->
-              <!-- <TextBox.Style> -->
-              <!--   <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"> -->
-              <!--     <Style.Triggers> -->
-              <!--       <DataTrigger Binding="{Binding ElementName=CollectionEditing, Path=IsVisible}" Value="true"> -->
-              <!--         <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=EditCollectionName}" /> -->
-              <!--       </DataTrigger> -->
-              <!--     </Style.Triggers> -->
-              <!--   </Style> -->
-              <!-- </TextBox.Style> -->
-            </TextBox>
-            <controls:IconButton Icon="Check" Foreground="{StaticResource AcceptFill}" 
-                                 IsDefault="{Binding #EditCollectionName.IsFocused}"
-                                 Command="{Binding EditCollectionNameCommand}" 
-                                 CommandParameter="{Binding #EditCollectionName.Text}"/>
-            <controls:IconButton Icon="Close" Foreground="{StaticResource CancelFill}"
-                                 Command="{Binding ToggleEditCollectionCommand}"/>
-          </StackPanel>
-          <Rectangle Fill="{StaticResource Separator}" Width="2"/>
-          <!--More Options Collection-->
-          <controls:IconButton Icon="DotsVertical" 
-                               Foreground="{StaticResource CollectionIconFill}"
-                               ToolTip.Tip="More Actions" Width="15" Click="Toggle_ContextMenu">
-            <Button.ContextMenu>
-              <ContextMenu>
-                <MenuItem Header="Import..." ToolTip.Tip="Import a Collection" Command="{Binding ImportCommand}"
-                          Icon="{materialIcons:MaterialIconExt FolderDownload}"/>
-                <MenuItem Header="Export..." ToolTip.Tip="Share this Collection with other COMPASS users" 
-                          Command="{Binding ExportCommand}"
-                          Icon="{materialIcons:MaterialIconExt FolderUpload}"/>
-                <MenuItem Header="Merge into " ItemsSource="{Binding CollectionDirectories}" 
-                          Icon="{materialIcons:MaterialIconExt FolderMove}">
-                  <MenuItem.Styles>
-                    <Style Selector="MenuItem MenuItem">
-                      <Setter Property="Command" Value="{Binding Path=$parent[MenuItem].((vm:CollectionViewModel)DataContext).MergeCollectionIntoCommand}"/>
-                      <Setter Property="CommandParameter" Value="{Binding $self.Header}"/>
-                    </Style>
-                  </MenuItem.Styles>
-                </MenuItem>
-                <MenuItem Header="Delete" ToolTip.Tip="Delete this Collection" 
-                          Command="{Binding DeleteCollectionCommand}"
-                          Icon="{materialIcons:MaterialIconExt Delete}"/>
-              </ContextMenu>
-            </Button.ContextMenu>
-          </controls:IconButton>
-        </StackPanel>
-      </Border>
-      
-      <!--Search Bar-->
-      <Border Grid.Column="3" IsHitTestVisible="True"
-              Width="300" MinWidth="100" Height="35" CornerRadius="4" 
-              Background="{StaticResource UIElementBackground}" 
-              OpacityMask="#FF222222" Margin="10,5" 
-              DataContext="{Binding CollectionVM.FilterVM}">
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width ="*"/>
-            <ColumnDefinition Width="auto"/>
-          </Grid.ColumnDefinitions>
-          <TextBox Grid.Column="0" x:Name="Searchbar" Watermark="Search (Ctrl+S)" Margin="0"
-                   Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
-                   Background="Transparent" BorderBrush="{x:Null}"/>
-          <controls:IconButton  Grid.Column="1" Classes="ZoomOnHover" 
-                                Margin="5,0" Icon="Search"
-                                Command="{Binding SearchCommand}" 
-                                Background="Transparent"
-                                Width="30" Padding="0"
-                                CommandParameter="{Binding #Searchbar.Text}"
-                                IsDefault="{Binding #Searchbar.IsKeyboardFocusWithin}" ToolTip.Tip="Search"/>
-        </Grid>
-      </Border>
-      
-      <!--Settings button-->
-      <controls:IconButton Grid.Column="5" IsHitTestVisible="True" 
-                           Theme="{StaticResource IconOnly}"
-                           Click="Toggle_ContextMenu" Icon="Settings" 
-                           Height="25" Padding="0" Background="Transparent"
-                           ToolTip.Tip="Settings">
-        <Button.ContextMenu>
-          <ContextMenu Placement="Bottom">
-            <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}"
-                      Icon="{materialIcons:MaterialIconExt Cog}"/>
-            <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}"
-                      Icon="{materialIcons:MaterialIconExt Autorenew}"/>
-            <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}" CommandParameter="What's New"
-                      Icon="{materialIcons:MaterialIconExt AlertDecagram}"/>
-            <MenuItem Header="Report A Bug" Command="{Binding NavigateToLinkTree}"
-                      Icon="{materialIcons:MaterialIconExt Bug}"/>
-          </ContextMenu>
-        </Button.ContextMenu>
-      </controls:IconButton>
-    </Grid>
-
-    <!-- Bottom bar-->
-    <Grid DockPanel.Dock="Bottom" Height="25"
-          Background="{StaticResource TitlebarBackground}"
-          ColumnDefinitions="auto,auto, *, auto,auto,auto">
-      <Grid.Styles>
-        <Style Selector="StackPanel">
-          <Setter Property="VerticalAlignment" Value="Stretch"/>
-          <Setter Property="Orientation" Value="Horizontal"/>
-        </Style>
-        <Style Selector="TextBlock">
-          <Setter Property="VerticalAlignment" Value="Center"/>
-          <Setter  Property="FontSize" Value="14"/>
-          <Setter  Property="FontFamily" Value="Segoe UI"/>
-        </Style>
-      </Grid.Styles>
-
-      <!--Items shown counter-->
-      <StackPanel Grid.Column="0">
-        <TextBlock Margin="10,0">
-          Items Shown:
-          <Run Text="{Binding BindableCollectionVM.FilterVM.FilteredCodices.Count, Mode=OneWay, FallbackValue=0}"/>
-          /
-          <Run Text="{Binding BindableCollectionVM.CurrentCollection.AllCodices.Count, Mode=OneWay, FallbackValue=0}"/>
-        </TextBlock>
-      </StackPanel>
-
-      <Rectangle Grid.Column="1" Width="2" Fill="{StaticResource Separator}"/>
-
-      <!--Tasks in Progress Indicator-->
-      <StackPanel Grid.Column="2" HorizontalAlignment="Center"
-                  IsVisible="{Binding ProgressVM.WorkInProgress}">
-        <TextBlock Text="{Binding ProgressVM.FullText, FallbackValue=Stuff in Progress, Mode=OneWay}" Margin="20,0"
-                    FontFamily="Segoe UI"/>
-        <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" Height="12" Width="200"
-                      Value="{Binding ProgressVM.Percentage, FallbackValue=100, Mode=OneWay}"
-                      Classes="Rounded"
-                      Foreground="{StaticResource AccentColor}"
-                      Background="{StaticResource UIElementBackground}"/>
-        <controls:IconButton
-          Icon="CloseCircleOutline" 
-          Margin="5,0"
-          Background="Transparent"
-          Height="18" Width="20"
-          Theme="{StaticResource IconOnly}"
-          Command="{Binding ProgressVM.CancelTasksCommand}" 
-          ToolTip.Tip="Cancel Task"/>
-      </StackPanel>
-
-      <!--Internet status indicator-->
-      <materialIcons:MaterialIcon Grid.Column="3" Margin="5,0" Padding="0" Kind="WebOff"
-                                  Foreground="{StaticResource OfflineFill}"
-                                  ToolTip.Tip="No Internet Connection Found"
-                                  IsVisible="{Binding !IsOnline}"/>
-
-      <Rectangle Grid.Column="4" Width="2" Fill="{StaticResource Separator}"/>
-
-      <!--Version-->
-      <Button Grid.Column="5"
-              Command="{Binding OpenSettingsCommand}"
-              CommandParameter="About"
-              Content="{Binding VersionName, FallbackValue=v2.0.0}"
-              ToolTip.Tip="Go to 'About'"
-              Cursor="Hand"
-              VerticalAlignment="Stretch"
-              Padding="10,0"
-              Margin="0">
-        <Button.Styles>
-          <Style Selector="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Style Selector="^:pointerover">
-              <Setter Property="Background" Value="{StaticResource UIElementBackground}"/>
-            </Style>
-          </Style>
-        </Button.Styles>
-        <Button.Template>
-          <ControlTemplate>
-            <!--Might expand this with an indicator if there is a new version available-->
-            <Border Background="{TemplateBinding Background}">
-              <TextBlock Margin="{TemplateBinding Padding}"
-                         Text="{TemplateBinding Content}"/>
-            </Border>
-          </ControlTemplate>
-        </Button.Template>
-      </Button>
-    </Grid>
-    
-    <!-- Left Dock -->
-    <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}"/>
-
-    <!-- Info panel -->
-    <UserControl DockPanel.Dock="Right" Content="{Binding CurrentLayout.CodexInfoVM}" 
-                 IsVisible="{Binding CurrentLayout.CodexInfoVM.ShowInfo}"/>
-    
-    <!-- Codex View -->
-    <Grid x:Name="ViewsGrid"
-          RowDefinitions="15, Auto, Auto, *, 10"
-          ColumnDefinitions="*, *, Auto, Auto, Auto, Auto">
-      <Grid.DataTemplates>
-        <DataTemplate DataType="{x:Type models:ITag}">
-          <Button Classes="BlankButton" Command="{Binding $parent[ItemsControl].((vm:FilterViewModel)DataContext).RemoveFromItemsControlCommand}"
-                  CommandParameter="{Binding}" Cursor="Hand">
-            <Button.Styles>
-              <Style Selector="Border:pointerover > StackPanel">
-                <Style Selector="^ > TextBlock">
-                  <Setter Property="TextDecorations" Value="Strikethrough"/>
-                </Style>
-                <Style Selector="^ > materialIcons|MaterialIcon">
-                  <Setter Property="IsVisible" Value="True"/>
-                </Style>
-              </Style>
-            </Button.Styles>
-            <Button.Template>
-              <ControlTemplate>
-                <Border CornerRadius="5" Margin="2,3" 
-                        Background="{Binding BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}">
-                  <StackPanel Orientation="Horizontal" Margin="7,2">
-                    <TextBlock x:Name="DeletableTagTextBlock" Text="{Binding Content}" Foreground="White" FontSize="14" Margin="2,0"/>
-                    <materialIcons:MaterialIcon Kind="Trash" IsVisible="False" Width="14" Height="14" VerticalAlignment="Bottom" Margin="0,1"/>
-                  </StackPanel>
-                </Border>
-              </ControlTemplate>
-            </Button.Template>
-          </Button>
+    <UserControl.DataTemplates>
+        <DataTemplate DataType="layoutVms:ListLayoutViewModel">
+            <layoutViews:ListLayout />
         </DataTemplate>
-      </Grid.DataTemplates>
+        <DataTemplate DataType="layoutVms:CardLayoutViewModel">
+            <layoutViews:CardLayout />
+        </DataTemplate>
+        <DataTemplate DataType="layoutVms:TileLayoutViewModel">
+            <layoutViews:TileLayout />
+        </DataTemplate>
+        <DataTemplate DataType="layoutVms:HomeLayoutViewModel">
+            <layoutViews:HomeLayout />
+        </DataTemplate>
 
-      <!-- Current Filters-->
-      <Border CornerRadius="5" Grid.Column="0" Grid.Row ="1" BorderBrush="ForestGreen" BorderThickness="3" VerticalAlignment="Center"
-              MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}" DataContext="{Binding CollectionVM.FilterVM}">
-        <Panel>
-          <TextBlock Text="INCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
-                     Margin="5, 2" Foreground="Gray" FontSize="20" IsVisible="{Binding !IncludedFilters.Count}"/>
-          <ItemsControl MinHeight="30" Margin="5,2" VerticalAlignment="Center" Background="Transparent"
-                        DragDrop.AllowDrop="True" ItemsSource="{Binding IncludedFilters}">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <WrapPanel Orientation="Horizontal"/>
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-          </ItemsControl>
-        </Panel>
+        <DataTemplate DataType="vm:LeftDockViewModel">
+            <views:LeftDockView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:CodexInfoViewModel">
+            <views:CodexInfoView />
+        </DataTemplate>
+    </UserControl.DataTemplates>
 
-      </Border>
-      <Border CornerRadius="5" Grid.Column="1" Grid.Row ="1" BorderBrush="OrangeRed" BorderThickness="3" VerticalAlignment="Center"
-              MinHeight="40" Margin="10,0,5,0" Background="{StaticResource FiltersBackground}"  DataContext="{Binding CollectionVM.FilterVM}">
-        <Panel>
-          <TextBlock Text="EXCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center" 
-                     Margin="5 2" Foreground="Gray" FontSize="20" IsVisible="{Binding !ExcludedFilters.Count}"/>
-          <ItemsControl MinHeight="30" Margin="5,2" VerticalAlignment="Center" Background="Transparent"
-                        DragDrop.AllowDrop="True" ItemsSource="{Binding ExcludedFilters}">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <WrapPanel Orientation="Horizontal"/>
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-          </ItemsControl>
-        </Panel>
-      </Border>
-      <controls:IconButton Icon="FilterRemove" Command="{Binding CollectionVM.FilterVM.ClearFiltersCommand}" 
-                           Theme="{StaticResource IconOnly}" Classes="ZoomOnHover" Background="Transparent"
-                           Grid.Column="2" Grid.Row ="1" Width="30" Height="30" ToolTip.Tip="Clear Filters"/>
-      <!--#endregion-->
+    <DockPanel Name="MainGrid" Focusable="True">
 
-      <!--#region View Selection-->
-      <Border Grid.Column="4" Grid.Row="1" BorderThickness="0" BorderBrush="Gray" CornerRadius="5">
-        <StackPanel  Orientation="Horizontal">
-         
-          <Rectangle Width="3" Fill="Gray" Margin="3,0"/>
-          
-          <ComboBox MinWidth="120" VerticalAlignment="Center" 
-                    BorderThickness="0" Margin="5,0"
+        <!--  Title bar -->
+        <Grid DockPanel.Dock="Top"
+              x:Name="TitleBar"
+              Height="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}">
+            <!-- Should be this but bugged rn https://github.com/AvaloniaUI/Avalonia/issues/16066
+              IsHitTestVisible="False"
+              Background="{StaticResource TitlebarBackground}">-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" /> <!-- Logo -->
+                <ColumnDefinition Width="auto" /> <!-- Collections -->
+                <ColumnDefinition Width="*" />    <!-- Spacing -->
+                <ColumnDefinition Width="auto" /> <!-- Searchbar -->
+                <ColumnDefinition Width="*" />    <!-- Spacing -->
+                <ColumnDefinition Width="auto" /> <!-- Settings -->
+                <ColumnDefinition Width="135" />
+                <!-- Window controls TODO make this dynamic for differnt platforms-->
+            </Grid.ColumnDefinitions>
+
+            <!-- <ContentControl Content="{StaticResource CompassLogo}" Grid.Column="0" Margin="10,0" HorizontalAlignment="Left"/> -->
+            <Image Source="/Assets/CompassLogo.png" Height="30" Width="30" Margin="15, 0"
+                   IsHitTestVisible="False"
+                   VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+
+            <!--Collection Selection-->
+            <Border Grid.Column="1" IsHitTestVisible="True"
                     Background="{StaticResource UIElementBackground}"
-                    ItemsSource="{Binding AllLayouts, Mode=OneTime}"
-                    SelectedIndex="{Binding CurrentLayout.LayoutType, Mode=OneWay}"
-                    SelectionChanged="LayoutSelection_OnSelectionChanged">
-            <ComboBox.ItemTemplate>
-              <DataTemplate>
-                <StackPanel Orientation="Horizontal" Spacing="5">
-                  <materialIcons:MaterialIcon Kind="{Binding Icon}"/>
-                  <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                    CornerRadius="4" Margin="0,5" Height="35"
+                    DataContext="{Binding CollectionVM}">
+                <Border.Styles>
+                    <Style Selector="controls|IconButton">
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="3" />
+                        <Setter Property="Template">
+                            <ControlTemplate>
+                                <materialIcons:MaterialIcon Kind="{TemplateBinding Icon}"
+                                                            Height="25" Width="25"
+                                                            Foreground="{TemplateBinding Foreground}"
+                                                            Classes="ZoomOnHover" />
+                            </ControlTemplate>
+                        </Setter>
+                    </Style>
+                </Border.Styles>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
+                    <!--Collection Dropdown-->
+                    <ComboBox SelectedItem="{Binding CurrentCollection, Mode=TwoWay}"
+                              IsHitTestVisible="True" VerticalAlignment="Stretch"
+                              Background="Transparent" MinWidth="100"
+                              DisplayMemberBinding="{Binding DirectoryName}"
+                              ItemsSource="{Binding AllCodexCollections}"
+                              SelectionChanged="CollectionComboBox_SelectionChanged" />
+                    <Rectangle Fill="{StaticResource Separator}" Width="2" />
+                    <!--Create Collection-->
+                    <controls:IconButton Icon="FolderPlus"
+                                         Foreground="{StaticResource CollectionIconFill}"
+                                         ToolTip.Tip="Create New Collection"
+                                         IsVisible="{Binding !CreateCollectionVisibility}"
+                                         Command="{Binding ToggleCreateCollectionCommand}" />
+                    <StackPanel Orientation="Horizontal" x:Name="CollectionCreation"
+                                IsVisible="{Binding CreateCollectionVisibility}">
+                        <TextBox x:Name="NewCollectionName" Watermark="New Collection" VerticalAlignment="Center"
+                                 BorderBrush="{StaticResource DarkUIElementBackground}"
+                                 Margin="0" BorderThickness="0" MinWidth="150" MaxLength="50"
+                                 Background="Transparent">
+                            <!-- TODO: reimplement set focus on textbox when it becomes visible -->
+                            <!--   <TextBox.Style> -->
+                            <!--     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"> -->
+                            <!--       <Style.Triggers> -->
+                            <!--         <DataTrigger Binding="{Binding ElementName=CollectionCreation, Path=IsVisible}" Value="true"> -->
+                            <!--           <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=NewCollectionName}" /> -->
+                            <!--         </DataTrigger> -->
+                            <!--         <DataTrigger Binding="{Binding ElementName=CollectionCreation, Path=IsVisible}" Value="false"> -->
+                            <!--           <Setter Property="Text" Value=""/> -->
+                            <!--         </DataTrigger> -->
+                            <!--       </Style.Triggers> -->
+                            <!--     </Style> -->
+                            <!--   </TextBox.Style> -->
+                        </TextBox>
+                        <controls:IconButton Icon="Check" Foreground="{StaticResource AcceptFill}"
+                                             IsVisible="{Binding $self.IsEffectivelyEnabled}"
+                                             IsDefault="{Binding #NewCollectionName.IsFocused}"
+                                             Command="{Binding CreateCollectionCommand}"
+                                             CommandParameter="{Binding #NewCollectionName.Text}" />
+                        <controls:IconButton Icon="Close"
+                                             Foreground="{StaticResource CancelFill}"
+                                             Command="{Binding ToggleCreateCollectionCommand}" />
+                    </StackPanel>
+                    <Rectangle Fill="{StaticResource Separator}" Width="2" />
+                    <!--Edit Collection-->
+                    <controls:IconButton Icon="FolderEdit" Foreground="{StaticResource CollectionIconFill}"
+                                         ToolTip.Tip="Rename Collection"
+                                         Command="{Binding ToggleEditCollectionCommand}"
+                                         IsVisible="{Binding !EditCollectionVisibility}" />
+                    <StackPanel Orientation="Horizontal" x:Name="CollectionEditing"
+                                VerticalAlignment="Stretch"
+                                IsVisible="{Binding EditCollectionVisibility}">
+                        <TextBox x:Name="EditCollectionName"
+                                 Background="Transparent"
+                                 Text="{Binding CurrentCollection.DirectoryName, Mode=OneWay}"
+                                 VerticalAlignment="Center" MaxLength="50"
+                                 Margin="0" BorderThickness="0" MinWidth="150">
+                            <!-- TODO: reimplement set focus on textbox when it becomes visible -->
+                            <!-- <TextBox.Style> -->
+                            <!--   <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"> -->
+                            <!--     <Style.Triggers> -->
+                            <!--       <DataTrigger Binding="{Binding ElementName=CollectionEditing, Path=IsVisible}" Value="true"> -->
+                            <!--         <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=EditCollectionName}" /> -->
+                            <!--       </DataTrigger> -->
+                            <!--     </Style.Triggers> -->
+                            <!--   </Style> -->
+                            <!-- </TextBox.Style> -->
+                        </TextBox>
+                        <controls:IconButton Icon="Check" Foreground="{StaticResource AcceptFill}"
+                                             IsDefault="{Binding #EditCollectionName.IsFocused}"
+                                             Command="{Binding EditCollectionNameCommand}"
+                                             CommandParameter="{Binding #EditCollectionName.Text}" />
+                        <controls:IconButton Icon="Close" Foreground="{StaticResource CancelFill}"
+                                             Command="{Binding ToggleEditCollectionCommand}" />
+                    </StackPanel>
+                    <Rectangle Fill="{StaticResource Separator}" Width="2" />
+                    <!--More Options Collection-->
+                    <controls:IconButton Icon="DotsVertical"
+                                         Foreground="{StaticResource CollectionIconFill}"
+                                         ToolTip.Tip="More Actions" Width="15">
+                        <Button.Flyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Import..." ToolTip.Tip="Import a Collection"
+                                          Command="{Binding ImportCommand}"
+                                          Icon="{materialIcons:MaterialIconExt FolderDownload}" />
+                                <MenuItem Header="Export..."
+                                          ToolTip.Tip="Share this Collection with other COMPASS users"
+                                          Command="{Binding ExportCommand}"
+                                          Icon="{materialIcons:MaterialIconExt FolderUpload}" />
+                                <MenuItem Header="Merge into " ItemsSource="{Binding CollectionDirectories}"
+                                          Icon="{materialIcons:MaterialIconExt FolderMove}">
+                                    <MenuItem.Styles>
+                                        <Style Selector="MenuItem MenuItem">
+                                            <Setter Property="Command"
+                                                    Value="{Binding Path=$parent[MenuItem].((vm:CollectionViewModel)DataContext).MergeCollectionIntoCommand}" />
+                                            <Setter Property="CommandParameter" Value="{Binding $self.Header}" />
+                                        </Style>
+                                    </MenuItem.Styles>
+                                </MenuItem>
+                                <MenuItem Header="Delete" ToolTip.Tip="Delete this Collection"
+                                          Command="{Binding DeleteCollectionCommand}"
+                                          Icon="{materialIcons:MaterialIconExt Delete}" />
+                            </MenuFlyout>
+                        </Button.Flyout>
+                    </controls:IconButton>
                 </StackPanel>
-              </DataTemplate>
-            </ComboBox.ItemTemplate>
-          </ComboBox>
-          
-          <Rectangle Width="3" Fill="Gray" Margin="3,0"
-                     IsVisible="{Binding !CurrentLayout.CodexInfoVM.ShowInfo}"/>
-          <ToggleButton ToolTip.Tip="Show Book Info" Cursor="Hand"
-                        Margin="0,0,10,0"
-                        IsChecked="{Binding CurrentLayout.CodexInfoVM.ShowCodexInfo, Mode=TwoWay}" 
-                        IsVisible="{Binding !CurrentLayout.CodexInfoVM.ShowInfo}">
-            <ToggleButton.Styles>
-              <Style Selector="ToggleButton:checked materialIcons|MaterialIcon">
-                <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
-              </Style>
-            </ToggleButton.Styles>
-            <ToggleButton.Template>
-              <ControlTemplate>
-                <materialIcons:MaterialIcon Height="30" Width="30" Kind="BookInformationVariant"/>
-              </ControlTemplate>
-            </ToggleButton.Template>
-          </ToggleButton>
-        </StackPanel>
-      </Border>
-      <!--#endregion-->
+            </Border>
 
-      <!--Layout-->
-      <ContentControl Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="5" 
-                      Content="{Binding CurrentLayout}"
-                      IsVisible="{Binding !!CollectionVM.CurrentCollection.AllCodices.Count}"
-                      DragDrop.AllowDrop="True"/>
+            <!--Search Bar-->
+            <Border Grid.Column="3" IsHitTestVisible="True"
+                    Width="300" MinWidth="100" Height="35" CornerRadius="4"
+                    Background="{StaticResource UIElementBackground}"
+                    OpacityMask="#FF222222" Margin="10,5"
+                    DataContext="{Binding CollectionVM.FilterVM}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" x:Name="Searchbar" Watermark="Search (Ctrl+S)" Margin="0"
+                             Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+                             Background="Transparent" BorderBrush="{x:Null}" />
+                    <controls:IconButton Grid.Column="1" Classes="ZoomOnHover"
+                                         Margin="5,0" Icon="Search"
+                                         Command="{Binding SearchCommand}"
+                                         Background="Transparent"
+                                         Width="30" Padding="0"
+                                         CommandParameter="{Binding #Searchbar.Text}"
+                                         IsDefault="{Binding #Searchbar.IsKeyboardFocusWithin}" ToolTip.Tip="Search" />
+                </Grid>
+            </Border>
 
-      <!--Welcome screen-->
-      <Border Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" 
-              BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="20"
-              IsVisible="{Binding !CollectionVM.CurrentCollection.AllCodices.Count}"
-               DragDrop.AllowDrop="True" Background="Transparent">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-          <StackPanel.Styles>
-            <Style Selector="TextBlock">
-              <Setter Property="TextAlignment" Value="Center"/>
-              <Setter Property="Margin" Value="5"/>
-              <Setter Property="TextWrapping" Value="Wrap"/>
-            </Style>
-          </StackPanel.Styles>
-          <TextBlock>
-            Thank you for downloading COMPASS! <LineBreak/>
-            <LineBreak/>
-            The
-            <Run Foreground="{StaticResource AccentColor}" Text="C"/>odex
-            <Run Foreground="{StaticResource AccentColor}" Text="O"/>rganizer to
-            <Run Foreground="{StaticResource AccentColor}" Text="M"/>ake
-            <Run Foreground="{StaticResource AccentColor}" Text="P"/>en&amp;paper
-            <Run Foreground="{StaticResource AccentColor}" Text="A"/>dventuring
-            <Run Foreground="{StaticResource AccentColor}" Text="S"/>uper
-            <Run Foreground="{StaticResource AccentColor}" Text="S"/>imple.
-            <LineBreak/><LineBreak/>
-            You can start building your digital library by selecting the 'Add Books' tab on the left.<LineBreak/>
-            You can also drag and drop your files and folders right here!
-          </TextBlock>
-          <TextBlock TextAlignment="Center" Width="700">
-            COMPASS is a work in progress application that is made and maintained by a solo developer (Me).<LineBreak/>
-            This means that you might still occasionally run into problems or find some of its features lacking. <LineBreak/>
-            If this happens or if you have suggestions how to improve COMPASS, you can follow the links
-            in "About" section of the settings to share your feedback and support the project.
+            <!--Settings button-->
+            <controls:IconButton Grid.Column="5" IsHitTestVisible="True"
+                                 Theme="{StaticResource IconOnly}"
+                                 Icon="Settings" Margin="10,0"
+                                 Height="25" Padding="0" Background="Transparent"
+                                 ToolTip.Tip="Settings">
+                <controls:IconButton.Flyout>
+                    <MenuFlyout>
+                        <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}"
+                                  Icon="{materialIcons:MaterialIconExt Cog}" />
+                        <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}"
+                                  Icon="{materialIcons:MaterialIconExt Autorenew}" />
+                        <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}"
+                                  CommandParameter="What's New"
+                                  Icon="{materialIcons:MaterialIconExt AlertDecagram}" />
+                        <MenuItem Header="Report A Bug" Command="{Binding NavigateToLinkTree}"
+                                  Icon="{materialIcons:MaterialIconExt Bug}" />
+                    </MenuFlyout>
+                </controls:IconButton.Flyout>
+            </controls:IconButton>
+        </Grid>
 
-          </TextBlock>
-        </StackPanel>
-      </Border>
-    </Grid>
-    
-  </DockPanel>
+        <!-- Bottom bar-->
+        <Grid DockPanel.Dock="Bottom" Height="25"
+              Background="{StaticResource TitlebarBackground}"
+              ColumnDefinitions="auto,auto, *, auto,auto,auto">
+            <Grid.Styles>
+                <Style Selector="StackPanel">
+                    <Setter Property="VerticalAlignment" Value="Stretch" />
+                    <Setter Property="Orientation" Value="Horizontal" />
+                </Style>
+                <Style Selector="TextBlock">
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="FontFamily" Value="Segoe UI" />
+                </Style>
+            </Grid.Styles>
+
+            <!--Items shown counter-->
+            <StackPanel Grid.Column="0">
+                <TextBlock Margin="10,0">
+                    Items Shown:
+                    <Run
+                        Text="{Binding BindableCollectionVM.FilterVM.FilteredCodices.Count, Mode=OneWay, FallbackValue=0}" />
+                    /
+                    <Run
+                        Text="{Binding BindableCollectionVM.CurrentCollection.AllCodices.Count, Mode=OneWay, FallbackValue=0}" />
+                </TextBlock>
+            </StackPanel>
+
+            <Rectangle Grid.Column="1" Width="2" Fill="{StaticResource Separator}" />
+
+            <!--Tasks in Progress Indicator-->
+            <StackPanel Grid.Column="2" HorizontalAlignment="Center"
+                        IsVisible="{Binding ProgressVM.WorkInProgress}">
+                <TextBlock Text="{Binding ProgressVM.FullText, FallbackValue=Stuff in Progress, Mode=OneWay}"
+                           Margin="20,0"
+                           FontFamily="Segoe UI" />
+                <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" Height="12" Width="200"
+                             Value="{Binding ProgressVM.Percentage, FallbackValue=100, Mode=OneWay}"
+                             Classes="Rounded"
+                             Foreground="{StaticResource AccentColor}"
+                             Background="{StaticResource UIElementBackground}" />
+                <controls:IconButton
+                    Icon="CloseCircleOutline"
+                    Margin="5,0"
+                    Background="Transparent"
+                    Height="18" Width="20"
+                    Theme="{StaticResource IconOnly}"
+                    Command="{Binding ProgressVM.CancelTasksCommand}"
+                    ToolTip.Tip="Cancel Task" />
+            </StackPanel>
+
+            <!--Internet status indicator-->
+            <materialIcons:MaterialIcon Grid.Column="3" Margin="5,0" Padding="0" Kind="WebOff"
+                                        Foreground="{StaticResource OfflineFill}"
+                                        ToolTip.Tip="No Internet Connection Found"
+                                        IsVisible="{Binding !IsOnline}" />
+
+            <Rectangle Grid.Column="4" Width="2" Fill="{StaticResource Separator}" />
+
+            <!--Version-->
+            <Button Grid.Column="5"
+                    Command="{Binding OpenSettingsCommand}"
+                    CommandParameter="About"
+                    Content="{Binding VersionName, FallbackValue=v2.0.0}"
+                    ToolTip.Tip="Go to 'About'"
+                    Cursor="Hand"
+                    VerticalAlignment="Stretch"
+                    Padding="10,0"
+                    Margin="0">
+                <Button.Styles>
+                    <Style Selector="Button">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Style Selector="^:pointerover">
+                            <Setter Property="Background" Value="{StaticResource UIElementBackground}" />
+                        </Style>
+                    </Style>
+                </Button.Styles>
+                <Button.Template>
+                    <ControlTemplate>
+                        <!--Might expand this with an indicator if there is a new version available-->
+                        <Border Background="{TemplateBinding Background}">
+                            <TextBlock Margin="{TemplateBinding Padding}"
+                                       Text="{TemplateBinding Content}" />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Grid>
+
+        <!-- Left Dock -->
+        <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}" />
+
+        <!-- Info panel -->
+        <UserControl DockPanel.Dock="Right" Content="{Binding CurrentLayout.CodexInfoVM}"
+                     IsVisible="{Binding CurrentLayout.CodexInfoVM.ShowInfo}" />
+
+        <!-- Codex View -->
+        <DockPanel Margin="0,15,0,10">
+            <Grid DockPanel.Dock="Top" x:Name="ViewsGrid" 
+                  ColumnDefinitions="*, *, Auto, Auto, Auto, Auto">
+                <Grid.DataTemplates>
+                    <DataTemplate DataType="{x:Type models:ITag}">
+                        <Button Classes="BlankButton"
+                                Command="{Binding $parent[ItemsControl].((vm:FilterViewModel)DataContext).RemoveFromItemsControlCommand}"
+                                CommandParameter="{Binding}" Cursor="Hand">
+                            <Button.Styles>
+                                <Style Selector="Border:pointerover > StackPanel">
+                                    <Style Selector="^ > TextBlock">
+                                        <Setter Property="TextDecorations" Value="Strikethrough" />
+                                    </Style>
+                                    <Style Selector="^ > materialIcons|MaterialIcon">
+                                        <Setter Property="IsVisible" Value="True" />
+                                    </Style>
+                                </Style>
+                            </Button.Styles>
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Border CornerRadius="5" Margin="2,3"
+                                            Background="{Binding BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}">
+                                        <StackPanel Orientation="Horizontal" Margin="7,2">
+                                            <TextBlock x:Name="DeletableTagTextBlock" Text="{Binding Content}"
+                                                       Foreground="White" FontSize="14" Margin="2,0" />
+                                            <materialIcons:MaterialIcon Kind="Trash" IsVisible="False" Width="14"
+                                                                        Height="14" VerticalAlignment="Bottom" Margin="0,1" />
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </DataTemplate>
+                </Grid.DataTemplates>
+
+                <!-- Current Filters-->
+                <Border CornerRadius="5" Grid.Column="0" BorderBrush="ForestGreen" BorderThickness="3"
+                        VerticalAlignment="Center"
+                        MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}"
+                        DataContext="{Binding CollectionVM.FilterVM}">
+                    <Panel>
+                        <TextBlock Text="INCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                   Margin="5, 2" Foreground="Gray" FontSize="20"
+                                   IsVisible="{Binding !IncludedFilters.Count}" />
+                        <ItemsControl MinHeight="30" Margin="5,2" VerticalAlignment="Center" Background="Transparent"
+                                      DragDrop.AllowDrop="True" ItemsSource="{Binding IncludedFilters}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Panel>
+
+                </Border>
+                <Border CornerRadius="5" Grid.Column="1" BorderBrush="OrangeRed" BorderThickness="3"
+                        VerticalAlignment="Center"
+                        MinHeight="40" Margin="10,0,5,0" Background="{StaticResource FiltersBackground}"
+                        DataContext="{Binding CollectionVM.FilterVM}">
+                    <Panel>
+                        <TextBlock Text="EXCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                   Margin="5 2" Foreground="Gray" FontSize="20"
+                                   IsVisible="{Binding !ExcludedFilters.Count}" />
+                        <ItemsControl MinHeight="30" Margin="5,2" VerticalAlignment="Center" Background="Transparent"
+                                      DragDrop.AllowDrop="True" ItemsSource="{Binding ExcludedFilters}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Panel>
+                </Border>
+                <!--#endregion-->
+
+                <!--#region Other Controls-->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="7" 
+                            Margin="0,0,10,0" Height="32">
+                    <controls:IconButton Icon="FilterRemove" Command="{Binding CollectionVM.FilterVM.ClearFiltersCommand}"
+                                         Theme="{StaticResource IconOnly}" Classes="ZoomOnHover" Background="Transparent"
+                                         Width="30" Height="30" ToolTip.Tip="Clear Filters" />
+                    
+                    <Rectangle Width="2" Fill="Gray" />
+
+                    <controls:IconButton Icon="Sort" CornerRadius="3" VerticalAlignment="Stretch">
+                        <controls:IconButton.Flyout>
+                            <Flyout>
+                                <views:SortingChoice DataContext="{Binding CollectionVM.FilterVM}"/>
+                            </Flyout>
+                        </controls:IconButton.Flyout>
+                    </controls:IconButton>
+                    
+                    <ComboBox MinWidth="120" VerticalAlignment="Stretch"
+                              BorderThickness="0"
+                              Background="{StaticResource UIElementBackground}"
+                              ItemsSource="{Binding AllLayouts, Mode=OneTime}"
+                              SelectedIndex="{Binding CurrentLayout.LayoutType, Mode=OneWay}"
+                              SelectionChanged="LayoutSelection_OnSelectionChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <materialIcons:MaterialIcon Kind="{Binding Icon}" />
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <Rectangle Width="2" Fill="Gray"
+                               IsVisible="{Binding !CurrentLayout.CodexInfoVM.ShowInfo}" />
+                    
+                    <ToggleButton ToolTip.Tip="Show Book Info" Cursor="Hand"
+                                  IsChecked="{Binding CurrentLayout.CodexInfoVM.ShowCodexInfo, Mode=TwoWay}"
+                                  IsVisible="{Binding !CurrentLayout.CodexInfoVM.ShowInfo}">
+                        <ToggleButton.Styles>
+                            <Style Selector="ToggleButton:checked materialIcons|MaterialIcon">
+                                <Setter Property="Foreground" Value="{StaticResource AccentColorMuted}" />
+                            </Style>
+                        </ToggleButton.Styles>
+                        <ToggleButton.Template>
+                            <ControlTemplate>
+                                <materialIcons:MaterialIcon Height="30" Width="30" Kind="BookInformationVariant" />
+                            </ControlTemplate>
+                        </ToggleButton.Template>
+                    </ToggleButton>
+                </StackPanel>
+                <!--#endregion-->
+
+            </Grid>
+            
+            <Panel DragDrop.AllowDrop="True">
+                <!--Layout-->
+                <ContentControl Content="{Binding CurrentLayout}"
+                                IsVisible="{Binding !!CollectionVM.CurrentCollection.AllCodices.Count}"/>
+                
+                <views:WelcomeView IsVisible="{Binding !CollectionVM.CurrentCollection.AllCodices.Count}"/>
+            </Panel>
+        </DockPanel>
+    </DockPanel>
 </UserControl>

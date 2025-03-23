@@ -75,11 +75,11 @@ namespace COMPASS.Common.ViewModels
             CloseAction?.Invoke();
         }
 
-        private RelayCommand? _deleteCodexCommand;
-        public RelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
-        private void DeleteCodex()
+        private AsyncRelayCommand? _deleteCodexCommand;
+        public AsyncRelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
+        private async Task DeleteCodex()
         {
-            CodexOperations.DeleteCodex(_codex);
+            await CodexOperations.DeleteCodex(_codex);
             SetDialogResult?.Invoke(true);
             CloseAction?.Invoke();
         }

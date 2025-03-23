@@ -56,7 +56,7 @@
   <SolidColorBrush x:Key="AccentColorMuted" Color="{StaticResource CompassJadeDark}"/>
 
   <SolidColorBrush x:Key="ButtonBackground" Color="Gray"/>
-  <SolidColorBrush x:Key="ButtonFocus" Color="{StaticResource CompassJadeDark}"/>
+  <SolidColorBrush x:Key="ButtonHover" Color="{StaticResource CompassJadeDark}"/>
   <SolidColorBrush x:Key="TabFocus" Color="{StaticResource DarkerGray}"/>
   <SolidColorBrush x:Key="ListHover" Color="{StaticResource DarkerGray}"/>
   <SolidColorBrush x:Key="ListSelected" Color="{StaticResource KindaDarkGray}"/>

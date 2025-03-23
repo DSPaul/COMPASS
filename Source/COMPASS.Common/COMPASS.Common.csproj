@@ -17,6 +17,10 @@
       <DependentUpon>ModalWindow.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\SortingChoice.axaml.cs">
+      <DependentUpon>SortingSidePanel.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Include="Themes\Dark.axaml" />

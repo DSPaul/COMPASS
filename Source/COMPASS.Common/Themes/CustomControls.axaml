@@ -36,11 +36,12 @@
     <!--Icon Button With text-->
     <ControlTheme TargetType="controls:IconButton" x:Key="{x:Type controls:IconButton}">
         <Setter Property="Padding" Value="5,5" />
+        <Setter Property="CornerRadius" Value="7" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Border Background="{TemplateBinding Background}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="7" HorizontalAlignment="Stretch"
+                        CornerRadius="{TemplateBinding CornerRadius}" HorizontalAlignment="Stretch"
                         Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
                     <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                           VerticalAlignment="{TemplateBinding VerticalAlignment}">

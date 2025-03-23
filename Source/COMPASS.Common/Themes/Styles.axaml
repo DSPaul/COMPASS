@@ -103,13 +103,12 @@
 
     <!--Button base-->
     <Style Selector="views|MainView :is(Button)">
-        <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
-        <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+        <Setter Property="Background" Value="{StaticResource UIElementBackground}" />
         <Setter Property="BorderBrush" Value="{x:Null}" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Style Selector="^:pointerover">
-            <Setter Property="Background" Value="{StaticResource ButtonFocus}" />
+            <Setter Property="Background" Value="{StaticResource ButtonHover}" />
         </Style>
     </Style>
 

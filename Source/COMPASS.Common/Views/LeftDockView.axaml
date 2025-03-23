@@ -70,10 +70,6 @@
     <controls:CollapsableTabItem Header="Layouts" Icon="ViewDashboardEdit">
         <panels:LayoutsSidePanel DataContext="{Binding MainVM}"/>
     </controls:CollapsableTabItem>
-
-    <controls:CollapsableTabItem Header="Sorting" Icon="Sort">
-        <panels:SortingSidePanel DataContext="{Binding MainVM.CollectionVM.FilterVM}"/>
-    </controls:CollapsableTabItem>
     
     <controls:CollapsableTabItem Header="Add Items" Icon="BookAdd">
         <panels:AddCodexSidePanel DataContext="{Binding AddCodexPanelVM}"/>
