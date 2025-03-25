@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace COMPASS.Common.Models
 {
-    public class TreeViewNode : ObservableObject, IHasChildren<TreeViewNode>
+    public class TreeNode : ObservableObject, IHasChildren<TreeNode>
     {
-        public TreeViewNode(Tag tag)
+        public TreeNode(Tag tag)
         {
             _tag = tag;
-            Children = new(tag.Children.Select(childTag => new TreeViewNode(childTag)));
+            Children = new(tag.Children.Select(childTag => new TreeNode(childTag)));
             Expanded = tag.IsGroup;
         }
 
@@ -20,8 +20,8 @@ namespace COMPASS.Common.Models
             set => SetProperty(ref _tag, value);
         }
 
-        private ObservableCollection<TreeViewNode> _children = [];
-        public ObservableCollection<TreeViewNode> Children
+        private ObservableCollection<TreeNode> _children = [];
+        public ObservableCollection<TreeNode> Children
         {
             get => _children;
             set => SetProperty(ref _children, value);

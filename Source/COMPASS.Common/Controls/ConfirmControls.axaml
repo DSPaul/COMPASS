@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:interface="using:COMPASS.Common.Interfaces"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="30"
+             x:Class="COMPASS.Common.Controls.ConfirmControls"
+             x:DataType="interface:IConfirmable">
+    <Grid ColumnDefinitions="* 20 *" VerticalAlignment="Bottom">
+        <controls:IconButton Command="{Binding ConfirmCommand}" Icon="Check" 
+                             Grid.Column="0" IsDefault="True" 
+                             Content="{Binding !$parent[controls:ConfirmControls].ConfirmLabel}"
+                             HorizontalContentAlignment="Center">
+            <controls:IconButton.Styles>
+                <Style Selector="controls|IconButton">
+                    <Setter Property="Background" Value="{StaticResource AcceptFill}"/>
+                    <Style Selector="^[IsEffectivelyEnabled=false]">
+                        <Setter Property="Background" Value="{StaticResource Layer5}"/>
+                    </Style>
+                </Style>
+            </controls:IconButton.Styles>
+        </controls:IconButton>
+        <controls:IconButton Command="{Binding CancelCommand}" Icon="WindowClose"
+                             Grid.Column="2"
+                             Content="{Binding !$parent[controls:ConfirmControls].CancelLabel}"
+                             HorizontalContentAlignment="Center"
+                             Background="{StaticResource CancelFill}"/>
+    </Grid>
+</UserControl>

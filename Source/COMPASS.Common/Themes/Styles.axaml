@@ -83,7 +83,6 @@
     <Style Selector="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource TextColor}" />
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="15" />
     </Style>
 
     <!--HyperLink-->
@@ -247,6 +246,7 @@
     <!-- Checkbox -->
     <Style Selector="CheckBox">
         <Setter Property="Margin" Value="0" />
+        <Setter Property="MinHeight" Value="24" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">

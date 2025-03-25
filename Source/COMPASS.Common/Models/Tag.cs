@@ -1,20 +1,19 @@
 ﻿using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Tools;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace COMPASS.Common.Models
 {
-    public sealed class Tag : ObservableRecipient, ITag, IHasID, IHasChildren<Tag>, IEquatable<Tag>
+    public sealed class Tag : ObservableRecipient, ITag, IHasID, IHasChildren<Tag>
     {
         public Tag() { }
 
         public Tag(Tag tag)
         {
-            Copy(tag);
+            CopyFrom(tag);
         }
 
         public Tag(List<Tag> allTags)
@@ -42,7 +41,7 @@ namespace COMPASS.Common.Models
         public string Content
         {
             get => _content;
-            set => SetProperty(ref _content, value, true); //needs to broadcast so TagEdit can validate the input
+            set => SetProperty(ref _content, value);
         }
 
         //Color bound to the UI
@@ -72,7 +71,13 @@ namespace COMPASS.Common.Models
         public Tag? Parent
         {
             get => _parent;
-            set => SetProperty(ref _parent, value);
+            set
+            {
+                if (SetProperty(ref _parent, value) && InternalBackgroundColor == null)
+                {
+                    OnPropertyChanged(nameof(BackgroundColor));
+                }
+            }
         }
 
         // Group tags are important for filtering
@@ -103,9 +108,9 @@ namespace COMPASS.Common.Models
             return Parent.GetGroup();
         }
 
-        #region Equal and Copy Functions
+
         //can use copy over ctor to retain reference
-        public void Copy(Tag t)
+        public void CopyFrom(Tag t)
         {
             ID = t.ID;
             Content = t.Content;
@@ -115,35 +120,5 @@ namespace COMPASS.Common.Models
             Children = new(t.Children);
             LinkedGlobs = new(t.LinkedGlobs);
         }
-
-        //Overwrite Equal operator
-        public override bool Equals(object? obj) => this.Equals(obj as Tag);
-
-        public bool Equals(Tag? other)
-        {
-            if (other is null)
-                return false;
-            if (ReferenceEquals(this, other))
-                return true;
-            if (this.GetType() != other.GetType())
-                return false;
-            return ID == other.ID;
-        }
-        public static bool operator ==(Tag? lhs, Tag? rhs)
-        {
-            if (lhs is null)
-            {
-                return rhs is null; //if lhs is null, only equal if rhs is also null
-            }
-            // Equals handles case of null on right side.
-            return lhs.Equals(rhs);
-        }
-        public static bool operator !=(Tag? lhs, Tag? rhs)
-        {
-            return !(lhs == rhs);
-        }
-
-        public override int GetHashCode() => ID.GetHashCode();
-        #endregion
     }
 }

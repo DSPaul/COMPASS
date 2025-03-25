@@ -15,7 +15,7 @@
     <UserControl.Resources>
         <Thickness x:Key="TreeViewItemExpandCollapseChevronMargin"> 0, 0, 0, 0 </Thickness>
 
-        <ContextMenu x:Key="TagContextMenu" x:DataType="models:TreeViewNode">
+        <ContextMenu x:Key="TagContextMenu" x:DataType="models:TreeNode">
             <MenuItem Header="New Tag"
                       Icon="{materialIcons:MaterialIconExt TagPlusOutline}"
                       Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).CreateChildCommand}"
@@ -47,7 +47,7 @@
                       ToolTip.Tip="Export tags to a file" />
         </ContextMenu>
     </UserControl.Resources>
-    <Grid Grid.IsSharedSizeScope="True">
+    <Grid>
         <!-- Grid instead of StackPanel so height is capped and scrolling works -->
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -117,12 +117,18 @@
 
             <controls:CollapsableTabItem Header="New Tag" Icon="TagPlusOutline" CornerRadius="5,0,0,0">
                 <ContentControl>
-                    <views:TagEditBasicView DataContext="{Binding AddTagViewModel}" />
+                    <StackPanel DataContext="{Binding AddTagViewModel}" Margin="10" Spacing="10">
+                        <views:TagEditBasicView/>
+                        <controls:ConfirmControls Compact="True"/>
+                    </StackPanel>
                 </ContentControl>
             </controls:CollapsableTabItem>
             <controls:CollapsableTabItem Header="New Group" Icon="FolderPlusOutline">
                 <ContentControl>
-                    <views:TagEditBasicView DataContext="{Binding AddGroupViewModel}" />
+                    <StackPanel DataContext="{Binding AddGroupViewModel}" Margin="10" Spacing="10">
+                        <views:TagEditBasicView/>
+                        <controls:ConfirmControls Compact="True"/>
+                    </StackPanel>
                 </ContentControl>
             </controls:CollapsableTabItem>
             <controls:CollapsableTabItem Header="Import Tags" Icon="TagArrowDownOutline" CornerRadius="0,5,0,0">
@@ -171,7 +177,7 @@
                   ContextMenu="{StaticResource AllTagsContextMenu}">
             <TreeView.ItemTemplate>
                 <dataTemplates:TagTemplateSelector>
-                    <TreeDataTemplate x:Key="RegularTag" DataType="models:TreeViewNode"
+                    <TreeDataTemplate x:Key="RegularTag" DataType="models:TreeNode"
                                       ItemsSource="{Binding Children}">
                         <Button ContextMenu="{StaticResource TagContextMenu}" Margin="0"
                                 Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).AddTagFilterCommand}"
@@ -188,7 +194,7 @@
                         </Button>
                     </TreeDataTemplate>
 
-                    <TreeDataTemplate x:Key="GroupTag" DataType="models:TreeViewNode" ItemsSource="{Binding Children}">
+                    <TreeDataTemplate x:Key="GroupTag" DataType="models:TreeNode" ItemsSource="{Binding Children}">
                         <Border Margin="0,3, 20, 0" Background="Transparent"
                                 ContextMenu="{StaticResource TagContextMenu}">
                             <StackPanel Orientation="Vertical">
@@ -205,9 +211,9 @@
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
                     <Setter Property="IsExpanded"
-                            Value="{Binding $self.((models:TreeViewNode)DataContext).Expanded, Mode=TwoWay}" />
+                            Value="{Binding $self.((models:TreeNode)DataContext).Expanded, Mode=TwoWay}" />
                     <Setter Property="IsSelected"
-                            Value="{Binding $self.((models:TreeViewNode)DataContext).Selected, Mode=TwoWay}" />
+                            Value="{Binding $self.((models:TreeNode)DataContext).Selected, Mode=TwoWay}" />
                 </Style>
             </TreeView.Styles>
         </TreeView>

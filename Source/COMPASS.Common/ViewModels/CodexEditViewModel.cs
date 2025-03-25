@@ -21,7 +21,7 @@ using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels
 {
-    public class CodexEditViewModel : ViewModelBase, IEditViewModel
+    public class CodexEditViewModel : ViewModelBase, IConfirmable
     {
         public CodexEditViewModel(Codex? toEdit)
         {
@@ -33,7 +33,7 @@ namespace COMPASS.Common.ViewModels
             TempCodex.LoadCover();
 
             //Apply right checkboxes in AllTags
-            foreach (TreeViewNode t in AllTreeViewNodes)
+            foreach (TreeNode t in AllTreeNodes)
             {
                 t.Expanded = false;
                 t.Selected = TempCodex.Tags.Contains(t.Tag);
@@ -45,10 +45,10 @@ namespace COMPASS.Common.ViewModels
 
         readonly Codex? _editedCodex;
 
-        private ObservableCollection<TreeViewNode>? _treeViewSource;
-        public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
+        private ObservableCollection<TreeNode>? _treeViewSource;
+        public ObservableCollection<TreeNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeNode(tag)));
 
-        private HashSet<TreeViewNode> AllTreeViewNodes => TreeViewSource.Flatten().ToHashSet();
+        private HashSet<TreeNode> AllTreeNodes => TreeViewSource.Flatten().ToHashSet();
 
         private bool CreateNewCodex => _editedCodex == null;
 
@@ -114,7 +114,7 @@ namespace COMPASS.Common.ViewModels
         private void UpdateTagList()
         {
             TempCodex.Tags.Clear();
-            foreach (TreeViewNode t in AllTreeViewNodes)
+            foreach (TreeNode t in AllTreeNodes)
             {
                 if (t.Selected)
                 {
@@ -141,7 +141,7 @@ namespace COMPASS.Common.ViewModels
                 OnPropertyChanged(nameof(TreeViewSource));
 
                 //Apply right checkboxes in AllTags
-                foreach (TreeViewNode t in AllTreeViewNodes)
+                foreach (TreeNode t in AllTreeNodes)
                 {
                     t.Expanded = false;
                     t.Selected = TempCodex.Tags.Contains(t.Tag);
@@ -215,8 +215,8 @@ namespace COMPASS.Common.ViewModels
 
         public Action CloseAction { get; set; } = () => { };
 
-        private RelayCommand? _oKCommand;
-        public RelayCommand OKCommand => _oKCommand ??= new(OKBtn);
+        private RelayCommand? _confirmCommand;
+        public RelayCommand ConfirmCommand => _confirmCommand ??= new(OKBtn);
         public void OKBtn()
         {
             //Copy changes into Codex

@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Avalonia.Metadata;
@@ -20,19 +21,24 @@ namespace COMPASS.Common.DataTemplates
         public InstancedBinding? ItemsSelector(object item) => GetTemplate(item).ItemsSelector(item);
 
         // Check if we can accept the provided data
-        public bool Match(object? data) => data is TreeViewNode || data is CheckableTreeNode<Tag>;
+        public bool Match(object? data) => data is TreeNode || data is CheckableTreeNode<Tag> || data is Tag;
 
         private ITreeDataTemplate GetTemplate(object? param)
         {
             bool isGroup;
-            if (param is TreeViewNode node)
+            switch (param)
             {
-                isGroup = node.Tag.IsGroup;
-            }
-            else
-            {
-                var checkNode = param as CheckableTreeNode<Tag>;
-                isGroup = checkNode?.Item.IsGroup ?? false;
+                case TreeNode node:
+                    isGroup = node.Tag.IsGroup;
+                    break;
+                case CheckableTreeNode<Tag> checkableNode:
+                    isGroup = checkableNode?.Item.IsGroup ?? false;
+                    break;
+                case Tag tag:
+                    isGroup = tag.IsGroup;
+                    break;
+                default:
+                    throw new Exception($"{nameof(TagTemplateSelector)} does not support param of type {param?.GetType().Name}");
             }
 
             string key = isGroup ? "GroupTag" : "RegularTag";

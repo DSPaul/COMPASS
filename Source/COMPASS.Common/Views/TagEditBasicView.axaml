@@ -6,70 +6,140 @@
              xmlns:conv="using:COMPASS.Common.Converters"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:view="using:COMPASS.Common.Views"
-             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="250"
+             xmlns:converters="using:COMPASS.Common.Converters"
+             xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
+             xmlns:models="using:COMPASS.Common.Models"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="250"
              x:Class="COMPASS.Common.Views.TagEditBasicView"
              Focusable="True"
              x:DataType="vm:TagEditViewModel">
 
-    <StackPanel x:Name="InfoGrid" Margin="10,5,10,10" Spacing="10">
-        <StackPanel Orientation="Vertical">
-            <Label Content="Name:" />
+    <StackPanel Spacing="10">
+        <!-- Name -->
+        <StackPanel Orientation="Vertical" Spacing="3">
+            <TextBlock Text="Name:" />
             <TextBox Text="{Binding TempTag.Content, UpdateSourceTrigger=PropertyChanged}"
                      Loaded="TagNameTextBox_OnLoaded" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal"
-                    IsVisible="{Binding !CreateNewTag}">
-            <CheckBox Content="Is tag group" IsChecked="{Binding TempTag.IsGroup}" />
-            <!-- TODO add Info icon to explain groups-->
-        </StackPanel>
-        <Grid ColumnDefinitions="Auto, *">
-            <Label Content="Color:" VerticalAlignment="Center" />
-            <ToggleButton Grid.Column="1"
-                          Margin="5,0"
-                          HorizontalAlignment="Stretch"
-                          Background="{Binding TempTag.InternalBackgroundColor, Converter={x:Static conv:FuncConverters.ColorToBrush}}">
+
+        <!-- Color -->
+        <StackPanel Spacing="3">
+            <TextBlock Text="Color:" />
+            <Button HorizontalAlignment="Stretch"
+                    Background="{Binding TempTag.InternalBackgroundColor, Converter={x:Static conv:FuncConverters.ColorToBrush}}">
                 <Button.Flyout>
                     <Flyout Placement="Right" HorizontalOffset="10">
                         <StackPanel>
                             <view:ColorPicker Height="135" Width="166"
                                               SelectedColor="{Binding TempTag.InternalBackgroundColor, Mode=TwoWay, TargetNullValue=Black}" />
-                            <Button Content="Same as Parent" HorizontalAlignment="Center" Margin="0,5"
+                            <Button Content="Inherit from parent" HorizontalAlignment="Center" Margin="0,5"
                                     Command="{Binding ColorSameAsParentCommand}" FontSize="12" />
                         </StackPanel>
                     </Flyout>
                 </Button.Flyout>
-                <ToggleButton.Template>
+                <Button.Template>
                     <ControlTemplate>
                         <Border Background="{TemplateBinding Background}"
                                 BorderBrush="{Binding TempTag.BackgroundColor, Converter={x:Static conv:FuncConverters.ColorToBrush}}"
-                                BorderThickness="2" MinWidth="60" MinHeight="15" CornerRadius="8"
+                                BorderThickness="2" MinWidth="60" MinHeight="15" CornerRadius="5"
                                 VerticalAlignment="Center">
                             <TextBlock Text="Same as Parent" TextWrapping="Wrap" Margin="15,0"
-                                       HorizontalAlignment="Center" FontSize="12"
+                                       Background="Transparent"
+                                       HorizontalAlignment="Center" FontSize="12" TextAlignment="Center"
                                        IsVisible="{Binding TempTag.InternalBackgroundColor, Converter={x:Static ObjectConverters.IsNull}}" />
                         </Border>
                     </ControlTemplate>
-                </ToggleButton.Template>
-            </ToggleButton>
-        </Grid>
-        <Grid ColumnDefinitions="* 20 *">
-            <controls:IconButton Command="{Binding CancelCommand}" Icon="WindowClose"
-                                 Grid.Column="0" 
-                                 HorizontalContentAlignment="Center"
-                                 Background="{StaticResource CancelFill}" />
-            <controls:IconButton Command="{Binding OKCommand}" Icon="Check" 
-                                 Grid.Column="2" IsDefault="True"
-                                 HorizontalContentAlignment="Center">
-                <controls:IconButton.Styles>
-                    <Style Selector="controls|IconButton">
-                        <Setter Property="Background" Value="{StaticResource AcceptFill}"></Setter>
-                        <Style Selector="^[IsEffectivelyEnabled=false]">
-                            <Setter Property="Background" Value="{StaticResource Layer5}"></Setter>
-                        </Style>
-                    </Style>
-                </controls:IconButton.Styles>
-            </controls:IconButton>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+
+        <!-- Parent -->
+        <Grid ColumnDefinitions="Auto, * ,Auto" RowDefinitions="Auto Auto">
+            <Grid.Resources>
+                <Flyout x:Key="TagTreeFlyout" Placement="Right">
+                    <TreeView MaxHeight="400" AutoScrollToSelectedItem="True"
+                              SelectedItem="{Binding SelectedParent}"
+                              BorderBrush="{x:Null}" Background="Transparent"
+                              Margin="5" Classes="NoSelection"
+                              ItemsSource="{Binding PossibleParents}">
+                        <TreeView.ItemTemplate>
+                            <dataTemplates:TagTemplateSelector>
+                                <TreeDataTemplate x:Key="RegularTag" DataType="models:TreeNode"
+                                                  ItemsSource="{Binding Children}">
+                                    <RadioButton>
+                                        <Border CornerRadius="5" Margin="0,2"
+                                                Background="{Binding Tag.BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}">
+                                            <TextBlock Text="{Binding Tag.Content}" Margin="7,0" FontSize="14" />
+                                        </Border>
+                                    </RadioButton>
+                                </TreeDataTemplate>
+                                <TreeDataTemplate x:Key="GroupTag" DataType="models:TreeNode"
+                                                  ItemsSource="{Binding Children}">
+                                    <RadioButton>
+                                        <Border Margin="0, 3, 20, 0" Background="Transparent">
+                                            <StackPanel Orientation="Vertical">
+                                                <TextBlock Text="{Binding Tag.Content}"
+                                                           Foreground="{StaticResource TextMutedColor}"
+                                                           FontSize="16" FontWeight="Bold" />
+                                                <Rectangle
+                                                    Fill="{Binding Tag.BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
+                                                    Height="2" HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Bottom" />
+                                            </StackPanel>
+                                        </Border>
+                                    </RadioButton>
+                                </TreeDataTemplate>
+                            </dataTemplates:TagTemplateSelector>
+                        </TreeView.ItemTemplate>
+                        <TreeView.Styles>
+                            <Style Selector="TreeViewItem" x:DataType="models:TreeNode">
+                                <Setter Property="IsVisible">
+                                    <MultiBinding Converter="{StaticResource AreNotEqualConverter}">
+                                        <Binding
+                                            Path="$parent[TreeView].((vm:TagEditViewModel)DataContext).TempTag.ID" />
+                                        <Binding Path="Tag.ID" />
+                                    </MultiBinding>
+                                </Setter>
+
+                                <Setter Property="IsExpanded" Value="{Binding Expanded}" />
+
+                                <Style Selector="^:selected > RadioButton">
+                                    <Setter Property="IsChecked" Value="True" />
+                                </Style>
+
+                                <Style Selector="^ > RadioButton">
+                                    <Setter Property="GroupName" Value="ParentGroup" />
+                                    <Setter Property="IsHitTestVisible" Value="False" />
+                                </Style>
+                            </Style>
+                        </TreeView.Styles>
+                    </TreeView>
+                </Flyout>
+            </Grid.Resources>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Parent:" />
+
+            <Button Grid.Row="0" Grid.Column="1"
+                    Content="none" Flyout="{StaticResource TagTreeFlyout}"
+                    IsVisible="{Binding TempTag.Parent, Converter={x:Static ObjectConverters.IsNull}}"
+                    Background="Transparent" BorderBrush="{StaticResource ButtonBackground}"
+                    Padding="5,0" Margin="5,0" />
+
+            <Button Grid.Row="0" Grid.Column="2" Content="clear" Padding="10,2" Background="Transparent"
+                    IsVisible="{Binding TempTag.Parent, Converter={x:Static ObjectConverters.IsNotNull}}"
+                    Command="{Binding ClearParentCommand}" />
+
+            <Button Grid.Row="1" Grid.Column="0" Flyout="{StaticResource TagTreeFlyout}"
+                    IsVisible="{Binding TempTag.Parent, Converter={x:Static ObjectConverters.IsNotNull}}"
+                    Background="{Binding TempTag.Parent.BackgroundColor, Converter={x:Static conv:FuncConverters.ColorToBrush}}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="5" Margin="0,2" Background="{TemplateBinding Background}">
+                            <TextBlock Text="{Binding TempTag.Parent.Content}" Margin="7,0" FontSize="14" />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </Grid>
     </StackPanel>
-
 </UserControl>

@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using COMPASS.Common.Interfaces;
 
 namespace COMPASS.Common.ViewModels
 {
-    public class CodexBulkEditViewModel : ViewModelBase, IEditViewModel
+    public class CodexBulkEditViewModel : ViewModelBase, IConfirmable
     {
         public CodexBulkEditViewModel(List<Codex> toEdit)
         {
@@ -33,8 +34,8 @@ namespace COMPASS.Common.ViewModels
 
         #region Properties
 
-        private ObservableCollection<TreeViewNode>? _treeViewSource;
-        public ObservableCollection<TreeViewNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeViewNode(tag)));
+        private ObservableCollection<TreeNode>? _treeViewSource;
+        public ObservableCollection<TreeNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeNode(tag)));
 
 
         private ObservableCollection<Tag> _tagsToAdd = [];
@@ -106,8 +107,8 @@ namespace COMPASS.Common.ViewModels
 
         public Action CloseAction { get; set; } = () => { };
 
-        private RelayCommand? _okCommand;
-        public RelayCommand OKCommand => _okCommand ??= new(OKBtn);
+        private RelayCommand? _confirmCommand;
+        public RelayCommand ConfirmCommand => _confirmCommand ??= new(OKBtn);
         public void OKBtn()
         {
             //Copy changes into each Codex

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
@@ -29,6 +30,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
         private readonly CodexCollection _codexCollection;
         private readonly FilterViewModel _filterVM;
 
+        #region Properties
+        
         //Selected tab from tabControl with options to add tags
         private int _selectedTab = 0;
         public int SelectedTab
@@ -72,29 +75,53 @@ namespace COMPASS.Common.ViewModels.SidePanels
         }
         
         //TreeViewSource with hierarchy
-        private ObservableCollection<TreeViewNode> _treeViewSource = [];
-        public ObservableCollection<TreeViewNode> TreeViewSource
+        private ObservableCollection<TreeNode> _treeViewSource = [];
+        public ObservableCollection<TreeNode> TreeViewSource
         {
             get => _treeViewSource;
             set => SetProperty(ref _treeViewSource, value);
         }
+        
+        #endregion
 
+        private void OnTagParentChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Tag.Parent))
+            {
+                BuildTagTreeView();
+            }
+        }
+        
         public void BuildTagTreeView()
         {
-            List<TreeViewNode> newTreeViewSource = _codexCollection.RootTags.Select(tag => new TreeViewNode(tag)).ToList();
+            List<TreeNode> newTreeViewSource = _codexCollection.RootTags.Select(tag => new TreeNode(tag)).ToList();
+            List<TreeNode> newNodes = newTreeViewSource.Flatten().ToList();
 
             // transfer expanded property
             if (TreeViewSource.Any())
             {
                 var oldNodes = TreeViewSource.Flatten().ToList();
-                foreach (TreeViewNode newNode in newTreeViewSource.Flatten())
+                foreach (TreeNode node in oldNodes)
+                {
+                    node.Tag.PropertyChanged -= OnTagParentChanged;
+                }
+                
+                foreach (TreeNode newNode in newNodes)
                 {
                     newNode.Expanded = oldNodes.Find(n => n.Tag == newNode.Tag)?.Expanded ?? newNode.Expanded;
                 }
             }
+            
+            //Update the tree when a tag switches parent
+            foreach (TreeNode node in newNodes)
+            {
+                node.Tag.PropertyChanged += OnTagParentChanged;
+            }
+            
             TreeViewSource = new(newTreeViewSource);
         }
 
+        #region Commands
         //Tag Creation ViewModel
         private TagEditViewModel? _addTagViewModel;
         public TagEditViewModel? AddTagViewModel
@@ -112,7 +139,6 @@ namespace COMPASS.Common.ViewModels.SidePanels
         }
 
         //Add Tag Buttons
-
         private RelayCommand? _addTagCommand;
         public RelayCommand AddTagCommand => _addTagCommand ??= new(AddTag);
         public void AddTag() => AddTagViewModel = new TagEditViewModel(null, true);
@@ -194,6 +220,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
             w.Show();
         }
 
+        #endregion
+        
         #region Drag & Drop Tags Treeview
         //Drop on Treeview Behaviour
         //TODO: used to have to call the default implemenation of drag and drop here, not sure 

@@ -5,23 +5,44 @@
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
              xmlns:views="using:COMPASS.Common.Views"
              xmlns:controls="using:COMPASS.Common.Controls"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="250"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="COMPASS.Common.Views.Modals.TagEditView"
              x:DataType="vm:TagEditViewModel">
-    <StackPanel Orientation="Horizontal" Spacing="20">
-        <views:TagEditBasicView/>
-        <Rectangle Fill="{StaticResource Separator}" Width="3"/>
-        <Border Background="{StaticResource Layer2}" Margin="0,10" 
-                CornerRadius="5" MaxHeight="170" VerticalAlignment="Top">
-            <Grid RowDefinitions="Auto, Auto, *" Margin="0,10">
-                <StackPanel Orientation="Horizontal" Margin="10,5" Grid.Row="0">
-                    <TextBlock Text="Folder/URL links"/>
-                    <!-- TODO add explainer -->
+    <Grid ColumnDefinitions="Auto, *" RowDefinitions="*, Auto, Auto">
+        <StackPanel Grid.Row="0" Grid.Column="0"
+                    Margin="10" MinWidth="250" Spacing="10">
+            <!-- Basics -->
+            <views:TagEditBasicView  HorizontalAlignment="Stretch"/>
+
+            <!-- Group -->
+            <StackPanel Orientation="Horizontal">
+                <CheckBox Content="Is a group" IsChecked="{Binding TempTag.IsGroup}" />
+                <!-- TODO add Info icon to explain groups-->
+                <controls:Explainer />
+            </StackPanel>
+        </StackPanel>
+
+        <Border Grid.Row="0" Grid.Column="1"
+                Background="{StaticResource Layer2}" Margin="0,10"
+                CornerRadius="5" VerticalAlignment="Top">
+            <Grid RowDefinitions="Auto, Auto, *">
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="10" Grid.Row="0">
+                    <TextBlock Text="Associated Folders/URL's" />
+                    <controls:Explainer>
+                        <!-- TODO -->
+                        This is an explainer for how folder linking works
+                    </controls:Explainer>
                 </StackPanel>
-                <Rectangle Grid.Row="1" Fill="{StaticResource Separator}" Height="3"/>
-                <controls:StringListControl Grid.Row="2" Items="{Binding TempTag.LinkedGlobs}" 
-                                            Width="300" Margin="5" />
+                <Rectangle Grid.Row="1" Fill="{StaticResource Separator}" Height="3" />
+                <controls:StringListControl Grid.Row="2" Items="{Binding TempTag.LinkedGlobs}"
+                                            HorizontalAlignment="Stretch" MinWidth="300" Margin="5" />
             </Grid>
         </Border>
-    </StackPanel>
+
+        <Rectangle Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                   Fill="{StaticResource Separator}" Height="3" />
+
+        <controls:ConfirmControls Grid.Row="2" Grid.Column="1" Width="200"
+                                  HorizontalAlignment="Right" Margin="0,10" />
+    </Grid>
 </UserControl>

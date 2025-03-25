@@ -586,7 +586,7 @@ namespace COMPASS.Common.ViewModels
         void OnDragOver(object sender, DragEventArgs e)
         {
             //Move From Treeview
-            if (e.Data.GetValue<TreeViewNode>() is { Tag.IsGroup: false })
+            if (e.Data.GetValue<TreeNode>() is { Tag.IsGroup: false })
             {
                 e.DragEffects = DragDropEffects.Copy;
             }
@@ -614,9 +614,9 @@ namespace COMPASS.Common.ViewModels
             bool toIncluded = false;
 
             //Move From Treeview
-            if (e.Data.GetValue<TreeViewNode>() is { Tag.IsGroup: false } tvn)
+            if (e.Data.GetValue<TreeNode>() is { Tag.IsGroup: false } node)
             {
-                AddFilter(new TagFilter(tvn.Tag), toIncluded);
+                AddFilter(new TagFilter(node.Tag), toIncluded);
             }
             //Move Filter to included/excluded
             else if (e.Data.GetValue<Filter>() is Filter draggedFilter)

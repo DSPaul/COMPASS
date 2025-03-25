@@ -553,7 +553,7 @@ namespace COMPASS.Common.Operations
 
         public void OnDragOver(object sender, DragEventArgs e)
         {
-            if (e.Data.GetValue<TreeViewNode>() is { Tag.IsGroup: false } ||
+            if (e.Data.GetValue<TreeNode>() is { Tag.IsGroup: false } ||
                 e.Data.GetValue<Tag>() is { IsGroup: false })
             {
                 //TODO Handle adorner manually
@@ -570,10 +570,10 @@ namespace COMPASS.Common.Operations
 
             Tag? toAdd = null;
 
-            if (e.Data.Contains(nameof(TreeViewNode)))
+            if (e.Data.Contains(nameof(TreeNode)))
             {
-                TreeViewNode? tvn = e.Data.Get(nameof(TreeViewNode)) as TreeViewNode;
-                toAdd = tvn?.Tag;
+                TreeNode? node = e.Data.Get(nameof(TreeNode)) as TreeNode;
+                toAdd = node?.Tag;
             }
             else if (e.Data.Contains(nameof(Tag)))
             {

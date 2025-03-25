@@ -207,6 +207,15 @@
         </Setter>
     </ControlTheme>
     
+    <ControlTheme x:Key="{x:Type controls:Explainer}" TargetType="controls:Explainer">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <materialIcons:MaterialIcon Kind="{TemplateBinding Icon}" ToolTip.ShowDelay="0"
+                                            ToolTip.Tip="{TemplateBinding Content}"/>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+    
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="10">
