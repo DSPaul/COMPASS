@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Layouts;
 
-namespace COMPASS.Common.Controls;
+namespace COMPASS.Common.Views.Layouts;
 
 public class CodexLayoutView : UserControl
 {

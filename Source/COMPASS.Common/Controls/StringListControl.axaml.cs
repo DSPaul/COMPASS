@@ -40,7 +40,7 @@ public partial class StringListControl : UserControl
             set => SetValue(ItemsProperty, value);
         }
 
-        private string _newItemText;
+        private string _newItemText = "";
 
         public static readonly DirectProperty<StringListControl, string> NewItemTextProperty = AvaloniaProperty.RegisterDirect<StringListControl, string>(
             nameof(NewItemText), o => o.NewItemText, (o, v) => o.NewItemText = v);

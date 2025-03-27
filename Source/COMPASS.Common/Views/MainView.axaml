@@ -11,6 +11,7 @@
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:converters="using:COMPASS.Common.Converters"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:filters="clr-namespace:COMPASS.Common.Models.Filters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="COMPASS.Common.Views.MainView" FontSize="16"
              x:DataType="vm:MainViewModel"
@@ -337,7 +338,7 @@
             <Grid DockPanel.Dock="Top" x:Name="ViewsGrid" 
                   ColumnDefinitions="*, *, Auto, Auto, Auto, Auto">
                 <Grid.DataTemplates>
-                    <DataTemplate DataType="{x:Type models:ITag}">
+                    <DataTemplate DataType="{x:Type filters:Filter}">
                         <Button Classes="BlankButton"
                                 Command="{Binding $parent[ItemsControl].((vm:FilterViewModel)DataContext).RemoveFromItemsControlCommand}"
                                 CommandParameter="{Binding}" Cursor="Hand">
@@ -357,7 +358,7 @@
                                             Background="{Binding BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}">
                                         <StackPanel Orientation="Horizontal" Margin="7,2">
                                             <TextBlock x:Name="DeletableTagTextBlock" Text="{Binding Content}"
-                                                       Foreground="White" FontSize="14" Margin="2,0" />
+                                                       FontSize="14" Margin="2,0" />
                                             <materialIcons:MaterialIcon Kind="Trash" IsVisible="False" Width="14"
                                                                         Height="14" VerticalAlignment="Bottom" Margin="0,1" />
                                         </StackPanel>

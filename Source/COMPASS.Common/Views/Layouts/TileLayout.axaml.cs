@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using COMPASS.Common.Controls;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
 
