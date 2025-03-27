@@ -245,6 +245,18 @@ namespace COMPASS.Common.Models.XmlDtos
             prop.SourcePriority = propDto.SourcePriority;
             prop.OverwriteMode = propDto.OverwriteMode;
 
+            var defaultSources = CodexProperty.GetDefaultSources(prop.Name);
+            
+            // If a new possible source was not found in the save, add it
+            foreach (var source in defaultSources)
+            {
+                prop.SourcePriority.AddIfMissing(source);
+            }
+
+            // If a possible source was removed (due to a specific metadata fetch breaking
+            // or due to an api change or something), remove it from the sources
+            prop.SourcePriority.RemoveAll(source => !defaultSources.Contains(source));
+            
             return prop;
         }
 
@@ -254,8 +266,7 @@ namespace COMPASS.Common.Models.XmlDtos
             {
                 Name = prop.Name,
                 OverwriteMode = prop.OverwriteMode,
-                //Use order from NameMetaDataSources (which was reordered by user)
-                SourcePriority = prop.SourcePriorityNamed.Select(namedSource => namedSource.Source).ToList(),
+                SourcePriority = prop.SourcePriority,
             };
 
             return dto;

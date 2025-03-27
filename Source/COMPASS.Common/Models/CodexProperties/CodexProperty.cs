@@ -1,28 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Tools;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace COMPASS.Common.Models.CodexProperties
 {
-    public abstract class CodexProperty : ObservableObject, IDisposable
+    public abstract class CodexProperty : ObservableObject
     {
         protected CodexProperty(string propName, string? label = null)
         {
             Name = propName;
             Label = label ?? propName;
-            _defaultSourcePriority = GetDefaultSources(propName);
-            UpdateSources();
-
-            SourcePriorityNamed = new(SourcePriority.Select(source => new NamedMetaDataSource(source)));
-            SourcePriorityNamed.CollectionChanged += SourcePriorityNamed_CollectionChanged;
         }
-
-        private void SourcePriorityNamed_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-            => SourcePriority = SourcePriorityNamed.Select(spn => spn.Source).ToList();
 
         #region Properties
 
@@ -50,13 +39,6 @@ namespace COMPASS.Common.Models.CodexProperties
 
         #region Import Sources
 
-        private readonly List<MetaDataSource> _defaultSourcePriority;
-
-        /// <summary>
-        /// Ordered List of sources that can set this prop, named for data binding
-        /// </summary>
-        public ObservableCollection<NamedMetaDataSource> SourcePriorityNamed { get; }
-
         private List<MetaDataSource> _sourcePriority = [];
         /// <summary>
         /// Ordered List of sources that can set this prop, used for logic
@@ -64,11 +46,7 @@ namespace COMPASS.Common.Models.CodexProperties
         public List<MetaDataSource> SourcePriority
         {
             get => _sourcePriority;
-            set
-            {
-                _sourcePriority = value;
-                UpdateSources();
-            }
+            set => SetProperty(ref _sourcePriority, value);
         }
 
         private MetaDataOverwriteMode _overwriteMode = MetaDataOverwriteMode.IfEmpty;
@@ -76,23 +54,6 @@ namespace COMPASS.Common.Models.CodexProperties
         {
             get => _overwriteMode;
             set => SetProperty(ref _overwriteMode, value);
-        }
-
-        #endregion
-
-        #region Mapping
-
-        private void UpdateSources()
-        {
-            // If a new possible source was not found in the save, add it
-            foreach (var source in _defaultSourcePriority)
-            {
-                SourcePriority.AddIfMissing(source);
-            }
-
-            // If a possible source was removed (due to a specific metadata fetch breaking
-            // or due to an api change or something), remove it from the sources
-            SourcePriority.RemoveAll(source => !_defaultSourcePriority.Contains(source));
         }
 
         #endregion
@@ -115,7 +76,7 @@ namespace COMPASS.Common.Models.CodexProperties
             _ => null //could occur when a new preference file with new props is loaded into an older version of compass
         };
 
-        private static List<MetaDataSource> GetDefaultSources(string propName) => propName switch
+        public static List<MetaDataSource> GetDefaultSources(string propName) => propName switch
         {
             nameof(Codex.Title) => new()
                 {
@@ -181,8 +142,6 @@ namespace COMPASS.Common.Models.CodexProperties
                 },
             _ => new(),
         };
-        public void Dispose() => SourcePriorityNamed.CollectionChanged -= SourcePriorityNamed_CollectionChanged;
-
         #endregion
     }
 
