@@ -14,5 +14,8 @@ namespace COMPASS.Common.Converters
 
         public static FuncValueConverter<Enum, Enum, bool> HasFlagConverter { get; } =
             new((value, param) => value is Enum flags && param is Enum flag && flags.HasFlag(flag));
+        
+        public static FuncValueConverter<string?, string?> ToUpperConverter { get; } =
+            new (value => value?.ToUpper());
     }
 }

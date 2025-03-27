@@ -176,7 +176,7 @@
                   DragDrop.AllowDrop="True"
                   ContextMenu="{StaticResource AllTagsContextMenu}">
             <TreeView.ItemTemplate>
-                <dataTemplates:TagTemplateSelector>
+                <dataTemplates:TagTreeDataTemplateSelector>
                     <TreeDataTemplate x:Key="RegularTag" DataType="models:TreeNode"
                                       ItemsSource="{Binding Children}">
                         <Button ContextMenu="{StaticResource TagContextMenu}" Margin="0"
@@ -184,29 +184,20 @@
                                 CommandParameter="{Binding Tag}">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
-                                    <Border CornerRadius="5" Margin="0,2"
-                                            Background="{Binding Tag.BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}">
-                                        <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White"
-                                                   FontSize="14" />
-                                    </Border>
+                                    <controls:Chip Text="{Binding Tag.Content}" Margin="0,3"
+                                                   Background="{Binding Tag.BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"/>
                                 </ControlTemplate>
                             </Button.Template>
                         </Button>
                     </TreeDataTemplate>
 
                     <TreeDataTemplate x:Key="GroupTag" DataType="models:TreeNode" ItemsSource="{Binding Children}">
-                        <Border Margin="0,3, 20, 0" Background="Transparent"
-                                ContextMenu="{StaticResource TagContextMenu}">
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock x:Name="Label" Text="{Binding Tag.Content}" Foreground="LightGray"
-                                           FontSize="16" FontWeight="Bold" />
-                                <Rectangle
-                                    Fill="{Binding Tag.BackgroundColor, Mode=OneWay, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
-                                    Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
-                            </StackPanel>
-                        </Border>
+                        <controls:Chip Theme="{StaticResource GroupChip}" Margin="0,3,20,3"
+                                       Text="{Binding Tag.Content}" HorizontalAlignment="Stretch"
+                                       Background="{Binding Tag.BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
+                                       ContextMenu="{StaticResource TagContextMenu}"/>
                     </TreeDataTemplate>
-                </dataTemplates:TagTemplateSelector>
+                </dataTemplates:TagTreeDataTemplateSelector>
             </TreeView.ItemTemplate>
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">

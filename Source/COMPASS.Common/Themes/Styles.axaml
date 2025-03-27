@@ -3,32 +3,48 @@
         xmlns:views="using:COMPASS.Common.Views"
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
     <Design.PreviewWith>
-        <StackPanel Spacing="10">
+        <ScrollViewer MaxHeight="800">
+            
+            <StackPanel Spacing="10" >
 
-            <!-- Icons -->
-            <materialIcons:MaterialIcon Kind="About" Classes="Clickable" />
-            <!-- Button -->
-            <Button> This is a button</Button>
-            <!-- Checkbox -->
-            <CheckBox IsThreeState="True">This is a checkbox</CheckBox>
-            <CheckBox IsHitTestVisible="False">unchecked readonly checkbox</CheckBox>
-            <CheckBox IsHitTestVisible="False" IsChecked="True">checked readonly checkbox</CheckBox>
-            <!-- Slider -->
-            <Slider Value="200" Minimum="50" Maximum="400" TickFrequency="5" Margin="5" />
-            <!-- Context Menu -->
-            <ContextMenu>
-                <MenuItem Header="MenuItem" Tag="Filter"></MenuItem>
-                <Separator></Separator>
-                <MenuItem Header="Second MenuItem" Tag="Filter"></MenuItem>
-            </ContextMenu>
-            <!-- Combobox -->
-            <ComboBox>
-                <ComboBox.Items>
-                    <ComboBoxItem> Item1 </ComboBoxItem>
-                    <ComboBoxItem> Item1 </ComboBoxItem>
-                </ComboBox.Items>
-            </ComboBox>
-        </StackPanel>
+                <!-- Icons -->
+                <materialIcons:MaterialIcon Kind="About" Classes="Clickable" />
+                <!-- Button -->
+                <Button> This is a button</Button>
+                <!-- Checkbox -->
+                <CheckBox IsThreeState="True">This is a checkbox</CheckBox>
+                <CheckBox IsHitTestVisible="False">unchecked readonly checkbox</CheckBox>
+                <CheckBox IsHitTestVisible="False" IsChecked="True">checked readonly checkbox</CheckBox>
+                <!-- Slider -->
+                <Slider Value="200" Minimum="50" Maximum="400" TickFrequency="5" Margin="5" />
+                <!-- Context Menu -->
+                <ContextMenu>
+                    <MenuItem Header="MenuItem" Tag="Filter"></MenuItem>
+                    <Separator></Separator>
+                    <MenuItem Header="Second MenuItem" Tag="Filter"></MenuItem>
+                </ContextMenu>
+                <!-- Combobox -->
+                <ComboBox>
+                    <ComboBox.Items>
+                        <ComboBoxItem> Item1 </ComboBoxItem>
+                        <ComboBoxItem> Item1 </ComboBoxItem>
+                    </ComboBox.Items>
+                </ComboBox>
+
+                <!-- Radio Buttons -->
+                <RadioButton Content="Options 1" />
+                <RadioButton Content="Options 2" />
+                
+                <!-- Tree -->
+                <TreeView>
+                    <TreeViewItem Header="Tree item">
+                        <TreeViewItem Header="Sub item 1"></TreeViewItem>
+                        <TreeViewItem Header="Sub item 2"></TreeViewItem>
+                    </TreeViewItem>
+                    <TreeViewItem Header="Second">  </TreeViewItem>
+                </TreeView>
+            </StackPanel>
+        </ScrollViewer>
     </Design.PreviewWith>
 
     <Styles.Resources>
@@ -145,34 +161,55 @@
         </Style>
 
     </Style>
-
-
+    
     <!-- Tree view Items -->
     <Style Selector="TreeViewItem">
         <Style.Resources>
-            <x:Double x:Key="TreeViewItemExpandCollapseChevronSize">30</x:Double>
+            <ControlTheme x:Key="Chevron" TargetType="ToggleButton">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Padding="3"
+                                Background="Transparent"
+                                Width="18" Height="18"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                            <Path x:Name="ChevronPath"
+                                  Data="{StaticResource TreeViewItemCollapsedChevronPathData}"
+                                  Fill="{DynamicResource TreeViewItemForeground}"
+                                  Stretch="Uniform"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+
+                <Style Selector="^:checked /template/ Path#ChevronPath">
+                    <Setter Property="Data" Value="{StaticResource TreeViewItemExpandedChevronPathData}" />
+                </Style>
+            </ControlTheme>
+
         </Style.Resources>
+        <Setter Property="MinHeight" Value="24" />
         <Setter Property="Template">
             <ControlTemplate>
                 <StackPanel>
                     <Border Name="PART_LayoutRoot"
                             Classes="TreeViewItemLayoutRoot"
-                            Focusable="True"
-                            Background="{TemplateBinding Background}"
+                            Focusable="False"
+                            Background="{x:Null}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             MinHeight="{TemplateBinding MinHeight}"
                             TemplatedControl.IsTemplateFocusTarget="True">
                         <Grid Name="PART_Header"
-                              IsHitTestVisible="True"
-                              ColumnDefinitions="Auto, *"
+                              Background="{x:Null}"
+                              ColumnDefinitions="24, *"
                               Margin="{TemplateBinding Level, Mode=OneWay, Converter={StaticResource TreeViewItemLeftMarginConverter}}">
-                            <Panel Name="PART_ExpandCollapseChevronContainer"
-                                   Margin="{StaticResource TreeViewItemExpandCollapseChevronMargin}"
-                                   Width="{StaticResource TreeViewItemExpandCollapseChevronSize}">
+                            <Panel Name="PART_ExpandCollapseChevronContainer" Margin="5,0">
                                 <ToggleButton Name="PART_ExpandCollapseChevron"
-                                              Theme="{StaticResource FluentTreeViewExpandCollapseChevron}"
+                                              Theme="{StaticResource Chevron}"
                                               Focusable="False"
                                               IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}" />
                             </Panel>
@@ -196,7 +233,6 @@
         <Style Selector="^:empty /template/ Panel#PART_ExpandCollapseChevronContainer">
             <Setter Property="Width" Value="{StaticResource TreeViewItemExpandCollapseChevronSize}" />
         </Style>
-
     </Style>
 
     <Style Selector="TreeView.NoSelection TreeViewItem">
@@ -259,9 +295,9 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        
+
         <Style Selector="^[IsEffectivelyEnabled=true]">
-            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Cursor" Value="Hand" />
         </Style>
 
         <!-- readonly unchecked -->
@@ -299,6 +335,55 @@
                     <Setter Property="Kind" Value="Minus" />
                     <Setter Property="Foreground" Value="Gray" />
                 </Style>
+            </Style>
+        </Style>
+    </Style>
+
+    <!-- RadioButton -->
+    <Style Selector="RadioButton">
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="14,*" Background="Transparent">
+                    <Border Name="OuterRing"
+                            BorderBrush="{StaticResource UIElementBackground}"
+                            CornerRadius="100" Margin="1,1,2,1"
+                            BorderThickness="2"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                        <Ellipse Name="InnerDot" Margin="2" Width="6" Height="6"
+                                 UseLayoutRounding="False"
+                                 Fill="Transparent"  />
+                    </Border>
+                    
+                    <ContentPresenter
+                        Name="PART_ContentPresenter"
+                        Grid.Column="1"
+                        Margin="{TemplateBinding Padding}"
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                        Content="{TemplateBinding Content}"
+                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                        Foreground="{TemplateBinding Foreground}"
+                        RecognizesAccessKey="True" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        
+        <!-- hover state -->
+        <Style Selector="^:pointerover /template/ Border#OuterRing">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+        </Style>
+        
+        <!-- Checked state -->
+        <Style Selector="^:checked">
+            <Style Selector="^ /template/ Border#OuterRing">
+                <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+            </Style>
+            
+            <Style Selector="^ /template/ Ellipse#InnerDot">
+                <Setter Property="Fill" Value="{StaticResource AccentColorMuted}"/>
             </Style>
         </Style>
     </Style>

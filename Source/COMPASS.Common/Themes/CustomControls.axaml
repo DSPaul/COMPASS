@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="using:System"
                     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                    xmlns:converters="using:COMPASS.Common.Converters"
                     xmlns:controls="using:COMPASS.Common.Controls">
     <!--Icon Button-->
     <ControlTheme TargetType="controls:IconButton" x:Key="IconOnly">
@@ -53,7 +54,7 @@
                         </Grid.ColumnDefinitions>
                         <materialIcons:MaterialIcon Height="20" Width="20" Margin="5,0"
                                                     Kind="{TemplateBinding Icon}" />
-                        <ContentPresenter Grid.Column="1" Margin="5,0" 
+                        <ContentPresenter Grid.Column="1" Margin="5,0"
                                           IsVisible="{TemplateBinding Content, Converter={x:Static ObjectConverters.IsNotNull}}"
                                           VerticalAlignment="{TemplateBinding VerticalAlignment}"
                                           Content="{TemplateBinding Content}" />
@@ -206,16 +207,45 @@
             </ControlTemplate>
         </Setter>
     </ControlTheme>
-    
+
     <ControlTheme x:Key="{x:Type controls:Explainer}" TargetType="controls:Explainer">
         <Setter Property="Template">
             <ControlTemplate>
                 <materialIcons:MaterialIcon Kind="{TemplateBinding Icon}" ToolTip.ShowDelay="0"
-                                            ToolTip.Tip="{TemplateBinding Content}"/>
+                                            ToolTip.Tip="{TemplateBinding Content}" />
             </ControlTemplate>
         </Setter>
     </ControlTheme>
-    
+
+    <ControlTheme x:Key="{x:Type controls:Chip}" TargetType="controls:Chip">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border CornerRadius="5" Background="{TemplateBinding Background}" HorizontalAlignment="Left">
+                    <TextBlock Text="{TemplateBinding Text}" Margin="7,0" FontSize="14" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme x:Key="GroupChip" TargetType="controls:Chip">
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel Orientation="Vertical" Background="Transparent"
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}" >
+                    <TextBlock
+                        Text="{TemplateBinding Text, Converter={x:Static converters:FuncConverters.ToUpperConverter}}"
+                        Foreground="{StaticResource TextMutedColor}"
+                        FontSize="15" FontWeight="Bold" />
+                    <Rectangle
+                        Fill="{TemplateBinding Background}"
+                        Height="2" HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="10">
@@ -229,7 +259,7 @@
                         filter content
                     </controls:CollapsableTabItem>
                 </TabControl>
-                
+
                 <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Top">
                     <controls:CollapsableTabItem Header="Tags" Icon="Tags">
                         tags context
@@ -242,6 +272,9 @@
                 <controls:RatingControl Value="0" NumberOfStars="5" />
                 <controls:RatingControl Value="2" NumberOfStars="5" />
                 <controls:RatingControl Value="6" NumberOfStars="6" />
+
+                <controls:Chip Text="This is a chip" Background="Green" />
+                <controls:Chip Theme="{StaticResource GroupChip}" Text="This is a chip" Background="Green" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>

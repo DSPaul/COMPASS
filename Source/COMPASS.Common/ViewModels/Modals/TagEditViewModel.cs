@@ -18,11 +18,6 @@ namespace COMPASS.Common.ViewModels.Modals
 
             _tempTag = new Tag(_editedTag);
             _tempTag.PropertyChanged += HandleTagPropertyChanged;
-
-            PossibleParents  = new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeNode(tag)
-            {
-                Expanded = tag.Children.Flatten().Contains(_tempTag.Parent) //expand all parents so that parent is visible
-            }));
         }
 
         private void HandleTagPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -61,7 +56,14 @@ namespace COMPASS.Common.ViewModels.Modals
             }
         }
 
-        public ObservableCollection<TreeNode> PossibleParents { get; }
+        private ObservableCollection<TreeNode>? _possibleParents;
+        public ObservableCollection<TreeNode> PossibleParents => _possibleParents ??= 
+            new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeNode(tag)
+            {
+                Expanded = tag.Children.Flatten().Contains(_tempTag.Parent) //expand all parents so that parent is visible
+            }));
+        
+        public bool HasPossibleParents => PossibleParents.Any(node => node.Tag != _editedTag);
 
         public TreeNode? SelectedParent
         {
@@ -77,6 +79,15 @@ namespace COMPASS.Common.ViewModels.Modals
         {
             _editedTag = new();
             TempTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+
+            ResetPossibleParents();
+        }
+
+        private void ResetPossibleParents()
+        {
+            _possibleParents = null;
+            OnPropertyChanged(nameof(PossibleParents));
+            OnPropertyChanged(nameof(HasPossibleParents));
         }
         
         private RelayCommand? _colorSameAsParentCommand;

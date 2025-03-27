@@ -9,20 +9,17 @@ namespace COMPASS.Common.Models
     /// which is indicated by the bool return value
     /// </summary>
     /// <typeparam name="T"> Type of argument of the function</typeparam>
-    public class PreferableFunction<T> : ITag, IHasID
+    public class PreferableFunction<T> : IHasID
     {
         public PreferableFunction(string name, Func<T, bool> func, int id = -1)
         {
-            Content = name;
+            Name = name;
             Function = func;
             ID = id;
-            _ = Color.TryParse("#16D68A", out var col);
-            BackgroundColor = col;
         }
-
-        //Implement ITag
-        public string Content { get; init; }
-        public Color BackgroundColor { get; set; }
+        
+        public string Name { get; }
+        
         //Implement IHasID
         public int ID { get; set; }
 

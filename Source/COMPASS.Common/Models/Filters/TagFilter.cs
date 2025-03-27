@@ -9,9 +9,9 @@ namespace COMPASS.Common.Models.Filters
             AllowMultiple = true;
         }
 
-        public override Color BackgroundColor => ((ITag)FilterValue!).BackgroundColor;
+        public override Color BackgroundColor => ((Tag)FilterValue!).BackgroundColor;
 
-        public override string Content => ((ITag)FilterValue!).Content;
+        public override string Content => ((Tag)FilterValue!).Content;
 
         //Tag logic is contained in the FilterViewmodel, so here just make it match everything
         public override bool Apply(Codex codex) => true;

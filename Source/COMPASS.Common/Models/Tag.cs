@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace COMPASS.Common.Models
 {
-    public sealed class Tag : ObservableRecipient, ITag, IHasID, IHasChildren<Tag>
+    public sealed class Tag : ObservableRecipient, IHasID, IHasChildren<Tag>
     {
         public Tag() { }
 
@@ -35,8 +35,7 @@ namespace COMPASS.Common.Models
                 }
             }
         }
-
-        //implement ITag
+        
         private string _content = "";
         public string Content
         {

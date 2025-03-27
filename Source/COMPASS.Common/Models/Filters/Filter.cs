@@ -3,7 +3,7 @@ using System;
 
 namespace COMPASS.Common.Models.Filters
 {
-    public abstract class Filter : ITag, IEquatable<Filter>
+    public abstract class Filter : IEquatable<Filter>
     {
         protected Filter(FilterType filterType, object? filterValue = null)
         {

@@ -14,13 +14,6 @@ namespace COMPASS.Common.Models
         public ObservableCollection<T> Children { get; set; }
     }
 
-    //Object that can be represented by a Tag in the UI
-    public interface ITag
-    {
-        public string Content { get; }
-        public Color BackgroundColor { get; }
-    }
-
     public interface IDealsWithTabControl
     {
         public int SelectedTab { get; set; }

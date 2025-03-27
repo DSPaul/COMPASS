@@ -11,7 +11,7 @@ namespace COMPASS.Common.DataTemplates
 
     //based on https://github.com/AvaloniaUI/Avalonia.Samples/tree/main/src/Avalonia.Samples/DataTemplates/IDataTemplateSample
 
-    public class TagTemplateSelector : ITreeDataTemplate
+    public class TagTreeDataTemplateSelector : ITreeDataTemplate
     {
         // This Dictionary should store our templates. We mark this as [Content], so we can directly add elements to it later.
         [Content]
@@ -38,7 +38,7 @@ namespace COMPASS.Common.DataTemplates
                     isGroup = tag.IsGroup;
                     break;
                 default:
-                    throw new Exception($"{nameof(TagTemplateSelector)} does not support param of type {param?.GetType().Name}");
+                    throw new Exception($"{nameof(TagTreeDataTemplateSelector)} does not support param of type {param?.GetType().Name}");
             }
 
             string key = isGroup ? "GroupTag" : "RegularTag";
