@@ -14,4 +14,7 @@
     <x:Double x:Key="SliderHorizontalThumbHeight">14</x:Double>
     <x:Double x:Key="SliderVerticalThumbWidth">14</x:Double>
     <x:Double x:Key="SliderVerticalThumbHeight">14</x:Double>
+    
+    <!-- Scrollbar -->
+    <x:Double x:Key="ScrollBarSize">10</x:Double>
 </ResourceDictionary>

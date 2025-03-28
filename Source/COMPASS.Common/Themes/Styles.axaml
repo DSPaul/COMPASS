@@ -3,9 +3,9 @@
         xmlns:views="using:COMPASS.Common.Views"
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
     <Design.PreviewWith>
-        <ScrollViewer MaxHeight="800">
-            
-            <StackPanel Spacing="10" >
+        <ScrollViewer MaxHeight="400" AllowAutoHide="False">
+
+            <StackPanel Spacing="10">
 
                 <!-- Icons -->
                 <materialIcons:MaterialIcon Kind="About" Classes="Clickable" />
@@ -34,7 +34,7 @@
                 <!-- Radio Buttons -->
                 <RadioButton Content="Options 1" />
                 <RadioButton Content="Options 2" />
-                
+
                 <!-- Tree -->
                 <TreeView>
                     <TreeViewItem Header="Tree item">
@@ -161,7 +161,7 @@
         </Style>
 
     </Style>
-    
+
     <!-- Tree view Items -->
     <Style Selector="TreeViewItem">
         <Style.Resources>
@@ -354,9 +354,9 @@
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
                         <Ellipse Name="InnerDot" Margin="2" Width="6" Height="6"
                                  UseLayoutRounding="False"
-                                 Fill="Transparent"  />
+                                 Fill="Transparent" />
                     </Border>
-                    
+
                     <ContentPresenter
                         Name="PART_ContentPresenter"
                         Grid.Column="1"
@@ -370,20 +370,20 @@
                 </Grid>
             </ControlTemplate>
         </Setter>
-        
+
         <!-- hover state -->
         <Style Selector="^:pointerover /template/ Border#OuterRing">
-            <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}" />
         </Style>
-        
+
         <!-- Checked state -->
         <Style Selector="^:checked">
             <Style Selector="^ /template/ Border#OuterRing">
-                <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}" />
             </Style>
-            
+
             <Style Selector="^ /template/ Ellipse#InnerDot">
-                <Setter Property="Fill" Value="{StaticResource AccentColorMuted}"/>
+                <Setter Property="Fill" Value="{StaticResource AccentColorMuted}" />
             </Style>
         </Style>
     </Style>
@@ -396,4 +396,23 @@
             </Style>
         </Style>
     </Style>
+
+    <!-- ScrollViewer -->
+    <Style Selector="ScrollViewer">
+        <Setter Property="AllowAutoHide" Value="False" />
+    </Style>
+    
+    <!-- ScrollBar -->
+    <Style Selector="ScrollBar">
+        <Setter Property="Margin" Value="5,0,0,0"/>
+        <Style Selector="^ /template/ Track > Thumb">
+            <Setter Property="CornerRadius" Value="5"/>
+        </Style>
+    </Style>
+
+    <Style Selector="ListBox">
+        <Setter Property="ScrollViewer.AllowAutoHide" Value="False" />
+    </Style>
+    
+    
 </Styles>

@@ -87,5 +87,9 @@
   <SolidColorBrush x:Key="RatingControlSelectedBrush" Color="White"/>
   <SolidColorBrush x:Key="RatingControlUnselectedBrush" Color="Gray"/>
   
+  <!-- Scrollbar control -->
+
+  <SolidColorBrush x:Key="ScrollBarTrackFillPointerOver" Color="{StaticResource DarkestGray}" Opacity="0.2" />
+  <SolidColorBrush x:Key="ScrollBarBackground" Color="Transparent" />
   
 </ResourceDictionary>
