@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Controls;
 
@@ -18,7 +19,9 @@ public partial class StringListControl : UserControl
             // Initialize with sample data for design mode
             if (Design.IsDesignMode)
             {
-                Items = Enumerable.Range(0,50).Select(n => $"String {n}").ToList();
+                ReadOnlyToolTip = "This explains why I am locked";
+                ReadOnlyItems = Enumerable.Range(0,3).Select(n => $"Readonly String {n}").ToList();
+                Items = Enumerable.Range(0,10).Select(n => $"String {n}").ToList();
             }
         }
 
@@ -38,6 +41,26 @@ public partial class StringListControl : UserControl
         {
             get => GetValue(ItemsProperty);
             set => SetValue(ItemsProperty, value);
+        }
+        
+        // ReadOnly Items Collection
+        public static readonly StyledProperty<IList<string>> ReadOnlyItemsProperty =
+            AvaloniaProperty.Register<StringListControl, IList<string>>(
+                nameof(ReadOnlyItems), new List<string>(), defaultBindingMode:BindingMode.OneWay);
+
+        public IList<string> ReadOnlyItems
+        {
+            get => GetValue(ReadOnlyItemsProperty);
+            set => SetValue(ReadOnlyItemsProperty, value);
+        }
+        
+        public static readonly StyledProperty<string> ReadOnlyToolTipProperty = AvaloniaProperty.Register<StringListControl, string>(
+            nameof(ReadOnlyToolTip), defaultBindingMode: BindingMode.OneTime);
+
+        public string ReadOnlyToolTip
+        {
+            get => GetValue(ReadOnlyToolTipProperty);
+            set => SetValue(ReadOnlyToolTipProperty, value);
         }
 
         private string _newItemText = "";
@@ -76,11 +99,14 @@ public partial class StringListControl : UserControl
         {
             if (!string.IsNullOrWhiteSpace(NewItemText))
             {
-                Items.Add(NewItemText);
+                Items.AddIfMissing(NewItemText);
                 NewItemText = string.Empty;
             }
         }
-        private bool CanAddItem() => !string.IsNullOrWhiteSpace(NewItemText);
+        private bool CanAddItem() => 
+            !string.IsNullOrWhiteSpace(NewItemText) && 
+            !Items.Contains(NewItemText) &&
+            !ReadOnlyItems.Contains(NewItemText);
 
         #endregion
     }
