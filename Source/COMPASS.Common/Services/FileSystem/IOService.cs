@@ -515,9 +515,15 @@ namespace COMPASS.Common.Services.FileSystem
 
         public static bool MatchesAnyGlob(string filePath, IList<string> globs )
         {
+            if (string.IsNullOrEmpty(filePath)) return false;
+            
             var matcher = new Matcher();
             matcher.AddIncludePatterns(globs);
-            return matcher.Match(filePath.Replace('\\', '/')).HasMatches;
+            
+            string directory = Path.GetDirectoryName(filePath) ?? string.Empty;
+            string fileName = Path.GetFileName(filePath);
+            
+            return matcher.Match(directory, fileName).HasMatches;
         }
 
         #endregion
