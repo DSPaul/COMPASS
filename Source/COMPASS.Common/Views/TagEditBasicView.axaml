@@ -18,7 +18,7 @@
         <!-- Name -->
         <StackPanel Orientation="Vertical" Spacing="3">
             <TextBlock Text="Name:" />
-            <TextBox Text="{Binding TempTag.Content, UpdateSourceTrigger=PropertyChanged}"
+            <TextBox Text="{Binding TempTag.Name, UpdateSourceTrigger=PropertyChanged}"
                      Loaded="TagNameTextBox_OnLoaded" />
         </StackPanel>
 
@@ -68,14 +68,14 @@
                                 <TreeDataTemplate x:Key="RegularTag" DataType="models:TreeNode"
                                                   ItemsSource="{Binding Children}">
                                     <RadioButton>
-                                       <controls:Chip Text="{Binding Tag.Content}" Margin="0,3"
+                                       <controls:Chip Text="{Binding Tag.Name}" Margin="0,3"
                                                       Background="{Binding Tag.BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"/>
                                     </RadioButton>
                                 </TreeDataTemplate>
                                 <TreeDataTemplate x:Key="GroupTag" DataType="models:TreeNode"
                                                   ItemsSource="{Binding Children}">
                                     <RadioButton>
-                                        <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding Tag.Content}" 
+                                        <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding Tag.Name}" 
                                                         HorizontalAlignment="Stretch" Margin="0,3,20,3"
                                                        Background="{Binding Tag.BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"/>
                                     </RadioButton>
@@ -120,7 +120,8 @@
                     Background="Transparent" BorderBrush="{StaticResource Layer7}"
                     Padding="5,0" Margin="5,0" />
             
-            <Button Grid.Row="1" Grid.Column="0" Flyout="{StaticResource TagTreeFlyout}"
+            <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
+                    Flyout="{StaticResource TagTreeFlyout}"
                     IsVisible="{Binding TempTag.Parent, Converter={x:Static ObjectConverters.IsNotNull}}"
                     Content="{Binding TempTag.Parent}"
                     Classes="BlankButton"
@@ -128,11 +129,11 @@
                 <Button.DataTemplates>
                     <dataTemplates:TagDataTemplateSelector>
                         <DataTemplate x:Key="RegularTag" DataType="models:Tag">
-                            <controls:Chip Text="{Binding Content}" Margin="0,3"
+                            <controls:Chip Text="{Binding LongName}" Margin="0,3"
                                            Background="{Binding BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"/>
                         </DataTemplate>
                         <DataTemplate x:Key="GroupTag" DataType="models:Tag">
-                            <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding Content}" 
+                            <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding LongName}" 
                                            Background="{Binding BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"/>
                         </DataTemplate>
                     </dataTemplates:TagDataTemplateSelector>

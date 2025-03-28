@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Tools;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -36,12 +37,14 @@ namespace COMPASS.Common.Models
             }
         }
         
-        private string _content = "";
-        public string Content
+        private string _name = "";
+        public string Name
         {
-            get => _content;
-            set => SetProperty(ref _content, value);
+            get => _name;
+            set => SetProperty(ref _name, value);
         }
+
+        public string LongName => $"{Parent?.LongName}{(Parent == null ? "" : " > ")}{Name}";
 
         //Color bound to the UI
         public Color BackgroundColor => _internalBackgroundColor ?? Parent?.BackgroundColor ?? Colors.DarkGray;
@@ -112,7 +115,7 @@ namespace COMPASS.Common.Models
         public void CopyFrom(Tag t)
         {
             ID = t.ID;
-            Content = t.Content;
+            Name = t.Name;
             Parent = t.Parent;
             IsGroup = t.IsGroup;
             InternalBackgroundColor = t.InternalBackgroundColor;

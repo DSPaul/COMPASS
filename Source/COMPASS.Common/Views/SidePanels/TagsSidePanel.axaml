@@ -184,7 +184,7 @@
                                 CommandParameter="{Binding Tag}">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
-                                    <controls:Chip Text="{Binding Tag.Content}" Margin="0,3"
+                                    <controls:Chip Text="{Binding Tag.Name}" Margin="0,3"
                                                    Background="{Binding Tag.BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"/>
                                 </ControlTemplate>
                             </Button.Template>
@@ -193,7 +193,7 @@
 
                     <TreeDataTemplate x:Key="GroupTag" DataType="models:TreeNode" ItemsSource="{Binding Children}">
                         <controls:Chip Theme="{StaticResource GroupChip}" Margin="0,3,20,3"
-                                       Text="{Binding Tag.Content}" HorizontalAlignment="Stretch"
+                                       Text="{Binding Tag.Name}" HorizontalAlignment="Stretch"
                                        Background="{Binding Tag.BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
                                        ContextMenu="{StaticResource TagContextMenu}"/>
                     </TreeDataTemplate>

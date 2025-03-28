@@ -130,7 +130,7 @@
                                             <Border.Background>
                                                 <SolidColorBrush Color="{Binding BackgroundColor}" Opacity=".8"/>
                                             </Border.Background>
-                                            <TextBlock Text="{Binding Content}" Margin="7,2" Foreground="White" FontSize="14"/>
+                                            <TextBlock Text="{Binding Name}" Margin="7,2" Foreground="White" FontSize="14"/>
                                         </Border>
                                     </Button>
                                 </DataTemplate>

@@ -268,7 +268,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public void RecursiveSortChildren(Tag? tag)
         {
             if (tag is null) return;
-            tag.Children = new(tag.Children.OrderBy(t => t.Content));
+            tag.Children = new(tag.Children.OrderBy(t => t.Name));
             foreach (Tag child in tag.Children)
             {
                 RecursiveSortChildren(child);

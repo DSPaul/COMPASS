@@ -411,7 +411,7 @@ namespace COMPASS.Common.Models
                 var rootTag = new Tag(toMergeFrom.AllTags)
                 {
                     IsGroup = true,
-                    Content = toMergeFrom.DirectoryName.Trim('_'),
+                    Name = toMergeFrom.DirectoryName.Trim('_'),
                     Children = new(toMergeFrom.RootTags)
                 };
                 toMergeFrom.RootTags = [rootTag];

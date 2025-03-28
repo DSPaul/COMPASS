@@ -47,7 +47,7 @@ namespace COMPASS.Common.ViewModels.Sources
                 foreach (Tag tag in MainViewModel.CollectionVM.CurrentCollection.AllTags)
                 {
                     var splitFolders = sources.Path.Split("\\");
-                    if (splitFolders.Any(folder => Fuzz.Ratio(folder.ToLowerInvariant(), tag.Content.ToLowerInvariant()) > 90))
+                    if (splitFolders.Any(folder => Fuzz.Ratio(folder.ToLowerInvariant(), tag.Name.ToLowerInvariant()) > 90))
                     {
                         codex.TagIDs.AddIfMissing(tag.ID);
                     }

@@ -283,7 +283,7 @@ namespace COMPASS.Common.Models.XmlDtos
             var model = new Tag()
             {
                 ID = dto.ID,
-                Content = dto.Content,
+                Name = dto.Content,
                 InternalBackgroundColor = dto.BackgroundColor?.ToModel(),
                 IsGroup = dto.IsGroup,
                 Parent = parentTag,
@@ -297,7 +297,7 @@ namespace COMPASS.Common.Models.XmlDtos
         public static TagDto ToDto(this Tag model) => new()
         {
             ID = model.ID,
-            Content = Sanitize(model.Content),
+            Content = Sanitize(model.Name),
             BackgroundColor = model.InternalBackgroundColor?.ToDto(),
             IsGroup = model.IsGroup,
             Children = model.Children.Select(ToDto).ToList(),
