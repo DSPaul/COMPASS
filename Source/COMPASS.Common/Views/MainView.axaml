@@ -255,7 +255,7 @@
 
             <!--Items shown counter-->
             <StackPanel Grid.Column="0">
-                <TextBlock Margin="10,0">
+                <TextBlock Margin="10,0" FontSize="16" FontWeight="Regular" >
                     Items Shown:
                     <Run
                         Text="{Binding BindableCollectionVM.FilterVM.FilteredCodices.Count, Mode=OneWay, FallbackValue=0}" />
@@ -298,14 +298,12 @@
 
             <!--Version-->
             <Button Grid.Column="5"
-                    Command="{Binding OpenSettingsCommand}"
-                    CommandParameter="About"
+                    Command="{Binding OpenSettingsCommand}" CommandParameter="About" 
+                    FontSize="16" FontWeight="Regular"
                     Content="{Binding VersionName, FallbackValue=v2.0.0}"
                     ToolTip.Tip="Go to 'About'"
-                    Cursor="Hand"
                     VerticalAlignment="Stretch"
-                    Padding="10,0"
-                    Margin="0">
+                    Padding="10,0" Margin="0">
                 <Button.Styles>
                     <Style Selector="Button">
                         <Setter Property="Background" Value="Transparent" />
