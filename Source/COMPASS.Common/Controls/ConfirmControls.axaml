@@ -10,7 +10,7 @@
     <Grid ColumnDefinitions="* 20 *" VerticalAlignment="Bottom">
         <controls:IconButton Command="{Binding ConfirmCommand}" Icon="Check" 
                              Grid.Column="0" IsDefault="True" 
-                             Content="{Binding !$parent[controls:ConfirmControls].ConfirmLabel}"
+                             Content="{Binding $parent[controls:ConfirmControls].ConfirmLabel}"
                              HorizontalContentAlignment="Center">
             <controls:IconButton.Styles>
                 <Style Selector="controls|IconButton">
@@ -23,8 +23,9 @@
         </controls:IconButton>
         <controls:IconButton Command="{Binding CancelCommand}" Icon="WindowClose"
                              Grid.Column="2"
-                             Content="{Binding !$parent[controls:ConfirmControls].CancelLabel}"
+                             Content="{Binding $parent[controls:ConfirmControls].CancelLabel}"
                              HorizontalContentAlignment="Center"
                              Background="{StaticResource CancelFill}"/>
+        
     </Grid>
 </UserControl>
