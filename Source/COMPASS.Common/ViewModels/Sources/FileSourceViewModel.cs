@@ -36,7 +36,8 @@ namespace COMPASS.Common.ViewModels.Sources
             // Tags based on file path
             foreach (Tag tag in TargetCollection.AllTags)
             {
-                if (IOService.MatchesAnyGlob(sources.Path, tag.LinkedGlobs))
+                var globs = tag.LinkedGlobs.Concat(tag.CalculatedLinkedGlobs).ToList();
+                if (IOService.MatchesAnyGlob(sources.Path, globs))
                 {
                     codex.TagIDs.AddIfMissing(tag.ID);
                 }

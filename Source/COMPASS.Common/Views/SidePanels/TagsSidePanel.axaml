@@ -56,6 +56,8 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+        
+        <!-- Tag creation -->
         <TabControl Grid.Row="0" Margin="20,10" Background="Transparent"
                     BorderThickness="0" Padding="2,0" HorizontalAlignment="Stretch"
                     SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
@@ -149,6 +151,7 @@
                 </ContentControl>
             </controls:CollapsableTabItem>
         </TabControl>
+        
         <Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="2" />
 
         <!-- Include Exclude selection -->

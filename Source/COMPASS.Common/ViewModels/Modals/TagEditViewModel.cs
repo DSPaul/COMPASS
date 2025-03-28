@@ -2,10 +2,12 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.Tools;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Services.FileSystem;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
@@ -118,6 +120,58 @@ namespace COMPASS.Common.ViewModels.Modals
         {
             TempTag.Parent = null;
         }
+        
+        private RelayCommand? _detectLinksCommand;
+        public RelayCommand DetectLinksCommand => _detectLinksCommand ??= new(DetectLinks, CanDetectLinks);
+        
+        private void DetectLinks()
+        {
+            var relevantCodices = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+                .Where(codex => codex.Sources.HasOfflineSource() && 
+                                codex.Tags.Contains(_editedTag))
+                .ToList();
+            
+            var splitFolders = relevantCodices.Select(codex => codex.Sources.Path)
+                                              .SelectMany(path => path.Split("\\"))
+                                              .ToHashSet();
+        
+            foreach (string folder in splitFolders)
+            {
+                var codicesInFolder = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+                    .Where(codex => codex.Sources.HasOfflineSource())
+                    .Where(codex => codex.Sources.Path.Contains(@"\" + folder + @"\"))
+                    .ToList();
+                
+                if (codicesInFolder.Count < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
+
+                string glob = $"**/{folder}/**";
+                
+                if (codicesInFolder.All(codx => codx.Tags.Contains(_editedTag)) &&
+                    !TempTag.CalculatedLinkedGlobs.Contains(glob))
+                {
+                    TempTag.LinkedGlobs.AddIfMissing(glob);
+                }
+            }
+        }
+        
+        private bool CanDetectLinks() => !CreateNewTag;
+        
+        private RelayCommand? _applyLinksCommand;
+        public RelayCommand ApplyLinksCommand => _applyLinksCommand ??= new(ApplyLinks, CanApplyChanges);
+
+        private void ApplyLinks()
+        {
+            foreach (Codex codex in  MainViewModel.CollectionVM.CurrentCollection.AllCodices)
+            {
+                var globs = TempTag.LinkedGlobs.Concat(TempTag.CalculatedLinkedGlobs).ToList();
+                if (IOService.MatchesAnyGlob(codex.Sources.Path, globs))
+                {
+                    codex.Tags.AddIfMissing(_editedTag);
+                }
+            }
+        }
+
+        private bool CanApplyChanges() => !CreateNewTag;
 
         #endregion
         

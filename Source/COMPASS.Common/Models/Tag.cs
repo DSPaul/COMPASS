@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
+using COMPASS.Common.Services;
 
 namespace COMPASS.Common.Models
 {
@@ -41,7 +42,14 @@ namespace COMPASS.Common.Models
         public string Name
         {
             get => _name;
-            set => SetProperty(ref _name, value);
+            set
+            {
+                if (SetProperty(ref _name, value))
+                {
+                    OnPropertyChanged(nameof(LongName));
+                    OnPropertyChanged(nameof(CalculatedLinkedGlobs));
+                }
+            }
         }
 
         public string LongName => $"{Parent?.LongName}{(Parent == null ? "" : " > ")}{Name}";
@@ -92,13 +100,14 @@ namespace COMPASS.Common.Models
             set => SetProperty(ref _isGroup, value);
         }
         
-        private ObservableCollection<string> _linkedGlobs = new ObservableCollection<string>();
-
+        private ObservableCollection<string> _linkedGlobs = [];
         public ObservableCollection<string> LinkedGlobs
         {
             get => _linkedGlobs;
             set => SetProperty(ref _linkedGlobs, value);
         }
+        
+        public List<string> CalculatedLinkedGlobs => PreferencesService.GetInstance().Preferences.AutoLinkFolderTagSameName ? [$"**/{Name}/**"] : [];
 
         /// <summary>
         /// Does an upwards search until it find either a group tag or a root tag

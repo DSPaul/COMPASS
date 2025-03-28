@@ -6,6 +6,7 @@ using COMPASS.Common.Tools;
 using HtmlAgilityPack;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -52,7 +53,8 @@ namespace COMPASS.Common.ViewModels.Sources
             // Tags
             foreach (Tag tag in TargetCollection.AllTags)
             {
-                if (IOService.MatchesAnyGlob(sources.SourceURL, tag.LinkedGlobs))
+                var globs = tag.LinkedGlobs.Concat(tag.CalculatedLinkedGlobs).ToList();
+                if (IOService.MatchesAnyGlob(sources.SourceURL, globs))
                 {
                     codex.TagIDs.AddIfMissing(tag.ID);
                 }
