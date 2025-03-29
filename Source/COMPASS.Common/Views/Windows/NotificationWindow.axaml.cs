@@ -10,7 +10,6 @@ public partial class NotificationWindow : Window
     public NotificationWindow(Notification notification)
     {
         InitializeComponent();
-
         _notification = notification;
         DataContext = notification;
     }

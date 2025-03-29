@@ -9,7 +9,7 @@ namespace COMPASS.Common.Converters
 {
     public class SeverityToColorConverter : IValueConverter
     {
-        public Color InfoColor { get; } = Colors.LightGray;
+        public Color InfoColor { get; set; } = Colors.LightGray;
         public Color WarningColor { get; } = Color.Parse("#FFB800");
         public Color ErrorColor { get; } = Colors.Red;
 

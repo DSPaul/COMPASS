@@ -6,8 +6,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
+using Autofac;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
+using OpenQA.Selenium.Interactions;
+using Notification = COMPASS.Common.Models.Notification;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
@@ -156,17 +161,43 @@ namespace COMPASS.Common.ViewModels.Modals
         
         private bool CanDetectLinks() => !CreateNewTag;
         
-        private RelayCommand? _applyLinksCommand;
-        public RelayCommand ApplyLinksCommand => _applyLinksCommand ??= new(ApplyLinks, CanApplyChanges);
+        private AsyncRelayCommand? _applyLinksCommand;
+        public AsyncRelayCommand ApplyLinksCommand => _applyLinksCommand ??= new(ApplyLinks, CanApplyChanges);
 
-        private void ApplyLinks()
+        private async Task ApplyLinks()
         {
-            foreach (Codex codex in  MainViewModel.CollectionVM.CurrentCollection.AllCodices)
+            var globs = TempTag.LinkedGlobs.Concat(TempTag.CalculatedLinkedGlobs).ToList();
+            List<Codex> matchingCodices = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+                .Where(codex => IOService.MatchesAnyGlob(codex.Sources.Path, globs) &&
+                                !codex.Tags.Contains(_editedTag))
+                .ToList();
+
+            Notification notification;
+
+            if (matchingCodices.Any())
             {
-                var globs = TempTag.LinkedGlobs.Concat(TempTag.CalculatedLinkedGlobs).ToList();
-                if (IOService.MatchesAnyGlob(codex.Sources.Path, globs))
+                notification = new(
+                    $"{matchingCodices.Count} matching items found",
+                    $"This tag will be added to {matchingCodices.Count} items")
                 {
-                    codex.Tags.AddIfMissing(_editedTag);
+                    Details = string.Join('\n', matchingCodices.Select(codex => codex.Title)),
+                    Actions = NotificationAction.Confirm | NotificationAction.Cancel,
+                };
+            }
+            else
+            {
+                notification =new(
+                    $"No new matching items found",
+                    $"Either no matches were found or all matching items already contain this tag.");
+            }
+            
+            await App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(notification);
+
+            if (notification.Result == NotificationAction.Confirm)
+            {
+                foreach (Codex codex in matchingCodices)
+                {
+                    codex.Tags.Add(_editedTag);
                 }
             }
         }
