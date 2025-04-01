@@ -137,7 +137,7 @@
                     </RadioButton>
 
                     <RadioButton GroupName="IncludeGroup" Margin="0">
-                        <Border CornerRadius="0,5,5,0" Background="IndianRed">
+                        <Border CornerRadius="0,5,5,0" Background="OrangeRed">
                             <TextBlock Text="Exclude" />
                         </Border>
                     </RadioButton>
@@ -249,6 +249,8 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="10">
+                <controls:FilterModeSelector/>
+                
                 <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}" />
                 <controls:IconButton Icon="About" Content="About" />
                 <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">

@@ -5,6 +5,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
@@ -29,7 +31,9 @@ namespace COMPASS.Common.Services
         /// <exception cref="System.OperationCanceledException">The token has had cancellation requested.</exception>
         public static async Task GetCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null)
         {
-            Codex metaDatalessCodex = new()
+            var thumbnailStorageService = App.Container.Resolve<IThumbnailStorageService>();
+            
+            Codex metaDatalessCodex = new(codex.Collection)
             {
                 Sources = codex.Sources,
                 ID = codex.ID,
@@ -49,8 +53,8 @@ namespace COMPASS.Common.Services
                 return;
             }
 
-            //copy img paths over this way
-            metaDatalessCodex.SetImagePaths(MainViewModel.CollectionVM.CurrentCollection);
+            //set img paths
+            thumbnailStorageService.InitCodexImagePaths(metaDatalessCodex);
 
             bool shouldAsk = coverProp.OverwriteMode == MetaDataOverwriteMode.Ask && !coverProp.IsEmpty(codex);
             if (shouldAsk)
@@ -65,9 +69,9 @@ namespace COMPASS.Common.Services
             {
                 ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                SourceViewModel? sourceVM = SourceViewModel.GetSourceVM(source);
-                if (sourceVM == null || !sourceVM.IsValidSource(codex.Sources)) continue;
-                getCoverSuccessful = await sourceVM.FetchCover(metaDatalessCodex);
+                SourceViewModel? sourceVm = SourceViewModel.GetSourceVM(source);
+                if (sourceVm == null || !sourceVm.IsValidSource(codex.Sources)) continue;
+                getCoverSuccessful = await sourceVm.FetchCover(metaDatalessCodex);
                 if (getCoverSuccessful) break;
             }
 

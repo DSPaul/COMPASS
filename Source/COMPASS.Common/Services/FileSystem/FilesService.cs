@@ -10,31 +10,24 @@ namespace COMPASS.Common.Services.FileSystem
 {
     internal class FilesService : IFilesService
     {
-        private readonly Window _target;
-
-        public FilesService(Window target)
-        {
-            _target = target;
-        }
-
         public async Task<IList<IStorageFile>> OpenFilesAsync(FilePickerOpenOptions? options = null)
         {
             options ??= new FilePickerOpenOptions();
-            var files = await _target.StorageProvider.OpenFilePickerAsync(options);
+            var files = await App.MainWindow.StorageProvider.OpenFilePickerAsync(options);
             return files.ToList();
         }
 
         public async Task<IList<IStorageFolder>> OpenFoldersAsync(FolderPickerOpenOptions? options = null)
         {
             options ??= new FolderPickerOpenOptions();
-            var folders = await _target.StorageProvider.OpenFolderPickerAsync(options);
+            var folders = await App.MainWindow.StorageProvider.OpenFolderPickerAsync(options);
             return folders.ToList();
         }
 
         public async Task<IStorageFile?> SaveFileAsync(FilePickerSaveOptions? options = null)
         {
             options ??= new FilePickerSaveOptions();
-            return await _target.StorageProvider.SaveFilePickerAsync(options);
+            return await App.MainWindow.StorageProvider.SaveFilePickerAsync(options);
         }
 
         public FilePickerFileType SatchelExtensionFilter =>

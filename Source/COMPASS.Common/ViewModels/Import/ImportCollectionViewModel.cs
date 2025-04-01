@@ -6,6 +6,8 @@ using COMPASS.Common.Tools;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Operations;
 
 namespace COMPASS.Common.ViewModels.Import
 {
@@ -14,7 +16,7 @@ namespace COMPASS.Common.ViewModels.Import
         public ImportCollectionViewModel(CodexCollection collectionToImport)
         {
             CollectionToImport = collectionToImport;
-            CollectionName = CollectionToImport.DirectoryName.Substring(2, CollectionToImport.DirectoryName.Length - 2 - Constants.SatchelExtension.Length);
+            CollectionName = CollectionToImport.Name.Substring(2, CollectionToImport.Name.Length - 2 - Constants.SatchelExtension.Length);
 
             ContentSelectorVM = new(collectionToImport)
             {
@@ -24,15 +26,13 @@ namespace COMPASS.Common.ViewModels.Import
             UpdateSteps();
 
             //if files were included in compass file, set paths of codices to those files
-            if (Directory.Exists(CollectionToImport.UserFilesPath))
+            var userFileService = App.Container.Resolve<IUserFilesStorageService>();
+
+            if (userFileService.HasUserFiles(CollectionToImport))
             {
                 foreach (Codex codex in CollectionToImport.AllCodices.Where(c => c.Sources.HasOfflineSource()))
                 {
-                    string includedFilePath = Path.Combine(CollectionToImport.UserFilesPath, codex.Sources.Path); //TODO, what it this path becomes too long?
-                    if (File.Exists(includedFilePath))
-                    {
-                        codex.Sources.Path = includedFilePath;
-                    }
+                    userFileService.MoveCodexDataToCollection(codex, CollectionToImport);
                 }
             }
         }
@@ -71,7 +71,7 @@ namespace COMPASS.Common.ViewModels.Import
                 RefreshNavigationBtns();
             }
         }
-        public bool IsCollectionNameLegal => MainViewModel.CollectionVM.IsLegalCollectionName(CollectionName);
+        public bool IsCollectionNameLegal => CodexCollectionOperations.IsLegalCollectionName(CollectionName, MainViewModel.CollectionVM.AllCodexCollections);
 
         public bool ImportAllTags { get; set; } = true;
         public bool ImportAllCodices { get; set; } = true;
@@ -159,7 +159,7 @@ namespace COMPASS.Common.ViewModels.Import
             //Save the changes to a permanent collection
             var targetCollection = MergeIntoCollection ?
                 MainViewModel.CollectionVM.CurrentCollection :
-                MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
+                await MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
 
             //if create and load fails
             if (targetCollection is null)

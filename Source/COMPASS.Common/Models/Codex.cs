@@ -15,37 +15,27 @@ namespace COMPASS.Common.Models
 {
     public class Codex : ObservableObject, IHasID, IHasCodexMetadata, IDisposable
     {
-        private readonly CodexCollection? _cc;
+        public readonly CodexCollection Collection;
 
         #region Constructors
 
-        public Codex()
+        public Codex(CodexCollection collection)
         {
+            Collection = collection;
+            
             Authors.CollectionChanged += OnCollectionChanged;
             Tags.CollectionChanged += OnCollectionChanged;
         }
 
-        public Codex(CodexCollection cc) : this()
+        public Codex(Codex codex) : this(codex.Collection)
         {
-            _cc = cc;
-            ID = Utils.GetAvailableID(cc.AllCodices);
-            SetImagePaths(cc);
-
-            _thumbnail = LoadThumbnail().Result;
-        }
-
-        public Codex(Codex codex) : this()
-        {
-            Copy(codex);
+            CopyFrom(codex);
         }
 
         #endregion
 
-        public void SetImagePaths(CodexCollection collection)
+        public void RefreshImages(CodexCollection collection)
         {
-            CoverArtPath = Path.Combine(collection.CoverArtPath, $"{ID}.png");
-            ThumbnailPath = Path.Combine(collection.ThumbnailsPath, $"{ID}.png");
-
             _thumbnail?.Dispose();
             _thumbnail = null;
 
@@ -213,7 +203,7 @@ namespace COMPASS.Common.Models
 
         //order them in same order as allTags by starting with allTags and keeping the ones we need using intersect
         //TODO: codexCollection will currently not always be set, ideally we get rid of this dependency
-        public IEnumerable<Tag> OrderedTags => _cc?.AllTags.Intersect(_tags) ?? [];
+        public IEnumerable<Tag> OrderedTags => Collection.AllTags.Intersect(_tags) ?? _tags;
 
         private bool _physicallyOwned;
         public bool PhysicallyOwned
@@ -272,7 +262,7 @@ namespace COMPASS.Common.Models
         #endregion
 
         #region Methods
-        public void Copy(Codex c)
+        public void CopyFrom(Codex c)
         {
             Title = c.Title;
             SortingTitle = c.UserDefinedSortingTitle; //copy field instead of property, or it will copy _title
@@ -349,6 +339,7 @@ namespace COMPASS.Common.Models
         public void Dispose()
         {
             _thumbnail?.Dispose();
+            _cover?.Dispose();
             Authors.CollectionChanged -= OnCollectionChanged;
             Tags.CollectionChanged -= OnCollectionChanged;
         }

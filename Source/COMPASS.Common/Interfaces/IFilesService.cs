@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace COMPASS.Common.Interfaces
 {
-    internal interface IFilesService
+    public interface IFilesService
     {
         Task<IList<IStorageFile>> OpenFilesAsync(FilePickerOpenOptions? options = null);
         Task<IList<IStorageFolder>> OpenFoldersAsync(FolderPickerOpenOptions? options = null);

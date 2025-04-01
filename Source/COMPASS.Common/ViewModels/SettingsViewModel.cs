@@ -11,11 +11,13 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Models.Preferences;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
@@ -33,6 +35,7 @@ namespace COMPASS.Common.ViewModels
         {
             _preferencesService = PreferencesService.GetInstance();
             _environmentVarsService = App.Container.Resolve<IEnvironmentVarsService>();
+            _collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
 
             WebViewDataDir = Path.Combine(_environmentVarsService.CompassDataPath, "WebViewData");
         }
@@ -44,6 +47,7 @@ namespace COMPASS.Common.ViewModels
 
         private readonly PreferencesService _preferencesService;
         private readonly IEnvironmentVarsService _environmentVarsService;
+        private readonly ICodexCollectionStorageService _collectionStorageService;
 
 
         public MainViewModel? MVM { get; set; }
@@ -331,7 +335,7 @@ namespace COMPASS.Common.ViewModels
                     }
                 }
             }
-            MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
+            _collectionStorageService.SaveCodices(MainViewModel.CollectionVM.CurrentCollection);
         }
 
         //remove refs from codices
@@ -344,7 +348,7 @@ namespace COMPASS.Common.ViewModels
                 codex.Sources.Path = "";
             }
             BrokenCodicesChanged();
-            MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
+            _collectionStorageService.SaveCodices(MainViewModel.CollectionVM.CurrentCollection);
         }
 
         //Remove Codices with broken refs
@@ -352,10 +356,8 @@ namespace COMPASS.Common.ViewModels
         public AsyncRelayCommand DeleteCodicesWithBrokenRefsCommand => _deleteCodicesWithBrokenRefsCommand ??= new(RemoveCodicesWithBrokenRefs);
         public async Task RemoveCodicesWithBrokenRefs()
         {
-            await MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(BrokenCodices.ToList());
+            await CodexOperations.DeleteCodices(BrokenCodices.ToList(), true);
             BrokenCodicesChanged();
-            MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
         #endregion
 
@@ -474,7 +476,7 @@ namespace COMPASS.Common.ViewModels
         /// </summary>
         public void ChangeToNewDataPath()
         {
-            MainViewModel.CollectionVM?.CurrentCollection.Save();
+            _collectionStorageService.Save(MainViewModel.CollectionVM.CurrentCollection);
 
             _environmentVarsService.CompassDataPath = NewDataPath;
 
@@ -591,33 +593,12 @@ namespace COMPASS.Common.ViewModels
 
                 //save first
                 ApplyPreferences();
-                MainViewModel.CollectionVM.CurrentCollection.Save();
+                _collectionStorageService.Save(MainViewModel.CollectionVM.CurrentCollection);
 
-                await Task.Run(() => CompressUserDataToZip(targetPath));
+                await Task.Run(() =>  _collectionStorageService.CompressUserDataToZip(targetPath));
 
                 _lw.Close();
             }
-        }
-
-        private void CompressUserDataToZip(string zipPath)
-        {
-            //In caes zip already exists with same name, delete it first
-            if (File.Exists(zipPath))
-            {
-                try
-                {
-                    File.Delete(zipPath);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error("A backup with the same name already exists and could not be removed", ex);
-                    return;
-                }
-            }
-            
-            //zip up collections, easiest with system.IO.Compression
-            System.IO.Compression.ZipFile.CreateFromDirectory(CodexCollection.CollectionsPath, zipPath,
-                System.IO.Compression.CompressionLevel.Optimal, true);
         }
 
         private AsyncRelayCommand? _restoreBackupCommand;

@@ -13,8 +13,13 @@ namespace COMPASS.Common.ViewModels
     {
         public CodexBulkEditViewModel(List<Codex> toEdit)
         {
+            if (toEdit == null || toEdit.Count < 2)
+            {
+                throw new InvalidOperationException("Bulk edit should only be performed on 2 or more codices");
+            }
+            
             _editedCodices = toEdit;
-            _tempCodex = new();
+            _tempCodex = new(toEdit.First().Collection);
 
             //set common metadata
             _commonAuthors = _editedCodices.Select(f => f.Authors.ToList()).Aggregate((xs, ys) => xs.Intersect(ys).ToList());
@@ -181,13 +186,19 @@ namespace COMPASS.Common.ViewModels
                     foreach (Tag t in TagsToRemove) f.Tags.Remove(t);
                 }
             }
-            CloseAction();
+            Close();
         }
 
         private RelayCommand? _cancelCommand;
         public RelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
-        public void Cancel() => CloseAction();
+        public void Cancel() => Close();
 
+
+        private void Close()
+        {
+            CloseAction();
+            _tempCodex.Dispose();
+        }
         #endregion
     }
 }

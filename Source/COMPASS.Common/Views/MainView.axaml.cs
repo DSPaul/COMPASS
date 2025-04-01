@@ -48,10 +48,11 @@ public partial class MainView : UserControl
 
     private async void CollectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        //only refresh if a new item is set
+        //only refresh if the selection changes from one collection to another
+        //so both a added and removed collection
         if (e.AddedItems.Count > 0)
         {
-            await MainViewModel.CollectionVM.Refresh();
+            await MainViewModel.CollectionVM.OnCollectionChanged();
         }
     }
 

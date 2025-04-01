@@ -7,8 +7,6 @@ using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using HtmlAgilityPack;
 using Newtonsoft.Json.Linq;
-using SharpCompress.Archives;
-using SharpCompress.Archives.Zip;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,8 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileSystemGlobbing;
 
@@ -141,38 +137,8 @@ namespace COMPASS.Common.Services.FileSystem
 
         #endregion
 
-        #region (De)Serialization
-
-        /// <summary>
-        /// Unzips a collection stored in a satchel file
-        /// </summary>
-        /// <param name="path">Path to the satchel file</param>
-        /// <returns>Path to unzipped folder</returns>
-        public static async Task<string> UnZipCollection(string path)
-        {
-            string fileName = Path.GetFileName(path);
-            string tmpCollectionPath = Path.Combine(CodexCollection.CollectionsPath, $"__{fileName}");
-
-            //make sure any previous temp data is gone
-            ClearTmpData(tmpCollectionPath);
-
-            //unzip the file to tmp folder
-            using ZipArchive archive = ZipArchive.Open(path);
-
-            //report progress
-            var progressVM = ProgressViewModel.GetInstance();
-            progressVM.Text = $"Reading {path}";
-            progressVM.ResetCounter();
-            progressVM.TotalAmount = 1;
-
-            //extract
-            await Task.Run(() =>
-                archive.ExtractToDirectory(tmpCollectionPath, progressReport: progressVM.UpdateFromPercentage));
-
-            progressVM.IncrementCounter();
-            return tmpCollectionPath;
-        }
-
+        #region Tmp data
+        
         public static void ClearTmpData(string? tempPath = null)
         {
             if (tempPath == null)
@@ -291,125 +257,11 @@ namespace COMPASS.Common.Services.FileSystem
             return paths;
         }
 
-        public static async Task<CodexCollection?> OpenSatchel(string? path = null)
-        {
-            var filesService = App.Container.Resolve<IFilesService>();
-
-            FilePickerOpenOptions options = new()
-            {
-                FileTypeFilter = [filesService.SatchelExtensionFilter],
-                AllowMultiple = false,
-                Title = "Choose a COMPASS Satchel file to import",
-            };
-
-            if (path == null)
-            {
-                //ask for satchel file using fileDialog
-                var files = await filesService.OpenFilesAsync(options);
-
-                if (!files.Any()) return null;
-                using var file = files.Single();
-                path = file.Path.AbsolutePath;
-            }
-
-            var windowedNotificationService =
-                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
-
-            //Check compatibility
-            using (ZipArchive archive = ZipArchive.Open(path))
-            {
-                var satchelInfoFile =
-                    archive.Entries.SingleOrDefault(entry => entry.Key == Constants.SatchelInfoFileName);
-                if (satchelInfoFile == null)
-                {
-                    //No version information means we cannot ensure compatibility, so abort
-                    string message =
-                        $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
-                    Logger.Warn(message);
-                    Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message,
-                        Severity.Warning);
-                    await windowedNotificationService.Show(warnNotification);
-                    return null;
-                }
-
-                //Read the file contents
-                using var stream = new MemoryStream();
-                satchelInfoFile.WriteTo(stream);
-                stream.Seek(0, SeekOrigin.Begin);
-                using StreamReader reader = new(stream);
-                string json = await reader.ReadToEndAsync();
-
-                var satchelInfo = JsonSerializer.Deserialize<SatchelInfo>(json);
-                if (satchelInfo == null)
-                {
-                    //No version information means we cannot ensure compatibility, so abort
-                    string message =
-                        $"Cannot import {Path.GetFileName(path)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
-                    Logger.Warn(message);
-                    Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message,
-                        Severity.Warning);
-                    await windowedNotificationService.Show(warnNotification);
-                    return null;
-                }
-
-                var currentVersion = Assembly.GetExecutingAssembly().GetName().Version!;
-                var minVersions = new List<Version> { currentVersion }; //keep a list of min requirements
-
-                var filesInZip = archive.Entries.Select(entry => entry.Key).ToList();
-
-                //Check Codex version
-                if (filesInZip.Contains(Constants.CodicesFileName))
-                {
-                    Version minCodexVersion = Version.Parse(satchelInfo.MinCodexInfoVersion);
-                    minVersions.Add(minCodexVersion);
-                }
-
-                //Check tags version
-                if (filesInZip.Contains(Constants.TagsFileName))
-                {
-                    Version minVersion = Version.Parse(satchelInfo.MinTagsVersion);
-                    minVersions.Add(minVersion);
-                }
-
-                //Check collection info version
-                if (filesInZip.Contains(Constants.CollectionInfoFileName))
-                {
-                    Version minVersion = Version.Parse(satchelInfo.MinCollectionInfoVersion);
-                    minVersions.Add(minVersion);
-                }
-
-                //current version must exceed all min versions
-                if (minVersions.Max() > currentVersion)
-                {
-                    string message =
-                        $"Cannot import {Path.GetFileName(path)} because it was created in a newer version of COMPASS (v{satchelInfo.CreationVersion}), " +
-                        $"and has indicated to be incompatible with your version v{Reflection.Version}. Please update and try again.";
-                    Logger.Warn(message);
-                    Notification warnNotification = new($"Could not import {Path.GetFileName(path)}", message,
-                        Severity.Warning);
-                    await windowedNotificationService.Show(warnNotification);
-                    return null;
-                }
-            }
-
-            //unzip the file
-            try
-            {
-                string unzipLocation = await UnZipCollection(path);
-                return new(Path.GetFileName(unzipLocation));
-            }
-            catch (Exception ex)
-            {
-                Logger.Warn($"Failed to read {path}", ex);
-                return null;
-            }
-        }
-
         /// <summary>
         /// If the existing codex path is inaccessible for any reason, prompt the user to pick another one
         /// </summary>
         /// <returns></returns>
-        public static async Task AskNewCodexFilePath(string msg)
+        public static async Task AskNewCompassDataPath(string msg)
         {
             var windowedNotificationService =
                 App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
@@ -528,6 +380,29 @@ namespace COMPASS.Common.Services.FileSystem
 
         #endregion
 
+        /// <summary>
+        /// Tries to create a directory if it does not already exist
+        /// </summary>
+        /// <param name="path"></param>
+        public static bool EnsureDirectoryExists(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                try
+                {
+                    Directory.CreateDirectory(path);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Failed to create directory: {path}", ex);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        
         /// <summary>
         /// Safe alternative of <see cref="Directory.GetFiles(string)"/> that catches all exceptions
         /// </summary>

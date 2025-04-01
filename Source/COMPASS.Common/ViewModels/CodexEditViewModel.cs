@@ -9,6 +9,7 @@ using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
@@ -27,8 +28,7 @@ namespace COMPASS.Common.ViewModels
         {
             _editedCodex = toEdit;
             //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked
-            _tempCodex = new(MainViewModel.CollectionVM.CurrentCollection);
-            if (!CreateNewCodex) TempCodex.Copy(_editedCodex!);
+            _tempCodex = _editedCodex == null ? CodexOperations.CreateNewCodex(MainViewModel.CollectionVM.CurrentCollection) : new(_editedCodex);
 
             TempCodex.LoadCover();
 
@@ -43,7 +43,7 @@ namespace COMPASS.Common.ViewModels
 
         #region Properties
 
-        readonly Codex? _editedCodex;
+        private readonly Codex? _editedCodex;
 
         private ObservableCollection<TreeNode>? _treeViewSource;
         public ObservableCollection<TreeNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeNode(tag)));
@@ -163,6 +163,8 @@ namespace COMPASS.Common.ViewModels
             {
                 await CodexOperations.DeleteCodex(_editedCodex);
             }
+            
+            TempCodex?.Dispose();
             CloseAction();
         }
 
@@ -216,22 +218,21 @@ namespace COMPASS.Common.ViewModels
         public Action CloseAction { get; set; } = () => { };
 
         private RelayCommand? _confirmCommand;
-        public RelayCommand ConfirmCommand => _confirmCommand ??= new(OKBtn);
-        public void OKBtn()
+        public RelayCommand ConfirmCommand => _confirmCommand ??= new(Confirm);
+        public void Confirm()
         {
             //Copy changes into Codex
             if (!CreateNewCodex)
             {
-                _editedCodex!.Copy(TempCodex);
+                _editedCodex!.CopyFrom(TempCodex);
+                TempCodex.Dispose();
             }
             else
             {
-                Codex toAdd = new();
-                toAdd.Copy(TempCodex);
-                MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(toAdd);
+                MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(TempCodex);
             }
 
-            MainViewModel.CollectionVM.CurrentCollection.Save();
+            App.Container.Resolve<ICodexCollectionStorageService>().Save(TempCodex.Collection);
 
             //Add new Authors, Publishers, ect. to metadata lists
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
@@ -241,8 +242,11 @@ namespace COMPASS.Common.ViewModels
 
         private RelayCommand? _cancelCommand;
         public RelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
-        public void Cancel() => CloseAction();
-
+        public void Cancel()
+        {
+            TempCodex?.Dispose();
+            CloseAction();
+        }
 
         public void OnDragOver(object sender, DragEventArgs e)
         {

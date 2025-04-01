@@ -21,7 +21,7 @@ class Program
     public static void Main(string[] args)
     {
         // Create the Autofac container
-        ConfigureContainer();
+        BuildContainer();
 
         // Set up global exception handlers
         AppDomain.CurrentDomain.UnhandledException += CrashHandler.CurrentDomain_UnhandledException;
@@ -53,7 +53,7 @@ class Program
                          .LogToTrace();
     }
 
-    private static void ConfigureContainer()
+    private static void BuildContainer()
     {
         var builder = new ContainerBuilder();
 
@@ -63,8 +63,7 @@ class Program
         //Register windows specific dependencies
         builder.RegisterType<EnvironmentVarsService>().As<IEnvironmentVarsService>().SingleInstance();
         builder.RegisterInstance<IWebDriverService>(new WebDriverService());
-
-        //Don't build yet, App will also add some registrations
-        App.ContainerBuilder = builder;
+        
+        App.Container= builder.Build();
     }
 }

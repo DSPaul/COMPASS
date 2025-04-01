@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using COMPASS.Common.Interfaces.Storage;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -112,7 +113,7 @@ namespace COMPASS.Common.ViewModels
             using var saveFile = await filesService.SaveFileAsync(new()
             {
                 FileTypeChoices = [filesService.SatchelExtensionFilter],
-                SuggestedFileName = CollectionToExport.DirectoryName,
+                SuggestedFileName = CollectionToExport.Name,
                 DefaultExtension = Constants.SatchelExtension
             });
 
@@ -126,12 +127,13 @@ namespace COMPASS.Common.ViewModels
         public async Task ExportToFile(string targetPath)
         {
             var progressVM = ProgressViewModel.GetInstance();
+            var collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
 
             try
             {
                 //make sure to save first
-                ContentSelectorVM.CuratedCollection.InitAsNew();
-                ContentSelectorVM.CuratedCollection.Save();
+                await collectionStorageService.AllocateNewCollection(ContentSelectorVM.CuratedCollection);
+                collectionStorageService.Save(ContentSelectorVM.CuratedCollection);
 
                 using var archive = ZipArchive.Create();
 
@@ -166,10 +168,10 @@ namespace COMPASS.Common.ViewModels
                 }
 
                 //Save changes
-                ContentSelectorVM.CuratedCollection.SaveCodices();
+                collectionStorageService.SaveCodices(ContentSelectorVM.CuratedCollection);
 
                 //Now add xml files
-                archive.AddAllFromDirectory(ContentSelectorVM.CuratedCollection.FullDataPath);
+                collectionStorageService.AddCollectionToArchive(archive, ContentSelectorVM.CuratedCollection);
 
                 //Add version so we can check compatibility when importing
                 SatchelInfo info = new();
@@ -186,7 +188,7 @@ namespace COMPASS.Common.ViewModels
                 await Task.Run(() => archive.SaveTo(targetPath, CompressionType.None));
 
                 progressVM.IncrementCounter();
-                Logger.Info($"Exported {CollectionToExport.DirectoryName} to {targetPath}");
+                Logger.Info($"Exported {CollectionToExport.Name} to {targetPath}");
             }
             catch (Exception ex)
             {
@@ -196,7 +198,7 @@ namespace COMPASS.Common.ViewModels
             }
             finally
             {
-                Directory.Delete(ContentSelectorVM.CuratedCollection.FullDataPath, true);
+                collectionStorageService.OnCollectionDeleted(ContentSelectorVM.CuratedCollection);
             }
         }
 

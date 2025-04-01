@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using COMPASS.Common.Interfaces.Storage;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -60,7 +61,7 @@ namespace COMPASS.Common.ViewModels
                 Logger.Info(message);
                 Logger.Debug(message);
 
-                MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
+                App.Container.Resolve<ICodexCollectionStorageService>().SaveCodices(MainViewModel.CollectionVM.CurrentCollection);
                 CodexOperations.OpenCodexLocally(_codex);
                 SetDialogResult?.Invoke(true);
                 CloseAction?.Invoke();

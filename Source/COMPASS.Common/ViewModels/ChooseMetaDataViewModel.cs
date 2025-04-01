@@ -10,6 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
+using COMPASS.Common.Interfaces.Storage;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -55,6 +57,8 @@ namespace COMPASS.Common.ViewModels
 
         public override Task Finish()
         {
+            var thumbnailStorageService = App.Container.Resolve<IThumbnailStorageService>();
+            
             ApplyChoice();
             CloseAction?.Invoke();
 
@@ -82,10 +86,10 @@ namespace COMPASS.Common.ViewModels
                 }
 
                 //Set image paths back so that copy operation after this doesn't change them to the temp files
-                _codicesWithMadeChoices[i].SetImagePaths(MainViewModel.CollectionVM.CurrentCollection);
+                thumbnailStorageService.InitCodexImagePaths(_codicesWithMadeChoices[i]);
 
                 //copy metadata data over
-                CodicesWithChoices[i].Item1.Copy(_codicesWithMadeChoices[i]);
+                CodicesWithChoices[i].Item1.CopyFrom(_codicesWithMadeChoices[i]);
             }
             return Task.CompletedTask;
         }

@@ -45,9 +45,9 @@ namespace COMPASS.Common.Models.XmlDtos
 
         #region Codex
 
-        public static Codex ToModel(this CodexDto dto, IList<Tag> tags)
+        public static Codex ToModel(this CodexDto dto, CodexCollection collection)
         {
-            Codex codex = new()
+            Codex codex = new(collection)
             {
                 // COMPASS related Metadata
                 ID = dto.ID,
@@ -83,7 +83,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 }
             };
 
-            codex.Tags = new(tags.Where(tag => dto.TagIDs.Contains(tag.ID)));
+            codex.Tags = new(collection.AllTags.Where(tag => dto.TagIDs.Contains(tag.ID)));
 
             return codex;
         }

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.Views.Windows;
@@ -32,7 +28,6 @@ public partial class App : Application
             string? crashMsg = CmdLineArgumentService.Args?.CrashMessage;
             if (!string.IsNullOrEmpty(crashMsg))
             {
-                Container = ContainerBuilder!.Build();
                 var crashNotification = CrashHandler.GetCrashNotification(crashMsg);
                 MainWindow = new NotificationWindow(crashNotification);
                 MainWindow.Closing += (s,e) => CrashHandler.OnCrashNotificationClosing(e, crashNotification, crashMsg);
@@ -53,26 +48,16 @@ public partial class App : Application
 
     private SplashScreenWindow? _splashScreenWindow;
     
-    public static Window MainWindow { get; private set; }
+    public static Window MainWindow { get; private set; } = null!;
 
-    public static ContainerBuilder? ContainerBuilder { get; set; }
-    public static IContainer Container { get; set; }
+    public static IContainer Container { get; set; } = null!;
 
-    private IContainer BuildContainer(Window window)
-    {
-        if(ContainerBuilder == null) throw new InvalidOperationException("Container builder should be constructed by platform specific project");
-        
-        ContainerBuilder.RegisterInstance<IFilesService>(new FilesService(window));
-        return ContainerBuilder.Build();
-    }
-    
     private void CompleteApplicationStart()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             //Build container
             var mainWindow = new MainWindow();
-            Container = BuildContainer(MainWindow);
             
             //load and set vm
             var mainVm =  new MainViewModel();

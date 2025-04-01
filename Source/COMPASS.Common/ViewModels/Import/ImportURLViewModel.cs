@@ -127,7 +127,7 @@ namespace COMPASS.Common.ViewModels.Import
 
             //Step 1: add codex
             progressVM.Text = "Adding new item to Collection";
-            Codex newCodex = new(MainViewModel.CollectionVM.CurrentCollection);
+            Codex newCodex = CodexOperations.CreateNewCodex(MainViewModel.CollectionVM.CurrentCollection);
             if (_importSource == ImportSource.ISBN)
             {
                 newCodex.Sources.ISBN = InputURL;

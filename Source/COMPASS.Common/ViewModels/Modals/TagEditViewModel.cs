@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
 using OpenQA.Selenium.Interactions;
@@ -246,7 +247,8 @@ namespace COMPASS.Common.ViewModels.Modals
 
             }
             
-            MainViewModel.CollectionVM.CurrentCollection.SaveTags();
+            var collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
+            collectionStorageService.SaveTags(MainViewModel.CollectionVM.CurrentCollection);
 
             MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
@@ -112,7 +113,7 @@ namespace COMPASS.Common.ViewModels.Import
                     break;
                 }
 
-                Codex newCodex = new(targetCollection);
+                Codex newCodex = CodexOperations.CreateNewCodex(targetCollection);
                 newCodex.Sources.Path = path;
                 newCodices.Add(newCodex);
                 targetCollection.AllCodices.Add(newCodex);
@@ -122,7 +123,8 @@ namespace COMPASS.Common.ViewModels.Import
                 progressVM.AddLogEntry(logEntry);
             }
 
-            MainViewModel.CollectionVM.CurrentCollection.Save();
+            var collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
+            collectionStorageService.Save(MainViewModel.CollectionVM.CurrentCollection);
 
             await FinishImport(newCodices);
         }

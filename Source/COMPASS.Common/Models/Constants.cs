@@ -14,9 +14,7 @@ namespace COMPASS.Common.Models
 
         //File names
         public const string SatchelInfoFileName = "SatchelInfo.json";
-        public const string CodicesFileName = "CodexInfo.xml";
-        public const string TagsFileName = "Tags.xml";
-        public const string CollectionInfoFileName = "CollectionInfo.xml";
+        
 
         public static string InstallersPath => Path.Combine(App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath, "Installers");
         public const string AutoUpdateXMLPath = "https://raw.githubusercontent.com/DSPAUL/COMPASS/master/versionInfo.xml";

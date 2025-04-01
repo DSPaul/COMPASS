@@ -7,17 +7,15 @@ using System.Threading.Tasks;
 using Autofac;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.SidePanels;
 using COMPASS.Common.Views.Windows;
-using SharpCompress.Archives;
-using SharpCompress.Archives.Zip;
-using SharpCompress.Common;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -26,48 +24,22 @@ namespace COMPASS.Common.ViewModels
         public CollectionViewModel(MainViewModel? mainViewModel)
         {
             MainVM = mainViewModel;
-            _preferencesService = PreferencesService.GetInstance();
-            _environmentVarsService = App.Container.Resolve<IEnvironmentVarsService>();
+            _windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+            _collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
 
             //only to avoid null references, should be overwritten as soon as the UI loads, which calls refresh
             _filterVM = new([]);
             _tagsVM = new(new("__tmp"), _filterVM);
 
-            //Create Collections Directory
-            try
-            {
-                Directory.CreateDirectory(CodexCollection.CollectionsPath);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
-                string msg = $"Failed to create a folder to store user data at {_environmentVarsService.CompassDataPath}, " +
-                             $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
-                IOService.AskNewCodexFilePath(msg).Wait();
-            }
-
-            try
-            {
-                //Get all collections by folder name
-                AllCodexCollections = new(Directory
-                    .GetDirectories(CodexCollection.CollectionsPath)
-                    .Select(dir => Path.GetFileName(dir))
-                    .Where(IsLegalCollectionName)
-                    .Select(dir => new CodexCollection(dir)));
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"Failed to find existing collections in {CodexCollection.CollectionsPath}", ex);
-                AllCodexCollections = [];
-            }
-
+            _collectionStorageService.EnsureDirectoryExists();
+            AllCodexCollections = new(_collectionStorageService.GetAllCollections());
             LoadInitialCollection();
 
             Debug.Assert(_currentCollection is not null, "Current Collection should never be null after loading Initial Collection");
         }
-
-        private readonly PreferencesService _preferencesService;
-        private readonly IEnvironmentVarsService _environmentVarsService;
+        
+        private readonly ICodexCollectionStorageService _collectionStorageService;
+        private readonly INotificationService _windowedNotificationService;
 
         #region Properties
         public MainViewModel? MainVM { get; init; }
@@ -83,8 +55,15 @@ namespace COMPASS.Common.ViewModels
                     return;
                 }
                 //save prev collection before switching
-                _currentCollection?.Save();
-                SetProperty(ref _currentCollection!, value);
+                if (_currentCollection != null)
+                {
+                    _collectionStorageService.Save(_currentCollection);
+                }
+
+                if (SetProperty(ref _currentCollection, value))
+                {
+                    PreferencesService.GetInstance().Preferences.UIState.StartupCollection = _currentCollection.Name;
+                }
             }
         }
 
@@ -96,7 +75,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         //Needed for binding to context menu "Move to Collection"
-        public ObservableCollection<string> CollectionDirectories => new(AllCodexCollections.Select(collection => collection.DirectoryName));
+        public ObservableCollection<string> CollectionDirectories => new(AllCodexCollections.Select(collection => collection.Name));
 
         private FilterViewModel _filterVM;
         public FilterViewModel FilterVM
@@ -131,83 +110,28 @@ namespace COMPASS.Common.ViewModels
         #endregion
 
         #region Methods and Commands
+
         private void LoadInitialCollection()
         {
-            while (!Directory.Exists(CodexCollection.CollectionsPath))
+            var loadedCollection = CodexCollectionOperations.LoadInitialCollection(AllCodexCollections);
+            
+            if (loadedCollection == null)
             {
-                try
+                Debug.Assert(AllCodexCollections.Count == 0, "Collection should only be null if all options have been tried and failed");
+                string name = "Default Collection";
+                var createdCollection = CreateAndLoadCollection(name);
+                if (createdCollection == null)
                 {
-                    Directory.CreateDirectory(CodexCollection.CollectionsPath);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
-                    string msg = $"Failed to create a folder to store user data at {_environmentVarsService.CompassDataPath}, " +
-                                 $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
-                    IOService.AskNewCodexFilePath(msg).Wait();
+                    //If no collections are found and creation fails, we are stuck in an infinite loop which is bad so throw and crash
+                    throw new IOException($"Could not create the default collection");
                 }
             }
-
-            bool initSuccess = false;
-            while (!initSuccess)
+            else
             {
-                //in case of first boot, or if the existing ones couldn't load, create default collection
-                if (AllCodexCollections.Count == 0)
-                {
-                    string name = "Default Collection";
-                    var createdCollection = CreateAndLoadCollection(name);
-                    if (createdCollection != null)
-                    {
-                        initSuccess = true;
-                    }
-                    else
-                    {
-                        //If no collections are found and creation fails, we are stuck in an infinite loop which is bad so throw and crash
-                        throw new IOException($"Could not create the default collection at {Path.Combine(CodexCollection.CollectionsPath, name)}");
-                    }
-                }
-
-                //otherwise, open startup collection
-                else if (AllCodexCollections.Any(collection => collection.DirectoryName == _preferencesService.Preferences.UIState.StartupCollection))
-                {
-                    var startupCollection = AllCodexCollections.First(collection => collection.DirectoryName == _preferencesService.Preferences.UIState.StartupCollection);
-                    initSuccess = TryLoadCollection(startupCollection);
-                    if (!initSuccess)
-                    {
-                        // if loading failed -> remove it from the pool and try again
-                        AllCodexCollections.Remove(startupCollection);
-                    }
-                }
-
-                //in case startup collection no longer exists, pick first one that does exists
-                else
-                {
-                    Logger.Warn($"The collection {_preferencesService.Preferences.UIState.StartupCollection} could not be found.", new DirectoryNotFoundException());
-                    var firstCollection = AllCodexCollections.First();
-                    initSuccess = TryLoadCollection(firstCollection);
-                    if (!initSuccess)
-                    {
-                        // if loading failed -> remove it from the pool and try again
-                        AllCodexCollections.RemoveAt(0);
-                    }
-                }
-
-
+                CurrentCollection = loadedCollection;
             }
         }
-
-        public bool IsLegalCollectionName(string? dirName)
-        {
-            bool legal =
-                !String.IsNullOrWhiteSpace(dirName)
-                && dirName.IndexOfAny(Path.GetInvalidPathChars()) < 0
-                && dirName.IndexOfAny(Path.GetInvalidFileNameChars()) < 0
-                && AllCodexCollections.All(collection => collection.DirectoryName != dirName)
-                && dirName.Length < 100
-                && (dirName.Length < 2 || dirName[..2] != "__"); //reserved for protected folders
-            return legal;
-        }
-
+        
         /// <summary>
         /// Tries to load a collection and will set <see cref="CurrentCollection"/> if succesfull
         /// </summary>
@@ -215,7 +139,7 @@ namespace COMPASS.Common.ViewModels
         /// <returns>A boolean indiciating whether or not the load was a succes </returns>
         private bool TryLoadCollection(CodexCollection collection)
         {
-            int success = collection.Load();
+            int success = _collectionStorageService.Load(collection);
             if (success < 0)
             {
                 string msg = success switch
@@ -225,15 +149,15 @@ namespace COMPASS.Common.ViewModels
                     -3 => "Both the save files with tags and items seem to be corrupted and could not be read.",
                     _ => ""
                 };
-                Notification error = new("Failed to Load Collection", $"Could not load {collection.DirectoryName}. \n" + msg, Severity.Error);
-                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(error);
+                Notification error = new("Failed to Load Collection", $"Could not load {collection.Name}. \n" + msg, Severity.Error);
+                _windowedNotificationService.Show(error);
                 return false;
             }
 
             CurrentCollection = collection;
             return true;
         }
-
+        
         public async Task AutoImport()
         {
             //Start Auto Imports
@@ -247,7 +171,13 @@ namespace COMPASS.Common.ViewModels
 
         public async Task Refresh()
         {
-            CurrentCollection.Save();
+            _collectionStorageService.Save(CurrentCollection);
+
+            await OnCollectionChanged();
+        }
+
+        public async Task OnCollectionChanged()
+        {
             bool loaded = TryLoadCollection(CurrentCollection);
 
             if (!loaded)
@@ -259,7 +189,7 @@ namespace COMPASS.Common.ViewModels
             }
             //TODO: check if this is still needed
             //MainVM?.CurrentLayout?.UpdateDoVirtualization();
-
+            
             FilterVM = new(CurrentCollection.AllCodices);
             TagsVM = new(CurrentCollection, FilterVM);
 
@@ -277,10 +207,12 @@ namespace COMPASS.Common.ViewModels
         private void ToggleEditCollection() => EditCollectionVisibility = !EditCollectionVisibility;
 
         // Create CodexCollection
-        private RelayCommand<string>? _createCollectionCommand;
-        public RelayCommand<string> CreateCollectionCommand =>
-            _createCollectionCommand ??= new(name => CreateAndLoadCollection(name), IsLegalCollectionName);
-        public CodexCollection? CreateAndLoadCollection(string? dirName)
+        private AsyncRelayCommand<string>? _createCollectionCommand;
+        public AsyncRelayCommand<string> CreateCollectionCommand =>
+            _createCollectionCommand ??= new(
+                name => CreateAndLoadCollection(name), 
+                name => CodexCollectionOperations.IsLegalCollectionName(name, AllCodexCollections));
+        public async Task<CodexCollection?> CreateAndLoadCollection(string? dirName)
         {
             if (dirName == null)
             {
@@ -290,7 +222,7 @@ namespace COMPASS.Common.ViewModels
             CodexCollection newCollection;
             try
             {
-                newCollection = CreateCollection(dirName);
+                newCollection = await CreateCollection(dirName);
             }
             catch (InvalidOperationException ex)
             {
@@ -316,18 +248,17 @@ namespace COMPASS.Common.ViewModels
         /// <param name="dirName"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public CodexCollection CreateCollection(string dirName)
+        public async Task<CodexCollection> CreateCollection(string dirName)
         {
-            if (!IsLegalCollectionName(dirName))
+            if (!CodexCollectionOperations.IsLegalCollectionName(dirName, AllCodexCollections))
             {
                 string msg = $"{dirName} is not a valid collection name";
                 Logger.Warn(msg);
                 throw new InvalidOperationException(msg);
             }
 
-            CodexCollection newCollection = new(dirName);
-
-            newCollection.InitAsNew();
+            CodexCollection newCollection = new CodexCollection(dirName);
+            await _collectionStorageService.AllocateNewCollection(newCollection);
 
             AllCodexCollections.Add(newCollection);
             return newCollection;
@@ -335,10 +266,13 @@ namespace COMPASS.Common.ViewModels
 
         // Rename Collection
         private RelayCommand<string>? _editCollectionNameCommand;
-        public RelayCommand<string> EditCollectionNameCommand => _editCollectionNameCommand ??= new(EditCollectionName, IsLegalCollectionName);
+        public RelayCommand<string> EditCollectionNameCommand => _editCollectionNameCommand ??= new(
+            EditCollectionName, 
+            name => CodexCollectionOperations.IsLegalCollectionName(name, AllCodexCollections));
         public void EditCollectionName(string? newName)
         {
-            if (!IsLegalCollectionName(newName)) return;
+            if (!CodexCollectionOperations.IsLegalCollectionName(newName, AllCodexCollections)) return;
+            
             CurrentCollection.RenameCollection(newName!);
             EditCollectionVisibility = false;
         }
@@ -373,18 +307,14 @@ namespace COMPASS.Common.ViewModels
         }
         public void DeleteCollection(CodexCollection toDelete)
         {
+            //TODO dispose collection
             AllCodexCollections.Remove(toDelete);
             if (CurrentCollection == toDelete)
             {
                 LoadInitialCollection();
             }
 
-            //if Dir name of toDelete is empty, it will delete the entire collections folder
-            if (String.IsNullOrEmpty(toDelete.DirectoryName)) return;
-            if (Directory.Exists(toDelete.FullDataPath)) //does not exist if collection was never saved
-            {
-                Directory.Delete(toDelete.FullDataPath, true);
-            }
+            _collectionStorageService.OnCollectionDeleted(toDelete);
         }
 
         //Export Collection
@@ -399,31 +329,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         private AsyncRelayCommand? _exportTagsCommand;
-        public AsyncRelayCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags);
-        public async Task ExportTags()
-        {
-            var filesService = App.Container.Resolve<IFilesService>();
-            var savedFile = await filesService.SaveFileAsync(new()
-            {
-                FileTypeChoices = [filesService.SatchelExtensionFilter],
-                SuggestedFileName = $"{CurrentCollection.DirectoryName}_Tags",
-                DefaultExtension = Constants.SatchelExtension,
-            });
-
-            if (savedFile == null) return;
-
-            //make sure to save first
-            CurrentCollection.SaveTags();
-
-            string targetPath = savedFile.Path.AbsolutePath;
-            savedFile.Dispose();
-            using var archive = ZipArchive.Create();
-            archive.AddEntry(Constants.TagsFileName, CurrentCollection.TagsDataFilePath);
-
-            //Export
-            archive.SaveTo(targetPath, CompressionType.None);
-            Logger.Info($"Exported Tags from {CurrentCollection.DirectoryName} to {targetPath}");
-        }
+        public AsyncRelayCommand ExportTagsCommand => _exportTagsCommand ??= new(_ => _collectionStorageService.ExportTags(CurrentCollection));
 
         //Import Collection
         private AsyncRelayCommand? _importCommand;
@@ -432,7 +338,7 @@ namespace COMPASS.Common.ViewModels
         public async Task ImportSatchelAsync() => await ImportSatchelAsync(null);
         public async Task ImportSatchelAsync(string? path)
         {
-            var collectionToImport = await IOService.OpenSatchel(path);
+            var collectionToImport = await _collectionStorageService.OpenSatchel(path);
 
             if (collectionToImport == null)
             {
@@ -451,7 +357,7 @@ namespace COMPASS.Common.ViewModels
         public AsyncRelayCommand<string> MergeCollectionIntoCommand => _mergeCollectionIntoCommand ??= new(MergeIntoCollection);
         public async Task MergeIntoCollection(string? collectionToMergeInto)
         {
-            if (String.IsNullOrEmpty(collectionToMergeInto) || !AllCodexCollections.Select(coll => coll.DirectoryName).Contains(collectionToMergeInto))
+            if (string.IsNullOrEmpty(collectionToMergeInto) || !AllCodexCollections.Select(coll => coll.Name).Contains(collectionToMergeInto))
             {
                 return;
             }
@@ -459,7 +365,7 @@ namespace COMPASS.Common.ViewModels
             //Are you sure?
             Notification areYouSure = Notification.AreYouSureNotification;
             areYouSure.Title = "Confirm merge";
-            areYouSure.Body = $"You are about to merge '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'. \n" +
+            areYouSure.Body = $"You are about to merge '{CurrentCollection.Name}' into '{collectionToMergeInto}'. \n" +
                            $"This will copy all items, tags and preferences to the chosen collection. \n" +
                            $"Are you sure you want to continue?";
 
@@ -469,10 +375,10 @@ namespace COMPASS.Common.ViewModels
 
             CodexCollection targetCollection = new(collectionToMergeInto);
 
-            targetCollection.Load(makeStartupCollection: false);
+            _collectionStorageService.Load(targetCollection);
             await targetCollection.MergeWith(CurrentCollection);
 
-            Notification doneNotification = new("Merge Success", $"Successfully merged '{CurrentCollection.DirectoryName}' into '{collectionToMergeInto}'");
+            Notification doneNotification = new("Merge Success", $"Successfully merged '{CurrentCollection.Name}' into '{collectionToMergeInto}'");
             await App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Toast).Show(doneNotification);
         }
         #endregion

@@ -3,6 +3,9 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Tools;
 using System.Collections.Generic;
 using System.Linq;
+using Autofac;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Storage;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -39,7 +42,7 @@ namespace COMPASS.Common.ViewModels
         {
             public TagCollection(CodexCollection c)
             {
-                Name = c.DirectoryName;
+                Name = c.Name;
                 _collection = c;
             }
 
@@ -56,7 +59,7 @@ namespace COMPASS.Common.ViewModels
                     if (_tagsRoot != null) return _tagsRoot;
 
                     //load if not done yet
-                    if (!_collection.AllTags.Any()) _collection.LoadTags();
+                    if (!_collection.AllTags.Any()) App.Container.Resolve<ICodexCollectionStorageService>().LoadTags(_collection);
                     //convert to nodes
                     _tagsRoot = new CheckableTreeNode<Tag>(new Tag(), containerOnly: true)
                     {

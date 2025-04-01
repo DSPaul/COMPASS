@@ -10,6 +10,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
@@ -168,6 +169,18 @@ namespace COMPASS.Common.Operations
 
         #endregion
 
+        #region Create Codex
+
+        public static Codex CreateNewCodex(CodexCollection collection)
+        {
+            var codex = new Codex(collection);
+            codex.ID = Utils.GetAvailableID(collection.AllCodices);
+            App.Container.Resolve<IThumbnailStorageService>().InitCodexImagePaths(codex);
+            return codex;
+        }
+
+        #endregion
+        
         #region Toggle Favorite 
 
         //Toggle Favorite
@@ -211,9 +224,9 @@ namespace COMPASS.Common.Operations
         public RelayCommand<Codex> ShowInExplorerCommand => _showInExplorerCommand ??= new(ShowInExplorer, CanOpenCodexLocally);
         public static void ShowInExplorer(Codex? toShow)
         {
-            if (String.IsNullOrEmpty(toShow?.Sources.Path) || !File.Exists(toShow.Sources.Path)) return;
+            if (string.IsNullOrEmpty(toShow?.Sources.Path) || !File.Exists(toShow.Sources.Path)) return;
             string? folderPath = Path.GetDirectoryName(toShow.Sources.Path);
-            if (String.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath)) return;
+            if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath)) return;
             IOService.ShowInExplorer(folderPath);
         }
 
@@ -243,19 +256,31 @@ namespace COMPASS.Common.Operations
         /// <param name="toMoveList"></param>
         public static async Task MoveToCollection(CodexCollection targetCollection, List<Codex> toMoveList)
         {
-            //Check if target Collection is valid
-            if (targetCollection.DirectoryName == MainViewModel.CollectionVM.CurrentCollection.DirectoryName)
+            if (!toMoveList.Any())
             {
-                Logger.Warn($"Target Collection {targetCollection.DirectoryName} is invalid");
+                return;
+            }
+            
+            //To move should all belong to same collection
+            CodexCollection sourceCollection = toMoveList[0].Collection;
+            Debug.Assert(toMoveList.All(codex => codex.Collection == sourceCollection));
+            
+            //Check if target Collection is valid
+            if (targetCollection.Name == sourceCollection.Name)
+            {
+                Logger.Warn($"Target Collection {targetCollection.Name} is invalid");
                 return;
             }
 
             //"Are you Sure?"
 
             var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+            var codexCollectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
+            var thumbnailStorageService = App.Container.Resolve<IThumbnailStorageService>();
+            var userFilesStorageService = App.Container.Resolve<IUserFilesStorageService>();
 
-            string messageSingle = $"Moving  {toMoveList[0].Title} to {targetCollection.DirectoryName} will remove all tags from the item, are you sure you wish to continue?";
-            string messageMultiple = $"Moving these {toMoveList.Count} items to {targetCollection.DirectoryName} will remove all tags from these items, are you sure you wish to continue?";
+            string messageSingle = $"Moving  {toMoveList[0].Title} to {targetCollection.Name} will remove all tags from the item, are you sure you wish to continue?";
+            string messageMultiple = $"Moving these {toMoveList.Count} items to {targetCollection.Name} will remove all tags from these items, are you sure you wish to continue?";
 
             Notification areYouSureNotification = Notification.AreYouSureNotification;
             areYouSureNotification.Body = toMoveList.Count == 1 ? messageSingle : messageMultiple;
@@ -263,46 +288,38 @@ namespace COMPASS.Common.Operations
 
             if (areYouSureNotification.Result == NotificationAction.Confirm)
             {
-                bool success = targetCollection.LoadCodices();
+                bool success = codexCollectionStorageService.LoadCodices(targetCollection);
                 if (!success)
                 {
-                    Notification errorNotification = new("Target collection could not be loaded.", $"Could not move items to {targetCollection.DirectoryName}", Severity.Error);
+                    Notification errorNotification = new("Target collection could not be loaded.", $"Could not move items to {targetCollection.Name}", Severity.Error);
                     await windowedNotificationService.Show(errorNotification);
                     return;
                 }
-
-                //Make sure the directories exist before copying cover art into it
-                targetCollection.CreateDirectories();
+                
+                //Copy the codices to the target collection
                 foreach (Codex toMove in toMoveList)
                 {
-                    toMove.Tags.Clear();
-                    toMove.ID = Utils.GetAvailableID(targetCollection.AllCodices);
+                    Codex movedCodex = new(targetCollection);
+                    movedCodex.CopyFrom(toMove);
+                    
+                    movedCodex.Tags.Clear();
+                    movedCodex.ID = Utils.GetAvailableID(targetCollection.AllCodices);
 
                     //Add Codex to target CodexCollection
-                    targetCollection.AllCodices.Add(toMove);
+                    targetCollection.AllCodices.Add(movedCodex);
+                    
+                    thumbnailStorageService.MoveCodexDataToCollection(movedCodex, targetCollection);
+                    userFilesStorageService.MoveCodexDataToCollection(movedCodex, targetCollection, toMove.Collection);
 
-                    //Move cover art to right folder with new ID
-                    Codex tempCodex = new(toMove);
-                    tempCodex.SetImagePaths(targetCollection);
-
-                    if (Path.Exists(toMove.CoverArtPath))
-                        File.Copy(toMove.CoverArtPath, tempCodex.CoverArtPath, true);
-                    if (Path.Exists(toMove.CoverArtPath))
-                        File.Copy(toMove.ThumbnailPath, tempCodex.ThumbnailPath, true);
-
-                    //Delete codex in original collection
-                    MainViewModel.CollectionVM.CurrentCollection.DeleteCodex(toMove);
-                    MainViewModel.CollectionVM.FilterVM.RemoveCodex(toMove);
-
-                    //Update the cover art metadata to new path, has to happen after delete so old one gets deleted
-                    toMove.Copy(tempCodex);
-
-                    Logger.Info($"Moved {toMove.Title} from {MainViewModel.CollectionVM.CurrentCollection.DirectoryName} to {targetCollection.DirectoryName}");
+                    Logger.Info($"Moved {movedCodex.Title} from {sourceCollection.Name} to {targetCollection.Name}");
                 }
+                
+                //After they are all copied, delete them
+                await DeleteCodices(toMoveList, false);
 
                 //Save changes to both collections
-                MainViewModel.CollectionVM.CurrentCollection.SaveCodices();
-                targetCollection.SaveCodices();
+                codexCollectionStorageService.SaveCodices(sourceCollection);
+                codexCollectionStorageService.SaveCodices(targetCollection);
             }
         }
 
@@ -312,16 +329,55 @@ namespace COMPASS.Common.Operations
         public static async Task DeleteCodex(Codex? toDelete)
         {
             if (toDelete == null) return;
-            await DeleteCodices(new List<Codex>() { toDelete });
+            await DeleteCodices( [toDelete], true );
         }
 
         //Delete Codices
         private AsyncRelayCommand<IList>? _deleteCodicesCommand;
-        public AsyncRelayCommand<IList> DeleteCodicesCommand => _deleteCodicesCommand ??= new(DeleteCodices);
-        public static async Task DeleteCodices(IList? toDelete)
+        public AsyncRelayCommand<IList> DeleteCodicesCommand => _deleteCodicesCommand ??= new( async (codices) =>
         {
-            await MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(toDelete?.Cast<Codex>().ToList() ?? []);
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
+            var codicesToDelete = codices?.Cast<Codex>().ToList() ?? [];
+            await DeleteCodices(codicesToDelete, true);
+        });
+        public static async Task DeleteCodices(IList<Codex> codicesToDelete, bool askForConfirmation)
+        {
+            var collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
+            var thumbnailStorageService = App.Container.Resolve<IThumbnailStorageService>();
+            
+            Notification deleteWarnNotification = Notification.AreYouSureNotification;
+            if (askForConfirmation)
+            {
+                deleteWarnNotification.Body = $"You are about to remove {codicesToDelete.Count} item{(codicesToDelete.Count > 1 ? @"s" : @"")}. " +
+                                              $"This cannot be undone. " +
+                                              $"Are you sure you want to continue?";
+                var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+                await windowedNotificationService.Show(deleteWarnNotification);
+            }
+
+            if (askForConfirmation && deleteWarnNotification.Result != NotificationAction.Confirm)
+            {
+                return;
+            }
+            
+            var codicesByCollections = codicesToDelete.GroupBy(codex => codex.Collection);
+            foreach (var group in codicesByCollections)
+            {
+                CodexCollection collection = group.Key;
+                foreach (Codex codexToDelete in group)
+                {
+                    //Delete codex from all lists
+                    collection.AllCodices.Remove(codexToDelete);
+                    thumbnailStorageService.OnCodexDeleted(codexToDelete);
+
+                    Logger.Info($"Removed {codexToDelete.Title} from {collection.Name}");
+                    codexToDelete.Dispose();
+                }
+                collectionStorageService.SaveCodices(collection);
+                if (collection == MainViewModel.CollectionVM.CurrentCollection)
+                {
+                    MainViewModel.CollectionVM.FilterVM.ReFilter();
+                }
+            }
         }
 
         //Banish Codex
@@ -337,8 +393,9 @@ namespace COMPASS.Common.Operations
         public AsyncRelayCommand<IList> BanishCodicesCommand => _banishCodicesCommand ??= new(BanishCodices);
         public static async Task BanishCodices(IList? toBanish)
         {
-            MainViewModel.CollectionVM.CurrentCollection.BanishCodices(toBanish?.Cast<Codex>().ToList() ?? []);
-            await DeleteCodices(toBanish);
+            var codicesToBanish = toBanish?.Cast<Codex>().ToList() ?? [];
+            MainViewModel.CollectionVM.CurrentCollection.BanishCodices(codicesToBanish);
+            await DeleteCodices(codicesToBanish, true);
         }
 
         private AsyncRelayCommand<Codex>? _getMetaDataCommand;
@@ -386,7 +443,7 @@ namespace COMPASS.Common.Operations
             }
 
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            MainViewModel.CollectionVM.CurrentCollection.Save();
+            App.Container.Resolve<ICodexCollectionStorageService>().Save(MainViewModel.CollectionVM.CurrentCollection);
             MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
         private static async Task GetMetaData(Codex codex, ChooseMetaDataViewModel chooseMetaDataVM)
@@ -449,7 +506,7 @@ namespace COMPASS.Common.Operations
 
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Always || prop.IsEmpty(codex))
                 {
-                    prop.SetProp(codex, preferredMetadata.ToModel(MainViewModel.CollectionVM.CurrentCollection.AllTags));
+                    prop.SetProp(codex, preferredMetadata.ToModel(MainViewModel.CollectionVM.CurrentCollection));
                 }
                 else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask && prop.HasNewValue(preferredMetadata, codex))
                 {
@@ -460,8 +517,7 @@ namespace COMPASS.Common.Operations
 
             if (shouldAsk)
             {
-                var allTags = MainViewModel.CollectionVM.CurrentCollection.AllTags;
-                chooseMetaDataVM.AddCodexPair(codex, toAsk.ToModel(allTags));
+                chooseMetaDataVM.AddCodexPair(codex, toAsk.ToModel(MainViewModel.CollectionVM.CurrentCollection));
             }
 
             ProgressViewModel.GetInstance().IncrementCounter();
@@ -519,7 +575,7 @@ namespace COMPASS.Common.Operations
                         else
                         {
                             //Delete
-                            await DeleteCodices(codices);
+                            await DeleteCodices(codices, true);
                         }
                         e.Handled = true;
                         break;

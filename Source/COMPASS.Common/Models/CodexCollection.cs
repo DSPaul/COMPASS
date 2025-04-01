@@ -1,22 +1,12 @@
 ﻿using Autofac;
 using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Interfaces;
-using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Models.XmlDtos;
-using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
+using COMPASS.Common.Interfaces.Storage;
 
 namespace COMPASS.Common.Models
 {
@@ -24,32 +14,23 @@ namespace COMPASS.Common.Models
     {
         public CodexCollection(string collectionDirectory)
         {
-            _directoryName = collectionDirectory;
-            _preferencesService = PreferencesService.GetInstance();
+            _name = collectionDirectory;
         }
 
-        private readonly PreferencesService _preferencesService;
-        private static readonly Lock _writeLocker = new();
-
-        public static string CollectionsPath => Path.Combine(App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath, "Collections");
-        public string FullDataPath => Path.Combine(CollectionsPath, DirectoryName);
-        public string CodicesDataFilePath => Path.Combine(FullDataPath, Constants.CodicesFileName);
-        public string TagsDataFilePath => Path.Combine(FullDataPath, Constants.TagsFileName);
-        public string CollectionInfoFilePath => Path.Combine(FullDataPath, Constants.CollectionInfoFileName);
-
-        public string CoverArtPath => Path.Combine(FullDataPath, "CoverArt");
-        public string ThumbnailsPath => Path.Combine(FullDataPath, "Thumbnails");
-        public string UserFilesPath => Path.Combine(FullDataPath, "Files");
-
+        //To prevent saving a collection that hasn't loaded yet, which would wipe all your data
+        public bool LoadedTags { get; set; }
+        public bool LoadedCodices { get; set; }
+        public bool LoadedInfo { get; set; }
+        
         #region Properties
-        private string _directoryName;
-        public string DirectoryName
+        private string _name;
+        public string Name
         {
-            get => _directoryName;
-            set => SetProperty(ref _directoryName, value);
+            get => _name;
+            set => SetProperty(ref _name, value);
         }
 
-        public List<Tag> AllTags { get; private set; } = [];
+        public List<Tag> AllTags { get; set; } = [];
 
         private List<Tag> _rootTags = [];
         public List<Tag> RootTags
@@ -57,11 +38,12 @@ namespace COMPASS.Common.Models
             get => _rootTags;
             set
             {
-                _rootTags = value;
+                SetProperty(ref _rootTags, value);
                 foreach (Tag t in _rootTags)
                 {
                     t.Parent = null;
                 }
+                TagsChanged();
             }
         }
 
@@ -69,334 +51,12 @@ namespace COMPASS.Common.Models
         public ObservableCollection<Codex> AllCodices
         {
             get => _allCodices;
-            private set => SetProperty(ref _allCodices, value);
+            set => SetProperty(ref _allCodices, value);
         }
 
-        public CollectionInfo Info { get; private set; } = new();
+        public CollectionInfo Info { get; set; } = new();
 
         #endregion
-
-        //TODO: move loading and saving logic to a service
-        
-        #region Load Data From File
-
-        //To prevent saving a collection that hasn't loaded yet, which would wipe all your data
-        private bool _loadedTags = false;
-        private bool _loadedCodices = false;
-        private bool _loadedInfo = false;
-
-        /// <summary>
-        /// Loads the collection and unless MakeStartupCollection, sets it as the new default to load on startup
-        /// </summary>
-        /// <returns>int that gives status: 0 for success, -1 for failed tags, -2 for failed codices, -4 for failed info, or combination of those</returns>
-        public int Load(bool makeStartupCollection = true)
-        {
-            int result = 0;
-            bool loadedTags = LoadTags();
-            bool loadedCodices = LoadCodices();
-            bool loadedInfo = LoadInfo();
-            if (!loadedTags) { result -= 1; }
-            if (!loadedCodices) { result -= 2; }
-            if (!loadedInfo) { result -= 4; }
-            if (makeStartupCollection)
-            {
-                _preferencesService.Preferences.UIState.StartupCollection = DirectoryName;
-                Logger.Info($"Loaded {DirectoryName}");
-            }
-            return result;
-        }
-
-        //Loads the RootTags from a file and constructs the AllTags list from it
-        public bool LoadTags()
-        {
-            List<TagDto> loadedTags = [];
-            if (File.Exists(TagsDataFilePath))
-            {
-                //loading root tags          
-                using var reader = new StreamReader(TagsDataFilePath);
-                XmlSerializer serializer = new(typeof(List<TagDto>));
-                try
-                {
-                    loadedTags = serializer.Deserialize(reader) as List<TagDto> ?? [];
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"Could not load {TagsDataFilePath}.", ex);
-                    return false;
-                }
-            }
-
-            RootTags = loadedTags.Select(dto => dto.ToModel()).ToList();
-
-            CompleteLoadingTags();
-            _loadedTags = true;
-            return true;
-        }
-
-        private void CompleteLoadingTags() => AllTags = RootTags.Flatten().ToList();
-
-        //Loads AllCodices list from Files
-        public bool LoadCodices()
-        {
-            CodexDto[] dtos = [];
-            if (File.Exists(CodicesDataFilePath))
-            {
-                using var reader = new StreamReader(CodicesDataFilePath);
-                XmlSerializer serializer = new(typeof(CodexDto[]));
-                try
-                {
-                    dtos = serializer.Deserialize(reader) as CodexDto[] ?? [];
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"Could not load {CodicesDataFilePath}", ex);
-                    return false;
-                }
-            }
-
-            AllCodices = new(dtos.Select(dto => dto.ToModel(AllTags)));
-
-            _loadedCodices = true;
-            return true;
-        }
-
-        public bool LoadInfo()
-        {
-            Debug.Assert(_loadedTags);
-            
-            if (File.Exists(CollectionInfoFilePath))
-            {
-                try
-                {
-                    using var reader = new StreamReader(CollectionInfoFilePath);
-
-                    //Obsolete properties should still be deserialized for backwards compatibility
-                    var overrides = new XmlAttributeOverrides();
-                    var obsoleteAttributes = new XmlAttributes { XmlIgnore = false };
-                    var obsoleteProperties = Reflection.GetObsoleteProperties(typeof(CollectionInfoDto));
-                    foreach (string prop in obsoleteProperties)
-                    {
-                        overrides.Add(typeof(CollectionInfoDto), prop, obsoleteAttributes);
-                    }
-
-                    XmlSerializer serializer = new(typeof(CollectionInfoDto), overrides);
-                    if (serializer.Deserialize(reader) is not CollectionInfoDto loadedInfo)
-                    {
-                        Logger.Warn($"Could not load info for {CollectionInfoFilePath}");
-                        return false;
-                    }
-                    Info = loadedInfo.ToModel(AllTags);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"Could not load info for {CollectionInfoFilePath}", ex);
-                    return false;
-                }
-            }
-            else
-            {
-                Info = new();
-            }
-            
-            _loadedInfo = true;
-            return true;
-        }
-        #endregion
-
-        #region Save Data To XML File
-
-        /// <summary>
-        /// Will initialize the collection for the first time. 
-        /// </summary>
-        public void InitAsNew()
-        {
-            _loadedCodices = true;
-            _loadedInfo = true;
-            _loadedTags = true;
-
-            CreateDirectories();
-        }
-
-        public void CreateDirectories()
-        {
-            try
-            {
-                //top folder
-                Directory.CreateDirectory(FullDataPath);
-                //subfolders
-                Directory.CreateDirectory(CoverArtPath);
-                Directory.CreateDirectory(ThumbnailsPath);
-                Directory.CreateDirectory(UserFilesPath);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Failed to create folders to store user data for this collection.", ex);
-                var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
-
-                string msg = $"Failed to create the necessary folders to store data about this collection. The following error occured: {ex.Message}";
-                Notification failedFolderCreation = new("Failed to save collection", msg, Severity.Error);
-                windowedNotificationService.Show(failedFolderCreation);
-            }
-        }
-
-        public void Save()
-        {
-            OnPropertyChanged(nameof(AllCodices));
-
-            try
-            {
-                Directory.CreateDirectory(UserFilesPath);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Failed to create the folder to save the data for this collection", ex);
-            }
-
-            bool savedTags = SaveTags();
-            bool savedCodices = SaveCodices();
-            bool savedInfo = SaveInfo();
-            _preferencesService.SavePreferences();
-
-            if (savedCodices || savedTags || savedInfo)
-            {
-                Logger.Info($"Saved {DirectoryName}");
-            }
-        }
-
-        public bool SaveTags()
-        {
-            if (!_loadedTags)
-            {
-                //Should always load a collection before it can be saved
-                return false;
-            }
-
-            var toSave = RootTags.Select(c => c.ToDto()).ToList();
-
-            try
-            {
-                string tempFileName = TagsDataFilePath + ".tmp";
-
-                lock (_writeLocker)
-                {
-                    using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
-                    {
-                        XmlSerializer serializer = new(typeof(List<TagDto>));
-                        serializer.Serialize(writer, toSave);
-                    }
-
-                    //if successfully written to the tmp file, move to actual path
-                    File.Move(tempFileName, TagsDataFilePath, true);
-                    File.Delete(tempFileName);
-                }
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                Logger.Error($"Access denied when trying to save Tags to {TagsDataFilePath}", ex);
-                return false;
-            }
-            catch (IOException ex)
-            {
-                Logger.Error($"IO error occurred when saving Tags to {TagsDataFilePath}", ex);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"Failed to save Tags to {TagsDataFilePath}", ex);
-                return false;
-            }
-            return true;
-        }
-
-        public bool SaveCodices()
-        {
-            if (!_loadedCodices)
-            {
-                //Should always load a collection before it can be saved
-                return false;
-            }
-
-            var toSave = AllCodices.Select(c => c.ToDto()).ToList();
-
-            try
-            {
-                string tempFileName = CodicesDataFilePath + ".tmp";
-
-                lock (_writeLocker)
-                {
-                    using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
-                    {
-                        XmlSerializer serializer = new(typeof(List<CodexDto>));
-                        serializer.Serialize(writer, toSave);
-                    }
-
-                    //if successfully written to the tmp file, move to actual path
-                    File.Move(tempFileName, CodicesDataFilePath, true);
-                    File.Delete(tempFileName);
-                }
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                Logger.Error($"Access denied when trying to save Codex Info to {CodicesDataFilePath}", ex);
-                return false;
-            }
-            catch (IOException ex)
-            {
-                Logger.Error($"IO error occurred when saving Codex Info to {CodicesDataFilePath}", ex);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"Failed to save Codex Info to {CodicesDataFilePath}", ex);
-                return false;
-            }
-            return true;
-        }
-
-        public bool SaveInfo()
-        {
-            if (!_loadedInfo)
-            {
-                //Should always load a collection before it can be saved
-                return false;
-            }
-
-            try
-            {
-                string tempFileName = CollectionInfoFilePath + ".tmp";
-
-                lock (_writeLocker)
-                {
-                    using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
-                    {
-                        XmlSerializer serializer = new(typeof(CollectionInfoDto));
-                        serializer.Serialize(writer, Info.ToDto());
-                    }
-
-                    //if successfully written to the tmp file, move to actual path
-                    File.Move(tempFileName, CollectionInfoFilePath, true);
-                    File.Delete(tempFileName);
-                }
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                Logger.Error($"Access denied when trying to save Collection Info to {CollectionInfoFilePath}", ex);
-                return false;
-            }
-            catch (IOException ex)
-            {
-                Logger.Error($"IO error occurred when saving Collection Info to {CollectionInfoFilePath}", ex);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"Failed to save Collection Info to {CollectionInfoFilePath}", ex);
-                return false;
-            }
-            return true;
-        }
-
-        #endregion    
 
         /// <summary>
         /// Will merge all the data from toMergeFrom into this collection
@@ -411,7 +71,7 @@ namespace COMPASS.Common.Models
                 var rootTag = new Tag(toMergeFrom.AllTags)
                 {
                     IsGroup = true,
-                    Name = toMergeFrom.DirectoryName.Trim('_'),
+                    Name = toMergeFrom.Name.Trim('_'),
                     Children = new(toMergeFrom.RootTags)
                 };
                 toMergeFrom.RootTags = [rootTag];
@@ -431,30 +91,24 @@ namespace COMPASS.Common.Models
             }
             else
             {
-                Save();
+                App.Container.Resolve<ICodexCollectionStorageService>().Save(this);
             }
         }
 
+        public void TagsChanged()
+        {
+            AllTags = RootTags.Flatten().ToList();
+        }
+        
         public void RenameCollection(string newCollectionName)
         {
-            string oldName = DirectoryName;
-            DirectoryName = newCollectionName;
+            string oldName = Name;
+            Name = newCollectionName;
+            
+            App.Container.Resolve<ICodexCollectionStorageService>().OnCollectionRenamed(oldName, newCollectionName);
+            App.Container.Resolve<IThumbnailStorageService>().OnCollectionRenamed(this);
 
-            foreach (Codex codex in AllCodices)
-            {
-                //Replace folder names in image paths
-                codex.SetImagePaths(this);
-            }
-            try
-            {
-                Directory.Move(Path.Combine(CollectionsPath, oldName), Path.Combine(CollectionsPath, newCollectionName));
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"Failed to move data files from {oldName} to {newCollectionName}", ex);
-            }
-
-            Logger.Info($"Renamed  {oldName} to {newCollectionName}");
+            Logger.Info($"Renamed {oldName} to {newCollectionName}");
         }
 
         public void AddTags(IEnumerable<Tag> tags)
@@ -473,124 +127,34 @@ namespace COMPASS.Common.Models
 
         public void ImportCodicesFrom(CodexCollection source)
         {
+            var userFilesStorageService = App.Container.Resolve<IUserFilesStorageService>();
+            var thumbnailStorageService = App.Container.Resolve<IThumbnailStorageService>();
+            
             //if import includes files, make sure directory exists to copy files into
-            if (Path.Exists(source.UserFilesPath))
+            bool canImportFiles = false;
+            if (userFilesStorageService.HasUserFiles(source))
             {
-                try
+                canImportFiles = userFilesStorageService.EnsureDirectoryExists(this);
+                if (!canImportFiles)
                 {
-                    Directory.CreateDirectory(UserFilesPath);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error("Failed to create a folder to store the imported files", ex);
+                    //TODO add a notification or similar that files will not be imported
                 }
             }
-
+            
             foreach (var codex in source.AllCodices)
             {
                 //Give it a new id that is unique to this collection
                 codex.ID = Utils.GetAvailableID(AllCodices);
 
-                //Move Cover file
-                if (File.Exists(codex.CoverArtPath))
-                {
-                    try
-                    {
-                        File.Copy(codex.CoverArtPath, Path.Combine(CoverArtPath, $"{codex.ID}.png"), true);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Warn($"Failed to copy cover of {codex.Title}", ex);
-                    }
-                }
-
-                //Move Thumbnail file
-                if (File.Exists(codex.ThumbnailPath))
-                {
-                    try
-                    {
-                        File.Copy(codex.ThumbnailPath, Path.Combine(ThumbnailsPath, $"{codex.ID}.png"), true);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Warn($"Failed to copy thumbnail of {codex.Title}", ex);
-                    }
-                }
-
-                //update img path to these new files
-                codex.SetImagePaths(this);
-
-                //if no thumbnail file was moved, create one
-                if (!File.Exists(codex.ThumbnailPath))
-                {
-                    CoverService.CreateThumbnail(codex);
-                }
+                //Move thumbnail and cover
+                thumbnailStorageService.MoveCodexDataToCollection(codex, this);
 
                 //move user files included in import
-                if (codex.Sources.Path.StartsWith(source.UserFilesPath) && File.Exists(codex.Sources.Path))
+                if (canImportFiles)
                 {
-                    try
-                    {
-                        string newPath = codex.Sources.Path.Replace(source.UserFilesPath, UserFilesPath);
-                        string? newDir = Path.GetDirectoryName(newPath);
-                        if (newDir != null)
-                        {
-                            try
-                            {
-                                Directory.CreateDirectory(newDir);
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Error("Failed to create a folder to store the imported files", ex);
-                            }
-                        }
-                        File.Copy(codex.Sources.Path, newPath, true);
-                        codex.Sources.Path = newPath;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Warn($"Failed to copy file associated with {codex.Title}", ex);
-                    }
+                    userFilesStorageService.MoveCodexDataToCollection(codex, this, source, copy: true);
                 }
                 AllCodices.Add(codex);
-            }
-        }
-
-        public void DeleteCodex(Codex toDelete)
-        {
-            //Delete codex from all lists
-            AllCodices.Remove(toDelete);
-
-            //Delete CoverArt & Thumbnail
-            try
-            {
-                File.Delete(toDelete.CoverArtPath);
-                File.Delete(toDelete.ThumbnailPath);
-            }
-            catch
-            {
-                //deleting the thumbnail could fail because of many reasons,
-                //not a big deal as it will just get overwritten when a new codex gets the freed id
-            }
-            Logger.Info($"Removed {toDelete.Title} from {DirectoryName}");
-        }
-
-        public async Task DeleteCodices(IList<Codex> toDelete)
-        {
-            Notification deleteWarnNotification = Notification.AreYouSureNotification;
-            deleteWarnNotification.Body = $"You are about to remove {toDelete.Count} item{(toDelete.Count > 1 ? @"s" : @"")}. " +
-                           $"This cannot be undone. " +
-                           $"Are you sure you want to continue?";
-            var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
-            await windowedNotificationService.Show(deleteWarnNotification);
-
-            if (deleteWarnNotification.Result == NotificationAction.Confirm)
-            {
-                foreach (Codex toDel in toDelete)
-                {
-                    DeleteCodex(toDel);
-                }
-                SaveCodices();
             }
         }
 
@@ -628,7 +192,7 @@ namespace COMPASS.Common.Models
                 toDelete.Parent.Children.Remove(toDelete);
             }
 
-            SaveTags();
+            App.Container.Resolve<ICodexCollectionStorageService>().SaveTags(this);
         }
     }
 }

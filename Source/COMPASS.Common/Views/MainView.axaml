@@ -87,7 +87,7 @@
                     <ComboBox SelectedItem="{Binding CurrentCollection, Mode=TwoWay}"
                               IsHitTestVisible="True" VerticalAlignment="Stretch"
                               Background="Transparent" MinWidth="100"
-                              DisplayMemberBinding="{Binding DirectoryName}"
+                              DisplayMemberBinding="{Binding Name}"
                               ItemsSource="{Binding AllCodexCollections}"
                               SelectionChanged="CollectionComboBox_SelectionChanged" />
                     <Rectangle Fill="{StaticResource Separator}" Width="2" />
@@ -137,7 +137,7 @@
                                 IsVisible="{Binding EditCollectionVisibility}">
                         <TextBox x:Name="EditCollectionName"
                                  Background="Transparent"
-                                 Text="{Binding CurrentCollection.DirectoryName, Mode=OneWay}"
+                                 Text="{Binding CurrentCollection.Name, Mode=OneWay}"
                                  VerticalAlignment="Center" MaxLength="50"
                                  Margin="0" BorderThickness="0" MinWidth="150">
                             <!-- TODO: reimplement set focus on textbox when it becomes visible -->

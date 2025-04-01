@@ -6,6 +6,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Autofac;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Storage;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -20,11 +23,11 @@ namespace COMPASS.Common.ViewModels
 
             if (MainViewModel.CollectionVM.CurrentCollection == completeCollection)
             {
-                CompleteCollection.Save();
+                App.Container.Resolve<ICodexCollectionStorageService>().Save(CompleteCollection);
             }
             else
             {
-                CompleteCollection.Load(makeStartupCollection: false);
+                App.Container.Resolve<ICodexCollectionStorageService>().Load(CompleteCollection);
             }
 
             //Checks which steps need to be included in wizard
