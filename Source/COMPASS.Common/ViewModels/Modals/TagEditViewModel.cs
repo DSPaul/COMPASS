@@ -192,7 +192,7 @@ namespace COMPASS.Common.ViewModels.Modals
                     $"Either no matches were found or all matching items already contain this tag.");
             }
             
-            await App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(notification);
+            await App.Container.Resolve<INotificationService>().ShowDialog(notification);
 
             if (notification.Result == NotificationAction.Confirm)
             {

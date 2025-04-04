@@ -5,9 +5,9 @@ using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.Services
 {
-    public class WindowedNotificationService : INotificationService
+    public class NotificationService : INotificationService
     {
-        public async Task Show(Notification notification)
+        public async Task ShowDialog(Notification notification)
         {
             var window = new NotificationWindow(notification);
             await window.ShowDialog(App.MainWindow);

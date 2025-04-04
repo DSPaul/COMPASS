@@ -12,85 +12,84 @@
              x:DataType="vm:TileLayoutViewModel"
              x:Class="COMPASS.Common.Views.Layouts.TileLayout">
 
-  <ListBox x:Name="TileLayoutListBox"
-           Background="Transparent"
-           ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}"
-           Margin="10,0" SelectionMode="Multiple"
-           SelectedItem="{Binding SelectedCodex, Mode=OneWayToSource}"
-           KeyDown="ListBox_KeyDown"
-           behav:ContextMenuSelector.SingleSelectContextMenu="{StaticResource CodexContextMenu}"
-           behav:ContextMenuSelector.MultiSelectContextMenu="{StaticResource MultiCodexContextMenu}"
-           SelectionChanged="SelectedCodicesChanged">
-    
-    <ListBox.ItemContainerTheme>
-      <ControlTheme TargetType="ListBoxItem">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Style Selector="^:selected">
-          <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
-        </Style>
-      </ControlTheme>
-    </ListBox.ItemContainerTheme>
-    <ListBox.ItemsPanel>
-      <ItemsPanelTemplate>
-        <WrapPanel HorizontalAlignment="Center"/>
-      </ItemsPanelTemplate>
-    </ListBox.ItemsPanel>
-    <ListBox.ItemTemplate>
-      <DataTemplate DataType="model:Codex">
-        <Grid VerticalAlignment="Top"
-              RowDefinitions="Auto, Auto"
-              DoubleTapped="Codex_DoubleTapped"
-              Background="Transparent"
-              Classes="ZoomOnHover">
-          <Border CornerRadius="5" Margin="25,15,25,5" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
-                  BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
-                  Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
-                  Height="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileHeight}">
-            <Border.Background>
-              <ImageBrush Source="{Binding Thumbnail^, Mode=OneWay}"/>
-            </Border.Background>
+    <ListBox x:Name="TileLayoutListBox"
+             Background="Transparent"
+             ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}"
+             Margin="10,0" SelectionMode="Multiple"
+             SelectedItem="{Binding SelectedCodex, Mode=OneWayToSource}"
+             KeyDown="ListBox_KeyDown"
+             behav:ContextMenuSelector.SingleSelectContextMenu="{StaticResource CodexContextMenu}"
+             behav:ContextMenuSelector.MultiSelectContextMenu="{StaticResource MultiCodexContextMenu}"
+             SelectionChanged="SelectedCodicesChanged">
 
-            <Border.Effect>
-              <DropShadowDirectionEffect BlurRadius="15"/>
-            </Border.Effect>
-          </Border>
-          <Panel Grid.Row="1" Margin="0,5"
-                Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
-                IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.ShowExtraData}">
-            <Panel.Styles>
-              <Style Selector="TextBlock">
-                <Setter Property="TextWrapping" Value="Wrap"/>
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="TextTrimming" Value="WordEllipsis"/>
-                <Setter Property="Height" Value="60"/>
-                <Setter Property="IsVisible" Value="False"/>
-              </Style>
-            </Panel.Styles>
-            <TextBlock Text="{Binding Title}"
-                       IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
-                        Converter={x:Static conv:FuncConverters.AreEqual}, 
-                        ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Title}}"/>
-            <TextBlock Text="{Binding AuthorsAsString}"
-                       IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
-                        Converter={x:Static conv:FuncConverters.AreEqual}, 
-                        ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Author}}"/>
-            <TextBlock Text="{Binding Publisher}"
-                       IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
-                        Converter={x:Static conv:FuncConverters.AreEqual}, 
-                        ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Publisher}}"/>
-          <controls:RatingControl Value="{Binding Rating}" HorizontalAlignment="Center" Margin="0,0,0,5"
-                                        IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
+        <ListBox.ItemContainerTheme>
+            <ControlTheme TargetType="ListBoxItem">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Style Selector="^:selected">
+                    <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}" />
+                </Style>
+            </ControlTheme>
+        </ListBox.ItemContainerTheme>
+        <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+                <WrapPanel HorizontalAlignment="Center" />
+            </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+        <ListBox.ItemTemplate>
+            <DataTemplate DataType="model:Codex">
+                <Grid VerticalAlignment="Top"
+                      RowDefinitions="Auto, Auto"
+                      DoubleTapped="Codex_DoubleTapped"
+                      Background="Transparent"
+                      Classes="ZoomOnHover">
+                    <Border CornerRadius="5" Margin="25,15,25,5" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
+                            BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                            Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
+                            Height="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileHeight}">
+                        <Border.Background>
+                            <ImageBrush Source="{Binding Thumbnail^, Mode=OneWay}" />
+                        </Border.Background>
+
+                        <Border.Effect>
+                            <DropShadowDirectionEffect BlurRadius="15" />
+                        </Border.Effect>
+                    </Border>
+                    <Panel Grid.Row="1" Margin="0,5"
+                           Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
+                           IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.ShowExtraData}">
+                        <Panel.Styles>
+                            <Style Selector="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap" />
+                                <Setter Property="FontSize" Value="14" />
+                                <Setter Property="Foreground" Value="{StaticResource TextMutedColor}" />
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="TextTrimming" Value="WordEllipsis" />
+                                <Setter Property="Height" Value="40" />
+                                <Setter Property="IsVisible" Value="False" />
+                            </Style>
+                        </Panel.Styles>
+                        <TextBlock Text="{Binding Title}"
+                                   IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
+                                    Converter={x:Static conv:FuncConverters.AreEqual}, 
+                                    ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Title}}" />
+                        <TextBlock Text="{Binding AuthorsAsString}"
+                                   IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
+                                    Converter={x:Static conv:FuncConverters.AreEqual}, 
+                                    ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Author}}" />
+                        <TextBlock Text="{Binding Publisher}"
+                                   IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
+                                    Converter={x:Static conv:FuncConverters.AreEqual}, 
+                                    ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Publisher}}" />
+                        <controls:RatingControl Value="{Binding Rating}" HorizontalAlignment="Center" Margin="0,0,0,5" Height="20"
+                                                IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
                                           Converter={x:Static conv:FuncConverters.AreEqual}, 
-                                          ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Rating}}"/>
-          </Panel>
-            
-        </Grid>
-      </DataTemplate>
-    </ListBox.ItemTemplate>
-  </ListBox>
+                                          ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Rating}}" />
+                    </Panel>
+                </Grid>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
 </UserControl>

@@ -13,12 +13,11 @@ namespace COMPASS.Common.DependencyInjection
     {
         protected override void Load(ContainerBuilder builder)
         {
-            // Notification Services
-            builder.RegisterType<WindowedNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Windowed).SingleInstance();
-            builder.RegisterType<WindowedNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Toast).SingleInstance(); //use windowed for everything for now
+            // Notification Service
+            builder.RegisterType<NotificationService>().As<INotificationService>();
             
             //Storage Services
-            builder.RegisterType<CodexCollectionXmlStorageService>().As<ICodexCollectionStorageService>().WithAttributeFiltering();
+            builder.RegisterType<CodexCollectionXmlStorageService>().As<ICodexCollectionStorageService>();
             builder.RegisterType<ThumbnailStorageService>().As<IThumbnailStorageService>();
             builder.RegisterType<UserFilesStorageService>().As<IUserFilesStorageService>();
             

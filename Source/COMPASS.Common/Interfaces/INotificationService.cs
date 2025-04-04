@@ -6,6 +6,6 @@ namespace COMPASS.Common.Interfaces
 {
     public interface INotificationService
     {
-        Task Show(Notification notification);
+        Task ShowDialog(Notification notification);
     }
 }

@@ -35,7 +35,7 @@ namespace COMPASS.Common.Operations
             if (!success)
             {
                 Notification notification = new("Could Not open item", "Could not open item, please check local path or URL");
-                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(notification);
+                App.Container.Resolve<INotificationService>().ShowDialog(notification);
             }
 
             return success;
@@ -115,7 +115,7 @@ namespace COMPASS.Common.Operations
 
             Notification notification = Notification.AreYouSureNotification;
             notification.Body = "You are about to open " + toOpen.Count + " items. Are you sure you wish to continue?";
-            await App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(notification);
+            await App.Container.Resolve<INotificationService>().ShowDialog(notification);
 
             if (notification.Result == NotificationAction.Confirm)
             {
@@ -274,7 +274,7 @@ namespace COMPASS.Common.Operations
 
             //"Are you Sure?"
 
-            var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+            var windowedNotificationService = App.Container.Resolve<INotificationService>();
             var codexCollectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
             var thumbnailStorageService = App.Container.Resolve<IThumbnailStorageService>();
             var userFilesStorageService = App.Container.Resolve<IUserFilesStorageService>();
@@ -284,7 +284,7 @@ namespace COMPASS.Common.Operations
 
             Notification areYouSureNotification = Notification.AreYouSureNotification;
             areYouSureNotification.Body = toMoveList.Count == 1 ? messageSingle : messageMultiple;
-            await windowedNotificationService.Show(areYouSureNotification);
+            await windowedNotificationService.ShowDialog(areYouSureNotification);
 
             if (areYouSureNotification.Result == NotificationAction.Confirm)
             {
@@ -292,7 +292,7 @@ namespace COMPASS.Common.Operations
                 if (!success)
                 {
                     Notification errorNotification = new("Target collection could not be loaded.", $"Could not move items to {targetCollection.Name}", Severity.Error);
-                    await windowedNotificationService.Show(errorNotification);
+                    await windowedNotificationService.ShowDialog(errorNotification);
                     return;
                 }
                 
@@ -350,8 +350,8 @@ namespace COMPASS.Common.Operations
                 deleteWarnNotification.Body = $"You are about to remove {codicesToDelete.Count} item{(codicesToDelete.Count > 1 ? @"s" : @"")}. " +
                                               $"This cannot be undone. " +
                                               $"Are you sure you want to continue?";
-                var windowedNotificationService = App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
-                await windowedNotificationService.Show(deleteWarnNotification);
+                var windowedNotificationService = App.Container.Resolve<INotificationService>();
+                await windowedNotificationService.ShowDialog(deleteWarnNotification);
             }
 
             if (askForConfirmation && deleteWarnNotification.Result != NotificationAction.Confirm)

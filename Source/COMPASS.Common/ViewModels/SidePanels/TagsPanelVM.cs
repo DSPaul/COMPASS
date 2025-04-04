@@ -192,7 +192,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
             if (!importVM.TagsSelectorVM.HasTags)
             {
                 Notification noTagsFound = new("No Tags found", $"{collectionToImport.Name[2..]} does not contain tags");
-                await App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(noTagsFound);
+                await App.Container.Resolve<INotificationService>().ShowDialog(noTagsFound);
                 return;
             }
 

@@ -264,13 +264,13 @@ namespace COMPASS.Common.Services.FileSystem
         public static async Task AskNewCompassDataPath(string msg)
         {
             var windowedNotificationService =
-                App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed);
+                App.Container.Resolve<INotificationService>();
 
             Notification pickNewPath = new("Pick a location to save your data", msg, Severity.Warning)
             {
                 ConfirmText = "Continue"
             };
-            await windowedNotificationService.Show(pickNewPath);
+            await windowedNotificationService.ShowDialog(pickNewPath);
 
             bool success = false;
             while (!success)
@@ -284,7 +284,7 @@ namespace COMPASS.Common.Services.FileSystem
                 {
                     Notification notValid = new("Invalid path", $"{newPath} is not a valid path, please try again",
                         Severity.Warning);
-                    await windowedNotificationService.Show(notValid);
+                    await windowedNotificationService.ShowDialog(notValid);
                 }
             }
         }

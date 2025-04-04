@@ -481,7 +481,7 @@ namespace COMPASS.Common.ViewModels
             _environmentVarsService.CompassDataPath = NewDataPath;
 
             Notification changeSuccessful = new("Data path changed successfully", $"Data path was successfully changed to {_environmentVarsService.CompassDataPath}. COMPASS will now restart.");
-            App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(changeSuccessful);
+            App.Container.Resolve<INotificationService>().ShowDialog(changeSuccessful);
 
             //Restart COMPASS
             var currentExecutablePath = Environment.ProcessPath;

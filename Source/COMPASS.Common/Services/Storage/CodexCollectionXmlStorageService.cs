@@ -31,7 +31,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
 {
     public CodexCollectionXmlStorageService(
         IEnvironmentVarsService environmentVarsService,
-        [KeyFilter(NotificationDisplayType.Windowed)] INotificationService windowedNotificationService,
+        INotificationService windowedNotificationService,
         IFilesService filesService)
     {
         _environmentVarsService = environmentVarsService;
@@ -281,7 +281,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
             {
                 Details = ex.ToString()
             };
-            await _windowedNotificationService.Show(failedFolderCreation);
+            await _windowedNotificationService.ShowDialog(failedFolderCreation);
         }
     }
 
@@ -480,7 +480,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
                     $"Cannot import {Path.GetFileName(satchelPath)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
                 Logger.Warn(message);
                 Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message, Severity.Warning);
-                await _windowedNotificationService.Show(warnNotification);
+                await _windowedNotificationService.ShowDialog(warnNotification);
                 return null;
             }
 
@@ -499,7 +499,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
                     $"Cannot import {Path.GetFileName(satchelPath)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
                 Logger.Warn(message);
                 Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message, Severity.Warning);
-                await _windowedNotificationService.Show(warnNotification);
+                await _windowedNotificationService.ShowDialog(warnNotification);
                 return null;
             }
 
@@ -538,7 +538,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
                 Logger.Warn(message);
                 Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message,
                     Severity.Warning);
-                await _windowedNotificationService.Show(warnNotification);
+                await _windowedNotificationService.ShowDialog(warnNotification);
                 return null;
             }
         }
