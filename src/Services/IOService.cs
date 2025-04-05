@@ -472,5 +472,26 @@ namespace COMPASS.Services
             }
             return files;
         }
+
+        public static bool EnsureFoldersExists(string path)
+        {
+            var directory = Path.GetDirectoryName(path);
+
+            if (string.IsNullOrEmpty(directory))
+            {
+                return false;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(directory);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to create required folders for path {path}", ex);
+                return false;
+            }
+        }
     }
 }

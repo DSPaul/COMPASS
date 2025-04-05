@@ -60,7 +60,7 @@ namespace COMPASS.ViewModels.Sources
                 //screenshot and download the image
                 using (IMagickImage image = CoverService.GetCroppedScreenShot(driver, coverPage))
                 {
-                    CoverService.SaveCover(codex, image);
+                    await CoverService.SaveCover(codex, image);
                 }
                 codex.RefreshThumbnail();
                 return true;

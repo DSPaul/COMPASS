@@ -116,7 +116,7 @@ namespace COMPASS.Services
             }
         }
 
-        public static void SaveCover(Codex destCodex, IMagickImage image)
+        public static async Task SaveCover(Codex destCodex, IMagickImage image)
         {
             if (String.IsNullOrEmpty(destCodex.CoverArt))
             {
@@ -126,8 +126,11 @@ namespace COMPASS.Services
 
             if (image.Width > 850) image.Resize(850, 0);
 
-            image.Write(destCodex.CoverArt);
-            CreateThumbnail(destCodex, image);
+            if (IOService.EnsureFoldersExists(destCodex.CoverArt))
+            {
+                await image.WriteAsync(destCodex.CoverArt);
+                CreateThumbnail(destCodex, image);
+            }
         }
 
         public static async Task SaveCover(string imgURL, Codex destCodex)
@@ -139,9 +142,12 @@ namespace COMPASS.Services
             }
 
             var imgBytes = await IOService.DownloadFileAsync(imgURL);
-            await File.WriteAllBytesAsync(destCodex.CoverArt, imgBytes);
-            CreateThumbnail(destCodex);
-            destCodex.RefreshThumbnail();
+            if (IOService.EnsureFoldersExists(destCodex.CoverArt))
+            {
+                await File.WriteAllBytesAsync(destCodex.CoverArt, imgBytes);
+                CreateThumbnail(destCodex);
+                destCodex.RefreshThumbnail();
+            }
         }
 
         public static bool GetCoverFromImage(string imagePath, Codex destCodex)
@@ -162,14 +168,18 @@ namespace COMPASS.Services
 
             try
             {
-                using (MagickImage image = new(imagePath))
+                if (IOService.EnsureFoldersExists(destCodex.CoverArt))
                 {
-                    if (image.Width > 1000) image.Resize(1000, 0);
-                    image.Write(destCodex.CoverArt);
-                    CreateThumbnail(destCodex, image);
+                    using (MagickImage image = new(imagePath))
+                    {
+                        if (image.Width > 1000) image.Resize(1000, 0);
+                        image.Write(destCodex.CoverArt);
+                        CreateThumbnail(destCodex, image);
+                    }
+                    destCodex.RefreshThumbnail();
+                    return true;
                 }
-                destCodex.RefreshThumbnail();
-                return true;
+                return false;
             }
             catch (Exception ex)
             {
@@ -204,8 +214,11 @@ namespace COMPASS.Services
                 uint height = image.Height;
                 uint newHeight = newWidth / width * height;
                 //create thumbnail
-                image.Thumbnail(newWidth, newHeight);
-                image.Write(c.Thumbnail);
+                if (IOService.EnsureFoldersExists(c.Thumbnail))
+                {
+                    image.Thumbnail(newWidth, newHeight);
+                    image.Write(c.Thumbnail);
+                }
             }
             finally
             {
