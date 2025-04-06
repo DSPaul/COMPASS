@@ -1,10 +1,8 @@
 ﻿using COMPASS.Models;
 using COMPASS.Tools;
 using COMPASS.ViewModels;
-using System;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 
 namespace COMPASS.Views
 {
@@ -33,14 +31,11 @@ namespace COMPASS.Views
             Image? img = sender as Image;
             Codex? codex = img?.DataContext as Codex;
 
-            string msg = codex == null ? "Failed to load tumbnail" : $"Failed to load tumbnail for {codex.Title}";
+            string msg = codex == null ? "Failed to load thumbnail\n" : $"Failed to load thumbnail for {codex.Title}\n";
+            msg += "It might be corrupted, try regenerating it from the edit window";
 
-            Logger.Error(msg, e.ErrorException);
-
-            if (img != null)
-            {
-                img.Source = new BitmapImage(new Uri("pack://application:,,,/Media/CoverPlaceholder.png"));
-            }
+            Logger.Warn(msg, e.ErrorException);
         }
     }
 }
+

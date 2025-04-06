@@ -1,5 +1,16 @@
 # CHANGELOG
-## COMPASS v1.8.5 (16 February 2025)
+
+## COMPASS v1.8.6 (06 April 2025)
+
+### Improvements
+
+- The .NET runtime no longer needs to be installed separatly 
+
+### Fixes
+
+- Fix crash when a thumbnail is corrupted
+- Create required folders before trying to save thumbnail
+## COMPASS v1.8.5 (16 February 2025)
 
 ### Fixes
 - Fix transparency issues then generating thumbnail from pdf (thanks @anthony-bernaert)
