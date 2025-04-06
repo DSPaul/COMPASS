@@ -1,5 +1,10 @@
 # CHANGELOG
-## COMPASS v1.8.6 (06 April 2025)
+
+## COMPASS v1.8.6 (06 April 2025)
+
+### Improvements
+
+- The .NET runtime no longer needs to be installed separatly 
 
 ### Fixes
 
