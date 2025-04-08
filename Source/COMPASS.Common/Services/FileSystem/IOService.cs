@@ -381,21 +381,27 @@ namespace COMPASS.Common.Services.FileSystem
         #endregion
 
         /// <summary>
-        /// Tries to create a directory if it does not already exist
+        /// Tries to create the required directories for the given path
         /// </summary>
         /// <param name="path"></param>
         public static bool EnsureDirectoryExists(string path)
         {
-            if (!Directory.Exists(path))
+            var directory = Path.GetDirectoryName(path);
+
+            if (string.IsNullOrEmpty(directory))
+            {
+                return false;
+            }
+            
+            if (!Directory.Exists(directory))
             {
                 try
                 {
-                    Directory.CreateDirectory(path);
-                    return true;
+                    Directory.CreateDirectory(directory);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Failed to create directory: {path}", ex);
+                    Logger.Error($"Failed to create required folders for path {path}", ex);
                     return false;
                 }
             }

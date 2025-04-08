@@ -132,7 +132,7 @@ namespace COMPASS.Common.Services
 
             if (image.Width > 850) image.Resize(850, 0);
 
-            if (IOService.EnsureFoldersExists(destCodex.CoverArtPath))
+            if (IOService.EnsureDirectoryExists(destCodex.CoverArtPath))
             {
                 await image.WriteAsync(destCodex.CoverArtPath);
                 CreateThumbnail(destCodex, image);
@@ -149,7 +149,7 @@ namespace COMPASS.Common.Services
 
             var imgBytes = await IOService.DownloadFileAsync(imgURL);
 
-            if (IOService.EnsureFoldersExists(destCodex.CoverArtPath))
+            if (IOService.EnsureDirectoryExists(destCodex.CoverArtPath))
             {
                 await File.WriteAllBytesAsync(destCodex.CoverArtPath, imgBytes);
                 CreateThumbnail(destCodex);
@@ -176,7 +176,7 @@ namespace COMPASS.Common.Services
 
             try
             {
-                if (IOService.EnsureFoldersExists(destCodex.CoverArtPath))
+                if (IOService.EnsureDirectoryExists(destCodex.CoverArtPath))
                 {
 
                     using (MagickImage image = new(imagePath))
@@ -223,7 +223,7 @@ namespace COMPASS.Common.Services
                 uint height = image.Height;
                 uint newHeight = newWidth / width * height;
                 //create thumbnail
-                if (IOService.EnsureFoldersExists(c.ThumbnailPath))
+                if (IOService.EnsureDirectoryExists(c.ThumbnailPath))
                 {
                     image.Thumbnail(newWidth, newHeight);
                     image.Write(c.ThumbnailPath);
