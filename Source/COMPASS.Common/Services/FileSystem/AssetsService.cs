@@ -14,5 +14,7 @@ namespace COMPASS.Common.Services.FileSystem
         public static Bitmap GetPlaceholder(Codex codex) =>
             //for now only one placeholder, will have diffrent placeholders based on filetype/source in the future
             NoThumbnailPlaceholder;
+        
+        public static bool IsSharedAsset(Bitmap bitmap) => bitmap == NoThumbnailPlaceholder;
     }
 }

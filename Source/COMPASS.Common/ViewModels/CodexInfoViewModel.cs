@@ -39,7 +39,7 @@ namespace COMPASS.Common.ViewModels
                 Codex? prevCodex = _displayedCodex;
                 if (SetProperty(ref _displayedCodex, value))
                 {
-                    prevCodex?.Cover?.Dispose();
+                    prevCodex?.DisposeCover();
                     _displayedCodex?.LoadCover();
                     OnPropertyChanged(nameof(ShowInfo));
                 }

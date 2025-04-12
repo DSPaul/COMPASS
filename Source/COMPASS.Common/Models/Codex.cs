@@ -34,15 +34,6 @@ namespace COMPASS.Common.Models
 
         #endregion
 
-        public void RefreshImages(CodexCollection collection)
-        {
-            _thumbnail?.Dispose();
-            _thumbnail = null;
-
-            Cover?.Dispose();
-            Cover = null;
-        }
-
         #region Properties
 
         #region COMPASS related Metadata
@@ -284,7 +275,11 @@ namespace COMPASS.Common.Models
             OpenedCount = c.OpenedCount;
         }
 
-        public void RefreshThumbnail() => OnPropertyChanged(nameof(Thumbnail));
+        public void RefreshThumbnail()
+        {
+            DisposeThumbnail();
+            OnPropertyChanged(nameof(Thumbnail));
+        }
 
         public void ClearPersonalData()
         {
@@ -335,14 +330,34 @@ namespace COMPASS.Common.Models
             if (o == Tags) OnPropertyChanged(nameof(OrderedTags));
             if (o == Authors) OnPropertyChanged(nameof(AuthorsAsString));
         }
-
+        
         public void Dispose()
         {
-            _thumbnail?.Dispose();
-            _cover?.Dispose();
+            DisposeThumbnail();
+            DisposeCover();
+            
             Authors.CollectionChanged -= OnCollectionChanged;
             Tags.CollectionChanged -= OnCollectionChanged;
         }
+
+        public void DisposeThumbnail()
+        {
+            if (_thumbnail != null && !AssetsService.IsSharedAsset(_thumbnail))
+            {
+                _thumbnail.Dispose();
+            }
+            _thumbnail = null;
+        }
+        
+        public void DisposeCover()
+        {
+            if (_cover != null && !AssetsService.IsSharedAsset(_cover))
+            {
+                _cover.Dispose();
+            }
+            _cover = null;
+        }
+        
         #endregion
 
         public static readonly List<CodexProperty> MetadataProperties =
