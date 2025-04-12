@@ -7,9 +7,10 @@
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="30"
              x:Class="COMPASS.Common.Controls.ConfirmControls"
              x:DataType="interface:IConfirmable">
-    <Grid ColumnDefinitions="* 20 *" VerticalAlignment="Bottom">
-        <controls:IconButton Command="{Binding ConfirmCommand}" Icon="Check" 
+    <Grid ColumnDefinitions="* 15 *" VerticalAlignment="Bottom">
+        <controls:IconButton Command="{Binding ConfirmCommand}" 
                              Grid.Column="0" IsDefault="True" 
+                             Icon="{Binding $parent[controls:ConfirmControls].ConfirmIcon}" 
                              Content="{Binding $parent[controls:ConfirmControls].ConfirmLabel}"
                              HorizontalContentAlignment="Center">
             <controls:IconButton.Styles>
@@ -21,11 +22,12 @@
                 </Style>
             </controls:IconButton.Styles>
         </controls:IconButton>
-        <controls:IconButton Command="{Binding CancelCommand}" Icon="WindowClose"
-                             Grid.Column="2"
+        <controls:IconButton Command="{Binding CancelCommand}"
+                             Grid.Column="2" Classes="Outline"
                              Content="{Binding $parent[controls:ConfirmControls].CancelLabel}"
+                             Icon="{Binding $parent[controls:ConfirmControls].CancelIcon}" 
                              HorizontalContentAlignment="Center"
-                             Background="{StaticResource CancelFill}"/>
+                             BorderBrush="{StaticResource CancelFill}"/>
         
     </Grid>
 </UserControl>

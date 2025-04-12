@@ -25,6 +25,7 @@
         <CheckBox IsChecked="{Binding ShowEditWhenDone}" Content="Open Edit Window when done" />
         <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" TextWrapping="Wrap"/>
         <controls:ConfirmControls HorizontalAlignment="Right"
-                                  ConfirmLabel="Import"/>
+                                  ConfirmLabel="Import"
+                                  ConfirmIcon="Import"/>
     </StackPanel>
 </UserControl>

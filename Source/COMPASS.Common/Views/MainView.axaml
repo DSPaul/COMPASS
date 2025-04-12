@@ -206,6 +206,7 @@
                              Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
                              Background="Transparent" BorderBrush="{x:Null}" />
                     <controls:IconButton Grid.Column="1" Classes="ZoomOnHover"
+                                         Theme="{StaticResource IconOnly}"
                                          Margin="5,0" Icon="Search"
                                          Command="{Binding SearchCommand}"
                                          Background="Transparent"

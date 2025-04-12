@@ -133,7 +133,7 @@
 
     <!-- Button -->
     <Style Selector="views|MainView Button">
-        <Setter Property="Padding" Value="15,5" />
+        <Setter Property="Padding" Value="10,5" />
     </Style>
 
     <!--Blank button-->

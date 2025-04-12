@@ -12,7 +12,7 @@
     <StackPanel Grid.IsSharedSizeScope="True" Spacing="10" Margin="15,0">
       <StackPanel.Styles>
         <Style Selector="controls|IconButton">
-          <Setter Property="Padding" Value="15,7"/>
+          <Setter Property="Padding" Value="10,4"/>
         </Style>
       </StackPanel.Styles>
       <TextBlock Text="Physical Books" Classes="Categorizer"/>
@@ -33,12 +33,13 @@
           Command="{Binding ImportCommand}" CommandParameter="{x:Static import:ImportSource.GoogleDrive}"/>
       
       <Button Command="{Binding ImportCommand}"
+              HorizontalAlignment="Stretch"
               CommandParameter="{x:Static import:ImportSource.Homebrewery}">
         <Button.Template>
           <ControlTemplate>
             <Border Background="{TemplateBinding Background}"
                     BorderThickness="{TemplateBinding BorderThickness}"
-                    CornerRadius="7" HorizontalAlignment="Stretch"
+                    CornerRadius="7"
                     Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
               <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                     VerticalAlignment="{TemplateBinding VerticalAlignment}">
@@ -46,20 +47,22 @@
                   <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon"/>
                   <ColumnDefinition Width="*" SharedSizeGroup="ButtonText"/>
                 </Grid.ColumnDefinitions>
-                  <Svg Path="/Assets/homebrewery.svg" Width="20" Height="20" HorizontalAlignment="Left"/>
-                  <TextBlock Grid.Column="1" Text="Homebrewery"/>
+                  <Svg Path="/Assets/homebrewery.svg" Width="20" Height="20" 
+                       HorizontalAlignment="Left" Margin="5,0"/>
+                  <TextBlock Grid.Column="1" Text="Homebrewery" Margin="5,0"/>
               </Grid>
             </Border>
           </ControlTemplate>
         </Button.Template>
       </Button>
       <Button Command="{Binding ImportCommand}" 
+              HorizontalAlignment="Stretch"
               CommandParameter="{x:Static import:ImportSource.GmBinder}">
           <Button.Template>
               <ControlTemplate>
                   <Border Background="{TemplateBinding Background}"
                           BorderThickness="{TemplateBinding BorderThickness}"
-                          CornerRadius="7" HorizontalAlignment="Stretch"
+                          CornerRadius="7"
                           Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}">
                       <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalAlignment}">
@@ -67,8 +70,9 @@
                               <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon"/>
                               <ColumnDefinition Width="*" SharedSizeGroup="ButtonText"/>
                           </Grid.ColumnDefinitions>
-                          <Svg Path="/Assets/gmbinder.svg" Width="20" Height="20" HorizontalAlignment="Left"/>
-                          <TextBlock Grid.Column="1" Text="GM Binder"/>
+                          <Svg Path="/Assets/gmbinder.svg" Width="20" Height="20" 
+                               HorizontalAlignment="Left" Margin="5,0"/>
+                          <TextBlock Grid.Column="1" Text="GM Binder" Margin="5,0"/>
                       </Grid>
                   </Border>
               </ControlTemplate>

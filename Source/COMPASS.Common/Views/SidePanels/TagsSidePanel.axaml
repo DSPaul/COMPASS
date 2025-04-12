@@ -121,7 +121,7 @@
                 <ContentControl>
                     <StackPanel DataContext="{Binding AddTagViewModel}" Margin="10" Spacing="10">
                         <views:TagEditBasicView/>
-                        <controls:ConfirmControls Compact="True"/>
+                        <controls:ConfirmControls Compact="True" CancelIcon="Close"/>
                     </StackPanel>
                 </ContentControl>
             </controls:CollapsableTabItem>
@@ -129,7 +129,7 @@
                 <ContentControl>
                     <StackPanel DataContext="{Binding AddGroupViewModel}" Margin="10" Spacing="10">
                         <views:TagEditBasicView/>
-                        <controls:ConfirmControls Compact="True"/>
+                        <controls:ConfirmControls Compact="True" CancelIcon="Close"/>
                     </StackPanel>
                 </ContentControl>
             </controls:CollapsableTabItem>
