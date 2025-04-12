@@ -218,7 +218,7 @@ namespace COMPASS.Common.ViewModels
         public Action CloseAction { get; set; } = () => { };
 
         private RelayCommand? _confirmCommand;
-        public RelayCommand ConfirmCommand => _confirmCommand ??= new(Confirm);
+        public IRelayCommand ConfirmCommand => _confirmCommand ??= new(Confirm);
         public void Confirm()
         {
             //Copy changes into Codex
@@ -241,7 +241,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         private RelayCommand? _cancelCommand;
-        public RelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
+        public IRelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel()
         {
             TempCodex?.Dispose();

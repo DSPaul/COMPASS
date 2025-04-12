@@ -113,7 +113,7 @@ namespace COMPASS.Common.ViewModels
         public Action CloseAction { get; set; } = () => { };
 
         private RelayCommand? _confirmCommand;
-        public RelayCommand ConfirmCommand => _confirmCommand ??= new(OKBtn);
+        public IRelayCommand ConfirmCommand => _confirmCommand ??= new(OKBtn);
         public void OKBtn()
         {
             //Copy changes into each Codex
@@ -190,7 +190,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         private RelayCommand? _cancelCommand;
-        public RelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
+        public IRelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel() => Close();
 
 

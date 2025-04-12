@@ -9,6 +9,7 @@ using HtmlAgilityPack;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using COMPASS.Common.ViewModels.Modals.Import;
 
 namespace COMPASS.Common.ViewModels.Sources
 {

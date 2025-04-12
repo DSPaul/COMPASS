@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Modals.Import"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Views.Modals.ImportURLView"
+             x:DataType="vm:ImportURLViewModel">
+    <StackPanel Margin="15" Spacing="10">
+        <TextBlock Text="{Binding SourceName, FallbackValue= URL:}"/>
+        <Grid ColumnDefinitions="*, Auto, Auto">
+            <TextBox Watermark="{Binding ExampleURL}"
+                     Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <!-- <controls:IconButton Grid.Column="1" Icon="BarcodeScan" Margin="5"   -->
+            <!--                      IsVisible="{Binding ShowScannerButton}" -->
+            <!--                      Command="{Binding OpenBarcodeScannerCommand}"  -->
+            <!--                      ToolTip.Tip="Scan Barcode With Webcam"/> -->
+        </Grid>
+        
+        <CheckBox IsChecked="{Binding !ValidateURL}" 
+                  Content="Disable URL validation (for self-hosted instances)"
+                  IsVisible="{Binding ShowValidateDisableCheckbox}"/>
+        
+        <CheckBox IsChecked="{Binding ShowEditWhenDone}" Content="Open Edit Window when done" />
+        <TextBlock Foreground="Red" Text="{Binding ImportError, Mode=OneWay}" TextWrapping="Wrap"/>
+        <controls:ConfirmControls HorizontalAlignment="Right"
+                                  ConfirmLabel="Import"/>
+    </StackPanel>
+</UserControl>

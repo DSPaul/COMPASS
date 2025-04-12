@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.Views.Windows;
 
-namespace COMPASS.Common.ViewModels.Import
+namespace COMPASS.Common.ViewModels.Modals.Import
 {
-    public class ImportURLViewModel : ViewModelBase
+    public class ImportURLViewModel : ViewModelBase, IModalViewModel, IConfirmable
     {
 
         public ImportURLViewModel(ImportSource importSource)
@@ -20,36 +22,34 @@ namespace COMPASS.Common.ViewModels.Import
             switch (importSource)
             {
                 case ImportSource.GmBinder:
-                    ImportTitle = "GM Binder";
+                    SourceName = "GM Binder";
                     ExampleURL = "https://www.gmbinder.com/share/";
                     break;
                 case ImportSource.Homebrewery:
-                    ImportTitle = "Homebrewery";
+                    SourceName = "Homebrewery";
                     ExampleURL = "https://homebrewery.naturalcrit.com/share/";
                     ShowValidateDisableCheckbox = true;
                     break;
                 case ImportSource.GoogleDrive:
-                    ImportTitle = "Google Drive";
+                    SourceName = "Google Drive";
                     ExampleURL = "https://drive.google.com/file/";
                     break;
                 case ImportSource.GenericURL:
-                    ImportTitle = "Any URL";
+                    SourceName = "Any URL";
                     ExampleURL = "https://";
                     break;
                 case ImportSource.ISBN:
-                    ImportTitle = "ISBN";
+                    SourceName = "ISBN";
                     ExampleURL = "";
                     ShowScannerButton = true;
                     break;
             }
         }
 
-        public ImportURLWindow? Window;
-
         private readonly ImportSource _importSource;
 
         //configuration props
-        public string ImportTitle { get; } = "";
+        public string SourceName { get; } = "";
         public string ExampleURL { get; init; } = "";
         public bool ShowValidateDisableCheckbox { get; init; } = false;
         public bool ShowScannerButton { get; init; } = false;
@@ -71,43 +71,7 @@ namespace COMPASS.Common.ViewModels.Import
             get => _importError;
             set => SetProperty(ref _importError, value);
         }
-
-        private AsyncRelayCommand? _submitUrlCommand;
-        public AsyncRelayCommand SubmitURLCommand => _submitUrlCommand ??= new(SubmitURL);
-        public async Task SubmitURL()
-        {
-            if (!InputURL.Contains(ExampleURL) && ValidateURL)
-            {
-                ImportError = $"'{InputURL}' is not a valid URL for {ImportTitle}";
-                return;
-            }
-            if (!IOService.PingURL())
-            {
-                ImportError = "You need to be connected to the internet to import an online source.";
-                return;
-            }
-            Window?.Close();
-
-            var progressVM = ProgressViewModel.GetInstance();
-            progressVM.Log.Clear();
-            progressVM.ResetCounter();
-            progressVM.TotalAmount = 1;
-
-            ProgressWindow progressWindow = new(3);
-            progressWindow.Show(App.MainWindow);
-
-            Codex newCodex = await ImportURLAsync();
-
-            if (ShowEditWhenDone)
-            {
-                CodexEditWindow editWindow = new(new CodexEditViewModel(newCodex))
-                {
-                    Topmost = true,
-                };
-                await editWindow.ShowDialog(App.MainWindow);
-            }
-        }
-
+        
         private AsyncRelayCommand? _openBarcodeScannerCommand;
         public AsyncRelayCommand OpenBarcodeScannerCommand => _openBarcodeScannerCommand ??= new(OpenBarcodeScanner);
         private async Task OpenBarcodeScanner()
@@ -180,5 +144,60 @@ namespace COMPASS.Common.ViewModels.Import
 
             return newCodex;
         }
+
+        #region IConfirmable
+        
+        private RelayCommand? _cancelCommand;
+        public IRelayCommand CancelCommand => _cancelCommand ??= new(CloseAction);
+        
+        private AsyncRelayCommand? _submitUrlCommand;
+        public IRelayCommand ConfirmCommand => _submitUrlCommand ??= new (SubmitURL);
+        private async Task SubmitURL()
+        {
+            if (!InputURL.Contains(ExampleURL) && ValidateURL)
+            {
+                ImportError = $"'{InputURL}' is not a valid URL for {SourceName}";
+                return;
+            }
+            if (!IOService.PingURL())
+            {
+                ImportError = "You need to be connected to the internet to import an online source.";
+                return;
+            }
+
+            CloseAction();
+
+            var progressVM = ProgressViewModel.GetInstance();
+            progressVM.Log.Clear();
+            progressVM.ResetCounter();
+            progressVM.TotalAmount = 1;
+            
+            //TODO uncomment when implemented
+            // ProgressWindow progressWindow = new(3);
+            // progressWindow.Show(App.MainWindow);
+
+            Codex newCodex = await ImportURLAsync();
+
+            if (ShowEditWhenDone)
+            {
+                CodexEditWindow editWindow = new(new CodexEditViewModel(newCodex))
+                {
+                    Topmost = true,
+                };
+                await editWindow.ShowDialog(App.MainWindow);
+            }
+        }
+
+        
+        #endregion
+        
+        #region IModelViewModel
+
+        public string WindowTitle => $"Import an item from {SourceName}";
+        public int? WindowWidth => 600;
+        public int? WindowHeight => null;
+        public Action CloseAction { get; set; } = () => { };
+
+        #endregion
     }
 }

@@ -4,8 +4,8 @@ namespace COMPASS.Common.Interfaces
 {
     public interface IConfirmable
     {
-        RelayCommand CancelCommand { get; }
+        IRelayCommand CancelCommand { get; }
 
-        RelayCommand ConfirmCommand { get; }
+        IRelayCommand ConfirmCommand { get; }
     }
 }

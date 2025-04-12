@@ -12,7 +12,6 @@ using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
-using OpenQA.Selenium.Interactions;
 using Notification = COMPASS.Common.Models.Notification;
 
 namespace COMPASS.Common.ViewModels.Modals
@@ -210,7 +209,7 @@ namespace COMPASS.Common.ViewModels.Modals
         #region IConfirmable
         
         private RelayCommand? _confirmCommand;
-        public RelayCommand ConfirmCommand => _confirmCommand ??= new(Confirm, CanConfirm);
+        public IRelayCommand ConfirmCommand => _confirmCommand ??= new(Confirm, CanConfirm);
         public void Confirm()
         {
             //Apply changes 
@@ -259,7 +258,7 @@ namespace COMPASS.Common.ViewModels.Modals
         public bool CanConfirm() => !string.IsNullOrWhiteSpace(TempTag.Name);
 
         private RelayCommand? _cancelCommand;
-        public RelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
+        public IRelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel()
         {
             Clear();
@@ -267,7 +266,7 @@ namespace COMPASS.Common.ViewModels.Modals
         }
         #endregion
         
-        #region  IModelViewModel
+        #region  IModalViewModel
 
         public string WindowTitle => CreateNewTag ? "Create new tag" : "Edit tag";
 

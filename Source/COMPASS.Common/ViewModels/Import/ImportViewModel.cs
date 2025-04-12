@@ -10,6 +10,7 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.Import
@@ -74,8 +75,7 @@ namespace COMPASS.Common.ViewModels.Import
         private static async Task ImportURL(ImportSource source)
         {
             ImportURLViewModel importVM = new(source);
-            ImportURLWindow window = new(importVM);
-            importVM.Window = window;
+            ModalWindow window = new(importVM);
             await window.ShowDialog(App.MainWindow);
         }
 
