@@ -1,0 +1,394 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
+             xmlns:model="using:COMPASS.Common.Models"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
+             xmlns:converters="using:COMPASS.Common.Converters"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="500"
+             x:Class="COMPASS.Common.Views.Modals.CodexEditView"
+             x:DataType="vm:CodexEditViewModel">
+    
+    <Grid Name="MainGrid" Focusable="True" Margin="5,10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height ="auto"/>
+            <RowDefinition Height ="*"/>
+            <RowDefinition Height ="auto" MinHeight="50"/>
+        </Grid.RowDefinitions>
+
+        <Grid.Styles>
+            <Style Selector="TextBlock">
+                <Setter Property="Margin" Value="3,0"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+            <Style Selector="TextBox">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+            <Style Selector="controls|IconButton">
+                <Setter Property="Background" Value="{StaticResource ButtonBackground}"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+
+            <!-- <HierarchicalDataTemplate x:Key="RegularTag" DataType="{x:Type models:TreeViewNode}" ItemsSource="{Binding Children}"> -->
+            <!--     <Border CornerRadius="5" Margin="0,3"> -->
+            <!--         <Border.Background> -->
+            <!--             <SolidColorBrush Color="{Binding Tag.BackgroundColor}"/> -->
+            <!--         </Border.Background> -->
+            <!--         <CheckBox Margin="5,0,0,0" Command="{Binding Path=DataContext.TagCheckCommand, -->
+            <!--                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeView}}}" -->
+            <!--                           CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}" -->
+            <!--                            IsChecked="{Binding Selected, Mode=TwoWay}" -->
+            <!--                       Content="{Binding Tag.Content}" Foreground="{StaticResource TextColor}"/> -->
+            <!--     </Border> -->
+            <!-- </HierarchicalDataTemplate> -->
+            <!-- <tools:TagTemplateSelector x:Key="TagTemplateSelector"/> -->
+        </Grid.Styles>
+        
+        <!-- TODO look at title style -->
+        <TextBlock Grid.Column="0" Grid.Row="0" 
+                   Text="Cover/Preview:" 
+                   HorizontalAlignment="Center"
+                   Classes="Categorizer"/>
+        <Panel Grid.Column="0" Grid.Row="1" Margin="10">
+            <Image Width="300"
+                   IsVisible="{Binding !ShowLoading}" Source="{Binding TempCodex.Cover}" />
+            <!-- TODO GIFS -->
+            <!-- <Image Width="150" Height="150" -->
+            <!--        gif:ImageBehavior.AnimatedSource="../Media/LoadingAnimation.gif"  -->
+            <!--        IsVisible="{Binding ShowLoading}"/> -->
+        </Panel>
+
+        <UniformGrid Grid.Column="0" Grid.Row="2" 
+                     Columns="2" HorizontalAlignment="Center">
+            <controls:IconButton Content="Renew" Icon="ImageSyncOutline" 
+                                 Margin="5,0"
+                                 ToolTip.Tip="Renews the thumbnail for this item, overwriting the current one."
+                                 Command="{Binding FetchCoverCommand}" />
+            <controls:IconButton Content="Browse..." Icon="BookImage"
+                                 Margin="5,0"
+                                 ToolTip.Tip="Choose an image to use as cover/preview for this item."
+                                 Command="{Binding ChooseCoverCommand}"/>
+        </UniformGrid>
+
+        <Rectangle Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" 
+                   Fill="{StaticResource Separator}" Width="3" Margin="10,0"/>
+        
+        <TabControl Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" 
+                    Background="{x:Null}" BorderThickness="0,1,0,0"
+                    Padding="0,5">
+            <TabControl.Styles>
+                <Style Selector="TabItem">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="CornerRadius" Value="3,3,0,0"/>
+                    <Setter Property="VerticalAlignment" Value="Bottom"/>
+                    <Setter Property="MaxWidth" Value="300"/>
+                    <Setter Property="FontSize" Value="14"/>
+                    <Setter Property="Padding" Value="10,5"/>
+                    <Setter Property="MinHeight" Value="0"/>
+                    <Style Selector="^:selected">
+                        <Setter Property="Background" Value="{StaticResource TabFocus}"/>
+                    </Style>
+                    <Style Selector="^:pointerover /template/ Border#LayoutRoot">
+                        <Setter Property="Background" Value="{StaticResource TabFocus}"/>
+                    </Style>
+                </Style>
+                <Style Selector="TabControl">
+                    <Setter Property="Template">
+                        <ControlTemplate TargetType="TabControl">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
+                                    Background="{TemplateBinding Background}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                                <Grid RowDefinitions="Auto, Auto, *">
+                                    <ItemsPresenter Name="PART_ItemsPresenter"
+                                                    ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                                    <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource TabFocus}"
+                                               Margin="0,-2, 0, 0"/>
+                                    <ContentPresenter Name="PART_SelectedContentHost"
+                                                      Grid.Row="2"
+                                                      Margin="{TemplateBinding Padding}"
+                                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                      Content="{TemplateBinding SelectedContent}"
+                                                      ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter>
+                </Style>
+            </TabControl.Styles>
+            
+            <TabItem Header="General">
+                <Grid ColumnDefinitions="*, Auto, Auto">
+                    <Grid Name="MainProperties" Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height ="auto"/>
+                            <RowDefinition Height ="auto"/>
+                            <RowDefinition Height ="auto"/>
+                            <RowDefinition Height ="auto"/>
+                            <RowDefinition Height ="auto"/>
+                            <RowDefinition Height ="auto"/>
+                            <RowDefinition Height ="auto"/>
+                            <RowDefinition Height ="auto"/>
+                            <RowDefinition Height ="auto"/>
+                            <RowDefinition Height ="auto"/>
+                            <RowDefinition Height ="auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Title -->
+                        <TextBlock Grid.Row="0" Margin="3,5,3,3"
+                                   Text="Title:"  />
+                        <TextBox Grid.Row="1" Padding="5,0"
+                                 Text="{Binding TempCodex.Title, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- Sorting Title -->
+                        <TextBlock Grid.Row="2" Margin="3,5,3,3"
+                                   Text="Sorting Title:" />
+                        <Grid ColumnDefinitions="*, Auto" Grid.Row="3" HorizontalAlignment="Stretch">
+                            <TextBox Text="{Binding TempCodex.SortingTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      Padding="5,0" HorizontalAlignment="Stretch"/>
+                            <controls:Explainer Content="{Binding TempCodex.ZeroPaddingExplainer}" 
+                                                IsVisible="{Binding TempCodex.SortingTitleContainsNumbers}"
+                                                Grid.Column="1" Margin="6"/>
+                        </Grid>
+
+                        <!-- Authors -->
+                        <TextBlock Grid.Row="4" Margin="3,5,3,3"
+                                   Text="Authors:" />
+                        <!--  TODO make this control -->
+                        <!-- <multiSelectCombobox:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}" -->
+                        <!--                             Grid.Row="5" ItemSeparator="," LookUpContract="{Binding Contract}" -->
+                        <!--                             ItemSource="{Binding MVM.CollectionVM.FilterVM.AuthorList}"  -->
+                        <!--                             SelectedItems="{Binding TempCodex.Authors, Mode=TwoWay}"/> -->
+
+                        <!-- Publisher -->
+                        <TextBlock Grid.Row="6" Margin="3,5,3,3"
+                                   Text="Publisher:" />
+                        <!-- TODO allow creating new elements, keep an eye on avalonia #18094 -->
+                        <ComboBox Grid.Row="7" HorizontalAlignment="Stretch" 
+                                  Background="Transparent" BorderBrush="{StaticResource TextMutedColor}"
+                                  SelectedItem="{Binding TempCodex.Publisher}"
+                                  ItemsSource="{Binding MVM.CollectionVM.FilterVM.PublisherList}"/>
+
+                        <!-- Smaller properties -->
+                        <Grid Grid.Row="8" Margin="0,10"
+                              ColumnDefinitions="*, *, 0.5*, *, 1.5*"
+                              RowDefinitions="Auto, Auto, Auto">
+
+                            <!-- Version -->
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Version:" />
+                            <TextBox Grid.Row="0" Grid.Column="1" 
+                                     Text="{Binding TempCodex.Version, Mode=TwoWay}" Margin="5,0"  />
+
+                            <!--Page count -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" 
+                                       Text="Page count:" />
+                            <!-- TODO have a look at validation -->
+                            <TextBox Grid.Row="1" Grid.Column="1"
+                                     Text="{Binding TempCodex.PageCount}" 
+                                     MinWidth="30" Margin="5"  />
+                            
+                            <!-- Hard Copy -->
+                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="3,0"
+                                       Text="Hard Copy:" />
+                            <CheckBox Grid.Row="2" Grid.Column="1" Margin="3,0"
+                                      IsChecked="{Binding TempCodex.PhysicallyOwned, Mode=TwoWay}"/>
+                            
+                            <!-- Release Date -->
+                            <!-- TODO Add clear btn if not default  -->
+                            <TextBlock Grid.Row="0" Grid.Column="3"
+                                       Text="Release Date:"  />
+                            <CalendarDatePicker Grid.Row="0" Grid.Column="4" Width="140"
+                                                SelectedDate="{Binding TempCodex.ReleaseDate}"/>
+                            
+                            <!-- Rating --> 
+                            <!-- TODO Add clear btn if not default  -->
+                            <TextBlock Grid.Row="1" Grid.Column="3"
+                                       Text="Rating:" />
+                            <controls:RatingControl Grid.Column="4" Grid.Row="1" Margin="5"
+                                                    Value="{Binding TempCodex.Rating, Mode=TwoWay}" />
+
+                            <!-- Favorite -->
+                            <TextBlock Grid.Row="2" Grid.Column="3"  Margin="3,0"
+                                       Text="Favorite:" />
+                            <CheckBox Grid.Row="2" Grid.Column="4" Margin="3,0"
+                                      IsChecked="{Binding TempCodex.Favorite, Mode=TwoWay}" VerticalAlignment="Bottom"/>
+
+                        </Grid>
+
+                        <!-- Tags -->
+                        <StackPanel Orientation="Horizontal" Grid.Row="9">
+                            <TextBlock Text="Tags:"/>
+                            <ItemsControl ItemsSource="{Binding TempCodex.OrderedTags}" 
+                                          Background="{x:Null}" BorderBrush="{x:Null}" 
+                                          Foreground="Black" FontSize="15" VerticalAlignment="Center">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="model:Tag">
+                                        <controls:Chip Background="{Binding BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}" 
+                                                       Text="{Binding Name}" Margin="2,0"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Grid>
+                    
+                    <Rectangle Grid.Column="1" Fill="{StaticResource Separator}" Width="3" Margin="10,0"/>
+
+                    <!-- Tags selection sidepanel -->
+                    <ScrollViewer Grid.Column="2" MaxHeight="360" MaxWidth="300">
+                        <StackPanel>
+                            <TreeView MinWidth="200"
+                              BorderBrush="{x:Null}" Background="Transparent"
+                              Classes="NoSelection"
+                              ItemsSource="{Binding AllTagsAsTreeNodes}">
+                        <TreeView.ItemTemplate>
+                            <dataTemplates:TagTreeDataTemplateSelector>
+                                <TreeDataTemplate x:Key="RegularTag" DataType="model:TreeNode"
+                                                  ItemsSource="{Binding Children}">
+                                    <Border CornerRadius="5" Margin="0,3" HorizontalAlignment="Left"
+                                            Background="{Binding Tag.BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}">
+                                        <CheckBox Margin="5,0,0,0" 
+                                                  Command="{Binding $parent[TreeView].((vm:CodexEditViewModel)DataContext).TagCheckCommand}"
+                                                  CommandParameter="{Binding $self.IsChecked}"
+                                                  IsChecked="{Binding Selected}"
+                                                  Content="{Binding Tag.Name}"/>
+                                    </Border>
+                                </TreeDataTemplate>
+                                <TreeDataTemplate x:Key="GroupTag" DataType="model:TreeNode"
+                                                  ItemsSource="{Binding Children}">
+                                    <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding Tag.Name}" 
+                                                   HorizontalAlignment="Stretch" Margin="0,3,20,3"
+                                                   Background="{Binding Tag.BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"/>
+                                </TreeDataTemplate>
+                            </dataTemplates:TagTreeDataTemplateSelector>
+                        </TreeView.ItemTemplate>
+                        <TreeView.Styles>
+                            <Style Selector="TreeViewItem" x:DataType="model:TreeNode">
+                                <Setter Property="IsExpanded" Value="{Binding Expanded}" />
+                            </Style>
+                        </TreeView.Styles>
+                    </TreeView>
+                            <controls:IconButton Command="{Binding QuickCreateTagCommand}"
+                                                 Margin="20,5" Classes="Outline"
+                                                 Icon="TagAdd" Content="Quick new tag..."/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+            
+            <TabItem Header="Description">
+                <TextBox Text="{Binding TempCodex.Description, Mode=TwoWay}" MinHeight="250" 
+                         AcceptsReturn="True" TextWrapping="Wrap" VerticalAlignment="Stretch"/>
+            </TabItem>
+            
+            <TabItem Header="Sources">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Path -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" 
+                               Text="Path:"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" 
+                             Text="{Binding TempCodex.Sources.Path, Mode=TwoWay}" 
+                             TextWrapping="Wrap" Padding="3" Margin="10"/>
+                    <controls:IconButton Grid.Row="0" Grid.Column="2" 
+                                         Command="{Binding BrowsePathCommand}" 
+                                         Icon="FolderOpen"
+                                         ToolTip.Tip="Choose a new Path..."/>
+
+                    <!-- URL -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" 
+                               Text="Source URL:"/>
+                    <TextBox  Grid.Row="1" Grid.Column="1"
+                              Text="{Binding TempCodex.Sources.SourceURL, Mode=TwoWay}"  
+                              TextWrapping="Wrap" Padding="3" Margin="10" />
+                    <controls:IconButton Grid.Row="1" Grid.Column="2" 
+                                         Command="{Binding BrowseURLCommand}" 
+                                         Icon="Compass" ToolTip.Tip="Open URL in Browser"/>
+
+                    <!-- ISBN -->
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Text="ISBN:"/>
+                    <TextBox Grid.Row="2" Grid.Column="1"
+                             Text="{Binding TempCodex.Sources.ISBN, Mode=TwoWay}" 
+                             TextWrapping="Wrap" Padding="3" Margin="10"/>
+                    <controls:IconButton Grid.Row="2" Grid.Column="2" 
+                                         Command="{Binding BrowseISBNCommand}" 
+                                         Icon="Library" ToolTip.Tip="Show on OpenLibrary.org"  />
+                </Grid>
+            </TabItem>
+            
+            <TabItem Header="Advanced">
+                <Grid RowDefinitions="Auto, Auto, Auto"
+                      ColumnDefinitions="*, *, 0.3*, *, *">
+
+                    <!-- Date Added -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" 
+                               Text="Date Added:" />
+                    <CalendarDatePicker Grid.Row="0" Grid.Column="1" 
+                                        SelectedDate="{Binding TempCodex.DateAdded, Mode=OneWay}"/>
+
+                    <!-- Last opened -->
+                    <TextBlock Grid.Row="0" Grid.Column="3" 
+                               Text="Last Opened:" />
+                    <CalendarDatePicker SelectedDate="{Binding TempCodex.LastOpened, Mode=OneWay, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
+                                        Grid.Column="4" Grid.Row="0"/>
+
+                    <!-- ID -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" 
+                               Text="ID:"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" 
+                               MinWidth="30" Margin="5"
+                               Text="{Binding TempCodex.ID}" />
+
+                    <!-- Times opened -->
+                    <TextBlock Grid.Row="1" Grid.Column="3"
+                               Text="Times Opened:"/>
+                    <TextBlock Grid.Row="1" Grid.Column="4"
+                               Text="{Binding TempCodex.OpenedCount}" 
+                               MinWidth="30" Margin="5"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!--#region Confirmation Buttons -->
+        <Grid Grid.Row="2" Grid.Column="2"
+              ColumnDefinitions="Auto * Auto">
+            <controls:IconButton Grid.Column="0" 
+                                 Content="Remove" Icon="Delete"
+                                 Command="{Binding DeleteCodexCommand}" Margin="5"
+                                 ToolTip.Tip="Removes this item from COMPASS"
+                                 Background="{StaticResource CancelFill}"/>
+            <controls:ConfirmControls Grid.Column="2"/>
+        </Grid>
+        <!--#endregion-->
+    </Grid>
+</UserControl>

@@ -180,10 +180,8 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
             if (ShowEditWhenDone)
             {
-                CodexEditWindow editWindow = new(new CodexEditViewModel(newCodex))
-                {
-                    Topmost = true,
-                };
+                CodexEditViewModel vm = new(newCodex);
+                ModalWindow editWindow = new(vm);
                 await editWindow.ShowDialog(App.MainWindow);
             }
         }

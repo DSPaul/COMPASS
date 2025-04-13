@@ -17,14 +17,13 @@ using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.Views.Windows;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.Modals
 {
-    public class CodexEditViewModel : ViewModelBase, IConfirmable
+    public class CodexEditViewModel : ViewModelBase, IModalViewModel, IConfirmable
     {
-        public CodexEditViewModel(Codex? toEdit)
+        public CodexEditViewModel(Codex? toEdit = null)
         {
             _editedCodex = toEdit;
             //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked
@@ -41,14 +40,15 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
+        private readonly Codex? _editedCodex;
+        
         #region Properties
 
-        private readonly Codex? _editedCodex;
 
         private ObservableCollection<TreeNode>? _treeViewSource;
-        public ObservableCollection<TreeNode> TreeViewSource => _treeViewSource ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeNode(tag)));
+        public ObservableCollection<TreeNode> AllTagsAsTreeNodes => _treeViewSource ??= new(TempCodex.Collection.RootTags.Select(tag => new TreeNode(tag)));
 
-        private HashSet<TreeNode> AllTreeNodes => TreeViewSource.Flatten().ToHashSet();
+        private HashSet<TreeNode> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
 
         private bool CreateNewCodex => _editedCodex == null;
 
@@ -65,8 +65,6 @@ namespace COMPASS.Common.ViewModels
             get => _showLoading;
             set => SetProperty(ref _showLoading, value);
         }
-
-        //public CreatableLookUpContract Contract { get; set; } = new();
 
         #endregion
 
@@ -132,13 +130,13 @@ namespace COMPASS.Common.ViewModels
 
             TagEditViewModel tagEditVm = new(null, createNew: true);
             var modal = new ModalWindow(tagEditVm);
-            await modal.ShowDialog(App.MainWindow);
+            await modal.ShowDialog(App.MainWindow); //TODO make this the window of the codex edit
 
             if (MainViewModel.CollectionVM.CurrentCollection.RootTags.Count > tagCount) //new tag was created
             {
                 //recalculate treeview source
                 _treeViewSource = null;
-                OnPropertyChanged(nameof(TreeViewSource));
+                OnPropertyChanged(nameof(AllTagsAsTreeNodes));
 
                 //Apply right checkboxes in AllTags
                 foreach (TreeNode t in AllTreeNodes)
@@ -149,7 +147,7 @@ namespace COMPASS.Common.ViewModels
                 }
 
                 //check the newly created tag
-                TreeViewSource.Last().Selected = true;
+                AllTagsAsTreeNodes.Last().Selected = true;
 
                 UpdateTagList();
             }
@@ -214,8 +212,11 @@ namespace COMPASS.Common.ViewModels
             }
         }
 
+        #endregion
 
-        public Action CloseAction { get; set; } = () => { };
+        #region IConfirmable
+
+        
 
         private RelayCommand? _confirmCommand;
         public IRelayCommand ConfirmCommand => _confirmCommand ??= new(Confirm);
@@ -244,10 +245,13 @@ namespace COMPASS.Common.ViewModels
         public IRelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
         public void Cancel()
         {
-            TempCodex?.Dispose();
+            TempCodex.Dispose();
             CloseAction();
         }
+        #endregion
 
+        #region  Drag and Drop
+        
         public void OnDragOver(object sender, DragEventArgs e)
         {
             if (e.Data is DataObject data
@@ -273,6 +277,15 @@ namespace COMPASS.Common.ViewModels
                 TempCodex.LoadCover();
             }
         }
+        #endregion
+
+        #region IModalViewModel
+
+        public string WindowTitle => "Edit item properties";
+        public int? WindowWidth => 1200;
+        public int? WindowHeight => 500;
+        public Action CloseAction { get; set; } = () => { };
+        
         #endregion
     }
 }

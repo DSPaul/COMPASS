@@ -10,6 +10,7 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.Views.Windows;
 
@@ -67,8 +68,8 @@ namespace COMPASS.Common.ViewModels.Import
 
         private static async Task ImportManual()
         {
-            CodexEditWindow editWindow = new(new CodexEditViewModel(null));
-            editWindow.Topmost = true;
+            CodexEditViewModel vm = new();
+            ModalWindow editWindow = new(vm);
             await editWindow.ShowDialog(App.MainWindow);
         }
 

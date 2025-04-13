@@ -193,7 +193,6 @@ namespace COMPASS.Common.Models
         }
 
         //order them in same order as allTags by starting with allTags and keeping the ones we need using intersect
-        //TODO: codexCollection will currently not always be set, ideally we get rid of this dependency
         public IEnumerable<Tag> OrderedTags => Collection.AllTags.Intersect(_tags) ?? _tags;
 
         private bool _physicallyOwned;

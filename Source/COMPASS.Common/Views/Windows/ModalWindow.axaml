@@ -22,6 +22,10 @@
             <views:TagEditView/>
         </DataTemplate>
         
+        <DataTemplate DataType="vm:CodexEditViewModel">
+            <views:CodexEditView/>
+        </DataTemplate>
+        
         <DataTemplate DataType="importVm:ImportURLViewModel">
             <views:ImportURLView/>
         </DataTemplate>

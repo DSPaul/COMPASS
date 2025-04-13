@@ -19,6 +19,7 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
+using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Sources;
 using COMPASS.Common.Views.Windows;
 
@@ -139,10 +140,7 @@ namespace COMPASS.Common.Operations
         public static async Task EditCodex(Codex? toEdit)
         {
             if (toEdit is null) return;
-            CodexEditWindow editWindow = new(new CodexEditViewModel(toEdit))
-            {
-                Topmost = true
-            };
+            ModalWindow editWindow = new(new CodexEditViewModel(toEdit));
             await editWindow.ShowDialog(App.MainWindow);
         }
 

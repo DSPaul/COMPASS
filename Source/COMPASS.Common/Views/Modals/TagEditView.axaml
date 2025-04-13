@@ -12,7 +12,7 @@
         <StackPanel Grid.Row="0" Grid.Column="0"
                     Margin="10" MinWidth="250" Spacing="10">
             <!-- Basics -->
-            <views:TagEditBasicView  HorizontalAlignment="Stretch"/>
+            <views:TagEditBasicView HorizontalAlignment="Stretch"/>
 
             <!-- Group -->
             <StackPanel Orientation="Horizontal">
