@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using COMPASS.Common.Models;
@@ -14,11 +15,11 @@ public partial class TileLayout : CodexLayoutView
 
     private void ListBox_KeyDown(object? sender, KeyEventArgs e) => CodexOperations.HandleKeyDownOnCodex((sender as ListBox)?.SelectedItems, e);
 
-    private void Codex_DoubleTapped(object? sender, TappedEventArgs e)
+    private async void Codex_DoubleTapped(object? sender, TappedEventArgs e)
     {
         if (sender is Grid container && container.DataContext is Codex codex)
         {
-            CodexOperations.OpenCodex(codex);
+            await CodexOperations.OpenCodex(codex);
         }
     }
 }

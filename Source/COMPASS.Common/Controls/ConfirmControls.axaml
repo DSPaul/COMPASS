@@ -12,7 +12,8 @@
                              Grid.Column="0" IsDefault="True" 
                              Icon="{Binding $parent[controls:ConfirmControls].ConfirmIcon}" 
                              Content="{Binding $parent[controls:ConfirmControls].ConfirmLabel}"
-                             HorizontalContentAlignment="Center">
+                             HorizontalContentAlignment="Center"
+                             HorizontalAlignment="Stretch">
             <controls:IconButton.Styles>
                 <Style Selector="controls|IconButton">
                     <Setter Property="Background" Value="{StaticResource AcceptFill}"/>
@@ -27,6 +28,7 @@
                              Content="{Binding $parent[controls:ConfirmControls].CancelLabel}"
                              Icon="{Binding $parent[controls:ConfirmControls].CancelIcon}" 
                              HorizontalContentAlignment="Center"
+                             HorizontalAlignment="Stretch"
                              BorderBrush="{StaticResource CancelFill}"/>
         
     </Grid>

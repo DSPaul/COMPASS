@@ -40,7 +40,10 @@
     <ControlTheme TargetType="controls:IconButton" x:Key="{x:Type controls:IconButton}">
         <Setter Property="Padding" Value="5,5" />
         <Setter Property="CornerRadius" Value="7" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <!-- <Setter Property="Background" Value="{StaticResource ButtonBackground}" /> -->
+        <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
         <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
         
         <Setter Property="Template">

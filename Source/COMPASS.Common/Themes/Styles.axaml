@@ -99,6 +99,12 @@
     <Style Selector="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource TextColor}" />
         <Setter Property="VerticalAlignment" Value="Center" />
+        
+        <Style Selector="^.Categorizer">
+            <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+        </Style>
     </Style>
 
     <!--HyperLink-->
@@ -118,7 +124,7 @@
 
     <!--Button base-->
     <Style Selector="views|MainView :is(Button)">
-        <Setter Property="Background" Value="{StaticResource UIElementBackground}" />
+        <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
         <Setter Property="BorderBrush" Value="{x:Null}" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />

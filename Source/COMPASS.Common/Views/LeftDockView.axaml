@@ -42,13 +42,6 @@
         </ControlTemplate>
       </Setter>
     </Style>
-
-    <Style Selector="TextBlock.Categorizer">
-      <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
-      <Setter Property="HorizontalAlignment" Value="Center"/>
-      <!--<Setter Property="Typography.Capitals" Value="AllSmallCaps"/>-->
-      <Setter Property="FontWeight" Value="DemiBold"/>
-    </Style>
   </UserControl.Styles>
     
   <TabControl Background="{StaticResource ButtonBackground}" 

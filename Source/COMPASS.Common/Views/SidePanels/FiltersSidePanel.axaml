@@ -98,6 +98,8 @@
             
             <controls:IconButton Grid.Row="4" Content="Clear All"  
                                  Margin="10" Command="{Binding ClearFiltersCommand}"
+                                 HorizontalAlignment="Stretch"
+                                 HorizontalContentAlignment="Center"
                                  Icon="FilterRemove" Background="Red"/>
         </Grid>
     </ScrollViewer>

@@ -162,7 +162,7 @@ namespace COMPASS.Common.ViewModels.Modals
                 await CodexOperations.DeleteCodex(_editedCodex);
             }
             
-            TempCodex?.Dispose();
+            TempCodex.Dispose();
             CloseAction();
         }
 
