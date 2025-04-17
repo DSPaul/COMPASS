@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
+             xmlns:contols="using:COMPASS.Common.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Views.Modals.FileNotFoundView"
+             x:DataType="vm:FileNotFoundViewModel">
+    <StackPanel VerticalAlignment="Center" 
+                Margin="50, 20" Spacing="10">
+        <!-- Message -->
+        <TextBlock TextAlignment="Center">
+            The file 
+            <LineBreak/>
+            <Run Text="{Binding Codex.Sources.Path}" Foreground="{StaticResource TextMutedColor}"/>
+            <LineBreak/>
+            could not be found.
+            <LineBreak/>
+            This usually means the file was either moved, renamed, or deleted. 
+            <LineBreak/>
+            How would you like to resolve this?
+        </TextBlock>
+        
+        <!-- Options -->
+        <UniformGrid HorizontalAlignment="Center">
+            <UniformGrid.Styles>
+                <Style Selector="contols|IconButton">
+                    <Setter Property="Margin" Value="10,3"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                </Style>
+            </UniformGrid.Styles>
+            <contols:IconButton Content="Find the file..." Icon="Folder"
+                                Background="{StaticResource AccentColorMuted}" 
+                                Command="{Binding FindFileCommand}"
+                                ToolTip.Tip="Opens a file explorer which will allow you to select the file in its new location / with its new name"/>
+            <contols:IconButton Content="Remove the path" Icon="FileDocumentRemoveOutline" 
+                                Command="{Binding RemovePathCommand}"
+                                ToolTip.Tip="Will remove the path from the item"/>
+            <contols:IconButton Content="Remove this item" Icon="Delete"
+                                Background="Red" 
+                                Command="{Binding DeleteCodexCommand}"
+                                ToolTip.Tip="Will remove the item from the collection"/>
+            <contols:IconButton Content="Ignore for now" Icon="SkipNext"
+                                Command="{Binding DoNothingCommand}"
+                                ToolTip.Tip="Ignores the problem. Good option if the file is on a seperate drive that is temporarily disconnected."/>
+        </UniformGrid>
+        
+        <!-- Hint -->
+        <TextBlock Foreground="{StaticResource TextMutedColor}"
+                   HorizontalAlignment="Center" TextAlignment="Center">
+            (Tip: if you moved multiple files, you can resolve them all at once by going to
+            <LineBreak/>
+            Preferences -> Manage Data -> Tools for Broken File References.)
+        </TextBlock>
+    </StackPanel>
+</UserControl>

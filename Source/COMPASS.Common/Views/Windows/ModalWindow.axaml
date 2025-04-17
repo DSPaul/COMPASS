@@ -29,6 +29,10 @@
         <DataTemplate DataType="importVm:ImportURLViewModel">
             <views:ImportURLView/>
         </DataTemplate>
+        
+        <DataTemplate DataType="vm:FileNotFoundViewModel">
+            <views:FileNotFoundView/>
+        </DataTemplate>
     </Window.DataTemplates>
     
     <ContentControl Content="{Binding}" Margin="10"/>

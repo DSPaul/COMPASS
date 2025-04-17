@@ -11,17 +11,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.Interfaces.Storage;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.Modals
 {
-    public class FileNotFoundViewModel
+    public class FileNotFoundViewModel : IModalViewModel
     {
         public FileNotFoundViewModel(Codex codex)
         {
-            _codex = codex;
+            Codex = codex;
         }
 
-        private Codex _codex;
+        public Codex Codex { get; }
+        
+        public bool FixedAndOpenedCodex { get; private set; }
 
+        private void MarkAsResolved(bool fixedAndOpenedCodex)
+        {
+            FixedAndOpenedCodex = fixedAndOpenedCodex;
+            CloseAction();
+        }
+        
         private AsyncRelayCommand? _findFileCommand;
         public AsyncRelayCommand FindFileCommand => _findFileCommand ??= new(FindFile);
         public async Task FindFile()
@@ -31,19 +39,21 @@ namespace COMPASS.Common.ViewModels
             if (files.Any())
             {
                 using var file = files.Single();
+                
                 //find the replaced part of the path
-                string oldPath = _codex.Sources.Path;
+                string oldPath = Codex.Sources.Path;
                 string newPath = file.Path.AbsolutePath;
                 var (toReplace, replaceWith) = IOService.GetDifferingRoot(oldPath, newPath);
 
                 //fix the path of this codex
-                _codex.Sources.Path = newPath;
+                Codex.Sources.Path = newPath;
                 int fixedRefs = 1;
 
-                //try to fix the path of all codices
-                var codicesWithBrokenPaths = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+                //try to fix the path of all codices in this collection
+                var codicesWithBrokenPaths = Codex.Collection.AllCodices
                     .Where(c => c.Sources.HasOfflineSource() && !File.Exists(c.Sources.Path))
                     .ToList();
+                
                 foreach (var c in codicesWithBrokenPaths)
                 {
                     if (c.Sources.Path.StartsWith(toReplace))
@@ -61,10 +71,9 @@ namespace COMPASS.Common.ViewModels
                 Logger.Info(message);
                 Logger.Debug(message);
 
-                App.Container.Resolve<ICodexCollectionStorageService>().SaveCodices(MainViewModel.CollectionVM.CurrentCollection);
-                CodexOperations.OpenCodexLocally(_codex);
-                SetDialogResult?.Invoke(true);
-                CloseAction?.Invoke();
+                App.Container.Resolve<ICodexCollectionStorageService>().SaveCodices(Codex.Collection);
+                bool opened = await CodexOperations.OpenCodexLocally(Codex);
+                MarkAsResolved(opened);
             }
         }
 
@@ -72,20 +81,28 @@ namespace COMPASS.Common.ViewModels
         public RelayCommand RemovePathCommand => _removePathCommand ??= new(RemovePath);
         private void RemovePath()
         {
-            _codex.Sources.Path = "";
-            CloseAction?.Invoke();
+            Codex.Sources.Path = "";
+            MarkAsResolved(false);
         }
 
         private AsyncRelayCommand? _deleteCodexCommand;
         public AsyncRelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
         private async Task DeleteCodex()
         {
-            await CodexOperations.DeleteCodex(_codex);
-            SetDialogResult?.Invoke(true);
-            CloseAction?.Invoke();
+            await CodexOperations.DeleteCodex(Codex);
+            MarkAsResolved(false);
         }
-
-        public Action? CloseAction;
-        public Action<bool>? SetDialogResult;
+        
+        private RelayCommand? _doNothingCommand;
+        public RelayCommand DoNothingCommand => _doNothingCommand ??= new(DoNothing);
+        private void DoNothing()
+        {
+            MarkAsResolved(false);
+        }
+        
+        public string WindowTitle => "File Not Found";
+        public int? WindowWidth => null;
+        public int? WindowHeight => null;
+        public Action CloseAction { get; set; } = () => { };
     }
 }

@@ -30,22 +30,23 @@ namespace COMPASS.Common.Operations
         #region Open Codex
 
         //Open Codex wherever
-        public static bool OpenCodex(Codex codex)
+        public static async Task<bool> OpenCodex(Codex codex)
         {
-            bool success = PreferableFunction<Codex>.TryFunctions(PreferencesService.GetInstance().Preferences.OpenCodexPriority, codex);
+            var openPriority = PreferencesService.GetInstance().Preferences.OpenCodexPriority;
+            bool success = await PreferableFunction<Codex>.TryFunctionsAsync(openPriority, codex);
             if (!success)
             {
-                Notification notification = new("Could Not open item", "Could not open item, please check local path or URL");
-                App.Container.Resolve<INotificationService>().ShowDialog(notification);
+                Notification notification = new("Could not open item", "Could not open item, please check its sources");
+                await App.Container.Resolve<INotificationService>().ShowDialog(notification);
             }
 
             return success;
         }
 
         //Open codex Offline
-        private RelayCommand<Codex>? _openCodexLocallyCommand;
-        public RelayCommand<Codex> OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(codex => OpenCodexLocally(codex), CanOpenCodexLocally);
-        public static bool OpenCodexLocally(Codex? toOpen)
+        private AsyncRelayCommand<Codex>? _openCodexLocallyCommand;
+        public AsyncRelayCommand<Codex> OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(OpenCodexLocally, CanOpenCodexLocally);
+        public static async Task<bool> OpenCodexLocally(Codex? toOpen)
         {
             if (toOpen is null) return false;
             if (!toOpen.Sources.HasOfflineSource()) return false;
@@ -61,8 +62,9 @@ namespace COMPASS.Common.Operations
             {
                 Logger.Warn($"Failed to open {toOpen.Sources.Path}", ex);
 
-                FileNotFoundWindow fileNotFoundWindow = new(new(toOpen));
-                return fileNotFoundWindow.ShowDialog(App.MainWindow).IsCompletedSuccessfully; //TODO, this should be async
+                var fileNotFoundVM = new FileNotFoundViewModel(toOpen);
+                await new ModalWindow(fileNotFoundVM).ShowDialog(App.MainWindow);
+                return fileNotFoundVM.FixedAndOpenedCodex;
             }
         }
         public static bool CanOpenCodexLocally(Codex? toOpen)
@@ -111,7 +113,7 @@ namespace COMPASS.Common.Operations
 
             if (toOpen.Count == 1)
             {
-                return OpenCodex(toOpen.First());
+                return await OpenCodex(toOpen.First());
             }
 
             Notification notification = Notification.AreYouSureNotification;
@@ -122,7 +124,7 @@ namespace COMPASS.Common.Operations
             {
                 foreach (Codex f in toOpen)
                 {
-                    OpenCodex(f);
+                    await OpenCodex(f);
                 }
 
                 return true;
