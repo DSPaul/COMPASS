@@ -9,10 +9,11 @@
              xmlns:converters="using:COMPASS.Common.Converters"
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
              xmlns:models="using:COMPASS.Common.Models"
+             xmlns:edit="clr-namespace:COMPASS.Common.ViewModels.Modals.Edit"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="250"
              x:Class="COMPASS.Common.Views.TagEditBasicView"
              Focusable="True"
-             x:DataType="vm:TagEditViewModel">
+             x:DataType="edit:TagEditViewModel">
 
     <StackPanel Spacing="10">
         <!-- Name -->
@@ -87,7 +88,7 @@
                                 <Setter Property="IsVisible">
                                     <MultiBinding Converter="{StaticResource AreNotEqualConverter}">
                                         <Binding
-                                            Path="$parent[TreeView].((vm:TagEditViewModel)DataContext).TempTag.ID" />
+                                            Path="$parent[TreeView].((edit:TagEditViewModel)DataContext).TempTag.ID" />
                                         <Binding Path="Tag.ID" />
                                     </MultiBinding>
                                 </Setter>

@@ -2,11 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Modals.Edit"
              xmlns:views="using:COMPASS.Common.Views"
              xmlns:controls="using:COMPASS.Common.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
-             x:Class="COMPASS.Common.Views.Modals.TagEditView"
+             x:Class="COMPASS.Common.Views.Modals.Edit.TagEditView"
              x:DataType="vm:TagEditViewModel">
     <Grid ColumnDefinitions="Auto, *" RowDefinitions="*, Auto, Auto">
         <StackPanel Grid.Row="0" Grid.Column="0"

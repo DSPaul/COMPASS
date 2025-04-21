@@ -4,10 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Org.BouncyCastle.Tls;
 
 namespace COMPASS.Common.Tools
 {
@@ -197,7 +199,22 @@ namespace COMPASS.Common.Tools
             }
         }
 
-        public static bool SafeAny<T>(this IEnumerable<T>? l) => l != null && l.Any();
+        public static bool SafeAny<T>(
+            [NotNullWhen(true)] this IEnumerable<T>? l) 
+            => l != null && l.Any();
+
+        public static bool HasCommonValue<T, TKey>(this IEnumerable<T>? l, Func<T, TKey> keySelector, out TKey? value)
+        {
+            value = default;
+            if (!l.SafeAny())
+            {
+                return false;
+            }
+
+            value = keySelector(l.First());
+            TKey key = value;
+            return l.All(item => EqualityComparer<TKey>.Default.Equals(keySelector(item), key));
+        }
         #endregion
 
         #region Drag & Drop

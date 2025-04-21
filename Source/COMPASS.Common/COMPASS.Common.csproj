@@ -21,6 +21,14 @@
       <DependentUpon>SortingSidePanel.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Modals\Edit\CodexEditView.axaml.cs">
+      <DependentUpon>CodexEditView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Modals\Edit\TagEditView.axaml.cs">
+      <DependentUpon>TagEditView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Include="Themes\Dark.axaml" />

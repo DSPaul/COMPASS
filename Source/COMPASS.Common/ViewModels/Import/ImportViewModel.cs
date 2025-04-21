@@ -11,6 +11,7 @@ using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Modals;
+using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.Views.Windows;
 

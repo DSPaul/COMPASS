@@ -3,7 +3,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="using:COMPASS.Common.Views.Modals"
+        xmlns:editViews="using:COMPASS.Common.Views.Modals.Edit"
         xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
+        xmlns:editVm="using:COMPASS.Common.ViewModels.Modals.Edit"
         xmlns:importVm="using:COMPASS.Common.ViewModels.Modals.Import"
         xmlns:interfaces="using:COMPASS.Common.Interfaces"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -18,12 +20,16 @@
         Title="{Binding WindowTitle}">
     
     <Window.DataTemplates>
-        <DataTemplate DataType="vm:TagEditViewModel">
-            <views:TagEditView/>
+        <DataTemplate DataType="editVm:TagEditViewModel">
+            <editViews:TagEditView/>
         </DataTemplate>
         
-        <DataTemplate DataType="vm:CodexEditViewModel">
-            <views:CodexEditView/>
+        <DataTemplate DataType="editVm:CodexEditViewModel">
+            <editViews:CodexEditView/>
+        </DataTemplate>
+        
+        <DataTemplate DataType="editVm:CodexBulkEditViewModel">
+            <editViews:CodexBulkEditView/>
         </DataTemplate>
         
         <DataTemplate DataType="importVm:ImportURLViewModel">

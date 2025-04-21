@@ -1,20 +1,20 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Models;
-using COMPASS.Common.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Tools;
 using Notification = COMPASS.Common.Models.Notification;
 
-namespace COMPASS.Common.ViewModels.Modals
+namespace COMPASS.Common.ViewModels.Modals.Edit
 {
     public class TagEditViewModel : ViewModelBase, IConfirmable, IModalViewModel
     {

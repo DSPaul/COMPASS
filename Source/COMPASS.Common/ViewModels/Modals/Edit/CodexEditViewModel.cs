@@ -19,7 +19,7 @@ using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.Views.Windows;
 
-namespace COMPASS.Common.ViewModels.Modals
+namespace COMPASS.Common.ViewModels.Modals.Edit
 {
     public class CodexEditViewModel : ViewModelBase, IModalViewModel, IConfirmable
     {

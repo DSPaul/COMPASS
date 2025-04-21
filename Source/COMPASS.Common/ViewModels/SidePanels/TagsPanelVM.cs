@@ -14,6 +14,7 @@ using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals;
+using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.SidePanels

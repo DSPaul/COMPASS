@@ -9,6 +9,7 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.Modals.Import

@@ -20,6 +20,7 @@ using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Modals;
+using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Sources;
 using COMPASS.Common.Views.Windows;
 
@@ -160,10 +161,8 @@ namespace COMPASS.Common.Operations
                 return;
             }
 
-            CodexBulkEditWindow window = new(new CodexBulkEditViewModel(toEditList))
-            {
-                Topmost = true
-            };
+            CodexBulkEditViewModel vm = new (toEditList);
+            ModalWindow window = new(vm);
             await window.ShowDialog(App.MainWindow);
         }
 
