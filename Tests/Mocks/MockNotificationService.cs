@@ -1,6 +1,6 @@
-﻿using COMPASS.Interfaces;
-using COMPASS.Models;
-using COMPASS.Models.Enums;
+﻿using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 
 namespace Tests.Mocks
 {
@@ -10,6 +10,13 @@ namespace Tests.Mocks
         {
             Console.WriteLine(notification.Body);
             notification.Result = NotificationAction.Confirm;
+        }
+
+        public Task ShowDialog(Notification notification)
+        {
+            Console.WriteLine(notification.Body);
+            notification.Result = NotificationAction.Confirm;
+            return Task.CompletedTask;
         }
     }
 }

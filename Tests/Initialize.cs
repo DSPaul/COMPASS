@@ -1,4 +1,7 @@
-﻿using Tests.Mocks;
+﻿using Autofac;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Tools;
+using Tests.Mocks;
 
 namespace Tests
 {
@@ -11,17 +14,19 @@ namespace Tests
             //init the container
             var builder = new ContainerBuilder();
 
-            builder.RegisterType<MockNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Windowed);
-            builder.RegisterType<MockNotificationService>().Keyed<INotificationService>(NotificationDisplayType.Toast);
+            builder.RegisterType<MockNotificationService>().As<INotificationService>();
+            builder.RegisterType<MockEnvironmentVarsService>().As<IEnvironmentVarsService>();
 
-            App.Container = builder.Build();
+            //App.Container = builder.Build();
 
             Logger.Init();
-            AppDomain.CurrentDomain.FirstChanceException += Logger.LogUnhandledException;
+            //TODO
+            //AppDomain.CurrentDomain.FirstChanceException += Logger.LogUnhandledException;
             Logger.Debug("Logger Initialized");
         }
 
-        [OneTimeTearDown]
-        public static void MyTestCleanup() => AppDomain.CurrentDomain.FirstChanceException -= Logger.LogUnhandledException;
+        //TODO
+        // [OneTimeTearDown]
+        // public static void MyTestCleanup() => AppDomain.CurrentDomain.FirstChanceException -= Logger.LogUnhandledException;
     }
 }

@@ -1,16 +1,15 @@
-﻿using COMPASS.Models;
-using COMPASS.Tools;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using COMPASS.Common.Models;
+using COMPASS.Common.Tools;
 
 namespace Tests.UnitTests.Models
 {
-    [TestClass]
     public class CheckableTreeNode
     {
         private static CheckableTreeNode<Tag>? checkableRoot;
 
-        [ClassInitialize]
-        public static void Initialize(TestContext context)
+        [OneTimeSetUp]
+        public void Initialize()
         {
             //Setup
             Tag root = new()
@@ -65,19 +64,19 @@ namespace Tests.UnitTests.Models
             }
         }
 
-        [TestMethod]
-        public void TestDownwardsPropagatiion()
+        [Test]
+        public void TestDownwardsPropagation()
         {
             //Downwards false
             checkableRoot!.IsChecked = false;
-            Assert.IsTrue(checkableRoot!.Children.Flatten().All(child => child.IsChecked == false));
+            Assert.That(checkableRoot!.Children.Flatten().All(child => child.IsChecked == false));
 
             //Downwards true
             checkableRoot!.IsChecked = true;
-            Assert.IsTrue(checkableRoot!.Children.Flatten().All(child => child.IsChecked == true));
+            Assert.That(checkableRoot!.Children.Flatten().All(child => child.IsChecked == true));
         }
 
-        [TestMethod]
+        [Test]
         public void TestUpwardsPropagatiion()
         {
             //uncheck all to start
@@ -88,28 +87,40 @@ namespace Tests.UnitTests.Models
 
             //check one, all above should become null
             firstChild.Children.First().IsChecked = true;
-            Assert.IsNull(firstChild.IsChecked);
-            Assert.IsNull(checkableRoot.IsChecked);
+            Assert.Multiple(() =>
+            {
+                Assert.That(firstChild.IsChecked, Is.Null);
+                Assert.That(checkableRoot.IsChecked, Is.Null);
+            });
 
-            //check the other, should cause parent to be checked
+            //check the other, this should cause the parent to be checked
             firstChild.Children[1].IsChecked = true;
-            Assert.IsTrue(firstChild.IsChecked);
-            Assert.IsNull(checkableRoot.IsChecked);
+            Assert.Multiple(() =>
+            {
+                Assert.That(firstChild.IsChecked, Is.True);
+                Assert.That(checkableRoot.IsChecked, Is.Null);
+            });
 
             //now uncheck children of first, because it is containerOnly, should be unchecked
             firstChild.Children[0].IsChecked = false;
             firstChild.Children[1].IsChecked = false;
-            Assert.IsTrue(firstChild.ContainerOnly);
-            Assert.IsFalse(firstChild.IsChecked);
-            Assert.IsFalse(checkableRoot.IsChecked);
+            Assert.Multiple(() =>
+            {
+                Assert.That(firstChild.ContainerOnly);
+                Assert.That(firstChild.IsChecked, Is.False);
+                Assert.That(checkableRoot.IsChecked, Is.False);
+            });
 
             //check second child and uncheck children, because it is NOT containerOnly, should stay checked
             secondChild.IsChecked = true;
             secondChild.Children[0].IsChecked = false;
             secondChild.Children[1].IsChecked = false;
-            Assert.IsFalse(secondChild.ContainerOnly);
-            Assert.IsTrue(secondChild.IsChecked);
-            Assert.IsNull(checkableRoot.IsChecked);
+            Assert.Multiple(() =>
+            {
+                Assert.That(secondChild.ContainerOnly, Is.False);
+                Assert.That(secondChild.IsChecked, Is.True);
+                Assert.That(checkableRoot.IsChecked, Is.Null);
+            });
         }
     }
 }

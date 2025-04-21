@@ -1,11 +1,11 @@
-﻿using COMPASS.Services;
+﻿using COMPASS.Common.Services.FileSystem;
 
 namespace Tests.UnitTests
 {
-    [TestClass]
+    [TestFixture]
     public class IOService_UnitTest
     {
-        [TestMethod]
+        [Test]
         public void TestGetDifferingRoot_Normal()
         {
             //normal case
@@ -14,22 +14,28 @@ namespace Tests.UnitTests
 
             var (r1, r2) = IOService.GetDifferingRoot(path1, path2);
 
-            Assert.AreEqual(@"a\path", r1);
-            Assert.AreEqual(@"another\root\that goes", r2);
+            Assert.Multiple(() =>
+            {
+                Assert.That(r1, Is.EqualTo(@"a\path"));
+                Assert.That(r2, Is.EqualTo(@"another\root\that goes"));
+            });
         }
 
-        [TestMethod]
+        [Test]
         public void TestGetDifferingRoot_Same()
         {
             string path1 = @"a\path\to\a\file.txt";
 
             var (r1, r2) = IOService.GetDifferingRoot(path1, path1);
 
-            Assert.AreEqual(r1, r2);
-            Assert.AreEqual(r1, path1);
+            Assert.Multiple(() =>
+            {
+                Assert.That(r1, Is.EqualTo(r2));
+                Assert.That(r1, Is.EqualTo(path1));
+            });
         }
 
-        [TestMethod]
+        [Test]
         public void TestGetDifferingRoot_Subpath()
         {
             string path1 = @"a\path\to\a\file.txt";
@@ -37,11 +43,14 @@ namespace Tests.UnitTests
 
             var (r1, r2) = IOService.GetDifferingRoot(path1, path2);
 
-            Assert.AreEqual(@"a\path\to", r1);
-            Assert.AreEqual(@"", r2);
+            Assert.Multiple(() =>
+            {
+                Assert.That(r1, Is.EqualTo(@"a\path\to"));
+                Assert.That(r2, Is.EqualTo(""));
+            });
         }
 
-        [TestMethod]
+        [Test]
         public void TestGetDifferingRoot_Different()
         {
             string path1 = @"a\path\to\a\file.txt";
@@ -49,8 +58,11 @@ namespace Tests.UnitTests
 
             var (r1, r2) = IOService.GetDifferingRoot(path1, path2);
 
-            Assert.AreEqual(path1, r1);
-            Assert.AreEqual(path2, r2);
+            Assert.Multiple(() =>
+            {
+                Assert.That(r1, Is.EqualTo(path1));
+                Assert.That(r2, Is.EqualTo(path2));
+            });
         }
     }
 }

@@ -1,16 +1,16 @@
-﻿using COMPASS.Models;
-using COMPASS.Models.CodexProperties;
-using COMPASS.Models.Preferences;
-using COMPASS.Models.XmlDtos;
-using System.Text.Json;
+﻿using System.Text.Json;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Models.Preferences;
+using COMPASS.Common.Models.XmlDtos;
 using Tests.DataGenerators;
 
 namespace Tests.UnitTests.Models
 {
-    [TestClass]
+    [TestFixture]
     public class XmlMapper
     {
-        [TestMethod]
+        [Test]
         public void MapCodex()
         {
             // Sources are 3 props in dto, but only 1 in model
@@ -18,17 +18,19 @@ namespace Tests.UnitTests.Models
 
             AssertAllPropMapped(typeof(Codex), typeof(CodexDto), expectedDiff);
 
-            Codex codex = RandomGenerator.GetRandomCodex();
+            var collection = new CodexCollection("__testCollection");
+
+            Codex codex = RandomGenerator.GetRandomCodex(collection);
 
             CodexDto dto = codex.ToDto();
-            Codex reconstrution = dto.ToModel(codex.Tags);
+            Codex reconstruction = dto.ToModel(collection);
 
-            Assert.AreEqual(
-                JsonSerializer.Serialize(reconstrution),
-                JsonSerializer.Serialize(codex));
+            Assert.That(
+                JsonSerializer.Serialize(reconstruction),
+                Is.EqualTo(JsonSerializer.Serialize(codex)));
         }
 
-        [TestMethod]
+        [Test]
         public void MapCodexProperty()
         {
             AssertAllPropMapped(typeof(CodexProperty), typeof(CodexPropertyDto));
@@ -38,12 +40,12 @@ namespace Tests.UnitTests.Models
             CodexPropertyDto dto = codexProp.ToDto();
             CodexProperty reconstrution = dto.ToModel()!;
 
-            Assert.AreEqual(
+            Assert.That(
                 JsonSerializer.Serialize(reconstrution),
-                JsonSerializer.Serialize(codexProp));
+                Is.EqualTo(JsonSerializer.Serialize(codexProp)));
         }
 
-        [TestMethod]
+        [Test]
         public void MapPreferences()
         {
             AssertAllPropMapped(typeof(Preferences), typeof(PreferencesDto));
@@ -51,31 +53,29 @@ namespace Tests.UnitTests.Models
             Preferences prefs = RandomGenerator.GetRandomPreferences();
 
             PreferencesDto dto = prefs.ToDto();
-            Preferences reconstrution = dto.ToModel()!;
+            Preferences reconstruction = dto.ToModel()!;
 
             //Funcs cannot be serialized
-            Assert.IsTrue(prefs.OpenCodexPriority.SequenceEqual(reconstrution.OpenCodexPriority));
-            prefs.OpenCodexPriority = new System.Collections.ObjectModel.ObservableCollection<PreferableFunction<Codex>>();
-            reconstrution.OpenCodexPriority = new System.Collections.ObjectModel.ObservableCollection<PreferableFunction<Codex>>();
+            Assert.That(prefs.OpenCodexPriority.SequenceEqual(reconstruction.OpenCodexPriority), Is.True);
+            prefs.OpenCodexPriority = [];
+            reconstruction.OpenCodexPriority = [];
 
-            Assert.AreEqual(
-                JsonSerializer.Serialize(reconstrution),
-                JsonSerializer.Serialize(prefs));
+            Assert.That(
+                JsonSerializer.Serialize(reconstruction),
+                Is.EqualTo(JsonSerializer.Serialize(prefs)));
         }
 
-        private void AssertAllPropMapped(Type modelType, Type dtoType, int expectedDiff = 0)
+        private static void AssertAllPropMapped(Type modelType, Type dtoType, int expectedDiff = 0)
         {
             var modelPropsCount = modelType
-               .GetProperties()
-               .Where(prop => prop.CanWrite && !prop.IsDefined(typeof(ObsoleteAttribute), false))
-               .Count();
+                .GetProperties()
+                .Count(prop => prop.CanWrite && !prop.IsDefined(typeof(ObsoleteAttribute), false));
 
             var dtoPropCount = dtoType
                 .GetProperties()
-                .Where(prop => prop.CanWrite && !prop.IsDefined(typeof(ObsoleteAttribute), false))
-                .Count();
+                .Count(prop => prop.CanWrite && !prop.IsDefined(typeof(ObsoleteAttribute), false));
 
-            Assert.AreEqual(modelPropsCount, dtoPropCount + expectedDiff);
+            Assert.That(modelPropsCount, Is.EqualTo(dtoPropCount + expectedDiff));
         }
     }
 }

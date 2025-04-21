@@ -1,24 +1,23 @@
-﻿//using COMPASS.Models;
-using COMPASS.Common.Models;
+﻿using COMPASS.Common.Models;
 using COMPASS.Common.Models.Preferences;
 using System.Text;
+using Avalonia.Media;
 
 namespace Tests.DataGenerators
 {
     public static class RandomGenerator
     {
-        private static Random random = new();
+        private static readonly Random Random = new();
 
-        private static Dictionary<Type, Func<object>> DefaultGenerators = new()
+        private static readonly Dictionary<Type, Func<object>> DefaultGenerators = new()
         {
-            { typeof(int)   ,() => random.Next() },
-            { typeof(float) ,() => random.NextSingle() },
-            { typeof(double),() => random.NextDouble() },
+            { typeof(int)   ,() => Random.Next() },
+            { typeof(float) ,() => Random.NextSingle() },
+            { typeof(double),() => Random.NextDouble() },
             { typeof(bool)  ,() => GetRandomBool() },
             { typeof(string),() => GetRandomString() },
             { typeof(Color) ,() => GetRandomColor() },
             { typeof(Tag)   ,() => GetRandomTag() },
-            { typeof(Codex) ,() => GetRandomCodex() },
         };
 
         #region Primitives
@@ -26,30 +25,30 @@ namespace Tests.DataGenerators
         public static string GetRandomString(int minLength = 5, int maxLength = 10)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            int length = random.Next(minLength, maxLength + 1);
+            int length = Random.Next(minLength, maxLength + 1);
             StringBuilder stringBuilder = new(length);
 
             for (int i = 0; i < length; i++)
             {
-                stringBuilder.Append(chars[random.Next(chars.Length)]);
+                stringBuilder.Append(chars[Random.Next(chars.Length)]);
             }
 
             return stringBuilder.ToString();
         }
 
-        public static bool GetRandomBool(int falseFreq = 1, int trueFreq = 1) => random.Next(falseFreq + trueFreq) < trueFreq;
+        public static bool GetRandomBool(int falseFreq = 1, int trueFreq = 1) => Random.Next(falseFreq + trueFreq) < trueFreq;
 
         public static Color GetRandomColor()
         {
             byte[] colorBytes = new byte[3];
-            random.NextBytes(colorBytes);
+            Random.NextBytes(colorBytes);
             return Color.FromRgb(colorBytes[0], colorBytes[1], colorBytes[2]);
         }
 
         public static DateTime GetRandomDate(DateTime startDate = default)
         {
             long range = DateTime.Now.Ticks - startDate.Ticks;
-            long ticks = (long)(random.NextDouble() * range);
+            long ticks = (long)(Random.NextDouble() * range);
             return startDate.AddTicks(ticks);
         }
 
@@ -59,36 +58,36 @@ namespace Tests.DataGenerators
 
         public static Tag GetRandomTag(int depth = 4) => new()
         {
-            BackgroundColor = GetRandomColor(),
-            Content = GetRandomString(),
-            ID = random.Next(),
+            InternalBackgroundColor = GetRandomColor(),
+            Name = GetRandomString(),
+            ID = Random.Next(),
             IsGroup = GetRandomBool(falseFreq: 5),
-            //Give it a random amount of children, to a max of depth, and each level decrease depth
-            Children = new(Enumerable.Range(0, random.Next(depth)).Select(_ => GetRandomTag(depth - 1)))
+            //Give it a random number of children, to a max of depth, and each level decrease depth
+            Children = new(Enumerable.Range(0, Random.Next(depth)).Select(_ => GetRandomTag(depth - 1)))
         };
 
-        public static Codex GetRandomCodex()
+        public static Codex GetRandomCodex(CodexCollection collection)
         {
-            Codex codex = new()
+            Codex codex = new(collection)
             {
-                ID = random.Next(),
+                ID = Random.Next(),
                 Title = GetRandomString(),
                 SortingTitle = GetRandomString(),
                 Authors = new(GetRandomList<string>(maxLength: 3)),
                 Publisher = GetRandomString(),
                 Description = GetRandomString(10, 500),
                 ReleaseDate = GetRandomDate(),
-                PageCount = random.Next(1, 400),
+                PageCount = Random.Next(1, 400),
                 Version = GetRandomString(minLength: 1, maxLength: 3),
                 PhysicallyOwned = GetRandomBool(),
-                Rating = random.Next(0, 6),
+                Rating = Random.Next(0, 6),
                 Favorite = GetRandomBool(falseFreq: 10),
-                OpenedCount = random.Next(100),
+                OpenedCount = Random.Next(100),
                 Sources = new()
                 {
                     ISBN = GetRandomISBN(),
-                    Path = GetRandomBool() ? GetRandomPath() : String.Empty,       //randomly decide if it has a path
-                    SourceURL = GetRandomBool() ? GetRandomUrl() : String.Empty,   //randomly decide if it has a url
+                    Path = GetRandomBool() ? GetRandomPath() : string.Empty,       //randomly decide if it has a path
+                    SourceURL = GetRandomBool() ? GetRandomUrl() : string.Empty,   //randomly decide if it has a URL
                 }
             };
 
@@ -101,7 +100,7 @@ namespace Tests.DataGenerators
         public static Preferences GetRandomPreferences() => new()
         {
             AutoLinkFolderTagSameName = true,
-            CodexProperties = Codex.MedataProperties,
+            CodexProperties = Codex.MetadataProperties,
             CardLayoutPreferences = new CardLayoutPreferences()
             {
                 ShowAuthor = GetRandomBool(),
@@ -146,7 +145,7 @@ namespace Tests.DataGenerators
                 SortDirection = System.ComponentModel.ListSortDirection.Descending,
                 SortProperty = "Title",
                 StartupCollection = GetRandomString(),
-                StartupLayout = COMPASS.ViewModels.Layouts.LayoutViewModel.Layout.Card,
+                StartupLayout = COMPASS.Common.Models.Enums.CodexLayout.Card,
                 StartupTab = 3
             }
         };
@@ -159,7 +158,7 @@ namespace Tests.DataGenerators
         {
             // The standard format for ISBN is "XXX-X-XX-XXXXXX-X" where X represents a digit.
             // Generate random digits for each part of the ISBN.
-            int[] parts = Enumerable.Range(0, 10).Select(_ => random.Next(10)).ToArray();
+            int[] parts = Enumerable.Range(0, 10).Select(_ => Random.Next(10)).ToArray();
 
             // Calculate the last digit (checksum) based on the first 9 digits.
             int checksum = ((parts[0] * 10) + (parts[1] * 9) + (parts[2] * 8) + (parts[3] * 7) + (parts[4] * 6) +
@@ -194,7 +193,7 @@ namespace Tests.DataGenerators
         {
             var result = new List<T>();
             var generator = DefaultGenerators[typeof(T)];
-            int length = random.Next(minLength, maxLength + 1);
+            int length = Random.Next(minLength, maxLength + 1);
             for (int i = 0; i < length; i++)
             {
                 result.Add((T)generator());
@@ -207,7 +206,7 @@ namespace Tests.DataGenerators
             // Shuffle the list using Fisher-Yates algorithm
             for (int i = list.Count - 1; i > 0; i--)
             {
-                int j = random.Next(0, i + 1);
+                int j = Random.Next(0, i + 1);
                 (list[j], list[i]) = (list[i], list[j]);
             }
 

@@ -1,17 +1,8 @@
 ﻿using Autofac;
-using Avalonia.Threading;
 using COMPASS.Common.Interfaces;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.ApiDtos;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
 using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
-using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
 using COMPASS.Common.ViewModels.SidePanels;
 
 namespace COMPASS.Common.Tools
@@ -23,10 +14,6 @@ namespace COMPASS.Common.Tools
             log4net.GlobalContext.Properties["CompassDataPath"] = App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath;
             log4net.Config.XmlConfigurator.Configure(new FileInfo("log4net.config"));
             FileLog = log4net.LogManager.GetLogger(nameof(Logger));
-            //if (Application.Current is not null)
-            //{
-            //    Application.Current.DispatcherUnhandledException += LogUnhandledException;
-            //}
             Info($"Launching Compass v{Reflection.Version}");
         }
 
