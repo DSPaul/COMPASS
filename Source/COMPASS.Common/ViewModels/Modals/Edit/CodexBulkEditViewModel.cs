@@ -227,7 +227,6 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         
         #endregion
         
-        
         #region IModalViewModel
         
         public override string WindowTitle => "Bulk edit items";

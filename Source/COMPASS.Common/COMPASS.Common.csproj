@@ -71,6 +71,7 @@
     <PackageReference Include="Autofac" Version="8.2.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
     <PackageReference Include="Avalonia" Version="11.2.5" />
+    <PackageReference Include="Avalonia.Labs.Gif" Version="11.2.0" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.2.0.2" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5" />

@@ -7,6 +7,7 @@
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
              xmlns:converters="using:COMPASS.Common.Converters"
+             xmlns:gif="using:Avalonia.Labs.Gif"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="500"
              x:Class="COMPASS.Common.Views.Modals.Edit.CodexEditView"
              x:DataType="vm:CodexEditViewModel">
@@ -33,10 +34,9 @@
         <Panel Grid.Column="0" Grid.Row="1" Margin="10">
             <Image Width="300"
                    IsVisible="{Binding !ShowLoading}" Source="{Binding TempCodex.Cover}" />
-            <!-- TODO GIFS -->
-            <!-- <Image Width="150" Height="150" -->
-            <!--        gif:ImageBehavior.AnimatedSource="../Media/LoadingAnimation.gif"  -->
-            <!--        IsVisible="{Binding ShowLoading}"/> -->
+            <gif:GifImage Width="150" Height="150"
+                          IsVisible="{Binding ShowLoading}"
+                          Source="avares://COMPASS.Common/Assets/LoadingAnimation.gif"/>
         </Panel>
 
         <UniformGrid Grid.Column="0" Grid.Row="2"
