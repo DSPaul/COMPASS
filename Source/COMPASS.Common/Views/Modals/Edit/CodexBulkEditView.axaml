@@ -28,20 +28,19 @@
         </Grid.Styles>
 
         <TextBlock Text="Authors:" Margin="0,10" />
-        <!--  TODO make this control -->
-        <!-- <multiSelectCombobox:MultiSelectCombobox x:Name="AuthorsComboBox" Template="{StaticResource Default}" -->
-        <!--                                             Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1" ItemSeparator=","  -->
-        <!--                                             LookUpContract="{Binding Contract}" -->
-        <!--                                             ItemSource="{Binding MVM.CollectionVM.FilterVM.AuthorList}"  -->
-        <!--                                             SelectedItems="{Binding Authors, Mode=TwoWay}"/> -->
+        <controls:MultiSelectAutoCompleteBox Grid.Row="1" Grid.Column="0" 
+                                             ItemsSource="{Binding MVM.CollectionVM.FilterVM.AuthorList}"
+                                             SelectedItems="{Binding Authors, Mode=TwoWay}"
+                                             Watermark="Add author" CanCreate="True"/>
 
         <TextBlock Text="Publisher:" Grid.Row="2" Grid.Column="0" Margin="0,10" />
         <!-- TODO allow creating new elements, keep an eye on avalonia #18094 -->
         <ComboBox Grid.Row="3" Grid.Column="0"
                   HorizontalAlignment="Stretch"
-                  Background="Transparent" BorderBrush="{StaticResource TextMutedColor}"
+                  BorderBrush="LightGray"
+                  Background="{DynamicResource TextControlBackground}"
                   SelectedItem="{Binding Publisher}"
-                  ItemsSource="{Binding MVM.CollectionVM.FilterVM.PublisherList}" />
+                  ItemsSource="{Binding PublisherOptions}" />
 
         <!-- Smaller properties -->
         <Grid Grid.Row="4" Grid.Column="0" Margin="0,10"
@@ -72,7 +71,8 @@
             <TextBlock Grid.Row="1" Grid.Column="3"
                        Text="Rating:" />
             <controls:RatingControl Grid.Column="4" Grid.Row="1" Margin="5"
-                                    Value="{Binding Rating, Mode=TwoWay}" />
+                                    Value="{Binding Rating, Mode=TwoWay}"
+                                    CanClear="True"/>
         </Grid>
 
         <Grid Grid.Row="5" Grid.ColumnSpan="2" Grid.Column="0" 

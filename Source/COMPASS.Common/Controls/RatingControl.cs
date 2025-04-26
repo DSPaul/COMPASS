@@ -7,6 +7,9 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Data;
 using System.Collections.Generic;
 using System.Linq;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using iText.Layout.Splitting;
 
 namespace COMPASS.Common.Controls;
 
@@ -14,9 +17,11 @@ namespace COMPASS.Common.Controls;
 
 // This Attribute specifies that "PART_StarsPresenter" is a control, which must be present in the Control-Template
 [TemplatePart("PART_StarsPresenter", typeof(ItemsControl))]
+[TemplatePart("PART_Clear", typeof(Button))]
 public class RatingControl : TemplatedControl 
 {
     private ItemsControl? _starsPresenter;
+    private Button? _clearButton;
  
     public RatingControl() 
     { 
@@ -59,6 +64,25 @@ public class RatingControl : TemplatedControl
         set => SetAndRaise(ValueProperty, ref _value, value);
     }
 
+    public static readonly StyledProperty<bool> CanClearProperty = AvaloniaProperty.Register<RatingControl, bool>(
+        nameof(CanClear));
+
+    public bool CanClear
+    {
+        get => GetValue(CanClearProperty);
+        set => SetValue(CanClearProperty, value);
+    }
+
+    private bool _showClear;
+
+    public static readonly DirectProperty<RatingControl, bool> ShowClearProperty = AvaloniaProperty.RegisterDirect<RatingControl, bool>(
+        nameof(ShowClear), o => o.ShowClear);
+
+    public bool ShowClear
+    {
+        get => _showClear;
+        set => SetAndRaise(ShowClearProperty, ref _showClear, value);
+    }
 
     /// <summary>
     /// Defines the <see cref="Stars"/> property.
@@ -90,11 +114,16 @@ public class RatingControl : TemplatedControl
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
-
-        // if the changed property is the NumberOfStarsProperty, we need to update the stars
+        
         if (change.Property == NumberOfStarsProperty) 
         {
             UpdateStars();
+        }
+        
+        else if (change.Property == CanClearProperty ||
+                 change.Property == ValueProperty)
+        {
+            ShowClear = CanClear && Value > 0;
         }
     }
 
@@ -110,13 +139,24 @@ public class RatingControl : TemplatedControl
             _starsPresenter.PointerReleased-= StarsPresenter_PointerReleased;
         }
 
+        if (_clearButton is not null)
+        {
+            _clearButton.Click -= ClearButtonOnClick;
+        }
+
         // try to find the control with the given name
         _starsPresenter = e.NameScope.Find("PART_StarsPresenter") as ItemsControl;
+        _clearButton = e.NameScope.Find("PART_Clear") as Button;
 
         // listen to pointer-released events on the stars presenter.
         if(_starsPresenter != null)
         {
             _starsPresenter.PointerReleased += StarsPresenter_PointerReleased;
+        }
+
+        if (_clearButton != null)
+        {
+            _clearButton.Click += ClearButtonOnClick;
         }
     }
 
@@ -136,11 +176,16 @@ public class RatingControl : TemplatedControl
         }
     }
 
-    private void StarsPresenter_PointerReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
+    private void StarsPresenter_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (e.Source is Path star)
         {
             Value = star.DataContext as int? ?? 0;
         }
+    }
+    
+    private void ClearButtonOnClick(object? sender, RoutedEventArgs e)
+    {
+        Value = 0;
     }
 }

@@ -44,17 +44,17 @@
         <Setter Property="VerticalAlignment" Value="Center" />
         <!-- <Setter Property="Background" Value="{StaticResource ButtonBackground}" /> -->
         <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
-        <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
-        
+        <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}" />
+
         <Setter Property="Template">
             <ControlTemplate>
                 <Panel>
                     <Border x:Name="OuterBorder"
                             Background="{TemplateBinding Background}"
                             BorderThickness="2"
-                            CornerRadius="{TemplateBinding CornerRadius}" 
+                            CornerRadius="{TemplateBinding CornerRadius}"
                             HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                            Margin="{TemplateBinding Margin}" 
+                            Margin="{TemplateBinding Margin}"
                             Padding="{TemplateBinding Padding}">
                         <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalAlignment}"
@@ -72,7 +72,7 @@
                                               Content="{TemplateBinding Content}" />
                         </Grid>
                     </Border>
-                    
+
                     <!-- Is default indicator -->
                     <!-- <materialIcons:MaterialIcon Height="10" Margin="3" Kind="KeyboardReturn" -->
                     <!--                             IsHitTestVisible="False" -->
@@ -87,29 +87,29 @@
                 </Panel>
             </ControlTemplate>
         </Setter>
-        
+
         <Style Selector="^:pointerover /template/ Border#OuterBorder">
-            <Setter Property="Background" Value="{StaticResource ButtonHover}"/>
+            <Setter Property="Background" Value="{StaticResource ButtonHover}" />
         </Style>
-        
+
         <Style Selector="^.Outline">
-            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="2" />
-            
-            <Style Selector="^ /template/ Border#OuterBorder" >
-                <Setter Property="BorderBrush" Value="Transparent"/>
+
+            <Style Selector="^ /template/ Border#OuterBorder">
+                <Setter Property="BorderBrush" Value="Transparent" />
             </Style>
-            
+
             <Style Selector="^:pointerover /template/ Border#OuterBorder">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderBrush" Value="{TemplateBinding BorderBrush}"/>
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="{TemplateBinding BorderBrush}" />
             </Style>
             <Style Selector="^:pressed /template/ Border#OuterBorder">
-                <Setter Property="Background" Value="{TemplateBinding BorderBrush}"/>
+                <Setter Property="Background" Value="{TemplateBinding BorderBrush}" />
             </Style>
         </Style>
     </ControlTheme>
-    
+
     <!--CollapsableTabItem-->
     <ControlTheme TargetType="controls:CollapsableTabItem"
                   x:Key="{x:Type controls:CollapsableTabItem}">
@@ -221,39 +221,48 @@
 
                     </DataValidationErrors.Styles>
                     <!--This is our stars-presenter. Make sure to set the name, so the control can be found.-->
-                    <ItemsControl x:Name="PART_StarsPresenter"
-                                  ItemsSource="{TemplateBinding Stars}">
-                        <!--We want to have the stars drawn horizontally. Therefore we change the ItemsPanel accordingly-->
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="5" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
+                    <Grid ColumnDefinitions="*, Auto">
+                        <ItemsControl x:Name="PART_StarsPresenter"
+                                      ItemsSource="{TemplateBinding Stars}">
+                            <!--We want to have the stars drawn horizontally. Therefore we change the ItemsPanel accordingly-->
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="5" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
 
-                        <!--Items is an array if integer. Let's add a Path as the DataTemplate-->
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Path Classes="star">
-                                    <!--We enable or disable classes through a boolean value. We use our IsSmallerOrEqualConverter to do so. -->
-                                    <Classes.selected>
-                                        <MultiBinding Converter="{StaticResource IsSmallerOrEqualConverter}">
-                                            <!--This is our dataContext, so the number of this item-->
-                                            <Binding />
-                                            <!--This is the binding to the RatingControls current value-->
-                                            <Binding
-                                                RelativeSource="{RelativeSource AncestorType=controls:RatingControl}"
-                                                Path="Value" />
-                                        </MultiBinding>
-                                    </Classes.selected>
-                                </Path>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                            <!--Items is an array if integer. Let's add a Path as the DataTemplate-->
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Path Classes="star">
+                                        <!--We enable or disable classes through a boolean value. We use our IsSmallerOrEqualConverter to do so. -->
+                                        <Classes.selected>
+                                            <MultiBinding Converter="{StaticResource IsSmallerOrEqualConverter}">
+                                                <!--This is our dataContext, so the number of this item-->
+                                                <Binding />
+                                                <!--This is the binding to the RatingControls current value-->
+                                                <Binding
+                                                    RelativeSource="{RelativeSource AncestorType=controls:RatingControl}"
+                                                    Path="Value" />
+                                            </MultiBinding>
+                                        </Classes.selected>
+                                    </Path>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <controls:IconButton Grid.Column="1" Margin="2,0"
+                                             Name="PART_Clear"
+                                             IsVisible="{TemplateBinding ShowClear}"
+                                             Theme="{StaticResource IconOnly}"
+                                             ToolTip.Tip="Clear rating"
+                                             Icon="Clear"/>
+                    </Grid>
                 </DataValidationErrors>
             </ControlTemplate>
         </Setter>
     </ControlTheme>
 
+    <!-- Explainer -->
     <ControlTheme x:Key="{x:Type controls:Explainer}" TargetType="controls:Explainer">
         <Setter Property="Template">
             <ControlTemplate>
@@ -263,6 +272,7 @@
         </Setter>
     </ControlTheme>
 
+    <!-- Chip -->
     <ControlTheme x:Key="{x:Type controls:Chip}" TargetType="controls:Chip">
         <Setter Property="Template">
             <ControlTemplate>
@@ -273,12 +283,13 @@
         </Setter>
     </ControlTheme>
 
+    <!-- Group Chip -->
     <ControlTheme x:Key="GroupChip" TargetType="controls:Chip">
-        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Template">
             <ControlTemplate>
                 <StackPanel Orientation="Vertical" Background="Transparent"
-                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}" >
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}">
                     <TextBlock
                         Text="{TemplateBinding Text, Converter={x:Static converters:FuncConverters.ToUpperConverter}}"
                         Foreground="{StaticResource TextMutedColor}"
@@ -291,18 +302,95 @@
             </ControlTemplate>
         </Setter>
     </ControlTheme>
+    
+    <!-- Removable Chip -->
+    <ControlTheme x:Key="Removable" TargetType="controls:Chip">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Style Selector="^ /template/ Border:pointerover > StackPanel">
+            <Style Selector="^ > TextBlock">
+                <Setter Property="TextDecorations" Value="Strikethrough" />
+            </Style>
+            <Style Selector="^ > materialIcons|MaterialIcon">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+        </Style>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border CornerRadius="5" Margin="2,3" Background="{TemplateBinding Background}">
+                    <StackPanel Orientation="Horizontal" Margin="7,2">
+                        <TextBlock Text="{TemplateBinding Name}" FontSize="14" Margin="2,0" />
+                        <materialIcons:MaterialIcon Kind="Close" IsVisible="False" Width="14"
+                                                    Height="14" VerticalAlignment="Center" Margin="0,1" />
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+    
+    <!-- MultiSelect Autocomplete box -->
+    <ControlTheme x:Key="{x:Type controls:MultiSelectAutoCompleteBox}" TargetType="controls:MultiSelectAutoCompleteBox">
+        <Setter Property="BorderBrush" Value="LightGray"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:MultiSelectAutoCompleteBox">
+
+                <Border BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Background="{DynamicResource TextControlBackground}">
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{TemplateBinding SelectedItems}" VerticalAlignment="Center">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Command="{Binding $parent[controls:MultiSelectAutoCompleteBox].RemoveItemCommand}"
+                                            CommandParameter="{Binding}"
+                                            Classes="BlankButton">
+                                        <controls:Chip Theme="{StaticResource Removable}" Margin="2,0"
+                                                       Background="LightSlateGray" Name="{Binding $self.DataContext}"/>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBox Name="PART_Input" 
+                                 Background="Transparent"
+                                 Watermark="{TemplateBinding Watermark}"
+                                 Text="{TemplateBinding Text, Mode=TwoWay}" 
+                                 HorizontalAlignment="Stretch" 
+                                 BorderThickness="0"/>
+                        <Popup Name="PART_SuggestionPopup" 
+                               IsLightDismissEnabled="True"
+                               MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
+                               MaxHeight="300">
+                            <ListBox Name="PART_Suggestions"
+                                     ItemsSource="{TemplateBinding SuggestedItems}" 
+                                     HorizontalAlignment="Stretch">
+                            </ListBox>
+                        </Popup>
+                    </StackPanel>
+                </Border>
+
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
 
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="10">
-                <controls:FilterModeSelector/>
-                
+                <controls:FilterModeSelector />
+
                 <StackPanel Orientation="Horizontal">
                     <controls:IconButton Icon="About" Theme="{StaticResource IconOnly}" />
-                    <controls:IconButton Icon="Search" IsDefault="True" 
+                    <controls:IconButton Icon="Search" IsDefault="True"
                                          Theme="{StaticResource IconOnly}" />
                 </StackPanel>
-                <controls:IconButton Icon="About" Content="About" Background="DimGray"/>
+                <controls:IconButton Icon="About" Content="About" Background="DimGray" />
                 <controls:IconButton Icon="Achievement" Content="Outlined button" Classes="Outline" />
                 <controls:IconButton Content="Icon btn without icon" />
                 <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">

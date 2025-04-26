@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using COMPASS.Common.Models;
@@ -6,7 +7,15 @@ namespace COMPASS.Common.Views.Windows;
 
 public partial class NotificationWindow : Window
 {
-    private Notification _notification;
+    /// <summary>
+    /// //DO NOT USE, FOR DESIGNER ONLY
+    /// </summary>
+    public NotificationWindow()
+    {
+        throw new Exception("DO NOT USE PARAMETERLESS CONSTRUCTOR");
+    }
+    
+    private readonly Notification _notification;
     public NotificationWindow(Notification notification)
     {
         InitializeComponent();

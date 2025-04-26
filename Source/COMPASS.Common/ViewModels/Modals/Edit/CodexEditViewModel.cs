@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,17 +14,16 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.Tools;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
-    public class CodexEditViewModel : ViewModelBase, IModalViewModel, IConfirmable
+    public class CodexEditViewModel : CodexEditBaseViewModel
     {
-        public CodexEditViewModel(Codex? toEdit = null)
+        public CodexEditViewModel(Codex? toEdit = null) : base()
         {
             _editedCodex = toEdit;
-            //apply all changes to new codex so they can be cancelled, only copy changes over after OK is clicked
+            //apply all changes to new codex so they can be canceled, only copy changes over after OK is clicked
             _tempCodex = _editedCodex == null ? CodexOperations.CreateNewCodex(MainViewModel.CollectionVM.CurrentCollection) : new(_editedCodex);
 
             TempCodex.LoadCover();
@@ -43,12 +40,6 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         private readonly Codex? _editedCodex;
         
         #region Properties
-
-
-        private ObservableCollection<TreeNode>? _treeViewSource;
-        public ObservableCollection<TreeNode> AllTagsAsTreeNodes => _treeViewSource ??= new(TempCodex.Collection.RootTags.Select(tag => new TreeNode(tag)));
-
-        private HashSet<TreeNode> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
 
         private bool CreateNewCodex => _editedCodex == null;
 
@@ -125,7 +116,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public AsyncRelayCommand QuickCreateTagCommand => _quickCreateTagCommand ??= new(QuickCreateTag);
         public async Task QuickCreateTag()
         {
-            //keep track of count to check of tags were created
+            //keep track of the count to check of tags were created
             int tagCount = MainViewModel.CollectionVM.CurrentCollection.RootTags.Count;
 
             TagEditViewModel tagEditVm = new(null, createNew: true);
@@ -215,12 +206,8 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         #endregion
 
         #region IConfirmable
-
         
-
-        private RelayCommand? _confirmCommand;
-        public IRelayCommand ConfirmCommand => _confirmCommand ??= new(Confirm);
-        public void Confirm()
+        protected override void Confirm()
         {
             //Copy changes into Codex
             if (!CreateNewCodex)
@@ -240,10 +227,8 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             MainViewModel.CollectionVM.FilterVM.ReFilter();
             CloseAction();
         }
-
-        private RelayCommand? _cancelCommand;
-        public IRelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
-        public void Cancel()
+        
+        protected override void Cancel()
         {
             TempCodex.Dispose();
             CloseAction();
@@ -281,10 +266,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
         #region IModalViewModel
 
-        public string WindowTitle => "Edit item properties";
-        public int? WindowWidth => 1200;
-        public int? WindowHeight => 500;
-        public Action CloseAction { get; set; } = () => { };
+        public override string WindowTitle => "Edit item properties";
+        public override int? WindowWidth => 1200;
+        public override int? WindowHeight => 500;
         
         #endregion
     }

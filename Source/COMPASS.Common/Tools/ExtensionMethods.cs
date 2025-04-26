@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using FuzzySharp;
 using Org.BouncyCastle.Tls;
 
 namespace COMPASS.Common.Tools
@@ -109,6 +110,18 @@ namespace COMPASS.Common.Tools
         public static string RemoveDiacritics(this string text) =>
             //"héllo" becomes "he<acute>llo", which in turn becomes "hello".
             string.Concat(text.Normalize(NormalizationForm.FormD).Where(ch => CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark)).Normalize(NormalizationForm.FormC);
+
+        public static bool MatchesFuzzy(this string? input, string pattern, int threshold = 80)
+        {
+            if (string.IsNullOrEmpty(pattern)) return true; //an empty pattern matches everything
+            if (string.IsNullOrEmpty(input)) return false;
+            
+            string loweredInput = input.ToLower();
+            string loweredPattern = pattern.ToLower();
+            return Fuzz.TokenInitialismRatio(loweredInput, loweredPattern) > threshold || //include acronyms
+                    input.Contains(pattern, StringComparison.CurrentCultureIgnoreCase) || //include string fragments
+                    Fuzz.PartialRatio(loweredInput, loweredPattern) > 80; //include spelling errors
+        }
         #endregion
 
         #region ReflectionExtentions

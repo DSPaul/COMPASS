@@ -1,6 +1,7 @@
 ﻿using Avalonia.Media;
 using FuzzySharp;
 using System;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Models.Filters
 {
@@ -18,12 +19,7 @@ namespace COMPASS.Common.Models.Filters
         {
             string? searchTerm = FilterValue as string;
 
-            if (string.IsNullOrWhiteSpace(searchTerm)) return false;
-
-            return
-                Fuzz.TokenInitialismRatio(codex.Title.ToLowerInvariant(), searchTerm) > 80 || //include acronyms
-                codex.Title.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase) || //include string fragments
-                Fuzz.PartialRatio(codex.Title.ToLowerInvariant(), searchTerm) > 80; //include spelling errors
+            return !string.IsNullOrWhiteSpace(searchTerm) && codex.Title.MatchesFuzzy(searchTerm);
         }
     }
 }

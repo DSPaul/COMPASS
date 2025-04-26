@@ -5,13 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using COMPASS.Common.Interfaces;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
-    public class CodexBulkEditViewModel : ViewModelBase, IModalViewModel, IConfirmable
+    public class CodexBulkEditViewModel : CodexEditBaseViewModel
     {
-        public CodexBulkEditViewModel(List<Codex> toEdit)
+        public CodexBulkEditViewModel(List<Codex> toEdit) : base()
         {
             if (toEdit == null || toEdit.Count < 2)
             {
@@ -19,7 +18,6 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             }
             
             _editedCodices = toEdit;
-            _collection = toEdit.First().Collection;
 
             //set common metadata
             _commonAuthors = _editedCodices.Select(f => f.Authors.ToList()).Aggregate((xs, ys) => xs.Intersect(ys).ToList());
@@ -53,7 +51,6 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
         private readonly List<Codex> _editedCodices;
         private readonly List<string> _commonAuthors;
-        private readonly CodexCollection _collection;
         
         #region Properties
 
@@ -99,9 +96,6 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             set => SetProperty(ref _version, value);
         }
         
-        private ObservableCollection<TreeNode>? _allTagsAsTreeNodes;
-        public ObservableCollection<TreeNode> AllTagsAsTreeNodes => _allTagsAsTreeNodes ??= new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeNode(tag)));
-
         private ObservableCollection<Tag> _tagsToAdd = [];
         public ObservableCollection<Tag> TagsToAdd
         {
@@ -157,10 +151,8 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 break;
             }
         }
-
-        private RelayCommand? _confirmCommand;
-        public IRelayCommand ConfirmCommand => _confirmCommand ??= new(OKBtn);
-        public void OKBtn()
+        
+        protected override void Confirm()
         {
             //find added and removed authors
             var deletedAuthors = _commonAuthors.Except(Authors).ToList();
@@ -230,25 +222,17 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                     foreach (Tag t in TagsToRemove) f.Tags.Remove(t);
                 }
             }
-            Close();
-        }
-
-        private RelayCommand? _cancelCommand;
-        public IRelayCommand CancelCommand => _cancelCommand ??= new(Close);
-        
-        private void Close()
-        {
             CloseAction();
         }
+        
         #endregion
         
         
         #region IModalViewModel
         
-        public string WindowTitle => "Bulk edit items";
-        public int? WindowWidth => 800;
-        public int? WindowHeight => 400;
-        public Action CloseAction { get; set; } = () => { };
+        public override string WindowTitle => "Bulk edit items";
+        public override int? WindowWidth => 800;
+        public override int? WindowHeight => 400;
 
         #endregion
 
