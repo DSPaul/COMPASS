@@ -1,6 +1,6 @@
-﻿using COMPASS.Common.Interfaces;
-using System;
+﻿using System;
 using System.IO;
+using COMPASS.Common.Interfaces;
 
 namespace COMPASS.Windows.Services
 {

@@ -1,7 +1,4 @@
-﻿using COMPASS.Services;
-using COMPASS.Tools;
-using COMPASS.ViewModels;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -9,6 +6,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using COMPASS.Services;
+using COMPASS.Tools;
+using COMPASS.ViewModels;
 
 namespace COMPASS.Windows
 {

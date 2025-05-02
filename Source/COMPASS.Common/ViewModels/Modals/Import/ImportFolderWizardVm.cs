@@ -1,9 +1,9 @@
-﻿using COMPASS.Common.Models;
-using COMPASS.Common.Tools;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using COMPASS.Common.Models;
+using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Selection;
 
 namespace COMPASS.Common.ViewModels.Modals.Import
@@ -27,6 +27,8 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             //Add SubFolders Step
             if (!_autoImport)
             {
+                //TODO: this step isn't really needed if there are no subfolders
+                //except for auto import checkbox, could probably just check that behind the scenes
                 Steps.Add(_subFoldersStep);
                 SelectSubfoldersVM = new(folders);
 

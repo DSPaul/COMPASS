@@ -1,4 +1,9 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -7,14 +12,9 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.ViewModels.Modals.Import;
 using HtmlAgilityPack;
 using ImageMagick;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using COMPASS.Common.ViewModels.Modals.Import;
 
 namespace COMPASS.Common.ViewModels.Sources
 {
@@ -56,7 +56,7 @@ namespace COMPASS.Common.ViewModels.Sources
         {
             if (String.IsNullOrEmpty(codex.Sources.SourceURL)) { return false; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from {codex.Sources.SourceURL}"));
-            OpenQA.Selenium.WebDriver? driver = await App.Container.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
+            OpenQA.Selenium.WebDriver? driver = await ServiceResolver.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
 
             if (driver is null) { return false; }
 

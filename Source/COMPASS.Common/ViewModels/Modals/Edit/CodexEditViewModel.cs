@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -70,7 +70,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public AsyncRelayCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
         private async Task BrowsePath()
         {
-            var filesService = App.Container.Resolve<IFilesService>();
+            var filesService = ServiceResolver.Resolve<IFilesService>();
 
             var files = await filesService.OpenFilesAsync(new()
             {
@@ -188,7 +188,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public AsyncRelayCommand ChooseCoverCommand => _chooseCoverCommand ??= new(ChooseCover);
         private async Task ChooseCover()
         {
-            var filesService = App.Container.Resolve<IFilesService>();
+            var filesService = ServiceResolver.Resolve<IFilesService>();
 
             var files = await filesService.OpenFilesAsync(new()
             {
@@ -220,7 +220,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(TempCodex);
             }
 
-            App.Container.Resolve<ICodexCollectionStorageService>().Save(TempCodex.Collection);
+            ServiceResolver.Resolve<ICodexCollectionStorageService>().Save(TempCodex.Collection);
 
             //Add new Authors, Publishers, ect. to metadata lists
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();

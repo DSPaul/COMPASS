@@ -1,11 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Models;
-using COMPASS.Common.Tools;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Autofac;
+using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -60,7 +60,7 @@ namespace COMPASS.Common.ViewModels
                     if (_tagsRoot != null) return _tagsRoot;
 
                     //load if not done yet
-                    if (!_collection.AllTags.Any()) App.Container.Resolve<ICodexCollectionStorageService>().LoadTags(_collection);
+                    if (!_collection.AllTags.Any()) ServiceResolver.Resolve<ICodexCollectionStorageService>().LoadTags(_collection);
                     //convert to nodes
                     _tagsRoot = new CheckableTreeNode<Tag>(new Tag(), containerOnly: true)
                     {

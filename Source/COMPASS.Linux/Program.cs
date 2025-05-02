@@ -1,4 +1,6 @@
-﻿using Autofac;
+﻿using System;
+using System.Threading.Tasks;
+using Autofac;
 using Avalonia;
 using COMPASS.Common;
 using COMPASS.Common.DependencyInjection;
@@ -6,8 +8,6 @@ using COMPASS.Common.Interfaces;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Linux.Services;
-using System;
-using System.Threading.Tasks;
 
 namespace COMPASS.Linux;
 
@@ -56,6 +56,6 @@ class Program
         builder.RegisterType<EnvironmentVarsService>().As<IEnvironmentVarsService>().SingleInstance();
         builder.RegisterInstance<IWebDriverService>(new WebDriverService());
 
-        App.Container = builder.Build();
+        ServiceResolver.Initialize(builder.Build());
     }
 }

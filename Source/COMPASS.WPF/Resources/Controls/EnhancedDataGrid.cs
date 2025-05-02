@@ -1,8 +1,5 @@
 ﻿//https://bengribaudo.com/blog/2012/03/14/1942/saving-restoring-wpf-datagrid-columns-size-sorting-and-order
 
-using COMPASS.Services;
-using COMPASS.Tools;
-using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -10,6 +7,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using COMPASS.Services;
+using COMPASS.Tools;
+using Newtonsoft.Json;
 
 namespace COMPASS.Resources.Controls
 {

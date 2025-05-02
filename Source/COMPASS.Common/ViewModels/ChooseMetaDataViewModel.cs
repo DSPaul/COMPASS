@@ -1,17 +1,17 @@
-﻿using COMPASS.Common.Models;
-using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
-using COMPASS.Common.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -60,7 +60,7 @@ namespace COMPASS.Common.ViewModels
 
         protected override Task Finish()
         {
-            var thumbnailStorageService = App.Container.Resolve<IThumbnailStorageService>();
+            var thumbnailStorageService = ServiceResolver.Resolve<IThumbnailStorageService>();
             
             ApplyChoice();
             CloseAction();

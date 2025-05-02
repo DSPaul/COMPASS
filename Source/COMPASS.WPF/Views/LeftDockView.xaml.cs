@@ -1,13 +1,13 @@
-﻿using COMPASS.Models;
-using COMPASS.Models.Enums;
-using COMPASS.ViewModels;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using COMPASS.Models;
+using COMPASS.Models.Enums;
+using COMPASS.ViewModels;
 
 namespace COMPASS.Views
 {

@@ -1,11 +1,11 @@
-﻿using Autofac;
+﻿using System;
+using System.IO;
+using System.Windows;
+using Autofac;
 using COMPASS.Interfaces;
 using COMPASS.Models.Enums;
 using COMPASS.Services;
 using COMPASS.ViewModels;
-using System;
-using System.IO;
-using System.Windows;
 
 namespace COMPASS
 {

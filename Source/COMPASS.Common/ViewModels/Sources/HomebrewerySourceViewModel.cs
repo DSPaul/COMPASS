@@ -1,4 +1,10 @@
-﻿using Autofac;
+﻿using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -7,18 +13,12 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.ViewModels.Modals.Import;
 using ImageMagick;
 using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
-using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using COMPASS.Common.ViewModels.Modals.Import;
 
 namespace COMPASS.Common.ViewModels.Sources
 {
@@ -72,7 +72,7 @@ namespace COMPASS.Common.ViewModels.Sources
         {
             if (String.IsNullOrEmpty(codex.Sources.SourceURL)) { return false; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Homebrewery"));
-            WebDriver? driver = await App.Container.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
+            WebDriver? driver = await ServiceResolver.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
 
             if (driver == null) { return false; }
 

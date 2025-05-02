@@ -1,9 +1,9 @@
-﻿using Avalonia.Media;
-using COMPASS.Common.Models.CodexProperties;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using Avalonia.Media;
+using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Models.XmlDtos

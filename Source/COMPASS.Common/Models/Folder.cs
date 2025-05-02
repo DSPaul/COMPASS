@@ -1,11 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Models
 {

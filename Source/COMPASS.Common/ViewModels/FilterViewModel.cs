@@ -1,17 +1,17 @@
-﻿using Avalonia.Input;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using Avalonia.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Filters;
+using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using COMPASS.Common.Models.Hierarchy;
 
 namespace COMPASS.Common.ViewModels
 {

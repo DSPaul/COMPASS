@@ -1,9 +1,9 @@
-﻿using Avalonia.Data;
+﻿using System;
+using System.Globalization;
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
-using System;
-using System.Globalization;
 
 namespace COMPASS.Common.Converters
 {

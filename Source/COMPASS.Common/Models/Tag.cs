@@ -1,11 +1,11 @@
-﻿using Avalonia.Media;
-using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Tools;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Services;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Models
 {

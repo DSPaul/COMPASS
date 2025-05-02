@@ -1,5 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
+﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace COMPASS.Common.Models
 {

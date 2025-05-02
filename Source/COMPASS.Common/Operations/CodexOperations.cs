@@ -9,6 +9,7 @@ using Autofac;
 using Avalonia.Controls;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -39,7 +40,7 @@ namespace COMPASS.Common.Operations
             if (!success)
             {
                 Notification notification = new("Could not open item", "Could not open item, please check its sources");
-                await App.Container.Resolve<INotificationService>().ShowDialog(notification);
+                await ServiceResolver.Resolve<INotificationService>().ShowDialog(notification);
             }
 
             return success;
@@ -120,7 +121,7 @@ namespace COMPASS.Common.Operations
 
             Notification notification = Notification.AreYouSureNotification;
             notification.Body = "You are about to open " + toOpen.Count + " items. Are you sure you wish to continue?";
-            await App.Container.Resolve<INotificationService>().ShowDialog(notification);
+            await ServiceResolver.Resolve<INotificationService>().ShowDialog(notification);
 
             if (notification.Result == NotificationAction.Confirm)
             {
@@ -175,7 +176,7 @@ namespace COMPASS.Common.Operations
         {
             var codex = new Codex(collection);
             codex.ID = Utils.GetAvailableID(collection.AllCodices);
-            App.Container.Resolve<IThumbnailStorageService>().InitCodexImagePaths(codex);
+            ServiceResolver.Resolve<IThumbnailStorageService>().InitCodexImagePaths(codex);
             return codex;
         }
 
@@ -274,10 +275,10 @@ namespace COMPASS.Common.Operations
 
             //"Are you Sure?"
 
-            var windowedNotificationService = App.Container.Resolve<INotificationService>();
-            var codexCollectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
-            var thumbnailStorageService = App.Container.Resolve<IThumbnailStorageService>();
-            var userFilesStorageService = App.Container.Resolve<IUserFilesStorageService>();
+            var windowedNotificationService = ServiceResolver.Resolve<INotificationService>();
+            var codexCollectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
+            var thumbnailStorageService = ServiceResolver.Resolve<IThumbnailStorageService>();
+            var userFilesStorageService = ServiceResolver.Resolve<IUserFilesStorageService>();
 
             string messageSingle = $"Moving  {toMoveList[0].Title} to {targetCollection.Name} will remove all tags from the item, are you sure you wish to continue?";
             string messageMultiple = $"Moving these {toMoveList.Count} items to {targetCollection.Name} will remove all tags from these items, are you sure you wish to continue?";
@@ -341,8 +342,8 @@ namespace COMPASS.Common.Operations
         });
         public static async Task DeleteCodices(IList<Codex> codicesToDelete, bool askForConfirmation)
         {
-            var collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
-            var thumbnailStorageService = App.Container.Resolve<IThumbnailStorageService>();
+            var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
+            var thumbnailStorageService = ServiceResolver.Resolve<IThumbnailStorageService>();
             
             Notification deleteWarnNotification = Notification.AreYouSureNotification;
             if (askForConfirmation)
@@ -350,7 +351,7 @@ namespace COMPASS.Common.Operations
                 deleteWarnNotification.Body = $"You are about to remove {codicesToDelete.Count} item{(codicesToDelete.Count > 1 ? @"s" : @"")}. " +
                                               $"This cannot be undone. " +
                                               $"Are you sure you want to continue?";
-                var windowedNotificationService = App.Container.Resolve<INotificationService>();
+                var windowedNotificationService = ServiceResolver.Resolve<INotificationService>();
                 await windowedNotificationService.ShowDialog(deleteWarnNotification);
             }
 
@@ -443,7 +444,7 @@ namespace COMPASS.Common.Operations
             }
 
             MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            App.Container.Resolve<ICodexCollectionStorageService>().Save(MainViewModel.CollectionVM.CurrentCollection);
+            ServiceResolver.Resolve<ICodexCollectionStorageService>().Save(MainViewModel.CollectionVM.CurrentCollection);
             MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
         private static async Task GetMetaData(Codex codex, ChooseMetaDataViewModel chooseMetaDataVM)

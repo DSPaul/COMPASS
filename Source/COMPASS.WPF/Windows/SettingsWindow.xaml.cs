@@ -1,12 +1,12 @@
-﻿using COMPASS.Models;
-using COMPASS.Services;
-using COMPASS.ViewModels;
-using Microsoft.Web.WebView2.Core;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using COMPASS.Models;
+using COMPASS.Services;
+using COMPASS.ViewModels;
+using Microsoft.Web.WebView2.Core;
 
 namespace COMPASS.Windows
 {

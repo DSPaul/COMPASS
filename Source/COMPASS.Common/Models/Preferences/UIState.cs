@@ -1,5 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.Enums;
 
 namespace COMPASS.Common.Models.Preferences

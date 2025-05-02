@@ -1,10 +1,10 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Models;
-using COMPASS.Common.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Models;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {

@@ -1,6 +1,6 @@
-﻿using COMPASS.ViewModels;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
+using COMPASS.ViewModels;
 
 namespace COMPASS.Views
 {

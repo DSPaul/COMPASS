@@ -1,15 +1,15 @@
-﻿using Autofac;
+﻿using System;
+using System.IO;
+using System.Threading;
+using System.Xml;
+using System.Xml.Serialization;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
-using System;
-using System.IO;
-using System.Threading;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace COMPASS.Common.Services
 {
@@ -21,7 +21,7 @@ namespace COMPASS.Common.Services
         public static PreferencesService GetInstance() => _prefService ??= new PreferencesService();
         #endregion
 
-        public string PreferencesFilePath => Path.Combine(App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath, "Preferences.xml");
+        public string PreferencesFilePath => Path.Combine(ServiceResolver.Resolve<IEnvironmentVarsService>().CompassDataPath, "Preferences.xml");
 
         public static readonly Lock _writeLocker = new();
 

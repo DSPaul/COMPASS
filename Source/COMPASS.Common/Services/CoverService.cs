@@ -5,7 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
@@ -31,7 +31,7 @@ namespace COMPASS.Common.Services
         /// <exception cref="System.OperationCanceledException">The token has had cancellation requested.</exception>
         public static async Task GetCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null)
         {
-            var thumbnailStorageService = App.Container.Resolve<IThumbnailStorageService>();
+            var thumbnailStorageService = ServiceResolver.Resolve<IThumbnailStorageService>();
             
             Codex metaDatalessCodex = new(codex.Collection)
             {

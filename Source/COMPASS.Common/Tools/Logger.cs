@@ -1,8 +1,9 @@
-﻿using Autofac;
+﻿using System;
+using System.IO;
+using Autofac;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models.Enums;
-using System;
-using System.IO;
 using COMPASS.Common.ViewModels.SidePanels;
 
 namespace COMPASS.Common.Tools
@@ -11,7 +12,7 @@ namespace COMPASS.Common.Tools
     {
         public static void Init()
         {
-            log4net.GlobalContext.Properties["CompassDataPath"] = App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath;
+            log4net.GlobalContext.Properties["CompassDataPath"] = ServiceResolver.Resolve<IEnvironmentVarsService>().CompassDataPath;
             log4net.Config.XmlConfigurator.Configure(new FileInfo("log4net.config"));
             FileLog = log4net.LogManager.GetLogger(nameof(Logger));
             Info($"Launching Compass v{Reflection.Version}");

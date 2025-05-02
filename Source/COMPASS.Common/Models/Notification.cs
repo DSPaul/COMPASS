@@ -1,7 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Models.Enums;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.Models.Enums;
 
 namespace COMPASS.Common.Models
 {

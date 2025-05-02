@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Tools;
 using Tests.Mocks;
@@ -17,7 +18,7 @@ namespace Tests
             builder.RegisterType<MockNotificationService>().As<INotificationService>();
             builder.RegisterType<MockEnvironmentVarsService>().As<IEnvironmentVarsService>();
 
-            //App.Container = builder.Build();
+            ServiceResolver.Initialize(builder.Build());
 
             Logger.Init();
             //TODO

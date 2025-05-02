@@ -1,5 +1,5 @@
-﻿using Autofac;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels;
@@ -17,7 +17,7 @@ public partial class MainWindow : Window
     private void Window_Closing(object? sender, Avalonia.Controls.WindowClosingEventArgs e)
     {
         ProgressViewModel.GetInstance().CancelBackgroundTask();
-        App.Container.Resolve<ICodexCollectionStorageService>().Save(MainViewModel.CollectionVM.CurrentCollection);
+        ServiceResolver.Resolve<ICodexCollectionStorageService>().Save(MainViewModel.CollectionVM.CurrentCollection);
         PreferencesService.GetInstance().SavePreferences();
     }
 }

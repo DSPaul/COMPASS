@@ -1,5 +1,5 @@
-﻿using Avalonia.Media;
-using System.IO;
+﻿using System.IO;
+using Avalonia.Media;
 
 namespace COMPASS.Common.Models.Filters
 {

@@ -1,5 +1,5 @@
-﻿using COMPASS.ViewModels.Import;
-using System.Windows;
+﻿using System.Windows;
+using COMPASS.ViewModels.Import;
 
 
 namespace COMPASS.Windows

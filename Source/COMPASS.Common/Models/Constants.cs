@@ -1,7 +1,7 @@
-﻿using Autofac;
-using COMPASS.Common.Interfaces;
-using System.IO;
+﻿using System.IO;
 using System.Text.RegularExpressions;
+using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Interfaces;
 
 namespace COMPASS.Common.Models
 {
@@ -14,9 +14,9 @@ namespace COMPASS.Common.Models
 
         //File names
         public const string SatchelInfoFileName = "SatchelInfo.json";
-        
 
-        public static string InstallersPath => Path.Combine(App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath, "Installers");
+
+        public static string InstallersPath => Path.Combine(ServiceResolver.Resolve<IEnvironmentVarsService>().CompassDataPath, "Installers");
         public const string AutoUpdateXMLPath = "https://raw.githubusercontent.com/DSPAUL/COMPASS/master/versionInfo.xml";
 
         //Regex expresions
@@ -29,7 +29,7 @@ namespace COMPASS.Common.Models
 
         [GeneratedRegex(@"\d+")]
         public static partial Regex RegexNumbersOnly();
-        
+
         //Command line arguments
         public const string CmdArgNotifyCrashed = "notify_crashed";
     }

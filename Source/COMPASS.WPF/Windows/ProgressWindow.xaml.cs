@@ -1,6 +1,6 @@
-﻿using COMPASS.ViewModels;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Windows;
+using COMPASS.ViewModels;
 
 namespace COMPASS.Windows
 {

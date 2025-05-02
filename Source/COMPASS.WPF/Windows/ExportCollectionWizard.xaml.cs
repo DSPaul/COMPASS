@@ -1,5 +1,5 @@
-﻿using COMPASS.ViewModels;
-using System.Windows;
+﻿using System.Windows;
+using COMPASS.ViewModels;
 
 namespace COMPASS.Windows
 {

@@ -1,15 +1,15 @@
-﻿using Avalonia.Media.Imaging;
-using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Models
 {

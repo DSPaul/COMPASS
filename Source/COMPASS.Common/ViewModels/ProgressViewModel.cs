@@ -1,8 +1,8 @@
-﻿using Avalonia.Threading;
+﻿using System.Collections.ObjectModel;
+using System.Threading;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
-using System.Collections.ObjectModel;
-using System.Threading;
 
 namespace COMPASS.Common.ViewModels
 {

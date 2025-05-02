@@ -6,9 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Autofac;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -21,7 +21,6 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
-using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.Views.Windows;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
@@ -33,8 +32,8 @@ namespace COMPASS.Common.ViewModels
         private SettingsViewModel()
         {
             _preferencesService = PreferencesService.GetInstance();
-            _environmentVarsService = App.Container.Resolve<IEnvironmentVarsService>();
-            _collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
+            _environmentVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
+            _collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
 
             WebViewDataDir = Path.Combine(_environmentVarsService.CompassDataPath, "WebViewData");
         }
@@ -372,7 +371,7 @@ namespace COMPASS.Common.ViewModels
         public AsyncRelayCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
         private async Task ChooseNewDataPath()
         {
-            var folders = await App.Container.Resolve<IFilesService>().OpenFoldersAsync(new()
+            var folders = await ServiceResolver.Resolve<IFilesService>().OpenFoldersAsync(new()
             {
                 Title = "Choose a new data location",
             });
@@ -480,7 +479,7 @@ namespace COMPASS.Common.ViewModels
             _environmentVarsService.CompassDataPath = NewDataPath;
 
             Notification changeSuccessful = new("Data path changed successfully", $"Data path was successfully changed to {_environmentVarsService.CompassDataPath}. COMPASS will now restart.");
-            App.Container.Resolve<INotificationService>().ShowDialog(changeSuccessful);
+            ServiceResolver.Resolve<INotificationService>().ShowDialog(changeSuccessful);
 
             //Restart COMPASS
             var currentExecutablePath = Environment.ProcessPath;
@@ -577,7 +576,7 @@ namespace COMPASS.Common.ViewModels
         public AsyncRelayCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
         public async Task BackupLocalFiles()
         {
-            var filesService = App.Container.Resolve<IFilesService>();
+            var filesService = ServiceResolver.Resolve<IFilesService>();
             var saveFile = await filesService.SaveFileAsync(new()
             {
                 FileTypeChoices = [filesService.ZipExtensionFilter]
@@ -604,7 +603,7 @@ namespace COMPASS.Common.ViewModels
         public AsyncRelayCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
         public async Task RestoreBackup()
         {
-            var filesService = App.Container.Resolve<IFilesService>();
+            var filesService = ServiceResolver.Resolve<IFilesService>();
             var files = await filesService.OpenFilesAsync(new()
             {
                 FileTypeFilter = [filesService.ZipExtensionFilter]

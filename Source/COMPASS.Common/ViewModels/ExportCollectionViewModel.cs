@@ -1,18 +1,18 @@
-﻿using Autofac;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
-using System;
-using System.IO;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
-using COMPASS.Common.Interfaces.Storage;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -111,7 +111,7 @@ namespace COMPASS.Common.ViewModels
 
         private async Task<string?> ChooseDestination()
         {
-            var filesService = App.Container.Resolve<IFilesService>();
+            var filesService = ServiceResolver.Resolve<IFilesService>();
 
             using var saveFile = await filesService.SaveFileAsync(new()
             {
@@ -130,7 +130,7 @@ namespace COMPASS.Common.ViewModels
         public async Task ExportToFile(string targetPath)
         {
             var progressVM = ProgressViewModel.GetInstance();
-            var collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
+            var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
 
             try
             {

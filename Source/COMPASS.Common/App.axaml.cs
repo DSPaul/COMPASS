@@ -50,8 +50,6 @@ public partial class App : Application
     
     public static Window MainWindow { get; private set; } = null!;
 
-    public static IContainer Container { get; set; } = null!;
-
     private void CompleteApplicationStart()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.FileSystem;
@@ -72,7 +72,7 @@ public class ImportFilesViewModel : ViewModelBase
         else if (!_autoImport)
         {
             Notification noFilesFound = new("No files found", "The selected folder did not contain any files.");
-            var windowedNotificationService = App.Container.Resolve<INotificationService>();
+            var windowedNotificationService = ServiceResolver.Resolve<INotificationService>();
             await windowedNotificationService.ShowDialog(noFilesFound);
         }
     }

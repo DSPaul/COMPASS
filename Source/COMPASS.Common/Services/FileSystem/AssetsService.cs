@@ -1,7 +1,7 @@
-﻿using Avalonia.Media.Imaging;
+﻿using System;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using COMPASS.Common.Models;
-using System;
 
 namespace COMPASS.Common.Services.FileSystem
 {

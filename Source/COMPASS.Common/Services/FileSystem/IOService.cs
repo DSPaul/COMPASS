@@ -1,13 +1,4 @@
-﻿using Autofac;
-using Avalonia.Platform.Storage;
-using COMPASS.Common.Interfaces;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels;
-using HtmlAgilityPack;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,7 +6,17 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using Autofac;
+using Avalonia.Platform.Storage;
+using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Interfaces;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels;
+using HtmlAgilityPack;
 using Microsoft.Extensions.FileSystemGlobbing;
+using Newtonsoft.Json.Linq;
 
 namespace COMPASS.Common.Services.FileSystem
 {
@@ -215,7 +216,7 @@ namespace COMPASS.Common.Services.FileSystem
         /// <returns> the selected path, null if canceled/failed / whatever </returns>
         public static async Task<string?> PickFolder()
         {
-            var filesService = App.Container.Resolve<IFilesService>();
+            var filesService = ServiceResolver.Resolve<IFilesService>();
 
             IList<IStorageFolder> folders = await filesService.OpenFoldersAsync();
 
@@ -236,7 +237,7 @@ namespace COMPASS.Common.Services.FileSystem
         /// <returns> IList with selected paths, empty list if canceled/failed / whatever </returns>
         public static async Task<IList<string>> TryPickFolders()
         {
-            var filesService = App.Container.Resolve<IFilesService>();
+            var filesService = ServiceResolver.Resolve<IFilesService>();
 
             FolderPickerOpenOptions options = new()
             {
@@ -264,7 +265,7 @@ namespace COMPASS.Common.Services.FileSystem
         public static async Task AskNewCompassDataPath(string msg)
         {
             var windowedNotificationService =
-                App.Container.Resolve<INotificationService>();
+                ServiceResolver.Resolve<INotificationService>();
 
             Notification pickNewPath = new("Pick a location to save your data", msg, Severity.Warning)
             {

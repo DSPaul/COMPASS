@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.ApiDtos;
@@ -59,7 +60,7 @@ public static class CrashHandler
         string message = $"An unexpected error ocurred.\n \n" +
                          $"You can help improve COMPASS by reporting the issue on either discord, reddit, the github repo or by filling in an anonymous Google form. \n \n" +
                          $"Links to all of these can be found at {Constants.LinkTreeURL}. \n \n" +
-                         $"Please include the log file located at {App.Container.Resolve<IEnvironmentVarsService>().CompassDataPath}\\logs";
+                         $"Please include the log file located at {ServiceResolver.Resolve<IEnvironmentVarsService>().CompassDataPath}\\logs";
 
         Notification crashNotification = new($"COMPASS ran into a critical error.", message, Severity.Error);
         crashNotification.Details = exceptionMessage;

@@ -1,12 +1,12 @@
-﻿using Autofac;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Tools;
-using System.Linq;
-using System.Threading.Tasks;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Operations;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.ViewModels.Import
 {
@@ -14,8 +14,8 @@ namespace COMPASS.Common.ViewModels.Import
     {
         public override string WindowTitle { get; } = "Import Collection";
 
-        private readonly WizardStepViewModel _overviewStep = new ("Overview");
-        
+        private readonly WizardStepViewModel _overviewStep = new("Overview");
+
         public ImportCollectionViewModel(CodexCollection collectionToImport)
         {
             CollectionToImport = collectionToImport;
@@ -29,7 +29,7 @@ namespace COMPASS.Common.ViewModels.Import
             UpdateSteps();
 
             //if files were included in compass file, set paths of codices to those files
-            var userFileService = App.Container.Resolve<IUserFilesStorageService>();
+            var userFileService = ServiceResolver.Resolve<IUserFilesStorageService>();
 
             if (userFileService.HasUserFiles(CollectionToImport))
             {
@@ -53,6 +53,7 @@ namespace COMPASS.Common.ViewModels.Import
 
         //OVERVIEW STEP
         private bool _mergeIntoCollection = false;
+
         public bool MergeIntoCollection
         {
             get => _mergeIntoCollection;
@@ -64,6 +65,7 @@ namespace COMPASS.Common.ViewModels.Import
         }
 
         private string _collectionName = "Unnamed Collection";
+
         public string CollectionName
         {
             get => _collectionName;
@@ -74,6 +76,7 @@ namespace COMPASS.Common.ViewModels.Import
                 RefreshNavigationBtns();
             }
         }
+
         public bool IsCollectionNameLegal => CodexCollectionOperations.IsLegalCollectionName(CollectionName, MainViewModel.CollectionVM.AllCodexCollections);
 
         public bool ImportAllTags { get; set; } = true;
@@ -81,6 +84,7 @@ namespace COMPASS.Common.ViewModels.Import
         public bool ImportAllSettings { get; set; } = true;
 
         private bool _advancedImport = false;
+
         public bool AdvancedImport
         {
             get => _advancedImport;
@@ -94,9 +98,10 @@ namespace COMPASS.Common.ViewModels.Import
 
         //Don't show on overview tab if new collection is chosen with illegal name
         protected override bool ShowNextButton() => base.ShowNextButton() &&
-            !(CurrentStep == _overviewStep && !MergeIntoCollection && !IsCollectionNameLegal);
+                                                    !(CurrentStep == _overviewStep && !MergeIntoCollection && !IsCollectionNameLegal);
+
         protected override bool ShowFinishButton() => base.ShowFinishButton() &&
-            !(CurrentStep == _overviewStep && !MergeIntoCollection && !IsCollectionNameLegal);
+                                                      !(CurrentStep == _overviewStep && !MergeIntoCollection && !IsCollectionNameLegal);
 
         protected override async Task Finish()
         {
@@ -126,20 +131,21 @@ namespace COMPASS.Common.ViewModels.Import
             }
 
             //If we have tags and are doing an advanced import, but the tags step is missing, ask if we should still import them
-            if (AdvancedImport                                                   // if we are doing an advanced import
-                && !Steps.Contains(CollectionContentSelectorViewModel.TagsStep)  // and the tags step is missing
-                && ContentSelectorVM.HasTags                                     // but there are tags included in the import
-                && ContentSelectorVM.SelectableCodices                           // and the tags are present on the chosen codices
+            if (AdvancedImport // if we are doing an advanced import
+                && !Steps.Contains(CollectionContentSelectorViewModel.TagsStep) // and the tags step is missing
+                && ContentSelectorVM.HasTags // but there are tags included in the import
+                && ContentSelectorVM.SelectableCodices // and the tags are present on the chosen codices
                     .Where(x => x.Selected)
                     .SelectMany(sc => sc.Codex.Tags)
                     .Any())
             {
                 string message = $"Some of the items that you are about to import have Tags, \n " +
-                    $"would you like to import these as well?\n " +
-                    $"They will be put in a new tag group called {CollectionName}.";
+                                 $"would you like to import these as well?\n " +
+                                 $"They will be put in a new tag group called {CollectionName}.";
 
-                Notification notification = new("Tags found", message, Severity.Info, NotificationAction.Cancel | NotificationAction.Decline | NotificationAction.Confirm);
-                await App.Container.Resolve<INotificationService>().ShowDialog(notification);
+                Notification notification = new("Tags found", message, Severity.Info,
+                    NotificationAction.Cancel | NotificationAction.Decline | NotificationAction.Confirm);
+                await ServiceResolver.Resolve<INotificationService>().ShowDialog(notification);
 
                 switch (notification.Result)
                 {
@@ -160,9 +166,9 @@ namespace COMPASS.Common.ViewModels.Import
             ContentSelectorVM.ApplyAllSelections();
 
             //Save the changes to a permanent collection
-            var targetCollection = MergeIntoCollection ?
-                MainViewModel.CollectionVM.CurrentCollection :
-                await MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
+            var targetCollection = MergeIntoCollection
+                ? MainViewModel.CollectionVM.CurrentCollection
+                : await MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
 
             //if create and load fails
             if (targetCollection is null)
@@ -189,7 +195,7 @@ namespace COMPASS.Common.ViewModels.Import
         }
 
         private void Cleanup() => MainViewModel.CollectionVM.DeleteCollection(CollectionToImport);
-        
+
         //TODO this needs to be connected again
         public void OnWizardClosing()
         {

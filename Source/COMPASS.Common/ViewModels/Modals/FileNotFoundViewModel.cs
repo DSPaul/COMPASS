@@ -1,15 +1,15 @@
-﻿using Autofac;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using COMPASS.Common.Interfaces.Storage;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
@@ -34,7 +34,7 @@ namespace COMPASS.Common.ViewModels.Modals
         public AsyncRelayCommand FindFileCommand => _findFileCommand ??= new(FindFile);
         public async Task FindFile()
         {
-            var files = await App.Container.Resolve<IFilesService>().OpenFilesAsync();
+            var files = await ServiceResolver.Resolve<IFilesService>().OpenFilesAsync();
 
             if (files.Any())
             {
@@ -71,7 +71,7 @@ namespace COMPASS.Common.ViewModels.Modals
                 Logger.Info(message);
                 Logger.Debug(message);
 
-                App.Container.Resolve<ICodexCollectionStorageService>().SaveCodices(Codex.Collection);
+                ServiceResolver.Resolve<ICodexCollectionStorageService>().SaveCodices(Codex.Collection);
                 bool opened = await CodexOperations.OpenCodexLocally(Codex);
                 MarkAsResolved(opened);
             }

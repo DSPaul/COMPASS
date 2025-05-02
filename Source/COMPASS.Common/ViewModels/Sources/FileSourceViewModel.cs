@@ -1,14 +1,14 @@
-﻿using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Models.XmlDtos;
-using COMPASS.Common.Services;
-using COMPASS.Common.Tools;
-using FuzzySharp;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.XmlDtos;
+using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Tools;
+using FuzzySharp;
 
 namespace COMPASS.Common.ViewModels.Sources
 {

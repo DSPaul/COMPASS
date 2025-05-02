@@ -1,12 +1,12 @@
-﻿using Autofac;
-using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels;
 
 namespace COMPASS.Common.Models
 {
@@ -91,7 +91,7 @@ namespace COMPASS.Common.Models
             }
             else
             {
-                App.Container.Resolve<ICodexCollectionStorageService>().Save(this);
+                ServiceResolver.Resolve<ICodexCollectionStorageService>().Save(this);
             }
         }
 
@@ -105,8 +105,8 @@ namespace COMPASS.Common.Models
             string oldName = Name;
             Name = newCollectionName;
             
-            App.Container.Resolve<ICodexCollectionStorageService>().OnCollectionRenamed(oldName, newCollectionName);
-            App.Container.Resolve<IThumbnailStorageService>().OnCollectionRenamed(this);
+            ServiceResolver.Resolve<ICodexCollectionStorageService>().OnCollectionRenamed(oldName, newCollectionName);
+            ServiceResolver.Resolve<IThumbnailStorageService>().OnCollectionRenamed(this);
 
             Logger.Info($"Renamed {oldName} to {newCollectionName}");
         }
@@ -127,8 +127,8 @@ namespace COMPASS.Common.Models
 
         public void ImportCodicesFrom(CodexCollection source)
         {
-            var userFilesStorageService = App.Container.Resolve<IUserFilesStorageService>();
-            var thumbnailStorageService = App.Container.Resolve<IThumbnailStorageService>();
+            var userFilesStorageService = ServiceResolver.Resolve<IUserFilesStorageService>();
+            var thumbnailStorageService = ServiceResolver.Resolve<IThumbnailStorageService>();
             
             //if import includes files, make sure directory exists to copy files into
             bool canImportFiles = false;
@@ -192,7 +192,7 @@ namespace COMPASS.Common.Models
                 toDelete.Parent.Children.Remove(toDelete);
             }
 
-            App.Container.Resolve<ICodexCollectionStorageService>().SaveTags(this);
+            ServiceResolver.Resolve<ICodexCollectionStorageService>().SaveTags(this);
         }
     }
 }

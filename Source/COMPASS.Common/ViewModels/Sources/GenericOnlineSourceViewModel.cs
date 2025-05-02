@@ -1,14 +1,14 @@
-﻿using COMPASS.Common.Models;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using HtmlAgilityPack;
-using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels.Sources
 {

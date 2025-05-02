@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -10,7 +10,6 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.Views.Windows;
@@ -48,7 +47,7 @@ namespace COMPASS.Common.ViewModels.Import
 
         private static async Task<List<string>> ChooseFiles()
         {
-            var filesService = App.Container.Resolve<IFilesService>();
+            var filesService = ServiceResolver.Resolve<IFilesService>();
 
             var files = await filesService.OpenFilesAsync(new()
             {
@@ -125,7 +124,7 @@ namespace COMPASS.Common.ViewModels.Import
                 progressVM.AddLogEntry(logEntry);
             }
 
-            var collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
+            var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
             collectionStorageService.Save(MainViewModel.CollectionVM.CurrentCollection);
 
             await FinishImport(newCodices);

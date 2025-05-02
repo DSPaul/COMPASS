@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Autofac;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
@@ -26,7 +26,7 @@ public static class CodexCollectionOperations
     public static CodexCollection? LoadInitialCollection(IList<CodexCollection> collections)
     {
         string startupCollectionName = PreferencesService.GetInstance().Preferences.UIState.StartupCollection;
-        var collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
+        var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
         
         CodexCollection? loadedCollection = null;
         while (loadedCollection  == null)

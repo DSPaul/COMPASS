@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -14,7 +14,6 @@ using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
-using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.ViewModels.SidePanels;
 using COMPASS.Common.Views.Windows;
 
@@ -25,8 +24,8 @@ namespace COMPASS.Common.ViewModels
         public CollectionViewModel(MainViewModel? mainViewModel)
         {
             MainVM = mainViewModel;
-            _windowedNotificationService = App.Container.Resolve<INotificationService>();
-            _collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
+            _windowedNotificationService = ServiceResolver.Resolve<INotificationService>();
+            _collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
 
             //only to avoid null references, should be overwritten as soon as the UI loads, which calls refresh
             _filterVM = new([]);
@@ -293,7 +292,7 @@ namespace COMPASS.Common.ViewModels
                 Notification areYouSure = Notification.AreYouSureNotification;
                 areYouSure.Body = CurrentCollection.AllCodices.Count == 1 ? messageSingle : messageMultiple;
 
-                var windowedNotificationService = App.Container.Resolve<INotificationService>();
+                var windowedNotificationService = ServiceResolver.Resolve<INotificationService>();
                 await windowedNotificationService.ShowDialog(areYouSure);
 
                 if (areYouSure.Result == NotificationAction.Confirm)
@@ -370,7 +369,7 @@ namespace COMPASS.Common.ViewModels
                            $"This will copy all items, tags and preferences to the chosen collection. \n" +
                            $"Are you sure you want to continue?";
 
-            await App.Container.Resolve<INotificationService>().ShowDialog(areYouSure);
+            await ServiceResolver.Resolve<INotificationService>().ShowDialog(areYouSure);
 
             if (areYouSure.Result != NotificationAction.Confirm) return;
 
@@ -382,7 +381,7 @@ namespace COMPASS.Common.ViewModels
             Notification doneNotification = new("Merge Success", $"Successfully merged '{CurrentCollection.Name}' into '{collectionToMergeInto}'");
             
             //TODO toast notifications
-            //await App.Container.Resolve<INotificationService>().ShowToast(doneNotification);
+            //await ServiceResolver.Resolve<INotificationService>().ShowToast(doneNotification);
         }
         #endregion
     }

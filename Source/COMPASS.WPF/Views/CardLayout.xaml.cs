@@ -1,7 +1,7 @@
-﻿using COMPASS.Models;
-using COMPASS.ViewModels;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
+using COMPASS.Models;
+using COMPASS.ViewModels;
 
 namespace COMPASS.Views
 {

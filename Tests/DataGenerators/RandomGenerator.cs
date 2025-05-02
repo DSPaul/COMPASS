@@ -1,7 +1,7 @@
-﻿using COMPASS.Common.Models;
-using COMPASS.Common.Models.Preferences;
-using System.Text;
+﻿using System.Text;
 using Avalonia.Media;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.Preferences;
 
 namespace Tests.DataGenerators
 {

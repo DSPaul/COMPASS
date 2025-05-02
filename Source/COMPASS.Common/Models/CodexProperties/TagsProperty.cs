@@ -1,8 +1,8 @@
-﻿using COMPASS.Common.Models.XmlDtos;
-using COMPASS.Common.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using COMPASS.Common.Models.XmlDtos;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Models.CodexProperties
 {

@@ -1,11 +1,11 @@
-﻿using COMPASS.Common.Interfaces;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using COMPASS.Common.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Safari;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace COMPASS.Common.Services
 {

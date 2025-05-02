@@ -1,5 +1,5 @@
-﻿using COMPASS.Common.Tools;
-using System;
+﻿using System;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Models
 {

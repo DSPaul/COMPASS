@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Autofac;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -19,7 +19,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public AsyncRelayCommand ImportBooksFromSatchelCommand => _importBooksFromSatchelCommand ??= new(ImportBooksFromSatchel);
         public async Task ImportBooksFromSatchel()
         {
-            var collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
+            var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
             var collectionToImport = await collectionStorageService.OpenSatchel();
 
             if (collectionToImport == null)
@@ -39,7 +39,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
             if (!vm.ContentSelectorVM.HasCodices)
             {
                 Notification noItemsFound = new("No items found", $"{collectionToImport.Name[2..]} does not contain items to import");
-                await App.Container.Resolve<INotificationService>().ShowDialog(noItemsFound);
+                await ServiceResolver.Resolve<INotificationService>().ShowDialog(noItemsFound);
                 return;
             }
 

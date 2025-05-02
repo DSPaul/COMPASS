@@ -1,4 +1,6 @@
-﻿using Autofac;
+﻿using System;
+using System.Threading.Tasks;
+using Autofac;
 using Avalonia;
 using Avalonia.Svg.Skia;
 using COMPASS.Common;
@@ -7,8 +9,6 @@ using COMPASS.Common.Interfaces;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Windows.Services;
-using System;
-using System.Threading.Tasks;
 
 namespace COMPASS.Windows;
 
@@ -64,6 +64,6 @@ class Program
         builder.RegisterType<EnvironmentVarsService>().As<IEnvironmentVarsService>().SingleInstance();
         builder.RegisterInstance<IWebDriverService>(new WebDriverService());
         
-        App.Container= builder.Build();
+        ServiceResolver.Initialize(builder.Build());
     }
 }

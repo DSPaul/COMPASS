@@ -1,4 +1,8 @@
-﻿using COMPASS.Common.Models;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
@@ -9,10 +13,6 @@ using ImageMagick.Formats;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels.Sources
 {

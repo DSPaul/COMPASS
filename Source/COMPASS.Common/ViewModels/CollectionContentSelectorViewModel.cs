@@ -1,15 +1,13 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Models;
-using COMPASS.Common.Tools;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using Autofac;
-using COMPASS.Common.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
+using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -24,11 +22,11 @@ namespace COMPASS.Common.ViewModels
 
             if (MainViewModel.CollectionVM.CurrentCollection == completeCollection)
             {
-                App.Container.Resolve<ICodexCollectionStorageService>().Save(CompleteCollection);
+                ServiceResolver.Resolve<ICodexCollectionStorageService>().Save(CompleteCollection);
             }
             else
             {
-                App.Container.Resolve<ICodexCollectionStorageService>().Load(CompleteCollection);
+                ServiceResolver.Resolve<ICodexCollectionStorageService>().Load(CompleteCollection);
             }
 
             //Checks which steps need to be included in wizard
@@ -47,13 +45,13 @@ namespace COMPASS.Common.ViewModels
             AutoImportFolders = CompleteCollection.Info.AutoImportFolders.Select(folder => new SelectableWithPathHelper(folder.FullPath)).ToList();
             BanishedPaths = CompleteCollection.Info.BanishedPaths.Select(path => new SelectableWithPathHelper(path)).ToList();
             FileTypePrefs = CompleteCollection.Info.FiletypePreferences
-                                                            .Select(x => new ObservableKeyValuePair<string, bool>(x))
-                                                            .OrderByDescending(x => x.Value)
-                                                            .ToList();
+                .Select(x => new ObservableKeyValuePair<string, bool>(x))
+                .OrderByDescending(x => x.Value)
+                .ToList();
         }
 
         public override string WindowTitle { get; } = "Choose content";
-        
+
         public static readonly WizardStepViewModel TagsStep = new("Select Tags", "SelectTags");
         public static readonly WizardStepViewModel ItemsStep = new("Select Items", "SelectItems");
         public static readonly WizardStepViewModel SettingsStep = new("Select Settings", "SelectSettings");
@@ -64,6 +62,7 @@ namespace COMPASS.Common.ViewModels
         public CodexCollection CompleteCollection { get; set; }
 
         private CodexCollection? _curatedCollection;
+
         /// <summary>
         /// Curated collection that contains only the selected items 
         /// </summary>
@@ -79,7 +78,9 @@ namespace COMPASS.Common.ViewModels
 
         //TAGS STEP
         public TagsSelectorViewModel TagsSelectorVM { get; set; }
-        public IEnumerable<CheckableTreeNode<Tag>> SelectableTags => TagsSelectorVM.SelectedTagCollection?.TagsRoot.Children ?? Enumerable.Empty<CheckableTreeNode<Tag>>();
+
+        public IEnumerable<CheckableTreeNode<Tag>> SelectableTags =>
+            TagsSelectorVM.SelectedTagCollection?.TagsRoot.Children ?? Enumerable.Empty<CheckableTreeNode<Tag>>();
 
         /// <summary>
         /// Indicates that only tags that are present on codices should be imported
@@ -97,33 +98,40 @@ namespace COMPASS.Common.ViewModels
 
         //Auto Import Folders
         private bool _selectAutoImportFolders = false;
+
         public bool SelectAutoImportFolders
         {
             get => _selectAutoImportFolders;
             set => SetProperty(ref _selectAutoImportFolders, value);
         }
+
         public List<SelectableWithPathHelper> AutoImportFolders { get; init; }
 
         //Banished paths
         private bool _selectBanishedFiles = false;
+
         public bool SelectBanishedFiles
         {
             get => _selectBanishedFiles;
             set => SetProperty(ref _selectBanishedFiles, value);
         }
+
         public List<SelectableWithPathHelper> BanishedPaths { get; init; }
 
         //File type preferences
         private bool _selectFileTypePrefs = false;
+
         public bool SelectFileTypePrefs
         {
             get => _selectFileTypePrefs;
             set => SetProperty(ref _selectFileTypePrefs, value);
         }
+
         public List<ObservableKeyValuePair<string, bool>> FileTypePrefs { get; init; }
 
         //Tag-Folder links
         private bool _selectFolderTagLinks = false;
+
         public bool SelectFolderTagLinks
         {
             get => _selectFolderTagLinks;
@@ -131,6 +139,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         #region Helper classes
+
         public class SelectableWithPathHelper : ObservableObject
         {
             public SelectableWithPathHelper(string path)
@@ -140,6 +149,7 @@ namespace COMPASS.Common.ViewModels
             }
 
             private bool _selected;
+
             public bool Selected
             {
                 get => _selected;
@@ -154,22 +164,26 @@ namespace COMPASS.Common.ViewModels
         public class SelectableCodex : SelectableWithPathHelper
         {
             private CollectionContentSelectorViewModel _vm;
+
             public SelectableCodex(Codex codex, CollectionContentSelectorViewModel vm) : base(codex.Sources.Path)
             {
                 Codex = codex;
                 _vm = vm;
             }
+
             public Codex Codex { get; }
 
             private RelayCommand<IList>? _itemCheckedCommand;
+
             public RelayCommand<IList> ItemCheckedCommand => _itemCheckedCommand ??= new((items) =>
             {
                 items?.Cast<SelectableCodex>()
-                     .ToList()
-                     .ForEach(c => c.Selected = Selected);
+                    .ToList()
+                    .ForEach(c => c.Selected = Selected);
                 _vm.RaiseSelectedCodicesCountChanged();
             });
         }
+
         #endregion
 
         public void ApplySelectedTags()
@@ -186,8 +200,8 @@ namespace COMPASS.Common.ViewModels
                 {
                     allSelectableTags.Single(st => st.Item.ID == tag.ID).IsChecked = true;
                 }
-                CuratedCollection.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).ToList();
 
+                CuratedCollection.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).ToList();
             }
             else //otherwise use the users choice
             {
@@ -210,7 +224,8 @@ namespace COMPASS.Common.ViewModels
         public void ApplySelectedCodices()
         {
             CuratedCollection.AllCodices.Clear();
-            CuratedCollection.AllCodices.AddRange(SelectableCodices.Where(x => x.Selected).Select(x => new Codex(x.Codex))); //make new codices to not modify the existing ones
+            CuratedCollection.AllCodices.AddRange(SelectableCodices.Where(x => x.Selected)
+                .Select(x => new Codex(x.Codex))); //make new codices to not modify the existing ones
 
             if (RemovePersonalData)
             {
@@ -265,10 +280,12 @@ namespace COMPASS.Common.ViewModels
             {
                 Steps.Add(TagsStep);
             }
+
             if (HasCodices)
             {
                 Steps.Add(ItemsStep);
             }
+
             if (HasSettings)
             {
                 Steps.Add(SettingsStep);

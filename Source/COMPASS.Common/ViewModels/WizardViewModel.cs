@@ -1,9 +1,9 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
 
 namespace COMPASS.Common.ViewModels

@@ -1,6 +1,6 @@
-﻿using COMPASS.Common.Interfaces;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
+using COMPASS.Common.Interfaces;
 
 namespace COMPASS.Linux.Services
 {

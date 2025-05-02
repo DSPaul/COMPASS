@@ -1,6 +1,6 @@
-﻿using COMPASS.Common.Models.Preferences;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
+using COMPASS.Common.Models.Preferences;
 
 namespace COMPASS.Common.Models.XmlDtos
 {

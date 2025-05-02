@@ -1,13 +1,13 @@
-﻿using Avalonia.Input;
-using COMPASS.Common.Models;
-using COMPASS.Common.Services;
-using COMPASS.Common.ViewModels.Import;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Avalonia.Input;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
+using COMPASS.Common.Services;
+using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals.Import;
 using Material.Icons;
 

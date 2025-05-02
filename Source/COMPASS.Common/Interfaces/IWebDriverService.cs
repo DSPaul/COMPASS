@@ -1,5 +1,5 @@
-﻿using OpenQA.Selenium;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using OpenQA.Selenium;
 
 namespace COMPASS.Common.Interfaces
 {

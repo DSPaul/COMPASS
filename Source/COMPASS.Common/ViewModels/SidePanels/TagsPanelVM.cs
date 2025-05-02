@@ -3,9 +3,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -178,7 +178,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public AsyncRelayCommand ImportTagsFromSatchelCommand => _importTagsFromSatchelCommand ??= new(ImportTagsFromSatchel);
         public async Task ImportTagsFromSatchel()
         {
-            var collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
+            var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
             var collectionToImport = await collectionStorageService.OpenSatchel();
 
             if (collectionToImport == null)
@@ -192,7 +192,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
             if (!importVM.TagsSelectorVM.HasTags)
             {
                 Notification noTagsFound = new("No Tags found", $"{collectionToImport.Name[2..]} does not contain tags");
-                await App.Container.Resolve<INotificationService>().ShowDialog(noTagsFound);
+                await ServiceResolver.Resolve<INotificationService>().ShowDialog(noTagsFound);
                 return;
             }
 

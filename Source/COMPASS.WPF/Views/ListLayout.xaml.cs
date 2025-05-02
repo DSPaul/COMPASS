@@ -1,10 +1,10 @@
-﻿using COMPASS.Models;
+﻿using System.Collections.ObjectModel;
+using System.Windows.Controls;
+using System.Windows.Input;
+using COMPASS.Models;
 using COMPASS.Resources.Controls;
 using COMPASS.ViewModels;
 using Newtonsoft.Json;
-using System.Collections.ObjectModel;
-using System.Windows.Controls;
-using System.Windows.Input;
 
 
 namespace COMPASS.Views

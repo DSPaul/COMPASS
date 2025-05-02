@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -186,7 +186,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                     $"Either no matches were found or all matching items already contain this tag.");
             }
             
-            await App.Container.Resolve<INotificationService>().ShowDialog(notification);
+            await ServiceResolver.Resolve<INotificationService>().ShowDialog(notification);
 
             if (notification.Result == NotificationAction.Confirm)
             {
@@ -241,7 +241,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
             }
             
-            var collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
+            var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
             collectionStorageService.SaveTags(MainViewModel.CollectionVM.CurrentCollection);
 
             MainViewModel.CollectionVM.TagsVM.UpdateTagsAsTreeNodes();
