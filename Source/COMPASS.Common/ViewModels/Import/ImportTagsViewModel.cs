@@ -3,6 +3,7 @@ using COMPASS.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using COMPASS.Common.Models.Hierarchy;
 
 namespace COMPASS.Common.ViewModels.Import
 {

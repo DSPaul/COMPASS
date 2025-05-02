@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using COMPASS.Common.Models.Hierarchy;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -586,7 +587,7 @@ namespace COMPASS.Common.ViewModels
         void OnDragOver(object sender, DragEventArgs e)
         {
             //Move From Treeview
-            if (e.Data.GetValue<TreeNode>() is { Tag.IsGroup: false })
+            if (e.Data.GetValue<TreeNode<Tag>>() is { Item.IsGroup: false })
             {
                 e.DragEffects = DragDropEffects.Copy;
             }
@@ -614,9 +615,9 @@ namespace COMPASS.Common.ViewModels
             bool toIncluded = false;
 
             //Move From Treeview
-            if (e.Data.GetValue<TreeNode>() is { Tag.IsGroup: false } node)
+            if (e.Data.GetValue<TreeNode<Tag>>() is { Item.IsGroup: false } node)
             {
-                AddFilter(new TagFilter(node.Tag), toIncluded);
+                AddFilter(new TagFilter(node.Item), toIncluded);
             }
             //Move Filter to included/excluded
             else if (e.Data.GetValue<Filter>() is Filter draggedFilter)

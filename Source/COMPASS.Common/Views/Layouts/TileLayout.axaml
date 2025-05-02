@@ -73,19 +73,19 @@
                         </Panel.Styles>
                         <TextBlock Text="{Binding Title}"
                                    IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
-                                    Converter={x:Static conv:FuncConverters.AreEqual}, 
+                                    Converter={x:Static conv:ObjectConverters.AreEqual}, 
                                     ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Title}}" />
                         <TextBlock Text="{Binding AuthorsAsString}"
                                    IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
-                                    Converter={x:Static conv:FuncConverters.AreEqual}, 
+                                    Converter={x:Static conv:ObjectConverters.AreEqual}, 
                                     ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Author}}" />
                         <TextBlock Text="{Binding Publisher}"
                                    IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
-                                    Converter={x:Static conv:FuncConverters.AreEqual}, 
+                                    Converter={x:Static conv:ObjectConverters.AreEqual}, 
                                     ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Publisher}}" />
                         <controls:RatingControl Value="{Binding Rating}" HorizontalAlignment="Center" Margin="0,0,0,5" Height="20"
                                                 IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.DisplayedData, 
-                                          Converter={x:Static conv:FuncConverters.AreEqual}, 
+                                          Converter={x:Static conv:ObjectConverters.AreEqual}, 
                                           ConverterParameter={x:Static preferences:TileLayoutPreferences+DataOption.Rating}}" />
                     </Panel>
                 </Grid>

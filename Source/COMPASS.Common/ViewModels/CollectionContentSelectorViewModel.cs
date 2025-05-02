@@ -9,6 +9,7 @@ using System.Linq;
 using Autofac;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Models.Hierarchy;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -51,9 +52,11 @@ namespace COMPASS.Common.ViewModels
                                                             .ToList();
         }
 
-        public const string TagsStep = "Tags";
-        public const string ItemsStep = "Items";
-        public const string SettingsStep = "Settings";
+        public override string WindowTitle { get; } = "Choose content";
+        
+        public static readonly WizardStepViewModel TagsStep = new("Select Tags", "SelectTags");
+        public static readonly WizardStepViewModel ItemsStep = new("Select Items", "SelectItems");
+        public static readonly WizardStepViewModel SettingsStep = new("Select Settings", "SelectSettings");
 
         /// <summary>
         /// Complete collections whose content will be sub selected

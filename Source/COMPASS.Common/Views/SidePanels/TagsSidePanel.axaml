@@ -4,35 +4,36 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="using:COMPASS.Common.ViewModels.SidePanels"
-             xmlns:models="using:COMPASS.Common.Models"
+             xmlns:model="using:COMPASS.Common.Models"
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:converters="using:COMPASS.Common.Converters"
              xmlns:views="using:COMPASS.Common.Views"
+             xmlns:hierarchy="clr-namespace:COMPASS.Common.Models.Hierarchy"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.SidePanels.TagsSidePanel"
              x:DataType="vm:TagsPanelVM">
     <UserControl.Resources>
         <Thickness x:Key="TreeViewItemExpandCollapseChevronMargin"> 0, 0, 0, 0 </Thickness>
 
-        <ContextMenu x:Key="TagContextMenu" x:DataType="models:TreeNode">
+        <ContextMenu x:Key="TagContextMenu" x:DataType="hierarchy:TagTreeNode">
             <MenuItem Header="New Tag"
                       Icon="{materialIcons:MaterialIconExt TagPlusOutline}"
                       Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).CreateChildCommand}"
-                      CommandParameter="{Binding Tag}" />
+                      CommandParameter="{Binding Item}" />
             <MenuItem Header="Edit"
                       Icon="{materialIcons:MaterialIconExt Edit}"
                       Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).EditTagCommand}"
-                      CommandParameter="{Binding Tag}" />
+                      CommandParameter="{Binding Item}" />
             <MenuItem Header="Delete"
                       Icon="{materialIcons:MaterialIconExt Delete}"
                       Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).DeleteTagCommand}"
-                      CommandParameter="{Binding Tag}" />
+                      CommandParameter="{Binding Item}" />
             <Separator />
             <MenuItem Header="Sort Children"
                       Icon="{materialIcons:MaterialIconExt TagMultipleOutline}"
                       Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).SortChildrenCommand}"
-                      CommandParameter="{Binding Tag}"
+                      CommandParameter="{Binding Item}"
                       ToolTip.Tip="Sorts its children A->Z" />
         </ContextMenu>
 
@@ -175,29 +176,30 @@
 
         <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="Transparent"
                   Grid.Row="4" Margin="5" Classes="NoSelection"
-                  ItemsSource="{Binding Path=TreeViewSource, Mode=TwoWay}"
+                  ItemsSource="{Binding Path=TagsAsTreeNodes, Mode=TwoWay}"
                   DragDrop.AllowDrop="True"
                   ContextMenu="{StaticResource AllTagsContextMenu}">
             <TreeView.ItemTemplate>
                 <dataTemplates:TagTreeDataTemplateSelector>
-                    <TreeDataTemplate x:Key="RegularTag" DataType="models:TreeNode"
+                    <TreeDataTemplate x:Key="RegularTag" DataType="hierarchy:TagTreeNode"
                                       ItemsSource="{Binding Children}">
                         <Button ContextMenu="{StaticResource TagContextMenu}" Margin="0"
                                 Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).AddTagFilterCommand}"
-                                CommandParameter="{Binding Tag}">
+                                CommandParameter="{Binding Item}">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
-                                    <controls:Chip Text="{Binding Tag.Name}" Margin="0,3"
-                                                   Background="{Binding Tag.BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"/>
+                                    <controls:Chip Text="{Binding Item.Name}" Margin="0,3"
+                                                   Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
                                 </ControlTemplate>
                             </Button.Template>
                         </Button>
                     </TreeDataTemplate>
 
-                    <TreeDataTemplate x:Key="GroupTag" DataType="models:TreeNode" ItemsSource="{Binding Children}">
+                    <TreeDataTemplate x:Key="GroupTag" DataType="hierarchy:TagTreeNode"
+ItemsSource="{Binding Children}">
                         <controls:Chip Theme="{StaticResource GroupChip}" Margin="0,3,20,3"
-                                       Text="{Binding Tag.Name}" HorizontalAlignment="Stretch"
-                                       Background="{Binding Tag.BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
+                                       Text="{Binding Item.Name}" HorizontalAlignment="Stretch"
+                                       Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
                                        ContextMenu="{StaticResource TagContextMenu}"/>
                     </TreeDataTemplate>
                 </dataTemplates:TagTreeDataTemplateSelector>
@@ -205,9 +207,7 @@
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
                     <Setter Property="IsExpanded"
-                            Value="{Binding $self.((models:TreeNode)DataContext).Expanded, Mode=TwoWay}" />
-                    <Setter Property="IsSelected"
-                            Value="{Binding $self.((models:TreeNode)DataContext).Selected, Mode=TwoWay}" />
+                            Value="{Binding $self.((model:IExpandable)DataContext).Expanded, Mode=TwoWay}" />
                 </Style>
             </TreeView.Styles>
         </TreeView>

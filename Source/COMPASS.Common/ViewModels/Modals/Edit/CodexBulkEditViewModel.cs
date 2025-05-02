@@ -143,13 +143,15 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             if (t is null) return;
             TagsToAdd.Remove(t);
             TagsToRemove.Remove(t);
-            foreach (TreeNode node in AllTagsAsTreeNodes.Flatten())
-            {
-                if (node.Tag != t) continue;
-                node.Selected = true;
-                node.Selected = false;
-                break;
-            }
+            
+            //TODO check what the point of this was
+            // foreach (TreeNode node in AllTagsAsTreeNodes.Flatten())
+            // {
+            //     if (node.Item != t) continue;
+            //     node.Selected = true;
+            //     node.Selected = false;
+            //     break;
+            // }
         }
         
         protected override void Confirm()

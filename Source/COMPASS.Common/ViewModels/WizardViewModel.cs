@@ -2,37 +2,26 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
+using COMPASS.Common.Interfaces;
 
 namespace COMPASS.Common.ViewModels
 {
-    public abstract class WizardViewModel : ViewModelBase
+    public abstract class WizardViewModel : ViewModelBase, IModalViewModel
     {
         protected WizardViewModel()
         {
-            _steps.CollectionChanged += StepChangeHandler;
+            Steps.CollectionChanged += StepChangeHandler;
         }
-
-        private ObservableCollection<string> _steps = [];
-        public virtual ObservableCollection<string> Steps
-        {
-            get => _steps;
-            set
-            {
-                //unsubscribe old one
-                _steps.CollectionChanged -= StepChangeHandler;
-                
-                SetProperty(ref _steps, value);
-                _steps.CollectionChanged += StepChangeHandler;
-                OnStepsChanged();
-            }
-        }
+        
+        public virtual ObservableCollection<WizardStepViewModel> Steps { get; } = [];
 
         private int _stepCounter = 0;
         public int StepCounter
         {
             get => _stepCounter;
-            set
+            protected set
             {
                 if (value <= 0)
                 {
@@ -66,30 +55,34 @@ namespace COMPASS.Common.ViewModels
             FinishCommand.NotifyCanExecuteChanged();
         }
 
-        public string CurrentStep => StepCounter >= Steps.Count ? "" : Steps[StepCounter];
+        public WizardStepViewModel CurrentStep => StepCounter >= Steps.Count ? Steps.Last() : Steps[StepCounter];
 
         private RelayCommand? _cancelCommand;
-        public virtual RelayCommand CancelCommand => _cancelCommand ??= new((CancelAction ?? CloseAction) ?? (() => { }));
+        public RelayCommand CancelCommand => _cancelCommand ??= new(CancelAction ?? CloseAction);
+        protected virtual Action? CancelAction { get; } = null;
 
         private RelayCommand? _nextStepCommand;
         public RelayCommand NextStepCommand => _nextStepCommand ??= new(NextStep, ShowNextButton);
         protected virtual void NextStep() => StepCounter++;
-        public virtual bool ShowNextButton() => StepCounter < Steps.Count - 1;
+        protected virtual bool ShowNextButton() => StepCounter < Steps.Count - 1;
 
         private RelayCommand? _prevStepCommand;
         public RelayCommand PrevStepCommand => _prevStepCommand ??= new(PrevStep, ShowBackButton);
         protected virtual void PrevStep() => StepCounter--;
-        public virtual bool ShowBackButton() => StepCounter > 0;
+        protected virtual bool ShowBackButton() => StepCounter > 0;
 
         private AsyncRelayCommand? _finishCommand;
         public AsyncRelayCommand FinishCommand => _finishCommand ??= new(Finish, ShowFinishButton);
-        public virtual Task Finish()
+        protected virtual Task Finish()
         {
+            CloseAction();
             return Task.CompletedTask;
         }
-        public virtual bool ShowFinishButton() => StepCounter == Steps.Count - 1;
-
-        public Action? CloseAction;
-        public Action? CancelAction;
+        protected virtual bool ShowFinishButton() => StepCounter == Steps.Count - 1;
+        
+        public abstract string WindowTitle { get; }
+        public virtual int? WindowWidth => null;
+        public virtual int? WindowHeight => null;
+        public Action CloseAction { get; set; } = () => { };
     }
 }

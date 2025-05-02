@@ -19,6 +19,8 @@ namespace COMPASS.Common.ViewModels
     {
         public List<Tuple<Codex, Codex>> CodicesWithChoices { get; init; } = [];
         private List<Codex> _codicesWithMadeChoices = [];
+        
+        public override string WindowTitle { get; } = "Choose which metadata to keep";
 
         public List<CodexProperty> PropsToAsk =>
             PreferencesService.GetInstance().Preferences.CodexProperties
@@ -34,7 +36,8 @@ namespace COMPASS.Common.ViewModels
             _codicesListMutex.ReleaseMutex();
         }
 
-        public override ObservableCollection<string> Steps => new(CodicesWithChoices.Select(pair => pair.Item1.Title));
+        public override ObservableCollection<WizardStepViewModel> Steps => 
+            new(CodicesWithChoices.Select(pair => new WizardStepViewModel(pair.Item1.Title)));
         public Tuple<Codex, Codex> CurrentPair => CodicesWithChoices[StepCounter];
 
         protected override void NextStep()
@@ -55,12 +58,12 @@ namespace COMPASS.Common.ViewModels
             ShouldUseNewValue = DefaultShouldUseNewValue;
         }
 
-        public override Task Finish()
+        protected override Task Finish()
         {
             var thumbnailStorageService = App.Container.Resolve<IThumbnailStorageService>();
             
             ApplyChoice();
-            CloseAction?.Invoke();
+            CloseAction();
 
             for (var i = 0; i < CodicesWithChoices.Count; i++)
             {

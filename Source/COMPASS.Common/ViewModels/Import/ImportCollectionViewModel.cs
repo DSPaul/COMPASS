@@ -3,7 +3,6 @@ using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Tools;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.Interfaces.Storage;
@@ -13,6 +12,10 @@ namespace COMPASS.Common.ViewModels.Import
 {
     public class ImportCollectionViewModel : WizardViewModel
     {
+        public override string WindowTitle { get; } = "Import Collection";
+
+        private readonly WizardStepViewModel _overviewStep = new ("Overview");
+        
         public ImportCollectionViewModel(CodexCollection collectionToImport)
         {
             CollectionToImport = collectionToImport;
@@ -90,12 +93,12 @@ namespace COMPASS.Common.ViewModels.Import
 
 
         //Don't show on overview tab if new collection is chosen with illegal name
-        public override bool ShowNextButton() => base.ShowNextButton() &&
-            !(CurrentStep == "Overview" && !MergeIntoCollection && !IsCollectionNameLegal);
-        public override bool ShowFinishButton() => base.ShowFinishButton() &&
-            !(CurrentStep == "Overview" && !MergeIntoCollection && !IsCollectionNameLegal);
+        protected override bool ShowNextButton() => base.ShowNextButton() &&
+            !(CurrentStep == _overviewStep && !MergeIntoCollection && !IsCollectionNameLegal);
+        protected override bool ShowFinishButton() => base.ShowFinishButton() &&
+            !(CurrentStep == _overviewStep && !MergeIntoCollection && !IsCollectionNameLegal);
 
-        public override async Task Finish()
+        protected override async Task Finish()
         {
             _deleteSatchelOnWizardClosing = false; //need to keep files around to merge files and cover art
             CloseAction?.Invoke();
@@ -173,11 +176,11 @@ namespace COMPASS.Common.ViewModels.Import
             Cleanup();
         }
 
-        public void UpdateSteps()
+        private void UpdateSteps()
         {
             //Checks which steps need to be included in wizard
             Steps.Clear();
-            Steps.Add("Overview");
+            Steps.Add(_overviewStep);
             if (AdvancedImport)
             {
                 ContentSelectorVM.UpdateSteps();
@@ -185,7 +188,9 @@ namespace COMPASS.Common.ViewModels.Import
             }
         }
 
-        public void Cleanup() => MainViewModel.CollectionVM.DeleteCollection(CollectionToImport);
+        private void Cleanup() => MainViewModel.CollectionVM.DeleteCollection(CollectionToImport);
+        
+        //TODO this needs to be connected again
         public void OnWizardClosing()
         {
             if (_deleteSatchelOnWizardClosing)

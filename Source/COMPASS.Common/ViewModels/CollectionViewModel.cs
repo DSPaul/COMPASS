@@ -14,6 +14,7 @@ using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.ViewModels.SidePanels;
 using COMPASS.Common.Views.Windows;
 
@@ -161,7 +162,7 @@ namespace COMPASS.Common.ViewModels
         public async Task AutoImport()
         {
             //Start Auto Imports
-            ImportFolderViewModel folderImportVM = new(manuallyTriggered: false)
+            ImportFilesViewModel folderImportVM = new(autoImport: true)
             {
                 NonRecursiveDirectories = CurrentCollection?.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList() ?? [],
             };

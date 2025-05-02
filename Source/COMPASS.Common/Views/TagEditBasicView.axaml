@@ -10,6 +10,7 @@
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
              xmlns:models="using:COMPASS.Common.Models"
              xmlns:edit="clr-namespace:COMPASS.Common.ViewModels.Modals.Edit"
+             xmlns:hierarchy="clr-namespace:COMPASS.Common.Models.Hierarchy"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="250"
              x:Class="COMPASS.Common.Views.TagEditBasicView"
              Focusable="True"
@@ -27,7 +28,7 @@
         <StackPanel Spacing="3">
             <TextBlock Text="Color:" />
             <Button HorizontalAlignment="Stretch"
-                    Background="{Binding TempTag.InternalBackgroundColor, Converter={x:Static conv:FuncConverters.ColorToBrush}}">
+                    Background="{Binding TempTag.InternalBackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}">
                 <Button.Flyout>
                     <Flyout Placement="Right" HorizontalOffset="10">
                         <StackPanel>
@@ -41,7 +42,7 @@
                 <Button.Template>
                     <ControlTemplate>
                         <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{Binding TempTag.BackgroundColor, Converter={x:Static conv:FuncConverters.ColorToBrush}}"
+                                BorderBrush="{Binding TempTag.BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"
                                 BorderThickness="2" MinWidth="60" MinHeight="15" CornerRadius="5"
                                 VerticalAlignment="Center">
                             <TextBlock Text="Same as parent" TextWrapping="Wrap" Margin="15,0"
@@ -66,30 +67,30 @@
                               ItemsSource="{Binding PossibleParents}">
                         <TreeView.ItemTemplate>
                             <dataTemplates:TagTreeDataTemplateSelector>
-                                <TreeDataTemplate x:Key="RegularTag" DataType="models:TreeNode"
+                                <TreeDataTemplate x:Key="RegularTag" DataType="hierarchy:TagTreeNode"
                                                   ItemsSource="{Binding Children}">
                                     <RadioButton>
-                                       <controls:Chip Text="{Binding Tag.Name}" Margin="0,3"
-                                                      Background="{Binding Tag.BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"/>
+                                       <controls:Chip Text="{Binding Item.Name}" Margin="0,3"
+                                                      Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
                                     </RadioButton>
                                 </TreeDataTemplate>
-                                <TreeDataTemplate x:Key="GroupTag" DataType="models:TreeNode"
+                                <TreeDataTemplate x:Key="GroupTag" DataType="hierarchy:TagTreeNode"
                                                   ItemsSource="{Binding Children}">
                                     <RadioButton>
-                                        <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding Tag.Name}" 
+                                        <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding Item.Name}" 
                                                         HorizontalAlignment="Stretch" Margin="0,3,20,3"
-                                                       Background="{Binding Tag.BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"/>
+                                                       Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
                                     </RadioButton>
                                 </TreeDataTemplate>
                             </dataTemplates:TagTreeDataTemplateSelector>
                         </TreeView.ItemTemplate>
                         <TreeView.Styles>
-                            <Style Selector="TreeViewItem" x:DataType="models:TreeNode">
+                            <Style Selector="TreeViewItem" x:DataType="hierarchy:TagTreeNode">
                                 <Setter Property="IsVisible">
                                     <MultiBinding Converter="{StaticResource AreNotEqualConverter}">
                                         <Binding
                                             Path="$parent[TreeView].((edit:TagEditViewModel)DataContext).TempTag.ID" />
-                                        <Binding Path="Tag.ID" />
+                                        <Binding Path="Item.ID" />
                                     </MultiBinding>
                                 </Setter>
 
@@ -126,16 +127,16 @@
                     IsVisible="{Binding TempTag.Parent, Converter={x:Static ObjectConverters.IsNotNull}}"
                     Content="{Binding TempTag.Parent}"
                     Classes="BlankButton"
-                    Background="{Binding TempTag.Parent.BackgroundColor, Converter={x:Static conv:FuncConverters.ColorToBrush}}">
+                    Background="{Binding TempTag.Parent.BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}">
                 <Button.DataTemplates>
                     <dataTemplates:TagDataTemplateSelector>
                         <DataTemplate x:Key="RegularTag" DataType="models:Tag">
                             <controls:Chip Text="{Binding LongName}" Margin="0,3"
-                                           Background="{Binding BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"/>
+                                           Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
                         </DataTemplate>
                         <DataTemplate x:Key="GroupTag" DataType="models:Tag">
                             <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding LongName}" 
-                                           Background="{Binding BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"/>
+                                           Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
                         </DataTemplate>
                     </dataTemplates:TagDataTemplateSelector>
                 </Button.DataTemplates>

@@ -1,5 +1,4 @@
-﻿using Avalonia.Media;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.Models
@@ -11,7 +10,17 @@ namespace COMPASS.Common.Models
 
     public interface IHasChildren<T> where T : IHasChildren<T>
     {
-        public ObservableCollection<T> Children { get; set; }
+        public ObservableCollection<T> Children { get; }
+    }
+
+    public interface IItemWrapper<T>
+    {
+        public T Item { get; set; }
+    }
+
+    public interface IExpandable
+    {
+        public bool Expanded { get; set; }
     }
 
     public interface IDealsWithTabControl

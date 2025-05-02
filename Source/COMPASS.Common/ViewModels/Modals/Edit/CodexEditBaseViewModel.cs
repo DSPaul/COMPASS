@@ -5,6 +5,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit;
@@ -18,11 +19,11 @@ public abstract class CodexEditBaseViewModel: ViewModelBase, IModalViewModel, IC
 
     #region Properties
     
-    protected ObservableCollection<TreeNode>? _treeViewSource;
-    public ObservableCollection<TreeNode> AllTagsAsTreeNodes => _treeViewSource ??= 
-        new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeNode(tag)));
+    protected ObservableCollection<CheckableTreeNode<Tag>>? _allTagsAsTreeNodes;
+    public ObservableCollection<CheckableTreeNode<Tag>> AllTagsAsTreeNodes => _allTagsAsTreeNodes ??= 
+        new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new CheckableTreeNode<Tag>(tag)));
 
-    protected HashSet<TreeNode> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
+    protected HashSet<CheckableTreeNode<Tag>> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
     
     public List<string> PublisherOptions { get; }
 

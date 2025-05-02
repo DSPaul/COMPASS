@@ -4,11 +4,12 @@ using COMPASS.Common.Tools;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Models.Hierarchy;
 
 namespace COMPASS.Common.ViewModels
 {
+    //TODO make this use the more generic HierachicalSelectorViewmodel
     public class TagsSelectorViewModel : ViewModelBase
     {
         public TagsSelectorViewModel(List<CodexCollection> collections)

@@ -1,34 +1,26 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using COMPASS.Common.Tools;
 
-namespace COMPASS.Common.Models
+namespace COMPASS.Common.Models.Hierarchy
 {
-    public class CheckableTreeNode<T> : ObservableObject, IHasChildren<CheckableTreeNode<T>> where T : class, IHasChildren<T>
+    public class CheckableTreeNode<T> : TreeNode<T>, IHasChildren<CheckableTreeNode<T>> where T : class, IHasChildren<T>
     {
-        public CheckableTreeNode(T item, bool containerOnly)
+        public CheckableTreeNode(T item, bool containerOnly = false) : base (item)
         {
-            _item = item;
             ContainerOnly = containerOnly;
             Children = new(item.Children.Select(child => new CheckableTreeNode<T>(child, containerOnly)));
 
-            Children.CollectionChanged += (_, _) =>
-            {
-                Update();
-                foreach (var child in _children)
-                {
-                    child.Parent = this;
-                }
-            };
-        }
-
-        private T _item;
-        public T Item
-        {
-            get => _item;
-            set => SetProperty(ref _item, value);
+            // Children.CollectionChanged += (_, _) =>
+            // {
+            //     Update();
+            //     foreach (var child in _children)
+            //     {
+            //         child.Parent = this;
+            //     }
+            // };
         }
 
         /// <summary>
@@ -61,7 +53,7 @@ namespace COMPASS.Common.Models
         private void InternalSetChecked(bool? value) => SetProperty(ref _isChecked, value, nameof(IsChecked));
 
         private ObservableCollection<CheckableTreeNode<T>> _children = [];
-        public ObservableCollection<CheckableTreeNode<T>> Children
+        public new ObservableCollection<CheckableTreeNode<T>> Children
         {
             get => _children;
             set
@@ -116,19 +108,14 @@ namespace COMPASS.Common.Models
 
         public event Action<bool?>? Updated;
 
-        private bool _expanded = true;
-        public bool Expanded
-        {
-            get => _expanded;
-            set => SetProperty(ref _expanded, value);
-        }
-
         public T? GetCheckedItems()
         {
             if (IsChecked == false) return default;
 
-            Item.Children = new(Children.Where(child => child.IsChecked != false)
-                                        .Select(child => child.GetCheckedItems()!));
+            Item.Children.Clear();
+            Item.Children.AddRange(
+                Children.Where(child => child.IsChecked != false)
+                        .Select(child => child.GetCheckedItems()!));
 
             return Item;
         }
@@ -136,5 +123,6 @@ namespace COMPASS.Common.Models
         public static IEnumerable<T> GetCheckedItems(IEnumerable<CheckableTreeNode<T>> items) =>
             items.Where(item => item.IsChecked != false)
                  .Select(item => item.GetCheckedItems()!);
+            
     }
 }

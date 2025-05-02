@@ -13,22 +13,16 @@ namespace COMPASS.Common.Converters
     {
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (value is not int i)
-            {
-                var exception = new ArgumentException($"{nameof(value)} was not an integer");
-                return new BindingNotification(exception, BindingErrorType.Error);
-            }
-            return i + 1;
+            if (value is int i) return i + 1;
+            var exception = new ArgumentException($"{nameof(value)} was not an integer");
+            return new BindingNotification(exception, BindingErrorType.Error);
         }
 
         public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (value is not int i)
-            {
-                var exception = new ArgumentException($"{nameof(value)} was not an integer");
-                return new BindingNotification(exception, BindingErrorType.Error);
-            }
-            return i - 1;
+            if (value is int i) return i - 1;
+            var exception = new ArgumentException($"{nameof(value)} was not an integer");
+            return new BindingNotification(exception, BindingErrorType.Error);
         }
     }
 }

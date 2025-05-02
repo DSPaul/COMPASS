@@ -10,6 +10,7 @@ using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using Notification = COMPASS.Common.Models.Notification;
@@ -49,25 +50,19 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             get => _tempTag;
             set
             {
-                if (_tempTag != null)
-                {
-                    _tempTag.PropertyChanged -= HandleTagPropertyChanged;
-                }
+                _tempTag.PropertyChanged -= HandleTagPropertyChanged;
 
                 if (SetProperty(ref _tempTag, value))
                 {
                     ConfirmCommand.NotifyCanExecuteChanged();
                 }
-                if (_tempTag != null)
-                {
-                    _tempTag.PropertyChanged += HandleTagPropertyChanged;
-                }
+                _tempTag.PropertyChanged += HandleTagPropertyChanged;
             }
         }
 
-        private ObservableCollection<TreeNode> _possibleParents;
+        private ObservableCollection<TreeNode<Tag>> _possibleParents;
 
-        public ObservableCollection<TreeNode> PossibleParents
+        public ObservableCollection<TreeNode<Tag>> PossibleParents
         {
             get => _possibleParents;
             set
@@ -79,12 +74,12 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             }
         }
 
-        public bool HasPossibleParents => PossibleParents.Any(node => node.Tag != _editedTag);
+        public bool HasPossibleParents => PossibleParents.Any(node => node.Item != _editedTag);
 
-        public TreeNode? SelectedParent
+        public TreeNode<Tag>? SelectedParent
         {
-            get => PossibleParents.Flatten().FirstOrDefault(node => node.Tag == TempTag.Parent);
-            set => TempTag.Parent = value?.Tag;
+            get => PossibleParents.Flatten().FirstOrDefault(node => node.Item == TempTag.Parent);
+            set => TempTag.Parent = value?.Item;
         }
         
         #endregion
@@ -100,13 +95,13 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             PossibleParents = GetPossibleParents();
         }
 
-        private ObservableCollection<TreeNode> GetPossibleParents()
+        private ObservableCollection<TreeNode<Tag>> GetPossibleParents()
         {
-            var collection = MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeNode(tag)).ToList();
+            var collection = MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeNode<Tag>(tag)).ToList();
 
-            foreach (TreeNode node in collection.Flatten())
+            foreach (TreeNode<Tag> node in collection.Flatten())
             {
-                node.Expanded = node.Tag.Children.Flatten().Contains(_tempTag.Parent); //expand all parents so that parent is visible
+                node.Expanded = node.Item.Children.Flatten().Contains(_tempTag.Parent); //expand all parents so that parent is visible
             } 
             
             return new(collection);
@@ -249,7 +244,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             var collectionStorageService = App.Container.Resolve<ICodexCollectionStorageService>();
             collectionStorageService.SaveTags(MainViewModel.CollectionVM.CurrentCollection);
 
-            MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
+            MainViewModel.CollectionVM.TagsVM.UpdateTagsAsTreeNodes();
 
             //reset fields
             Clear();

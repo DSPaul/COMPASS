@@ -9,11 +9,10 @@ using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Filters;
+using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
-using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.Views.Windows;
 
@@ -25,7 +24,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         {
             _codexCollection = codexCollection;
             _filterVM = filterVM;
-            BuildTagTreeView();
+            UpdateTagsAsTreeNodes();
         }
 
         private readonly CodexCollection _codexCollection;
@@ -76,11 +75,11 @@ namespace COMPASS.Common.ViewModels.SidePanels
         }
         
         //TreeViewSource with hierarchy
-        private ObservableCollection<TreeNode> _treeViewSource = [];
-        public ObservableCollection<TreeNode> TreeViewSource
+        private ObservableCollection<TreeNode<Tag>> _tagsAsTreeNodes = [];
+        public ObservableCollection<TreeNode<Tag>> TagsAsTreeNodes
         {
-            get => _treeViewSource;
-            set => SetProperty(ref _treeViewSource, value);
+            get => _tagsAsTreeNodes;
+            set => SetProperty(ref _tagsAsTreeNodes, value);
         }
         
         #endregion
@@ -89,37 +88,37 @@ namespace COMPASS.Common.ViewModels.SidePanels
         {
             if (e.PropertyName == nameof(Tag.Parent))
             {
-                BuildTagTreeView();
+                UpdateTagsAsTreeNodes();
             }
         }
         
-        public void BuildTagTreeView()
+        public void UpdateTagsAsTreeNodes()
         {
-            List<TreeNode> newTreeViewSource = _codexCollection.RootTags.Select(tag => new TreeNode(tag)).ToList();
-            List<TreeNode> newNodes = newTreeViewSource.Flatten().ToList();
+            List<TreeNode<Tag>> tagsAsTreeNodes = _codexCollection.RootTags.Select(tag => new TreeNode<Tag>(tag)).ToList();
+            List<TreeNode<Tag>> newNodes = tagsAsTreeNodes.Flatten().ToList();
 
             // transfer expanded property
-            if (TreeViewSource.Any())
+            if (TagsAsTreeNodes.Any())
             {
-                var oldNodes = TreeViewSource.Flatten().ToList();
-                foreach (TreeNode node in oldNodes)
+                var oldNodes = TagsAsTreeNodes.Flatten().ToList();
+                foreach (TreeNode<Tag> node in oldNodes)
                 {
-                    node.Tag.PropertyChanged -= OnTagParentChanged;
+                    node.Item.PropertyChanged -= OnTagParentChanged;
                 }
                 
-                foreach (TreeNode newNode in newNodes)
+                foreach (TreeNode<Tag> newNode in newNodes)
                 {
-                    newNode.Expanded = oldNodes.Find(n => n.Tag == newNode.Tag)?.Expanded ?? newNode.Expanded;
+                    newNode.Expanded = oldNodes.Find(n => n.Item == newNode.Item)?.Expanded ?? newNode.Expanded;
                 }
             }
             
             //Update the tree when a tag switches parent
-            foreach (TreeNode node in newNodes)
+            foreach (TreeNode<Tag> node in newNodes)
             {
-                node.Tag.PropertyChanged += OnTagParentChanged;
+                node.Item.PropertyChanged += OnTagParentChanged;
             }
             
-            TreeViewSource = new(newTreeViewSource);
+            TagsAsTreeNodes = new(tagsAsTreeNodes);
         }
 
         #region Commands
@@ -231,16 +230,33 @@ namespace COMPASS.Common.ViewModels.SidePanels
         {
             // Drag & Drop will modify the Collection of Treeview nodes that the treeview is bound to
             // We need to convert that back to the collection of Tags so that the changes are saved
-            var newRootTags = TreeViewSource.Select(node => node.ToTag()).ToList();
+            var newRootTags = TagsAsTreeNodes.Select(ToTag).ToList();
 
-            foreach (Tag t in newRootTags)
+            foreach (Tag? t in newRootTags)
             {
-                t.Parent = null;
+                t!.Parent = null;
             }
 
             // Cannot do TreeRoot = ExtractTagsFromTreeViewSource(TreeViewSource); because that changes ref of TreeRoot
             _codexCollection.RootTags.Clear();
             _codexCollection.RootTags.AddRange(newRootTags);
+        }
+        
+        //TODO move this somewhere else
+        private Tag ToTag(TreeNode<Tag> node)
+        {
+            Tag tag = node.Item;
+            
+            //add children according to treeview
+            tag.Children = new(node.Children.Select(ToTag));
+
+            //set parentID for all the children
+            foreach (Tag childTag in tag.Children)
+            {
+                childTag.Parent = tag;
+            }
+
+            return tag;
         }
         #endregion
 
@@ -265,7 +281,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public void SortChildren(Tag? parentTag)
         {
             RecursiveSortChildren(parentTag);
-            BuildTagTreeView();
+            UpdateTagsAsTreeNodes();
         }
         public void RecursiveSortChildren(Tag? tag)
         {
@@ -289,7 +305,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
             };
             RecursiveSortChildren(t);
             MainViewModel.CollectionVM.CurrentCollection.RootTags = t.Children.ToList();
-            BuildTagTreeView();
+            UpdateTagsAsTreeNodes();
         }
 
         private AsyncRelayCommand<Tag?>? _editTagCommand;
@@ -317,7 +333,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
                 f.Tags.Remove(toDelete);
             }
 
-            BuildTagTreeView();
+            UpdateTagsAsTreeNodes();
         }
         #endregion
     }

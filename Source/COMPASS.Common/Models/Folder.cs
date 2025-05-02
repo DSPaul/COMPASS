@@ -13,7 +13,7 @@ namespace COMPASS.Common.Models
     {
         public Folder(string path)
         {
-            _fullPath = path;
+            _fullPath = path.Trim(Path.DirectorySeparatorChar).Trim(Path.AltDirectorySeparatorChar);;
         }
 
         /// <summary>

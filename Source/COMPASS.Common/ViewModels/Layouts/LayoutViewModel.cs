@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
+using COMPASS.Common.ViewModels.Modals.Import;
 using Material.Icons;
 
 namespace COMPASS.Common.ViewModels.Layouts
@@ -106,7 +106,7 @@ namespace COMPASS.Common.ViewModels.Layouts
                 //check for folder import
                 if (folders.Count != 0)
                 {
-                    ImportFolderViewModel folderImportVM = new(manuallyTriggered: true)
+                    ImportFilesViewModel folderImportVM = new(autoImport: false)
                     {
                         RecursiveDirectories = folders,
                         Files = files

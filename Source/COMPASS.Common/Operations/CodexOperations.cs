@@ -14,6 +14,7 @@ using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
@@ -552,8 +553,8 @@ namespace COMPASS.Common.Operations
             await CoverService.GetCover(codices?.Cast<Codex>().ToList() ?? []);
 
         //TODO remove this, HandleKeyDownOnCodex should be called directly
-        public static void DataGridHandleKeyDown(object? sender, KeyEventArgs e)
-            => HandleKeyDownOnCodex((sender as DataGrid)?.SelectedItems, e);
+        // public static void DataGridHandleKeyDown(object? sender, KeyEventArgs e)
+        //     => HandleKeyDownOnCodex((sender as DataGrid)?.SelectedItems, e);
         public static async void HandleKeyDownOnCodex(IList? selectedItems, KeyEventArgs e)
         {
             if (selectedItems is null) return;
@@ -608,7 +609,7 @@ namespace COMPASS.Common.Operations
 
         public void OnDragOver(object sender, DragEventArgs e)
         {
-            if (e.Data.GetValue<TreeNode>() is { Tag.IsGroup: false } ||
+            if (e.Data.GetValue<TreeNode<Tag>>() is { Item.IsGroup: false } ||
                 e.Data.GetValue<Tag>() is { IsGroup: false })
             {
                 //TODO Handle adorner manually
@@ -625,10 +626,10 @@ namespace COMPASS.Common.Operations
 
             Tag? toAdd = null;
 
-            if (e.Data.Contains(nameof(TreeNode)))
+            if (e.Data.Contains(nameof(TreeNode<Tag>)))
             {
-                TreeNode? node = e.Data.Get(nameof(TreeNode)) as TreeNode;
-                toAdd = node?.Tag;
+                TreeNode<Tag>? node = e.Data.Get(nameof(TreeNode<Tag>)) as TreeNode<Tag>;
+                toAdd = node?.Item;
             }
             else if (e.Data.Contains(nameof(Tag)))
             {

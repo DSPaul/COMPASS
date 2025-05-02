@@ -6,4 +6,5 @@
   <conv:AreEqualConverter Invert="True" x:Key="AreNotEqualConverter"/>
   <conv:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
   <conv:IsSmallerOrEqualConverter x:Key="IsSmallerOrEqualConverter" />
+  <conv:PlusOneConverter x:Key="PlusOneConverter" />
 </ResourceDictionary>

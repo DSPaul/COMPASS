@@ -342,7 +342,7 @@
                             <Button.Template>
                                 <ControlTemplate>
                                     <controls:Chip Theme="{StaticResource Removable}"
-                                                   Background="{Binding BackgroundColor, Converter={x:Static converters:FuncConverters.ColorToBrush}}"
+                                                   Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
                                                    Name="{Binding Content}"/>
                                 </ControlTemplate>
                             </Button.Template>

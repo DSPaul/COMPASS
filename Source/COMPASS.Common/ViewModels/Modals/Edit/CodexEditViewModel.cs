@@ -11,9 +11,11 @@ using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Tools;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
@@ -29,11 +31,14 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             TempCodex.LoadCover();
 
             //Apply right checkboxes in AllTags
-            foreach (TreeNode t in AllTreeNodes)
+            foreach (var node in AllTreeNodes)
             {
-                t.Expanded = false;
-                t.Selected = TempCodex.Tags.Contains(t.Tag);
-                if (t.Children.Any(node => TempCodex.Tags.Contains(node.Tag))) t.Expanded = true;
+                node.Expanded = false;
+                node.IsChecked = TempCodex.Tags.Contains(node.Item);
+                if (node.Children.Any(n => TempCodex.Tags.Contains(n.Item)))
+                {
+                    node.Expanded = true;
+                }
             }
         }
 
@@ -103,13 +108,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         private void UpdateTagList()
         {
             TempCodex.Tags.Clear();
-            foreach (TreeNode t in AllTreeNodes)
-            {
-                if (t.Selected)
-                {
-                    TempCodex.Tags.Add(t.Tag);
-                }
-            }
+            TempCodex.Tags.AddRange(CheckableTreeNode<Tag>.GetCheckedItems(AllTagsAsTreeNodes));
         }
 
         private AsyncRelayCommand? _quickCreateTagCommand;
@@ -123,22 +122,23 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             var modal = new ModalWindow(tagEditVm);
             await modal.ShowDialog(App.MainWindow); //TODO make this the window of the codex edit
 
+            //TODO, we can now create tags outside of root, this is not longer correct
             if (MainViewModel.CollectionVM.CurrentCollection.RootTags.Count > tagCount) //new tag was created
             {
                 //recalculate treeview source
-                _treeViewSource = null;
+                _allTagsAsTreeNodes = null;
                 OnPropertyChanged(nameof(AllTagsAsTreeNodes));
 
                 //Apply right checkboxes in AllTags
-                foreach (TreeNode t in AllTreeNodes)
+                foreach (CheckableTreeNode<Tag> t in AllTreeNodes)
                 {
                     t.Expanded = false;
-                    t.Selected = TempCodex.Tags.Contains(t.Tag);
-                    if (t.Children.Any(node => TempCodex.Tags.Contains(node.Tag))) t.Expanded = true;
+                    t.IsChecked = TempCodex.Tags.Contains(t.Item);
+                    if (t.Children.Any(node => TempCodex.Tags.Contains(node.Item))) t.Expanded = true;
                 }
 
                 //check the newly created tag
-                AllTagsAsTreeNodes.Last().Selected = true;
+                AllTagsAsTreeNodes.Last().IsChecked = true;
 
                 UpdateTagList();
             }

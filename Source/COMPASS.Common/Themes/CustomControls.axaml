@@ -291,7 +291,7 @@
                 <StackPanel Orientation="Vertical" Background="Transparent"
                             HorizontalAlignment="{TemplateBinding HorizontalAlignment}">
                     <TextBlock
-                        Text="{TemplateBinding Text, Converter={x:Static converters:FuncConverters.ToUpperConverter}}"
+                        Text="{TemplateBinding Text, Converter={x:Static converters:StringConverters.ToUpperConverter}}"
                         Foreground="{StaticResource TextMutedColor}"
                         FontSize="15" FontWeight="Bold" />
                     <Rectangle

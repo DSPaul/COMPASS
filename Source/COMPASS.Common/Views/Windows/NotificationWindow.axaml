@@ -39,13 +39,13 @@
             </Border>
             <Panel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Margin="20, 20, 0, 0" Width="60" Height="60">
                 <Svg Path="/Assets/Info.svg"
-                     IsVisible="{Binding Severity, Converter={x:Static converters:FuncConverters.AreEqual},
+                     IsVisible="{Binding Severity, Converter={x:Static converters:ObjectConverters.AreEqual},
                      ConverterParameter={x:Static enums:Severity.Info}}" />
                 <Svg Path="/Assets/Warning.svg"
-                     IsVisible="{Binding Severity, Converter={x:Static converters:FuncConverters.AreEqual},
+                     IsVisible="{Binding Severity, Converter={x:Static converters:ObjectConverters.AreEqual},
                      ConverterParameter={x:Static enums:Severity.Warning}}" />
                 <Svg Path="/Assets/Error.svg"
-                     IsVisible="{Binding Severity, Converter={x:Static converters:FuncConverters.AreEqual},
+                     IsVisible="{Binding Severity, Converter={x:Static converters:ObjectConverters.AreEqual},
                      ConverterParameter={x:Static enums:Severity.Error}}" />
             </Panel>
 
@@ -87,16 +87,16 @@
                     </Style>
                 </StackPanel.Styles>
                 <Button Content="{Binding ConfirmText}" Click="ConfirmClick"
-                        IsVisible="{Binding Actions, Converter={x:Static converters:FuncConverters.HasFlagConverter}, 
+                        IsVisible="{Binding Actions, Converter={x:Static converters:EnumConverters.HasFlagConverter}, 
                         ConverterParameter={x:Static enums:NotificationAction.Confirm}}"
                         Background="{Binding Severity, Converter={StaticResource SeverityToColorConverter}}"
                         Foreground="{StaticResource Layer0}" IsDefault="True" />
                 <Button Content="{Binding DeclineText}" Click="DeclineClick"
-                        IsVisible="{Binding Actions, Converter={x:Static converters:FuncConverters.HasFlagConverter}, 
+                        IsVisible="{Binding Actions, Converter={x:Static converters:EnumConverters.HasFlagConverter}, 
                         ConverterParameter={x:Static enums:NotificationAction.Decline}}"
                         BorderBrush="{StaticResource TextColor}" BorderThickness="2" Background="Transparent" />
                 <Button Content="{Binding CancelText}" Click="CancelClick"
-                        IsVisible="{Binding Actions, Converter={x:Static converters:FuncConverters.HasFlagConverter}, 
+                        IsVisible="{Binding Actions, Converter={x:Static converters:EnumConverters.HasFlagConverter}, 
                         ConverterParameter={x:Static enums:NotificationAction.Cancel}}"
                         BorderBrush="{StaticResource TextColor}" BorderThickness="2" Background="Transparent" />
             </StackPanel>

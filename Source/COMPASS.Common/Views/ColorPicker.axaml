@@ -23,9 +23,9 @@
         <ItemsControl.ItemTemplate>
             <DataTemplate>
                 <RadioButton GroupName="ColorGroup" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="0"
-                             Background="{Binding $self.DataContext, Converter={x:Static conv:FuncConverters.ColorToBrush}}"
+                             Background="{Binding $self.DataContext, Converter={x:Static conv:ColorConverters.ColorToBrush}}"
                              IsChecked="{Binding $parent[view:ColorPicker].SelectedColor, 
-                                Converter={x:Static conv:FuncConverters.AreEqual}, Mode=OneWay}"
+                                Converter={x:Static conv:ObjectConverters.AreEqual}, Mode=OneWay}"
                              IsCheckedChanged="ToggleButton_OnIsCheckedChanged">
                     <RadioButton.Template>
                         <ControlTemplate>

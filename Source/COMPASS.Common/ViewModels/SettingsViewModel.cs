@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
@@ -22,10 +21,10 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.Views.Windows;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
-using ZstdSharp.Unsafe;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -178,7 +177,7 @@ namespace COMPASS.Common.ViewModels
         {
             if (!String.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))
             {
-                var importFolderVM = new ImportFolderViewModel(true)
+                var importFolderVM = new ImportFilesViewModel(false)
                 {
                     RecursiveDirectories = [dir],
                 };
@@ -189,7 +188,7 @@ namespace COMPASS.Common.ViewModels
         private async Task EditAutoImportFolder(Folder? folder)
         {
             if (folder is null) return;
-            var importFolderVM = new ImportFolderViewModel(true)
+            var importFolderVM = new ImportFilesViewModel(true)
             {
                 ExistingFolders = [folder],
             };

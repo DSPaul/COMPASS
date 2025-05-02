@@ -30,8 +30,8 @@ namespace COMPASS.Common.ViewModels.Import
                     await ImportFilesAsync(pathsToImport, targetCollection);
                     break;
                 case ImportSource.Folder:
-                    ImportFolderViewModel importFolderVM = new(targetCollection, manuallyTriggered: true);
-                    await importFolderVM.Import();
+                    ImportFilesViewModel folderVM = new(targetCollection, autoImport: false);
+                    await folderVM.Import();
                     break;
                 case ImportSource.Manual:
                     await ImportManual();
@@ -81,7 +81,7 @@ namespace COMPASS.Common.ViewModels.Import
             await window.ShowDialog(App.MainWindow);
         }
 
-        public static async Task ImportFilesAsync(List<string> paths, CodexCollection? targetCollection = null)
+        public static async Task ImportFilesAsync(IList<string> paths, CodexCollection? targetCollection = null)
         {
             targetCollection ??= MainViewModel.CollectionVM.CurrentCollection;
 

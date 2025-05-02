@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="using:COMPASS.Common.Views.Modals"
+        xmlns:importViews="using:COMPASS.Common.Views.Modals.Import"
         xmlns:editViews="using:COMPASS.Common.Views.Modals.Edit"
         xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
         xmlns:editVm="using:COMPASS.Common.ViewModels.Modals.Edit"
@@ -33,7 +34,11 @@
         </DataTemplate>
         
         <DataTemplate DataType="importVm:ImportURLViewModel">
-            <views:ImportURLView/>
+            <importViews:ImportURLView/>
+        </DataTemplate>
+        
+        <DataTemplate DataType="importVm:ImportFolderWizardVm">
+            <importViews:ImportFolderWizard/>
         </DataTemplate>
         
         <DataTemplate DataType="vm:FileNotFoundViewModel">

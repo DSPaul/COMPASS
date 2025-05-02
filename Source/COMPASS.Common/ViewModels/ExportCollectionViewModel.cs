@@ -35,7 +35,10 @@ namespace COMPASS.Common.ViewModels
 
         public CodexCollection CollectionToExport { get; set; }
 
+        public override string WindowTitle { get; } = "Export Collection";
+        
         //OVERVIEW STEP
+        private readonly WizardStepViewModel _overviewStep = new("Overview");
         public bool ExportAllTags { get; set; } = true;
         public bool ExportAllCodices { get; set; } = true;
         public bool ExportAllSettings { get; set; } = false;
@@ -66,7 +69,7 @@ namespace COMPASS.Common.ViewModels
         public bool IncludeFiles { get; set; }
         public bool IncludeCoverArt { get; set; }
 
-        public override async Task Finish()
+        protected override async Task Finish()
         {
             ApplyChoices();
 
@@ -206,7 +209,7 @@ namespace COMPASS.Common.ViewModels
         {
             //Checks which steps need to be included in wizard
             Steps.Clear();
-            Steps.Add("Overview");
+            Steps.Add(_overviewStep);
             if (AdvancedExport)
             {
                 ContentSelectorVM.UpdateSteps();

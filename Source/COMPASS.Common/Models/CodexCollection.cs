@@ -122,7 +122,7 @@ namespace COMPASS.Common.Models
                 AllTags.Add(tag);
             }
             RootTags.AddRange(tagsList);
-            MainViewModel.CollectionVM.TagsVM.BuildTagTreeView();
+            MainViewModel.CollectionVM.TagsVM.UpdateTagsAsTreeNodes();
         }
 
         public void ImportCodicesFrom(CodexCollection source)
