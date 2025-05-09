@@ -14,6 +14,7 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
+using COMPASS.Common.Views.Windows;
 using HtmlAgilityPack;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Newtonsoft.Json.Linq;
@@ -258,38 +259,6 @@ namespace COMPASS.Common.Services.FileSystem
             return paths;
         }
 
-        /// <summary>
-        /// If the existing codex path is inaccessible for any reason, prompt the user to pick another one
-        /// </summary>
-        /// <returns></returns>
-        public static async Task AskNewCompassDataPath(string msg)
-        {
-            var windowedNotificationService =
-                ServiceResolver.Resolve<INotificationService>();
-
-            Notification pickNewPath = new("Pick a location to save your data", msg, Severity.Warning)
-            {
-                ConfirmText = "Continue"
-            };
-            await windowedNotificationService.ShowDialog(pickNewPath);
-
-            bool success = false;
-            while (!success)
-            {
-                string? newPath = await PickFolder();
-                if (!string.IsNullOrWhiteSpace(newPath) && Path.Exists(newPath))
-                {
-                    success = await SettingsViewModel.GetInstance().SetNewDataPath(newPath);
-                }
-                else
-                {
-                    Notification notValid = new("Invalid path", $"{newPath} is not a valid path, please try again",
-                        Severity.Warning);
-                    await windowedNotificationService.ShowDialog(notValid);
-                }
-            }
-        }
-
         #endregion
 
         #region Path matching
@@ -381,6 +350,65 @@ namespace COMPASS.Common.Services.FileSystem
 
         #endregion
 
+        #region Manipulate data on disk
+
+        public static async Task<bool> CopyDataAsync(string sourceDir, string destDir)
+        {
+            ProgressViewModel progressVM = ProgressViewModel.GetInstance();
+            ProgressWindow progressWindow = new();
+
+            var toCopy = Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories);
+
+            progressVM.TotalAmount = toCopy.Length;
+            progressVM.ResetCounter();
+            progressVM.Text = "Copying Files";
+
+            progressWindow.Show();
+
+            try
+            {
+                //Create all the directories
+                foreach (string dirPath in Directory.GetDirectories(sourceDir, "*", SearchOption.AllDirectories))
+                {
+                    Directory.CreateDirectory(dirPath.Replace(sourceDir, destDir));
+                }
+
+                //Copy all the files & Replaces any files with the same name
+                await Task.Run(() =>
+                {
+                    foreach (string sourcePath in toCopy)
+                    {
+                        ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                        // don't copy log file, causes error because log file is open
+                        if (Path.GetExtension(sourcePath) != ".log")
+                        {
+                            File.Copy(sourcePath, sourcePath.Replace(sourceDir, destDir), true);
+                        }
+
+                        progressVM.IncrementCounter();
+                        progressVM.AddLogEntry(new LogEntry(Severity.Info, $"Copied {sourcePath}"));
+                    }
+                });
+            }
+            catch (OperationCanceledException ex)
+            {
+                Logger.Warn($"Transfer was cancelled", ex);
+                progressVM.ConfirmCancellation();
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Could not move data to {destDir}", ex);
+                progressVM.Clear();
+                return false;
+            }
+
+            return true;
+        }
+
+        #endregion
+        
         /// <summary>
         /// Tries to create the required directories for the given path
         /// </summary>

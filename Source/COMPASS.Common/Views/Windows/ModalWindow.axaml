@@ -44,6 +44,14 @@
         <DataTemplate DataType="vm:FileNotFoundViewModel">
             <views:FileNotFoundView/>
         </DataTemplate>
+        
+        <DataTemplate DataType="vm:SettingsViewModel">
+            <views:SettingsView/>
+        </DataTemplate>
+        
+        <DataTemplate DataType="vm:ChangeDataLocationViewModel">
+            <views:ChangeDataLocationView/>
+        </DataTemplate>
     </Window.DataTemplates>
     
     <ContentControl Content="{Binding}" Margin="10"/>

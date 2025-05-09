@@ -22,6 +22,7 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<UserFilesStorageService>().As<IUserFilesStorageService>();
             
             builder.RegisterType<FilesService>().As<IFilesService>();
+            builder.RegisterType<ApplicationDataService>().As<IApplicationDataService>();
         }
     }
 }

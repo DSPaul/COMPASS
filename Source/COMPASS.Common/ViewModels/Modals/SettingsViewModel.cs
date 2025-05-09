@@ -6,14 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Operations;
@@ -25,31 +23,36 @@ using COMPASS.Common.Views.Windows;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.Modals
 {
-    public class SettingsViewModel : ObservableObject
+    public class SettingsViewModel : ViewModelBase, IModalViewModel
     {
-        private SettingsViewModel()
+        public SettingsViewModel(string tabToOpen = "")
         {
+            //TODO use tabToOpen 
+            
             _preferencesService = PreferencesService.GetInstance();
             _environmentVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
             _collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
+            _applicationDataService = ServiceResolver.Resolve<IApplicationDataService>();
 
             WebViewDataDir = Path.Combine(_environmentVarsService.CompassDataPath, "WebViewData");
         }
 
-        #region singleton pattern
-        private static SettingsViewModel? _settingsVM;
-        public static SettingsViewModel GetInstance() => _settingsVM ??= new SettingsViewModel();
-        #endregion
-
         private readonly PreferencesService _preferencesService;
         private readonly IEnvironmentVarsService _environmentVarsService;
         private readonly ICodexCollectionStorageService _collectionStorageService;
+        private readonly IApplicationDataService _applicationDataService;
 
+        #region IModalWindow
 
-        public MainViewModel? MVM { get; set; }
+        public string WindowTitle => "Settings";
+        public int? WindowWidth { get; } = 1000;
+        public int? WindowHeight { get; } = 500;
+        public Action CloseAction { get; set; } = () => { };
 
+        #endregion
+        
         #region Load and Save Settings
 
         public Preferences Preferences => _preferencesService.Preferences;
@@ -210,48 +213,6 @@ namespace COMPASS.Common.ViewModels
         #endregion
 
         #region Link Folders to Tag
-        
-
-        //TODO check which parts of this logic can be resused
-        // private void DetectFolderTagPairs()
-        // {
-        //     var splitFolders = MainViewModel.CollectionVM.CurrentCollection.AllCodices
-        //         .Where(codex => codex.Sources.HasOfflineSource())
-        //         .Select(codex => codex.Sources.Path)
-        //         .SelectMany(path => path.Split("\\"))
-        //         .ToHashSet()
-        //         .Select(folder => @"\" + folder + @"\");
-        //
-        //     foreach (string folder in splitFolders)
-        //     {
-        //         var codicesInFolder = MainViewModel.CollectionVM.CurrentCollection.AllCodices
-        //             .Where(codex => codex.Sources.HasOfflineSource())
-        //             .Where(codex => codex.Sources.Path.Contains(folder))
-        //             .ToList();
-        //
-        //         if (codicesInFolder.Count < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
-        //
-        //         var tagsToLink = codicesInFolder
-        //             .Select(codex => codex.Tags)
-        //             .Aggregate<IEnumerable<Tag>>((prev, next) => prev.Intersect(next))
-        //             .ToList();
-        //
-        //         // if there are tags that aren't associated with any folder so far,
-        //         // do only those to try and avoid doubles
-        //         if (tagsToLink.Count > 1)
-        //         {
-        //             var strippedTagsToLink = tagsToLink
-        //                 .Except(MainViewModel.CollectionVM.CurrentCollection.Info.FolderTagPairs.Select(pair => pair.Tag!))
-        //                 .ToList();
-        //             if (strippedTagsToLink.Any()) tagsToLink = strippedTagsToLink;
-        //         }
-        //
-        //         foreach (var tag in tagsToLink)
-        //         {
-        //             AddFolderTagPair(new FolderTagPair(folder, tag));
-        //         }
-        //     }
-        // }
 
         public bool AutoLinkFolderTagSameName
         {
@@ -363,10 +324,6 @@ namespace COMPASS.Common.ViewModels
 
         #region Data Path 
 
-        public string BindableDataPath => _environmentVarsService.CompassDataPath; // used because binding to static stuff has its problems
-
-        public string NewDataPath { get; set; } = "";
-
         private AsyncRelayCommand? _changeDataPathCommand;
         public AsyncRelayCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
         private async Task ChooseNewDataPath()
@@ -381,180 +338,15 @@ namespace COMPASS.Common.ViewModels
                 var folder = folders.Single();
                 string newPath = folder.Path.AbsolutePath;
                 folder.Dispose();
-                await SetNewDataPath(newPath);
+                await _applicationDataService.UpdateRootDirectory(newPath);
             }
         }
 
         private AsyncRelayCommand? _resetDataPathCommand;
-        public AsyncRelayCommand ResetDataPathCommand => _resetDataPathCommand ??= new(() => SetNewDataPath(IEnvironmentVarsService.DefaultDataPath));
-
-        public async Task<bool> SetNewDataPath(string newPath)
+        public AsyncRelayCommand ResetDataPathCommand => _resetDataPathCommand ??= new(ResetDataPath);
+        private async Task ResetDataPath()
         {
-            if (String.IsNullOrWhiteSpace(newPath) || !Path.Exists(newPath)) { return false; }
-
-            //make sure new folder ends on /COMPASS
-            string folderName = new DirectoryInfo(newPath).Name;
-            if (folderName != "COMPASS")
-            {
-                newPath = Path.Combine(newPath, "COMPASS");
-                try
-                {
-                    Directory.CreateDirectory(newPath);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"Failed to create the COMPASS folder at new data path location {newPath}", ex);
-                    return false;
-                }
-            }
-
-            if (newPath == _environmentVarsService.CompassDataPath) { return false; }
-
-            NewDataPath = newPath;
-
-            //If there is existing data, Give users choice between moving or copying
-            if (Path.Exists(_environmentVarsService.CompassDataPath))
-            {
-                ChangeDataLocationWindow window = new(this);
-                await window.ShowDialog(App.MainWindow);
-            }
-            //If not, just change over
-            else
-            {
-                ChangeToNewDataPath();
-            }
-
-            return true;
-        }
-
-        private AsyncRelayCommand? _moveToNewDataPathCommand;
-        public AsyncRelayCommand MoveToNewDataPathCommand => _moveToNewDataPathCommand ??= new(MoveToNewDataPath);
-        public async Task MoveToNewDataPath()
-        {
-            bool success;
-            try
-            {
-                success = await CopyDataAsync(_environmentVarsService.CompassDataPath, NewDataPath);
-            }
-            catch (OperationCanceledException ex)
-            {
-                Logger.Warn("File copy has been cancelled", ex);
-                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
-                return;
-            }
-            if (success)
-            {
-                DeleteDataLocation();
-            }
-        }
-
-        private AsyncRelayCommand? _copyToNewDataPathCommand;
-        public AsyncRelayCommand CopyToNewDataPathCommand => _copyToNewDataPathCommand ??= new(CopyToNewDataPath);
-        private async Task CopyToNewDataPath()
-        {
-            try
-            {
-                await CopyDataAsync(_environmentVarsService.CompassDataPath, NewDataPath);
-            }
-            catch (OperationCanceledException ex)
-            {
-                Logger.Warn("File copy has been cancelled", ex);
-                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
-                return;
-            }
-
-            ChangeToNewDataPath();
-        }
-
-        private RelayCommand? _changeToNewDataPathCommand;
-        public RelayCommand ChangeToNewDataPathCommand => _changeToNewDataPathCommand ??= new(ChangeToNewDataPath);
-
-        /// <summary>
-        /// Sets the data path to <see cref="NewDataPath"/> and restarts the app
-        /// </summary>
-        public void ChangeToNewDataPath()
-        {
-            _collectionStorageService.Save(MainViewModel.CollectionVM.CurrentCollection);
-
-            _environmentVarsService.CompassDataPath = NewDataPath;
-
-            Notification changeSuccessful = new("Data path changed successfully", $"Data path was successfully changed to {_environmentVarsService.CompassDataPath}. COMPASS will now restart.");
-            ServiceResolver.Resolve<INotificationService>().ShowDialog(changeSuccessful);
-
-            //Restart COMPASS
-            var currentExecutablePath = Environment.ProcessPath;
-            var args = Environment.GetCommandLineArgs();
-            if (currentExecutablePath != null) Process.Start(currentExecutablePath, args);
-            Utils.Shutdown();
-        }
-
-        private RelayCommand? _deleteDataCommand;
-        public RelayCommand DeleteDataCommand => _deleteDataCommand ??= new(DeleteDataLocation);
-
-        public void DeleteDataLocation()
-        {
-            try
-            {
-                Directory.Delete(_environmentVarsService.CompassDataPath, true);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("could not delete all data", ex);
-            }
-            ChangeToNewDataPath();
-        }
-
-        public static async Task<bool> CopyDataAsync(string sourceDir, string destDir)
-        {
-            ProgressViewModel progressVM = ProgressViewModel.GetInstance();
-            ProgressWindow progressWindow = new();
-
-            var toCopy = Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories);
-
-            progressVM.TotalAmount = toCopy.Length;
-            progressVM.ResetCounter();
-            progressVM.Text = "Copying Files";
-
-            progressWindow.Show();
-
-            try
-            {
-                //Create all the directories
-                foreach (string dirPath in Directory.GetDirectories(sourceDir, "*", SearchOption.AllDirectories))
-                {
-                    Directory.CreateDirectory(dirPath.Replace(sourceDir, destDir));
-                }
-
-                //Copy all the files & Replaces any files with the same name
-                await Task.Run(() =>
-                {
-                    foreach (string sourcePath in toCopy)
-                    {
-                        ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-                        // don't copy log file, causes error because log file is open
-                        if (Path.GetExtension(sourcePath) != ".log")
-                        {
-                            File.Copy(sourcePath, sourcePath.Replace(sourceDir, destDir), true);
-                        }
-                        progressVM.IncrementCounter();
-                        progressVM.AddLogEntry(new LogEntry(Severity.Info, $"Copied {sourcePath}"));
-                    }
-                });
-            }
-            catch (OperationCanceledException ex)
-            {
-                Logger.Warn($"Transfer was cancelled", ex);
-                progressVM.ConfirmCancellation();
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"Could not move data to {destDir}", ex);
-                progressVM.Clear();
-                return false;
-            }
-            return true;
+            await _applicationDataService.UpdateRootDirectory(IEnvironmentVarsService.DefaultDataPath);
         }
         #endregion
 

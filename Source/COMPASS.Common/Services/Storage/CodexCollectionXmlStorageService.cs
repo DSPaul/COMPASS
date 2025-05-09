@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
-using Autofac.Features.AttributeFilters;
 using Avalonia.Platform.Storage;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Storage;
@@ -32,11 +31,13 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
     public CodexCollectionXmlStorageService(
         IEnvironmentVarsService environmentVarsService,
         INotificationService windowedNotificationService,
-        IFilesService filesService)
+        IFilesService filesService,
+        IApplicationDataService applicationDataService)
     {
         _environmentVarsService = environmentVarsService;
         _filesService = filesService;
         _windowedNotificationService = windowedNotificationService;
+        _applicationDataService = applicationDataService;
 
         _collectionsPath = Path.Combine(environmentVarsService.CompassDataPath, "Collections");
     }
@@ -44,6 +45,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
     private readonly INotificationService _windowedNotificationService;
     private readonly IEnvironmentVarsService _environmentVarsService;
     private readonly IFilesService _filesService;
+    private readonly IApplicationDataService _applicationDataService;
 
     private string _collectionsPath;
     private readonly Lock _codicesLocker = new();
@@ -100,7 +102,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
                 Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
                 string msg = $"Failed to create a folder to store user data at {_environmentVarsService.CompassDataPath}, " +
                              $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
-                IOService.AskNewCompassDataPath(msg).Wait();
+                _applicationDataService.RequireNewCompassDataLocation(msg).Wait();
                 _collectionsPath = Path.Combine(_environmentVarsService.CompassDataPath, "Collections");
             }
         }

@@ -11,6 +11,7 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Layouts;
+using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.Views.Windows;
 using ImageMagick;
 
@@ -29,7 +30,6 @@ namespace COMPASS.Common.ViewModels
             CollectionVM = new(this);
             _currentLayout = LayoutViewModel.GetLayout();
             LeftDockVM = new(this);
-            SettingsViewModel.GetInstance().MVM = this;
 
             //Update stuff
             InitAutoUpdates();
@@ -139,16 +139,16 @@ namespace COMPASS.Common.ViewModels
         #region Commands and Methods
 
         //Open settings
-        private RelayCommand<string>? _openSettingsCommand;
-        public RelayCommand<string> OpenSettingsCommand => _openSettingsCommand ??= new(OpenSettings);
-        public void OpenSettings(string? tab = "")
+        private AsyncRelayCommand<string>? _openSettingsCommand;
+        public AsyncRelayCommand<string> OpenSettingsCommand => _openSettingsCommand ??= new(OpenSettings);
+        public async Task OpenSettings(string? tab = "")
         {
-            var settingsWindow = new SettingsWindow(SettingsViewModel.GetInstance(), tab ?? "");
-            settingsWindow.Show();
+            var settingsWindow = new ModalWindow(new SettingsViewModel(tab ?? ""));
+            await settingsWindow.ShowDialog(App.MainWindow);
         }
 
-        //check updates
-        public RelayCommand CheckForUpdatesCommand => SettingsViewModel.GetInstance().CheckForUpdatesCommand;
+        //TODO reimplement this, should probably be moved out of settings viewmodel
+        public RelayCommand CheckForUpdatesCommand => new(() => { }); //SettingsViewModel.CheckForUpdatesCommand;
 
         private RelayCommand? _navigateToLinkTree;
         public RelayCommand NavigateToLinkTree => _navigateToLinkTree ??= new(()

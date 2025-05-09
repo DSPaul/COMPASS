@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Views.Modals.ChangeDataLocationView"
+             x:DataType="vm:ChangeDataLocationViewModel">
+    <StackPanel VerticalAlignment="Center">
+        <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="30,5" TextWrapping="Wrap">
+            <Run Text="You are about to change the data location from" />
+            <LineBreak />
+            <LineBreak />
+            <Run Text="{Binding CurrentDataLocation, Mode=OneTime}" FontWeight="Bold" />
+            <LineBreak />
+            <Run Text="to" />
+            <LineBreak />
+            <Run Text="{Binding NewDataLocation, Mode=OneTime}" FontWeight="Bold" />
+            <LineBreak />
+        </TextBlock>
+        <TextBlock HorizontalAlignment="Center" Margin="30,5" TextWrapping="Wrap">
+            What would you like to do with your existing data? You can either:
+            <LineBreak />
+            - Move your data to the new location
+            <LineBreak />
+            - Copy your data to the new location (recommended)
+            <LineBreak />
+            - Leave your data behind and use the data already in the new location
+            <LineBreak />
+            - Delete your data and use the data already in the new location
+        </TextBlock>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="20">
+            <controls:IconButton Content="Move" Icon="FileDocumentArrowRight"
+                                 Command="{Binding MoveToNewDataLocationCommand}" />
+            <controls:IconButton Content="Copy" Icon="FileDocumentMultiple"
+                                 Command="{Binding CopyToNewDataLocationCommand}" />
+            <controls:IconButton Content="Leave" Icon="FileDocumentRemove"
+                                 Command="{Binding ChangeToNewDataLocationCommand}" />
+            <controls:IconButton Content="Delete" Icon="Delete"
+                                 Command="{Binding DeleteDataCommand}" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

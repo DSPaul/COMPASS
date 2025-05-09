@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -25,6 +27,14 @@ namespace COMPASS.Common.Tools
             {
                 desktopApp.Shutdown();
             }
+        }
+
+        public static void Restart(bool keepArgs)
+        {
+            var currentExecutablePath = Environment.ProcessPath;
+            var args = keepArgs? Environment.GetCommandLineArgs() : [];
+            if (currentExecutablePath != null) Process.Start(currentExecutablePath, args);
+            Shutdown();
         }
     }
 }
