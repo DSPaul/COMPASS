@@ -219,6 +219,13 @@ namespace COMPASS.Models
             CreateDirectories();
         }
 
+        public void Unload()
+        {
+            _loadedCodices = false;
+            _loadedInfo = false;
+            _loadedTags = false;
+        }
+
         public void CreateDirectories()
         {
             try

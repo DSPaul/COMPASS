@@ -81,6 +81,7 @@ namespace COMPASS.ViewModels
                 }
                 //save prev collection before switching
                 _currentCollection?.Save();
+                _currentCollection?.Unload();
                 SetProperty(ref _currentCollection!, value);
             }
         }
