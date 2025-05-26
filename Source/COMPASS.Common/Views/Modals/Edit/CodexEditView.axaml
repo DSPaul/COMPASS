@@ -71,12 +71,12 @@
                     <Setter Property="FontSize" Value="14" />
                     <Setter Property="Padding" Value="10,5" />
                     <Setter Property="MinHeight" Value="0" />
-                    <Style Selector="^:selected">
-                        <Setter Property="Background" Value="{StaticResource TabFocus}" />
-                    </Style>
-                    <Style Selector="^:pointerover /template/ Border#LayoutRoot">
-                        <Setter Property="Background" Value="{StaticResource TabFocus}" />
-                    </Style>
+                    <!-- <Style Selector="^:pointerover /template/ Border#LayoutRoot"> -->
+                    <!--     <Setter Property="Background" Value="{StaticResource TabFocus}" /> -->
+                    <!-- </Style> -->
+                    <!-- <Style Selector="^:selected /template/ Border#LayoutRoot"> -->
+                    <!--     <Setter Property="Background" Value="{StaticResource TabFocus}" /> -->
+                    <!-- </Style> -->
                 </Style>
                 <Style Selector="TabControl">
                     <Setter Property="Template">

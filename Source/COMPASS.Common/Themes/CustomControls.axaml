@@ -4,6 +4,7 @@
                     xmlns:materialIcons="using:Material.Icons.Avalonia"
                     xmlns:converters="using:COMPASS.Common.Converters"
                     xmlns:controls="using:COMPASS.Common.Controls">
+    
     <!--Icon Button-->
     <ControlTheme TargetType="controls:IconButton" x:Key="IconOnly">
         <Setter Property="Background" Value="Transparent" />
@@ -110,26 +111,26 @@
         </Style>
     </ControlTheme>
 
-    <!--CollapsableTabItem-->
-    <ControlTheme TargetType="controls:CollapsableTabItem"
-                  x:Key="{x:Type controls:CollapsableTabItem}">
+    <!--Custom TabItems-->
+    <ControlTheme TargetType="controls:IconTabItem"
+                  x:Key="{x:Type controls:IconTabItem}">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Background" Value="Transparent" />
-        <Style Selector="^:selected">
-            <Setter Property="Background" Value="{StaticResource TabFocus}" />
-        </Style>
         <Setter Property="Template">
-            <ControlTemplate TargetType="controls:CollapsableTabItem">
+            <ControlTemplate TargetType="controls:IconTabItem">
                 <Border CornerRadius="5,0,0,5" Margin="2,2,0,2"
                         Background="{TemplateBinding Background}"
-                        ToolTip.Tip="{TemplateBinding Header}">
+                        ToolTip.Tip="{TemplateBinding Header, Mode=OneWay}">
                     <Panel>
-                        <materialIcons:MaterialIcon Height="35" Width="35" Margin="10"
-                                                    HorizontalAlignment="Center"
-                                                    Kind="{TemplateBinding Icon}" />
-
+                        <StackPanel Orientation="Horizontal" Margin="10" Spacing="10">
+                            <materialIcons:MaterialIcon Height="35" Width="35"
+                                                        HorizontalAlignment="Center"
+                                                        Kind="{TemplateBinding Icon}" />
+                            <TextBlock Text="{TemplateBinding Header, Mode=OneWay}" 
+                                       IsVisible="{TemplateBinding HideHeader, Converter={x:Static BoolConverters.Not}}"/>
+                        </StackPanel>
                         <Ellipse
                             Fill="{TemplateBinding AttentionSeverity, Converter={StaticResource SeverityToColorConverter}}"
                             Width="10" Height="10" VerticalAlignment="Top"
@@ -139,59 +140,39 @@
                 </Border>
             </ControlTemplate>
         </Setter>
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{StaticResource TabFocus}" />
+        </Style>
+        <Style Selector="^:selected">
+            <Setter Property="Background" Value="{StaticResource TabFocus}" />
+        </Style>
     </ControlTheme>
-
+    <ControlTheme TargetType="controls:CollapsableTabItem"
+                  x:Key="{x:Type controls:CollapsableTabItem}"
+                  BasedOn="{StaticResource {x:Type controls:IconTabItem}}"/>
+    
     <!--Include/Exclude selector-->
     <ControlTheme TargetType="controls:FilterModeSelector"
                   x:Key="{x:Type controls:FilterModeSelector}">
         <Setter Property="Template">
             <ControlTemplate TargetType="controls:FilterModeSelector">
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel.Styles>
-                        <Style Selector="RadioButton">
-                            <Setter Property="Opacity" Value="0.3" />
-                            <Setter Property="Template">
-                                <ControlTemplate>
-                                    <ContentPresenter Content="{TemplateBinding Content}" />
-                                </ControlTemplate>
-                            </Setter>
-
-                            <Style Selector="^:checked">
-                                <Setter Property="Opacity" Value="1" />
-                            </Style>
-
-                            <Style Selector="^ > Border">
-                                <Setter Property="Padding" Value="10,0" />
-                                <Setter Property="Height" Value="30" />
-                            </Style>
-
-                            <Style Selector="^ TextBlock">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                                <Setter Property="Foreground" Value="{StaticResource TextColor}" />
-                                <Setter Property="Margin" Value="5,2" />
-                                <Setter Property="FontSize" Value="18" />
-                            </Style>
-                        </Style>
-                    </StackPanel.Styles>
-
-                    <RadioButton GroupName="IncludeGroup" IsChecked="{TemplateBinding Include, Mode=TwoWay}"
-                                 Margin="0">
-                        <Border CornerRadius="5,0,0,5" Background="{StaticResource AcceptFill}">
-                            <TextBlock Text="Include" />
-                        </Border>
-                    </RadioButton>
-
-                    <RadioButton GroupName="IncludeGroup" Margin="0">
-                        <Border CornerRadius="0,5,5,0" Background="OrangeRed">
-                            <TextBlock Text="Exclude" />
-                        </Border>
-                    </RadioButton>
-                </StackPanel>
+                <Border Classes="RadioBtnStrip"
+                        HorizontalAlignment="Stretch">
+                    <Grid ColumnSpacing="3" ColumnDefinitions="*, *"
+                          HorizontalAlignment="Stretch">
+                        <RadioButton Grid.Column="0" GroupName="IncludeGroup"
+                                     Content="Include"
+                                     IsChecked="{TemplateBinding Include, Mode=TwoWay}"
+                                     Background="{StaticResource AcceptFill}"/>
+                        <RadioButton Grid.Column="1" GroupName="IncludeGroup"
+                                     Content="Exclude"
+                                     Background="OrangeRed"/>
+                    </Grid>
+                </Border>
             </ControlTemplate>
         </Setter>
     </ControlTheme>
-
+    
     <!--RatingControl-->
     <ControlTheme x:Key="{x:Type controls:RatingControl}" TargetType="controls:RatingControl">
         <!--Every TemplatedControl needs to have a ControlTemplate applied. In this setter we define it.-->
@@ -394,6 +375,11 @@
                 <controls:IconButton Icon="Achievement" Content="Outlined button" Classes="Outline" />
                 <controls:IconButton Content="Icon btn without icon" />
                 <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">
+                    <TabControl.Styles>
+                        <Style Selector="controls|CollapsableTabItem">
+                            <Setter Property="HideHeader" Value="True"/>
+                        </Style>
+                    </TabControl.Styles>
                     <controls:CollapsableTabItem Header="Tags" Icon="Tags">
                         tags context
                     </controls:CollapsableTabItem>
@@ -402,6 +388,15 @@
                     </controls:CollapsableTabItem>
                 </TabControl>
 
+                <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Top">
+                    <controls:CollapsableTabItem Header="Tags" Icon="Tags">
+                        tags context
+                    </controls:CollapsableTabItem>
+                    <controls:CollapsableTabItem Header="Filters" Icon="Filter">
+                        filter content
+                    </controls:CollapsableTabItem>
+                </TabControl>
+                
                 <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Top">
                     <controls:CollapsableTabItem Header="Tags" Icon="Tags">
                         tags context

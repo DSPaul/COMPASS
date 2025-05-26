@@ -135,7 +135,7 @@ public class ImportFilesViewModel : ViewModelBase
         }
 
         //3. Filter out doubles and banished paths
-        return toImport.Distinct().Except(_targetCollection.Info.BanishedPaths).ToList();
+        return toImport.Distinct().Where(path => !IOService.MatchesAnyGlob(path, _targetCollection.Info.BanishedPaths)).ToList();
     }
 
     /// <summary>

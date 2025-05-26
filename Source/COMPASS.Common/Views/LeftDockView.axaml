@@ -10,68 +10,76 @@
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.LeftDockView"
              x:DataType="vm:LeftDockViewModel">
-  <UserControl.Styles>
-    <Style Selector=":is(panels|SidePanel)">
-      <Setter Property="HorizontalAlignment" Value="Left"/>
-      <Setter Property="Template">
-        <ControlTemplate TargetType="panels:SidePanel">
-            <Border BorderBrush="{StaticResource Separator}" BorderThickness="3" Width="250"
-                    Background="{Binding $parent[controls:CollapsableTabItem].Background}">
-              <Grid RowDefinitions="auto, auto, *">
-                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                  <materialIcons:MaterialIcon Height="25" Width="25" HorizontalAlignment="Center"
-                        Margin="5" Kind="{Binding $parent[controls:CollapsableTabItem].Icon}"
-                                              VerticalAlignment="Center"/>
-                  <TextBlock Text="{Binding $parent[controls:CollapsableTabItem].Header}" 
-                             VerticalAlignment="Center" FontSize="20"/>
-                </StackPanel>
-                <ToggleButton Grid.Row="0" ToolTip.Tip="Collapse"
-                              Cursor="Hand"
-                              IsChecked="{Binding $parent[TabControl].((vm:LeftDockViewModel)DataContext).Collapsed}"
-                              Height="35" Width="35" HorizontalAlignment="Right">
-                <ToggleButton.Template>
-                  <ControlTemplate>
-                    <materialIcons:MaterialIcon Height="25" Width="25" Margin="5" Background="Transparent" Kind="ArrowCollapseLeft"/>
-                  </ControlTemplate>
-                </ToggleButton.Template>
-              </ToggleButton>
-                <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource Separator}"/>
-                <ContentPresenter Grid.Row="2" Content="{TemplateBinding Content}"/>
-              </Grid>
-            </Border>
-        </ControlTemplate>
-      </Setter>
-    </Style>
-  </UserControl.Styles>
-    
-  <TabControl Background="{StaticResource ButtonBackground}" 
-              BorderThickness="0" 
-              TabStripPlacement="Left" 
-              Padding="0"
-              SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
-    
-    <TabItem IsVisible="False"/> <!--This tab is selected when collapsing-->
-    
-    <controls:CollapsableTabItem Header="Tags" Icon="TagMultiple">
-        <panels:TagsSidePanel DataContext="{Binding MainVM.CollectionVM.TagsVM}"/>
-    </controls:CollapsableTabItem>
-    
-    <controls:CollapsableTabItem Header="Filters" Icon="Filter">
-        <panels:FiltersSidePanel DataContext="{Binding MainVM.CollectionVM.FilterVM}"/>
-    </controls:CollapsableTabItem>
+    <UserControl.Styles>
+        <Style Selector=":is(panels|SidePanel)">
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Template">
+                <ControlTemplate TargetType="panels:SidePanel">
+                    <Border BorderBrush="{StaticResource Separator}" BorderThickness="3" Width="250"
+                            Background="{Binding $parent[controls:CollapsableTabItem].Background}">
+                        <Grid RowDefinitions="auto, auto, *">
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                <materialIcons:MaterialIcon Height="25" Width="25" HorizontalAlignment="Center"
+                                                            Margin="5"
+                                                            Kind="{Binding $parent[controls:CollapsableTabItem].Icon}"
+                                                            VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding $parent[controls:CollapsableTabItem].Header}"
+                                           VerticalAlignment="Center" FontSize="20" />
+                            </StackPanel>
+                            <ToggleButton Grid.Row="0" ToolTip.Tip="Collapse"
+                                          Cursor="Hand"
+                                          IsChecked="{Binding $parent[TabControl].((vm:LeftDockViewModel)DataContext).Collapsed}"
+                                          Height="35" Width="35" HorizontalAlignment="Right">
+                                <ToggleButton.Template>
+                                    <ControlTemplate>
+                                        <materialIcons:MaterialIcon Height="25" Width="25" Margin="5"
+                                                                    Background="Transparent" Kind="ArrowCollapseLeft" />
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource Separator}" />
+                            <ContentPresenter Grid.Row="2" Content="{TemplateBinding Content}" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
 
-    <controls:CollapsableTabItem Header="Layouts" Icon="ViewDashboardEdit">
-        <panels:LayoutsSidePanel DataContext="{Binding MainVM}"/>
-    </controls:CollapsableTabItem>
-    
-    <controls:CollapsableTabItem Header="Add Items" Icon="BookAdd">
-        <panels:AddCodexSidePanel DataContext="{Binding AddCodexPanelVM}"/>
-    </controls:CollapsableTabItem>
+    <TabControl Background="{StaticResource ButtonBackground}"
+                BorderThickness="0"
+                TabStripPlacement="Left"
+                Padding="0"
+                SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
+        
+        <TabControl.Styles>
+            <Style Selector="controls|CollapsableTabItem">
+                <Setter Property="HideHeader" Value="True"/>
+            </Style>
+        </TabControl.Styles>
 
-    <controls:CollapsableTabItem Header="Logs" Icon="TextLong" 
-                                 AttentionSeverity="{Binding LogsVM.LastSeverity}"
-                                 ShowAttention="{Binding LogsVM.ShowAttention}">
-        <panels:LogsSidePanel DataContext="{Binding LogsVM}"/>
-    </controls:CollapsableTabItem>
-  </TabControl>
+        <TabItem IsVisible="False" /> <!--This tab is selected when collapsing-->
+
+        <controls:CollapsableTabItem Header="Tags" Icon="TagMultiple">
+            <panels:TagsSidePanel DataContext="{Binding MainVM.CollectionVM.TagsVM}" />
+        </controls:CollapsableTabItem>
+
+        <controls:CollapsableTabItem Header="Filters" Icon="Filter">
+            <panels:FiltersSidePanel DataContext="{Binding MainVM.CollectionVM.FilterVM}" />
+        </controls:CollapsableTabItem>
+
+        <controls:CollapsableTabItem Header="Layouts" Icon="ViewDashboardEdit">
+            <panels:LayoutsSidePanel DataContext="{Binding MainVM}" />
+        </controls:CollapsableTabItem>
+
+        <controls:CollapsableTabItem Header="Add Items" Icon="BookAdd">
+            <panels:AddCodexSidePanel DataContext="{Binding AddCodexPanelVM}" />
+        </controls:CollapsableTabItem>
+
+        <controls:CollapsableTabItem Header="Logs" Icon="TextLong"
+                                     AttentionSeverity="{Binding LogsVM.LastSeverity}"
+                                     ShowAttention="{Binding LogsVM.ShowAttention}">
+            <panels:LogsSidePanel DataContext="{Binding LogsVM}" />
+        </controls:CollapsableTabItem>
+    </TabControl>
 </UserControl>

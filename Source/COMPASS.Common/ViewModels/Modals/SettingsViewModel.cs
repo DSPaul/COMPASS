@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
@@ -37,6 +38,9 @@ namespace COMPASS.Common.ViewModels.Modals
             _applicationDataService = ServiceResolver.Resolve<IApplicationDataService>();
 
             WebViewDataDir = Path.Combine(_environmentVarsService.CompassDataPath, "WebViewData");
+
+            BanishedPaths = new(MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.OrderBy(x => x));
+            BanishedPaths.CollectionChanged += OnBanishedPathsChanged;
         }
 
         private readonly PreferencesService _preferencesService;
@@ -49,6 +53,9 @@ namespace COMPASS.Common.ViewModels.Modals
         public string WindowTitle => "Settings";
         public int? WindowWidth { get; } = 1000;
         public int? WindowHeight { get; } = 500;
+
+        public SizeToContent SizeToContent { get; } = SizeToContent.Manual;
+
         public Action CloseAction { get; set; } = () => { };
 
         #endregion
@@ -76,7 +83,19 @@ namespace COMPASS.Common.ViewModels.Modals
         }
         #endregion
 
-        #region Tab: Preferences
+        #region Tab: General
+
+        public bool PreferOnlineSource
+        {
+            get => _preferencesService.Preferences.OpenCodexPriority.First().ID == Preferences.ONLINE_SOURCE_PRIORITY_ID;
+            set
+            {
+                if (value == PreferOnlineSource) return;
+                //If the value changed, we can just switch the order around, because there are only 2 options
+                _preferencesService.Preferences.OpenCodexPriority = new(_preferencesService.Preferences.OpenCodexPriority.Reverse());
+                OnPropertyChanged();
+            }
+        }
 
         //TODO check if this virtualization stuff is still relevant
         //#region Virtualization Preferences
@@ -150,7 +169,7 @@ namespace COMPASS.Common.ViewModels.Modals
         private RelayCommand<string>? _showInExplorerCommand;
         public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(path =>
         {
-            if (String.IsNullOrEmpty(path) || !Path.Exists(path)) return;
+            if (string.IsNullOrEmpty(path) || !Path.Exists(path)) return;
             IOService.ShowInExplorer(path);
         });
 
@@ -158,14 +177,25 @@ namespace COMPASS.Common.ViewModels.Modals
         public ObservableCollection<Folder> AutoImportFolders => new(MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.OrderBy(f => f.FullPath));
 
         //Edit a folder from auto import
+        private AsyncRelayCommand<Folder>? _editAutoImportDirectoryCommand;
+        public AsyncRelayCommand<Folder> EditAutoImportDirectoryCommand => _editAutoImportDirectoryCommand ??= new(EditAutoImportFolder);
+        private async Task EditAutoImportFolder(Folder? folder)
+        {
+            if (folder is null) return;
+            var importFolderVM = new ImportFilesViewModel(autoImport: false)
+            {
+                ExistingFolders = [folder],
+            };
+            await importFolderVM.Import();
+            
+            OnPropertyChanged(nameof(AutoImportFolders));
+        }
+        
+        //Remove a folder from auto import
         private RelayCommand<Folder>? _removeAutoImportDirectoryCommand;
         public RelayCommand<Folder> RemoveAutoImportDirectoryCommand => _removeAutoImportDirectoryCommand ??= new(folder =>
             MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.Remove(folder!));
-
-        //Remove a folder from auto import
-        private AsyncRelayCommand<Folder>? _editAutoImportDirectoryCommand;
-        public AsyncRelayCommand<Folder> EditAutoImportDirectoryCommand => _editAutoImportDirectoryCommand ??= new(EditAutoImportFolder);
-
+        
         //Add a directory from auto import
         private AsyncRelayCommand<string>? _addAutoImportDirectoryCommand;
         public AsyncRelayCommand<string> AddAutoImportDirectoryCommand => _addAutoImportDirectoryCommand ??= new(AddAutoImportDirectory);
@@ -187,29 +217,23 @@ namespace COMPASS.Common.ViewModels.Modals
             }
         }
 
-        private async Task EditAutoImportFolder(Folder? folder)
-        {
-            if (folder is null) return;
-            var importFolderVM = new ImportFilesViewModel(true)
-            {
-                ExistingFolders = [folder],
-            };
-            await importFolderVM.Import();
-        }
-
         //File types to import
         private List<ObservableKeyValuePair<string, bool>>? _filetypePreferences;
         public List<ObservableKeyValuePair<string, bool>> FiletypePreferences
             => _filetypePreferences
-            ??= MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences.Select(x => new ObservableKeyValuePair<string, bool>(x)).ToList();
+            ??= MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences
+                .Select(x => new ObservableKeyValuePair<string, bool>(x))
+                .OrderBy(x => x.Key)
+                .ToList();
 
-        public ObservableCollection<string> BanishedPaths => new(MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.OrderBy(x => x));
+        public ObservableCollection<string> BanishedPaths { get; }
 
-        //Remove a directory from auto import
-        private RelayCommand<string>? _removeBanishedPathCommand;
-        public RelayCommand<string> RemoveBanishedPathCommand => _removeBanishedPathCommand ??= new(path =>
-            MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.Remove(path!));
-
+        public void OnBanishedPathsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.Clear();
+            MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.AddRange(BanishedPaths);
+        }
+        
         #endregion
 
         #region Link Folders to Tag
@@ -228,7 +252,7 @@ namespace COMPASS.Common.ViewModels.Modals
         #endregion
 
         #region Tab: Metadata
-        public List<CodexProperty> MetaDataPreferences => Preferences.CodexProperties;
+        public List<CodexProperty> MetaDataPreferences => Preferences.CodexProperties.OrderBy(x => x.Name).ToList();
         #endregion
 
         #region Tab: Data
@@ -324,6 +348,8 @@ namespace COMPASS.Common.ViewModels.Modals
 
         #region Data Path 
 
+        public string CompassDataPath => _environmentVarsService.CompassDataPath;
+        
         private AsyncRelayCommand? _changeDataPathCommand;
         public AsyncRelayCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
         private async Task ChooseNewDataPath()
@@ -339,6 +365,8 @@ namespace COMPASS.Common.ViewModels.Modals
                 string newPath = folder.Path.AbsolutePath;
                 folder.Dispose();
                 await _applicationDataService.UpdateRootDirectory(newPath);
+                
+                OnPropertyChanged(nameof(CompassDataPath));
             }
         }
 
@@ -347,6 +375,7 @@ namespace COMPASS.Common.ViewModels.Modals
         private async Task ResetDataPath()
         {
             await _applicationDataService.UpdateRootDirectory(IEnvironmentVarsService.DefaultDataPath);
+            OnPropertyChanged(nameof(CompassDataPath));
         }
         #endregion
 

@@ -14,7 +14,7 @@
         MinHeight="{Binding WindowHeight}"
         Background="{StaticResource WindowBackground}"
         WindowStartupLocation="CenterOwner"
-        SizeToContent="WidthAndHeight"
+        SizeToContent="{Binding SizeToContent}"
         Focusable="True"
         x:Class="COMPASS.Common.Views.Windows.ModalWindow"
         x:DataType="interfaces:IModalViewModel"

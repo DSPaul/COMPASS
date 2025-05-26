@@ -1,0 +1,54 @@
+<ItemsControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:COMPASS.Common.Controls"
+             xmlns:converters="clr-namespace:COMPASS.Common.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Controls.PriorityControl">
+    <ItemsControl.Template>
+        <ControlTemplate TargetType="ItemsControl">
+            <Border CornerRadius="5" Background="{StaticResource DarkUIElementBackground}">
+                <ItemsControl x:Name="InnerItemsControl" BorderBrush="{x:Null}" Background="{x:Null}"
+                              Padding="5" ItemsSource="{TemplateBinding ItemsSource}">
+                    <ItemsControl.Styles>
+                        <Style Selector="#InnerItemsControl ContentPresenter:nth-child(1) controls|IconButton#UpBtn">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
+                        <Style Selector="#InnerItemsControl ContentPresenter:nth-last-child(1) controls|IconButton#DownBtn">
+                            <Setter Property="IsVisible" Value="False"/>
+                        </Style>
+                    </ItemsControl.Styles>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="5"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="5" Background="{StaticResource AccentColorMuted}">
+                                <Grid ColumnDefinitions="*,15,15">
+                                    <TextBlock Text="{Binding $self.DataContext, Converter={x:Static converters:StringConverters.ToStringConverter}}" Margin="7,2"/>
+                                    <controls:IconButton Grid.Column="1" Name="UpBtn" 
+                                                         Width="20" Height="20"
+                                                         Theme="{StaticResource IconOnly}" 
+                                                         Foreground="{StaticResource TextColor}"
+                                                         Classes="ZoomOnHover"
+                                                         Icon="MenuUp" Margin="0"
+                                                         Click="MoveUp"/>
+                                    <controls:IconButton Grid.Column="2" Name="DownBtn"
+                                                         Width="20" Height="20"
+                                                         Classes="ZoomOnHover"
+                                                         Theme="{StaticResource IconOnly}" 
+                                                         Foreground="{StaticResource TextColor}"
+                                                         Icon="MenuDown" Margin="-3,0,0,0"
+                                                         Click="MoveDown"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+        </ControlTemplate>
+    </ItemsControl.Template>
+</ItemsControl>

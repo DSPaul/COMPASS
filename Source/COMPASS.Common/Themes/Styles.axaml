@@ -3,7 +3,7 @@
         xmlns:views="using:COMPASS.Common.Views"
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
     <Design.PreviewWith>
-        <ScrollViewer MaxHeight="400" AllowAutoHide="False">
+        <ScrollViewer MaxHeight="600" AllowAutoHide="False">
 
             <StackPanel Spacing="10">
 
@@ -34,6 +34,19 @@
                 <!-- Radio Buttons -->
                 <RadioButton Content="Options 1" />
                 <RadioButton Content="Options 2" />
+                
+                <Border Classes="RadioBtnStrip"
+                        HorizontalAlignment="Stretch">
+                    <Grid ColumnSpacing="3" ColumnDefinitions="*, *, *"
+                                 HorizontalAlignment="Stretch">
+                        <RadioButton Background="Green"
+                                     Content="Include"/>
+                        <RadioButton Grid.Column="1"
+                                     Background="OrangeRed" Content="Exclude"/>
+                        <RadioButton Grid.Column="2" Content="other"
+                                     Background="{StaticResource AccentColorMuted}"/>
+                    </Grid>
+                </Border>
 
                 <!-- Tree -->
                 <TreeView>
@@ -128,9 +141,6 @@
         <Setter Property="BorderBrush" Value="{x:Null}" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Style Selector="^:pointerover">
-            <Setter Property="Background" Value="{StaticResource ButtonHover}" />
-        </Style>
     </Style>
 
     <Style Selector=":is(Button)[IsEffectivelyEnabled=true]">
@@ -140,6 +150,9 @@
     <!-- Button -->
     <Style Selector="views|MainView Button">
         <Setter Property="Padding" Value="10,5" />
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{StaticResource ButtonHover}" />
+        </Style>
     </Style>
 
     <!--Blank button-->
@@ -393,7 +406,41 @@
             </Style>
         </Style>
     </Style>
-
+    
+    <Style Selector="Border.RadioBtnStrip">
+        <Setter Property="Background" Value="{StaticResource Layer2}"/>
+        <Setter Property="CornerRadius" Value="7"/>
+        <Setter Property="Padding" Value="5"/>
+        <Style Selector="^ RadioButton">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <ControlTemplate TargetType="RadioButton">
+                    <Panel HorizontalAlignment="{TemplateBinding HorizontalAlignment}">
+                        <Border CornerRadius="5" Opacity="0"
+                                HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                Background="{TemplateBinding Background}"/>
+                        <ContentPresenter
+                            Margin="5 2"
+                            Name="PART_ContentPresenter"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            Foreground="{TemplateBinding Foreground}"
+                            RecognizesAccessKey="True" />
+                    </Panel>
+                </ControlTemplate>
+            </Setter>
+            <Style Selector="^:pointerover /template/ Border">
+                <Setter Property="Opacity" Value="0.6"/>
+            </Style>
+            <Style Selector="^:checked /template/ Border">
+                <Setter Property="Opacity" Value="1"/>
+            </Style>
+        </Style>
+    </Style>
+    
     <!-- contextmenu -->
     <Style Selector="MenuItem">
         <Style Selector="^ materialIcons|MaterialIcon">
@@ -419,6 +466,5 @@
     <Style Selector="ListBox">
         <Setter Property="ScrollViewer.AllowAutoHide" Value="False" />
     </Style>
-    
     
 </Styles>

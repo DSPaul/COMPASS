@@ -2,7 +2,661 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
+             xmlns:models="using:COMPASS.Common.Models"
+             xmlns:enums="using:COMPASS.Common.Models.Enums"
+             xmlns:converters="clr-namespace:COMPASS.Common.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="COMPASS.Common.Views.Modals.SettingsView">
-    Welcome to Avalonia!
+             x:Class="COMPASS.Common.Views.Modals.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+    <UserControl.Styles>
+        <!-- Option 1 -->
+        <!-- <Style Selector="TabItem"> -->
+        <!--     <Setter Property="CornerRadius" Value="5 0 0 5"/> -->
+        <!--     <Setter Property="Margin" Value="0 0 -10 5"/> -->
+        <!--     <Setter Property="FontSize" Value="16"/> -->
+        <!--     <Setter Property="Padding" Value="0,0,18,0"/> -->
+        <!-- </Style> -->
+        <!-- <Style Selector="TabControl /template/ ContentPresenter"> -->
+        <!--     <Setter Property="Background" Value="{StaticResource TabFocus}"/> -->
+        <!--     <Setter Property="CornerRadius" Value="5"/> -->
+        <!--     <Setter Property="Padding" Value="10"/> -->
+        <!-- </Style> -->
+
+        <!-- Option 2 -->
+        <Style Selector="TabItem">
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Padding" Value="0,0,8,0" />
+        </Style>
+        <Style Selector="TabControl /template/ ContentPresenter">
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Padding" Value="5" />
+        </Style>
+        <!-- _________________________________________________ -->
+
+        <Style Selector="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="10,5" />
+        </Style>
+        <Style Selector="TextBlock.SectionTitle">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="10,5" />
+            <Setter Property="Foreground" Value="{StaticResource TextMutedColor}" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="FontSize" Value="20" />
+        </Style>
+        <Style Selector="Rectangle.SeparatorStyle">
+            <Setter Property="Fill" Value="{StaticResource DarkUIElementBackground}" />
+            <Setter Property="Width" Value="10000" />
+            <Setter Property="Height" Value="3" />
+            <Setter Property="Margin" Value="0,10" />
+        </Style>
+    </UserControl.Styles>
+    <TabControl TabStripPlacement="Left"
+                SelectedIndex="3"
+                BorderThickness="0" CornerRadius="10"
+                Padding="0" Margin="10">
+        <TabControl.Styles>
+            <Style Selector="Border.SettingsContainer">
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="Padding" Value="10" />
+                <Setter Property="BorderBrush" Value="{StaticResource DarkUIElementBackground}" />
+            </Style>
+        </TabControl.Styles>
+        <TabControl.Resources>
+            <x:Double x:Key="TabItemMinHeight"> 48 </x:Double>
+        </TabControl.Resources>
+        <TabItem Header="General">
+            <StackPanel Orientation="Vertical">
+                <Border x:Name="Behaviour" Classes="SettingsContainer">
+                    <StackPanel>
+                        <TextBlock Classes="SectionTitle" Text="Behaviour" />
+                        <Grid ColumnDefinitions="Auto * Auto">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                <TextBlock Text="On double click:" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Border Grid.Column="2" Classes="RadioBtnStrip">
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <RadioButton GroupName="OpenPref"
+                                                 Content="Prefer URL"
+                                                 IsChecked="{Binding PreferOnlineSource}"
+                                                 Background="{StaticResource AccentColorMuted}" />
+                                    <RadioButton GroupName="OpenPref"
+                                                 Content="Prefer local file"
+                                                 IsChecked="{Binding !PreferOnlineSource, Mode=OneWay}"
+                                                 Background="{StaticResource AccentColorMuted}" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                <!-- <Border Classes="SettingsContainer"> -->
+                <!--     <StackPanel> -->
+                <!--         <TextBlock Classes="SectionTitle" Text="Performance"/> -->
+                <!--          -->
+                <!--         <StackPanel Orientation="Horizontal"> -->
+                <!--             <CheckBox IsChecked="{Binding DoVirtualizationList}"/> -->
+                <!--             <TextBlock Text="Virtualize List " Margin="0" MinWidth="110"/> -->
+                <!--             <TextBlock Text="Layout for collections with more then " Margin="0"/> -->
+                <!--             <TextBox PreviewTextInput="FilterOnlyNumbers" Padding="2,0"  Margin="2" MinWidth="50" -->
+                <!--                      Text="{Binding VirtualizationThresholdList}"/> -->
+                <!--             <TextBlock Text="items." Margin="5,0"/> -->
+                <!--             <controls:Explainer VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}" -->
+                <!--                     ToolTip.Tip="Virtualized layouts only render items when they are scrolled into view, which greatly reduces load times for large collections. This will however cause stutter while scrolling. -->
+                <!--                         The List layout loads reasonable fast so virtualization is only needed for big collections."/> -->
+                <!--         </StackPanel> -->
+                <!--         <StackPanel Orientation="Horizontal"> -->
+                <!--             <CheckBox IsChecked="{Binding DoVirtualizationCard}"/> -->
+                <!--             <TextBlock Text="Virtualize Card " Margin="0" MinWidth="110"/> -->
+                <!--             <TextBlock Text="Layout for collections with more then " Margin="0"/> -->
+                <!--             <TextBox PreviewTextInput="FilterOnlyNumbers" Padding="2,0"  Margin="2" MinWidth="50" -->
+                <!--                      Text="{Binding VirtualizationThresholdCard}"/> -->
+                <!--             <TextBlock Text="items." Margin="5,0"/> -->
+                <!--             <controls:Explainer VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}" -->
+                <!--                     ToolTip.Tip="Virtualized layouts only render items when they are scrolled into view, which greatly reduces load times for large collections. This will however cause stutter while scrolling. -->
+                <!--                         The card layout loads the slowest due to due to its complexity so virtualisation is recommended even for medium sized collections."/> -->
+                <!--         </StackPanel> -->
+                <!--         <StackPanel Orientation="Horizontal"> -->
+                <!--             <CheckBox IsChecked="{Binding DoVirtualizationTile}"/> -->
+                <!--             <TextBlock Text="Virtualize Grid " Margin="0" MinWidth="110"/> -->
+                <!--             <TextBlock Text="Layout for collections with more then " Margin="0"/> -->
+                <!--             <TextBox PreviewTextInput="FilterOnlyNumbers" Padding="2,0"  Margin="2" MinWidth="50" -->
+                <!--                      Text="{Binding VirtualizationThresholdTile}"/> -->
+                <!--             <TextBlock Text="items." Margin="5,0"/> -->
+                <!--             <controls:Explainer VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}" -->
+                <!--                     ToolTip.Tip="Virtualized layouts only render items when they are scrolled into view, which greatly reduces load times for large collections. This will however cause stutter while scrolling. -->
+                <!--                         The Grid layout loads reasonable fast so virtualization is only needed for big collections."/> -->
+                <!--         </StackPanel> -->
+                <!--     </StackPanel> -->
+                <!-- </Border> -->
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Import">
+            <ScrollViewer>
+                <StackPanel>
+                    <Border x:Name="AutoImportSettings" Classes="SettingsContainer">
+                        <StackPanel Spacing="10">
+                            <StackPanel.Styles>
+                                <Style Selector="Expander">
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="BorderThickness" Value="10"/>
+                                </Style>
+                            </StackPanel.Styles>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Automatic Import" Classes="SectionTitle" />
+                                <controls:Explainer VerticalAlignment="Center"
+                                                    Content="These folders will periodically be checked for files that have not yet been imported, and import them automatically." />
+                            </StackPanel>
+
+                            <!--Auto import folders-->
+                            <Expander Header="Folders to Check">
+                                <StackPanel>
+                                    
+                                    <ScrollViewer MaxHeight="250">
+                                        <ItemsControl ItemsSource="{Binding AutoImportFolders}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border BorderBrush="{StaticResource AccentColorMuted}"
+                                                            BorderThickness="1" CornerRadius="5" Padding="5"
+                                                            Margin="10,5">
+                                                        <Grid ColumnDefinitions="*,auto,auto,auto">
+
+                                                            <TreeView Classes="NoSelection" VerticalAlignment="Center">
+                                                                <TreeViewItem ItemsSource="{Binding SubFolders}">
+                                                                    <TreeViewItem.Header>
+                                                                        <TextBlock Text="{Binding FullPath}"
+                                                                                   TextWrapping="Wrap" Margin="5" />
+                                                                    </TreeViewItem.Header>
+                                                                    <TreeViewItem.DataTemplates>
+                                                                        <TreeDataTemplate DataType="models:Folder"
+                                                                            ItemsSource="{Binding SubFolders}">
+                                                                            <TextBlock
+                                                                                Text="{Binding Name, Mode=OneWay}"
+                                                                                TextWrapping="Wrap" Margin="5" />
+                                                                        </TreeDataTemplate>
+                                                                    </TreeViewItem.DataTemplates>
+                                                                </TreeViewItem>
+                                                            </TreeView>
+
+                                                            <controls:IconButton Grid.Column="1" Margin="5"
+                                                                                 Theme="{StaticResource IconOnly}"
+                                                                                 Icon="FolderOpen"
+                                                                                 ToolTip.Tip="Show In Explorer"
+                                                                                 Command="{Binding $parent[TabItem].((vm:SettingsViewModel)DataContext).ShowInExplorerCommand}"
+                                                                                 CommandParameter="{Binding FullPath}" />
+                                                            <controls:IconButton
+                                                                Grid.Column="2" Margin="5"
+                                                                Theme="{StaticResource IconOnly}"
+                                                                Icon="Edit" ToolTip.Tip="Edit"
+                                                                Command="{Binding $parent[TabItem].((vm:SettingsViewModel)DataContext).EditAutoImportDirectoryCommand}"
+                                                                CommandParameter="{Binding}" />
+                                                            <controls:IconButton
+                                                                Grid.Column="3" Margin="5"
+                                                                Theme="{StaticResource IconOnly}"
+                                                                Icon="Delete" ToolTip.Tip="Remove From Auto Import"
+                                                                Command="{Binding $parent[TabItem].((vm:SettingsViewModel)DataContext).RemoveAutoImportDirectoryCommand}"
+                                                                CommandParameter="{Binding}" />
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                    <Grid Margin="10" ColumnDefinitions="*,auto,auto,*" ColumnSpacing="10">
+                                        <TextBox x:Name="NewAutoImportFolderTextBox" Watermark="Path/to/folder/to/add"
+                                                 Margin="0" BorderThickness="1" Padding="10 0"
+                                                 VerticalAlignment="Center" VerticalContentAlignment="Center" />
+                                        <controls:IconButton Icon="Plus" Grid.Column="1" Padding="0"
+                                                             VerticalAlignment="Stretch"
+                                                             Background="{StaticResource AccentColorMuted}"
+                                                             IsDefault="{Binding #NewAutoImportFolderTextBox.IsFocused}"
+                                                             Command="{Binding AddAutoImportDirectoryCommand}"
+                                                             ToolTip.Tip="Add Folder"
+                                                             CommandParameter="{Binding #NewAutoImportFolderTextBox.Text}" />
+                                        <TextBlock Text="OR" Grid.Column="2" VerticalAlignment="Center" Margin="5 0" />
+                                        <controls:IconButton Content="Select a Folder..."
+                                                             ToolTip.Tip="Select Folder To Add" Grid.Column="3"
+                                                             Padding="3,0" Icon="FolderPlus"
+                                                             HorizontalAlignment="Stretch"
+                                                             HorizontalContentAlignment="Center"
+                                                             Background="{StaticResource AccentColorMuted}"
+                                                             Command="{Binding PickAutoImportDirectoryCommand}" />
+                                    </Grid>
+                                </StackPanel>
+                            </Expander>
+
+                            <!--File Types-->
+                            <Expander Header="File Types to import"
+                                      IsVisible="{Binding !!FiletypePreferences.Count}">
+                                <ItemsControl ItemsSource="{Binding FiletypePreferences}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="6" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Content="{Binding Key}" IsChecked="{Binding Value, Mode=TwoWay}"
+                                                      Margin="15 5" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Expander>
+
+                            <!--Banished Files-->
+                            <Expander IsVisible="{Binding !!BanishedPaths.Count}">
+                                <Expander.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Banished files"/>
+                                        <controls:Explainer>
+                                            These files will be excluded from future imports, supports glob syntax.
+                                            <!-- TODO explain blob syntax -->
+                                        </controls:Explainer>
+                                    </StackPanel>
+                                </Expander.Header>
+                                <controls:StringListControl Items="{Binding BanishedPaths}" MaxHeight="400"/>
+                            </Expander>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Metadata">
+            <ScrollViewer>
+                <StackPanel Spacing="10">
+                    <Border x:Name="FolderTagMapping" Classes="SettingsContainer">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Link Folders to Tags" Classes="SectionTitle"/>
+                                <controls:Explainer Margin="0,6"
+                                                    Content="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
+                            </StackPanel>
+                            <CheckBox Content="Treat tags and folders with the same name as linked"
+                                      Margin="10,5"
+                                      IsChecked="{Binding AutoLinkFolderTagSameName}"/>
+                        </StackPanel>
+                    </Border>
+            
+                    <Border x:Name="MetaDataSettings" Classes="SettingsContainer">
+                        <StackPanel>
+                            <TextBlock Text="Source Priority Preferences" Classes="SectionTitle"/>
+                            <Grid ColumnDefinitions="*,2*,2*" RowDefinitions="auto,auto,auto">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Property"/>
+                                
+                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Margin="20,0">
+                                    <TextBlock Text="Source Priority" />
+                                    <controls:Explainer Margin="0,6"
+                                                        Content="If multiple sources provide metadata for a given property, the value from the topmost source will be used."/>
+                                </StackPanel>
+                                
+                                <TextBlock Text="Overwrite existing metadata" Grid.Row="0" Grid.Column="2"/>
+            
+                                <Rectangle Classes="SeparatorStyle" Grid.ColumnSpan="3" Grid.Column="0"
+                                           Grid.Row="1"/>
+            
+                                <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
+                                              ItemsSource="{Binding MetaDataPreferences}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid RowDefinitions="auto,auto" ColumnDefinitions="*,2*,2*">
+                                                <TextBlock Text="{Binding Label}" VerticalAlignment="Top"/>
+                                                <controls:PriorityControl Grid.Row="0" Grid.Column="1"
+                                                                          ItemsSource="{Binding SourcePriority, Mode=OneWay}"/>
+                                                <StackPanel Grid.Row="0" Grid.Column="2"  Margin="10,0,20,0">
+                                                    <RadioButton Content="Never"
+                                                                 IsChecked="{Binding OverwriteMode, Converter={x:Static converters:ObjectConverters.AreEqual},
+                                                                 ConverterParameter={x:Static enums:MetaDataOverwriteMode.Never}}" />
+                                                    <RadioButton Content="If existing metadata is empty"
+                                                                 IsChecked="{Binding OverwriteMode, Converter={x:Static converters:ObjectConverters.AreEqual},
+                                                                 ConverterParameter={x:Static enums:MetaDataOverwriteMode.IfEmpty}}" />
+                                                    <RadioButton Content="Ask every time"
+                                                                 IsChecked="{Binding OverwriteMode, Converter={x:Static converters:ObjectConverters.AreEqual},
+                                                                 ConverterParameter={x:Static enums:MetaDataOverwriteMode.Ask}}" />
+                                                    <RadioButton Content="Always"
+                                                                 IsChecked="{Binding OverwriteMode, Converter={x:Static converters:ObjectConverters.AreEqual},
+                                                                 ConverterParameter={x:Static enums:MetaDataOverwriteMode.Always}}" />
+                                                </StackPanel>
+                                                <Rectangle Classes="SeparatorStyle" Grid.ColumnSpan="3"
+                                                           Grid.Column="0" Grid.Row="1"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Manage Data">
+            <!-- <ScrollViewer> -->
+            <!--     <StackPanel Orientation="Vertical" Margin="20"> -->
+            <!--         <Border x:Name="FixRenamedFolder"  Classes="SettingsContainer"> -->
+            <!--             <StackPanel> -->
+            <!--                 <TextBlock Text="Tools for broken file references" Classes="SectionTitle"/> -->
+            <!--                 <StackPanel Orientation="Horizontal"> -->
+            <!--                     <TextBlock Text="{Binding BrokenCodicesMessage, FallbackValue=Could not detect how many broken references are present.}" -->
+            <!--                                FontSize="12" Margin="10,0,0,0"> -->
+            <!--                         <TextBlock.Styles> -->
+            <!--                             <Style Selector="TextBlock"> -->
+            <!--                                 <Setter Property="Foreground" Value="Goldenrod"/> -->
+            <!--                                 ~1~ <Style Selector=""> @1@ -->
+            <!--                                 ~1~     <DataTrigger Binding="{Binding BrokenCodicesAmount}" Value="0"> @1@ -->
+            <!--                                 ~1~         <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/> @1@ -->
+            <!--                                 ~1~     </DataTrigger> @1@ -->
+            <!--                                 ~1~ </Style> @1@ -->
+            <!--                             </Style> -->
+            <!--                         </TextBlock.Styles> -->
+            <!--                     </TextBlock> -->
+            <!--                     <Button Command="{Binding ShowBrokenCodicesCommand}"> -->
+            <!--                         <TextBlock Text="Show" TextDecorations="Underline"  -->
+            <!--                                        Foreground="{StaticResource TextMutedColor}" FontSize="12"/> -->
+            <!--                     </Button> -->
+            <!--                 </StackPanel> -->
+            <!--                 <StackPanel Orientation="Horizontal"> -->
+            <!--                     <TextBlock Text="Update broken references:" Margin="10,5"/> -->
+            <!--                     <controls:Explainer> -->
+            <!--                         <TextBlock> -->
+            <!--                                 Only items with broken references will be updated and only if the updated path points to a file that exists. -->
+            <!--                                 <LineBreak/> -->
+            <!--                                 If you moved half of your files out of a folder, you can safely use this tool to rename the folder reference. -->
+            <!--                                 <LineBreak/> -->
+            <!--                                 The files that stayed behind will not be touched, only the files that were moved will get the updated reference. -->
+            <!--                         </TextBlock> -->
+            <!--                     </controls:Explainer> -->
+            <!--                 </StackPanel> -->
+            <!-- -->
+            <!--                 <Grid Margin="12,0" ColumnDefinitions="*,auto,*,auto"> -->
+            <!--                     <TextBox x:Name="OldPathTextBox" Watermark="old\folder\path\" Grid.Column="0"/> -->
+            <!--                     <TextBlock Text="To" Grid.Column="1"/> -->
+            <!--                     <TextBox x:Name="NewPathTextBox" Watermark = "new\folder\path\" Grid.Column="2"/> -->
+            <!--                     <controls:IconButton Content="Update References" Icon="RenameBox" Grid.Column="3" -->
+            <!--                             Command="{Binding RenameFolderRefCommand}" IsDefault="{Binding #NewPathTextBox.IsFocused}"> -->
+            <!--                         <Button.CommandParameter> -->
+            <!--                             <MultiBinding> -->
+            <!--                                 <MultiBinding.Converter> -->
+            <!--                                     <converters:MultiParamConverter/> -->
+            <!--                                 </MultiBinding.Converter> -->
+            <!--                                 <Binding Path="Text" ElementName="OldPathTextBox"/> -->
+            <!--                                 <Binding Path="Text" ElementName="NewPathTextBox"/> -->
+            <!--                             </MultiBinding> -->
+            <!--                         </Button.CommandParameter> -->
+            <!--                     </controls:IconButton> -->
+            <!--                 </Grid> -->
+            <!--                  -->
+            <!--                 <TextBlock Text="{Binding RenameCompleteMessage}" FontSize="14" Foreground="{StaticResource TextMutedColor}" -->
+            <!--                            IsVisible="{Binding Path=AmountRenamed}"/> -->
+            <!--                 <TextBlock Text="Remove broken references:" Margin="10,5"/> -->
+            <!--                 <controls:IconButton Icon="FileDocumentRemoveOutline"  -->
+            <!--                         Content="Remove broken references from items." HorizontalAlignment="Left"  -->
+            <!--                             Command="{Binding RemoveBrokenRefsCommand}" /> -->
+            <!-- -->
+            <!--                 <controls:IconButton Icon="BookRemove"  -->
+            <!--                         Content="Remove items with broken references.   " HorizontalAlignment="Left" -->
+            <!--                             Command="{Binding DeleteCodicesWithBrokenRefsCommand}"/> -->
+            <!--             </StackPanel> -->
+            <!--         </Border> -->
+            <!--         <Border x:Name="ManageLocalData" Classes="SettingsContainer"> -->
+            <!--             <StackPanel> -->
+            <!--                 <TextBlock Text="Manage Local Data" Classes="SectionTitle"/> -->
+            <!--                 <Grid Margin="12,0"> -->
+            <!--                     <Grid.ColumnDefinitions> -->
+            <!--                         <ColumnDefinition Width="auto"/> -->
+            <!--                         <ColumnDefinition Width="*"/> -->
+            <!--                         <ColumnDefinition Width="auto"/> -->
+            <!--                         <ColumnDefinition Width="auto"/> -->
+            <!--                     </Grid.ColumnDefinitions> -->
+            <!--                     <TextBlock Text="Data Path:" Grid.Column="0"/> -->
+            <!--                     <TextBox IsReadOnly="True" Grid.Column="1" TextWrapping="Wrap" -->
+            <!--                              Text="{Binding CompassDataPath, Mode=OneWay}"/> -->
+            <!--                     <controls:IconButton Grid.Column="2" Content="Change..." Margin="5" -->
+            <!--                             ToolTip.Tip="Change Data Path" Icon="FolderEdit" Command="{Binding ChangeDataPathCommand}"/> -->
+            <!--                     <controls:IconButton Grid.Column="3" Content="Default" Margin="5" -->
+            <!--                             ToolTip.Tip="Restore Default" Icon="FolderRefresh" Command="{Binding ResetDataPathCommand}"/> -->
+            <!-- -->
+            <!--                 </Grid> -->
+            <!--                 <UniformGrid Columns="3"> -->
+            <!--                     <controls:IconButton Content="Browse Local Files" Icon="FolderOpen" -->
+            <!--                             Command="{Binding BrowseLocalFilesCommand}"/> -->
+            <!--                     <controls:IconButton Content="Backup User Data..." Icon="FolderZip" -->
+            <!--                                          Command="{Binding BackupLocalFilesCommand}"  -->
+            <!--                                          ToolTip.Tip="Saves metadata, tags, thumbnails and preferences to zip"/> -->
+            <!--                     <controls:IconButton Content="Restore Backup..." Icon="BackupRestore" -->
+            <!--                                          Command="{Binding RestoreBackupCommand}"/> -->
+            <!--                 </UniformGrid> -->
+            <!--             </StackPanel> -->
+            <!--         </Border> -->
+            <!--     </StackPanel> -->
+            <!-- </ScrollViewer> -->
+        </TabItem>
+        <TabItem Header="About">
+            <!-- <ScrollViewer> -->
+            <!--     <StackPanel Orientation="Vertical"> -->
+            <!--         <Border Classes="SettingsContainer"> -->
+            <!--             <StackPanel Orientation="Horizontal"> -->
+            <!--                 <ContentControl Content="{StaticResource CompassLogo}" Margin="20"/> -->
+            <!--                 <TextBlock Text="{Binding Version}"/> -->
+            <!--                 <controls:IconButton Content="Check for Updates" Command="{Binding CheckForUpdatesCommand}"  -->
+            <!--                                      Icon="Autorenew"/> -->
+            <!--                 <TextBlock Text="Author: Paul De Smul"/> -->
+            <!--             </StackPanel> -->
+            <!--         </Border> -->
+            <!--         <Border Classes="SettingsContainer"> -->
+            <!--             <StackPanel Orientation="Vertical"> -->
+            <!--                 <TextBlock Text="Links" Classes="SectionTitle"/> -->
+            <!--                 <UniformGrid Columns="2"> -->
+            <!--                     <TextBlock> -->
+            <!--                         Source Code: -->
+            <!--                         <HyperlinkButton NavigateUri="https://github.com/DSPaul/COMPASS"> -->
+            <!--                             github.com/DSPaul/COMPASS -->
+            <!--                         </HyperlinkButton> -->
+            <!--                     </TextBlock> -->
+            <!--                     ~1~ <TextBlock> @1@ -->
+            <!--                     ~1~     Buy Me a Drink: @1@ -->
+            <!--                     ~1~     <Hyperlink NavigateUri="https://ko-fi.com/pauldesmul" @1@ -->
+            <!--                     ~1~                 RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                     ~1~         ko-fi.com/pauldesmul @1@ -->
+            <!--                     ~1~     </Hyperlink> @1@ -->
+            <!--                     ~1~ </TextBlock> @1@ -->
+            <!--                     ~1~ <TextBlock> @1@ -->
+            <!--                     ~1~     Join the Discord: @1@ -->
+            <!--                     ~1~     <Hyperlink NavigateUri="https://discord.gg/HawGMJgS9Y" @1@ -->
+            <!--                     ~1~                 RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                     ~1~         discord.gg/HawGMJgS9Y @1@ -->
+            <!--                     ~1~     </Hyperlink> @1@ -->
+            <!--                     ~1~ </TextBlock> @1@ -->
+            <!--                     ~1~ <TextBlock> @1@ -->
+            <!--                     ~1~     Join the Subreddit: @1@ -->
+            <!--                     ~1~     <Hyperlink NavigateUri="https://www.reddit.com/r/compassapp/" @1@ -->
+            <!--                     ~1~                 RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                     ~1~         reddit.com/r/compassapp @1@ -->
+            <!--                     ~1~     </Hyperlink> @1@ -->
+            <!--                     ~1~ </TextBlock> @1@ -->
+            <!--                     ~1~ <TextBlock> @1@ -->
+            <!--                     ~1~     Project Website: @1@ -->
+            <!--                     ~1~     <Hyperlink NavigateUri="https://www.compassapp.info" @1@ -->
+            <!--                     ~1~                 RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                     ~1~         compassapp.info @1@ -->
+            <!--                     ~1~     </Hyperlink> @1@ -->
+            <!--                     ~1~ </TextBlock> @1@ -->
+            <!--                 </UniformGrid> -->
+            <!--             </StackPanel> -->
+            <!--         </Border> -->
+            <!--         <Border Classes="SettingsContainer"> -->
+            <!--             <StackPanel Orientation="Vertical"> -->
+            <!--                 <TextBlock Text="Dependencies" Classes="SectionTitle"/> -->
+            <!--                 <TextBlock Text="COMPASS could not exist without the following open source projects:" /> -->
+            <!--                 ~1~ <UniformGrid Columns="4" > @1@ -->
+            <!--                 ~1~     <TextBlock Text="Inversion of Control:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://autofac.org/" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             Autofac @1@ -->
+            <!--                 ~1~         </Hyperlink>                 @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Automatic Updates:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/ravibpatel/AutoUpdater.NET" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             AutoUpdater.NET @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Multiselect Combobox:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/nilayjoshi89/BlackPearl" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             BlackPearl @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Embed GitHub files:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/yusanshi/emgithub" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             emgithub @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Fuzzy Search:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/JakeBayer/FuzzySharp" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             FuzzySharp @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Drag &amp; Drop:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/punker76/gong-wpf-dragdrop" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             Gong WPF DragDrop @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Extract PDf cover as img:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://www.ghostscript.com/" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             Ghostscript @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="HTML Parsing:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/zzzprojects/html-agility-pack" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             HTML Agility Pack @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Getting PDF metadata:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/itext/itext7-dotnet" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             iText @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Logging:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/apache/logging-log4net" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             log4net @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Image Manipulation:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/dlemstra/Magick.NET" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             Magick.NET @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Display Markdown:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/xoofx/markdig" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             Markdig @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock>@1@ -->
+            <!--                 ~1~     <TextBlock Text="Icons and Controls:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             Material Design Toolkit @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Reactivity"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/CommunityToolkit/dotnet" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             CommunityToolkit @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Json Parsing: "/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/JamesNK/Newtonsoft.Json" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             Newsoft Json @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Folder Dialog:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/ookii-dialogs/ookii-dialogs-wpf" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             Ookii Dialogs @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Detecting Barcodes:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/shimat/opencvsharp" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             OpenCVSharp @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Web Scraping:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/rflechner/ScrapySharp" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             ScrapySharp @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock>@1@ -->
+            <!--                 ~1~     <TextBlock Text="Zipping and unzipping:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/adamhathcock/sharpcompress" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~              SharpCompress @1@ -->
+            <!--                 ~1~          </Hyperlink>           @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Website Screenshotting:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/SeleniumHQ/selenium" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             Selenium @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Virtualize WrapPanels:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/sbaeumlisberger/VirtualizingWrapPanel" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             VirtualizingWrapPanel @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~     <TextBlock Text="Download Webdrivers:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/rosolko/WebDriverManager.Net" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             WebDriverManager.Net @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock>@1@ -->
+            <!--                 ~1~     <TextBlock Text="Decode Barcodes:"/> @1@ -->
+            <!--                 ~1~     <TextBlock> @1@ -->
+            <!--                 ~1~         <Hyperlink NavigateUri="https://github.com/micjahn/ZXing.Net" @1@ -->
+            <!--                 ~1~                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> @1@ -->
+            <!--                 ~1~             ZXing.Net @1@ -->
+            <!--                 ~1~         </Hyperlink> @1@ -->
+            <!--                 ~1~     </TextBlock> @1@ -->
+            <!--                 ~1~ </UniformGrid> @1@ -->
+            <!--             </StackPanel> -->
+            <!--         </Border> -->
+            <!--     </StackPanel> -->
+            <!-- </ScrollViewer> -->
+        </TabItem>
+    </TabControl>
 </UserControl>

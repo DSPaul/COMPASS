@@ -20,8 +20,8 @@
                             <DataTemplate>
                                 <Border CornerRadius="5" Background="{StaticResource Layer6}">
                                     <Grid ColumnDefinitions="*,Auto">
-                                        <TextBlock Grid.Column="0" Text="{Binding}" VerticalAlignment="Center"
-                                                   Padding="10,2" />
+                                        <SelectableTextBlock Grid.Column="0" Text="{Binding}" VerticalAlignment="Center"
+                                                             Padding="10,2" />
                                         <material:MaterialIcon Grid.Column="1" Kind="Lock" Margin="3" 
                                                                Foreground="{StaticResource TextMutedColor}"
                                                                ToolTip.ShowDelay="10"
@@ -41,8 +41,8 @@
                             <DataTemplate>
                                 <Border CornerRadius="5" Background="{StaticResource AccentColorMuted}">
                                     <Grid ColumnDefinitions="*,Auto">
-                                        <TextBlock Grid.Column="0" Text="{Binding}" VerticalAlignment="Center"
-                                                   Padding="10,2" />
+                                        <SelectableTextBlock Grid.Column="0" Text="{Binding}" VerticalAlignment="Center"
+                                                             Padding="10,2" />
                                         <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}"
                                                              Icon="Delete"
                                                              Command="{Binding $parent[controls:StringListControl].DeleteItemCommand}"

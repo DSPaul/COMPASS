@@ -48,7 +48,7 @@
                       ToolTip.Tip="Export tags to a file" />
         </ContextMenu>
     </UserControl.Resources>
-    <Grid>
+    <Grid RowSpacing="10" Margin="0 10">
         <!-- Grid instead of StackPanel so height is capped and scrolling works -->
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -59,7 +59,7 @@
         </Grid.RowDefinitions>
         
         <!-- Tag creation -->
-        <TabControl Grid.Row="0" Margin="20,10" Background="Transparent"
+        <TabControl Grid.Row="0" Margin="20 0" Background="Transparent"
                     BorderThickness="0" Padding="2,0" HorizontalAlignment="Stretch"
                     SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
             <TabControl.Resources>
@@ -156,26 +156,29 @@
         <Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="2" />
 
         <!-- Include Exclude selection -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal"
-                    HorizontalAlignment="Center" VerticalAlignment="Top"
-                    Margin="0,10,0,0">
+        <Grid Grid.Row="3" ColumnDefinitions="*, Auto"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                    Margin="20 0"
+                    ColumnSpacing="10">
+            <controls:FilterModeSelector Grid.Column="0"
+                                         Include="{Binding ModeIsInclude}" 
+                                         HorizontalAlignment="Stretch" />
 
-            <controls:FilterModeSelector Include="{Binding ModeIsInclude}" />
-
-            <!-- A flyout would be better here than the hacky context menu and event to toggle it
+            <!-- A flyout would be better here than the hacky context menu and event to toggle it, 
                  But this way I can reuse the context menu of the treeview -->
-            <controls:IconButton Icon="DotsVertical"
+            <controls:IconButton Grid.Column="1"
+                                 Icon="DotsVertical"
                                  Theme="{StaticResource IconOnly}"
-                                 Width="30" Height="30" Margin="10,0,0,0"
+                                 Width="30" Height="30"
                                  Background="{StaticResource Layer4}"
                                  Foreground="{StaticResource TextMutedColor}"
                                  Tapped="Toggle_ContextMenu"
                                  ContextMenu="{StaticResource AllTagsContextMenu}"
                                  ToolTip.Tip="Additional Actions" />
-        </StackPanel>
+        </Grid>
 
         <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="Transparent"
-                  Grid.Row="4" Margin="5" Classes="NoSelection"
+                  Grid.Row="4" Margin="5 0" Classes="NoSelection"
                   ItemsSource="{Binding Path=TagsAsTreeNodes, Mode=TwoWay}"
                   DragDrop.AllowDrop="True"
                   ContextMenu="{StaticResource AllTagsContextMenu}">

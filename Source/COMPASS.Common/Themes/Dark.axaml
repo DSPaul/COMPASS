@@ -58,6 +58,7 @@
   <SolidColorBrush x:Key="ButtonBackground" Color="Gray"/>
   <SolidColorBrush x:Key="ButtonHover" Color="{StaticResource CompassJadeDark}"/>
   <SolidColorBrush x:Key="TabFocus" Color="{StaticResource DarkerGray}"/>
+  <SolidColorBrush x:Key="TabHover" Color="{StaticResource DarkererGray}"/>
   <SolidColorBrush x:Key="ListHover" Color="{StaticResource DarkerGray}"/>
   <SolidColorBrush x:Key="ListSelected" Color="{StaticResource KindaDarkGray}"/>
   <SolidColorBrush x:Key="PopupOutline" Color="{StaticResource DarkerGray}"/>
@@ -93,5 +94,8 @@
   
   <!-- TabItem -->
   <SolidColorBrush x:Key="TabItemHeaderSelectedPipeFill" Color="Transparent" />
+  <StaticResource x:Key="TabItemHeaderBackgroundSelected" ResourceKey="TabFocus" />
+  <StaticResource x:Key="TabItemHeaderBackgroundSelectedPointerOver" ResourceKey="TabFocus" />
+  <StaticResource x:Key="TabItemHeaderBackgroundUnselectedPointerOver" ResourceKey="TabHover" />
   
 </ResourceDictionary>

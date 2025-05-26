@@ -339,6 +339,12 @@ namespace COMPASS.Common.Services.FileSystem
         {
             if (string.IsNullOrEmpty(filePath)) return false;
             
+            // Check for exact matches first
+            if (globs.Any(glob => glob == filePath))
+            {
+                return true;
+            }
+
             var matcher = new Matcher();
             matcher.AddIncludePatterns(globs);
             

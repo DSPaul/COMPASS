@@ -1,12 +1,17 @@
 using System;
-using Avalonia.Data.Converters;
 using COMPASS.Common.Models.Enums;
 
-namespace COMPASS.Common.Converters;
+namespace COMPASS.Common.Localization;
 
-public static class EnumLocalizers
+public static class EnumLocalizer
 {
-    public static FuncValueConverter<MetaDataSource, string> FromMetaDataSource { get; } = new(source => source switch
+    public static string Localize(Enum? value) => value switch
+    {
+        MetaDataSource source => FromMetaDataSource(source),
+        _ => throw new NotImplementedException(),
+    };
+
+    private static string FromMetaDataSource(MetaDataSource source) => source switch
     {
         MetaDataSource.None => "None",
         MetaDataSource.File => "File Name/Path",
@@ -20,5 +25,5 @@ public static class EnumLocalizers
         MetaDataSource.Dropbox => "Dropbox",
         MetaDataSource.DnDBeyond => "Dnd Beyond",
         _ => throw new NotImplementedException(),
-    });
+    };
 }

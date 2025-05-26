@@ -30,13 +30,20 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 //TODO: this step isn't really needed if there are no subfolders
                 //except for auto import checkbox, could probably just check that behind the scenes
                 Steps.Add(_subFoldersStep);
-                SelectSubfoldersVM = new(folders);
+                
+                //Get the root folders will all subfolders to show in step
+                var rootFolders = folders.Select(f => new Folder(f.FullPath)).ToList();
+                SelectSubfoldersVM = new(rootFolders);
 
                 //Existing folders already have a list of subfolders, which may be a subset of the subfolders on disk
                 //so we need to check the subfolders that are already in the collection
                 foreach (var node in SelectSubfoldersVM.OptionsRoot)
                 {
-                    var chosenSubFolderPaths = node.Item.SubFolders.Flatten().Select(sf => sf.FullPath).ToList();
+                    node.IsChecked = true;
+                    
+                    Folder? origFolder = folders.First(f => f.FullPath == node.Item.FullPath);
+
+                    var chosenSubFolderPaths = origFolder.SubFolders.Flatten().Select(sf => sf.FullPath).ToList();
                     foreach (var subNode in node.Children.Flatten())
                     {
                         subNode.IsChecked = chosenSubFolderPaths.Contains(subNode.Item.FullPath);
@@ -170,12 +177,14 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                     _collectionInfo.AutoImportFolders.Remove(folder);
                 }
 
-                //Add the folder to the AutoImportFolders
+                //Add or update the folder to the AutoImportFolders
                 foreach (Folder folder in updatedFolders)
                 {
-                    if (_collectionInfo.AutoImportFolders.All(f => f.FullPath != folder.FullPath))
+                    var existingFolder = _collectionInfo.AutoImportFolders.FirstOrDefault(f => f.FullPath == folder.FullPath);
+                    _collectionInfo.AutoImportFolders.Add(folder);
+                    if (existingFolder != null)
                     {
-                        _collectionInfo.AutoImportFolders.Add(folder);
+                        _collectionInfo.AutoImportFolders.Remove(existingFolder);
                     }
                 }
             }

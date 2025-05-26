@@ -22,13 +22,16 @@ namespace COMPASS.Common.Models.Preferences
         }
 
         #region Constants
+        
+        public const int ONLINE_SOURCE_PRIORITY_ID = 0;
+        public const int LOCAL_SOURCE_PRIORITY_ID = 1;
 
         //list with possible functions to open a file
         public static readonly ReadOnlyCollection<PreferableFunction<Codex>> OpenCodexFunctions =
             new List<PreferableFunction<Codex>>()
             {
-                new("Web Version", CodexOperations.OpenCodexOnline,0),
-                new("Local File", CodexOperations.OpenCodexLocally,1)
+                new("Online source", CodexOperations.OpenCodexOnline, ONLINE_SOURCE_PRIORITY_ID),
+                new("Local File", CodexOperations.OpenCodexLocally, LOCAL_SOURCE_PRIORITY_ID)
             }.AsReadOnly();
 
         #endregion

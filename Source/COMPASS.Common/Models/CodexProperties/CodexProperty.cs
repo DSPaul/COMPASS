@@ -35,6 +35,7 @@ namespace COMPASS.Common.Models.CodexProperties
         /// <returns></returns>
         public abstract bool HasNewValue(IHasCodexMetadata toEvaluate, IHasCodexMetadata reference);
 
+        public override string ToString() => Label;
         #endregion
 
         #region Import Sources

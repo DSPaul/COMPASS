@@ -1,4 +1,5 @@
 using System;
+using Avalonia.Controls;
 
 namespace COMPASS.Common.Interfaces;
 
@@ -18,6 +19,8 @@ public interface IModalViewModel
     /// Optional maximum Window height
     /// </summary>
     int? WindowHeight { get; }
+
+    SizeToContent SizeToContent => SizeToContent.WidthAndHeight;
     
     /// <summary>
     /// Callback set by the modal that can be used to close the window from the vm
