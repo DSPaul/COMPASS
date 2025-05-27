@@ -37,7 +37,7 @@ namespace COMPASS.ViewModels.Sources
             CodexDto codex = new();
 
             // Title 
-            codex.Title = WebUtility.HtmlDecode(src.SelectSingleNode("//meta[@property='og:title']")?.GetAttributeValue("content", null) ?? codex.Title);
+            codex.Title = WebUtility.HtmlDecode(src.SelectSingleNode("//meta[@property='og:title']")?.GetAttributeValue("content", codex.Title) ?? codex.Title);
 
             // Authors
             string? author = WebUtility.HtmlDecode(src.SelectSingleNode("//meta[@property='og:author']")?.GetAttributeValue("content", String.Empty));
@@ -47,7 +47,7 @@ namespace COMPASS.ViewModels.Sources
             }
 
             // Description
-            codex.Description = WebUtility.HtmlDecode(src.SelectSingleNode("//meta[@property='og:description']")?.GetAttributeValue("content", null) ?? codex.Description);
+            codex.Description = WebUtility.HtmlDecode(src.SelectSingleNode("//meta[@property='og:description']")?.GetAttributeValue("content", codex.Description) ?? codex.Description);
 
             // Tags
             foreach (var folderTagPair in TargetCollection.Info.FolderTagPairs)

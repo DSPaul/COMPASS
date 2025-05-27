@@ -40,7 +40,7 @@ namespace COMPASS.ViewModels.Sources
                 HtmlNode? src = doc?.DocumentNode;
                 if (src is null) return false;
 
-                string imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']").GetAttributeValue("content", String.Empty);
+                string imgURL = src.SelectSingleNode("//img[@class='product-hero-avatar__image']")?.GetAttributeValue("content", String.Empty) ?? string.Empty;
 
                 //download the file
                 await CoverService.SaveCover(imgURL, codex);
