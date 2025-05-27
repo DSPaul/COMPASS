@@ -1,5 +1,9 @@
 name: build and test
 
+permissions:
+  contents: read
+  actions: read
+
 on:
   pull_request:
     branches: [ main ]
