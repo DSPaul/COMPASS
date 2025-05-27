@@ -1,5 +1,9 @@
 # CHANGELOG
+## COMPASS v1.8.7 (27 May 2025)
 
+### Fixes
+
+- Fixed issue in "move to collection" where the item would not appear in the target collection.
 ## COMPASS v1.8.6 (06 April 2025)
 
 ### Improvements
