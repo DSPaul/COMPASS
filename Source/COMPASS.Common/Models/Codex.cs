@@ -262,6 +262,7 @@ namespace COMPASS.Common.Models
             Version = c.Version;
             ID = c.ID;
             CoverArtPath = c.CoverArtPath;
+            ThumbnailPath = c.ThumbnailPath;
             PhysicallyOwned = c.PhysicallyOwned;
             Description = c.Description;
             ReleaseDate = c.ReleaseDate;
