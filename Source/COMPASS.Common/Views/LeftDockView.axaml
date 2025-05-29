@@ -77,8 +77,8 @@
         </controls:CollapsableTabItem>
 
         <controls:CollapsableTabItem Header="Logs" Icon="TextLong"
-                                     AttentionSeverity="{Binding LogsVM.LastSeverity}"
-                                     ShowAttention="{Binding LogsVM.ShowAttention}">
+                                     AttentionSeverity="{Binding LogsVM.HighestUnseenSeverity, Mode=TwoWay}"
+                                     ShowAttention="{Binding LogsVM.ShowAttention, Mode=TwoWay}">
             <panels:LogsSidePanel DataContext="{Binding LogsVM}" />
         </controls:CollapsableTabItem>
     </TabControl>

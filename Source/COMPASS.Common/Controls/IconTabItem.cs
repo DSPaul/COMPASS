@@ -46,6 +46,7 @@ public class IconTabItem : TabItem
 
     protected virtual void TabItemClicked(object? sender, TappedEventArgs e)
     {
+        AttentionSeverity = Severity.Info;
         ShowAttention = false;
     }
 }

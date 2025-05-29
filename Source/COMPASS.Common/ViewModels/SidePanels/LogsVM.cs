@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia.Threading;
@@ -17,14 +18,27 @@ public class LogsVM : ViewModelBase
     {
         ActivityLog.CollectionChanged += (_,_) =>
         {
-            OnPropertyChanged(nameof(LastSeverity));
-            OnPropertyChanged(nameof(ShowAttention));
+            var addedLog = ActivityLog.LastOrDefault();
+            HighestUnseenSeverity = addedLog.Severity > HighestUnseenSeverity ? addedLog.Severity : HighestUnseenSeverity;
+            ShowAttention |= HighestUnseenSeverity != Severity.Info;
         };
     }
     
     public static ObservableCollection<LogEntry> ActivityLog { get; } = [];
     
     //Used for attention indicator
-    public Severity LastSeverity => ActivityLog.LastOrDefault().Severity;
-    public bool ShowAttention => LastSeverity != Severity.Info;
+    private Severity _highestUnseenSeverity = Severity.Info;
+
+    public Severity HighestUnseenSeverity
+    {
+        get => _highestUnseenSeverity;
+        set => SetProperty(ref _highestUnseenSeverity, value);
+    }
+
+    private bool _showAttention;
+    public bool ShowAttention 
+    {
+        get => _showAttention;
+        set => SetProperty(ref _showAttention, value);
+    }
 }
