@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.FileSystem;

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.XmlDtos;

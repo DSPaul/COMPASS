@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
 
-namespace COMPASS.Common.Interfaces
+namespace COMPASS.Common.Interfaces.Services
 {
     public interface IFilesService
     {

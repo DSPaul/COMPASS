@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.Modals"
+             xmlns:toolVms="clr-namespace:COMPASS.Common.ViewModels.Tools"
+             xmlns:toolViews="clr-namespace:COMPASS.Common.Views.Tools"
+             xmlns:interface="clr-namespace:COMPASS.Common.Interfaces.ViewModels"
+             xmlns:controls="clr-namespace:COMPASS.Common.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Views.ToolsView"
+             x:DataType="vm:ToolsViewModel">
+    <ItemsControl ItemsSource="{Binding Tools}">
+        <ItemsControl.DataTemplates>
+            <DataTemplate x:DataType="toolVms:BackupToolViewModel">
+                <UniformGrid Classes="ButtonStrip">
+                    <controls:IconButton Content="Backup User Data..." Icon="FolderZip"
+                                         Command="{Binding BackupLocalFilesCommand}"
+                                         ToolTip.Tip="Saves all user data to a zip file"/>
+                    <controls:IconButton Content="Restore Backup..." Icon="BackupRestore"
+                                         Command="{Binding RestoreBackupCommand}"/>
+                </UniformGrid>
+            </DataTemplate>
+            
+            <DataTemplate x:DataType="toolVms:BrokenFileRefsToolViewModel">
+                <toolViews:BrokenFileRefsToolView/>
+            </DataTemplate>
+        </ItemsControl.DataTemplates>
+        
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel Spacing="10"/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        
+        <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="interface:IToolViewModel">
+                <Expander Header="{Binding Name}" HorizontalAlignment="Stretch">
+                    <ContentControl Content="{Binding}"/>
+                </Expander>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

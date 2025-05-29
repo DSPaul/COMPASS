@@ -4,7 +4,6 @@
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
     <Design.PreviewWith>
         <ScrollViewer MaxHeight="600" AllowAutoHide="False">
-
             <StackPanel Spacing="10">
 
                 <!-- Icons -->
@@ -15,6 +14,7 @@
                 <CheckBox IsThreeState="True">This is a checkbox</CheckBox>
                 <CheckBox IsHitTestVisible="False">unchecked readonly checkbox</CheckBox>
                 <CheckBox IsHitTestVisible="False" IsChecked="True">checked readonly checkbox</CheckBox>
+                <CheckBox Classes="Toggle" IsChecked="True">Toggle style</CheckBox>
                 <!-- Slider -->
                 <Slider Value="200" Minimum="50" Maximum="400" TickFrequency="5" Margin="5" />
                 <!-- Context Menu -->
@@ -34,17 +34,17 @@
                 <!-- Radio Buttons -->
                 <RadioButton Content="Options 1" />
                 <RadioButton Content="Options 2" />
-                
+
                 <Border Classes="RadioBtnStrip"
                         HorizontalAlignment="Stretch">
                     <Grid ColumnSpacing="3" ColumnDefinitions="*, *, *"
-                                 HorizontalAlignment="Stretch">
+                          HorizontalAlignment="Stretch">
                         <RadioButton Background="Green"
-                                     Content="Include"/>
+                                     Content="Include" />
                         <RadioButton Grid.Column="1"
-                                     Background="OrangeRed" Content="Exclude"/>
+                                     Background="OrangeRed" Content="Exclude" />
                         <RadioButton Grid.Column="2" Content="other"
-                                     Background="{StaticResource AccentColorMuted}"/>
+                                     Background="{StaticResource AccentColorMuted}" />
                     </Grid>
                 </Border>
 
@@ -112,17 +112,21 @@
     <Style Selector="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource TextColor}" />
         <Setter Property="VerticalAlignment" Value="Center" />
-        
+
         <Style Selector="^.Categorizer">
-            <Setter Property="Foreground" Value="{StaticResource TextMutedColor}"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMutedColor}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="DemiBold" />
         </Style>
     </Style>
 
     <!--HyperLink-->
     <Style Selector="HyperlinkButton">
         <Setter Property="Foreground" Value="{StaticResource AccentColor}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
     </Style>
 
     <!-- Icons -->
@@ -356,6 +360,84 @@
                 </Style>
             </Style>
         </Style>
+
+        <Style Selector="^.Toggle">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <!-- Toggle Switch Track -->
+                        <Border Name="ToggleTrack"
+                                Grid.Column="0"
+                                Width="36"
+                                Height="18"
+                                CornerRadius="9"
+                                Background="{StaticResource Layer1}"
+                                BorderBrush="{StaticResource TextMutedColor}"
+                                BorderThickness="2">
+
+                            <!-- Toggle Circle -->
+                            <Ellipse Name="ToggleCircle"
+                                     Width="12"
+                                     Height="12"
+                                     HorizontalAlignment="Left"
+                                     VerticalAlignment="Center"
+                                     Fill="{StaticResource TextColor}"
+                                     Margin="3,0">
+                                <Ellipse.Transitions>
+                                    <Transitions>
+                                        <TransformOperationsTransition
+                                            Easing="CubicEaseOut"
+                                            Property="RenderTransform"
+                                            Duration="0:0:0.2" />
+                                    </Transitions>
+                                </Ellipse.Transitions>
+                            </Ellipse>
+                        </Border>
+
+                        <!-- Content (Text) -->
+                        <ContentPresenter Name="PART_ContentPresenter"
+                                          Grid.Column="1"
+                                          Margin="8,0,0,0"
+                                          VerticalAlignment="Center"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+
+            <Style Selector="^:unchecked /template/ Ellipse#ToggleCircle">
+                <Setter Property="RenderTransform" Value="translateX(0px)" />
+            </Style>
+
+            <Style Selector="^:checked /template/ Border#ToggleTrack">
+                <Setter Property="Background" Value="{StaticResource AccentColorMuted}" />
+                <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}" />
+            </Style>
+
+            <Style Selector="^:checked /template/ Ellipse#ToggleCircle">
+                <Setter Property="RenderTransform" Value="translateX(16px)" />
+            </Style>
+
+            <!-- Hover Effects -->
+            <Style Selector="^:pointerover /template/ Border#ToggleTrack">
+                <Setter Property="Background" Value="{StaticResource Layer2}" />
+            </Style>
+
+            <Style Selector="^:checked:pointerover /template/ Border#ToggleTrack">
+                <Setter Property="Background" Value="{StaticResource AccentColor}" />
+                <Setter Property="BorderBrush" Value="{StaticResource AccentColor}" />
+            </Style>
+
+            <!-- Disabled State -->
+            <Style Selector="^:disabled /template/ Border#ToggleTrack">
+                <Setter Property="Background" Value="#F5F5F5" />
+                <Setter Property="BorderBrush" Value="#E0E0E0" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ Ellipse#ToggleCircle">
+                <Setter Property="Fill" Value="#CCCCCC" />
+            </Style>
+        </Style>
     </Style>
 
     <!-- RadioButton -->
@@ -406,20 +488,20 @@
             </Style>
         </Style>
     </Style>
-    
+
     <Style Selector="Border.RadioBtnStrip">
-        <Setter Property="Background" Value="{StaticResource Layer2}"/>
-        <Setter Property="CornerRadius" Value="7"/>
-        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Background" Value="{StaticResource Layer2}" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="Padding" Value="5" />
         <Style Selector="^ RadioButton">
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="Template">
                 <ControlTemplate TargetType="RadioButton">
                     <Panel HorizontalAlignment="{TemplateBinding HorizontalAlignment}">
                         <Border CornerRadius="5" Opacity="0"
                                 HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                                Background="{TemplateBinding Background}"/>
+                                Background="{TemplateBinding Background}" />
                         <ContentPresenter
                             Margin="5 2"
                             Name="PART_ContentPresenter"
@@ -433,14 +515,14 @@
                 </ControlTemplate>
             </Setter>
             <Style Selector="^:pointerover /template/ Border">
-                <Setter Property="Opacity" Value="0.6"/>
+                <Setter Property="Opacity" Value="0.6" />
             </Style>
             <Style Selector="^:checked /template/ Border">
-                <Setter Property="Opacity" Value="1"/>
+                <Setter Property="Opacity" Value="1" />
             </Style>
         </Style>
     </Style>
-    
+
     <!-- contextmenu -->
     <Style Selector="MenuItem">
         <Style Selector="^ materialIcons|MaterialIcon">
@@ -454,17 +536,27 @@
     <Style Selector="ScrollViewer">
         <Setter Property="AllowAutoHide" Value="False" />
     </Style>
-    
+
     <!-- ScrollBar -->
     <Style Selector="ScrollBar">
-        <Setter Property="Margin" Value="5,0,0,0"/>
+        <Setter Property="Margin" Value="5,0,0,0" />
         <Style Selector="^ /template/ Track > Thumb">
-            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="CornerRadius" Value="5" />
         </Style>
     </Style>
 
     <Style Selector="ListBox">
         <Setter Property="ScrollViewer.AllowAutoHide" Value="False" />
     </Style>
-    
+
+    <!-- containers -->
+    <Style Selector="UniformGrid.ButtonStrip">
+        <Setter Property="Rows" Value="1" />
+        <Setter Property="ColumnSpacing" Value="10" />
+        <Style Selector="^ > :is(Button)">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+    </Style>
+
 </Styles>

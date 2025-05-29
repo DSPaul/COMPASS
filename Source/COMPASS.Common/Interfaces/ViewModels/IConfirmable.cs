@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 
-namespace COMPASS.Common.Interfaces
+namespace COMPASS.Common.Interfaces.ViewModels
 {
     public interface IConfirmable
     {

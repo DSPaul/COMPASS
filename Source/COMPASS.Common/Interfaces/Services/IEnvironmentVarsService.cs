@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace COMPASS.Common.Interfaces
+namespace COMPASS.Common.Interfaces.Services
 {
     public interface IEnvironmentVarsService
     {

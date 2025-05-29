@@ -3,6 +3,7 @@ using System.IO;
 using Autofac;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.ViewModels.SidePanels;
 

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Views.Windows;
 

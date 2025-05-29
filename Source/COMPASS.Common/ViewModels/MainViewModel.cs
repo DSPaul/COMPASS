@@ -139,20 +139,31 @@ namespace COMPASS.Common.ViewModels
         #region Commands and Methods
 
         //Open settings
-        private AsyncRelayCommand<string>? _openSettingsCommand;
-        public AsyncRelayCommand<string> OpenSettingsCommand => _openSettingsCommand ??= new(OpenSettings);
-        public async Task OpenSettings(string? tab = "")
+        private RelayCommand<string>? _openSettingsCommand;
+        public RelayCommand<string> OpenSettingsCommand => _openSettingsCommand ??= new(OpenSettings);
+        private void OpenSettings(string? tab = "")
         {
             var settingsWindow = new ModalWindow(new SettingsViewModel(tab ?? ""));
-            await settingsWindow.ShowDialog(App.MainWindow);
+            settingsWindow.Show(App.MainWindow);
         }
 
         //TODO reimplement this, should probably be moved out of settings viewmodel
         public RelayCommand CheckForUpdatesCommand => new(() => { }); //SettingsViewModel.CheckForUpdatesCommand;
 
+        private RelayCommand<string>? _navigateToCommand;
+        public RelayCommand<string> NavigateToCommand => _navigateToCommand ??= new(url =>
+        {
+            if (string.IsNullOrEmpty(url)) return;
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        });
+        
         private RelayCommand? _navigateToLinkTree;
         public RelayCommand NavigateToLinkTree => _navigateToLinkTree ??= new(()
             => Process.Start(new ProcessStartInfo(@"https://linktr.ee/compassapp") { UseShellExecute = true }));
+        
+        private RelayCommand? _navigateToKofi;
+        public RelayCommand NavigateToKofi => _navigateToKofi ??= new(()
+            => Process.Start(new ProcessStartInfo(@"https://ko-fi.com/pauldesmul") { UseShellExecute = true }));
 
         //Change Layout
         private RelayCommand<CodexLayout>? _changeLayoutCommand;

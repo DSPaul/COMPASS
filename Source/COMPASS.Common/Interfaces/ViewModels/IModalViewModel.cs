@@ -1,7 +1,7 @@
 using System;
 using Avalonia.Controls;
 
-namespace COMPASS.Common.Interfaces;
+namespace COMPASS.Common.Interfaces.ViewModels;
 
 public interface IModalViewModel
 {

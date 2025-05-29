@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Tools;
 using Tests.Mocks;
 

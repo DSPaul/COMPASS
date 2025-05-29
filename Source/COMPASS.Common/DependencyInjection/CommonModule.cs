@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Features.AttributeFilters;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;

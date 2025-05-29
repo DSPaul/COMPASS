@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:interface="using:COMPASS.Common.Interfaces"
              xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:viewModels="clr-namespace:COMPASS.Common.Interfaces.ViewModels"
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="30"
              x:Class="COMPASS.Common.Controls.ConfirmControls"
-             x:DataType="interface:IConfirmable">
+             x:DataType="viewModels:IConfirmable">
     <Grid ColumnDefinitions="* 15 *" VerticalAlignment="Bottom">
         <controls:IconButton Command="{Binding ConfirmCommand}" 
                              Grid.Column="0" IsDefault="True" 

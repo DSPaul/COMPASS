@@ -217,20 +217,31 @@
             <!--Settings button-->
             <controls:IconButton Grid.Column="5" IsHitTestVisible="True"
                                  Theme="{StaticResource IconOnly}"
-                                 Icon="Settings" Margin="10,0"
+                                 Icon="DotsVertical" Margin="10,0"
                                  Height="25" Background="Transparent"
-                                 ToolTip.Tip="Settings">
+                                 ToolTip.Tip="More Actions">
                 <controls:IconButton.Flyout>
                     <MenuFlyout>
                         <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}"
                                   Icon="{materialIcons:MaterialIconExt Cog}" />
+                        <MenuItem Header="Tools" Command="{Binding OpenSettingsCommand}"
+                                  Icon="{materialIcons:MaterialIconExt Tools}" />
+                        <Separator/>
                         <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}"
                                   Icon="{materialIcons:MaterialIconExt Autorenew}" />
-                        <MenuItem Header="What's New" Command="{Binding OpenSettingsCommand}"
-                                  CommandParameter="What's New"
+                        <MenuItem Header="{materialIcons:MaterialIconTextExt ArrowTopRight, Text=What\'s new, TextFirst=True}" 
+                                  Command="{Binding NavigateToCommand}" CommandParameter="https://compassapp.info/releases"
                                   Icon="{materialIcons:MaterialIconExt AlertDecagram}" />
-                        <MenuItem Header="Report A Bug" Command="{Binding NavigateToLinkTree}"
+                        <Separator/>
+                        <MenuItem Header="{materialIcons:MaterialIconTextExt ArrowTopRight, Text=Report a bug, TextFirst=True}" 
+                                  Command="{Binding NavigateToCommand}" CommandParameter="https://linktr.ee/compassapp"
                                   Icon="{materialIcons:MaterialIconExt Bug}" />
+                        <MenuItem Header="{materialIcons:MaterialIconTextExt ArrowTopRight, Text=Donate, TextFirst=True}"  
+                                  Command="{Binding NavigateToCommand}" CommandParameter="https://ko-fi.com/pauldesmul"
+                                  Icon="{materialIcons:MaterialIconExt Heart}" />
+                        <Separator/>
+                        <MenuItem Header="About" Command="{Binding OpenSettingsCommand}"
+                                  Icon="{materialIcons:MaterialIconExt InfoCircleOutline}" />
                     </MenuFlyout>
                 </controls:IconButton.Flyout>
             </controls:IconButton>

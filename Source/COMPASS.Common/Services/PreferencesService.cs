@@ -5,6 +5,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Models.XmlDtos;

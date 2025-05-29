@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.ApiDtos;
 using COMPASS.Common.Models.Enums;

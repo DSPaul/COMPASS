@@ -10,7 +10,9 @@ using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Filters;
@@ -36,9 +38,7 @@ namespace COMPASS.Common.ViewModels.Modals
             _environmentVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
             _collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
             _applicationDataService = ServiceResolver.Resolve<IApplicationDataService>();
-
-            WebViewDataDir = Path.Combine(_environmentVarsService.CompassDataPath, "WebViewData");
-
+            
             BanishedPaths = new(MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.OrderBy(x => x));
             BanishedPaths.CollectionChanged += OnBanishedPathsChanged;
         }
@@ -257,92 +257,7 @@ namespace COMPASS.Common.ViewModels.Modals
 
         #region Tab: Data
 
-        #region Fix Broken refs
-
-        public IEnumerable<Codex> BrokenCodices => MainViewModel.CollectionVM.CurrentCollection.AllCodices
-               .Where(codex => codex.Sources.HasOfflineSource()) //do this check so message doesn't count codices that never had a path to begin with
-               .Where(codex => !Path.Exists(codex.Sources.Path));
-        public int BrokenCodicesAmount => BrokenCodices.Count();
-        public string BrokenCodicesMessage => $"Broken references detected: {BrokenCodicesAmount}.";
-
-        private void BrokenCodicesChanged()
-        {
-            OnPropertyChanged(nameof(BrokenCodices));
-            OnPropertyChanged(nameof(BrokenCodicesAmount));
-            OnPropertyChanged(nameof(BrokenCodicesMessage));
-        }
-
-        private RelayCommand? _showBrokenCodicesCommand;
-        public RelayCommand ShowBrokenCodicesCommand => _showBrokenCodicesCommand ??= new(ShowBrokenCodices);
-        private void ShowBrokenCodices() => MainViewModel.CollectionVM.FilterVM.AddFilter(new HasBrokenPathFilter());
-
-        //Rename the refs
-        private int _amountRenamed = 0;
-        public int AmountRenamed
-        {
-            get => _amountRenamed;
-            set
-            {
-                SetProperty(ref _amountRenamed, value);
-                OnPropertyChanged(nameof(RenameCompleteMessage));
-                BrokenCodicesChanged();
-            }
-        }
-
-        public string RenameCompleteMessage => $"Renamed Path Reference in {AmountRenamed} items.";
-
-        private RelayCommand<object[]>? _renameFolderRefCommand;
-        public RelayCommand<object[]> RenameFolderRefCommand => _renameFolderRefCommand ??= new(RenameFolderReferences);
-
-        private void RenameFolderReferences(object[]? args)
-        {
-            if (args is null || args.Length != 2) { return; }
-            RenameFolderReferences(args[0] as string, args[1] as string);
-        }
-
-        private void RenameFolderReferences(string? oldPath, string? newPath)
-        {
-            if (String.IsNullOrWhiteSpace(oldPath) || newPath is null) return;
-
-            AmountRenamed = 0;
-            foreach (Codex codex in MainViewModel.CollectionVM.CurrentCollection.AllCodices)
-            {
-                if (codex.Sources.HasOfflineSource() && codex.Sources.Path.Contains(oldPath))
-                {
-                    string updatedPath = codex.Sources.Path.Replace(oldPath, newPath);
-                    //only replace path if old one was broken and new one exists
-                    if (!File.Exists(codex.Sources.Path) && File.Exists(updatedPath))
-                    {
-                        codex.Sources.Path = updatedPath;
-                        AmountRenamed++;
-                    }
-                }
-            }
-            _collectionStorageService.SaveCodices(MainViewModel.CollectionVM.CurrentCollection);
-        }
-
-        //remove refs from codices
-        private RelayCommand? _removeBrokenRefsCommand;
-        public RelayCommand RemoveBrokenRefsCommand => _removeBrokenRefsCommand ??= new(RemoveBrokenReferences);
-        public void RemoveBrokenReferences()
-        {
-            foreach (Codex codex in BrokenCodices)
-            {
-                codex.Sources.Path = "";
-            }
-            BrokenCodicesChanged();
-            _collectionStorageService.SaveCodices(MainViewModel.CollectionVM.CurrentCollection);
-        }
-
-        //Remove Codices with broken refs
-        private AsyncRelayCommand? _deleteCodicesWithBrokenRefsCommand;
-        public AsyncRelayCommand DeleteCodicesWithBrokenRefsCommand => _deleteCodicesWithBrokenRefsCommand ??= new(RemoveCodicesWithBrokenRefs);
-        public async Task RemoveCodicesWithBrokenRefs()
-        {
-            await CodexOperations.DeleteCodices(BrokenCodices.ToList(), true);
-            BrokenCodicesChanged();
-        }
-        #endregion
+        
 
         #region Manage Data
 
@@ -391,70 +306,7 @@ namespace COMPASS.Common.ViewModels.Modals
             Process.Start(startInfo);
         }
 
-        private LoadingWindow? _lw;
-
-        private AsyncRelayCommand? _backupLocalFilesCommand;
-        public AsyncRelayCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
-        public async Task BackupLocalFiles()
-        {
-            var filesService = ServiceResolver.Resolve<IFilesService>();
-            var saveFile = await filesService.SaveFileAsync(new()
-            {
-                FileTypeChoices = [filesService.ZipExtensionFilter]
-            });
-
-            if (saveFile != null)
-            {
-                string targetPath = saveFile.Path.AbsolutePath;
-                saveFile.Dispose();
-                _lw = new("Compressing to Zip File");
-                _lw.Show();
-
-                //save first
-                ApplyPreferences();
-                _collectionStorageService.Save(MainViewModel.CollectionVM.CurrentCollection);
-
-                await Task.Run(() =>  _collectionStorageService.CompressUserDataToZip(targetPath));
-
-                _lw.Close();
-            }
-        }
-
-        private AsyncRelayCommand? _restoreBackupCommand;
-        public AsyncRelayCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
-        public async Task RestoreBackup()
-        {
-            var filesService = ServiceResolver.Resolve<IFilesService>();
-            var files = await filesService.OpenFilesAsync(new()
-            {
-                FileTypeFilter = [filesService.ZipExtensionFilter]
-            });
-
-            if (files.Any())
-            {
-                using var file = files.Single();
-                string targetPath = file.Path.AbsolutePath;
-                _lw = new("Restoring Backup");
-                _lw.Show();
-
-                await Task.Run(() => ExtractZip(targetPath));
-
-                //restore collection that was open
-                MainViewModel.CollectionVM.CurrentCollection = new(_preferencesService.Preferences.UIState.StartupCollection);
-                _lw?.Close();
-            }
-        }
-
-        private void ExtractZip(string sourcePath)
-        {
-            if (!Path.Exists(sourcePath))
-            {
-                Logger.Warn($"Cannot extract sourcePath as it does not exit");
-                return;
-            }
-            using ZipArchive archive = ZipArchive.Open(sourcePath);
-            archive.ExtractToDirectory(_environmentVarsService.CompassDataPath);
-        }
+        
         #endregion
 
         #endregion
@@ -469,13 +321,6 @@ namespace COMPASS.Common.ViewModels.Modals
                 codex.RefreshThumbnail();
             }
         }
-
-        #region Tab: What's New
-
-        public readonly string WebViewDataDir;
-
-        #endregion
-
         #region Tab: About
         public string Version => "Version: " + Assembly.GetExecutingAssembly().GetName().Version?.ToString()[0..5];
 

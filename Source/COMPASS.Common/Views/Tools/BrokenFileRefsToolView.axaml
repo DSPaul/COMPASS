@@ -1,0 +1,73 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.Tools"
+             xmlns:controls="clr-namespace:COMPASS.Common.Controls"
+             xmlns:converters="clr-namespace:COMPASS.Common.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Views.Tools.BrokenFileRefsToolView"
+             x:DataType="vm:BrokenFileRefsToolViewModel">
+    <StackPanel Spacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="5">
+            <Panel>
+                <TextBlock Text="{Binding BrokenCodicesMessage, FallbackValue=Broken references detected: 0.}"
+                           IsVisible="{Binding !!BrokenCodicesAmount}" Foreground="{StaticResource TextMutedColor}"/>
+                <TextBlock Text="{Binding BrokenCodicesMessage, FallbackValue=Broken references detected: >0.}"
+                           IsVisible="{Binding !BrokenCodicesAmount}" Foreground="Goldenrod"/>
+            </Panel>
+            <Button Command="{Binding ShowBrokenCodicesCommand}" Classes="BlankButton"
+                    ToolTip.Tip="Will apply a filter to the current layout to highlight the files with broken references">
+                <TextBlock Text="Apply Filter" TextDecorations="Underline"
+                           Foreground="{StaticResource TextMutedColor}"/>
+            </Button>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="5">
+            <TextBlock Text="Update broken references:"/>
+            <controls:Explainer>
+                <TextBlock>
+                    If you moved files to another folder, you can use this tool to replace the old path with the new.
+                    <LineBreak />
+                    Only items with broken references will be updated, so even if you only moved some files out of a folder,
+                    <LineBreak />
+                    you can safely use this tool without breaking the references to the files that have not moved.
+                </TextBlock>
+            </controls:Explainer>
+        </StackPanel>
+                    
+        <Grid ColumnDefinitions="*,auto,*,auto" ColumnSpacing="5">
+            <TextBox x:Name="OldPathTextBox" Watermark="old\folder\path\" Grid.Column="0" />
+            <TextBlock Text="To" Grid.Column="1" />
+            <TextBox x:Name="NewPathTextBox" Watermark="new\folder\path\" Grid.Column="2" />
+            <controls:IconButton Content="Update" Grid.Column="3"
+                                 Command="{Binding RenameFolderRefCommand}"
+                                 IsDefault="{Binding #NewPathTextBox.IsFocused}">
+                <Button.CommandParameter>
+                    <MultiBinding>
+                        <MultiBinding.Converter>
+                            <converters:MultiParamConverter />
+                        </MultiBinding.Converter>
+                        <Binding Path="Text" ElementName="OldPathTextBox" />
+                        <Binding Path="Text" ElementName="NewPathTextBox" />
+                    </MultiBinding>
+                </Button.CommandParameter>
+            </controls:IconButton>
+        </Grid>
+        
+        <TextBlock Text="{Binding RenameCompleteMessage, FallbackValue=Renamed path to fix reference on x items.}" 
+                   FontSize="14"
+                   Foreground="{StaticResource TextMutedColor}"
+                   IsVisible="{Binding AmountRenamed}" />
+        
+        <TextBlock Text="Remove broken references:" />
+        <UniformGrid Classes="ButtonStrip">
+            <controls:IconButton Icon="FileDocumentRemoveOutline"
+                                 Content="Remove broken references from items." 
+                                 Command="{Binding RemoveBrokenRefsCommand}" />
+            
+            <controls:IconButton Icon="BookRemove"
+                                 Content="Remove items with broken references."
+                                 Command="{Binding RemoveCodicesWithBrokenRefsCommand}" />
+        </UniformGrid>
+    </StackPanel>
+</UserControl>

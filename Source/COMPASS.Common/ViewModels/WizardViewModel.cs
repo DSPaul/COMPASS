@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.ViewModels;
 
 namespace COMPASS.Common.ViewModels
 {

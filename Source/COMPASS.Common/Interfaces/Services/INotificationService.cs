@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
 using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
 
-namespace COMPASS.Common.Interfaces
+namespace COMPASS.Common.Interfaces.Services
 {
     public interface INotificationService
     {

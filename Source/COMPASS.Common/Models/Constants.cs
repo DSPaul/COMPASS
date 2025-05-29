@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces;
+using COMPASS.Common.Interfaces.Services;
 
 namespace COMPASS.Common.Models
 {

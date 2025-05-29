@@ -9,6 +9,7 @@
         xmlns:editVm="using:COMPASS.Common.ViewModels.Modals.Edit"
         xmlns:importVm="using:COMPASS.Common.ViewModels.Modals.Import"
         xmlns:interfaces="using:COMPASS.Common.Interfaces"
+        xmlns:viewModels="clr-namespace:COMPASS.Common.Interfaces.ViewModels"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         MinWidth="{Binding WindowWidth}" 
         MinHeight="{Binding WindowHeight}"
@@ -17,7 +18,7 @@
         SizeToContent="{Binding SizeToContent}"
         Focusable="True"
         x:Class="COMPASS.Common.Views.Windows.ModalWindow"
-        x:DataType="interfaces:IModalViewModel"
+        x:DataType="viewModels:IModalViewModel"
         Title="{Binding WindowTitle}">
     
     <Window.DataTemplates>
