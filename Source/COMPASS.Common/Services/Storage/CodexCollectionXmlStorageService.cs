@@ -187,7 +187,10 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
     public bool LoadCodices(CodexCollection collection)
     {
         //Tags should be loaded before codices
-        Debug.Assert(collection.LoadedTags);
+        if (!collection.LoadedTags)
+        {
+            LoadTags(collection);
+        }
 
         CodexDto[] dtos = [];
         if (File.Exists(CodicesDataFilePath(collection.Name)))
