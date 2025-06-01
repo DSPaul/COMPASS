@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals.Import"
              xmlns:controls="using:COMPASS.Common.Controls"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Modals.Import.ImportURLView"
-             x:DataType="vm:ImportURLViewModel">
+             x:DataType="vm:ImportURLViewModel" MinWidth="600" Margin="10">
     <StackPanel Margin="15" Spacing="10">
         <TextBlock Text="{Binding SourceName, FallbackValue= URL:}"/>
         <Grid ColumnDefinitions="*, Auto, Auto">

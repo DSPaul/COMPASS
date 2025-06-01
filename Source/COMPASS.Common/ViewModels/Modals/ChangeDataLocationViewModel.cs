@@ -132,8 +132,6 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
     #region IModalWindow
 
     public string WindowTitle => "Change Data Location";
-    public int? WindowWidth { get; } = 700;
-    public int? WindowHeight { get; } = 400;
     public Action CloseAction { get; set; } = () => { };
 
     #endregion

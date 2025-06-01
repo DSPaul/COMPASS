@@ -232,8 +232,6 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         #region IModalViewModel
         
         public override string WindowTitle => "Bulk edit items";
-        public override int? WindowWidth => 800;
-        public override int? WindowHeight => 400;
 
         #endregion
 

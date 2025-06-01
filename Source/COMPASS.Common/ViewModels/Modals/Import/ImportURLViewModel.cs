@@ -194,8 +194,6 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         #region IModelViewModel
 
         public string WindowTitle => $"Import an item from {SourceName}";
-        public int? WindowWidth => 600;
-        public int? WindowHeight => null;
         public Action CloseAction { get; set; } = () => { };
 
         #endregion

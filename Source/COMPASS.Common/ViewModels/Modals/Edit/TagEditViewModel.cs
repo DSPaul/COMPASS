@@ -266,10 +266,6 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         #region  IModalViewModel
 
         public string WindowTitle => CreateNewTag ? "Create new tag" : "Edit tag";
-
-        public int? WindowWidth => null;
-        public int? WindowHeight => null;
-        
         public Action CloseAction { get; set; } = () => { };
 
         #endregion

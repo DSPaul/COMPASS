@@ -82,8 +82,6 @@ namespace COMPASS.Common.ViewModels
         protected virtual bool ShowFinishButton() => StepCounter == Steps.Count - 1;
         
         public abstract string WindowTitle { get; }
-        public virtual int? WindowWidth => null;
-        public virtual int? WindowHeight => null;
         public Action CloseAction { get; set; } = () => { };
     }
 }

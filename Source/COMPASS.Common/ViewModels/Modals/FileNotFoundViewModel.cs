@@ -103,8 +103,6 @@ namespace COMPASS.Common.ViewModels.Modals
         }
         
         public string WindowTitle => "File Not Found";
-        public int? WindowWidth => null;
-        public int? WindowHeight => null;
         public Action CloseAction { get; set; } = () => { };
     }
 }

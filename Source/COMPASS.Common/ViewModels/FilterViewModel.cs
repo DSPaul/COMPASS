@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
@@ -12,6 +7,11 @@ using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -24,7 +24,7 @@ namespace COMPASS.Common.ViewModels
             // Load sorting from settings
             InitSortingProperties();
 
-            _includedCodices = [.._allCodices];
+            _includedCodices = [.. _allCodices];
             _excludedCodices = [];
 
             IncludedFilters.CollectionChanged += (_, _) => UpdateIncludedCodices();
@@ -65,13 +65,7 @@ namespace COMPASS.Common.ViewModels
         public ObservableCollection<Filter> ExcludedFilters { get; set; } = [];
         public bool HasActiveFilters => IncludedFilters.Any() || ExcludedFilters.Any();
 
-
-        private ObservableCollection<Codex>? _filteredCodices;
-        public ObservableCollection<Codex>? FilteredCodices
-        {
-            get => _filteredCodices;
-            set => SetProperty(ref _filteredCodices, value);
-        }
+        public ObservableCollection<Codex>? FilteredCodices { get; } = [];
 
         public ObservableCollection<Codex> Favorites => FilteredCodices is null ? new() :
             new(FilteredCodices.Where(c => c.Favorite));
@@ -101,7 +95,7 @@ namespace COMPASS.Common.ViewModels
         ];
 
         #region Clear selection on comboboxes
-        
+
         private string? _noneSelection;
         public string? NoneSelection
         {
@@ -116,9 +110,9 @@ namespace COMPASS.Common.ViewModels
             NoneSelection = "";
             NoneSelection = null;
         }
-        
+
         #endregion
-        
+
         public string SelectedAuthor
         {
             set
@@ -268,7 +262,7 @@ namespace COMPASS.Common.ViewModels
             get => SortDirection == ListSortDirection.Ascending;
             set => SortDirection = value ? ListSortDirection.Ascending : ListSortDirection.Descending;
         }
-        
+
         public ListSortDirection SortDirection
         {
             get => _preferencesService.Preferences.UIState.SortDirection;
@@ -443,7 +437,7 @@ namespace COMPASS.Common.ViewModels
         //------------- Filter Logic ------------//
         private void UpdateIncludedCodices(bool apply = true)
         {
-            _includedCodices = [.._allCodices];
+            _includedCodices = [.. _allCodices];
             foreach (FilterType filterType in Enum.GetValues(typeof(FilterType)))
             {
                 // Included codices must match filters of all types so IntersectWith()
@@ -471,7 +465,7 @@ namespace COMPASS.Common.ViewModels
         /// <returns></returns>
         private IEnumerable<Codex> GetFilteredCodicesByType(IEnumerable<Filter> filters, FilterType filterType, bool include)
         {
-            List<Filter> relevantFilters = [..filters.Where(filter => filter.Type == filterType)];
+            List<Filter> relevantFilters = [.. filters.Where(filter => filter.Type == filterType)];
 
             if (relevantFilters.Count == 0) return include ? _allCodices : Enumerable.Empty<Codex>();
 
@@ -486,7 +480,7 @@ namespace COMPASS.Common.ViewModels
             => include ? GetIncludedCodicesByTags(filters) : GetExcludedCodicesByTags(filters);
         private HashSet<Codex> GetIncludedCodicesByTags(IEnumerable<Filter> filters)
         {
-            HashSet<Codex> includedCodices = [.._allCodices];
+            HashSet<Codex> includedCodices = [.. _allCodices];
 
             List<Tag> includedTags = filters
                 .Select(filter => (Tag)filter.FilterValue!)
@@ -510,7 +504,7 @@ namespace COMPASS.Common.ViewModels
 
                     //List of codices that match filters in one group
                     HashSet<Codex> singleGroupFilteredCodices =
-                        [.._allCodices.Where(codex => singleGroupTags.Intersect(codex.Tags).Any())];
+                        [.. _allCodices.Where(codex => singleGroupTags.Intersect(codex.Tags).Any())];
 
                     includedCodices = includedCodices.Intersect(singleGroupFilteredCodices).ToHashSet();
                 }
@@ -527,18 +521,15 @@ namespace COMPASS.Common.ViewModels
             {
                 // If parent is excluded, so should all the children
                 excludedTags = excludedTags.Flatten().ToList();
-                excludedCodices = [.._allCodices.Where(c => excludedTags.Intersect(c.Tags).Any())];
+                excludedCodices = [.. _allCodices.Where(c => excludedTags.Intersect(c.Tags).Any())];
             }
 
             return excludedCodices;
         }
         //------------------------------------//
 
-        private void ApplySorting()
-        {
-            FilteredCodices?.Sort(c => c.GetPropertyValue(SortProperty), SortDirection);
-        }
-        
+        private void ApplySorting() => FilteredCodices?.Sort(c => c.GetPropertyValue(SortProperty), SortDirection);
+
         private void ApplyFilters(bool force = false)
         {
             IList<Codex> filteredCodices = _allCodices
@@ -548,7 +539,8 @@ namespace COMPASS.Common.ViewModels
 
             if (force || FilteredCodices is null || !FilteredCodices.SequenceEqual(filteredCodices))
             {
-                FilteredCodices = new(filteredCodices);
+                FilteredCodices.Clear();
+                FilteredCodices.AddRange(filteredCodices);
                 //Also apply filtering to these lists
                 OnPropertyChanged(nameof(Favorites));
                 OnPropertyChanged(nameof(RecentCodices));

@@ -20,13 +20,5 @@ public partial class ModalWindow : Window
         InitializeComponent();
         DataContext = vm;
         vm.CloseAction = Close;
-
-        if (vm.SizeToContent == SizeToContent.Manual)
-        {
-            if(vm.WindowHeight > 0)
-                Height = vm.WindowHeight.Value;
-            if(vm.WindowWidth > 0)
-                Width = vm.WindowWidth.Value;
-        }
     }
 }

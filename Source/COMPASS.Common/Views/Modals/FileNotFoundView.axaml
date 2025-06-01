@@ -6,7 +6,7 @@
              xmlns:contols="using:COMPASS.Common.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Modals.FileNotFoundView"
-             x:DataType="vm:FileNotFoundViewModel">
+             x:DataType="vm:FileNotFoundViewModel" Margin="10">
     <StackPanel VerticalAlignment="Center" 
                 Margin="50, 20" Spacing="10">
         <!-- Message -->

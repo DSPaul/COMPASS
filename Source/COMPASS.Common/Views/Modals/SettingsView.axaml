@@ -10,7 +10,8 @@
              xmlns:views="clr-namespace:COMPASS.Common.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Modals.SettingsView"
-             x:DataType="vm:SettingsViewModel">
+             x:DataType="vm:SettingsViewModel"
+             Width="1000" Height="500">
     <UserControl.Styles>
         <!-- Option 1 -->
         <!-- <Style Selector="TabItem"> -->
@@ -34,8 +35,12 @@
         </Style>
         <Style Selector="TabControl /template/ ContentPresenter">
             <Setter Property="CornerRadius" Value="0 10 10 0" />
-            <Setter Property="Padding" Value="5" />
+            <Setter Property="Padding" Value="15" />
             <Setter Property="Background" Value="{StaticResource WindowBackground}"/>
+        </Style>
+        <Style Selector="TabControl /template/ ItemsPresenter#PART_ItemsPresenter > WrapPanel">
+            <Setter Property="Margin" Value="0 10" />
+            <Setter Property="ItemWidth" Value="150" />
         </Style>
         <!-- _________________________________________________ -->
 
@@ -57,8 +62,8 @@
     </UserControl.Styles>
     <TabControl TabStripPlacement="Left"
                 SelectedIndex="4"
-                BorderThickness="2" CornerRadius="10"
-                Padding="0" Margin="10"
+                BorderThickness="0"
+                Padding="0"
                 Background="{StaticResource Layer2}"
                 BorderBrush="{StaticResource Layer2}">
         <TabControl.Styles>

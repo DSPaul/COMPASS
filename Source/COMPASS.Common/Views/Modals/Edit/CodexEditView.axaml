@@ -11,7 +11,8 @@
              xmlns:hierarchy="clr-namespace:COMPASS.Common.Models.Hierarchy"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="500"
              x:Class="COMPASS.Common.Views.Modals.Edit.CodexEditView"
-             x:DataType="vm:CodexEditViewModel">
+             x:DataType="vm:CodexEditViewModel"
+             MinWidth="1200" MinHeight="500" Margin="10">
 
     <Grid Name="MainGrid" Focusable="True" Margin="5,10" 
           ColumnDefinitions="auto,auto,*" 

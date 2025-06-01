@@ -51,11 +51,6 @@ namespace COMPASS.Common.ViewModels.Modals
         #region IModalWindow
 
         public string WindowTitle => "Settings";
-        public int? WindowWidth { get; } = 1000;
-        public int? WindowHeight { get; } = 500;
-
-        public SizeToContent SizeToContent { get; } = SizeToContent.Manual;
-
         public Action CloseAction { get; set; } = () => { };
 
         #endregion

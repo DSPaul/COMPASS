@@ -49,8 +49,6 @@ public abstract class CodexEditBaseViewModel: ViewModelBase, IModalViewModel, IC
     #region IModalWindow
     
     public abstract string WindowTitle { get; }
-    public abstract int? WindowWidth { get; }
-    public abstract int? WindowHeight { get; }
     public Action CloseAction { get; set; } = () => { };
 
     #endregion

@@ -78,8 +78,6 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         #region IModalWindow
         
         public override string WindowTitle => _autoImport ?  "AutoImport" : "Import Folder(s)";
-        public override int? WindowWidth => 600;
-        public override int? WindowHeight => 400;
         
         #endregion
 

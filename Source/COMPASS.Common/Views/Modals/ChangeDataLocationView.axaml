@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="400"
              x:Class="COMPASS.Common.Views.Modals.ChangeDataLocationView"
-             x:DataType="vm:ChangeDataLocationViewModel">
+             x:DataType="vm:ChangeDataLocationViewModel"
+             MinWidth="700" MinHeight="400" Margin="10">
     <StackPanel VerticalAlignment="Center">
         <TextBlock HorizontalAlignment="Center" TextAlignment="Center" Margin="30,5" TextWrapping="Wrap">
             <Run Text="You are about to change the data location from" />
