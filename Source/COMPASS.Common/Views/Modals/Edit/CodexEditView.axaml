@@ -35,7 +35,7 @@
                    Classes="Categorizer" />
         <Panel Grid.Column="0" Grid.Row="1" Margin="10">
             <Image Width="300"
-                   IsVisible="{Binding !ShowLoading}" Source="{Binding TempCodex.Cover}" />
+                   IsVisible="{Binding !ShowLoading}" Source="{Binding TempCodex.Cover, Mode=OneWay}" />
             <gif:GifImage Width="150" Height="150"
                           IsVisible="{Binding ShowLoading}"
                           Source="avares://COMPASS.Common/Assets/LoadingAnimation.gif"/>

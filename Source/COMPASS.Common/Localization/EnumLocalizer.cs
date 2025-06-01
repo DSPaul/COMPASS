@@ -7,23 +7,23 @@ public static class EnumLocalizer
 {
     public static string Localize(Enum? value) => value switch
     {
-        MetaDataSource source => FromMetaDataSource(source),
+        MetaDataSourceType source => FromMetaDataSource(source),
         _ => throw new NotImplementedException(),
     };
 
-    private static string FromMetaDataSource(MetaDataSource source) => source switch
+    private static string FromMetaDataSource(MetaDataSourceType sourceType) => sourceType switch
     {
-        MetaDataSource.None => "None",
-        MetaDataSource.File => "File Name/Path",
-        MetaDataSource.PDF => "PDF File",
-        MetaDataSource.Image => "Image File",
-        MetaDataSource.GmBinder => "GM Binder",
-        MetaDataSource.Homebrewery => "Homebrewery",
-        MetaDataSource.GoogleDrive => "Google Drive",
-        MetaDataSource.ISBN => "Open Library (ISBN)",
-        MetaDataSource.GenericURL => "Website Header",
-        MetaDataSource.Dropbox => "Dropbox",
-        MetaDataSource.DnDBeyond => "Dnd Beyond",
+        MetaDataSourceType.None => "None",
+        MetaDataSourceType.File => "File Name/Path",
+        MetaDataSourceType.PDF => "PDF File",
+        MetaDataSourceType.Image => "Image File",
+        MetaDataSourceType.GmBinder => "GM Binder",
+        MetaDataSourceType.Homebrewery => "Homebrewery",
+        MetaDataSourceType.GoogleDrive => "Google Drive",
+        MetaDataSourceType.ISBN => "Open Library (ISBN)",
+        MetaDataSourceType.GenericURL => "Website Header",
+        MetaDataSourceType.Dropbox => "Dropbox",
+        MetaDataSourceType.DnDBeyond => "Dnd Beyond",
         _ => throw new NotImplementedException(),
     };
 }

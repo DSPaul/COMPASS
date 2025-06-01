@@ -8,7 +8,7 @@
              xmlns:views="using:COMPASS.Common.Views"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:converters="using:COMPASS.Common.Converters"
-             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:filters="clr-namespace:COMPASS.Common.Models.Filters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="COMPASS.Common.Views.MainView" FontSize="16"
@@ -165,13 +165,13 @@
                             <MenuFlyout>
                                 <MenuItem Header="Import..." ToolTip.Tip="Import a Collection"
                                           Command="{Binding ImportCommand}"
-                                          Icon="{materialIcons:MaterialIconExt FolderDownload}" />
+                                          Icon="{materialIcons:MaterialIconExt Kind=FolderDownload}" />
                                 <MenuItem Header="Export..."
                                           ToolTip.Tip="Share this Collection with other COMPASS users"
                                           Command="{Binding ExportCommand}"
-                                          Icon="{materialIcons:MaterialIconExt FolderUpload}" />
+                                          Icon="{materialIcons:MaterialIconExt Kind=FolderUpload}" />
                                 <MenuItem Header="Merge into " ItemsSource="{Binding CollectionDirectories}"
-                                          Icon="{materialIcons:MaterialIconExt FolderMove}">
+                                          Icon="{materialIcons:MaterialIconExt Kind=FolderMove}">
                                     <MenuItem.Styles>
                                         <Style Selector="MenuItem MenuItem">
                                             <Setter Property="Command"
@@ -182,7 +182,7 @@
                                 </MenuItem>
                                 <MenuItem Header="Delete" ToolTip.Tip="Delete this Collection"
                                           Command="{Binding DeleteCollectionCommand}"
-                                          Icon="{materialIcons:MaterialIconExt Delete}" />
+                                          Icon="{materialIcons:MaterialIconExt Kind=Delete}" />
                             </MenuFlyout>
                         </Button.Flyout>
                     </controls:IconButton>
@@ -223,25 +223,25 @@
                 <controls:IconButton.Flyout>
                     <MenuFlyout>
                         <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}"
-                                  Icon="{materialIcons:MaterialIconExt Cog}" />
+                                  Icon="{materialIcons:MaterialIconExt Kind=Cog}" />
                         <MenuItem Header="Tools" Command="{Binding OpenSettingsCommand}"
-                                  Icon="{materialIcons:MaterialIconExt Tools}" />
+                                  Icon="{materialIcons:MaterialIconExt Kind=Tools}" />
                         <Separator/>
                         <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}"
-                                  Icon="{materialIcons:MaterialIconExt Autorenew}" />
-                        <MenuItem Header="{materialIcons:MaterialIconTextExt ArrowTopRight, Text=What\'s new, TextFirst=True}" 
+                                  Icon="{materialIcons:MaterialIconExt Kind=Autorenew}" />
+                        <MenuItem Header="{materialIcons:MaterialIconTextExt Kind=ArrowTopRight, Text=What\'s new, TextFirst=True}" 
                                   Command="{Binding NavigateToCommand}" CommandParameter="https://compassapp.info/releases"
-                                  Icon="{materialIcons:MaterialIconExt AlertDecagram}" />
+                                  Icon="{materialIcons:MaterialIconExt Kind=AlertDecagram}" />
                         <Separator/>
-                        <MenuItem Header="{materialIcons:MaterialIconTextExt ArrowTopRight, Text=Report a bug, TextFirst=True}" 
+                        <MenuItem Header="{materialIcons:MaterialIconTextExt Kind=ArrowTopRight, Text=Report a bug, TextFirst=True}" 
                                   Command="{Binding NavigateToCommand}" CommandParameter="https://linktr.ee/compassapp"
-                                  Icon="{materialIcons:MaterialIconExt Bug}" />
-                        <MenuItem Header="{materialIcons:MaterialIconTextExt ArrowTopRight, Text=Donate, TextFirst=True}"  
+                                  Icon="{materialIcons:MaterialIconExt Kind=Bug}" />
+                        <MenuItem Header="{materialIcons:MaterialIconTextExt Kind=ArrowTopRight, Text=Donate, TextFirst=True}"  
                                   Command="{Binding NavigateToCommand}" CommandParameter="https://ko-fi.com/pauldesmul"
-                                  Icon="{materialIcons:MaterialIconExt Heart}" />
+                                  Icon="{materialIcons:MaterialIconExt Kind=Heart}" />
                         <Separator/>
                         <MenuItem Header="About" Command="{Binding OpenSettingsCommand}"
-                                  Icon="{materialIcons:MaterialIconExt InfoCircleOutline}" />
+                                  Icon="{materialIcons:MaterialIconExt Kind=InfoCircleOutline}" />
                     </MenuFlyout>
                 </controls:IconButton.Flyout>
             </controls:IconButton>

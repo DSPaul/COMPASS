@@ -4,6 +4,7 @@ using Avalonia.Data;
 using Avalonia.Data.Converters;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Services;
 
 namespace COMPASS.Common.Converters
 {
@@ -22,7 +23,8 @@ namespace COMPASS.Common.Converters
                 var exception = new ArgumentNullException(nameof(parameter));
                 return new BindingNotification(exception, BindingErrorType.Error);
             }
-            CodexProperty? prop = Codex.MetadataProperties.Find(prop => prop.Name == parameter.ToString());
+            
+            CodexProperty? prop = CodexProperty.GetInstance(parameter.ToString() ?? "");
 
             if (prop is null)
             {

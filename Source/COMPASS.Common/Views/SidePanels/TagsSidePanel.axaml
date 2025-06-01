@@ -18,20 +18,20 @@
 
         <ContextMenu x:Key="TagContextMenu" x:DataType="hierarchy:TagTreeNode">
             <MenuItem Header="New Tag"
-                      Icon="{materialIcons:MaterialIconExt TagPlusOutline}"
+                      Icon="{materialIcons:MaterialIconExt Kind=TagPlusOutline}"
                       Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).CreateChildCommand}"
                       CommandParameter="{Binding Item}" />
             <MenuItem Header="Edit"
-                      Icon="{materialIcons:MaterialIconExt Edit}"
+                      Icon="{materialIcons:MaterialIconExt Kind=Edit}"
                       Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).EditTagCommand}"
                       CommandParameter="{Binding Item}" />
             <MenuItem Header="Delete"
-                      Icon="{materialIcons:MaterialIconExt Delete}"
+                      Icon="{materialIcons:MaterialIconExt Kind=Delete}"
                       Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).DeleteTagCommand}"
                       CommandParameter="{Binding Item}" />
             <Separator />
             <MenuItem Header="Sort Children"
-                      Icon="{materialIcons:MaterialIconExt TagMultipleOutline}"
+                      Icon="{materialIcons:MaterialIconExt Kind=TagMultipleOutline}"
                       Command="{Binding $parent[TreeView].((vm:TagsPanelVM)DataContext).SortChildrenCommand}"
                       CommandParameter="{Binding Item}"
                       ToolTip.Tip="Sorts its children A->Z" />
@@ -39,12 +39,12 @@
 
         <ContextMenu x:Key="AllTagsContextMenu" x:DataType="vm:TagsPanelVM">
             <MenuItem Header="Sort All Tags"
-                      Icon="{materialIcons:MaterialIconExt TagMultipleOutline}"
+                      Icon="{materialIcons:MaterialIconExt Kind=TagMultipleOutline}"
                       Command="{Binding SortAllTagsCommand}"
                       ToolTip.Tip="Sorts all the Tags and Tag Groups A->Z" />
             <MenuItem Header="Export Tags"
                       Command="{Binding ExportTagsCommand}"
-                      Icon="{materialIcons:MaterialIconExt TagArrowUpOutline}"
+                      Icon="{materialIcons:MaterialIconExt Kind=TagArrowUpOutline}"
                       ToolTip.Tip="Export tags to a file" />
         </ContextMenu>
     </UserControl.Resources>

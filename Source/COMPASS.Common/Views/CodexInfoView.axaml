@@ -55,7 +55,7 @@
                     <Border CornerRadius="5" Grid.ColumnSpan="2"
                             Width="200" Height="270" Margin="10">
                         <Border.Background>
-                            <ImageBrush Source="{Binding Cover}"/>
+                            <ImageBrush Source="{Binding Cover, Mode=OneWay}"/>
                         </Border.Background>
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="10"/>

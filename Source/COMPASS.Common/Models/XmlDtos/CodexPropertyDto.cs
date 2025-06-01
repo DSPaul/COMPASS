@@ -16,7 +16,7 @@ namespace COMPASS.Common.Models.XmlDtos
 
         #region Import Sources
 
-        public List<MetaDataSource> SourcePriority { get; set; } = [];
+        public List<MetaDataSourceType> SourcePriority { get; set; } = [];
 
         public MetaDataOverwriteMode OverwriteMode { get; set; } = MetaDataOverwriteMode.IfEmpty;
 

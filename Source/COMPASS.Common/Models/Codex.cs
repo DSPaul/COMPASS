@@ -23,8 +23,8 @@ namespace COMPASS.Common.Models
         {
             Collection = collection;
             
-            Authors.CollectionChanged += OnCollectionChanged;
-            Tags.CollectionChanged += OnCollectionChanged;
+            _authors.CollectionChanged += OnCollectionChanged;
+            _tags.CollectionChanged += OnCollectionChanged;
         }
 
         public Codex(Codex codex) : this(codex.Collection)
@@ -55,24 +55,13 @@ namespace COMPASS.Common.Models
         }
 
         private Bitmap? _thumbnail;
-        public Task<Bitmap?> Thumbnail
-        {
-            get
-            {
-                if (_thumbnail == null)
-                {
-                    return LoadThumbnail();
-                }
-
-                return Task.FromResult<Bitmap?>(_thumbnail);
-            }
-        }
+        public Task<Bitmap?> Thumbnail => _thumbnail == null ? LoadThumbnail() : Task.FromResult<Bitmap?>(_thumbnail);
 
         private Bitmap? _cover;
         public Bitmap? Cover
         {
             get => _cover; 
-            private set => SetProperty(ref _cover, value);
+            set => SetProperty(ref _cover, value);
         }
 
         #endregion
@@ -115,13 +104,17 @@ namespace COMPASS.Common.Models
             "However, with zero-padding, the order becomes 01, 02, 13, 20. \n";
 
         private ObservableCollection<string> _authors = [];
-        public ObservableCollection<string> Authors
+        public IList<string> Authors
         {
             get => _authors;
             set
             {
+                if (value is not ObservableCollection<string> v)
+                {
+                    v = new(value);
+                };
                 _authors.CollectionChanged -= OnCollectionChanged;
-                SetProperty(ref _authors, value);
+                SetProperty(ref _authors, v);
                 _authors.CollectionChanged += OnCollectionChanged;
                 OnPropertyChanged(nameof(AuthorsAsString));
             }
@@ -180,13 +173,18 @@ namespace COMPASS.Common.Models
         #region User related Metadata
 
         private ObservableCollection<Tag> _tags = [];
-        public ObservableCollection<Tag> Tags
+        public IList<Tag> Tags
         {
             get => _tags;
             set
             {
+                if (value is not ObservableCollection<Tag> v)
+                {
+                    v = new ObservableCollection<Tag>(value);
+                };
+                
                 _tags.CollectionChanged -= OnCollectionChanged;
-                _tags = value;
+                _tags = v;
                 _tags.CollectionChanged += OnCollectionChanged;
                 OnPropertyChanged(nameof(OrderedTags));
             }
@@ -257,7 +255,7 @@ namespace COMPASS.Common.Models
             Title = c.Title;
             SortingTitle = c.UserDefinedSortingTitle; //copy field instead of property, or it will copy _title
             Sources = c.Sources.Copy();
-            Authors = new(c.Authors);
+            Authors = new ObservableCollection<string>(c.Authors);
             Publisher = c.Publisher;
             Version = c.Version;
             ID = c.ID;
@@ -268,7 +266,7 @@ namespace COMPASS.Common.Models
             ReleaseDate = c.ReleaseDate;
             Rating = c.Rating;
             PageCount = c.PageCount;
-            Tags = new(c.Tags);
+            Tags = new ObservableCollection<Tag>(c.Tags);
             LastOpened = c.LastOpened;
             DateAdded = c.DateAdded;
             Favorite = c.Favorite;
@@ -327,8 +325,8 @@ namespace COMPASS.Common.Models
 
         private void OnCollectionChanged(object? o, NotifyCollectionChangedEventArgs args)
         {
-            if (o == Tags) OnPropertyChanged(nameof(OrderedTags));
-            if (o == Authors) OnPropertyChanged(nameof(AuthorsAsString));
+            if (o == _tags) OnPropertyChanged(nameof(OrderedTags));
+            if (o == _authors) OnPropertyChanged(nameof(AuthorsAsString));
         }
         
         public void Dispose()
@@ -336,8 +334,8 @@ namespace COMPASS.Common.Models
             DisposeThumbnail();
             DisposeCover();
             
-            Authors.CollectionChanged -= OnCollectionChanged;
-            Tags.CollectionChanged -= OnCollectionChanged;
+            _authors.CollectionChanged -= OnCollectionChanged;
+            _tags.CollectionChanged -= OnCollectionChanged;
         }
 
         public void DisposeThumbnail()
@@ -360,7 +358,7 @@ namespace COMPASS.Common.Models
         
         #endregion
 
-        public static readonly List<CodexProperty> MetadataProperties =
+        public static readonly List<CodexProperty> ImportableMetadataProperties =
         [
             CodexProperty.GetInstance(nameof(Title))!,
             CodexProperty.GetInstance(nameof(Authors))!,
@@ -370,7 +368,7 @@ namespace COMPASS.Common.Models
             CodexProperty.GetInstance(nameof(Tags))!,
             CodexProperty.GetInstance(nameof(Description))!,
             CodexProperty.GetInstance(nameof(ReleaseDate))!,
-            CodexProperty.GetInstance(nameof(CoverArtPath))!
+            CodexProperty.GetInstance(nameof(Cover))!
         ];
     }
 }

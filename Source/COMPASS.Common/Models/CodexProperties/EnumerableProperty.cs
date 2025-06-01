@@ -4,7 +4,7 @@ using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Models.CodexProperties
 {
-    public class EnumerableProperty<T> : CodexProperty<IEnumerable<T>>
+    public class EnumerableProperty<T> : CodexProperty<IList<T>>
     {
         public EnumerableProperty(string propName, string? label = null) :
             base(propName, label)
@@ -12,12 +12,12 @@ namespace COMPASS.Common.Models.CodexProperties
 
         public override bool IsEmpty(IHasCodexMetadata codex)
         {
-            IEnumerable<T>? value = GetProp(codex);
+            IList<T>? value = GetProp(codex);
 
             return !value.SafeAny();
         }
 
-        public override bool HasNewValue(IHasCodexMetadata toEvaluate, IHasCodexMetadata reference)
+        public override bool HasNewValue(SourceMetaData toEvaluate, Codex reference)
         {
             var newVal = GetProp(toEvaluate);
             if (!newVal.SafeAny())
@@ -34,6 +34,16 @@ namespace COMPASS.Common.Models.CodexProperties
             }
 
             return !newVal!.SequenceEqual(refVal);
+        }
+
+        public override void Copy(SourceMetaData source, SourceMetaData target)
+        {
+            target.SetProperty(Name, GetProp(source)?.ToList() ?? []); //make a new list
+        }
+        
+        public override void Apply(SourceMetaData source, Codex codex)
+        {
+            codex.SetProperty(Name, GetProp(source)?.ToList() ?? []); //make a new list
         }
     }
 }

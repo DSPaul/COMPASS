@@ -57,7 +57,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 //Codex related Metadata
                 Title = dto.Title,
                 SortingTitle = dto.SortingTitle,
-                Authors = new(dto.Authors),
+                Authors = new ObservableCollection<string>(dto.Authors),
                 Publisher = dto.Publisher,
                 Description = dto.Description,
                 ReleaseDate = dto.ReleaseDate,
@@ -83,7 +83,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 }
             };
 
-            codex.Tags = new(collection.AllTags.Where(tag => dto.TagIDs.Contains(tag.ID)));
+            codex.Tags = new ObservableCollection<Tag>(collection.AllTags.Where(tag => dto.TagIDs.Contains(tag.ID)));
 
             return codex;
         }
@@ -136,7 +136,7 @@ namespace COMPASS.Common.Models.XmlDtos
             var model = new Preferences.Preferences()
             {
                 OpenCodexPriority = MapCodexPriorities(dto.OpenFilePriorityIDs),
-                CodexProperties = dto.CodexProperties.ToModels(),
+                ImportableCodexProperties = dto.CodexProperties.ToModels(),
                 ListLayoutPreferences = dto.ListLayoutPreferences,
                 CardLayoutPreferences = dto.CardLayoutPreferences,
                 TileLayoutPreferences = dto.TileLayoutPreferences,
@@ -152,7 +152,7 @@ namespace COMPASS.Common.Models.XmlDtos
             PreferencesDto dto = new()
             {
                 OpenFilePriorityIDs = prefs.OpenCodexPriority.Select(pf => pf.ID).ToList(),
-                CodexProperties = prefs.CodexProperties.Select(prop => prop.ToDto()).ToList(),
+                CodexProperties = prefs.ImportableCodexProperties.Select(prop => prop.ToDto()).ToList(),
                 ListLayoutPreferences = prefs.ListLayoutPreferences,
                 CardLayoutPreferences = prefs.CardLayoutPreferences,
                 TileLayoutPreferences = prefs.TileLayoutPreferences,
@@ -207,7 +207,7 @@ namespace COMPASS.Common.Models.XmlDtos
             {
                 foreach (CodexPropertyDto propDto in propertyDtos)
                 {
-                    var foundProp = Codex.MetadataProperties.Find(p => p.Label == propDto.Label);
+                    var foundProp = Codex.ImportableMetadataProperties.Find(p => p.Label == propDto.Label);
                     if (foundProp != null)
                     {
                         propDto.Name = foundProp.Name;
@@ -218,7 +218,7 @@ namespace COMPASS.Common.Models.XmlDtos
 
             var props = new List<CodexProperty>();
 
-            foreach (var defaultProp in Codex.MetadataProperties)
+            foreach (var defaultProp in Codex.ImportableMetadataProperties)
             {
                 CodexPropertyDto? propDto = propertyDtos.Find(p => p.Name == defaultProp.Name);
                 // Add Preferences from defaults if they weren't found on the loaded Preferences
@@ -339,7 +339,7 @@ namespace COMPASS.Common.Models.XmlDtos
 #pragma warning disable CS0618 // Type or member is obsolete
             
             //(1.x -> 2.x) migrate Folder - Tag Links
-            foreach (FolderTagPairDto pair in dto.FolderTagPairs ?? [])
+            foreach (FolderTagPairDto pair in dto.FolderTagPairs)
             {
                 allTags.FirstOrDefault(t => t.ID == pair.TagID)?.LinkedGlobs.AddIfMissing(pair.Folder);
             }

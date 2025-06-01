@@ -65,7 +65,7 @@ namespace COMPASS.Common.ViewModels
         public ObservableCollection<Filter> ExcludedFilters { get; set; } = [];
         public bool HasActiveFilters => IncludedFilters.Any() || ExcludedFilters.Any();
 
-        public ObservableCollection<Codex>? FilteredCodices { get; } = [];
+        public ObservableCollection<Codex> FilteredCodices { get; } = [];
 
         public ObservableCollection<Codex> Favorites => FilteredCodices is null ? new() :
             new(FilteredCodices.Where(c => c.Favorite));
@@ -199,7 +199,7 @@ namespace COMPASS.Common.ViewModels
         public static List<CodexProperty> PossibleEmptyProperties { get; } =
         [
             CodexProperty.GetInstance(nameof(Codex.Authors))!,
-            CodexProperty.GetInstance(nameof(Codex.CoverArtPath))!,
+            CodexProperty.GetInstance(nameof(Codex.Cover))!,
             CodexProperty.GetInstance(nameof(Codex.Description))!,
             CodexProperty.GetInstance(nameof(Codex.Sources.ISBN))!,
             CodexProperty.GetInstance(nameof(Codex.PageCount))!,
@@ -537,7 +537,7 @@ namespace COMPASS.Common.ViewModels
                 .Except(_excludedCodices)
                 .ToList();
 
-            if (force || FilteredCodices is null || !FilteredCodices.SequenceEqual(filteredCodices))
+            if (force || !FilteredCodices.SequenceEqual(filteredCodices))
             {
                 FilteredCodices.Clear();
                 FilteredCodices.AddRange(filteredCodices);

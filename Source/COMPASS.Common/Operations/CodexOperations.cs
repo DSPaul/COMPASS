@@ -5,26 +5,22 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
-using Avalonia.Controls;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Hierarchy;
-using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Sources;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Edit;
-using COMPASS.Common.ViewModels.Sources;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.Operations
@@ -438,7 +434,7 @@ namespace COMPASS.Common.Operations
                 ProgressViewModel.GetInstance().ConfirmCancellation();
             }
 
-            if (chooseMetaDataVM.CodicesWithChoices.Any())
+            if (chooseMetaDataVM.MetaDataProposals.Any())
             {
                 ChooseMetaDataWindow window = new(chooseMetaDataVM);
                 window.Show();
@@ -450,76 +446,75 @@ namespace COMPASS.Common.Operations
         }
         private static async Task GetMetaData(Codex codex, ChooseMetaDataViewModel chooseMetaDataVM)
         {
+            SourceMetaData existingMetaData = new(codex);
+            
             // Lazy load metadata from all the sources, use dict to store
-            Dictionary<MetaDataSource, CodexDto> metaDataFromSource = new();
+            Dictionary<MetaDataSourceType, SourceMetaData> metaDataFromSource = new();
 
             //First try to get sources from other sources
             //Pdf can contain ISBN number
-            PdfSourceViewModel pdfSourceVM = new();
-            if (pdfSourceVM.IsValidSource(codex.Sources) && String.IsNullOrEmpty(codex.Sources.ISBN))
+            PdfMetaDataSource pdfSource = new();
+            if (pdfSource.IsValidSource(codex.Sources) && string.IsNullOrEmpty(codex.Sources.ISBN))
             {
-                CodexDto pdfData = await pdfSourceVM.GetMetaData(codex.Sources);
+                SourceMetaData pdfData = await pdfSource.GetMetaData(codex.Sources);
 
                 //already store this so pdf doesn't need to be opened twice
-                metaDataFromSource.Add(MetaDataSource.PDF, pdfData);
+                metaDataFromSource.Add(MetaDataSourceType.PDF, pdfData);
             }
-
-
-            // Now use bits and pieces of the Codices in MetaDataFromSource to set the actual metadata based on preferences
-            //Codex with metadata that will be shown to the user, and asked if they want to use it
-            CodexDto toAsk = new();
+            
+            //metadata that will be shown to the user, and asked if they want to use it
+            SourceMetaData toAsk = new();
             bool shouldAsk = false;
 
             //Iterate over all the properties and set them
-            foreach (var prop in PreferencesService.GetInstance().Preferences.CodexProperties)
+            foreach (var prop in PreferencesService.GetInstance().Preferences.ImportableCodexProperties)
             {
-
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
-                if (prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(codex)) continue;
-                if (prop is CoverArtProperty) continue; //Covers are done separately
+                if (prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(existingMetaData)) continue;
+                if (prop is CoverProperty) continue; //Covers are done separately
 
                 //preferredMetadata will hold the metadata from the top preferred source
-                CodexDto preferredMetadata = new();
+                SourceMetaData preferredMetadata = new();
 
                 //iterate over the sources in reverse because overwriting causes the last ones to remain
-                foreach (var source in prop.SourcePriority.AsEnumerable().Reverse())
+                foreach (var sourceType in prop.SourcePriority.AsEnumerable().Reverse())
                 {
                     ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                     // Check if there is metadata from this source to use
-                    if (!metaDataFromSource.TryGetValue(source, out CodexDto? metadata))
+                    if (!metaDataFromSource.TryGetValue(sourceType, out SourceMetaData? metadata))
                     {
-                        SourceViewModel? sourceVM = SourceViewModel.GetSourceVM(source);
-                        if (sourceVM is null) continue;
-                        if (!sourceVM.IsValidSource(codex.Sources)) continue;
-                        metadata = await sourceVM.GetMetaData(codex.Sources);
-                        metaDataFromSource.Add(source, metadata);
+                        MetaDataSource? source = MetaDataSource.GetSource(sourceType);
+                        if (source is null) continue;
+                        if (!source.IsValidSource(codex.Sources)) continue;
+                        metadata = await source.GetMetaData(codex.Sources);
+                        metaDataFromSource.Add(sourceType, metadata);
                     }
-                    // Set the prop Data from this source in propHolder
-                    // if the new value is not null/default/empty
+                    
+                    //If there is, make it the new preferred
                     if (!prop.IsEmpty(metadata))
                     {
-                        prop.SetProp(preferredMetadata, metadata);
+                        prop.Copy(metadata, preferredMetadata);
                     }
                 }
 
                 //if no value was found for this prop, do nothing
                 if (prop.IsEmpty(preferredMetadata)) continue;
 
-                if (prop.OverwriteMode == MetaDataOverwriteMode.Always || prop.IsEmpty(codex))
+                if (prop.OverwriteMode == MetaDataOverwriteMode.Always || prop.IsEmpty(existingMetaData))
                 {
-                    prop.SetProp(codex, preferredMetadata.ToModel(MainViewModel.CollectionVM.CurrentCollection));
+                    prop.Apply(preferredMetadata, codex);
                 }
                 else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask && prop.HasNewValue(preferredMetadata, codex))
                 {
-                    prop.SetProp(toAsk, preferredMetadata);
+                    prop.Copy(preferredMetadata, toAsk);
                     shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked
                 }
             }
 
             if (shouldAsk)
             {
-                chooseMetaDataVM.AddCodexPair(codex, toAsk.ToModel(MainViewModel.CollectionVM.CurrentCollection));
+                chooseMetaDataVM.AddMetaDataProposal(codex, toAsk);
             }
 
             ProgressViewModel.GetInstance().IncrementCounter();
@@ -546,13 +541,13 @@ namespace COMPASS.Common.Operations
         private static async Task GetCover(Codex? codex)
         {
             if (codex is null) return;
-            await CoverService.GetCover([codex]);
+            await CoverService.GetAndApplyCover([codex]);
         }
 
         private AsyncRelayCommand<IList>? _getCoverBulkCommand;
         public AsyncRelayCommand<IList> GetCoverBulkCommand => _getCoverBulkCommand ??= new(GetCoverBulk);
         private static async Task GetCoverBulk(IList? codices) =>
-            await CoverService.GetCover(codices?.Cast<Codex>().ToList() ?? []);
+            await CoverService.GetAndApplyCover(codices?.Cast<Codex>().ToList() ?? []);
 
         //TODO remove this, HandleKeyDownOnCodex should be called directly
         // public static void DataGridHandleKeyDown(object? sender, KeyEventArgs e)

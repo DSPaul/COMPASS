@@ -2,8 +2,8 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.XmlDtos;
+using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels;
-using COMPASS.Common.ViewModels.Sources;
 
 namespace Tests.Sources
 {
@@ -11,6 +11,7 @@ namespace Tests.Sources
     public class HomeBrewery
     {
         const string TEST_COLLECTION = "__unitTests";
+        private const string TEST_URL = @"https://homebrewery.naturalcrit.com/share/FegJIEB2KUUo";
 
         [OneTimeSetUp]
         public void Init()
@@ -18,7 +19,7 @@ namespace Tests.Sources
             _ = new MainViewModel();
             if (!MainViewModel.CollectionVM.CollectionDirectories.Contains(TEST_COLLECTION))
             {
-                MainViewModel.CollectionVM.CreateAndLoadCollection(TEST_COLLECTION);
+                MainViewModel.CollectionVM.CreateAndLoadCollection(TEST_COLLECTION).Wait();
             }
             else
             {
@@ -32,12 +33,12 @@ namespace Tests.Sources
         {
             SourceSet sources = new()
             {
-                SourceURL = @"https://homebrewery.naturalcrit.com/share/FegJIEB2KUUo"
+                SourceURL = TEST_URL
             };
 
-            var vm = SourceViewModel.GetSourceVM(MetaDataSource.Homebrewery);
+            var source = MetaDataSource.GetSource(MetaDataSourceType.Homebrewery);
 
-            CodexDto response = await vm!.GetMetaData(sources);
+            SourceMetaData response = await source!.GetMetaData(sources);
 
             Assert.Multiple(() =>
             {
@@ -53,40 +54,17 @@ namespace Tests.Sources
         public async Task GetCoverFromHomeBrewery()
         {
             //Setup
-            var vm = SourceViewModel.GetSourceVM(MetaDataSource.Homebrewery);
-            CodexCollection cc = new(TEST_COLLECTION);
-            // cc.InitAsNew();
-            // cc.Load();
-
-            Codex codex = new(cc)
+            var source = MetaDataSource.GetSource(MetaDataSourceType.Homebrewery);
+            var sources = new SourceSet()
             {
-                Sources = new()
-                {
-                    SourceURL = @"https://homebrewery.naturalcrit.com/share/FegJIEB2KUUo"
-                }
+                SourceURL = TEST_URL
             };
 
-            //Clear existing data
-            if (File.Exists(codex.CoverArtPath))
-            {
-                File.Delete(codex.CoverArtPath);
-            }
-
-            if (File.Exists(codex.ThumbnailPath))
-            {
-                File.Delete(codex.ThumbnailPath);
-            }
-
             //Fetch the cover
-            bool success = await vm!.FetchCover(codex);
+            var cover = await source!.FetchCover(sources);
 
-            Assert.Multiple(() =>
-            {
-                //see if it worked
-                Assert.That(success, Is.True, "Failed to fetch cover");
-                Assert.That(File.Exists(codex.ThumbnailPath), Is.True, "Thumbnail doesn't exist");
-                Assert.That(File.Exists(codex.CoverArtPath), Is.True, "Cover doesn't exist");
-            });
+            //see if it worked
+            Assert.That(cover, Is.Not.Null, "Failed to fetch cover");
         }
     }
 }

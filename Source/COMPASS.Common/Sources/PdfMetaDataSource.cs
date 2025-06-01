@@ -2,32 +2,32 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Avalonia.Media.Imaging;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels;
 using ImageMagick;
 using ImageMagick.Formats;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 
-namespace COMPASS.Common.ViewModels.Sources
+namespace COMPASS.Common.Sources
 {
-    public class PdfSourceViewModel : SourceViewModel
+    public class PdfMetaDataSource : MetaDataSource
     {
-        public override MetaDataSource Source => MetaDataSource.PDF;
+        public override MetaDataSourceType Type => MetaDataSourceType.PDF;
         public override bool IsValidSource(SourceSet sources) => IOService.IsPDFFile(sources.Path);
 
-        public override async Task<CodexDto> GetMetaData(SourceSet sources)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
         {
             Debug.Assert(IsValidSource(sources), "Codex without pdf found in pdf source");
             PdfDocument? pdfDoc = null;
-
-            // Use a codex dto to transfer the data
-            CodexDto codex = new();
+            
+            SourceMetaData codex = new();
             try
             {
                 PdfDocumentInfo? info = await Task.Run(() =>
@@ -37,7 +37,7 @@ namespace COMPASS.Common.ViewModels.Sources
                     return pdfDoc.GetDocumentInfo();
                 });
 
-                codex.Title = info.GetTitle() ?? String.Empty;
+                codex.Title = info.GetTitle() ?? string.Empty;
                 if (info.GetAuthor() is not null)
                 {
                     codex.Authors = [info.GetAuthor()];
@@ -45,7 +45,7 @@ namespace COMPASS.Common.ViewModels.Sources
                 codex.PageCount = pdfDoc!.GetNumberOfPages();
 
                 // If it already has an ISBN, no need to check again
-                if (!String.IsNullOrEmpty(sources.ISBN)) return codex;
+                if (!string.IsNullOrEmpty(sources.ISBN)) return codex;
 
                 //Search for an ISBN in first 5 pages
                 for (int page = 1; page <= Math.Min(5, pdfDoc.GetNumberOfPages()); page++)
@@ -79,37 +79,33 @@ namespace COMPASS.Common.ViewModels.Sources
             return codex;
         }
 
-        public override async Task<bool> FetchCover(Codex codex)
+        public override async Task<IMagickImage?> FetchCover(SourceSet sources)
         {
-            //return false if file doesn't exist
-            if (!IOService.IsPDFFile(codex.Sources.Path) ||
-                !File.Exists(codex.Sources.Path))
+            //return false if the file doesn't exist
+            if (!IOService.IsPDFFile(sources.Path) ||
+                !File.Exists(sources.Path))
             {
-                return false;
+                return null;
             }
 
-            try //image.Read can throw exception if file can not be opened/read
+            try //image.Read can throw exception if the file can not be opened/read
             {
-                using (MagickImage image = new())
-                {
-                    await image.ReadAsync(codex.Sources.Path, ReadSettings);
-                    image.Format = MagickFormat.Png;
+                MagickImage image = new();
+                await image.ReadAsync(sources.Path, ReadSettings);
+                image.Format = MagickFormat.Png;
 
-                    //some pdf's are transparent, expecting a white page underneath
-                    image.BackgroundColor = new MagickColor("#FFFFFF");
-                    image.Alpha(AlphaOption.Remove);
-
-                    await CoverService.SaveCover(codex, image);
-                }
-                codex.RefreshThumbnail();
-                return true;
+                //some pdf's are transparent, expecting a white page underneath
+                image.BackgroundColor = new MagickColor("#FFFFFF");
+                image.Alpha(AlphaOption.Remove);
+                return image;
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to generate cover from {Path.GetFileName(codex.Sources.Path)}", ex);
-                LogEntry logEntry = new(Severity.Warning, $"Failed to generate cover from {codex.Title}");
+                string logMsg = $"Failed to generate cover from {Path.GetFileName(sources.Path)}";
+                Logger.Error(logMsg, ex);
+                LogEntry logEntry = new(Severity.Warning, logMsg);
                 ProgressVM.AddLogEntry(logEntry);
-                return false;
+                return null;
             }
         }
 

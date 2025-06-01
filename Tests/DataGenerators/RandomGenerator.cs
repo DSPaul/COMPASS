@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.ObjectModel;
+using System.Text;
 using Avalonia.Media;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Preferences;
@@ -73,7 +74,7 @@ namespace Tests.DataGenerators
                 ID = Random.Next(),
                 Title = GetRandomString(),
                 SortingTitle = GetRandomString(),
-                Authors = new(GetRandomList<string>(maxLength: 3)),
+                Authors = new ObservableCollection<string>(GetRandomList<string>(maxLength: 3)),
                 Publisher = GetRandomString(),
                 Description = GetRandomString(10, 500),
                 ReleaseDate = GetRandomDate(),
@@ -100,7 +101,7 @@ namespace Tests.DataGenerators
         public static Preferences GetRandomPreferences() => new()
         {
             AutoLinkFolderTagSameName = true,
-            CodexProperties = Codex.MetadataProperties,
+            ImportableCodexProperties = Codex.ImportableMetadataProperties,
             CardLayoutPreferences = new CardLayoutPreferences()
             {
                 ShowAuthor = GetRandomBool(),

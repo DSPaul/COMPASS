@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
@@ -21,21 +18,26 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 
-namespace COMPASS.Common.ViewModels.Sources
+namespace COMPASS.Common.Sources
 {
-    public class HomebrewerySourceViewModel : SourceViewModel
+    public class HomebreweryMetaDataSource : MetaDataSource
     {
-        public override MetaDataSource Source => MetaDataSource.Homebrewery;
+        public override MetaDataSourceType Type => MetaDataSourceType.Homebrewery;
         public override bool IsValidSource(SourceSet sources)
             => sources.HasOnlineSource() && sources.SourceURL.Contains(new ImportURLViewModel(ImportSource.Homebrewery).ExampleURL);
 
-        public override async Task<CodexDto> GetMetaData(SourceSet sources)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
         {
-            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from Homebrewery"));
             Debug.Assert(IsValidSource(sources), "Invalid Codex was used in Homebrewery source");
 
             string uri = sources.SourceURL.Replace(@"/share/", @"/metadata/");
+            
+            SourceMetaData metaData = new()
+            {
+                Publisher = "Homebrewery",
+            };
 
+            ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from Homebrewery"));
             JObject? metadata = await IOService.GetJsonAsync(uri);
 
             if (metadata is null || !metadata.HasValues)
@@ -47,40 +49,31 @@ namespace COMPASS.Common.ViewModels.Sources
                 return new();
             }
 
-            // Use a codex dto to transfer the data
-            CodexDto codex = new()
-            {
-                Publisher = "Homebrewery",
-                Title = metadata.SelectToken("title")?.ToString() ?? string.Empty
-            };
+            metaData.Title = metadata.SelectToken("title")?.ToString() ?? string.Empty;
+            var authors = metadata.SelectToken("authors")?.Values<string>() ?? [];
+            metaData.Authors = authors
+                .Where(author => !string.IsNullOrWhiteSpace(author))
+                .Cast<string>()
+                .ToList();
+            metaData.PageCount = int.Parse(metadata.SelectToken("pageCount")?.ToString() ?? "0");
+            metaData.Description = metadata.SelectToken("description")?.ToString() ?? string.Empty;
+            metaData.ReleaseDate = metadata.SelectToken("createdAt")?.Value<DateTime>();
 
-            var authors = metadata.SelectToken("authors")?.Values<string>();
-            if (authors is not null)
-            {
-                codex.Authors = authors
-                    .Cast<string>()
-                    .Where(author => !string.IsNullOrWhiteSpace(author))
-                    .ToList();
-            }
-            codex.PageCount = int.Parse(metadata.SelectToken("pageCount")?.ToString() ?? "0");
-            codex.Description = metadata.SelectToken("description")?.ToString() ?? String.Empty;
-            codex.ReleaseDate = metadata.SelectToken("createdAt")?.Value<DateTime>();
-
-            return codex;
+            return metaData;
         }
 
-        public override async Task<bool> FetchCover(Codex codex)
+        public override async Task<IMagickImage?> FetchCover(SourceSet sources)
         {
-            if (String.IsNullOrEmpty(codex.Sources.SourceURL)) { return false; }
+            if (string.IsNullOrEmpty(sources.SourceURL)) { return null; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Homebrewery"));
             WebDriver? driver = await ServiceResolver.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
 
-            if (driver == null) { return false; }
+            if (driver == null) { return null; }
 
             WebDriverWait wait = new(driver, TimeSpan.FromSeconds(5));
             try
             {
-                string url = codex.Sources.SourceURL;
+                string url = sources.SourceURL;
                 var frameSelector = By.Id("BrewRenderer");
                 var pageSelector = By.Id("p1");
 
@@ -94,8 +87,8 @@ namespace COMPASS.Common.ViewModels.Sources
 
                 Thread.Sleep(500);
 
-                var frame = driver.FindElement(frameSelector);
-                Point location = frame.Location;
+                IWebElement frame = driver.FindElement(frameSelector);
+                System.Drawing.Point location = frame.Location;
 
                 await Task.Run(() =>
                 {
@@ -105,29 +98,25 @@ namespace COMPASS.Common.ViewModels.Sources
 
                 Thread.Sleep(500);
 
-                var coverPage = driver.FindElement(pageSelector);
+                IWebElement coverPage = driver.FindElement(pageSelector);
                 location.X += coverPage.Location.X;
                 location.Y += coverPage.Location.Y;
 
                 //screenshot and download the image
-                using (IMagickImage image = CoverService.GetCroppedScreenShot(driver, location, coverPage.Size))
-                {
-                    await CoverService.SaveCover(codex, image);
-                }
-                codex.RefreshThumbnail();
-                return true;
+                return CoverService.GetCroppedScreenShot(driver, location, coverPage.Size) as MagickImage;
             }
             catch (Exception ex)
             {
-                string msg = $"Failed to get cover from {codex.Sources.SourceURL}";
+                string msg = $"Failed to get cover from {sources.SourceURL}";
                 Logger.Error(msg, ex);
                 ProgressVM.AddLogEntry(new(Severity.Error, msg));
-                return false;
             }
             finally
             {
                 driver.Quit();
             }
+
+            return null;
         }
     }
 }

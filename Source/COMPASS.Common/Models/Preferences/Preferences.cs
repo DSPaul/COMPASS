@@ -12,7 +12,7 @@ namespace COMPASS.Common.Models.Preferences
         public Preferences()
         {
             _openCodexPriority = new(OpenCodexFunctions);
-            CodexProperties = Codex.MetadataProperties.ToList();
+            ImportableCodexProperties = Codex.ImportableMetadataProperties.ToList();
             ListLayoutPreferences = new();
             CardLayoutPreferences = new();
             TileLayoutPreferences = new();
@@ -48,7 +48,10 @@ namespace COMPASS.Common.Models.Preferences
             set => SetProperty(ref _openCodexPriority, value);
         }
 
-        public List<CodexProperty> CodexProperties { get; set; }
+        /// <summary>
+        /// All codex properties that can be imported from a metadata source
+        /// </summary>
+        public List<CodexProperty> ImportableCodexProperties { get; set; }
 
         public ListLayoutPreferences ListLayoutPreferences { get; set; }
         public CardLayoutPreferences CardLayoutPreferences { get; set; }

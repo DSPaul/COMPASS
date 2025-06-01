@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Sources;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
-using COMPASS.Common.ViewModels.Sources;
 using COMPASS.Common.Views.Windows;
 using ImageMagick;
 using ImageMagick.Factories;
@@ -23,75 +20,75 @@ namespace COMPASS.Common.Services
 {
     public static class CoverService
     {
+        private const int ThumbnailWidth = 200;
+        private const int CoverWidth = 850;
+        
         /// <summary>
         /// Fetches a cover image for the given codex
         /// </summary>
         /// <param name="codex"></param>
         /// <param name="chooseMetaDataViewModel"></param>
         /// <exception cref="System.OperationCanceledException">The token has had cancellation requested.</exception>
-        public static async Task GetCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null)
+        public static async Task GetAndApplyCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null)
         {
-            var thumbnailStorageService = ServiceResolver.Resolve<IThumbnailStorageService>();
-            
-            Codex metaDatalessCodex = new(codex.Collection)
+            IMagickImage? coverFromSource = null;
+            try
             {
-                Sources = codex.Sources,
-                ID = codex.ID,
-            };
-
-            CodexProperty coverProp = PreferencesService.GetInstance().Preferences.CodexProperties.First(prop => prop.Name == nameof(Codex.CoverArtPath));
-
-            if (coverProp.OverwriteMode == MetaDataOverwriteMode.Ask)
-            {
-                Debug.Assert(chooseMetaDataViewModel is not null, "choose MetaData ViewModel cannot be null if overwrite mode is ask");
-            }
-
-            if (coverProp.OverwriteMode == MetaDataOverwriteMode.Never ||
-                (coverProp.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !coverProp.IsEmpty(codex)))
-            {
-                ProgressViewModel.GetInstance().IncrementCounter();
-                return;
-            }
-
-            //set img paths
-            thumbnailStorageService.InitCodexImagePaths(metaDatalessCodex);
-
-            bool shouldAsk = coverProp.OverwriteMode == MetaDataOverwriteMode.Ask && !coverProp.IsEmpty(codex);
-            if (shouldAsk)
-            {
-                //set img paths to temp path
-                metaDatalessCodex.CoverArtPath = codex.CoverArtPath.Insert(codex.CoverArtPath.Length - 4, ".tmp");
-                metaDatalessCodex.ThumbnailPath = codex.ThumbnailPath.Insert(codex.ThumbnailPath.Length - 4, ".tmp");
-            }
-
-            bool getCoverSuccessful = false;
-            foreach (var source in coverProp.SourcePriority)
-            {
-                ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-                SourceViewModel? sourceVm = SourceViewModel.GetSourceVM(source);
-                if (sourceVm == null || !sourceVm.IsValidSource(codex.Sources)) continue;
-                getCoverSuccessful = await sourceVm.FetchCover(metaDatalessCodex);
-                if (getCoverSuccessful) break;
-            }
-
-            if (shouldAsk)
-            {
-                //check if the image is different from the existing one
-                using MagickImage origCover = new(codex.CoverArtPath);
-                using MagickImage newCover = new(metaDatalessCodex.CoverArtPath);
-                var isEqual = origCover.Compare(newCover).MeanErrorPerPixel == 0;
-                if (!isEqual)
+                CodexProperty coverProp = PreferencesService.GetInstance().Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(Codex.Cover));
+                
+                switch (coverProp.OverwriteMode)
                 {
-                    chooseMetaDataViewModel?.AddCodexPair(codex, metaDatalessCodex);
+                    case MetaDataOverwriteMode.Ask:
+                        Debug.Assert(chooseMetaDataViewModel is not null, "choose MetaData ViewModel cannot be null if overwrite mode is ask");
+                        break;
+                    case MetaDataOverwriteMode.Never:
+                    case MetaDataOverwriteMode.IfEmpty when !coverProp.IsEmpty(codex):
+                        return;
+                }
+
+                bool shouldAsk = coverProp.OverwriteMode == MetaDataOverwriteMode.Ask && !coverProp.IsEmpty(codex);
+
+                
+                foreach (var sourceType in coverProp.SourcePriority)
+                {
+                    ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                    MetaDataSource? source = MetaDataSource.GetSource(sourceType);
+                    if (source == null || !source.IsValidSource(codex.Sources)) continue;
+                    coverFromSource = await source.FetchCover(codex.Sources);
+                    if (coverFromSource != null) break;
+                }
+
+                //no cover was found
+                if (coverFromSource == null) return;
+
+                if (shouldAsk)
+                {
+                    SourceMetaData newMetaData = new()
+                    {
+                        Cover = coverFromSource,
+                    };
+                    
+                    //check if the image is different from the existing one
+                    if (!coverProp.HasNewValue(newMetaData, codex)) return;
+
+                    //make a copy of cover because originals lifetime is limited to this method
+                    newMetaData.Cover = new MagickImage((IMagickImage<byte>)coverFromSource); 
+                    chooseMetaDataViewModel!.AddMetaDataProposal(codex, newMetaData);
+                }
+                else
+                {
+                    await SaveCover(codex, coverFromSource);
                 }
             }
-
-            if (getCoverSuccessful) codex.RefreshThumbnail();
-            ProgressViewModel.GetInstance().IncrementCounter();
+            finally
+            {
+                coverFromSource?.Dispose();
+                ProgressViewModel.GetInstance().IncrementCounter();
+            }
         }
 
-        public static async Task GetCover(List<Codex> codices)
+        public static async Task GetAndApplyCover(List<Codex> codices)
         {
             var progressVM = ProgressViewModel.GetInstance();
             progressVM.ResetCounter();
@@ -107,7 +104,7 @@ namespace COMPASS.Common.Services
 
             try
             {
-                await Parallel.ForEachAsync(codices, parallelOptions, async (codex, _) => await GetCover(codex, chooseMetaDataVM));
+                await Parallel.ForEachAsync(codices, parallelOptions, async (codex, _) => await GetAndApplyCover(codex, chooseMetaDataVM));
             }
             catch (OperationCanceledException ex)
             {
@@ -115,7 +112,7 @@ namespace COMPASS.Common.Services
                 await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
             }
 
-            if (chooseMetaDataVM.CodicesWithChoices.Any())
+            if (chooseMetaDataVM.MetaDataProposals.Any())
             {
                 ChooseMetaDataWindow window = new(chooseMetaDataVM);
                 window.Show();
@@ -124,89 +121,53 @@ namespace COMPASS.Common.Services
 
         public static async Task SaveCover(Codex destCodex, IMagickImage image)
         {
-            if (String.IsNullOrEmpty(destCodex.CoverArtPath))
+            if (string.IsNullOrEmpty(destCodex.CoverArtPath))
             {
                 Logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
                 return;
             }
 
-            if (image.Width > 850) image.Resize(850, 0);
+            if (image.Width > CoverWidth) image.Resize(CoverWidth, 0);
 
             if (IOService.EnsureDirectoryExists(destCodex.CoverArtPath))
             {
                 await image.WriteAsync(destCodex.CoverArtPath);
                 CreateThumbnail(destCodex, image);
-            }
-        }
-
-        public static async Task SaveCover(string imgURL, Codex destCodex)
-        {
-            if (String.IsNullOrEmpty(destCodex.CoverArtPath))
-            {
-                Logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
-                return;
-            }
-
-            var imgBytes = await IOService.DownloadFileAsync(imgURL);
-
-            if (IOService.EnsureDirectoryExists(destCodex.CoverArtPath))
-            {
-                await File.WriteAllBytesAsync(destCodex.CoverArtPath, imgBytes);
-                CreateThumbnail(destCodex);
                 destCodex.RefreshThumbnail();
             }
-
         }
 
-        public static bool GetCoverFromImage(string imagePath, Codex destCodex)
+        public static MagickImage? GetCoverFromImage(string imagePath)
         {
-            if (String.IsNullOrEmpty(destCodex.CoverArtPath))
-            {
-                Logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
-                return false;
-            }
-
             //check if it's a valid file
-            if (String.IsNullOrEmpty(imagePath) ||
+            if (string.IsNullOrEmpty(imagePath) ||
                 !Path.Exists(imagePath) ||
                 !IOService.IsImageFile(imagePath))
             {
-                return false;
+                return null;
             }
-
+            
             try
             {
-                if (IOService.EnsureDirectoryExists(destCodex.CoverArtPath))
-                {
-
-                    using (MagickImage image = new(imagePath))
-                    {
-                        if (image.Width > 1000) image.Resize(1000, 0);
-                        image.Write(destCodex.CoverArtPath);
-                        CreateThumbnail(destCodex, image);
-                    }
-                    destCodex.RefreshThumbnail();
-                    return true;
-                }
-                return false;
+                return new(imagePath);
             }
             catch (Exception ex)
             {
                 //will fail if image is corrupt
-                Logger.Error($"Failed to generate a thumbnail for {imagePath}", ex);
-                return false;
+                Logger.Error($"Failed to generate a cover for {imagePath}", ex);
+                return null;
             }
         }
 
         public static void CreateThumbnail(Codex c, IMagickImage? image = null)
         {
-            if (String.IsNullOrEmpty(c.ThumbnailPath))
+            if (string.IsNullOrEmpty(c.ThumbnailPath))
             {
                 Logger.Error("Trying to write thumbnail to empty path", new InvalidOperationException());
                 return;
             }
 
-            uint newWidth = 200; //sets resolution of thumbnail in pixels
+            uint newWidth = ThumbnailWidth; //sets resolution of thumbnail in pixels
             bool ownsImage = false;
 
             if (image is null)
@@ -242,7 +203,7 @@ namespace COMPASS.Common.Services
         public static IMagickImage GetCroppedScreenShot(IWebDriver driver, IWebElement webElement)
             => GetCroppedScreenShot(driver, webElement.Location, webElement.Size);
 
-        public static IMagickImage GetCroppedScreenShot(IWebDriver driver, Point location, Size size)
+        public static IMagickImage GetCroppedScreenShot(IWebDriver driver, System.Drawing.Point location, System.Drawing.Size size)
         {
             //take the screenshot
             Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();

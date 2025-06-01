@@ -6,10 +6,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
-using Autofac;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -17,6 +16,7 @@ using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.Views.Windows;
 using HtmlAgilityPack;
+using ImageMagick;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Newtonsoft.Json.Linq;
 
@@ -72,6 +72,20 @@ namespace COMPASS.Common.Services.FileSystem
             return json;
         }
 
+        public static async Task<MagickImage?> DownloadImageAsync(string imgURL)
+        {
+            try
+            {
+                var imgBytes = await DownloadFileAsync(imgURL);
+                return new(imgBytes);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to download cover image from {imgURL}", ex);
+                return null;
+            }
+        }
+        
         public static async Task<HtmlDocument?> ScrapeSite(string url)
         {
             HtmlWeb web = new();

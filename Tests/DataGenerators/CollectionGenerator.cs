@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Models;
+﻿using System.Collections.ObjectModel;
+using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
@@ -26,7 +27,7 @@ namespace Tests.DataGenerators
             //assign tags to codices
             foreach (var c in collection.AllCodices)
             {
-                c.Tags = new(RandomGenerator.GetRandomElements(collection.AllTags, Random.Next(0, 4)));
+                c.Tags = new ObservableCollection<Tag>(RandomGenerator.GetRandomElements(collection.AllTags, Random.Next(0, 4)));
             }
 
             //TODO add settings

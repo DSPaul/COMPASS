@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -108,8 +109,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public RelayCommand TagCheckCommand => _tagCheckCommand ??= new(UpdateTagList);
         private void UpdateTagList()
         {
-            TempCodex.Tags.Clear();
-            TempCodex.Tags.AddRange(CheckableTreeNode<Tag>.GetCheckedItems(AllTagsAsTreeNodes));
+            var tags = (ObservableCollection<Tag>)TempCodex.Tags;
+            tags.Clear();
+            tags.AddRange(CheckableTreeNode<Tag>.GetCheckedItems(AllTagsAsTreeNodes));
         }
 
         private AsyncRelayCommand? _quickCreateTagCommand;
@@ -164,13 +166,13 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             ShowLoading = true;
             //make it so cover always gets overwritten if this case, store old value first
-            CodexProperty coverProp = PreferencesService.GetInstance().Preferences.CodexProperties.First(prop => prop.Name == nameof(Codex.CoverArtPath));
+            CodexProperty coverProp = PreferencesService.GetInstance().Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(Codex.Cover));
             MetaDataOverwriteMode curSetting = coverProp.OverwriteMode;
             coverProp.OverwriteMode = MetaDataOverwriteMode.Always;
             //get the cover
             try
             {
-                await CoverService.GetCover(TempCodex);
+                await CoverService.GetAndApplyCover(TempCodex);
             }
             catch (OperationCanceledException)
             {
@@ -199,7 +201,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             if (files.Any())
             {
                 using var file = files.Single();
-                CoverService.GetCoverFromImage(file.Path.AbsolutePath, TempCodex);
+                var img = CoverService.GetCoverFromImage(file.Path.AbsolutePath);
+                if (img != null)
+                {
+                    await CoverService.SaveCover(TempCodex, img);
+                }
                 TempCodex.LoadCover();
             }
         }
@@ -252,14 +258,18 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             }
         }
 
-        public void Drop(object sender, DragEventArgs e)
+        public async void Drop(object sender, DragEventArgs e)
         {
             if (e.Data is DataObject data
                 && data.GetFiles()?.Count() == 1
                 && IOService.IsImageFile(data.GetFiles()?.Select(f => f.Path.AbsolutePath).First() ?? ""))
             {
                 string path = data.GetFiles()!.Select(f => f.Path.AbsolutePath).First();
-                CoverService.GetCoverFromImage(path, TempCodex);
+                var img = CoverService.GetCoverFromImage(path);
+                if (img != null)
+                {
+                    await CoverService.SaveCover(TempCodex, img);
+                }
                 TempCodex.LoadCover();
             }
         }

@@ -136,7 +136,7 @@ namespace COMPASS.Common.ViewModels.Import
             try
             {
                 await CodexOperations.StartGetMetaDataProcess(newCodices);
-                await CoverService.GetCover(newCodices);
+                await CoverService.GetAndApplyCover(newCodices);
             }
             catch (OperationCanceledException ex)
             {

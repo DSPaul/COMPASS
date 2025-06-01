@@ -247,7 +247,7 @@ namespace COMPASS.Common.ViewModels.Modals
         #endregion
 
         #region Tab: Metadata
-        public List<CodexProperty> MetaDataPreferences => Preferences.CodexProperties.OrderBy(x => x.Name).ToList();
+        public List<CodexProperty> MetaDataPreferences => Preferences.ImportableCodexProperties.OrderBy(x => x.Name).ToList();
         #endregion
 
         #region Tab: Data
