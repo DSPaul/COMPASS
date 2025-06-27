@@ -585,6 +585,8 @@ namespace COMPASS.Models
 
         public void DeleteCodices(IList<Codex> toDelete)
         {
+            if (!toDelete.Any()) return;
+
             Notification deleteWarnNotification = Notification.AreYouSureNotification;
             deleteWarnNotification.Body = $"You are about to remove {toDelete.Count} item{(toDelete.Count > 1 ? @"s" : @"")}. " +
                            $"This cannot be undone. " +
@@ -604,7 +606,8 @@ namespace COMPASS.Models
 
         public void BanishCodices(IList<Codex> toBanish)
         {
-            if (toBanish is null) return;
+            if (!toBanish.SafeAny()) return;
+
             IEnumerable<string> toBanishPaths = toBanish.Select(codex => codex.Sources.Path);
             IEnumerable<string> toBanishURLs = toBanish.Select(codex => codex.Sources.SourceURL);
             IEnumerable<string> toBanishStrings = toBanishPaths
