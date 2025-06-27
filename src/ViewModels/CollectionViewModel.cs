@@ -379,9 +379,20 @@ namespace COMPASS.ViewModels
 
             //if Dir name of toDelete is empty, it will delete the entire collections folder
             if (String.IsNullOrEmpty(toDelete.DirectoryName)) return;
-            if (Directory.Exists(toDelete.FullDataPath)) //does not exist if collection was never saved
+
+            //possible that folder does not exist if collection was never saved
+            if (!Directory.Exists(toDelete.FullDataPath)) return;
+
+            try
             {
-                Directory.Delete(toDelete.FullDataPath, true);
+                //sometimes delete fails because a file is locked, retry could help with that
+                Utils.Retry<IOException>(3, () => Directory.Delete(toDelete.FullDataPath, true),
+                    onFailedAttempt: (ex) => Logger.Warn($"Failed to delete collection {toDelete.DirectoryName}, retrying...", ex)
+                );
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to delete collection {toDelete.DirectoryName}", ex);
             }
         }
 
