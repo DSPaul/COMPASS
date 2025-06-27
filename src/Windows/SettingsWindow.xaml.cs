@@ -1,7 +1,9 @@
 ﻿using COMPASS.Models;
 using COMPASS.Services;
+using COMPASS.Tools;
 using COMPASS.ViewModels;
 using Microsoft.Web.WebView2.Core;
+using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,19 +49,27 @@ namespace COMPASS.Windows
 
         public async void LoadChangeLog()
         {
-            string sHTML = "<!DOCTYPE html>" +
-           "<html>" +
-           "<head>" +
-               "<meta charset=\"utf-8\" />" +
-               "<title>Changelog</title>" +
-           "</head>" +
-           "<body>" +
-               "<script src=\"https://emgithub.com/embed-v2.js?target=https%3A%2F%2Fgithub.com%2FDSPaul%2FCOMPASS%2Fblob%2Fmaster%2FChangelog.md&style=a11y-dark&type=markdown&showFullPath=on\"></script>" +
-           "</body>" +
-           "</html>";
+            try
+            {
+                string sHTML = "<!DOCTYPE html>" +
+                   "<html>" +
+                   "<head>" +
+                       "<meta charset=\"utf-8\" />" +
+                       "<title>Changelog</title>" +
+                   "</head>" +
+                   "<body>" +
+                       "<script src=\"https://emgithub.com/embed-v2.js?target=https%3A%2F%2Fgithub.com%2FDSPaul%2FCOMPASS%2Fblob%2Fmaster%2FChangelog.md&style=a11y-dark&type=markdown&showFullPath=on\"></script>" +
+                   "</body>" +
+                   "</html>";
 
-            await ChangelogWebView.EnsureCoreWebView2Async(await CoreWebView2Environment.CreateAsync(userDataFolder: VM.WebViewDataDir));
-            ChangelogWebView.NavigateToString(sHTML);
+                var environment = await CoreWebView2Environment.CreateAsync(userDataFolder: VM.WebViewDataDir);
+                await ChangelogWebView.EnsureCoreWebView2Async(environment);
+                ChangelogWebView.NavigateToString(sHTML);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("failed to load changelog", ex);
+            }
         }
 
         private void SelectFolderForFolderTagPairButton_Click(object sender, RoutedEventArgs e) => NewFolderTagPairTextBox.Text = IOService.PickFolder();
