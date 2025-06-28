@@ -87,6 +87,8 @@ namespace COMPASS.Services
 
         public static async Task GetCover(List<Codex> codices)
         {
+            if (!codices.Any()) return;
+
             var progressVM = ProgressViewModel.GetInstance();
             progressVM.ResetCounter();
             progressVM.TotalAmount = codices.Count;

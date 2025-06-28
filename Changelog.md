@@ -1,5 +1,12 @@
 # CHANGELOG
-## COMPASS v1.8.7 (27 May 2025)
+## COMPASS v1.8.8 (28 June 2025)
+
+### Fixes
+- Fix crashes on commands in context menu when no items are selected.
+- Fix potential crash when looking at the change logs in the settings
+- Fix a crash when deleting a collection when a file is locked
+- Fix an issue where the open collection was copied to the new data location after changing it
+## COMPASS v1.8.7 (27 May 2025)
 
 ### Fixes
 

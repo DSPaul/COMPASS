@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -172,7 +173,7 @@ namespace COMPASS.Tools
             }
         }
 
-        public static bool SafeAny<T>(this IEnumerable<T>? l) => l is not null && l.Any();
+        public static bool SafeAny<T>([NotNullWhen(true)] this IEnumerable<T>? l) => l is not null && l.Any();
         #endregion
     }
 }

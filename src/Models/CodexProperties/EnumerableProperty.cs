@@ -33,7 +33,7 @@ namespace COMPASS.Models.CodexProperties
                 return true;
             }
 
-            return !newVal!.SequenceEqual(refVal);
+            return !newVal.SequenceEqual(refVal);
         }
     }
 }

@@ -108,7 +108,7 @@ namespace COMPASS.ViewModels
         public RelayCommand<IList> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(l => OpenSelectedCodices(l?.Cast<Codex>().ToList()));
         public static bool OpenSelectedCodices(IList<Codex>? toOpen)
         {
-            if (toOpen is null) return false;
+            if (!toOpen.SafeAny()) return false;
 
             if (toOpen.Count == 1)
             {
@@ -152,7 +152,7 @@ namespace COMPASS.ViewModels
         public static void EditCodices(IList? toEdit)
         {
             List<Codex>? toEditList = toEdit?.Cast<Codex>().ToList();
-            if (toEditList is null) return;
+            if (!toEditList.SafeAny()) return;
 
             if (toEditList.Count == 1)
             {
@@ -186,7 +186,8 @@ namespace COMPASS.ViewModels
         private static void FavoriteCodices(IList? toFavorite)
         {
             List<Codex>? toFavoriteList = toFavorite?.Cast<Codex>().ToList();
-            if (toFavoriteList is null) return;
+            if (!toFavoriteList.SafeAny()) return;
+
             if (toFavoriteList.Count == 1)
             {
                 FavoriteCodex(toFavoriteList.First());
@@ -247,6 +248,8 @@ namespace COMPASS.ViewModels
         /// <param name="toMoveList"></param>
         public static void MoveToCollection(CodexCollection targetCollection, List<Codex> toMoveList)
         {
+            if (!toMoveList.Any()) return;
+
             //Check if target Collection is valid
             if (targetCollection.DirectoryName == MainViewModel.CollectionVM.CurrentCollection.DirectoryName)
             {
@@ -324,6 +327,8 @@ namespace COMPASS.ViewModels
         public RelayCommand<IList> DeleteCodicesCommand => _deleteCodicesCommand ??= new(DeleteCodices);
         public static void DeleteCodices(IList? toDelete)
         {
+            if (toDelete == null || toDelete.Count == 0) return;
+
             MainViewModel.CollectionVM.CurrentCollection.DeleteCodices(toDelete?.Cast<Codex>().ToList() ?? new());
             MainViewModel.CollectionVM.FilterVM.ReFilter();
         }
@@ -341,6 +346,8 @@ namespace COMPASS.ViewModels
         public RelayCommand<IList> BanishCodicesCommand => _banishCodicesCommand ??= new(BanishCodices);
         public static void BanishCodices(IList? toBanish)
         {
+            if (toBanish == null || toBanish.Count == 0) return;
+
             MainViewModel.CollectionVM.CurrentCollection.BanishCodices(toBanish?.Cast<Codex>().ToList() ?? new());
             DeleteCodices(toBanish);
         }
@@ -362,6 +369,8 @@ namespace COMPASS.ViewModels
         }
         public static async Task StartGetMetaDataProcess(IList<Codex> codices)
         {
+            if (!codices.Any()) return;
+
             var progressVM = ProgressViewModel.GetInstance();
             progressVM.ResetCounter();
             progressVM.Text = "Getting MetaData";

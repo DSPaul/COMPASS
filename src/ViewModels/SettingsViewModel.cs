@@ -549,12 +549,18 @@ namespace COMPASS.ViewModels
         /// </summary>
         public void ChangeToNewDataPath()
         {
+            //save stuff in old location
             MainViewModel.CollectionVM?.CurrentCollection.Save();
+            PreferencesService.GetInstance().SavePreferences();
 
+            //change location
             CompassDataPath = NewDataPath;
 
             Notification changeSuccessful = new("Data path changed succesfully", $"Data path was successfully changed to {CompassDataPath}. COMPASS will now restart.");
             App.Container.ResolveKeyed<INotificationService>(NotificationDisplayType.Windowed).Show(changeSuccessful);
+
+            //Now that datapath has been changed, don't save on close because it would save to new location
+            MainViewModel.SaveOnClose = false;
 
             //Restart COMPASS
             var currentExecutablePath = Environment.ProcessPath;
