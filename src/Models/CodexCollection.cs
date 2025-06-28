@@ -254,7 +254,7 @@ namespace COMPASS.Models
 
             try
             {
-                Directory.CreateDirectory(UserFilesPath);
+                Directory.CreateDirectory(FullDataPath);
             }
             catch (Exception ex)
             {

@@ -108,6 +108,8 @@ namespace COMPASS.ViewModels
 
         #region Properties
 
+        public static bool SaveOnClose { get; set; } = true;
+
         private bool _isOnline;
         public bool IsOnline
         {
