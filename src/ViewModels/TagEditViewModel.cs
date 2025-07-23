@@ -89,6 +89,7 @@ namespace COMPASS.ViewModels
 
             //reset fields
             TempTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+            TempTag.IsGroup = _editedTag.IsGroup; //If it was initialized as group, reinitialize that field
             _editedTag = new();
             CloseAction();
         }
