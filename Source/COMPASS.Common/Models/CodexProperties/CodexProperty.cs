@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Tools;
-using OpenQA.Selenium.BiDi.Modules.Script;
 
 namespace COMPASS.Common.Models.CodexProperties
 {
