@@ -1,16 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
 using Avalonia.Platform.Storage;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -23,6 +11,17 @@ using COMPASS.Common.ViewModels;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 using Notification = COMPASS.Common.Models.Notification;
 
 namespace COMPASS.Common.Services.Storage;
@@ -125,7 +124,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
             Logger.Error($"Failed to move data files from {oldName} to {newName}", ex);
         }
     }
-    
+
     #region Load Data From File
 
     /// <summary>
@@ -154,6 +153,13 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
         }
 
         return result;
+    }
+
+    public void Unload(CodexCollection collection)
+    {
+        collection.LoadedCodices = false;
+        collection.LoadedInfo = false;
+        collection.LoadedTags = false;
     }
 
     //Loads the RootTags from a file and constructs the AllTags list from it
@@ -264,7 +270,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
         {
             overrides.Add(type, prop, obsoleteAttributes);
         }
-        
+
         return new(type, overrides);
     }
 
@@ -620,11 +626,8 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
         Logger.Info($"Exported Tags from {collection.Name} to {targetPath}");
     }
 
-    public void AddCollectionToArchive(ZipArchive archive, CodexCollection collection)
-    {
-        archive.AddAllFromDirectory(CollectionDataPath(collection.Name));
-    }
-    
+    public void AddCollectionToArchive(ZipArchive archive, CodexCollection collection) => archive.AddAllFromDirectory(CollectionDataPath(collection.Name));
+
     public void CompressUserDataToZip(string zipPath)
     {
         //In caes zip already exists with same name, delete it first
@@ -652,18 +655,31 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
             Logger.Error("Backup failed", ex);
         }
     }
-    
+
     #endregion
-    
+
     #region Delete
 
     public void OnCollectionDeleted(CodexCollection toDelete)
     {
         //if Dir name of toDelete is empty, it will delete the entire collections folder
-        if (string.IsNullOrEmpty(toDelete.Name)) return;
-        if (Directory.Exists(CollectionDataPath(toDelete.Name))) //does not exist if collection was never saved
+        if (string.IsNullOrEmpty(toDelete.Name))
+            return;
+
+        //nothing to delete if collection was never saved
+        if (!Directory.Exists(CollectionDataPath(toDelete.Name)))
+            return;
+
+        try
         {
-            Directory.Delete(CollectionDataPath(toDelete.Name), true);
+            //sometimes completing delete fails because a files are locked, retry could help with that
+            Utils.Retry<IOException>(3, () => Directory.Delete(CollectionDataPath(toDelete.Name), true),
+                onFailedAttempt: (ex) => Logger.Warn($"Failed to delete collection {toDelete.Name}, retrying...", ex)
+            );
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Failed to delete collection {toDelete.Name}", ex);
         }
     }
 

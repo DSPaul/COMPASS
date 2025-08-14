@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Avalonia.Threading;
+﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
@@ -14,6 +7,13 @@ using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.Views.Windows;
 using ImageMagick;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -25,7 +25,7 @@ namespace COMPASS.Common.ViewModels
             ViewModelBase.MVM = this;
 
             InitLayouts();
-            
+
             //Load everything
             CollectionVM = new(this);
             _currentLayout = LayoutViewModel.GetLayout();
@@ -41,7 +41,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         #region Init Functions
-        
+
         private void InitAutoUpdates()
         {
             //TODO: this will all need to be replaced
@@ -88,20 +88,19 @@ namespace COMPASS.Common.ViewModels
             Task.Run(() => IsOnline = IOService.PingURL());
         }
 
-        private void InitLayouts()
-        {
-            AllLayouts = Assembly.GetExecutingAssembly()
+        private void InitLayouts() => AllLayouts = Assembly.GetExecutingAssembly()
                                  .GetTypes()
                                  .Where(t => !t.IsAbstract && typeof(LayoutViewModel).IsAssignableFrom(t))
                                  .Select(t => Activator.CreateInstance(t))
                                  .OfType<LayoutViewModel>()
                                  .OrderBy(l => l!.LayoutType)
                                  .ToList();
-        }
 
         #endregion
 
         #region Properties
+
+        public static bool SaveOnClose { get; set; } = true;
 
         private bool _isOnline;
         public bool IsOnline
@@ -122,7 +121,7 @@ namespace COMPASS.Common.ViewModels
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public CollectionViewModel BindableCollectionVM => CollectionVM; //because binding to static properties sucks
-        
+
         private LayoutViewModel _currentLayout;
         public LayoutViewModel CurrentLayout
         {
@@ -131,7 +130,7 @@ namespace COMPASS.Common.ViewModels
         }
 
         public IList<LayoutViewModel> AllLayouts { get; private set; } = [];
-        
+
         public LeftDockViewModel LeftDockVM { get; init; }
 
         #endregion
@@ -156,11 +155,11 @@ namespace COMPASS.Common.ViewModels
             if (string.IsNullOrEmpty(url)) return;
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         });
-        
+
         private RelayCommand? _navigateToLinkTree;
         public RelayCommand NavigateToLinkTree => _navigateToLinkTree ??= new(()
             => Process.Start(new ProcessStartInfo(@"https://linktr.ee/compassapp") { UseShellExecute = true }));
-        
+
         private RelayCommand? _navigateToKofi;
         public RelayCommand NavigateToKofi => _navigateToKofi ??= new(()
             => Process.Start(new ProcessStartInfo(@"https://ko-fi.com/pauldesmul") { UseShellExecute = true }));

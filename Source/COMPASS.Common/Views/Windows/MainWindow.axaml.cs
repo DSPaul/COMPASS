@@ -17,7 +17,10 @@ public partial class MainWindow : Window
     private void Window_Closing(object? sender, Avalonia.Controls.WindowClosingEventArgs e)
     {
         ProgressViewModel.GetInstance().CancelBackgroundTask();
-        ServiceResolver.Resolve<ICodexCollectionStorageService>().Save(MainViewModel.CollectionVM.CurrentCollection);
-        PreferencesService.GetInstance().SavePreferences();
+        if (MainViewModel.SaveOnClose)
+        {
+            ServiceResolver.Resolve<ICodexCollectionStorageService>().Save(MainViewModel.CollectionVM.CurrentCollection);
+            PreferencesService.GetInstance().SavePreferences();
+        }
     }
 }

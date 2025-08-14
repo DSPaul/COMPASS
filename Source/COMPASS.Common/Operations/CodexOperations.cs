@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
@@ -22,6 +15,13 @@ using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.Views.Windows;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace COMPASS.Common.Operations
 {
@@ -109,7 +109,7 @@ namespace COMPASS.Common.Operations
         public AsyncRelayCommand<IList> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(async l => await OpenSelectedCodices(l?.Cast<Codex>().ToList()));
         public static async Task<bool> OpenSelectedCodices(IList<Codex>? toOpen)
         {
-            if (toOpen is null) return false;
+            if (!toOpen.SafeAny()) return false;
 
             if (toOpen.Count == 1)
             {
@@ -152,7 +152,7 @@ namespace COMPASS.Common.Operations
         public static async Task EditCodices(IList? toEdit)
         {
             List<Codex>? toEditList = toEdit?.Cast<Codex>().ToList();
-            if (toEditList is null) return;
+            if (!toEditList.SafeAny()) return;
 
             if (toEditList.Count == 1)
             {
@@ -160,7 +160,7 @@ namespace COMPASS.Common.Operations
                 return;
             }
 
-            CodexBulkEditViewModel vm = new (toEditList);
+            CodexBulkEditViewModel vm = new(toEditList);
             ModalWindow window = new(vm);
             await window.ShowDialog(App.MainWindow);
         }
@@ -178,7 +178,7 @@ namespace COMPASS.Common.Operations
         }
 
         #endregion
-        
+
         #region Toggle Favorite 
 
         //Toggle Favorite
@@ -198,7 +198,7 @@ namespace COMPASS.Common.Operations
         private static void FavoriteCodices(IList? toFavorite)
         {
             List<Codex>? toFavoriteList = toFavorite?.Cast<Codex>().ToList();
-            if (toFavoriteList is null) return;
+            if (!toFavoriteList.SafeAny()) return;
             if (toFavoriteList.Count == 1)
             {
                 FavoriteCodex(toFavoriteList.First());
@@ -235,6 +235,12 @@ namespace COMPASS.Common.Operations
         {
             if (par == null) return;
 
+            if (par.Count != 2)
+            {
+                Logger.Debug($"Move to collection contained {par.Count} parameters, should be 2");
+                return;
+            }
+
             //par contains 2 parameters
             CodexCollection targetCollection = new((string)par[0]);
             List<Codex> toMoveList = par[1] switch
@@ -258,11 +264,11 @@ namespace COMPASS.Common.Operations
             {
                 return;
             }
-            
+
             //To move should all belong to same collection
             CodexCollection sourceCollection = toMoveList[0].Collection;
             Debug.Assert(toMoveList.All(codex => codex.Collection == sourceCollection));
-            
+
             //Check if target Collection is valid
             if (targetCollection.Name == sourceCollection.Name)
             {
@@ -293,25 +299,25 @@ namespace COMPASS.Common.Operations
                     await windowedNotificationService.ShowDialog(errorNotification);
                     return;
                 }
-                
+
                 //Copy the codices to the target collection
                 foreach (Codex toMove in toMoveList)
                 {
                     Codex movedCodex = new(targetCollection);
                     movedCodex.CopyFrom(toMove);
-                    
+
                     movedCodex.Tags.Clear();
                     movedCodex.ID = Utils.GetAvailableID(targetCollection.AllCodices);
 
                     //Add Codex to target CodexCollection
                     targetCollection.AllCodices.Add(movedCodex);
-                    
+
                     thumbnailStorageService.MoveCodexDataToCollection(movedCodex, targetCollection);
                     userFilesStorageService.MoveCodexDataToCollection(movedCodex, targetCollection, toMove.Collection);
 
                     Logger.Info($"Moved {movedCodex.Title} from {sourceCollection.Name} to {targetCollection.Name}");
                 }
-                
+
                 //After they are all copied, delete them
                 await DeleteCodices(toMoveList, false);
 
@@ -327,21 +333,23 @@ namespace COMPASS.Common.Operations
         public static async Task DeleteCodex(Codex? toDelete)
         {
             if (toDelete == null) return;
-            await DeleteCodices( [toDelete], true );
+            await DeleteCodices([toDelete], true);
         }
 
         //Delete Codices
         private AsyncRelayCommand<IList>? _deleteCodicesCommand;
-        public AsyncRelayCommand<IList> DeleteCodicesCommand => _deleteCodicesCommand ??= new( async (codices) =>
+        public AsyncRelayCommand<IList> DeleteCodicesCommand => _deleteCodicesCommand ??= new(async (codices) =>
         {
             var codicesToDelete = codices?.Cast<Codex>().ToList() ?? [];
             await DeleteCodices(codicesToDelete, true);
         });
         public static async Task DeleteCodices(IList<Codex> codicesToDelete, bool askForConfirmation)
         {
+            if (!codicesToDelete.Any()) return;
+
             var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
             var thumbnailStorageService = ServiceResolver.Resolve<IThumbnailStorageService>();
-            
+
             Notification deleteWarnNotification = Notification.AreYouSureNotification;
             if (askForConfirmation)
             {
@@ -356,7 +364,7 @@ namespace COMPASS.Common.Operations
             {
                 return;
             }
-            
+
             var codicesByCollections = codicesToDelete.GroupBy(codex => codex.Collection);
             foreach (var group in codicesByCollections)
             {
@@ -392,6 +400,8 @@ namespace COMPASS.Common.Operations
         public static async Task BanishCodices(IList? toBanish)
         {
             var codicesToBanish = toBanish?.Cast<Codex>().ToList() ?? [];
+            if (!codicesToBanish.SafeAny()) return;
+
             MainViewModel.CollectionVM.CurrentCollection.BanishCodices(codicesToBanish);
             await DeleteCodices(codicesToBanish, true);
         }
@@ -413,6 +423,8 @@ namespace COMPASS.Common.Operations
         }
         public static async Task StartGetMetaDataProcess(IList<Codex> codices)
         {
+            if (!codices.Any()) return;
+
             var progressVM = ProgressViewModel.GetInstance();
             progressVM.ResetCounter();
             progressVM.Text = "Getting MetaData";
@@ -447,7 +459,7 @@ namespace COMPASS.Common.Operations
         private static async Task GetMetaData(Codex codex, ChooseMetaDataViewModel chooseMetaDataVM)
         {
             SourceMetaData existingMetaData = new(codex);
-            
+
             // Lazy load metadata from all the sources, use dict to store
             Dictionary<MetaDataSourceType, SourceMetaData> metaDataFromSource = new();
 
@@ -461,7 +473,7 @@ namespace COMPASS.Common.Operations
                 //already store this so pdf doesn't need to be opened twice
                 metaDataFromSource.Add(MetaDataSourceType.PDF, pdfData);
             }
-            
+
             //metadata that will be shown to the user, and asked if they want to use it
             SourceMetaData toAsk = new();
             bool shouldAsk = false;
@@ -490,7 +502,7 @@ namespace COMPASS.Common.Operations
                         metadata = await source.GetMetaData(codex.Sources);
                         metaDataFromSource.Add(sourceType, metadata);
                     }
-                    
+
                     //If there is, make it the new preferred
                     if (!prop.IsEmpty(metadata))
                     {

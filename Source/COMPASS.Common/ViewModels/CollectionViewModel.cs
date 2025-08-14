@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -17,6 +10,12 @@ using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.SidePanels;
 using COMPASS.Common.Views.Windows;
+using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -38,7 +37,7 @@ namespace COMPASS.Common.ViewModels
 
             Debug.Assert(_currentCollection is not null, "Current Collection should never be null after loading Initial Collection");
         }
-        
+
         private readonly ICodexCollectionStorageService _collectionStorageService;
         private readonly INotificationService _windowedNotificationService;
 
@@ -59,6 +58,7 @@ namespace COMPASS.Common.ViewModels
                 if (_currentCollection != null)
                 {
                     _collectionStorageService.Save(_currentCollection);
+                    _collectionStorageService.Unload(_currentCollection);
                 }
 
                 if (SetProperty(ref _currentCollection, value))
@@ -115,7 +115,7 @@ namespace COMPASS.Common.ViewModels
         private void LoadInitialCollection()
         {
             var loadedCollection = CodexCollectionOperations.LoadInitialCollection(AllCodexCollections);
-            
+
             if (loadedCollection == null)
             {
                 Debug.Assert(AllCodexCollections.Count == 0, "Collection should only be null if all options have been tried and failed");
@@ -132,7 +132,7 @@ namespace COMPASS.Common.ViewModels
                 CurrentCollection = loadedCollection;
             }
         }
-        
+
         /// <summary>
         /// Tries to load a collection and will set <see cref="CurrentCollection"/> if succesfull
         /// </summary>
@@ -158,7 +158,7 @@ namespace COMPASS.Common.ViewModels
             CurrentCollection = collection;
             return true;
         }
-        
+
         public async Task AutoImport()
         {
             //Start Auto Imports
@@ -190,7 +190,7 @@ namespace COMPASS.Common.ViewModels
             }
             //TODO: check if this is still needed
             //MainVM?.CurrentLayout?.UpdateDoVirtualization();
-            
+
             FilterVM = new(CurrentCollection.AllCodices);
             TagsVM = new(CurrentCollection, FilterVM);
 
@@ -211,7 +211,7 @@ namespace COMPASS.Common.ViewModels
         private AsyncRelayCommand<string>? _createCollectionCommand;
         public AsyncRelayCommand<string> CreateCollectionCommand =>
             _createCollectionCommand ??= new(
-                name => CreateAndLoadCollection(name), 
+                name => CreateAndLoadCollection(name),
                 name => CodexCollectionOperations.IsLegalCollectionName(name, AllCodexCollections));
         public async Task<CodexCollection?> CreateAndLoadCollection(string? dirName)
         {
@@ -258,7 +258,7 @@ namespace COMPASS.Common.ViewModels
                 throw new InvalidOperationException(msg);
             }
 
-            CodexCollection newCollection = new CodexCollection(dirName);
+            CodexCollection newCollection = new(dirName);
             await _collectionStorageService.AllocateNewCollection(newCollection);
 
             AllCodexCollections.Add(newCollection);
@@ -268,12 +268,12 @@ namespace COMPASS.Common.ViewModels
         // Rename Collection
         private RelayCommand<string>? _editCollectionNameCommand;
         public RelayCommand<string> EditCollectionNameCommand => _editCollectionNameCommand ??= new(
-            EditCollectionName, 
+            EditCollectionName,
             name => CodexCollectionOperations.IsLegalCollectionName(name, AllCodexCollections));
         public void EditCollectionName(string? newName)
         {
             if (!CodexCollectionOperations.IsLegalCollectionName(newName, AllCodexCollections)) return;
-            
+
             CurrentCollection.RenameCollection(newName!);
             EditCollectionVisibility = false;
         }
@@ -380,7 +380,7 @@ namespace COMPASS.Common.ViewModels
             await targetCollection.MergeWith(CurrentCollection);
 
             Notification doneNotification = new("Merge Success", $"Successfully merged '{CurrentCollection.Name}' into '{collectionToMergeInto}'");
-            
+
             //TODO toast notifications
             //await ServiceResolver.Resolve<INotificationService>().ShowToast(doneNotification);
         }

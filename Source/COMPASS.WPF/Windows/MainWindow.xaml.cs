@@ -34,8 +34,11 @@ namespace COMPASS.Windows
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             ProgressViewModel.GetInstance().CancelBackgroundTask();
-            MainViewModel.CollectionVM?.CurrentCollection.Save();
-            PreferencesService.GetInstance().SavePreferences();
+            if (MainViewModel.SaveOnClose)
+            {
+                MainViewModel.CollectionVM?.CurrentCollection.Save();
+                PreferencesService.GetInstance().SavePreferences();
+            }
         }
 
         #region Window management

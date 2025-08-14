@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
@@ -15,6 +8,12 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
 using Notification = COMPASS.Common.Models.Notification;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
@@ -24,7 +23,14 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public TagEditViewModel(Tag? toEdit, bool createNew) : base()
         {
             _editedTag = toEdit ?? new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+            _templateTag = new();
             CreateNewTag = createNew;
+
+            //If create new and a toEdit is given, that toEdit acts as a template for all tags created with this vm
+            if (createNew && toEdit != null)
+            {
+                _templateTag.CopyFrom(toEdit);
+            }
 
             _tempTag = new Tag(_editedTag);
             _tempTag.PropertyChanged += HandleTagPropertyChanged;
@@ -39,10 +45,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 ConfirmCommand.NotifyCanExecuteChanged();
             }
         }
-        
+
         #region Properties
 
         private Tag _editedTag;
+        private Tag _templateTag;
         public bool CreateNewTag { get; init; }
 
         //TempTag to work with
@@ -83,7 +90,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             get => PossibleParents.Flatten().FirstOrDefault(node => node.Item == TempTag.Parent);
             set => TempTag.Parent = value?.Item;
         }
-        
+
         #endregion
 
         #region Methods and Commands
@@ -91,6 +98,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         private void Clear()
         {
             _editedTag = new();
+            _editedTag.CopyFrom(_templateTag);
             TempTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
 
             //reset parents as new tag might have just been added
@@ -104,50 +112,44 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             foreach (TreeNode<Tag> node in collection.Flatten())
             {
                 node.Expanded = node.Item.Children.Flatten().Contains(_tempTag.Parent); //expand all parents so that parent is visible
-            } 
-            
+            }
+
             return new(collection);
         }
-        
+
         private RelayCommand? _colorSameAsParentCommand;
         public RelayCommand ColorSameAsParentCommand => _colorSameAsParentCommand ??= new(SetColorSameAsParent);
-        private void SetColorSameAsParent()
-        {
-            TempTag.InternalBackgroundColor = null;
-        }
-        
+        private void SetColorSameAsParent() => TempTag.InternalBackgroundColor = null;
+
         private RelayCommand? _clearParentCommand;
         public RelayCommand ClearParentCommand => _clearParentCommand ??= new(ClearParent);
-        private void ClearParent()
-        {
-            TempTag.Parent = null;
-        }
-        
+        private void ClearParent() => TempTag.Parent = null;
+
         private RelayCommand? _detectLinksCommand;
         public RelayCommand DetectLinksCommand => _detectLinksCommand ??= new(DetectLinks, CanDetectLinks);
-        
+
         private void DetectLinks()
         {
             var relevantCodices = MainViewModel.CollectionVM.CurrentCollection.AllCodices
-                .Where(codex => codex.Sources.HasOfflineSource() && 
+                .Where(codex => codex.Sources.HasOfflineSource() &&
                                 codex.Tags.Contains(_editedTag))
                 .ToList();
-            
+
             var splitFolders = relevantCodices.Select(codex => codex.Sources.Path)
                                               .SelectMany(path => path.Split("\\"))
                                               .ToHashSet();
-        
+
             foreach (string folder in splitFolders)
             {
                 var codicesInFolder = MainViewModel.CollectionVM.CurrentCollection.AllCodices
                     .Where(codex => codex.Sources.HasOfflineSource())
                     .Where(codex => codex.Sources.Path.Contains(@"\" + folder + @"\"))
                     .ToList();
-                
+
                 if (codicesInFolder.Count < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern
 
                 string glob = $"**/{folder}/**";
-                
+
                 if (codicesInFolder.All(codx => codx.Tags.Contains(_editedTag)) &&
                     !TempTag.CalculatedLinkedGlobs.Contains(glob))
                 {
@@ -155,9 +157,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 }
             }
         }
-        
+
         private bool CanDetectLinks() => !CreateNewTag;
-        
+
         private AsyncRelayCommand? _applyLinksCommand;
         public AsyncRelayCommand ApplyLinksCommand => _applyLinksCommand ??= new(ApplyLinks, CanApplyChanges);
 
@@ -183,11 +185,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             }
             else
             {
-                notification =new(
+                notification = new(
                     $"No new matching items found",
                     $"Either no matches were found or all matching items already contain this tag.");
             }
-            
+
             await ServiceResolver.Resolve<INotificationService>().ShowDialog(notification);
 
             if (notification.Result == NotificationAction.Confirm)
@@ -202,9 +204,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         private bool CanApplyChanges() => !CreateNewTag;
 
         #endregion
-        
+
         #region IConfirmable
-        
+
         private RelayCommand? _confirmCommand;
         public IRelayCommand ConfirmCommand => _confirmCommand ??= new(Confirm, CanConfirm);
         public void Confirm()
@@ -230,7 +232,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 {
                     oldParent.Children.Remove(_editedTag);
                 }
-                
+
                 //Add to new parent
                 if (_editedTag.Parent == null)
                 {
@@ -242,7 +244,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 }
 
             }
-            
+
             var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
             collectionStorageService.SaveTags(MainViewModel.CollectionVM.CurrentCollection);
 
@@ -262,7 +264,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             CloseAction();
         }
         #endregion
-        
+
         #region  IModalViewModel
 
         public string WindowTitle => CreateNewTag ? "Create new tag" : "Edit tag";

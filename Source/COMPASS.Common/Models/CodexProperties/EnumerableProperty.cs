@@ -33,7 +33,7 @@ namespace COMPASS.Common.Models.CodexProperties
                 return true;
             }
 
-            return !newVal!.SequenceEqual(refVal);
+            return !newVal.SequenceEqual(refVal);
         }
 
         public override void Copy(SourceMetaData source, SourceMetaData target)

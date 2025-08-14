@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using COMPASS.Common.Models;
+﻿using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
@@ -15,6 +9,12 @@ using COMPASS.Common.Views.Windows;
 using ImageMagick;
 using ImageMagick.Factories;
 using OpenQA.Selenium;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace COMPASS.Common.Services
 {
@@ -22,7 +22,7 @@ namespace COMPASS.Common.Services
     {
         private const int ThumbnailWidth = 200;
         private const int CoverWidth = 850;
-        
+
         /// <summary>
         /// Fetches a cover image for the given codex
         /// </summary>
@@ -35,7 +35,7 @@ namespace COMPASS.Common.Services
             try
             {
                 CodexProperty coverProp = PreferencesService.GetInstance().Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(Codex.Cover));
-                
+
                 switch (coverProp.OverwriteMode)
                 {
                     case MetaDataOverwriteMode.Ask:
@@ -48,7 +48,7 @@ namespace COMPASS.Common.Services
 
                 bool shouldAsk = coverProp.OverwriteMode == MetaDataOverwriteMode.Ask && !coverProp.IsEmpty(codex);
 
-                
+
                 foreach (var sourceType in coverProp.SourcePriority)
                 {
                     ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
@@ -68,12 +68,12 @@ namespace COMPASS.Common.Services
                     {
                         Cover = coverFromSource,
                     };
-                    
+
                     //check if the image is different from the existing one
                     if (!coverProp.HasNewValue(newMetaData, codex)) return;
 
                     //make a copy of cover because originals lifetime is limited to this method
-                    newMetaData.Cover = new MagickImage((IMagickImage<byte>)coverFromSource); 
+                    newMetaData.Cover = new MagickImage((IMagickImage<byte>)coverFromSource);
                     chooseMetaDataViewModel!.AddMetaDataProposal(codex, newMetaData);
                 }
                 else
@@ -90,6 +90,8 @@ namespace COMPASS.Common.Services
 
         public static async Task GetAndApplyCover(List<Codex> codices)
         {
+            if (!codices.Any()) return;
+
             var progressVM = ProgressViewModel.GetInstance();
             progressVM.ResetCounter();
             progressVM.TotalAmount = codices.Count;
@@ -146,7 +148,7 @@ namespace COMPASS.Common.Services
             {
                 return null;
             }
-            
+
             try
             {
                 return new(imagePath);

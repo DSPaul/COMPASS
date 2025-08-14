@@ -1,16 +1,16 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace COMPASS.Common.ViewModels.Modals;
 
@@ -52,7 +52,7 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
     private async Task MoveToNewDataLocation()
     {
         CloseAction();
-        
+
         bool success = await IOService.CopyDataAsync(CurrentDataLocation, NewDataLocation);
 
         if (success)
@@ -62,7 +62,7 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
         else
         {
             //TODO could show a notification that it failed
-        }        
+        }
     }
 
     private AsyncRelayCommand? _copyToNewDataLocationCommand;
@@ -70,7 +70,7 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
     private async Task CopyToNewDataLocation()
     {
         CloseAction();
-        
+
         bool success = await IOService.CopyDataAsync(CurrentDataLocation, NewDataLocation);
         if (success)
         {
@@ -87,15 +87,21 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
     public void ChangeToNewDataLocation()
     {
         CloseAction();
-        
-        _collectionStorageService.Save(MainViewModel.CollectionVM.CurrentCollection);
 
+        //save stuff in old location
+        _collectionStorageService.Save(MainViewModel.CollectionVM.CurrentCollection);
+        PreferencesService.GetInstance().SavePreferences();
+
+        //update the location
         _envVarsService.CompassDataPath = NewDataLocation;
 
         Notification changeSuccessful = new("Data path changed successfully",
             $"Data path was successfully changed to {NewDataLocation}. COMPASS will now restart.");
         ServiceResolver.Resolve<INotificationService>().ShowDialog(changeSuccessful);
-        
+
+        //Now that datapath has been changed, don't save on close because it would save to new location
+        MainViewModel.SaveOnClose = false;
+
         Utils.Restart(false);
     }
 
@@ -104,19 +110,19 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
     private async Task DeleteDataLocation()
     {
         CloseAction();
-        
+
         try
         {
             var notification = Notification.AreYouSureNotification;
             notification.Body = $"Are you sure you want to delete all data from {CurrentDataLocation}?";
-            
+
             await _notificationService.ShowDialog(notification);
 
             if (notification.Result == NotificationAction.Cancel)
             {
                 return;
             }
-            
+
             Directory.Delete(CurrentDataLocation, true);
         }
         catch (Exception ex)
