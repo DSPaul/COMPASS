@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Notification = COMPASS.Common.Models.Notification;
@@ -20,19 +21,21 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 {
     public class TagEditViewModel : ViewModelBase, IConfirmable, IModalViewModel
     {
-        public TagEditViewModel(Tag? toEdit, bool createNew) : base()
+        public TagEditViewModel(Tag? sourceTag, bool createNew) : base()
         {
-            _editedTag = toEdit ?? new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
-            _templateTag = new();
+            //if not creating a new tag, an existing tag should always be given
+            if (!createNew)
+            {
+                ArgumentNullException.ThrowIfNull(sourceTag);
+            }
+            
+            _sourceTag = sourceTag;
             CreateNewTag = createNew;
 
-            //If create new and a toEdit is given, that toEdit acts as a template for all tags created with this vm
-            if (createNew && toEdit != null)
-            {
-                _templateTag.CopyFrom(toEdit);
-            }
-
-            _tempTag = new Tag(_editedTag);
+            _tempTag = sourceTag != null ? 
+                new(sourceTag) : 
+                new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+            
             _tempTag.PropertyChanged += HandleTagPropertyChanged;
 
             _possibleParents = GetPossibleParents();
@@ -48,8 +51,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
         #region Properties
 
-        private Tag _editedTag;
-        private Tag _templateTag;
+        private readonly Tag? _sourceTag;
         public bool CreateNewTag { get; init; }
 
         //TempTag to work with
@@ -83,7 +85,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             }
         }
 
-        public bool HasPossibleParents => PossibleParents.Any(node => node.Item != _editedTag);
+        public bool HasPossibleParents => PossibleParents.Any(node => node.Item != _sourceTag);
 
         public TreeNode<Tag>? SelectedParent
         {
@@ -97,9 +99,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
         private void Clear()
         {
-            _editedTag = new();
-            _editedTag.CopyFrom(_templateTag);
-            TempTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+            TempTag = _sourceTag != null ? 
+                new(_sourceTag) : 
+                new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
 
             //reset parents as new tag might have just been added
             PossibleParents = GetPossibleParents();
@@ -130,9 +132,12 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
         private void DetectLinks()
         {
+            //Can only detect links if tag exists
+            if (_sourceTag == null || CreateNewTag) return;
+            
             var relevantCodices = MainViewModel.CollectionVM.CurrentCollection.AllCodices
                 .Where(codex => codex.Sources.HasOfflineSource() &&
-                                codex.Tags.Contains(_editedTag))
+                                codex.Tags.Contains(_sourceTag))
                 .ToList();
 
             var splitFolders = relevantCodices.Select(codex => codex.Sources.Path)
@@ -150,7 +155,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
                 string glob = $"**/{folder}/**";
 
-                if (codicesInFolder.All(codx => codx.Tags.Contains(_editedTag)) &&
+                if (codicesInFolder.All(codex => codex.Tags.Contains(_sourceTag)) &&
                     !TempTag.CalculatedLinkedGlobs.Contains(glob))
                 {
                     TempTag.LinkedGlobs.AddIfMissing(glob);
@@ -165,10 +170,13 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
         private async Task ApplyLinks()
         {
+            //Can only apply links if tag exists
+            if (_sourceTag == null || CreateNewTag) return;
+            
             var globs = TempTag.LinkedGlobs.Concat(TempTag.CalculatedLinkedGlobs).ToList();
             List<Codex> matchingCodices = MainViewModel.CollectionVM.CurrentCollection.AllCodices
                 .Where(codex => IOService.MatchesAnyGlob(codex.Sources.Path, globs) &&
-                                !codex.Tags.Contains(_editedTag))
+                                !codex.Tags.Contains(_sourceTag))
                 .ToList();
 
             Notification notification;
@@ -196,7 +204,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             {
                 foreach (Codex codex in matchingCodices)
                 {
-                    codex.Tags.Add(_editedTag);
+                    codex.Tags.Add(_sourceTag);
                 }
             }
         }
@@ -212,37 +220,54 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public void Confirm()
         {
             //Apply changes 
-            Tag? oldParent = _editedTag.Parent;
-            _editedTag.CopyFrom(TempTag);
-
             if (CreateNewTag)
             {
-                _editedTag.ID = Utils.GetAvailableID(MainViewModel.CollectionVM.CurrentCollection.AllTags);
-                MainViewModel.CollectionVM.CurrentCollection.AllTags.Add(_editedTag);
+                Tag newTag = new(TempTag)
+                {
+                    ID = Utils.GetAvailableID(MainViewModel.CollectionVM.CurrentCollection.AllTags)
+                };
+                MainViewModel.CollectionVM.CurrentCollection.AllTags.Add(newTag);
+                
+                if (newTag.Parent == null)
+                {
+                    MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(newTag);
+                }
+                else
+                {
+                    newTag.Parent.Children.Add(newTag);
+                }
             }
-
-            if (CreateNewTag || oldParent != _editedTag.Parent)
+            else
             {
-                //remove from old parent
-                if (oldParent == null)
+                //if not creating a new tag, an existing tag is always given
+                Debug.Assert(_sourceTag != null);
+                    
+                Tag? oldParent = _sourceTag.Parent;
+                _sourceTag.CopyFrom(TempTag);
+                
+                //handle parent changed
+                if (oldParent != _sourceTag.Parent)
                 {
-                    MainViewModel.CollectionVM.CurrentCollection.RootTags.Remove(_editedTag);
+                    // remove the link with old parent
+                    if (oldParent == null)
+                    {
+                        MainViewModel.CollectionVM.CurrentCollection.RootTags.Remove(_sourceTag);
+                    }
+                    else
+                    {
+                        oldParent.Children.Remove(_sourceTag);
+                    }
+                    
+                    //add the link to new parent
+                    if (_sourceTag.Parent == null)
+                    {
+                        MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(_sourceTag);
+                    }
+                    else
+                    {
+                        _sourceTag.Parent.Children.Add(_sourceTag);
+                    }
                 }
-                else
-                {
-                    oldParent.Children.Remove(_editedTag);
-                }
-
-                //Add to new parent
-                if (_editedTag.Parent == null)
-                {
-                    MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(_editedTag);
-                }
-                else
-                {
-                    _editedTag.Parent.Children.Add(_editedTag);
-                }
-
             }
 
             var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
