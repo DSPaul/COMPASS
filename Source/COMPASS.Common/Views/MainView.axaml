@@ -53,7 +53,7 @@
                 <ColumnDefinition Width="*" />    <!-- Spacing -->
                 <ColumnDefinition Width="auto" /> <!-- Settings -->
                 <ColumnDefinition Width="135" />
-                <!-- Window controls TODO make this dynamic for differnt platforms-->
+                <!-- Window controls TODO make this dynamic for different platforms-->
             </Grid.ColumnDefinitions>
 
             <!-- <ContentControl Content="{StaticResource CompassLogo}" Grid.Column="0" Margin="10,0" HorizontalAlignment="Left"/> -->
