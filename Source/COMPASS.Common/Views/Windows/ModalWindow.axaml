@@ -8,7 +8,6 @@
         xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
         xmlns:editVm="using:COMPASS.Common.ViewModels.Modals.Edit"
         xmlns:importVm="using:COMPASS.Common.ViewModels.Modals.Import"
-        xmlns:interfaces="using:COMPASS.Common.Interfaces"
         xmlns:viewModels="clr-namespace:COMPASS.Common.Interfaces.ViewModels"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         Background="{StaticResource WindowBackground}"
@@ -53,6 +52,6 @@
         </DataTemplate>
     </Window.DataTemplates>
     
-    <ContentControl Content="{Binding}"/>
+    <ContentControl  x:Name="ContentPresenter" Content="{Binding}"/>
     
 </Window>
