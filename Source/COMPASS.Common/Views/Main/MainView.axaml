@@ -273,7 +273,7 @@
                         Text="{Binding TabsVM.ActiveTab.FilterVM.FilteredCodices.Count, Mode=OneWay, FallbackValue=0}" />
                     /
                     <Run
-                        Text="{Binding ActiveCollection.AllCodices.Count, Mode=OneWay, FallbackValue=0}" />
+                        Text="{Binding TabsVM.ActiveTab.CollectionHandle.CollectionVM.Collection.AllCodices.Count, Mode=OneWay, FallbackValue=0}" />
                 </TextBlock>
             </StackPanel>
 
