@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
-using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Tools;
@@ -84,6 +83,7 @@ public class CodexCollectionVM : ViewModelBase
         if (!Owners.Any())
         {
             _storageService.Unload(Collection);
+            Collection.Dispose();
         }
     }
 
@@ -156,7 +156,7 @@ public class CodexCollectionVM : ViewModelBase
     {
         if (!CanDeleteCollection(handle)) return false;
         
-        _storageService.Unload(Collection);
+        Unload(handle);
         _storageService.DeleteCollection(Collection);
         return true;
     }

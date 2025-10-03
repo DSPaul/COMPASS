@@ -25,7 +25,7 @@ using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
-    public class CodexEditViewModel : CodexEditBaseViewModel
+    public class CodexEditViewModel : CodexEditBaseViewModel, IDisposable
     {
         public CodexEditViewModel(Codex? toEdit = null, CollectionTabVM? tabVm = null) 
             : base(tabVm ?? TabsViewModel.GetInstance().ActiveTab ?? throw new NoTabException("An active tab is expected when editing a codex"))
@@ -289,6 +289,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public override string WindowTitle => "Edit item properties";
         
         #endregion
+
+        public void Dispose()
+        {
+            _tempCodex.Dispose();
+        }
     }
 }
 

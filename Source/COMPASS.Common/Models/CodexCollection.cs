@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -8,7 +9,7 @@ using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Models
 {
-    public class CodexCollection : ObservableObject
+    public class CodexCollection : ObservableObject, IDisposable
     {
         public CodexCollection(string identifier)
         {
@@ -168,6 +169,14 @@ namespace COMPASS.Common.Models
             else
             {
                 toDelete.Parent.Children.Remove(toDelete);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (Codex codex in AllCodices)
+            {
+                codex.Dispose();
             }
         }
     }
