@@ -55,6 +55,7 @@ namespace COMPASS.Common.ViewModels.Layouts
         public CodexInfoViewModel CodexInfoVM { get; }
         
         public FilterViewModel? FilterVM => TabsViewModel.GetInstance().ActiveTab?.FilterVM;
+        public CodexOperations? CodexCommands => TabsViewModel.GetInstance().ActiveTab?.CodexCommands;
         
         private Codex? _selectedCodex;
         public Codex? SelectedCodex
