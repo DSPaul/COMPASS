@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,16 +10,16 @@ using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Operations;
+using COMPASS.Common.Services.StateManagers;
+using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.ViewModels.Tools;
 
-public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel
+public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel, IDisposable
 {
-    private readonly ICodexCollectionStorageService _collectionStorageService;
-
     public BrokenFileRefsToolViewModel()
     {
-        _collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
+        SelectedCollectionVm = CollectionManager.CollectionVms.SingleOrDefault(vm => vm.Identifier == ActiveCollection.Name);
     }
 
     #region IToolViewModel
@@ -27,9 +28,24 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel
 
     #endregion
 
-    public IEnumerable<Codex> BrokenCodices => MainViewModel.CollectionVM.CurrentCollection.AllCodices
-        .Where(codex => codex.Sources.HasOfflineSource()) //do this check so message doesn't count codices that never had a path to begin with
-        .Where(codex => !Path.Exists(codex.Sources.Path));
+    private CollectionHandle? _selectedCollectionHandle;
+
+    //TODO show a dropdown in the UI somewhere
+    private CodexCollectionVM? _selectedCollectionVm;
+    public CodexCollectionVM? SelectedCollectionVm
+    {
+        get => _selectedCollectionVm;
+        set
+        {
+            _selectedCollectionHandle?.Dispose();
+            SetProperty(ref _selectedCollectionVm, value);
+            _selectedCollectionHandle = _selectedCollectionVm?.Load();
+        }
+    }
+    
+    public IEnumerable<Codex> BrokenCodices => SelectedCollectionVm?.Collection.AllCodices
+        .Where(codex => codex.Sources.HasOfflineSource()) //do this check so the message doesn't count codices that never had a path to begin with
+        .Where(codex => !Path.Exists(codex.Sources.Path)) ?? [];
 
     public int BrokenCodicesAmount => BrokenCodices.Count();
     public string BrokenCodicesMessage => $"Broken references detected: {BrokenCodicesAmount}.";
@@ -43,7 +59,17 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel
 
     private RelayCommand? _showBrokenCodicesCommand;
     public RelayCommand ShowBrokenCodicesCommand => _showBrokenCodicesCommand ??= new(ShowBrokenCodices);
-    private void ShowBrokenCodices() => MainViewModel.CollectionVM.FilterVM.AddFilter(new HasBrokenPathFilter());
+    private void ShowBrokenCodices()
+    {
+        if (SelectedCollectionVm is null || _selectedCollectionHandle is null) return;
+        
+        //TODO: if the collection is already open in a tab with no filters, switch to it and apply
+        //if not, open a new tab to apply the filter
+        //Always open new tab for now
+        var tabsVm = TabsViewModel.GetInstance();
+        tabsVm.CreateTab(SelectedCollectionVm);
+        tabsVm.ActiveTab!.FilterVM.AddFilter(new HasBrokenPathFilter());
+    }
 
     //Rename the refs
     private int _amountRenamed = 0;
@@ -76,10 +102,12 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel
 
     private void RenameFolderReferences(string? oldPath, string? newPath)
     {
+        if (SelectedCollectionVm is null || _selectedCollectionHandle is null) return;
+        
         if (string.IsNullOrWhiteSpace(oldPath) || newPath is null) return;
 
         AmountRenamed = 0;
-        foreach (Codex codex in MainViewModel.CollectionVM.CurrentCollection.AllCodices)
+        foreach (Codex codex in SelectedCollectionVm.Collection.AllCodices)
         {
             if (!codex.Sources.HasOfflineSource() || //If no file referenced
                 File.Exists(codex.Sources.Path) || //or reference file exists
@@ -95,7 +123,7 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel
             AmountRenamed++;
         }
 
-        _collectionStorageService.SaveCodices(MainViewModel.CollectionVM.CurrentCollection);
+        _selectedCollectionHandle.SaveCodices();
     }
 
     //remove refs from codices
@@ -103,13 +131,15 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel
     public RelayCommand RemoveBrokenRefsCommand => _removeBrokenRefsCommand ??= new(RemoveBrokenReferences);
     private void RemoveBrokenReferences()
     {
+        if (SelectedCollectionVm is null || _selectedCollectionHandle is null) return;
+        
         foreach (Codex codex in BrokenCodices)
         {
             codex.Sources.Path = "";
         }
 
         BrokenCodicesChanged();
-        _collectionStorageService.SaveCodices(MainViewModel.CollectionVM.CurrentCollection);
+        _selectedCollectionHandle.SaveCodices();
     }
 
     //Remove Codices with broken refs
@@ -117,7 +147,14 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel
     public AsyncRelayCommand RemoveCodicesWithBrokenRefsCommand => _removeCodicesWithBrokenRefsCommand ??= new(RemoveCodicesWithBrokenRefs);
     private async Task RemoveCodicesWithBrokenRefs()
     {
-        await CodexOperations.DeleteCodices(BrokenCodices.ToList(), true);
+        if (SelectedCollectionVm is null || _selectedCollectionHandle is null) return;
+        
+        await new CodexOperations(_selectedCollectionHandle).DeleteCodices(BrokenCodices.ToList(), true);
         BrokenCodicesChanged();
+    }
+
+    public void Dispose()
+    {
+        _selectedCollectionHandle?.Dispose();
     }
 }

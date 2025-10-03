@@ -3,10 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             xmlns:vm="clr-namespace:COMPASS.Common.ViewModels"
+             xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.Main"
              xmlns:controls="clr-namespace:COMPASS.Common.Controls"
              mc:Ignorable="d" d:DesignWidth="270" d:DesignHeight="850"
-             x:Class="COMPASS.Common.Views.CodexInfoView"
+             x:Class="COMPASS.Common.Views.Main.CodexInfoView"
              x:DataType="vm:CodexInfoViewModel">
   <Border BorderBrush="{StaticResource Separator}" 
           BorderThickness="3" x:Name="CodexInfoContainer"

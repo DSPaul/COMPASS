@@ -20,6 +20,9 @@ namespace COMPASS.Common.Sources
 {
     public class GmBinderMetaDataSource : MetaDataSource
     {
+        public GmBinderMetaDataSource(CodexCollection targetCollection) :  
+            base(targetCollection) { }
+        
         public override MetaDataSourceType Type => MetaDataSourceType.GmBinder;
 
         public override bool IsValidSource(SourceSet sources) =>

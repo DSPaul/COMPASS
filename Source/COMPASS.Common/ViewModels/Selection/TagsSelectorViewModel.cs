@@ -1,18 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Main;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.Selection
 {
     //TODO make this use the more generic HierachicalSelectorViewmodel
     public class TagsSelectorViewModel : ViewModelBase
     {
-        public TagsSelectorViewModel(List<CodexCollection> collections)
+        public TagsSelectorViewModel(IEnumerable<CodexCollection> collections)
         {
             TagCollections = collections.Select(c => new TagCollection(c)).ToList();
             SelectedTagCollection = TagCollections.FirstOrDefault();
@@ -20,6 +21,7 @@ namespace COMPASS.Common.ViewModels
 
         public TagsSelectorViewModel(CodexCollection collection) : this([collection]) { }
 
+        
         private List<TagCollection> _tagCollections = [];
         public List<TagCollection> TagCollections
         {
@@ -38,16 +40,16 @@ namespace COMPASS.Common.ViewModels
         }
 
         public bool HasTags => TagCollections.Any(tc => tc.TagsRoot.Children.Any());
-
+        
         public class TagCollection : ObservableObject
         {
-            public TagCollection(CodexCollection c)
+            public TagCollection(CodexCollection collection)
             {
-                Name = c.Name;
-                _collection = c;
+                _collection = collection;
+                Name = collection.Name;
             }
 
-            private CodexCollection _collection;
+            private readonly CodexCollection _collection;
 
             public string Name { get; set; }
 
@@ -58,9 +60,7 @@ namespace COMPASS.Common.ViewModels
                 {
                     //Lazy load, only load the first time
                     if (_tagsRoot != null) return _tagsRoot;
-
-                    //load if not done yet
-                    if (!_collection.AllTags.Any()) ServiceResolver.Resolve<ICodexCollectionStorageService>().LoadTags(_collection);
+                    
                     //convert to nodes
                     _tagsRoot = new CheckableTreeNode<Tag>(new Tag(), containerOnly: true)
                     {
@@ -74,7 +74,7 @@ namespace COMPASS.Common.ViewModels
                         node.ContainerOnly = node.Item.IsGroup;
                         node.IsChecked = false;
                     }
-                    _tagsRoot.Updated += _ => OnPropertyChanged(nameof(ImportCount));
+                    _tagsRoot.Updated += (_, _) => OnPropertyChanged(nameof(ImportCount));
                     return _tagsRoot;
                 }
             }

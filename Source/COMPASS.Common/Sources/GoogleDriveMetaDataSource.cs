@@ -14,6 +14,9 @@ namespace COMPASS.Common.Sources
 {
     public class GoogleDriveMetaDataSource : MetaDataSource
     {
+        public GoogleDriveMetaDataSource(CodexCollection targetCollection) :  
+            base(targetCollection) { }
+        
         public override MetaDataSourceType Type => MetaDataSourceType.GoogleDrive;
         public override bool IsValidSource(SourceSet soures) =>
             soures.HasOnlineSource() && soures.SourceURL.Contains(new ImportURLViewModel(ImportSource.GoogleDrive).ExampleURL);

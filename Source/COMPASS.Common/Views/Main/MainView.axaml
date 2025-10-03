@@ -4,14 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:layoutViews="using:COMPASS.Common.Views.Layouts"
              xmlns:layoutVms="using:COMPASS.Common.ViewModels.Layouts"
-             xmlns:vm="using:COMPASS.Common.ViewModels"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Main"
+             xmlns:managers="using:COMPASS.Common.Services.StateManagers"
              xmlns:views="using:COMPASS.Common.Views"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:converters="using:COMPASS.Common.Converters"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:filters="clr-namespace:COMPASS.Common.Models.Filters"
+             xmlns:main="clr-namespace:COMPASS.Common.Views.Main"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
-             x:Class="COMPASS.Common.Views.MainView" FontSize="16"
+             x:Class="COMPASS.Common.Views.Main.MainView" FontSize="16"
              x:DataType="vm:MainViewModel"
              KeyDown="UserControl_KeyDown">
     <UserControl.DataTemplates>
@@ -29,10 +31,10 @@
         </DataTemplate>
 
         <DataTemplate DataType="vm:LeftDockViewModel">
-            <views:LeftDockView />
+            <main:LeftDockView />
         </DataTemplate>
         <DataTemplate DataType="vm:CodexInfoViewModel">
-            <views:CodexInfoView />
+            <main:CodexInfoView />
         </DataTemplate>
     </UserControl.DataTemplates>
 
@@ -65,7 +67,7 @@
             <Border Grid.Column="1" IsHitTestVisible="True"
                     Background="{StaticResource UIElementBackground}"
                     CornerRadius="4" Margin="0,5" Height="35"
-                    DataContext="{Binding CollectionVM}">
+                    DataContext="{Binding TabsVM.ActiveTab}">
                 <Border.Styles>
                     <Style Selector="controls|IconButton">
                         <Setter Property="Padding" Value="0" />
@@ -82,10 +84,10 @@
                 </Border.Styles>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
                     <!--Collection Dropdown-->
-                    <ComboBox SelectedItem="{Binding CurrentCollection, Mode=TwoWay}"
+                    <ComboBox SelectedItem="{Binding CollectionHandle.CollectionVM, Mode=OneWay}"
                               IsHitTestVisible="True" VerticalAlignment="Stretch"
                               Background="Transparent" MinWidth="100"
-                              DisplayMemberBinding="{Binding Name}"
+                              DisplayMemberBinding="{Binding Identifier}"
                               ItemsSource="{Binding AllCodexCollections}"
                               SelectionChanged="CollectionComboBox_SelectionChanged" />
                     <Rectangle Fill="{StaticResource Separator}" Width="2" />
@@ -135,7 +137,7 @@
                                 IsVisible="{Binding EditCollectionVisibility}">
                         <TextBox x:Name="EditCollectionName"
                                  Background="Transparent"
-                                 Text="{Binding CurrentCollection.Name, Mode=OneWay}"
+                                 Text="{Binding CollectionHandle.CollectionVM.Identifier, Mode=OneWay}"
                                  VerticalAlignment="Center" MaxLength="50"
                                  Margin="0" BorderThickness="0" MinWidth="150">
                             <!-- TODO: reimplement set focus on textbox when it becomes visible -->
@@ -170,12 +172,12 @@
                                           ToolTip.Tip="Share this Collection with other COMPASS users"
                                           Command="{Binding ExportCommand}"
                                           Icon="{materialIcons:MaterialIconExt Kind=FolderUpload}" />
-                                <MenuItem Header="Merge into " ItemsSource="{Binding CollectionDirectories}"
+                                <MenuItem Header="Merge into " ItemsSource="{x:Static managers:CollectionManager.CollectionNames}"
                                           Icon="{materialIcons:MaterialIconExt Kind=FolderMove}">
                                     <MenuItem.Styles>
                                         <Style Selector="MenuItem MenuItem">
                                             <Setter Property="Command"
-                                                    Value="{Binding Path=$parent[MenuItem].((vm:CollectionViewModel)DataContext).MergeCollectionIntoCommand}" />
+                                                    Value="{Binding Path=$parent[MenuItem].((vm:CollectionTabVM)DataContext).MergeCollectionIntoCommand}" />
                                             <Setter Property="CommandParameter" Value="{Binding $self.Header}" />
                                         </Style>
                                     </MenuItem.Styles>
@@ -194,7 +196,7 @@
                     Width="300" MinWidth="100" Height="35" CornerRadius="4"
                     Background="{StaticResource UIElementBackground}"
                     OpacityMask="#FF222222" Margin="10,5"
-                    DataContext="{Binding CollectionVM.FilterVM}">
+                    DataContext="{Binding TabsVM.ActiveTab.FilterVM}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -268,10 +270,10 @@
                 <TextBlock Margin="10,0" FontSize="16" FontWeight="Regular" >
                     Items Shown:
                     <Run
-                        Text="{Binding BindableCollectionVM.FilterVM.FilteredCodices.Count, Mode=OneWay, FallbackValue=0}" />
+                        Text="{Binding TabsVM.ActiveTab.FilterVM.FilteredCodices.Count, Mode=OneWay, FallbackValue=0}" />
                     /
                     <Run
-                        Text="{Binding BindableCollectionVM.CurrentCollection.AllCodices.Count, Mode=OneWay, FallbackValue=0}" />
+                        Text="{Binding ActiveCollection.AllCodices.Count, Mode=OneWay, FallbackValue=0}" />
                 </TextBlock>
             </StackPanel>
 
@@ -338,11 +340,11 @@
         <UserControl DockPanel.Dock="Left" Content="{Binding LeftDockVM}" />
 
         <!-- Info panel -->
-        <UserControl DockPanel.Dock="Right" Content="{Binding CurrentLayout.CodexInfoVM}"
-                     IsVisible="{Binding CurrentLayout.CodexInfoVM.ShowInfo}" />
+        <UserControl DockPanel.Dock="Right" Content="{Binding TabsVM.ActiveTab.CurrentLayout.CodexInfoVM}"
+                     IsVisible="{Binding TabsVM.ActiveTab.CurrentLayout.CodexInfoVM.ShowInfo}" />
 
         <!-- Codex View -->
-        <DockPanel Margin="0,15,0,10">
+        <DockPanel Margin="0,15,0,10" DataContext="{Binding TabsVM.ActiveTab}">
             <Grid DockPanel.Dock="Top" x:Name="ViewsGrid" 
                   ColumnDefinitions="*, *, Auto, Auto, Auto, Auto">
                 <Grid.DataTemplates>
@@ -365,7 +367,7 @@
                 <Border CornerRadius="5" Grid.Column="0" BorderBrush="ForestGreen" BorderThickness="3"
                         VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}"
-                        DataContext="{Binding CollectionVM.FilterVM}">
+                        DataContext="{Binding FilterVM}">
                     <Panel>
                         <TextBlock Text="INCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Margin="5, 2" Foreground="Gray" FontSize="20"
@@ -384,7 +386,7 @@
                 <Border CornerRadius="5" Grid.Column="1" BorderBrush="OrangeRed" BorderThickness="3"
                         VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0,5,0" Background="{StaticResource FiltersBackground}"
-                        DataContext="{Binding CollectionVM.FilterVM}">
+                        DataContext="{Binding FilterVM}">
                     <Panel>
                         <TextBlock Text="EXCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Margin="5 2" Foreground="Gray" FontSize="20"
@@ -404,7 +406,7 @@
                 <!--#region Other Controls-->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="7" 
                             Margin="0,0,10,0" Height="32">
-                    <controls:IconButton Icon="FilterRemove" Command="{Binding CollectionVM.FilterVM.ClearFiltersCommand}"
+                    <controls:IconButton Icon="FilterRemove" Command="{Binding FilterVM.ClearFiltersCommand}"
                                          Theme="{StaticResource IconOnly}" Classes="ZoomOnHover" Background="Transparent"
                                          Height="32" ToolTip.Tip="Clear Filters" />
                     
@@ -413,7 +415,7 @@
                     <controls:IconButton Icon="Sort" CornerRadius="3" VerticalAlignment="Stretch">
                         <controls:IconButton.Flyout>
                             <Flyout>
-                                <views:SortingChoice DataContext="{Binding CollectionVM.FilterVM}"/>
+                                <views:SortingChoice DataContext="{Binding FilterVM}"/>
                             </Flyout>
                         </controls:IconButton.Flyout>
                     </controls:IconButton>
@@ -421,7 +423,7 @@
                     <ComboBox MinWidth="120" VerticalAlignment="Stretch"
                               BorderThickness="0"
                               Background="{StaticResource UIElementBackground}"
-                              ItemsSource="{Binding AllLayouts, Mode=OneTime}"
+                              ItemsSource="{Binding #MainGrid.((vm:MainViewModel)DataContext).AllLayouts, Mode=OneTime}"
                               SelectedIndex="{Binding CurrentLayout.LayoutType, Mode=OneWay}"
                               SelectionChanged="LayoutSelection_OnSelectionChanged">
                         <ComboBox.ItemTemplate>
@@ -459,9 +461,9 @@
             <Panel DragDrop.AllowDrop="True">
                 <!--Layout-->
                 <ContentControl Content="{Binding CurrentLayout}"
-                                IsVisible="{Binding !!CollectionVM.CurrentCollection.AllCodices.Count}"/>
+                                IsVisible="{Binding !!CollectionHandle.CollectionVM.Collection.AllCodices.Count}"/>
                 
-                <views:WelcomeView IsVisible="{Binding !CollectionVM.CurrentCollection.AllCodices.Count}"/>
+                <main:WelcomeView IsVisible="{Binding !CollectionHandle.CollectionVM.Collection.AllCodices.Count}"/>
             </Panel>
         </DockPanel>
     </DockPanel>

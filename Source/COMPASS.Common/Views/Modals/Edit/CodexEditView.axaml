@@ -132,7 +132,7 @@
                         <!-- Authors -->
                         <TextBlock Margin="3,10,3,3"
                                    Text="Authors:" />
-                        <controls:MultiSelectAutoCompleteBox ItemsSource="{Binding MVM.CollectionVM.FilterVM.AuthorList}"
+                        <controls:MultiSelectAutoCompleteBox ItemsSource="{Binding AuthorList}"
                                                              SelectedItems="{Binding TempCodex.Authors, Mode=TwoWay}"
                                                              Watermark="Add author" CanCreate="True"/>
 

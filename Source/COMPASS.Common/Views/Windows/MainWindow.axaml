@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:COMPASS.Common.Views"
         xmlns:system="using:System"
+        xmlns:main="clr-namespace:COMPASS.Common.Views.Main"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="COMPASS.Common.Views.Windows.MainWindow"
         ExtendClientAreaTitleBarHeightHint="45"
@@ -25,7 +26,7 @@
             VerticalAlignment="Top"
             Height="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}"
             IsHitTestVisible="False"/>
-      <views:MainView />
+      <main:MainView />
   </Grid>
 
 </Window>

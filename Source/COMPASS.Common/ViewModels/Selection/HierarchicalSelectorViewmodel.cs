@@ -36,7 +36,7 @@ public class HierarchicalSelectorViewmodel<T> : ViewModelBase where T : class, I
     /// </summary>
     public IList<T> UncheckedOptions => OptionsRoot.Flatten().Where(x => x.IsChecked == false).Select(x => x.Item).ToList();
 
-    private void OnSelectionChanged(bool? newValue)
+    private void OnSelectionChanged(object? sender, bool? newValue)
     {
         OnPropertyChanged(nameof(SelectedOptions));
         OnPropertyChanged(nameof(SelectedOptionsCount));

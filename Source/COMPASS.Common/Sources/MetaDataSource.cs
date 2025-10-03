@@ -1,31 +1,35 @@
 ﻿using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.ViewModels;
+using COMPASS.Common.ViewModels.Main;
 using ImageMagick;
 
 namespace COMPASS.Common.Sources
 {
     public abstract class MetaDataSource
     {
-        protected MetaDataSource() : this(MainViewModel.CollectionVM.CurrentCollection) { }
-
         protected MetaDataSource(CodexCollection targetCollection)
         {
             TargetCollection = targetCollection;
         }
 
-        public static MetaDataSource? GetSource(MetaDataSourceType sourceType) => sourceType switch
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sourceType"></param>
+        /// <param name="targetCollection"> Needed to have a list of tags that sources can choose from </param>
+        /// <returns></returns>
+        public static MetaDataSource? GetSource(MetaDataSourceType sourceType, CodexCollection targetCollection) => sourceType switch
         {
-            MetaDataSourceType.File => new FileMetaDataSource(),
-            MetaDataSourceType.PDF => new PdfMetaDataSource(),
-            MetaDataSourceType.Image => new ImageMetaDataSource(),
-            MetaDataSourceType.ISBN => new ISBNMetaDataSource(),
-            MetaDataSourceType.GmBinder => new GmBinderMetaDataSource(),
-            MetaDataSourceType.Homebrewery => new HomebreweryMetaDataSource(),
-            MetaDataSourceType.GoogleDrive => new GoogleDriveMetaDataSource(),
-            MetaDataSourceType.GenericURL => new GenericOnlineMetaDataSource(),
+            MetaDataSourceType.File => new FileMetaDataSource(targetCollection),
+            MetaDataSourceType.PDF => new PdfMetaDataSource(targetCollection),
+            MetaDataSourceType.Image => new ImageMetaDataSource(targetCollection),
+            MetaDataSourceType.ISBN => new ISBNMetaDataSource(targetCollection),
+            MetaDataSourceType.GmBinder => new GmBinderMetaDataSource(targetCollection),
+            MetaDataSourceType.Homebrewery => new HomebreweryMetaDataSource(targetCollection),
+            MetaDataSourceType.GoogleDrive => new GoogleDriveMetaDataSource(targetCollection),
+            MetaDataSourceType.GenericURL => new GenericOnlineMetaDataSource(targetCollection),
             _ => null
         };
 

@@ -4,27 +4,42 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
+using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.Import;
 
-public class ImportFilesViewModel : ViewModelBase
+public class ImportFilesViewModel : ViewModelBase, IDisposable
 {
     private readonly bool _autoImport;
-    private readonly CodexCollection _targetCollection;
+    private readonly CollectionHandle _targetCollectionHandle;
+    private CodexCollection _TargetCollection => _targetCollectionHandle.CollectionVM.Collection;
     
     #region CTOR
     
-    public ImportFilesViewModel(bool autoImport) : this(MainViewModel.CollectionVM.CurrentCollection, autoImport) { }
-    public ImportFilesViewModel(CodexCollection targetCollection, bool autoImport)
+    public ImportFilesViewModel(bool autoImport) : 
+        this(TabsViewModel.GetInstance().ActiveTab?.CollectionHandle.CollectionVM.Identifier ?? 
+             throw new NoTabException("There is no open tab, so no collection to import the files to"), 
+            autoImport) { }
+    public ImportFilesViewModel(string targetCollectionId, bool autoImport)
     {
-        _targetCollection = targetCollection;
+        var handle = CollectionManager.LoadCollection(targetCollectionId);
+        if (handle != null)
+        {
+            _targetCollectionHandle = handle;
+        }
+        else
+        {
+            //TODO probably throw a custom exception to indicate the target could not be loaded
+            throw new Exception("Target Collection not found");
+        }
         _autoImport = autoImport;
     }
     
@@ -68,7 +83,7 @@ public class ImportFilesViewModel : ViewModelBase
         if (toImport.Any())
         {
             toImport = await LetUserFilterToImport(toImport);
-            await ImportViewModel.ImportFilesAsync(toImport, _targetCollection);
+            await ImportViewModel.ImportFilesAsync(toImport, _targetCollectionHandle.CollectionVM.Identifier);
         }
         else if (!_autoImport)
         {
@@ -136,7 +151,7 @@ public class ImportFilesViewModel : ViewModelBase
         }
 
         //3. Filter out doubles and banished paths
-        return toImport.Distinct().Where(path => !IOService.MatchesAnyGlob(path, _targetCollection.Info.BanishedPaths)).ToList();
+        return toImport.Distinct().Where(path => !IOService.MatchesAnyGlob(path, _TargetCollection.Info.BanishedPaths)).ToList();
     }
 
     /// <summary>
@@ -149,7 +164,7 @@ public class ImportFilesViewModel : ViewModelBase
                                                     .Concat(ExistingFolders)
                                                     .ToList();
         
-        var folderImportWizardVm = new ImportFolderWizardVm(_autoImport, _targetCollection.Info, folders, allFilesToImport);
+        var folderImportWizardVm = new ImportFolderWizardVm(_autoImport, _TargetCollection.Info, folders, allFilesToImport);
         
         if (folderImportWizardVm.Steps.Any())
         {
@@ -163,5 +178,10 @@ public class ImportFilesViewModel : ViewModelBase
         }
 
         return folderImportWizardVm.GetFilteredFiles(allFilesToImport);
+    }
+
+    public void Dispose()
+    {
+        _targetCollectionHandle.Dispose();
     }
 }

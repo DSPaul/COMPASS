@@ -22,6 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using COMPASS.Common.Services.StateManagers;
 using Notification = COMPASS.Common.Models.Notification;
 
 namespace COMPASS.Common.Services.Storage;
@@ -56,10 +57,10 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
     private const string TagsFileName = "Tags.xml";
     private const string CollectionInfoFileName = "CollectionInfo.xml";
 
-    public string CollectionDataPath(string collectionName) => Path.Combine(_collectionsPath, collectionName);
-    public string CodicesDataFilePath(string collectionName) => Path.Combine(CollectionDataPath(collectionName), CodicesFileName);
-    public string TagsDataFilePath(string collectionName) => Path.Combine(CollectionDataPath(collectionName), TagsFileName);
-    public string CollectionInfoFilePath(string collectionName) => Path.Combine(CollectionDataPath(collectionName), CollectionInfoFileName);
+    private string CollectionDataPath(string collectionName) => Path.Combine(_collectionsPath, collectionName);
+    private string CodicesDataFilePath(string collectionName) => Path.Combine(CollectionDataPath(collectionName), CodicesFileName);
+    private string TagsDataFilePath(string collectionName) => Path.Combine(CollectionDataPath(collectionName), TagsFileName);
+    private string CollectionInfoFilePath(string collectionName) => Path.Combine(CollectionDataPath(collectionName), CollectionInfoFileName);
 
     public async Task AllocateNewCollection(CodexCollection collection)
     {
@@ -78,7 +79,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
             return Directory
                 .GetDirectories(_collectionsPath)
                 .Select(dir => Path.GetFileName(dir))
-                .Where(dir => CodexCollectionOperations.IsLegalCollectionName(dir, []))
+                .Where(dir => CollectionManager.IsLegalCollectionName(dir, []))
                 .Select(dir => new CodexCollection(dir))
                 .ToList();
         }
@@ -462,7 +463,12 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
 
     #region Import
 
-    public async Task<CodexCollection?> OpenSatchel(string? satchelPath = null)
+    /// <summary>
+    /// Unpack the satchel at the given location
+    /// </summary>
+    /// <param name="satchelPath"></param>
+    /// <returns> The collection id which is also the name of the extracted folder </returns>
+    public async Task<string?> OpenSatchel(string? satchelPath = null)
     {
         FilePickerOpenOptions options = new()
         {
@@ -559,7 +565,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
         try
         {
             string unzipLocation = await UnZipCollection(satchelPath);
-            return new(Path.GetFileName(unzipLocation));
+            return Path.GetFileName(unzipLocation);
         }
         catch (Exception ex)
         {
@@ -660,13 +666,13 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
 
     #region Delete
 
-    public void OnCollectionDeleted(CodexCollection toDelete)
+    public void DeleteCollection(CodexCollection toDelete)
     {
         //if Dir name of toDelete is empty, it will delete the entire collections folder
         if (string.IsNullOrEmpty(toDelete.Name))
             return;
 
-        //nothing to delete if collection was never saved
+        //nothing to delete if the collection was never saved
         if (!Directory.Exists(CollectionDataPath(toDelete.Name)))
             return;
 

@@ -2,13 +2,11 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels;
+using COMPASS.Common.ViewModels.Main;
 using ImageMagick;
 using ImageMagick.Formats;
 using iText.Kernel.Pdf;
@@ -19,6 +17,9 @@ namespace COMPASS.Common.Sources
 {
     public class PdfMetaDataSource : MetaDataSource
     {
+        public PdfMetaDataSource(CodexCollection targetCollection) :  
+            base(targetCollection) { }
+        
         public override MetaDataSourceType Type => MetaDataSourceType.PDF;
         public override bool IsValidSource(SourceSet sources) => IOService.IsPDFFile(sources.Path);
 
@@ -27,7 +28,7 @@ namespace COMPASS.Common.Sources
             Debug.Assert(IsValidSource(sources), "Codex without pdf found in pdf source");
             PdfDocument? pdfDoc = null;
             
-            SourceMetaData codex = new();
+            SourceMetaData metaData = new();
             try
             {
                 PdfDocumentInfo? info = await Task.Run(() =>
@@ -37,15 +38,15 @@ namespace COMPASS.Common.Sources
                     return pdfDoc.GetDocumentInfo();
                 });
 
-                codex.Title = info.GetTitle() ?? string.Empty;
+                metaData.Title = info.GetTitle() ?? string.Empty;
                 if (info.GetAuthor() is not null)
                 {
-                    codex.Authors = [info.GetAuthor()];
+                    metaData.Authors = [info.GetAuthor()];
                 }
-                codex.PageCount = pdfDoc!.GetNumberOfPages();
+                metaData.PageCount = pdfDoc!.GetNumberOfPages();
 
                 // If it already has an ISBN, no need to check again
-                if (!string.IsNullOrEmpty(sources.ISBN)) return codex;
+                if (!string.IsNullOrEmpty(sources.ISBN)) return metaData;
 
                 //Search for an ISBN in first 5 pages
                 for (int page = 1; page <= Math.Min(5, pdfDoc.GetNumberOfPages()); page++)
@@ -69,14 +70,13 @@ namespace COMPASS.Common.Sources
                 //in case pdf is corrupt: PdfReader will throw error
                 //in those cases: import the pdf without opening it
                 Logger.Error($"Failed to read metadata from {Path.GetFileName(sources.Path)}", ex);
-                LogEntry logEntry = new(Severity.Warning, $"Failed to read metadata from {codex.Title}");
+                LogEntry logEntry = new(Severity.Warning, $"Failed to read metadata from {metaData.Title}");
                 ProgressVM.AddLogEntry(logEntry);
             }
 
             finally { pdfDoc?.Close(); }
-
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            return codex;
+            
+            return metaData;
         }
 
         public override async Task<IMagickImage?> FetchCover(SourceSet sources)

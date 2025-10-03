@@ -1,0 +1,95 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
+             xmlns:hierarchy="clr-namespace:COMPASS.Common.Models.Hierarchy"
+             xmlns:converters="clr-namespace:COMPASS.Common.Converters"
+             xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.Selection"
+             xmlns:controls="clr-namespace:COMPASS.Common.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Views.TagSelectorView"
+             x:DataType="vm:TagsSelectorViewModel">
+    <Grid ColumnDefinitions="auto,auto,*">
+        <ListBox Width="200" Background="Transparent" BorderThickness="0"
+                 ItemsSource="{Binding TagCollections}"
+                 SelectedItem="{Binding SelectedTagCollection}">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="vm:TagsSelectorViewModel+TagCollection">
+                    <StackPanel Orientation="Vertical" Margin="20,10">
+                        <TextBlock Text="{Binding Name}"/>
+                        <Border Background="{StaticResource AccentColorMuted}" CornerRadius="3" 
+                                HorizontalAlignment="Left" Margin="0,5,0,0"
+                                IsVisible="{Binding !!ImportCount}">
+                            <TextBlock FontSize="12" Margin="5,1">
+                                <Run Text="{Binding ImportCount, Mode=OneWay}"></Run> tags selected
+                            </TextBlock>
+                        </Border>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemContainerTheme>
+                <ControlTheme TargetType="ListBoxItem" x:DataType="vm:TagsSelectorViewModel+TagCollection">
+                    <Setter Property="Template">
+                        <ControlTemplate>
+                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                    BorderThickness="0,1" BorderBrush="{StaticResource Separator}" 
+                                    Background="{TemplateBinding Background}">
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter>
+                    <Style Selector="^:pointerover">
+                        <Setter Property="Background" Value="{StaticResource CardBackground}" />
+                    </Style>
+                    <Style Selector="^:selected">
+                        <Setter Property="Background" Value="{StaticResource ListSelected}" />
+                    </Style>
+                </ControlTheme>
+            </ListBox.ItemContainerTheme>
+        </ListBox>
+        <Rectangle Grid.Column="1" Width="3" Fill="{StaticResource Separator}"/>
+        <Grid Grid.Column="2" Margin="30,0" RowDefinitions="auto,auto,*">
+            <CheckBox Content="All Tags" IsChecked="{Binding SelectedTagCollection.TagsRoot.IsChecked}" Margin="0,10"/>
+            <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/>
+            <TreeView  Background="Transparent" Grid.Row="2"
+                      ItemsSource="{Binding SelectedTagCollection.TagsRoot.Children}"
+                      HorizontalAlignment="Stretch" BorderThickness="0" >
+                <TreeView.ItemTemplate>
+                    <dataTemplates:TagTreeDataTemplateSelector>
+                        <TreeDataTemplate x:Key="RegularTag" DataType="hierarchy:CheckableTagTreeNode"
+                                          ItemsSource="{Binding Children}">
+                            <Border CornerRadius="5" Margin="0,3"
+                                    Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}">
+                                <CheckBox Margin="5,0,0,0" 
+                                          IsChecked="{Binding IsChecked}" 
+                                          Content="{Binding Item.Name}" />
+                            </Border>
+                        </TreeDataTemplate>
+                        <TreeDataTemplate x:Key="GroupTag" DataType="hierarchy:CheckableTagTreeNode"
+                                          ItemsSource="{Binding Children}">
+                            <StackPanel Margin="0,3" 
+                                        Background="Transparent">
+                                <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                          Content="{Binding Item.Name, Converter={x:Static converters:StringConverters.ToUpperConverter}}" 
+                                          Foreground="{StaticResource TextMutedColor}"
+                                          FontSize="15" FontWeight="Bold"/>
+                                <Rectangle
+                                    Fill="{Binding Item.BackgroundColor}"
+                                    Height="2" HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Bottom" />
+                            </StackPanel>
+                        </TreeDataTemplate>
+                    </dataTemplates:TagTreeDataTemplateSelector>
+                </TreeView.ItemTemplate>
+                <TreeView.ItemContainerTheme>
+                    <ControlTheme TargetType="TreeViewItem" x:DataType="hierarchy:CheckableTagTreeNode">
+                        <Setter Property="Focusable" Value="False" />
+                        <Setter Property="IsExpanded" Value="{Binding Expanded}"/>
+                    </ControlTheme>
+                </TreeView.ItemContainerTheme>
+            </TreeView>
+        </Grid>
+    </Grid>
+</UserControl>

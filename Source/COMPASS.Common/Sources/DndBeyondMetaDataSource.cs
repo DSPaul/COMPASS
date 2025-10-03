@@ -11,6 +11,9 @@ namespace COMPASS.Common.Sources
 {
     public class DndBeyondMetaDataSource : MetaDataSource
     {
+        public DndBeyondMetaDataSource(CodexCollection targetCollection) :  
+            base(targetCollection) { }
+        
         public override MetaDataSourceType Type => MetaDataSourceType.DnDBeyond;
 
         public override async Task<SourceMetaData> GetMetaData(SourceSet sources)

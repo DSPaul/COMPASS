@@ -1,6 +1,5 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Layouts;
@@ -14,24 +13,24 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using COMPASS.Common.Services.StateManagers;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.Main
 {
     public class MainViewModel : ViewModelBase
     {
         public MainViewModel()
         {
             Logger.Init();
-            ViewModelBase.MVM = this;
-
             InitLayouts();
+            CollectionManager.DiscoverCollections();
+            
+            TabsVM = TabsViewModel.GetInstance();
+            TabsVM.CreateTab();
+            
+            LeftDockVM = new(TabsVM);
 
-            //Load everything
-            CollectionVM = new(this);
-            _currentLayout = LayoutViewModel.GetLayout();
-            LeftDockVM = new(this);
-
-            //Update stuff
+            //check for update
             InitAutoUpdates();
 
             //Start timer that periodically checks if there is an internet connection
@@ -91,9 +90,9 @@ namespace COMPASS.Common.ViewModels
         private void InitLayouts() => AllLayouts = Assembly.GetExecutingAssembly()
                                  .GetTypes()
                                  .Where(t => !t.IsAbstract && typeof(LayoutViewModel).IsAssignableFrom(t))
-                                 .Select(t => Activator.CreateInstance(t))
+                                 .Select(Activator.CreateInstance)
                                  .OfType<LayoutViewModel>()
-                                 .OrderBy(l => l!.LayoutType)
+                                 .OrderBy(l => l.LayoutType)
                                  .ToList();
 
         #endregion
@@ -115,19 +114,8 @@ namespace COMPASS.Common.ViewModels
         #endregion
 
         #region ViewModels
-
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public static CollectionViewModel CollectionVM { get; private set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-
-        public CollectionViewModel BindableCollectionVM => CollectionVM; //because binding to static properties sucks
-
-        private LayoutViewModel _currentLayout;
-        public LayoutViewModel CurrentLayout
-        {
-            get => _currentLayout;
-            set => SetProperty(ref _currentLayout, value);
-        }
+        
+        public TabsViewModel TabsVM { get; }
 
         public IList<LayoutViewModel> AllLayouts { get; private set; } = [];
 
@@ -163,11 +151,7 @@ namespace COMPASS.Common.ViewModels
         private RelayCommand? _navigateToKofi;
         public RelayCommand NavigateToKofi => _navigateToKofi ??= new(()
             => Process.Start(new ProcessStartInfo(@"https://ko-fi.com/pauldesmul") { UseShellExecute = true }));
-
-        //Change Layout
-        private RelayCommand<CodexLayout>? _changeLayoutCommand;
-        public RelayCommand<CodexLayout> ChangeLayoutCommand => _changeLayoutCommand ??= new(ChangeLayout);
-        public void ChangeLayout(CodexLayout layout) => CurrentLayout = LayoutViewModel.GetLayout(layout);
+        
         #endregion
     }
 }

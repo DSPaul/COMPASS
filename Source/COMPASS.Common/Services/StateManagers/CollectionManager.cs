@@ -1,0 +1,240 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Main;
+
+namespace COMPASS.Common.Services.StateManagers
+{
+    public static class CollectionManager
+    {
+        #region Properties
+    
+        private static readonly List<CodexCollectionVM> _allCollectionVms = [];
+
+        //Needed for binding to context menu "Move to Collection"
+        public static IReadOnlyCollection<string> CollectionNames => _allCollectionVms.Select(collectionState => collectionState.Collection.Name)
+                                                                                      .ToList()
+                                                                                      .AsReadOnly();
+        public static IReadOnlyCollection<CodexCollectionVM> CollectionVms => _allCollectionVms.AsReadOnly();
+
+        #endregion
+
+        #region Methods
+    
+        public static bool IsLegalCollectionName(string? dirName, IList<CodexCollectionVM>? existingCollections = null)
+        {
+            existingCollections ??= _allCollectionVms;
+        
+            bool legal =
+                !string.IsNullOrWhiteSpace(dirName)
+                && dirName.IndexOfAny(Path.GetInvalidPathChars()) < 0
+                && dirName.IndexOfAny(Path.GetInvalidFileNameChars()) < 0
+                && existingCollections.All(col => col.Identifier != dirName)
+                && dirName.Length < 100
+                && (dirName.Length < 2 || dirName[..2] != "__"); //reserved for protected folders
+            return legal;
+        }
+    
+        public static void DiscoverCollections()
+        {
+            foreach (StorageStrategy strategy in Enum.GetValues<StorageStrategy>())
+            {
+                var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(strategy);
+                storageService.EnsureDirectoryExists();
+            
+                var foundCollections = storageService.GetAllCollections();
+                foreach (CodexCollection collection in foundCollections)
+                {
+                    CodexCollectionVM vm = new(collection.Name, collection, storageService);
+                    _allCollectionVms.Add(vm);
+                }
+            }
+        }
+
+        public static void RegisterCollection(CodexCollectionVM collectionVm)
+        {
+            if (_allCollectionVms.Any(vm => vm.Identifier == collectionVm.Identifier))
+            {
+                //TODO make this more robust by finding a name that is valid and renaming the collection to it
+                throw new InvalidOperationException("Collection with the same name already exists.");
+            }
+            
+            _allCollectionVms.Add(collectionVm);
+        }
+    
+        /// <summary>
+        /// Creates a new collection
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static async Task<CodexCollectionVM> CreateCollection(string identifier)
+        {
+            if (!IsLegalCollectionName(identifier, _allCollectionVms))
+            {
+                string msg = $"{identifier} is not a valid collection name";
+                Logger.Warn(msg);
+                throw new InvalidOperationException(msg);
+            }
+
+            CodexCollection newCollection = new(identifier);
+        
+            //save to xml by default
+            var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(StorageStrategy.Xml);
+            await storageService.AllocateNewCollection(newCollection);
+            var newCollectionVm = new CodexCollectionVM(newCollection.Name, newCollection, storageService);
+            RegisterCollection(newCollectionVm);
+        
+            return newCollectionVm;
+        }
+    
+        public static async Task<CollectionHandle> GetOrCreateInitialCollectionVM()
+        {
+            var collectionHandle = LoadInitialCollection(_allCollectionVms);
+
+            if (collectionHandle != null) return collectionHandle;
+        
+            Debug.Assert(_allCollectionVms.Count == 0, "Collection should only be null if all options have been tried and failed");
+            string name = "Default Collection";
+            collectionHandle = await CreateAndLoadCollection(name).ConfigureAwait(false);
+            if (collectionHandle == null)
+            {
+                //If no collections are found and creation fails, we are stuck in an infinite loop which is bad so throw and crash
+                throw new IOException($"Could not create the default collection");
+            }
+
+            return collectionHandle;
+        }
+    
+        private static CollectionHandle? LoadInitialCollection(IList<CodexCollectionVM> availableCollections)
+        {
+            CollectionHandle? collectionHandle = null;
+        
+            string startupCollectionId = PreferencesService.GetInstance().Preferences.UIState.StartupCollection;
+        
+            while (collectionHandle  == null)
+            {
+                //no collections to load
+                if (availableCollections.Count == 0)
+                {
+                    return null;
+                }
+            
+                //otherwise, open startup collection
+                else if (availableCollections.Any(collectionState => collectionState.Identifier == startupCollectionId))
+                {
+                    var startupCollection = availableCollections.First(collection => collection.Identifier == startupCollectionId);
+                    collectionHandle = startupCollection.Load();
+                    if (collectionHandle == null)
+                    {
+                        // if loading failed -> remove it from the pool and try again
+                        availableCollections.Remove(startupCollection);
+                    }
+                }
+
+                //in case startup collection no longer exists, pick first one that does exists
+                else
+                {
+                    Logger.Warn($"The collection {startupCollectionId} could not be found.",
+                        new DirectoryNotFoundException());
+                    var firstCollection = availableCollections.First();
+                    collectionHandle = firstCollection.Load();
+                    if (collectionHandle == null)
+                    {
+                        // if loading failed -> remove it from the pool and try again
+                        availableCollections.RemoveAt(0);
+                    }
+                }
+            }
+        
+            return collectionHandle;
+        }
+    
+        public static async Task<CollectionHandle?> CreateAndLoadCollection(string? dirName)
+        {
+            if (dirName == null)
+            {
+                return null;
+            }
+
+            CodexCollectionVM newCollectionVm;
+            try
+            {
+                newCollectionVm = await CreateCollection(dirName);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Logger.Warn("Failed to create the collection", ex);
+                return null;
+            }
+
+            return newCollectionVm.Load();
+        }
+
+        public static bool DeleteCollection(CollectionHandle handle)
+        {
+            if (handle.CollectionVM.Owners.Any())
+            {
+                Logger.Warn($"Collection {handle.CollectionVM.Identifier} cannot be removed as long as it has owners");
+                return false;
+            }
+            handle.DeleteCollection();
+            handle.Dispose();
+            _allCollectionVms.Remove(handle.CollectionVM);
+            return true;
+        }
+    
+        public static bool CollectionExists(string collectionIdentifier)
+        {
+            return _allCollectionVms.Any(c => c.Identifier == collectionIdentifier);
+        }
+    
+        public static CollectionHandle? LoadCollection(string collectionIdentifier)
+        {
+            CodexCollectionVM? codexCollectionVm = _allCollectionVms.SingleOrDefault(c => c.Identifier == collectionIdentifier);
+            return codexCollectionVm?.Load();
+        }
+
+        public static void SaveAllCollections()
+        {
+            foreach (CodexCollectionVM collectionVm in _allCollectionVms)
+            {
+                if (collectionVm.IsLoaded)
+                {
+                    collectionVm.Collection.Save();
+                }
+            }
+        }
+        
+        #endregion
+
+        #region Extension methods
+
+        public static void Save(this CodexCollection collection)
+        {
+            using var collectionHandler = LoadCollection(collection.Name);
+            collectionHandler?.Save();
+        }
+        
+        public static void SaveCodices(this CodexCollection collection)
+        {
+            using var collectionHandler = LoadCollection(collection.Name);
+            collectionHandler?.SaveCodices();
+        }
+
+        public static CollectionHandle? Load(this CodexCollection collection)
+        {
+            return LoadCollection(collection.Name);
+        }
+
+        #endregion
+    }
+}

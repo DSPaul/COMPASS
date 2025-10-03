@@ -1,6 +1,4 @@
 ﻿using Autofac;
-using Autofac.Features.AttributeFilters;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models.Enums;
@@ -18,7 +16,7 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<NotificationService>().As<INotificationService>();
             
             //Storage Services
-            builder.RegisterType<CodexCollectionXmlStorageService>().As<ICodexCollectionStorageService>();
+            builder.RegisterType<CodexCollectionXmlStorageService>().Keyed<ICodexCollectionStorageService>(StorageStrategy.Xml);
             builder.RegisterType<ThumbnailStorageService>().As<IThumbnailStorageService>();
             builder.RegisterType<UserFilesStorageService>().As<IUserFilesStorageService>();
             

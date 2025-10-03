@@ -14,7 +14,7 @@
 
     <ListBox x:Name="TileLayoutListBox"
              Background="Transparent"
-             ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}"
+             ItemsSource="{Binding FilterVM.FilteredCodices}"
              Margin="10,0" SelectionMode="Multiple"
              SelectedItem="{Binding SelectedCodex, Mode=OneWayToSource}"
              KeyDown="ListBox_KeyDown"

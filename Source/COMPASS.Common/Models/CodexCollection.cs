@@ -1,20 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels;
 
 namespace COMPASS.Common.Models
 {
     public class CodexCollection : ObservableObject
     {
-        public CodexCollection(string collectionDirectory)
+        public CodexCollection(string identifier)
         {
-            _name = collectionDirectory;
+            _name = identifier;
         }
 
         //To prevent saving a collection that hasn't loaded yet, which would wipe all your data
@@ -63,7 +61,7 @@ namespace COMPASS.Common.Models
         /// </summary>
         /// <param name="toMergeFrom"></param>
         /// <param name="separateTags"> if true, all new tags will be put under a group with the name of the collection they came from</param>
-        public async Task MergeWith(CodexCollection toMergeFrom, bool separateTags = false)
+        public void MergeWith(CodexCollection toMergeFrom, bool separateTags = false)
         {
             //Merge Tags
             if (separateTags)
@@ -83,32 +81,11 @@ namespace COMPASS.Common.Models
 
             //merge info
             Info.MergeWith(toMergeFrom.Info);
-
-            //save
-            if (MainViewModel.CollectionVM.CurrentCollection == this)
-            {
-                await MainViewModel.CollectionVM.Refresh();
-            }
-            else
-            {
-                ServiceResolver.Resolve<ICodexCollectionStorageService>().Save(this);
-            }
         }
 
         public void TagsChanged()
         {
             AllTags = RootTags.Flatten().ToList();
-        }
-        
-        public void RenameCollection(string newCollectionName)
-        {
-            string oldName = Name;
-            Name = newCollectionName;
-            
-            ServiceResolver.Resolve<ICodexCollectionStorageService>().OnCollectionRenamed(oldName, newCollectionName);
-            ServiceResolver.Resolve<IThumbnailStorageService>().OnCollectionRenamed(this);
-
-            Logger.Info($"Renamed {oldName} to {newCollectionName}");
         }
 
         public void AddTags(IEnumerable<Tag> tags)
@@ -122,10 +99,11 @@ namespace COMPASS.Common.Models
                 AllTags.Add(tag);
             }
             RootTags.AddRange(tagsList);
-            MainViewModel.CollectionVM.TagsVM.UpdateTagsAsTreeNodes();
+            
+            OnPropertyChanged(nameof(RootTags));
         }
 
-        public void ImportCodicesFrom(CodexCollection source)
+        private void ImportCodicesFrom(CodexCollection source)
         {
             var userFilesStorageService = ServiceResolver.Resolve<IUserFilesStorageService>();
             var thumbnailStorageService = ServiceResolver.Resolve<IThumbnailStorageService>();
@@ -191,8 +169,6 @@ namespace COMPASS.Common.Models
             {
                 toDelete.Parent.Children.Remove(toDelete);
             }
-
-            ServiceResolver.Resolve<ICodexCollectionStorageService>().SaveTags(this);
         }
     }
 }

@@ -8,8 +8,10 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.Views.Windows;
 
@@ -93,7 +95,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
             //Step 1: add codex
             progressVM.Text = "Adding new item to Collection";
-            Codex newCodex = CodexOperations.CreateNewCodex(MainViewModel.CollectionVM.CurrentCollection);
+            Codex newCodex = CodexOperations.CreateNewCodex(ActiveCollection);
             if (_importSource == ImportSource.ISBN)
             {
                 newCodex.Sources.ISBN = InputURL;
@@ -102,7 +104,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             {
                 newCodex.Sources.SourceURL = InputURL;
             }
-            MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(newCodex);
+            newCodex.Collection.AllCodices.Add(newCodex);
             progressVM.IncrementCounter();
             progressVM.ResetCounter();
 
@@ -111,7 +113,15 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
             try
             {
-                await CodexOperations.StartGetMetaDataProcess(newCodex)
+                using var collectionHandle = newCodex.Collection.Load();
+
+                if (collectionHandle == null)
+                {
+                    Logger.Warn($"Failed get metadata for item because the collection that contains it ({newCodex.Collection.Name}) failed to load to load.");
+                    return newCodex;
+                }
+                
+                await new CodexOperations(collectionHandle).StartGetMetaDataProcess(newCodex)
                 .ContinueWith(_ =>
                 {
                     progressVM.AddLogEntry(new(Severity.Info, "Metadata loaded."));

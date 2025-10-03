@@ -5,12 +5,14 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.ViewModels.Selection;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
@@ -19,22 +21,17 @@ namespace COMPASS.Common.ViewModels
 {
     public class ExportCollectionViewModel : WizardViewModel
     {
-        public ExportCollectionViewModel() : this(MainViewModel.CollectionVM.CurrentCollection) { }
+        public ExportCollectionViewModel() : this(TabsViewModel.GetInstance().ActiveTab!.CollectionHandle.CollectionVM.Collection) { }
         public ExportCollectionViewModel(CodexCollection collectionToExport)
         {
             CollectionToExport = collectionToExport;
-
-            ContentSelectorVM = new(collectionToExport)
-            {
-                CuratedCollection = new CodexCollection("__export__tmp")
-            };
-
+            ContentSelectorVM = new(collectionToExport);
             UpdateSteps();
         }
 
         public CollectionContentSelectorViewModel ContentSelectorVM { get; set; }
 
-        public CodexCollection CollectionToExport { get; set; }
+        public CodexCollection CollectionToExport { get; }
 
         public override string WindowTitle { get; } = "Export Collection";
         
@@ -57,12 +54,12 @@ namespace COMPASS.Common.ViewModels
 
         private RelayCommand? _applyActiveFiltersCommand;
         public RelayCommand ApplyActiveFiltersCommand => _applyActiveFiltersCommand ??=
-            new(ApplyActiveFilters, () => MainViewModel.CollectionVM.FilterVM.HasActiveFilters);
+            new(ApplyActiveFilters, () => TabsViewModel.GetInstance().ActiveTab?.FilterVM.HasActiveFilters ?? false);
         private void ApplyActiveFilters()
         {
             foreach (var selectableCodex in ContentSelectorVM.SelectableCodices)
             {
-                selectableCodex.Selected = MainViewModel.CollectionVM.FilterVM.FilteredCodices!.Contains(selectableCodex.Codex);
+                selectableCodex.Selected = TabsViewModel.GetInstance().ActiveTab!.FilterVM.FilteredCodices!.Contains(selectableCodex.Codex);
             }
             ContentSelectorVM.RaiseSelectedCodicesCountChanged();
         }
@@ -121,23 +118,22 @@ namespace COMPASS.Common.ViewModels
                 DefaultExtension = Constants.SatchelExtension
             });
 
-            if (saveFile != null)
-            {
-                return saveFile.Path.AbsolutePath;
-            }
-            return null;
+            return saveFile?.Path.AbsolutePath;
         }
 
         public async Task ExportToFile(string targetPath)
         {
             var progressVM = ProgressViewModel.GetInstance();
-            var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
 
+            StorageStrategy targetFormat = StorageStrategy.Xml; //Could add new formats in the future
+            var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(targetFormat);
+            
             try
             {
+                
                 //make sure to save first
-                await collectionStorageService.AllocateNewCollection(ContentSelectorVM.CuratedCollection);
-                collectionStorageService.Save(ContentSelectorVM.CuratedCollection);
+                await storageService.AllocateNewCollection(ContentSelectorVM.CuratedCollection);
+                storageService.Save(ContentSelectorVM.CuratedCollection);
 
                 using var archive = ZipArchive.Create();
 
@@ -172,12 +168,12 @@ namespace COMPASS.Common.ViewModels
                 }
 
                 //Save changes
-                collectionStorageService.SaveCodices(ContentSelectorVM.CuratedCollection);
+                storageService.SaveCodices(ContentSelectorVM.CuratedCollection);
 
-                //Now add xml files
-                collectionStorageService.AddCollectionToArchive(archive, ContentSelectorVM.CuratedCollection);
+                //Now add files
+                storageService.AddCollectionToArchive(archive, ContentSelectorVM.CuratedCollection);
 
-                //Add version so we can check compatibility when importing
+                //Add the version so we can check compatibility when importing
                 SatchelInfo info = new();
                 archive.AddEntry(Constants.SatchelInfoFileName, new MemoryStream(JsonSerializer.SerializeToUtf8Bytes(info)));
 
@@ -202,7 +198,7 @@ namespace COMPASS.Common.ViewModels
             }
             finally
             {
-                collectionStorageService.OnCollectionDeleted(ContentSelectorVM.CuratedCollection);
+                storageService.DeleteCollection(ContentSelectorVM.CuratedCollection);
             }
         }
 

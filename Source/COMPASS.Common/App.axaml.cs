@@ -8,6 +8,7 @@ using Avalonia.Threading;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
+using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common;

@@ -1,0 +1,168 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Interfaces.ViewModels;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Import;
+
+namespace COMPASS.Common.ViewModels.Main;
+
+public class CodexCollectionVM : ViewModelBase
+{
+    public CodexCollectionVM(string identifier, CodexCollection collection, ICodexCollectionStorageService storageService)
+    {
+        Identifier = identifier;
+        Collection = collection;
+            
+        _storageService = storageService;
+        _notificationService = ServiceResolver.Resolve<INotificationService>();
+    }
+
+    private readonly ICodexCollectionStorageService _storageService;
+    private readonly INotificationService _notificationService;
+        
+    public CodexCollection Collection { get; }
+        
+    /// <summary>
+    /// A string that identifies this collection, such as its path
+    /// </summary>
+    public string Identifier { get; private set; }
+
+    /// <summary>
+    /// The owners of the collection 
+    /// </summary>
+    public IList<CollectionHandle> Owners { get; } = [];
+        
+    public bool IsLoaded => Owners.Any();
+
+    #region Load-Save Methods
+    
+    public CollectionHandle? Load()
+    {
+        var handle = new CollectionHandle(this);
+        
+        if (IsLoaded)
+        {
+            //Already loaded by an existing owner, no need to load it again
+            Owners.Add(handle);
+            return handle;
+        }
+            
+        int loadResult = _storageService.Load(Collection);
+        if (loadResult == 0) //0 means success
+        {
+            Owners.Add(handle);
+            return handle;
+        }
+        else if (loadResult < 0)
+        {
+            string msg = loadResult switch
+            {
+                -1 => "The save file for the Tags seems to be corrupted and could not be read.",
+                -2 => "The save file with all items seems to be corrupted and could not be read.",
+                -3 => "Both the save files with tags and items seem to be corrupted and could not be read.",
+                _ => ""
+            };
+            Notification error = new("Failed to Load Collection", $"Could not load {Collection.Name}. \n" + msg, Severity.Error);
+            _notificationService.ShowDialog(error);
+        }
+            
+        return null;
+    }
+
+    public void Unload(CollectionHandle handle)
+    {
+        Owners.Remove(handle);
+
+        //if no more owners, collection can be unloaded
+        if (!Owners.Any())
+        {
+            _storageService.Unload(Collection);
+        }
+    }
+
+    public void Save(CollectionHandle handle)
+    {
+        if (Owners.Contains(handle))
+        {
+            _storageService.Save(Collection);
+        }
+        else
+        {
+            Logger.Warn($"Someone tried to save with expired handle");
+        }
+    }
+    
+    public void SaveCodices(CollectionHandle handle)
+    {
+        if (Owners.Contains(handle))
+        {
+            _storageService.SaveCodices(Collection);
+        }
+        else
+        {
+            Logger.Warn($"Someone tried to save codices with expired handle");
+        }
+    }
+    #endregion
+    
+    public async Task AutoImport()
+    {
+        //Start Auto Imports
+        using ImportFilesViewModel folderImportVM = new(autoImport: true);
+        folderImportVM.NonRecursiveDirectories = Collection.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList() ?? [];
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        await folderImportVM.Import();
+    }
+    
+    public void RenameCollection(string newCollectionName)
+    {
+        string oldName = Collection.Name;
+        Collection.Name = newCollectionName;
+        Identifier = Collection.Name;
+        
+        //TODO, check if CollectionManager should be notified of name changes for AllCollectionNames list
+        
+        _storageService.OnCollectionRenamed(oldName, newCollectionName);
+        ServiceResolver.Resolve<IThumbnailStorageService>().OnCollectionRenamed(Collection);
+
+        Logger.Info($"Renamed {oldName} to {newCollectionName}");
+    }
+
+    public bool CanDeleteCollection(CollectionHandle handle)
+    {
+        if (Owners.Count > 1)
+        {
+            Logger.Warn("The collection is open in another tab or window");
+            return false;
+        }
+
+        if (Owners.SingleOrDefault() != handle)
+        {
+            Logger.Warn($"Cannot delete the collection because it doesn't have a valid handle");
+            return false;
+        }
+
+        return true;
+    }
+    
+    public bool DeleteCollection(CollectionHandle handle)
+    {
+        if (!CanDeleteCollection(handle)) return false;
+        
+        _storageService.Unload(Collection);
+        _storageService.DeleteCollection(Collection);
+        return true;
+    }
+
+    public async Task ExportTags()
+    {
+        await _storageService.ExportTags(Collection);
+    }
+}

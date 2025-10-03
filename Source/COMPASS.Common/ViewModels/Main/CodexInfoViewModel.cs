@@ -3,7 +3,7 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Services;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.Main
 {
     public class CodexInfoViewModel : ViewModelBase
     {
@@ -12,6 +12,8 @@ namespace COMPASS.Common.ViewModels
         {
             _preferencesService = PreferencesService.GetInstance();
         }
+        
+        private FilterViewModel? _FilterVm => TabsViewModel.GetInstance().ActiveTab?.FilterVM;
 
         private readonly PreferencesService _preferencesService;
         private Codex? _displayedCodex;
@@ -62,14 +64,14 @@ namespace COMPASS.Common.ViewModels
 
         private RelayCommand<string>? _addAuthorFilterCommand;
         public RelayCommand<string> AddAuthorFilterCommand => _addAuthorFilterCommand ??= new(AddAuthorFilter);
-        private void AddAuthorFilter(string? author) => MainViewModel.CollectionVM.FilterVM.AddFilter(new AuthorFilter(author ?? ""));
+        private void AddAuthorFilter(string? author) => _FilterVm?.AddFilter(new AuthorFilter(author ?? ""));
 
         private RelayCommand<string>? _addPublisherFilterCommand;
         public RelayCommand<string> AddPublisherFilterCommand => _addPublisherFilterCommand ??= new(AddPublisherFilter);
-        private void AddPublisherFilter(string? publisher) => MainViewModel.CollectionVM.FilterVM.AddFilter(new PublisherFilter(publisher ?? ""));
+        private void AddPublisherFilter(string? publisher) => _FilterVm?.AddFilter(new PublisherFilter(publisher ?? ""));
 
         private RelayCommand<Tag>? _addTagFilterCommand;
         public RelayCommand<Tag> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilter);
-        private void AddTagFilter(Tag? tag) => MainViewModel.CollectionVM.FilterVM.AddFilter(new TagFilter(tag!));
+        private void AddTagFilter(Tag? tag) => _FilterVm?.AddFilter(new TagFilter(tag!));
     }
 }

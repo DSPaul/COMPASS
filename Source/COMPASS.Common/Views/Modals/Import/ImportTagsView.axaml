@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Modals.Import"
+             xmlns:views="using:COMPASS.Common.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Views.Modals.Import.ImportTagsView"
+             x:DataType="vm:ImportTagsViewModel">
+    <Grid RowDefinitions="*,auto,auto">
+        <views:TagSelectorView DataContext="{Binding TagsSelectorVM}" />
+        <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/>
+        <Button Content="Import" Margin="5" Grid.Row="2"
+                Background="{StaticResource AccentColorMuted}"
+                Command="{Binding ImportTagsCommand}"/>
+    </Grid>
+</UserControl>

@@ -14,6 +14,9 @@ namespace COMPASS.Common.Sources
 {
     public class GenericOnlineMetaDataSource : MetaDataSource
     {
+        public GenericOnlineMetaDataSource(CodexCollection targetCollection) :  
+            base(targetCollection) { }
+        
         public override MetaDataSourceType Type => MetaDataSourceType.GenericURL;
 
         public override Task<IMagickImage?> FetchCover(SourceSet sources) => throw new NotImplementedException();

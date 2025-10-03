@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -7,7 +8,7 @@ using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
+using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -17,21 +18,26 @@ using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
     public class CodexEditViewModel : CodexEditBaseViewModel
     {
-        public CodexEditViewModel(Codex? toEdit = null) : base()
+        public CodexEditViewModel(Codex? toEdit = null, CollectionTabVM? tabVm = null) 
+            : base(tabVm ?? TabsViewModel.GetInstance().ActiveTab ?? throw new NoTabException("An active tab is expected when editing a codex"))
         {
             _editedCodex = toEdit;
             //apply all changes to new codex so they can be canceled, only copy changes over after OK is clicked
-            _tempCodex = _editedCodex == null ? CodexOperations.CreateNewCodex(MainViewModel.CollectionVM.CurrentCollection) : new(_editedCodex);
+            _tempCodex = _editedCodex == null ? CodexOperations.CreateNewCodex(TabVM.CollectionHandle.CollectionVM.Collection) : new(_editedCodex);
 
             TempCodex.LoadCover();
 
+            AuthorList = TabVM.FilterVM.AuthorList.ToList();
+            
             //Apply right checkboxes in AllTags
             foreach (var node in AllTreeNodes)
             {
@@ -64,6 +70,8 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             set => SetProperty(ref _showLoading, value);
         }
 
+        public List<string> AuthorList { get; }
+        
         #endregion
 
         #region Methods and Commands
@@ -119,14 +127,14 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public async Task QuickCreateTag()
         {
             //keep track of the count to check of tags were created
-            int tagCount = MainViewModel.CollectionVM.CurrentCollection.RootTags.Count;
+            int tagCount = TempCodex.Collection.RootTags.Count;
 
             TagEditViewModel tagEditVm = new(null, createNew: true);
             var modal = new ModalWindow(tagEditVm);
             await modal.ShowDialog(App.MainWindow); //TODO make this the window of the codex edit
 
             //TODO, we can now create tags outside of root, this is not longer correct
-            if (MainViewModel.CollectionVM.CurrentCollection.RootTags.Count > tagCount) //new tag was created
+            if (TempCodex.Collection.RootTags.Count > tagCount) //new tag was created
             {
                 //recalculate treeview source
                 _allTagsAsTreeNodes = null;
@@ -153,7 +161,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             if (!CreateNewCodex)
             {
-                await CodexOperations.DeleteCodex(_editedCodex);
+                await TabVM.CodexCommands.DeleteCodex(_editedCodex);
             }
             
             TempCodex.Dispose();
@@ -224,14 +232,15 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             }
             else
             {
-                MainViewModel.CollectionVM.CurrentCollection.AllCodices.Add(TempCodex);
+                TempCodex.Collection.AllCodices.Add(TempCodex);
             }
 
-            ServiceResolver.Resolve<ICodexCollectionStorageService>().Save(TempCodex.Collection);
+            TempCodex.Collection.Save();
 
             //Add new Authors, Publishers, ect. to metadata lists
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
+            //TODO check if we still need this, should be handled by event subscription in FilterVM
+            // _tabVm.FilterVM.PopulateMetaDataCollections();
+            // _tabVm.FilterVM.ReFilter();
             CloseAction();
         }
         

@@ -5,13 +5,16 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels;
+using COMPASS.Common.ViewModels.Main;
 using ImageMagick;
 
 namespace COMPASS.Common.Sources
 {
     public class FileMetaDataSource : MetaDataSource
     {
+        public FileMetaDataSource(CodexCollection targetCollection) :  
+            base(targetCollection) { }
+        
         public override MetaDataSourceType Type => MetaDataSourceType.File;
 
         public override Task<IMagickImage?> FetchCover(SourceSet sources) => throw new System.NotImplementedException();
@@ -33,8 +36,7 @@ namespace COMPASS.Common.Sources
                     metaData.Tags.AddIfMissing(tag);
                 }
             }
-
-            MainViewModel.CollectionVM.FilterVM.ReFilter();
+             
             return Task.FromResult(metaData);
         }
     }

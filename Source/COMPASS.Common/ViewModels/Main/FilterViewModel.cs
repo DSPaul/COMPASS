@@ -10,10 +10,11 @@ using COMPASS.Common.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.Main
 {
     public class FilterViewModel : ViewModelBase
     {
@@ -30,8 +31,8 @@ namespace COMPASS.Common.ViewModels
             IncludedFilters.CollectionChanged += (_, _) => UpdateIncludedCodices();
             ExcludedFilters.CollectionChanged += (_, _) => UpdateExcludedCodices();
 
-            _allCodices.CollectionChanged += (_, _) => SubscribeToCodexProperties();
-            SubscribeToCodexProperties();
+            _allCodices.CollectionChanged += OnCodexCollectionChanged;
+            SubscribeToCodexProperties(_allCodices);
 
             PopulateMetaDataCollections();
 
@@ -308,17 +309,49 @@ namespace COMPASS.Common.ViewModels
         #endregion
 
         #region Methods and Commands
-        private void SubscribeToCodexProperties()
+
+        private void OnCodexCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            var oldCodices = e.OldItems?.Cast<Codex>() ?? [];
+            UnSubscribeFromCodexProperties(oldCodices);
+                
+            var newCodices = e.NewItems?.Cast<Codex>() ?? [];
+            SubscribeToCodexProperties(newCodices);
+        }
+        
+        private void SubscribeToCodexProperties(IEnumerable<Codex> codices)
         {
             //cause derived lists to update when codex gets updated
-            foreach (Codex c in _allCodices)
+            foreach (Codex c in codices)
             {
-                c.PropertyChanged += (_, _) => OnPropertyChanged(nameof(Favorites));
-                c.PropertyChanged += (_, _) => OnPropertyChanged(nameof(RecentCodices));
-                c.PropertyChanged += (_, _) => OnPropertyChanged(nameof(MostOpenedCodices));
+                c.PropertyChanged += OnCodexPropsChanged;
+            }
+        }
+        
+        private void UnSubscribeFromCodexProperties(IEnumerable<Codex> codices)
+        {
+            foreach (Codex c in codices)
+            {
+                c.PropertyChanged -= OnCodexPropsChanged;
             }
         }
 
+        private void OnCodexPropsChanged(object? _,  PropertyChangedEventArgs e)
+        {
+            //Do not refilter on props that don't affect filters
+            if (e.PropertyName == nameof(Codex.Cover) ||
+                e.PropertyName == nameof(Codex.Thumbnail))
+            {
+                return;
+            }
+            
+            OnPropertyChanged(nameof(Favorites));
+            OnPropertyChanged(nameof(RecentCodices));
+            OnPropertyChanged(nameof(MostOpenedCodices));
+            PopulateMetaDataCollections();
+            ReFilter();
+        }
+        
         private void InitSortingProperties()
         {
             //double check on typos by checking if all property names exist in codex class

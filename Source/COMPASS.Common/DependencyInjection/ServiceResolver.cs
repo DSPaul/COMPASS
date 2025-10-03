@@ -15,4 +15,8 @@ public static class ServiceResolver
     public static T Resolve<T>() where T : notnull => _container != null
             ? _container.Resolve<T>()
             : throw new Exception("Cannot resolve before it is initialized");
+    
+    public static T ResolveKeyed<T>(object key) where T : notnull => _container != null
+        ? _container.ResolveKeyed<T>(key)
+        : throw new Exception("Cannot resolve before it is initialized");
 }

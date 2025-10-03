@@ -8,6 +8,7 @@
              xmlns:enums="using:COMPASS.Common.Models.Enums"
              xmlns:converters="clr-namespace:COMPASS.Common.Converters"
              xmlns:views="clr-namespace:COMPASS.Common.Views"
+             xmlns:modals="clr-namespace:COMPASS.Common.Views.Modals"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Modals.SettingsView"
              x:DataType="vm:SettingsViewModel"
@@ -366,7 +367,7 @@
             </ScrollViewer>
         </TabItem>
         <TabItem Header="Tools">
-            <views:ToolsView/>
+            <modals:ToolsView/>
         </TabItem>
         <TabItem Header="About">
             <ScrollViewer>

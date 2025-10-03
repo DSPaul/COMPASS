@@ -16,7 +16,8 @@
         Focusable="True"
         x:Class="COMPASS.Common.Views.Windows.ModalWindow"
         x:DataType="viewModels:IModalViewModel"
-        Title="{Binding WindowTitle}">
+        Title="{Binding WindowTitle}"
+        Closed="TopLevel_OnClosed">
     
     <Window.DataTemplates>
         <DataTemplate DataType="editVm:TagEditViewModel">

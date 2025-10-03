@@ -11,6 +11,8 @@ using COMPASS.Common.Tools;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using COMPASS.Common.Services.StateManagers;
+using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.ViewModels.Modals;
 
@@ -20,13 +22,11 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
     private string _newDataLocation;
 
     private readonly IEnvironmentVarsService _envVarsService;
-    private readonly ICodexCollectionStorageService _collectionStorageService;
     private readonly INotificationService _notificationService;
 
     public ChangeDataLocationViewModel(string newDataLocation)
     {
         _envVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
-        _collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
         _notificationService = ServiceResolver.Resolve<INotificationService>();
 
         _currentDataLocation = _envVarsService.CompassDataPath;
@@ -89,7 +89,7 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
         CloseAction();
 
         //save stuff in old location
-        _collectionStorageService.Save(MainViewModel.CollectionVM.CurrentCollection);
+        CollectionManager.SaveAllCollections();
         PreferencesService.GetInstance().SavePreferences();
 
         //update the location

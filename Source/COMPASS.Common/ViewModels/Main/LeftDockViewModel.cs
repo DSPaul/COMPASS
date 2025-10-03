@@ -2,29 +2,29 @@
 using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.SidePanels;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.Main
 {
     public class LeftDockViewModel : ViewModelBase, IDealsWithTabControl
     {
-        public LeftDockViewModel(MainViewModel mainViewModel)
+        public LeftDockViewModel(TabsViewModel tabsViewModel)
         {
-            _mainVM = mainViewModel;
+            _tabsVM = tabsViewModel;
             _preferencesService = PreferencesService.GetInstance();
 
             AddCodexPanelVM = new();
             LogsVM = new();
         }
 
-        private MainViewModel _mainVM;
+        private TabsViewModel _tabsVM;
         private PreferencesService _preferencesService;
 
         public AddCodexPanelVM AddCodexPanelVM { get; }
         public LogsVM LogsVM { get; }
 
-        public MainViewModel MainVM
+        public TabsViewModel TabsVM
         {
-            get => _mainVM;
-            init => SetProperty(ref _mainVM, value);
+            get => _tabsVM;
+            init => SetProperty(ref _tabsVM, value);
         }
 
         public int SelectedTab

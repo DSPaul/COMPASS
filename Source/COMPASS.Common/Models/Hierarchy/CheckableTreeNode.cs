@@ -102,11 +102,11 @@ namespace COMPASS.Common.Models.Hierarchy
             }
 
             InternalSetChecked(newValue);
-            Updated?.Invoke(IsChecked);
+            Updated?.Invoke(this, IsChecked);
             Parent?.Update();
         }
 
-        public event Action<bool?>? Updated;
+        public event EventHandler<bool?>? Updated;
 
         public T? GetCheckedItems()
         {

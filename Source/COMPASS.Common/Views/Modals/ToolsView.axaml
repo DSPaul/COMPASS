@@ -8,7 +8,7 @@
              xmlns:interface="clr-namespace:COMPASS.Common.Interfaces.ViewModels"
              xmlns:controls="clr-namespace:COMPASS.Common.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="COMPASS.Common.Views.ToolsView"
+             x:Class="COMPASS.Common.Views.Modals.ToolsView"
              x:DataType="vm:ToolsViewModel">
     <ItemsControl ItemsSource="{Binding Tools}">
         <ItemsControl.DataTemplates>

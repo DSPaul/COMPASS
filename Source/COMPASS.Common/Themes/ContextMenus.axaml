@@ -1,6 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:vm ="clr-namespace:COMPASS.Common.ViewModels.Layouts"
+                    xmlns:vm ="clr-namespace:COMPASS.Common.ViewModels.Main"
+                    xmlns:managers ="clr-namespace:COMPASS.Common.Services.StateManagers"
                     xmlns:materialIcons="using:Material.Icons.Avalonia">
     <Design.PreviewWith>
         <StackPanel Orientation="Horizontal">
@@ -10,27 +11,27 @@
         
     </Design.PreviewWith>
     
-    <ContextMenu x:Key="CodexContextMenu" x:DataType="vm:LayoutViewModel">
+    <ContextMenu x:Key="CodexContextMenu" x:DataType="vm:CollectionTabVM">
         <MenuItem Header="Open Locally" 
                   Command="{Binding CodexCommands.OpenCodexLocallyCommand}"
-                  CommandParameter="{Binding SelectedCodex}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodex}"
                   Icon="{materialIcons:MaterialIconExt Kind=FileOutline}"/>
         
         <MenuItem Header="Open Online"
                   Command="{Binding CodexCommands.OpenCodexOnlineCommand}"
-                  CommandParameter="{Binding SelectedCodex}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodex}"
                   Icon="{materialIcons:MaterialIconExt Kind=Web}"/>
         
         <Separator/>
         
         <MenuItem Header="Edit..." InputGesture="Ctrl + E"
                   Command="{Binding CodexCommands.EditCodexCommand}"
-                  CommandParameter="{Binding SelectedCodex}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodex}"
                   Icon="{materialIcons:MaterialIconExt Kind=Edit}"/>
         
-        <MenuItem IsChecked="{Binding SelectedCodex.Favorite}" InputGesture="Ctrl + F"
+        <MenuItem IsChecked="{Binding CurrentLayout.SelectedCodex.Favorite}" InputGesture="Ctrl + F"
                   Command="{Binding CodexCommands.FavoriteCodexCommand}"
-                  CommandParameter="{Binding SelectedCodex}">
+                  CommandParameter="{Binding CurrentLayout.SelectedCodex}">
             <MenuItem.Icon>
                 <materialIcons:MaterialIcon Kind="Favorite" Foreground="{Binding $parent[MenuItem].Tag}"/>
             </MenuItem.Icon>
@@ -47,8 +48,8 @@
         </MenuItem>
         
         <MenuItem InputGesture="Ctrl + I" 
-                  IsChecked="{Binding CodexInfoVM.ShowCodexInfo}"
-                  Command="{Binding CodexInfoVM.ToggleCodexInfoCommand}"
+                  IsChecked="{Binding CurrentLayout.CodexInfoVM.ShowCodexInfo}"
+                  Command="{Binding CurrentLayout.CodexInfoVM.ToggleCodexInfoCommand}"
                   Icon="{materialIcons:MaterialIconExt Kind=BookInformationVariant}">
             <MenuItem.Theme>
                 <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
@@ -64,32 +65,32 @@
         
         <MenuItem Header="Renew MetaData"
                   Command="{Binding CodexCommands.GetMetaDataCommand}"
-                  CommandParameter="{Binding SelectedCodex}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodex}"
                   Icon="{materialIcons:MaterialIconExt Kind=FileRefreshOutline}"/>
         
         <MenuItem Header="Renew Cover"
                   Command="{Binding CodexCommands.GetCoverCommand}"
-                  CommandParameter="{Binding SelectedCodex}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodex}"
                   Icon="{materialIcons:MaterialIconExt Kind=ImageRefreshOutline}"/>
         
         <Separator/>
         
         <MenuItem Header="Show in Explorer"
                   Command="{Binding CodexCommands.ShowInExplorerCommand}"
-                  CommandParameter="{Binding SelectedCodex}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodex}"
                   Icon="{materialIcons:MaterialIconExt Kind=FolderEyeOutline}"/>
         
         <MenuItem Header="Move to Collection"
-                  ItemsSource="{Binding MVM.CollectionVM.CollectionDirectories}"
+                  ItemsSource="{x:Static managers:CollectionManager.CollectionNames}"
                   Icon="{materialIcons:MaterialIconExt Kind=FolderMoveOutline}">
             <MenuItem.Styles>
                 <Style Selector="MenuItem MenuItem">
-                    <Setter Property="Command" Value="{Binding $parent[MenuItem].((vm:LayoutViewModel)DataContext).CodexCommands.MoveToCollectionCommand}"/>
+                    <Setter Property="Command" Value="{Binding $parent[MenuItem].((vm:CollectionTabVM)DataContext).CodexCommands.MoveToCollectionCommand}"/>
                     <Setter Property="CommandParameter">
                         <Setter.Value>
                             <MultiBinding Converter="{StaticResource MultiParamConverter}">
                                 <Binding Path="$self.Header"/>
-                                <Binding Path="$parent[MenuItem].((vm:LayoutViewModel)DataContext).SelectedCodex"/>
+                                <Binding Path="$parent[MenuItem].((vm:CollectionTabVM)DataContext).CurrentLayout.SelectedCodex"/>
                             </MultiBinding>
                         </Setter.Value>
                     </Setter>
@@ -100,57 +101,57 @@
         <MenuItem Header="Remove" InputGesture="Delete"
                   ToolTip.Tip="Removes the item from COMPASS"
                   Command="{Binding CodexCommands.DeleteCodexCommand}"
-                  CommandParameter="{Binding SelectedCodex}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodex}"
                   Icon="{materialIcons:MaterialIconExt Kind=Delete}"/>
         
         <MenuItem Header="Remove Forever" InputGesture="Alt+Delete"
                   Command="{Binding CodexCommands.BanishCodexCommand}"
-                  CommandParameter="{Binding SelectedCodex}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodex}"
                   ToolTip.Tip="Removes the item from COMPASS and excludes it from future imports."
                   Icon="{materialIcons:MaterialIconExt Kind=DeleteForever}"/>
     </ContextMenu>
 
-    <ContextMenu x:Key="MultiCodexContextMenu" x:DataType="vm:LayoutViewModel">
+    <ContextMenu x:Key="MultiCodexContextMenu" x:DataType="vm:CollectionTabVM">
         <MenuItem Header="Open Selection" InputGesture="Enter"
                   Command="{Binding CodexCommands.OpenSelectedCodicesCommand}"
-                  CommandParameter="{Binding SelectedCodices}" 
+                  CommandParameter="{Binding CurrentLayout.SelectedCodices}" 
                   Icon="{materialIcons:MaterialIconExt Kind=FileMultipleOutline}" />
         
         <MenuItem Header="Bulk Edit Selection..." InputGesture="Ctrl + E"
                   Command="{Binding CodexCommands.EditCodicesCommand}"
-                  CommandParameter="{Binding SelectedCodices}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodices}"
                   Icon="{materialIcons:MaterialIconExt Kind=Edit}" />
         
         <MenuItem Header="Favorite" InputGesture="Ctrl + F"
                   Command="{Binding CodexCommands.FavoriteCodicesCommand}"
-                  CommandParameter="{Binding SelectedCodices}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodices}"
                   Icon="{materialIcons:MaterialIconExt Kind=Favorite}"/>
         
         <Separator />
         
         <MenuItem Header="Renew MetaData"
                   Command="{Binding CodexCommands.GetMetaDataBulkCommand}"
-                  CommandParameter="{Binding SelectedCodices}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodices}"
                   Icon="{materialIcons:MaterialIconExt Kind=FileRefreshOutline}"/>
         
         <MenuItem Header="Renew Cover" 
                   Command="{Binding CodexCommands.GetCoverBulkCommand}"
-                  CommandParameter="{Binding SelectedCodices}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodices}"
                   Icon="{materialIcons:MaterialIconExt Kind=ImageRefreshOutline}"/>
         
         <Separator />
         
         <MenuItem Header="Move to Collection"
-                  ItemsSource="{Binding MVM.CollectionVM.CollectionDirectories}"
+                  ItemsSource="{x:Static managers:CollectionManager.CollectionNames}"
                   Icon="{materialIcons:MaterialIconExt Kind=FolderMoveOutline}">
             <MenuItem.Styles>
                 <Style Selector="MenuItem MenuItem">
-                    <Setter Property="Command" Value="{Binding $parent[MenuItem].((vm:LayoutViewModel)DataContext).CodexCommands.MoveToCollectionCommand}"/>
+                    <Setter Property="Command" Value="{Binding $parent[MenuItem].((vm:CollectionTabVM)DataContext).CodexCommands.MoveToCollectionCommand}"/>
                     <Setter Property="CommandParameter">
                         <Setter.Value>
                             <MultiBinding Converter="{StaticResource MultiParamConverter}">
                                 <Binding Path="$self.Header"/>
-                                <Binding Path="$parent[MenuItem].((vm:LayoutViewModel)DataContext).SelectedCodices"/>
+                                <Binding Path="$parent[MenuItem].((vm:CollectionTabVM)DataContext).CurrentLayout.SelectedCodices"/>
                             </MultiBinding>
                         </Setter.Value>
                     </Setter>
@@ -161,13 +162,13 @@
         <MenuItem Header="Remove" InputGesture="Delete"
                   ToolTip.Tip="Removes the items from COMPASS"
                   Command="{Binding CodexCommands.DeleteCodicesCommand}"
-                  CommandParameter="{Binding SelectedCodices}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodices}"
                   Icon="{materialIcons:MaterialIconExt Kind=Delete}"/>
         
         <MenuItem Header="Remove Forever" InputGesture="Alt+Delete"
                   ToolTip.Tip="Removes the items from COMPASS and excludes it from future imports."
                   Command="{Binding CodexCommands.BanishCodicesCommand}"
-                  CommandParameter="{Binding SelectedCodices}"
+                  CommandParameter="{Binding CurrentLayout.SelectedCodices}"
                   Icon="{materialIcons:MaterialIconExt Kind=DeleteForever}"/>
     </ContextMenu>
     <!--#endregion-->

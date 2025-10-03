@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Exceptions;
 using COMPASS.Common.Models;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
     public class CodexBulkEditViewModel : CodexEditBaseViewModel
     {
-        public CodexBulkEditViewModel(List<Codex> toEdit) : base()
+        public CodexBulkEditViewModel(List<Codex> toEdit, CollectionTabVM? tabVm = null) 
+            : base(tabVm ?? TabsViewModel.GetInstance().ActiveTab ?? throw new NoTabException("An active tab is expected when editing a codex"))
         {
             if (toEdit == null || toEdit.Count < 2)
             {
@@ -206,7 +209,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             }
 
             //Update lists of all authors, publishers, ect.
-            MainViewModel.CollectionVM.FilterVM.PopulateMetaDataCollections();
+            TabsViewModel.GetInstance().ActiveTab?.FilterVM.PopulateMetaDataCollections();
 
             //Add and remove Tags
             foreach (Codex f in _editedCodices)

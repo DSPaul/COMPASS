@@ -2,13 +2,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:COMPASS.Common.ViewModels"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Main"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:tools="using:COMPASS.Common.Tools"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:panels="using:COMPASS.Common.Views.SidePanels"
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="450"
-             x:Class="COMPASS.Common.Views.LeftDockView"
+             x:Class="COMPASS.Common.Views.Main.LeftDockView"
              x:DataType="vm:LeftDockViewModel">
     <UserControl.Styles>
         <Style Selector=":is(panels|SidePanel)">
@@ -61,15 +61,15 @@
         <TabItem IsVisible="False" /> <!--This tab is selected when collapsing-->
 
         <controls:CollapsableTabItem Header="Tags" Icon="TagMultiple">
-            <panels:TagsSidePanel DataContext="{Binding MainVM.CollectionVM.TagsVM}" />
+            <panels:TagsSidePanel DataContext="{Binding TabsVM.ActiveTab.TagsVM}" />
         </controls:CollapsableTabItem>
 
         <controls:CollapsableTabItem Header="Filters" Icon="Filter">
-            <panels:FiltersSidePanel DataContext="{Binding MainVM.CollectionVM.FilterVM}" />
+            <panels:FiltersSidePanel DataContext="{Binding TabsVM.ActiveTab.FilterVM}" />
         </controls:CollapsableTabItem>
 
         <controls:CollapsableTabItem Header="Layouts" Icon="ViewDashboardEdit">
-            <panels:LayoutsSidePanel DataContext="{Binding MainVM}" />
+            <panels:LayoutsSidePanel DataContext="{Binding TabsVM.ActiveTab}" />
         </controls:CollapsableTabItem>
 
         <controls:CollapsableTabItem Header="Add Items" Icon="BookAdd">

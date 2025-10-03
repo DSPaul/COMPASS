@@ -1,13 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Layouts;
+using COMPASS.Common.ViewModels.Main;
 
-namespace COMPASS.Common.Views;
+namespace COMPASS.Common.Views.Main;
 
 public partial class MainView : UserControl
 {
@@ -15,6 +12,14 @@ public partial class MainView : UserControl
     {
         InitializeComponent();
     }
+
+    private CollectionTabVM? ActiveTabVM => DataContext switch
+    {
+        MainViewModel mainVm => mainVm.TabsVM.ActiveTab,
+        TabsViewModel tabsVm => tabsVm.ActiveTab,
+        CollectionTabVM tabVm => tabVm,
+        _ => null
+    };
 
     private async void UserControl_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
     {
@@ -31,16 +36,23 @@ public partial class MainView : UserControl
 
             case Key.I:
                 // Ctrl + I toggle info
-                if (e.KeyModifiers == KeyModifiers.Control && DataContext is MainViewModel mvm)
                 {
-                    mvm.CurrentLayout.CodexInfoVM.ShowCodexInfo = !((MainViewModel)DataContext).CurrentLayout.CodexInfoVM.ShowCodexInfo;
-                    e.Handled = true;
+                    if (e.KeyModifiers == KeyModifiers.Control && ActiveTabVM != null)
+                    {
+                        ActiveTabVM.CurrentLayout.CodexInfoVM.ShowCodexInfo = !ActiveTabVM.CurrentLayout.CodexInfoVM.ShowCodexInfo;
+                        e.Handled = true;
+                    }
                 }
                 break;
 
             case Key.F5:
-                await MainViewModel.CollectionVM.Refresh();
-                e.Handled = true;
+                {
+                    if (ActiveTabVM != null)
+                    {
+                        await ActiveTabVM.Refresh();
+                    }
+                    e.Handled = true;
+                }
                 break;
         }
 
@@ -49,21 +61,21 @@ public partial class MainView : UserControl
     private async void CollectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         //only refresh if the selection changes from one collection to another
-        //so both a added and removed collection
-        if (e.AddedItems.Count > 0)
+        //so both an added and removed collection
+        if (e.AddedItems.Count > 0 && e.RemovedItems.Count > 0 && ActiveTabVM != null)
         {
-            await MainViewModel.CollectionVM.OnCollectionChanged();
+            await ActiveTabVM.ChangeToCollection(e.AddedItems.Cast<CodexCollectionVM>().First());
         }
     }
 
     private void LayoutSelection_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (sender is ComboBox cb && 
-            cb.DataContext is MainViewModel vm &&
+            ActiveTabVM != null &&
             e.AddedItems.Count > 0 &&
             e.AddedItems[0] is LayoutViewModel layoutVm)
         {
-            vm.ChangeLayoutCommand.Execute(layoutVm.LayoutType);
+            ActiveTabVM.ChangeLayoutCommand.Execute(layoutVm.LayoutType);
         }
     }
 }

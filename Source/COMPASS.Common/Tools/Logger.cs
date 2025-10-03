@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Autofac;
 using COMPASS.Common.DependencyInjection;
@@ -32,7 +33,10 @@ namespace COMPASS.Common.Tools
             LogsVM.AddLog(new(Severity.Warning, message));
             if (ex is null)
             {
-                FileLog?.Warn(message);
+                var stackTrace = new StackTrace(1, true);
+                FileLog?.Warn($"{message}\n" +
+                              $"Stack trace:\n" +
+                              $"{stackTrace}");
             }
             else
             {

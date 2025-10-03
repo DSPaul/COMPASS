@@ -33,7 +33,12 @@ public interface ICodexCollectionStorageService
 
     #region Import
 
-    Task<CodexCollection?> OpenSatchel(string? satchelPath = null);
+    /// <summary>
+    /// Unpack the satchel at the given location
+    /// </summary>
+    /// <param name="satchelPath"></param>
+    /// <returns>The collection id of the extracted collection</returns>
+    Task<string?> OpenSatchel(string? satchelPath = null);
 
     #endregion
 
@@ -48,5 +53,5 @@ public interface ICodexCollectionStorageService
     #endregion
 
     void OnCollectionRenamed(string oldname, string newName);
-    void OnCollectionDeleted(CodexCollection collection);
+    void DeleteCollection(CodexCollection collection);
 }

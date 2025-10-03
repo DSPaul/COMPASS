@@ -2,7 +2,9 @@
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Services;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels;
+using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.Views.Windows;
 
@@ -19,7 +21,7 @@ public partial class MainWindow : Window
         ProgressViewModel.GetInstance().CancelBackgroundTask();
         if (MainViewModel.SaveOnClose)
         {
-            ServiceResolver.Resolve<ICodexCollectionStorageService>().Save(MainViewModel.CollectionVM.CurrentCollection);
+            CollectionManager.SaveAllCollections();
             PreferencesService.GetInstance().SavePreferences();
         }
     }

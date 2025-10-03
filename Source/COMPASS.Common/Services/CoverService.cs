@@ -53,7 +53,7 @@ namespace COMPASS.Common.Services
                 {
                     ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                    MetaDataSource? source = MetaDataSource.GetSource(sourceType);
+                    MetaDataSource? source = MetaDataSource.GetSource(sourceType, codex.Collection);
                     if (source == null || !source.IsValidSource(codex.Sources)) continue;
                     coverFromSource = await source.FetchCover(codex.Sources);
                     if (coverFromSource != null) break;

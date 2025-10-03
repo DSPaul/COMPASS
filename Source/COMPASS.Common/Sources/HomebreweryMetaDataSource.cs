@@ -22,6 +22,9 @@ namespace COMPASS.Common.Sources
 {
     public class HomebreweryMetaDataSource : MetaDataSource
     {
+        public HomebreweryMetaDataSource(CodexCollection targetCollection) :  
+            base(targetCollection) { }
+        
         public override MetaDataSourceType Type => MetaDataSourceType.Homebrewery;
         public override bool IsValidSource(SourceSet sources)
             => sources.HasOnlineSource() && sources.SourceURL.Contains(new ImportURLViewModel(ImportSource.Homebrewery).ExampleURL);

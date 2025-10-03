@@ -8,7 +8,7 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Import;
-using COMPASS.Common.ViewModels.Modals.Import;
+using COMPASS.Common.ViewModels.Main;
 using Material.Icons;
 
 namespace COMPASS.Common.ViewModels.Layouts
@@ -17,6 +17,11 @@ namespace COMPASS.Common.ViewModels.Layouts
     {
         public LayoutViewModel()
         {
+            var tabsVm = TabsViewModel.GetInstance();
+            tabsVm.TabCreated += OnTabCreated;
+            tabsVm.TabClosed += OnTabClosed;
+            tabsVm.TabChanged += OnTabChanged;
+            
             CodexInfoVM = new CodexInfoViewModel();
         }
 
@@ -46,10 +51,10 @@ namespace COMPASS.Common.ViewModels.Layouts
         public abstract MaterialIconKind Icon { get; }
         
         public string LongName => $"{Name} Layout";
-
-        //TODO: commands should be in a viewmodel rather than operations
-        public CodexOperations CodexCommands { get; init; } = new();
+        
         public CodexInfoViewModel CodexInfoVM { get; }
+        
+        public FilterViewModel? FilterVM => TabsViewModel.GetInstance().ActiveTab?.FilterVM;
         
         private Codex? _selectedCodex;
         public Codex? SelectedCodex
@@ -77,6 +82,26 @@ namespace COMPASS.Common.ViewModels.Layouts
         
             
         #endregion
+
+        private void OnTabCreated(object? sender, CollectionTabVM createdCollectionTabVM)
+        {
+            createdCollectionTabVM.CollectionChanged += OnCollectionChanged;
+        }
+        
+        private void OnTabClosed(object? sender, CollectionTabVM removedCollectionTabVM)
+        {
+            removedCollectionTabVM.CollectionChanged -= OnCollectionChanged;
+        }
+        
+        private void OnTabChanged(object? sender, CollectionTabVM? selectedTab)
+        {
+            OnPropertyChanged(nameof(FilterVM));
+        }
+        
+        public void OnCollectionChanged(object? sender, EventArgs? eventArgs)
+        {
+            OnPropertyChanged(nameof(FilterVM));
+        }
         
         public void OnDragOver(object? sender, DragEventArgs e)
         {
@@ -106,7 +131,7 @@ namespace COMPASS.Common.ViewModels.Layouts
                 //check for folder import
                 if (folders.Count != 0)
                 {
-                    ImportFilesViewModel folderImportVM = new(autoImport: false)
+                    using ImportFilesViewModel folderImportVM = new(autoImport: false)
                     {
                         RecursiveDirectories = folders,
                         Files = files
@@ -118,9 +143,12 @@ namespace COMPASS.Common.ViewModels.Layouts
                     //If no files or folders, to nothing
                     case 0:
                         return;
-                    //Check if it's a cmpss file, do import if so
+                    //Check if it's a satchel file, do import if so
                     case 1 when files.First().EndsWith(Constants.SatchelExtension):
-                        await MainViewModel.CollectionVM.ImportSatchelAsync(files.First());
+                        if (TabsViewModel.GetInstance().ActiveTab is CollectionTabVM activeTab)
+                        {
+                            await activeTab.ImportSatchelAsync(files.First());
+                        }
                         break;
                     //If none of the above, just import the files
                     default:

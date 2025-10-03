@@ -3,31 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Tools;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.Selection
 {
     /// <summary>
     /// Class with logic to select only a subset of the content in a collection for import and export purposes
     /// </summary>
     public class CollectionContentSelectorViewModel : WizardViewModel
     {
-        public CollectionContentSelectorViewModel(CodexCollection completeCollection)
+        public CollectionContentSelectorViewModel(CodexCollection collection)
         {
-            CompleteCollection = completeCollection;
-
-            if (MainViewModel.CollectionVM.CurrentCollection == completeCollection)
-            {
-                ServiceResolver.Resolve<ICodexCollectionStorageService>().Save(CompleteCollection);
-            }
-            else
-            {
-                ServiceResolver.Resolve<ICodexCollectionStorageService>().Load(CompleteCollection);
-            }
+            CompleteCollection = collection;
 
             //Checks which steps need to be included in wizard
             HasCodices = CompleteCollection.AllCodices.Any();
@@ -36,7 +25,7 @@ namespace COMPASS.Common.ViewModels
             UpdateSteps();
 
             //Put Tags in Checkable Wrapper
-            TagsSelectorVM = new(completeCollection);
+            TagsSelectorVM = new(collection);
 
             //Put codices in dictionary so they can be labeled true/false for import
             SelectableCodices = CompleteCollection.AllCodices.Select(codex => new SelectableCodex(codex, this)).ToList();
@@ -49,7 +38,7 @@ namespace COMPASS.Common.ViewModels
                 .OrderByDescending(x => x.Value)
                 .ToList();
         }
-
+        
         public override string WindowTitle { get; } = "Choose content";
 
         public static readonly WizardStepViewModel TagsStep = new("Select Tags", "SelectTags");
@@ -68,7 +57,7 @@ namespace COMPASS.Common.ViewModels
         /// </summary>
         public CodexCollection CuratedCollection
         {
-            get => _curatedCollection ??= new("__tmp_collection");
+            get => _curatedCollection ??= new($"{CompleteCollection.Name}_Curated");
             set => _curatedCollection = value;
         }
 

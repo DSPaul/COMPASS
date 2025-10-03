@@ -8,21 +8,27 @@ using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit;
 
 public abstract class CodexEditBaseViewModel: ViewModelBase, IModalViewModel, IConfirmable
 {
-    public CodexEditBaseViewModel()
+    public CodexEditBaseViewModel(CollectionTabVM tabVm)
     {
-        PublisherOptions = ["", ..MainViewModel.CollectionVM.FilterVM.PublisherList];
+        TabVM = tabVm;
+        
+        var publisherList = tabVm.FilterVM.PublisherList ?? [];
+        PublisherOptions = ["", ..publisherList];
     }
 
     #region Properties
     
+    public CollectionTabVM TabVM { get; }
+    
     protected ObservableCollection<CheckableTreeNode<Tag>>? _allTagsAsTreeNodes;
     public ObservableCollection<CheckableTreeNode<Tag>> AllTagsAsTreeNodes => _allTagsAsTreeNodes ??= 
-        new(MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new CheckableTreeNode<Tag>(tag)));
+        new(TabVM.CollectionHandle.CollectionVM.Collection.RootTags.Select(tag => new CheckableTreeNode<Tag>(tag)));
 
     protected HashSet<CheckableTreeNode<Tag>> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
     

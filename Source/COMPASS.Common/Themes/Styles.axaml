@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="using:COMPASS.Common.Views"
-        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:main="clr-namespace:COMPASS.Common.Views.Main">
     <Design.PreviewWith>
         <ScrollViewer MaxHeight="600" AllowAutoHide="False">
             <StackPanel Spacing="10">
@@ -140,7 +141,7 @@
     </Style>
 
     <!--Button base-->
-    <Style Selector="views|MainView :is(Button)">
+    <Style Selector="main|MainView :is(Button)">
         <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
         <Setter Property="BorderBrush" Value="{x:Null}" />
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -152,7 +153,7 @@
     </Style>
 
     <!-- Button -->
-    <Style Selector="views|MainView Button">
+    <Style Selector="main|MainView Button">
         <Setter Property="Padding" Value="10,5" />
         <Style Selector="^:pointerover">
             <Setter Property="Background" Value="{StaticResource ButtonHover}" />

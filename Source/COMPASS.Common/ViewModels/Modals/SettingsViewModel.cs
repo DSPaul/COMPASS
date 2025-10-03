@@ -6,47 +6,74 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Models.Preferences;
-using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
-using COMPASS.Common.Views.Windows;
-using SharpCompress.Archives;
-using SharpCompress.Archives.Zip;
+using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
-    public class SettingsViewModel : ViewModelBase, IModalViewModel
+    public class SettingsViewModel : ViewModelBase, IModalViewModel, IDisposable
     {
+        //TODO dispose handle on close
         public SettingsViewModel(string tabToOpen = "")
         {
             //TODO use tabToOpen 
             
             _preferencesService = PreferencesService.GetInstance();
             _environmentVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
-            _collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
             _applicationDataService = ServiceResolver.Resolve<IApplicationDataService>();
             
-            BanishedPaths = new(MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.OrderBy(x => x));
-            BanishedPaths.CollectionChanged += OnBanishedPathsChanged;
+
+            SelectedCollectionVm = CollectionManager.CollectionVms.SingleOrDefault(vm => vm.Identifier == ActiveCollection.Name);
+
+            if (SelectedCollectionVm == null)
+            {
+                Logger.Warn("The active collection was not found in the list of all known collections");
+            }
+
+            if (SelectedCollection != null)
+            {
+                BanishedPaths = new(SelectedCollection.Info.BanishedPaths.OrderBy(x => x));
+                BanishedPaths.CollectionChanged += OnBanishedPathsChanged;
+            }
+            else
+            {
+                BanishedPaths = new ObservableCollection<string>();
+            }
         }
 
         private readonly PreferencesService _preferencesService;
         private readonly IEnvironmentVarsService _environmentVarsService;
-        private readonly ICodexCollectionStorageService _collectionStorageService;
         private readonly IApplicationDataService _applicationDataService;
+        
+        
+        private CollectionHandle? _selectedCollectionHandle;
+
+        //TODO show a dropdown in the UI somewhere
+        private CodexCollectionVM? _selectedCollectionVm;
+        public CodexCollectionVM? SelectedCollectionVm
+        {
+            get => _selectedCollectionVm;
+            set
+            {
+                _selectedCollectionHandle?.Dispose();
+                SetProperty(ref _selectedCollectionVm, value);
+                _selectedCollectionHandle = _selectedCollectionVm?.Load();
+            }
+        }
+
+        private CodexCollection? SelectedCollection =>  SelectedCollectionVm?.Collection;
 
         #region IModalWindow
 
@@ -61,20 +88,23 @@ namespace COMPASS.Common.ViewModels.Modals
 
         private void ApplyPreferences()
         {
+            if (SelectedCollection == null) return;
             //Convert list back to dict because dict does not support two-way binding
-            MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences = FiletypePreferences.ToDictionary(x => x.Key, x => x.Value);
+            SelectedCollection.Info.FiletypePreferences = FiletypePreferences.ToDictionary(x => x.Key, x => x.Value);
 
             _preferencesService.SavePreferences();
         }
 
         public void Refresh()
         {
+            if (SelectedCollection == null) return;
+            
             //Tell the window that the FiletypePreferences dict might have changed so it needs to fetch it again
             _filetypePreferences = null;
             OnPropertyChanged(nameof(FiletypePreferences));
 
-            MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.CollectionChanged += (_, _) => OnPropertyChanged(nameof(AutoImportFolders));
-            MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.CollectionChanged += (_, _) => OnPropertyChanged(nameof(BanishedPaths));
+            SelectedCollection.Info.AutoImportFolders.CollectionChanged += (_, _) => OnPropertyChanged(nameof(AutoImportFolders));
+            SelectedCollection.Info.BanishedPaths.CollectionChanged += (_, _) => OnPropertyChanged(nameof(BanishedPaths));
         }
         #endregion
 
@@ -169,7 +199,9 @@ namespace COMPASS.Common.ViewModels.Modals
         });
 
         #region Auto import folders
-        public ObservableCollection<Folder> AutoImportFolders => new(MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.OrderBy(f => f.FullPath));
+        public ObservableCollection<Folder> AutoImportFolders => SelectedCollection != null ? 
+            new(SelectedCollection.Info.AutoImportFolders.OrderBy(f => f.FullPath)) :
+            [];
 
         //Edit a folder from auto import
         private AsyncRelayCommand<Folder>? _editAutoImportDirectoryCommand;
@@ -177,10 +209,8 @@ namespace COMPASS.Common.ViewModels.Modals
         private async Task EditAutoImportFolder(Folder? folder)
         {
             if (folder is null) return;
-            var importFolderVM = new ImportFilesViewModel(autoImport: false)
-            {
-                ExistingFolders = [folder],
-            };
+            using var importFolderVM = new ImportFilesViewModel(autoImport: false);
+            importFolderVM.ExistingFolders = [folder];
             await importFolderVM.Import();
             
             OnPropertyChanged(nameof(AutoImportFolders));
@@ -189,7 +219,7 @@ namespace COMPASS.Common.ViewModels.Modals
         //Remove a folder from auto import
         private RelayCommand<Folder>? _removeAutoImportDirectoryCommand;
         public RelayCommand<Folder> RemoveAutoImportDirectoryCommand => _removeAutoImportDirectoryCommand ??= new(folder =>
-            MainViewModel.CollectionVM.CurrentCollection.Info.AutoImportFolders.Remove(folder!));
+            SelectedCollection!.Info.AutoImportFolders.Remove(folder!));
         
         //Add a directory from auto import
         private AsyncRelayCommand<string>? _addAutoImportDirectoryCommand;
@@ -204,10 +234,8 @@ namespace COMPASS.Common.ViewModels.Modals
         {
             if (!String.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))
             {
-                var importFolderVM = new ImportFilesViewModel(false)
-                {
-                    RecursiveDirectories = [dir],
-                };
+                using var importFolderVM = new ImportFilesViewModel(false);
+                importFolderVM.RecursiveDirectories = [dir];
                 await importFolderVM.Import();
             }
         }
@@ -215,18 +243,19 @@ namespace COMPASS.Common.ViewModels.Modals
         //File types to import
         private List<ObservableKeyValuePair<string, bool>>? _filetypePreferences;
         public List<ObservableKeyValuePair<string, bool>> FiletypePreferences
-            => _filetypePreferences
-            ??= MainViewModel.CollectionVM.CurrentCollection.Info.FiletypePreferences
+            => _filetypePreferences ??= SelectedCollection != null ? 
+                SelectedCollection.Info.FiletypePreferences
                 .Select(x => new ObservableKeyValuePair<string, bool>(x))
                 .OrderBy(x => x.Key)
-                .ToList();
+                .ToList() : 
+                [];
 
         public ObservableCollection<string> BanishedPaths { get; }
 
         public void OnBanishedPathsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.Clear();
-            MainViewModel.CollectionVM.CurrentCollection.Info.BanishedPaths.AddRange(BanishedPaths);
+            SelectedCollection?.Info.BanishedPaths.Clear();
+            SelectedCollection?.Info.BanishedPaths.AddRange(BanishedPaths);
         }
         
         #endregion
@@ -306,16 +335,20 @@ namespace COMPASS.Common.ViewModels.Modals
 
         #endregion
 
+        #region Tab: Tools
+        public ToolsViewModel ToolsVM { get; } = new();
+        #endregion
         //for debugging only
         public void RegenAllThumbnails()
         {
-            foreach (Codex codex in MainViewModel.CollectionVM.CurrentCollection.AllCodices)
+            foreach (Codex codex in ActiveCollection.AllCodices)
             {
                 //codex.Thumbnail = codex.CoverArt.Replace("CoverArt", "Thumbnails");
                 CoverService.CreateThumbnail(codex);
                 codex.RefreshThumbnail();
             }
         }
+        
         #region Tab: About
         public string Version => "Version: " + Assembly.GetExecutingAssembly().GetName().Version?.ToString()[0..5];
 
@@ -328,5 +361,12 @@ namespace COMPASS.Common.ViewModels.Modals
             //AutoUpdater.Start();
         }
         #endregion
+
+        public void Dispose()
+        {
+            BanishedPaths.CollectionChanged -= OnBanishedPathsChanged;
+            _selectedCollectionHandle?.Dispose();
+            ToolsVM.Dispose();
+        }
     }
 }

@@ -1,0 +1,324 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Operations;
+using COMPASS.Common.Services;
+using COMPASS.Common.Services.StateManagers;
+using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.ViewModels.Layouts;
+using COMPASS.Common.ViewModels.SidePanels;
+using COMPASS.Common.Views.Windows;
+
+namespace COMPASS.Common.ViewModels.Main;
+
+public class CollectionTabVM : ViewModelBase
+{ 
+    public CollectionTabVM() : 
+        this(CollectionManager.GetOrCreateInitialCollectionVM().Result)
+    { }
+
+    public CollectionTabVM(CodexCollectionVM collectionVm) : this(collectionVm.Load() ?? CollectionManager.GetOrCreateInitialCollectionVM().Result)
+    { }
+    
+    public CollectionTabVM(CollectionHandle collectionHandle)
+    {
+        _collectionHandle = collectionHandle;
+        
+        _filterVM = new(_collectionHandle.CollectionVM.Collection.AllCodices);
+        _tagsVM = new(_collectionHandle.CollectionVM.Collection, _filterVM);
+        _currentLayout = LayoutViewModel.GetLayout();
+        CodexCommands = new(_collectionHandle);
+    }
+
+    #region events
+
+    public event EventHandler? CollectionChanged;
+    
+    #endregion
+
+    
+    #region Properties
+    
+    private CollectionHandle _collectionHandle;
+    
+    public CollectionHandle CollectionHandle
+    {
+        get => _collectionHandle;
+        private set
+        {
+            if (SetProperty(ref _collectionHandle, value))
+            {
+                PreferencesService.GetInstance().Preferences.UIState.StartupCollection = _collectionHandle.CollectionVM.Identifier;
+                //Collection doesn't get loaded here because it's async, happens in ChangeToCollection
+            }
+        }
+    }
+    
+    public IReadOnlyCollection<CodexCollectionVM> AllCodexCollections => CollectionManager.CollectionVms;
+    
+    private FilterViewModel _filterVM;
+    public FilterViewModel FilterVM
+    {
+        get => _filterVM;
+        private set => SetProperty(ref _filterVM, value);
+    }
+
+    private TagsPanelVM _tagsVM;
+    public TagsPanelVM TagsVM
+    {
+        get => _tagsVM;
+        private set => SetProperty(ref _tagsVM, value);
+    }
+    
+    private LayoutViewModel _currentLayout;
+    public LayoutViewModel CurrentLayout
+    {
+        get => _currentLayout;
+        private set => SetProperty(ref _currentLayout, value);
+    }
+    
+    //TODO: commands should be in a viewmodel rather than operations
+    public CodexOperations CodexCommands { get; private set; }
+    
+    //show edit Collection Stuff
+    private bool _createCollectionVisibility = false;
+    public bool CreateCollectionVisibility
+    {
+        get => _createCollectionVisibility;
+        set => SetProperty(ref _createCollectionVisibility, value);
+    }
+
+    //show edit Collection Stuff
+    private bool _editCollectionVisibility = false;
+    public bool EditCollectionVisibility
+    {
+        get => _editCollectionVisibility;
+        set => SetProperty(ref _editCollectionVisibility, value);
+    }
+
+    #endregion
+    
+    #region Methods and Commands
+
+    public async Task Refresh()
+    {
+        await ChangeToCollection(_collectionHandle.CollectionVM);
+    }
+
+    private RelayCommand? _toggleCreateCollectionCommand;
+    public RelayCommand ToggleCreateCollectionCommand => _toggleCreateCollectionCommand ??= new(ToggleCreateCollection);
+    private void ToggleCreateCollection() => CreateCollectionVisibility = !CreateCollectionVisibility;
+
+    private RelayCommand? _toggleEditCollectionCommand;
+    public RelayCommand ToggleEditCollectionCommand => _toggleEditCollectionCommand ??= new(ToggleEditCollection);
+    private void ToggleEditCollection() => EditCollectionVisibility = !EditCollectionVisibility;
+
+    // Create CodexCollection
+    private AsyncRelayCommand<string>? _createCollectionCommand;
+    public AsyncRelayCommand<string> CreateCollectionCommand => _createCollectionCommand ??= new(
+        CreateCollection, 
+        name => CollectionManager.IsLegalCollectionName(name));
+    private async Task CreateCollection(string? name)
+    {
+        CollectionHandle? newCollectionHandle = await CollectionManager.CreateAndLoadCollection(name);
+        if (newCollectionHandle != null)
+        {
+            CreateCollectionVisibility = false;
+            await ChangeToCollection(newCollectionHandle);
+        }
+    }
+
+    // Rename Collection
+    private RelayCommand<string>? _editCollectionNameCommand;
+    public RelayCommand<string> EditCollectionNameCommand => _editCollectionNameCommand ??= new(
+        EditCollectionName,
+        name => CollectionManager.IsLegalCollectionName(name));
+    private void EditCollectionName(string? newName)
+    {
+        if (!CollectionManager.IsLegalCollectionName(newName)) return;
+
+        CollectionHandle.CollectionVM.RenameCollection(newName!);
+        EditCollectionVisibility = false;
+    }
+
+    // Delete Collection
+    private AsyncRelayCommand? _deleteCollectionCommand;
+    public AsyncRelayCommand DeleteCollectionCommand => _deleteCollectionCommand ??= new(RaiseDeleteCollectionWarning);
+    public async Task RaiseDeleteCollectionWarning()
+    {
+        int codexCount = CollectionHandle.CollectionVM.Collection.AllCodices.Count;
+        
+        if (codexCount > 0)
+        {
+            //"Are you Sure?"
+
+            const string messageSingle = "There is still one item in this collection, if you don't want to remove it from COMPASS, move it to another collection first. Are you sure you want to continue?";
+            string messageMultiple = $"There are still {codexCount} items in this collection, if you don't want to remove these from COMPASS, move them to another collection first. Are you sure you want to continue?";
+
+            Notification areYouSure = Notification.AreYouSureNotification;
+            areYouSure.Body = codexCount == 1 ? messageSingle : messageMultiple;
+
+            var windowedNotificationService = ServiceResolver.Resolve<INotificationService>();
+            await windowedNotificationService.ShowDialog(areYouSure);
+
+            if (areYouSure.Result == NotificationAction.Confirm)
+            {
+               await OnConfirmedDelete();
+            }
+        }
+        else
+        {
+            await OnConfirmedDelete();
+        }
+    }
+
+    private async Task OnConfirmedDelete()
+    {
+        bool deleted = CollectionHandle.DeleteCollection();
+        
+        if (deleted)
+        {
+            CollectionManager.DeleteCollection(CollectionHandle);
+            
+            //Open another collection after deletion is successful
+            var collectionHandle = await CollectionManager.GetOrCreateInitialCollectionVM();
+            await ChangeToCollection(collectionHandle);
+        }
+    }
+
+    //Export Collection
+    private RelayCommand? _exportCommand;
+    public RelayCommand ExportCommand => _exportCommand ??= new(Export);
+    private void Export()
+    {
+        //open wizard
+        ExportCollectionViewModel exportCollectionVM = new(CollectionHandle.CollectionVM.Collection);
+        ExportCollectionWizard wizard = new(exportCollectionVM);
+        wizard.Show();
+    }
+
+    private AsyncRelayCommand? _exportTagsCommand;
+    public AsyncRelayCommand ExportTagsCommand => _exportTagsCommand ??= new(CollectionHandle.CollectionVM.ExportTags);
+
+    //Import Collection
+    private AsyncRelayCommand? _importCommand;
+    public AsyncRelayCommand ImportCommand => _importCommand ??= new(ImportSatchelAsync);
+
+    private async Task ImportSatchelAsync() => await ImportSatchelAsync(null);
+    public async Task ImportSatchelAsync(string? path)
+    {
+        //satchels contain data in xml format
+        var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(StorageStrategy.Xml);
+        var extractedCollectionName = await storageService.OpenSatchel(path);
+
+        if (extractedCollectionName == null)
+        {
+            Logger.Warn("Failed to read file");
+            return;
+        }
+        
+        //open wizard, which will handle the rest of the import process
+        CodexCollection toImport = new(extractedCollectionName);
+        CodexCollectionVM toImportVm = new(extractedCollectionName, toImport, storageService);
+        ImportCollectionViewModel importCollectionVM = new(toImportVm);
+        ModalWindow wizard = new(importCollectionVM);
+        wizard.Show();
+    }
+
+    //Merge Collection into another
+    private AsyncRelayCommand<string>? _mergeCollectionIntoCommand;
+    public AsyncRelayCommand<string> MergeCollectionIntoCommand => _mergeCollectionIntoCommand ??= new(MergeIntoCollection);
+    private async Task MergeIntoCollection(string? collectionToMergeInto)
+    {
+        if (string.IsNullOrEmpty(collectionToMergeInto) ||
+            !CollectionManager.CollectionExists(collectionToMergeInto))
+        {
+            return;
+        }
+
+        //Are you sure?
+        Notification areYouSure = Notification.AreYouSureNotification;
+        areYouSure.Title = "Confirm merge";
+        areYouSure.Body = $"You are about to merge '{CollectionHandle.CollectionVM.Identifier}' into '{collectionToMergeInto}'. \n" +
+                       $"This will copy all items, tags and preferences to the chosen collection. \n" +
+                       $"Are you sure you want to continue?";
+        await ServiceResolver.Resolve<INotificationService>().ShowDialog(areYouSure);
+        if (areYouSure.Result != NotificationAction.Confirm) return;
+
+        //load target, merge, and unload
+        using (var targetCollectionHandle = CollectionManager.LoadCollection(collectionToMergeInto))
+        {
+            if (targetCollectionHandle == null)
+            {
+                Logger.Warn($"Failed to load merge {CollectionHandle.CollectionVM.Identifier} into {collectionToMergeInto} " +
+                            $"because the target collection could not be loaded.");
+                return;
+            }
+            
+            targetCollectionHandle.CollectionVM.Collection.MergeWith(CollectionHandle.CollectionVM.Collection);
+            targetCollectionHandle.Save();
+        }
+
+        Notification doneNotification = new("Merge Success", $"Successfully merged '{CollectionHandle.CollectionVM.Identifier}' into '{collectionToMergeInto}'");
+
+        //TODO toast notifications
+        //await ServiceResolver.Resolve<INotificationService>().ShowToast(doneNotification);
+    }
+    
+    //Change Layout
+    private RelayCommand<CodexLayout>? _changeLayoutCommand;
+    public RelayCommand<CodexLayout> ChangeLayoutCommand => _changeLayoutCommand ??= new(ChangeLayout);
+    private void ChangeLayout(CodexLayout layout) => CurrentLayout = LayoutViewModel.GetLayout(layout);
+    
+    #endregion
+    
+    #region Methods
+    
+    /// <summary>
+    /// Called by selection changed event on collection dropdown
+    /// </summary>
+    public async Task ChangeToCollection(CodexCollectionVM collectionToChangeTo)
+    {
+        var newHandle = collectionToChangeTo.Load();
+
+        if (newHandle == null)
+        {
+            //load failed TODO
+            return;
+        }
+
+        await ChangeToCollection(newHandle);
+    }
+
+    public async Task ChangeToCollection(CollectionHandle newHandle)
+    {
+        //save prev collection before switching
+        _collectionHandle.Save();
+        _collectionHandle.Dispose();
+        
+        CollectionHandle = newHandle;
+        
+        //TODO: check if this is still needed
+        //CurrentLayout?.UpdateDoVirtualization();
+        
+        FilterVM = new(newHandle.CollectionVM.Collection.AllCodices);
+        TagsVM = new(newHandle.CollectionVM.Collection, FilterVM);
+        CodexCommands = new(newHandle);
+        
+        FilterVM.ReFilter(true);
+
+        OnPropertyChanged(nameof(ActiveCollection));
+        CollectionChanged?.Invoke(this, EventArgs.Empty);
+        
+        await newHandle.CollectionVM.AutoImport();
+    }
+    
+    #endregion
+}

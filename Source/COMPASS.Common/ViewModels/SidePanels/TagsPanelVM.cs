@@ -6,15 +6,18 @@ using System.Threading.Tasks;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Models.Hierarchy;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Edit;
+using COMPASS.Common.ViewModels.Modals.Import;
+using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.SidePanels
@@ -24,6 +27,9 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public TagsPanelVM(CodexCollection codexCollection, FilterViewModel filterVM)
         {
             _codexCollection = codexCollection;
+
+            codexCollection.PropertyChanged += OnCollectionChanged;
+            
             _filterVM = filterVM;
             UpdateTagsAsTreeNodes();
         }
@@ -85,6 +91,15 @@ namespace COMPASS.Common.ViewModels.SidePanels
         
         #endregion
 
+        private void OnCollectionChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CodexCollection.RootTags) ||
+                e.PropertyName == nameof(CodexCollection.AllTags))
+            {
+                UpdateTagsAsTreeNodes();
+            }
+        }
+        
         private void OnTagParentChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Tag.Parent))
@@ -170,8 +185,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public RelayCommand ImportTagsFromOtherCollectionsCommand => _importTagsFromOtherCollectionsCommand ??= new(ImportTagsFromOtherCollections);
         public void ImportTagsFromOtherCollections()
         {
-            var importVM = new ImportTagsViewModel(MainViewModel.CollectionVM.AllCodexCollections.ToList());
-            var w = new ImportTagsWindow(importVM);
+            var importVM = new ImportTagsViewModel(CollectionManager.CollectionNames);
+            var w = new ModalWindow(importVM);
             w.Show();
         }
 
@@ -179,7 +194,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public AsyncRelayCommand ImportTagsFromSatchelCommand => _importTagsFromSatchelCommand ??= new(ImportTagsFromSatchel);
         public async Task ImportTagsFromSatchel()
         {
-            var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
+            var collectionStorageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(StorageStrategy.Xml);
             var collectionToImport = await collectionStorageService.OpenSatchel();
 
             if (collectionToImport == null)
@@ -192,12 +207,12 @@ namespace COMPASS.Common.ViewModels.SidePanels
 
             if (!importVM.TagsSelectorVM.HasTags)
             {
-                Notification noTagsFound = new("No Tags found", $"{collectionToImport.Name[2..]} does not contain tags");
+                Notification noTagsFound = new("No Tags found", $"{collectionToImport[2..]} does not contain tags");
                 await ServiceResolver.Resolve<INotificationService>().ShowDialog(noTagsFound);
                 return;
             }
 
-            var w = new ImportTagsWindow(importVM);
+            var w = new ModalWindow(importVM);
             w.Show();
         }
 
@@ -268,7 +283,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         {
             if (referenceTag is not null)
             {
-                Tag newTag = new(MainViewModel.CollectionVM.CurrentCollection.AllTags)
+                Tag newTag = new(ActiveCollection.AllTags)
                 {
                     Parent = referenceTag
                 };
@@ -302,10 +317,10 @@ namespace COMPASS.Common.ViewModels.SidePanels
         {
             Tag t = new()
             {
-                Children = new(MainViewModel.CollectionVM.CurrentCollection.RootTags)
+                Children = new(ActiveCollection.RootTags)
             };
             RecursiveSortChildren(t);
-            MainViewModel.CollectionVM.CurrentCollection.RootTags = t.Children.ToList();
+            ActiveCollection.RootTags = t.Children.ToList();
             UpdateTagsAsTreeNodes();
         }
 
@@ -325,7 +340,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         {
             //tag to delete is context, because DeleteTag is called from context menu
             if (toDelete is null) return;
-            MainViewModel.CollectionVM.CurrentCollection.DeleteTag(toDelete);
+            ActiveCollection.DeleteTag(toDelete);
             _filterVM.RemoveFilter(new TagFilter(toDelete));
 
             //Go over all files and remove the tag from tag list
@@ -333,6 +348,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
             {
                 f.Tags.Remove(toDelete);
             }
+
+            _codexCollection.Save();
 
             UpdateTagsAsTreeNodes();
         }

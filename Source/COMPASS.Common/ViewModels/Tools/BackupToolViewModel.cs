@@ -3,12 +3,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
+using Org.BouncyCastle.Asn1.Ocsp;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 
@@ -18,13 +23,11 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
 {
     private LoadingWindow? _lw;
     private readonly PreferencesService _preferencesService;
-    private readonly ICodexCollectionStorageService _collectionStorageService;
     private readonly IEnvironmentVarsService _environmentVarsService;
 
     public BackupToolViewModel()
     {
         _preferencesService = PreferencesService.GetInstance();
-        _collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
         _environmentVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
     }
     
@@ -52,9 +55,10 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             _lw.Show();
 
             //save first
-            _collectionStorageService.Save(MainViewModel.CollectionVM.CurrentCollection);
+            CollectionManager.SaveAllCollections();
 
-            await Task.Run(() => _collectionStorageService.CompressUserDataToZip(targetPath));
+            var collectionStorageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(StorageStrategy.Xml);
+            await Task.Run(() => collectionStorageService.CompressUserDataToZip(targetPath));
 
             _lw.Close();
         }
@@ -79,8 +83,19 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
 
             await Task.Run(() => ExtractZip(targetPath));
 
+            //TODO should probably just restart after restore
+            
             //restore collection that was open
-            MainViewModel.CollectionVM.CurrentCollection = new(_preferencesService.Preferences.UIState.StartupCollection);
+            var defaultCollectionVM = await CollectionManager.GetOrCreateInitialCollectionVM();
+            var tabVm = TabsViewModel.GetInstance();
+            if (tabVm.ActiveTab == null)
+            {
+                tabVm.CreateTab(defaultCollectionVM.CollectionVM);
+            }
+            else
+            {
+                await tabVm.ActiveTab.ChangeToCollection(defaultCollectionVM);
+            }
             _lw?.Close();
         }
     }

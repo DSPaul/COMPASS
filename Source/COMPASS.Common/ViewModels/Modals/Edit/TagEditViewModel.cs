@@ -15,6 +15,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using COMPASS.Common.Services.StateManagers;
+using COMPASS.Common.ViewModels.Main;
 using Notification = COMPASS.Common.Models.Notification;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
@@ -34,7 +36,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
             _tempTag = sourceTag != null ? 
                 new(sourceTag) : 
-                new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+                new(ActiveCollection.AllTags);
             
             _tempTag.PropertyChanged += HandleTagPropertyChanged;
 
@@ -101,7 +103,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             TempTag = _sourceTag != null ? 
                 new(_sourceTag) : 
-                new(MainViewModel.CollectionVM.CurrentCollection.AllTags);
+                new(ActiveCollection.AllTags);
 
             //reset parents as new tag might have just been added
             PossibleParents = GetPossibleParents();
@@ -109,7 +111,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
         private ObservableCollection<TreeNode<Tag>> GetPossibleParents()
         {
-            var collection = MainViewModel.CollectionVM.CurrentCollection.RootTags.Select(tag => new TreeNode<Tag>(tag)).ToList();
+            var collection = ActiveCollection.RootTags.Select(tag => new TreeNode<Tag>(tag)).ToList();
 
             foreach (TreeNode<Tag> node in collection.Flatten())
             {
@@ -135,7 +137,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             //Can only detect links if tag exists
             if (_sourceTag == null || CreateNewTag) return;
             
-            var relevantCodices = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+            var relevantCodices = ActiveCollection.AllCodices
                 .Where(codex => codex.Sources.HasOfflineSource() &&
                                 codex.Tags.Contains(_sourceTag))
                 .ToList();
@@ -146,7 +148,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
             foreach (string folder in splitFolders)
             {
-                var codicesInFolder = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+                var codicesInFolder = ActiveCollection.AllCodices
                     .Where(codex => codex.Sources.HasOfflineSource())
                     .Where(codex => codex.Sources.Path.Contains(@"\" + folder + @"\"))
                     .ToList();
@@ -174,7 +176,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             if (_sourceTag == null || CreateNewTag) return;
             
             var globs = TempTag.LinkedGlobs.Concat(TempTag.CalculatedLinkedGlobs).ToList();
-            List<Codex> matchingCodices = MainViewModel.CollectionVM.CurrentCollection.AllCodices
+            List<Codex> matchingCodices = ActiveCollection.AllCodices
                 .Where(codex => IOService.MatchesAnyGlob(codex.Sources.Path, globs) &&
                                 !codex.Tags.Contains(_sourceTag))
                 .ToList();
@@ -224,13 +226,13 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             {
                 Tag newTag = new(TempTag)
                 {
-                    ID = Utils.GetAvailableID(MainViewModel.CollectionVM.CurrentCollection.AllTags)
+                    ID = Utils.GetAvailableID(ActiveCollection.AllTags)
                 };
-                MainViewModel.CollectionVM.CurrentCollection.AllTags.Add(newTag);
+                ActiveCollection.AllTags.Add(newTag);
                 
                 if (newTag.Parent == null)
                 {
-                    MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(newTag);
+                    ActiveCollection.RootTags.Add(newTag);
                 }
                 else
                 {
@@ -251,7 +253,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                     // remove the link with old parent
                     if (oldParent == null)
                     {
-                        MainViewModel.CollectionVM.CurrentCollection.RootTags.Remove(_sourceTag);
+                        ActiveCollection.RootTags.Remove(_sourceTag);
                     }
                     else
                     {
@@ -261,7 +263,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                     //add the link to new parent
                     if (_sourceTag.Parent == null)
                     {
-                        MainViewModel.CollectionVM.CurrentCollection.RootTags.Add(_sourceTag);
+                        ActiveCollection.RootTags.Add(_sourceTag);
                     }
                     else
                     {
@@ -269,11 +271,10 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                     }
                 }
             }
+            
+            ActiveCollection.Save();
 
-            var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
-            collectionStorageService.SaveTags(MainViewModel.CollectionVM.CurrentCollection);
-
-            MainViewModel.CollectionVM.TagsVM.UpdateTagsAsTreeNodes();
+            TabsViewModel.GetInstance().ActiveTab?.TagsVM.UpdateTagsAsTreeNodes();
 
             //reset fields
             Clear();

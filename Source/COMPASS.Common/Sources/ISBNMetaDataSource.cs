@@ -15,6 +15,9 @@ namespace COMPASS.Common.Sources
 {
     public class ISBNMetaDataSource : MetaDataSource
     {
+        public ISBNMetaDataSource(CodexCollection targetCollection) :  
+            base(targetCollection) { }
+        
         public override MetaDataSourceType Type => MetaDataSourceType.ISBN;
         public override bool IsValidSource(SourceSet sources) => !String.IsNullOrWhiteSpace(sources.ISBN);
 

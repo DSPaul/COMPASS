@@ -3,35 +3,45 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
+using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.Import
 {
-    public static class ImportViewModel
+    public class ImportViewModel : ViewModelBase
     {
-        public static async Task Import(ImportSource source) => await Import(source, MainViewModel.CollectionVM.CurrentCollection);
-        public static async Task Import(ImportSource source, CodexCollection targetCollection)
+        public ImportViewModel(string targetCollectionId)
+        {
+            _targetcollectionId =  targetCollectionId;
+        }
+
+        private readonly string _targetcollectionId;
+        
+        public async Task Import(ImportSource source) => await Import(source, _targetcollectionId);
+        public static async Task Import(ImportSource source, string targetCollectionId)
         {
             List<string> pathsToImport;
             switch (source)
             {
                 case ImportSource.File:
                     pathsToImport = await ChooseFiles();
-                    await ImportFilesAsync(pathsToImport, targetCollection);
+                    await ImportFilesAsync(pathsToImport, targetCollectionId);
                     break;
                 case ImportSource.Folder:
-                    ImportFilesViewModel folderVM = new(targetCollection, autoImport: false);
-                    await folderVM.Import();
+                    using (ImportFilesViewModel folderVM = new(targetCollectionId, autoImport: false))
+                    {
+                        await folderVM.Import();
+                    }
                     break;
                 case ImportSource.Manual:
                     await ImportManual();
@@ -81,10 +91,15 @@ namespace COMPASS.Common.ViewModels.Import
             await window.ShowDialog(App.MainWindow);
         }
 
-        public static async Task ImportFilesAsync(IList<string> paths, CodexCollection? targetCollection = null)
+        public static async Task ImportFilesAsync(IList<string> paths, string? targetCollectionId = null)
         {
-            targetCollection ??= MainViewModel.CollectionVM.CurrentCollection;
+            targetCollectionId ??= TabsViewModel.GetInstance().ActiveTab?.CollectionHandle.CollectionVM.Identifier 
+                                   ?? throw new NoTabException("There is no open tab, so no collection to import the files to");
 
+            using CollectionHandle targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId) 
+                                                            ?? throw new LoadException(targetCollectionId);
+            var targetCollection = targetCollectionHandle.CollectionVM.Collection;
+            
             //filter out codices already in collection & banned paths
             IEnumerable<string> existingPaths = targetCollection.AllCodices.Select(codex => codex.Sources.Path);
             paths = paths
@@ -124,18 +139,13 @@ namespace COMPASS.Common.ViewModels.Import
                 progressVM.IncrementCounter();
                 progressVM.AddLogEntry(logEntry);
             }
-
-            var collectionStorageService = ServiceResolver.Resolve<ICodexCollectionStorageService>();
-            collectionStorageService.Save(MainViewModel.CollectionVM.CurrentCollection);
-
-            await FinishImport(newCodices);
-        }
-
-        private static async Task FinishImport(List<Codex> newCodices)
-        {
+            
+            targetCollection.Save();
+            
+            //now get metadata and cover async
             try
             {
-                await CodexOperations.StartGetMetaDataProcess(newCodices);
+                await new CodexOperations(targetCollectionHandle).StartGetMetaDataProcess(newCodices);
                 await CoverService.GetAndApplyCover(newCodices);
             }
             catch (OperationCanceledException ex)

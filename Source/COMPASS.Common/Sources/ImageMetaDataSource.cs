@@ -11,6 +11,9 @@ namespace COMPASS.Common.Sources
 {
     public class ImageMetaDataSource : MetaDataSource
     {
+        public ImageMetaDataSource(CodexCollection targetCollection) :  
+            base(targetCollection) { }
+        
         public override MetaDataSourceType Type => MetaDataSourceType.Image;
 
         public override bool IsValidSource(SourceSet sources) => File.Exists(sources.Path) && IOService.IsImageFile(sources.Path);

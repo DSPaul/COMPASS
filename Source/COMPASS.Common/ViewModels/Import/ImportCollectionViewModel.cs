@@ -1,31 +1,39 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
+using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Operations;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.ViewModels.Selection;
 
 namespace COMPASS.Common.ViewModels.Import
 {
-    public class ImportCollectionViewModel : WizardViewModel
+    public class ImportCollectionViewModel : WizardViewModel, IDisposable
     {
         public override string WindowTitle { get; } = "Import Collection";
 
         private readonly WizardStepViewModel _overviewStep = new("Overview");
 
-        public ImportCollectionViewModel(CodexCollection collectionToImport)
+        private readonly CollectionHandle _collectionToImportHandle;
+        
+        public ImportCollectionViewModel(CodexCollectionVM collectionVmToImport)
         {
-            CollectionToImport = collectionToImport;
+            CollectionToImport = collectionVmToImport.Collection;
+            
+            //Collection will have format '__<name><extension>'
             CollectionName = CollectionToImport.Name.Substring(2, CollectionToImport.Name.Length - 2 - Constants.SatchelExtension.Length);
-
-            ContentSelectorVM = new(collectionToImport)
-            {
-                CuratedCollection = collectionToImport //The import collection is tmp anyway so result can be saved on top of it
-            };
+            
+            //temporarily register the collection to the manager so it can be loaded and read
+            CollectionManager.RegisterCollection(collectionVmToImport);
+            _collectionToImportHandle = collectionVmToImport.Load() ?? throw new LoadException(collectionVmToImport.Identifier);
+            
+            ContentSelectorVM = new(CollectionToImport);
 
             UpdateSteps();
 
@@ -41,16 +49,14 @@ namespace COMPASS.Common.ViewModels.Import
             }
         }
 
-        public CollectionContentSelectorViewModel ContentSelectorVM { get; set; }
+        public CollectionContentSelectorViewModel ContentSelectorVM { get; }
 
-        public CodexCollection CollectionToImport { get; set; } //collection that was in the satchel
+        public CodexCollection CollectionToImport { get; } //collection that was in the satchel
 
         /// <summary>
         /// Indicates that the tags should all be imported in a new, separate group
         /// </summary>
         public bool ImportTagsSeparatly { get; set; } = false;
-
-        private bool _deleteSatchelOnWizardClosing = true; //Delete the satchel if the wizard closes for any reason
 
         //OVERVIEW STEP
         private bool _mergeIntoCollection = false;
@@ -78,7 +84,7 @@ namespace COMPASS.Common.ViewModels.Import
             }
         }
 
-        public bool IsCollectionNameLegal => CodexCollectionOperations.IsLegalCollectionName(CollectionName, MainViewModel.CollectionVM.AllCodexCollections);
+        public bool IsCollectionNameLegal => CollectionManager.IsLegalCollectionName(CollectionName);
 
         public bool ImportAllTags { get; set; } = true;
         public bool ImportAllCodices { get; set; } = true;
@@ -106,9 +112,6 @@ namespace COMPASS.Common.ViewModels.Import
 
         protected override async Task Finish()
         {
-            _deleteSatchelOnWizardClosing = false; //need to keep files around to merge files and cover art
-            CloseAction?.Invoke();
-
             //if we do a quick import, set all the things in the contentSelector have the right value
             if (!AdvancedImport)
             {
@@ -166,21 +169,34 @@ namespace COMPASS.Common.ViewModels.Import
             //Apply the selection
             ContentSelectorVM.ApplyAllSelections();
 
-            //Save the changes to a permanent collection
-            var targetCollection = MergeIntoCollection
-                ? MainViewModel.CollectionVM.CurrentCollection
-                : await MainViewModel.CollectionVM.CreateAndLoadCollection(CollectionName);
-
-            //if create and load fails
-            if (targetCollection is null)
+            CollectionHandle targetCollectionHandle;
+            if (MergeIntoCollection)
             {
-                //TODO IDK, show an error of some kind
-                return;
+                targetCollectionHandle = ActiveCollection.Load() ?? throw new LoadException(ActiveCollection.Name);
             }
+            else
+            {
+                var newHandle = await CollectionManager.CreateAndLoadCollection(CollectionName);
+                if (newHandle == null)
+                {
+                    //TODO
+                    throw new Exception($"Collection {CollectionName} could not be created");
+                }
+                else
+                {
+                    targetCollectionHandle = newHandle;
+                }
+            }
+            
+            //Save the changes to a permanent collection
+            CodexCollection targetCollection = MergeIntoCollection
+                ? ActiveCollection
+                : targetCollectionHandle.CollectionVM.Collection;
 
-            await targetCollection.MergeWith(ContentSelectorVM.CuratedCollection, ImportTagsSeparatly);
-
-            Cleanup();
+            targetCollection.MergeWith(ContentSelectorVM.CuratedCollection, ImportTagsSeparatly);
+            targetCollection.Save();
+            targetCollectionHandle.Dispose();
+            CloseAction();
         }
 
         private void UpdateSteps()
@@ -195,15 +211,10 @@ namespace COMPASS.Common.ViewModels.Import
             }
         }
 
-        private void Cleanup() => MainViewModel.CollectionVM.DeleteCollection(CollectionToImport);
-
-        //TODO this needs to be connected again
-        public void OnWizardClosing()
+        public void Dispose()
         {
-            if (_deleteSatchelOnWizardClosing)
-            {
-                Cleanup();
-            }
+            //temporary import collection has served its purpose
+            CollectionManager.DeleteCollection(_collectionToImportHandle);
         }
     }
 }

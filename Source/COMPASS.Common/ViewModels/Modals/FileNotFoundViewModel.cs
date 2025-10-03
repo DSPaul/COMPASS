@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
@@ -11,11 +12,13 @@ using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
-    public class FileNotFoundViewModel : IModalViewModel
+    public class FileNotFoundViewModel : ViewModelBase, IModalViewModel
     {
         public FileNotFoundViewModel(Codex codex)
         {
@@ -72,8 +75,8 @@ namespace COMPASS.Common.ViewModels.Modals
                 string message = $"Fixed {fixedRefs} broken references based on recent manual fix, {codicesWithBrokenPaths.Count - fixedRefs + 1} remaining.";
                 Logger.Info(message);
                 Logger.Debug(message);
-
-                ServiceResolver.Resolve<ICodexCollectionStorageService>().SaveCodices(Codex.Collection);
+                
+                Codex.Collection.SaveCodices();
                 bool opened = await CodexOperations.OpenCodexLocally(Codex);
                 MarkAsResolved(opened);
             }
@@ -91,7 +94,8 @@ namespace COMPASS.Common.ViewModels.Modals
         public AsyncRelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
         private async Task DeleteCodex()
         {
-            await CodexOperations.DeleteCodex(Codex);
+            var collectionHandle = Codex.Collection.Load() ?? throw new LoadException(Codex.Collection.Name);
+            await new CodexOperations(collectionHandle).DeleteCodex(Codex);
             MarkAsResolved(false);
         }
         
