@@ -38,7 +38,7 @@ namespace COMPASS.Common.Services.FileSystem
                 throw new InvalidOperationException("URI is invalid.");
             try
             {
-                return await client.GetByteArrayAsync(uri);
+                return await client.GetByteArrayAsync(uri).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -57,7 +57,7 @@ namespace COMPASS.Common.Services.FileSystem
                 throw new InvalidOperationException("URI is invalid.");
             try
             {
-                HttpResponseMessage response = await client.GetAsync(uri);
+                HttpResponseMessage response = await client.GetAsync(uri).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
                     var data = response.Content.ReadAsStringAsync();
@@ -76,7 +76,7 @@ namespace COMPASS.Common.Services.FileSystem
         {
             try
             {
-                var imgBytes = await DownloadFileAsync(imgURL);
+                var imgBytes = await DownloadFileAsync(imgURL).ConfigureAwait(false);
                 return new(imgBytes);
             }
             catch (Exception ex)
@@ -95,7 +95,7 @@ namespace COMPASS.Common.Services.FileSystem
 
             try
             {
-                doc = await Task.Run(() => web.Load(url));
+                doc = await Task.Run(() => web.Load(url)).ConfigureAwait(false);
             }
 
             catch (Exception ex)
@@ -234,7 +234,7 @@ namespace COMPASS.Common.Services.FileSystem
         {
             var filesService = ServiceResolver.Resolve<IFilesService>();
 
-            IList<IStorageFolder> folders = await filesService.OpenFoldersAsync();
+            IList<IStorageFolder> folders = await filesService.OpenFoldersAsync().ConfigureAwait(false);
 
             if (folders.Count == 0) return null;
 
@@ -260,7 +260,7 @@ namespace COMPASS.Common.Services.FileSystem
                 AllowMultiple = true,
             };
 
-            IList<IStorageFolder> folders = await filesService.OpenFoldersAsync(options);
+            IList<IStorageFolder> folders = await filesService.OpenFoldersAsync(options).ConfigureAwait(false);
 
             if (folders.Count == 0) return [];
             var paths = folders.Select(f => f.Path.AbsolutePath).ToList();
@@ -410,7 +410,7 @@ namespace COMPASS.Common.Services.FileSystem
                         progressVM.IncrementCounter();
                         progressVM.AddLogEntry(new LogEntry(Severity.Info, $"Copied {sourcePath}"));
                     }
-                });
+                }).ConfigureAwait(false);
             }
             catch (OperationCanceledException ex)
             {

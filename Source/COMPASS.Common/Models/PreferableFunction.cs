@@ -45,7 +45,7 @@ namespace COMPASS.Common.Models
         {
             if (IsAsync && AsyncFunction != null)
             {
-                return await AsyncFunction(arg);
+                return await AsyncFunction(arg).ConfigureAwait(false);
             }
             else if (!IsAsync && SyncFunction != null)
             {
@@ -100,7 +100,7 @@ namespace COMPASS.Common.Models
             bool success = false;
             foreach (var func in toTry)
             {
-                success = await func.ExecuteAsync(arg);
+                success = await func.ExecuteAsync(arg).ConfigureAwait(false);
                 if (success) break;
             }
             return success;

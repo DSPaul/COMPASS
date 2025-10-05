@@ -27,7 +27,7 @@ namespace COMPASS.Common.ViewModels.Import
 
         private readonly string _targetcollectionId;
         
-        public async Task Import(ImportSource source) => await Import(source, _targetcollectionId);
+        public async Task Import(ImportSource source) => await Import(source, _targetcollectionId).ConfigureAwait(false);
         public static async Task Import(ImportSource source, string targetCollectionId)
         {
             List<string> pathsToImport;
@@ -63,7 +63,7 @@ namespace COMPASS.Common.ViewModels.Import
             var files = await filesService.OpenFilesAsync(new()
             {
                 AllowMultiple = true,
-            });
+            }).ConfigureAwait(false);
 
             if (!files.Any()) return [];
 

@@ -118,7 +118,8 @@ namespace COMPASS.Common.Operations
 
         //Open Multiple Files
         private AsyncRelayCommand<IList>? _openSelectedCodicesCommand;
-        public AsyncRelayCommand<IList> OpenSelectedCodicesCommand => _openSelectedCodicesCommand ??= new(async l => await OpenSelectedCodices(l?.Cast<Codex>().ToList()));
+        public AsyncRelayCommand<IList> OpenSelectedCodicesCommand => 
+            _openSelectedCodicesCommand ??= new(async l => await OpenSelectedCodices(l?.Cast<Codex>().ToList()));
         public static async Task<bool> OpenSelectedCodices(IList<Codex>? toOpen)
         {
             if (!toOpen.SafeAny()) return false;
@@ -136,7 +137,7 @@ namespace COMPASS.Common.Operations
             {
                 foreach (Codex f in toOpen)
                 {
-                    await OpenCodex(f);
+                    await OpenCodex(f).ConfigureAwait(false);
                 }
 
                 return true;
@@ -385,7 +386,7 @@ namespace COMPASS.Common.Operations
 
                 if (collectionHandle == null)
                 {
-                    //TODO deal with having to delete codices from a colletion that cannot be loaded
+                    //TODO deal with having to delete codices from a collection that cannot be loaded
                     //Shouldn't happen
                     return;
                 }
