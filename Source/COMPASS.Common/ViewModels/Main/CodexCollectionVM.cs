@@ -135,28 +135,28 @@ public class CodexCollectionVM : ViewModelBase
         Logger.Info($"Renamed {oldName} to {newCollectionName}");
     }
 
-    public bool CanDeleteCollection(CollectionHandle handle)
+    private bool CanDeleteCollection()
     {
-        if (Owners.Count > 1)
+        if (Owners.Count > 0)
         {
-            Logger.Warn("The collection is open in another tab or window");
-            return false;
-        }
-
-        if (Owners.SingleOrDefault() != handle)
-        {
-            Logger.Warn($"Cannot delete the collection because it doesn't have a valid handle");
+            Logger.Warn("The collection is still in use");
             return false;
         }
 
         return true;
     }
     
-    public bool DeleteCollection(CollectionHandle handle)
+    /// <summary>
+    /// Delete all data related to the collection
+    /// </summary>
+    /// <returns></returns>
+    public bool DeleteCollection()
     {
-        if (!CanDeleteCollection(handle)) return false;
+        //TODO cancel any background process that is using the collection like auto import
         
-        Unload(handle);
+        if (!CanDeleteCollection()) return false;
+        
+        CollectionManager.RemoveCollection(this);
         _storageService.DeleteCollection(Collection);
         return true;
     }

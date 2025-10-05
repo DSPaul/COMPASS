@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -17,14 +18,13 @@ namespace COMPASS.Common.Services.StateManagers
     {
         #region Properties
     
-        private static readonly List<CodexCollectionVM> _allCollectionVms = [];
+        private static readonly ObservableCollection<CodexCollectionVM> _allCollectionVms = [];
 
         //Needed for binding to context menu "Move to Collection"
         public static IReadOnlyCollection<string> CollectionNames => _allCollectionVms.Select(collectionState => collectionState.Collection.Name)
                                                                                       .ToList()
                                                                                       .AsReadOnly();
-        public static IReadOnlyCollection<CodexCollectionVM> CollectionVms => _allCollectionVms.AsReadOnly();
-
+        public static IReadOnlyCollection<CodexCollectionVM> CollectionVms => _allCollectionVms;
         #endregion
 
         #region Methods
@@ -54,7 +54,7 @@ namespace COMPASS.Common.Services.StateManagers
                 foreach (CodexCollection collection in foundCollections)
                 {
                     CodexCollectionVM vm = new(collection.Name, collection, storageService);
-                    _allCollectionVms.Add(vm);
+                    RegisterCollection(vm);
                 }
             }
         }
@@ -92,18 +92,20 @@ namespace COMPASS.Common.Services.StateManagers
             await storageService.AllocateNewCollection(newCollection);
             var newCollectionVm = new CodexCollectionVM(newCollection.Name, newCollection, storageService);
             RegisterCollection(newCollectionVm);
-        
+            
             return newCollectionVm;
         }
     
         public static async Task<CollectionHandle> GetOrCreateInitialCollectionVM()
         {
+            var collectionOptions = _allCollectionVms;
             var collectionHandle = LoadInitialCollection(_allCollectionVms);
 
             if (collectionHandle != null) return collectionHandle;
         
-            Debug.Assert(_allCollectionVms.Count == 0, "Collection should only be null if all options have been tried and failed");
+            Debug.Assert(collectionOptions.Count == 0, "Collection should only be null if all options have been tried and failed");
             string name = "Default Collection";
+            
             collectionHandle = await CreateAndLoadCollection(name).ConfigureAwait(false);
             if (collectionHandle == null)
             {
@@ -179,17 +181,9 @@ namespace COMPASS.Common.Services.StateManagers
             return newCollectionVm.Load();
         }
 
-        public static bool DeleteCollection(CollectionHandle handle)
+        public static void RemoveCollection(CodexCollectionVM collectionToDelete)
         {
-            if (handle.CollectionVM.Owners.Any())
-            {
-                Logger.Warn($"Collection {handle.CollectionVM.Identifier} cannot be removed as long as it has owners");
-                return false;
-            }
-            handle.DeleteCollection();
-            handle.Dispose();
-            _allCollectionVms.Remove(handle.CollectionVM);
-            return true;
+            _allCollectionVms.Remove(collectionToDelete);
         }
     
         public static bool CollectionExists(string collectionIdentifier)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
@@ -18,7 +19,7 @@ using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.ViewModels.Main;
 
-public class CollectionTabVM : ViewModelBase
+public class CollectionTabVM : ViewModelBase, IDisposable
 { 
     public CollectionTabVM() : 
         this(CollectionManager.GetOrCreateInitialCollectionVM().Result)
@@ -42,7 +43,6 @@ public class CollectionTabVM : ViewModelBase
     public event EventHandler? CollectionChanged;
     
     #endregion
-
     
     #region Properties
     
@@ -60,6 +60,7 @@ public class CollectionTabVM : ViewModelBase
             }
         }
     }
+    public CodexCollectionVM CollectionVM => _collectionHandle.CollectionVM;
     
     public IReadOnlyCollection<CodexCollectionVM> AllCodexCollections => CollectionManager.CollectionVms;
     
@@ -105,7 +106,7 @@ public class CollectionTabVM : ViewModelBase
 
     #endregion
     
-    #region Methods and Commands
+    #region Commands and their methods
 
     public async Task Refresh()
     {
@@ -151,7 +152,7 @@ public class CollectionTabVM : ViewModelBase
     // Delete Collection
     private AsyncRelayCommand? _deleteCollectionCommand;
     public AsyncRelayCommand DeleteCollectionCommand => _deleteCollectionCommand ??= new(RaiseDeleteCollectionWarning);
-    public async Task RaiseDeleteCollectionWarning()
+    private async Task RaiseDeleteCollectionWarning()
     {
         int codexCount = CollectionHandle.CollectionVM.Collection.AllCodices.Count;
         
@@ -181,15 +182,29 @@ public class CollectionTabVM : ViewModelBase
 
     private async Task OnConfirmedDelete()
     {
-        bool deleted = CollectionHandle.DeleteCollection();
+        var collectionToDelete = CollectionVM;
         
+        _collectionHandle.Dispose();
+        bool deleted = collectionToDelete.DeleteCollection();
+
         if (deleted)
         {
-            CollectionManager.DeleteCollection(CollectionHandle);
-            
-            //Open another collection after deletion is successful
+            //If it was the default, change the default
+            if (PreferencesService.GetInstance().Preferences.UIState.StartupCollection == collectionToDelete.Identifier)
+            {
+                PreferencesService.GetInstance().Preferences.UIState.StartupCollection =
+                    CollectionManager.CollectionVms
+                        .Select(vm => vm.Identifier)
+                        .FirstOrDefault(vm => vm != collectionToDelete.Identifier) ?? "Default Collection";
+            }
+
+            //Switch to another collection
             var collectionHandle = await CollectionManager.GetOrCreateInitialCollectionVM();
-            await ChangeToCollection(collectionHandle);
+            await ChangeToCollection(collectionHandle, saveBeforeSwitch: false);
+        }
+        else
+        {
+            Logger.Warn($"Failed to delete {collectionToDelete.Identifier}");
         }
     }
 
@@ -297,13 +312,19 @@ public class CollectionTabVM : ViewModelBase
         await ChangeToCollection(newHandle);
     }
 
-    public async Task ChangeToCollection(CollectionHandle newHandle)
+    public async Task ChangeToCollection(CollectionHandle newHandle, bool saveBeforeSwitch = true)
     {
-        //save prev collection before switching
-        _collectionHandle.Save();
-        _collectionHandle.Dispose();
+        if (saveBeforeSwitch)
+        {
+            //save prev collection before switching
+            _collectionHandle.Save();
+        }
         
-        CollectionHandle = newHandle;
+        _collectionHandle.Dispose();
+        _collectionHandle = newHandle;
+        
+        //update Startup collection, TODO make this a setting, choose between a set collection or last used (current behaviour)
+        PreferencesService.GetInstance().Preferences.UIState.StartupCollection = _collectionHandle.CollectionVM.Identifier;
         
         //TODO: check if this is still needed
         //CurrentLayout?.UpdateDoVirtualization();
@@ -320,5 +341,19 @@ public class CollectionTabVM : ViewModelBase
         await newHandle.CollectionVM.AutoImport();
     }
     
+    
+    private void OnCollectionsChanged(object? sender, EventArgs e)
+    {
+        OnPropertyChanged(nameof(AllCodexCollections));
+    }
+    #endregion
+
+    #region IDisposable
+    
+    public void Dispose()
+    {
+        _collectionHandle.Dispose();
+    }
+
     #endregion
 }

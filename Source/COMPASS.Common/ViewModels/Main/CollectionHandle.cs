@@ -24,11 +24,6 @@ public class CollectionHandle: IDisposable
     {
         CollectionVM.SaveCodices(this);
     }
-
-    public bool DeleteCollection()
-    {
-        return CollectionVM.DeleteCollection(this);
-    }
     
     public void Dispose()
     {
