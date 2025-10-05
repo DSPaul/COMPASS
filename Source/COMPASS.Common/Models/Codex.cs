@@ -104,17 +104,13 @@ namespace COMPASS.Common.Models
             "However, with zero-padding, the order becomes 01, 02, 13, 20. \n";
 
         private ObservableCollection<string> _authors = [];
-        public IList<string> Authors
+        public ObservableCollection<string> Authors
         {
             get => _authors;
             set
             {
-                if (value is not ObservableCollection<string> v)
-                {
-                    v = new(value);
-                };
                 _authors.CollectionChanged -= OnCollectionChanged;
-                SetProperty(ref _authors, v);
+                SetProperty(ref _authors, value);
                 _authors.CollectionChanged += OnCollectionChanged;
                 OnPropertyChanged(nameof(AuthorsAsString));
             }
@@ -173,18 +169,13 @@ namespace COMPASS.Common.Models
         #region User related Metadata
 
         private ObservableCollection<Tag> _tags = [];
-        public IList<Tag> Tags
+        public ObservableCollection<Tag> Tags
         {
             get => _tags;
             set
             {
-                if (value is not ObservableCollection<Tag> v)
-                {
-                    v = new ObservableCollection<Tag>(value);
-                };
-                
                 _tags.CollectionChanged -= OnCollectionChanged;
-                _tags = v;
+                _tags = value;
                 _tags.CollectionChanged += OnCollectionChanged;
                 OnPropertyChanged(nameof(OrderedTags));
             }
@@ -255,7 +246,7 @@ namespace COMPASS.Common.Models
             Title = c.Title;
             SortingTitle = c.UserDefinedSortingTitle; //copy field instead of property, or it will copy _title
             Sources = c.Sources.Copy();
-            Authors = new ObservableCollection<string>(c.Authors);
+            Authors = new(c.Authors);
             Publisher = c.Publisher;
             Version = c.Version;
             ID = c.ID;
@@ -266,7 +257,7 @@ namespace COMPASS.Common.Models
             ReleaseDate = c.ReleaseDate;
             Rating = c.Rating;
             PageCount = c.PageCount;
-            Tags = new ObservableCollection<Tag>(c.Tags);
+            Tags = new(c.Tags);
             LastOpened = c.LastOpened;
             DateAdded = c.DateAdded;
             Favorite = c.Favorite;

@@ -57,7 +57,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 //Codex related Metadata
                 Title = dto.Title,
                 SortingTitle = dto.SortingTitle,
-                Authors = new ObservableCollection<string>(dto.Authors),
+                Authors = new(dto.Authors),
                 Publisher = dto.Publisher,
                 Description = dto.Description,
                 ReleaseDate = dto.ReleaseDate,
@@ -83,7 +83,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 }
             };
 
-            codex.Tags = new ObservableCollection<Tag>(collection.AllTags.Where(tag => dto.TagIDs.Contains(tag.ID)));
+            codex.Tags = new(collection.AllTags.Where(tag => dto.TagIDs.Contains(tag.ID)));
 
             return codex;
         }

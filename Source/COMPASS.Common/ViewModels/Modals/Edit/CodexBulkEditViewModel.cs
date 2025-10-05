@@ -165,7 +165,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
             foreach (Codex f in _editedCodices)
             {
-                f.Authors = new ObservableCollection<string>(f.Authors.Union(addedAuthors).Except(deletedAuthors));
+                f.Authors = new(f.Authors.Union(addedAuthors).Except(deletedAuthors));
             }
 
             if (!string.IsNullOrEmpty(Publisher))
@@ -219,7 +219,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                     //add all tags from TagsToAdd
                     foreach (Tag t in TagsToAdd) f.Tags.Add(t);
                     //remove duplicates
-                    f.Tags = new ObservableCollection<Tag>(f.Tags.Distinct());
+                    f.Tags = new(f.Tags.Distinct());
                 }
                 if (TagsToRemove.Count > 0)
                 {
