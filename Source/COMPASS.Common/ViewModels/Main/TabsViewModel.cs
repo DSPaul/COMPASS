@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.StateManagers;
 using iText.Svg;
@@ -14,8 +15,12 @@ public class TabsViewModel : ViewModelBase
 
     private static TabsViewModel? _instance;
     public static TabsViewModel GetInstance() => _instance ??= new();
+
+    #region Properties
     
     public List<CollectionTabVM> Tabs { get; } = [];
+
+    public Stack<CodexCollectionVM> ClosedTabs { get; } = [];
 
     private int _tabIndex = 0;
     public int TabIndex
@@ -31,9 +36,26 @@ public class TabsViewModel : ViewModelBase
         
     public CollectionTabVM? ActiveTab => Tabs.Any() ? Tabs[TabIndex] : null;
 
+    #endregion
+
+    #region Events
+    
     public event EventHandler<CollectionTabVM>? TabCreated;
     public event EventHandler<CollectionTabVM>? TabClosed;
     public event EventHandler<CollectionTabVM?>? TabChanged;
+
+    #endregion
+    
+    #region Commands
+    
+    private RelayCommand? _createTabCommand;
+    public RelayCommand CreateTabCommand => _createTabCommand ??= new(CreateTab);
+    
+    private RelayCommand<CollectionTabVM>? _closeTabCommand;
+    public RelayCommand<CollectionTabVM> CloseTabCommand => _closeTabCommand ??= new(CloseTab);
+    #endregion
+
+    #region Methods
     
     public void CreateTab()
     {
@@ -53,14 +75,21 @@ public class TabsViewModel : ViewModelBase
         Tabs.Add(tab);
         TabIndex = Tabs.Count - 1;
     }
-
-    public void CloseTab(CollectionTabVM tab)
+    
+    private void CloseTab(CollectionTabVM? tab)
     {
+        if (tab == null)
+        {
+            return;
+        }
+        
         //Decrement index if it was the rightmost tab
         if (tab == Tabs.Last())
         {
             TabIndex--;
         }
+        
+        ClosedTabs.Push(tab.CollectionVM);
         
         Tabs.Remove(tab);
         TabClosed?.Invoke(this, tab);
@@ -74,4 +103,13 @@ public class TabsViewModel : ViewModelBase
         
         TabChanged?.Invoke(this, ActiveTab);
     }
+
+    public void ReopenTab()
+    {
+        if (!ClosedTabs.Any()) return;
+        var collectionVm = ClosedTabs.Pop();
+        CreateTab(collectionVm);
+    }
+
+    #endregion
 }
