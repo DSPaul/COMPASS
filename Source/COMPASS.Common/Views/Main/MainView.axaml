@@ -84,11 +84,11 @@
                 </Border.Styles>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
                     <!--Collection Dropdown-->
-                    <ComboBox SelectedItem="{Binding CollectionHandle.CollectionVM, Mode=OneWay}"
+                    <ComboBox SelectedItem="{Binding CollectionVM, Mode=OneWay}"
                               IsHitTestVisible="True" VerticalAlignment="Stretch"
                               Background="Transparent" MinWidth="100"
                               DisplayMemberBinding="{Binding Identifier}"
-                              ItemsSource="{Binding AllCodexCollections}"
+                              ItemsSource="{Binding AllCodexCollections, Mode=OneWay}"
                               SelectionChanged="CollectionComboBox_SelectionChanged" />
                     <Rectangle Fill="{StaticResource Separator}" Width="2" />
                     <!--Create Collection-->
@@ -137,7 +137,7 @@
                                 IsVisible="{Binding EditCollectionVisibility}">
                         <TextBox x:Name="EditCollectionName"
                                  Background="Transparent"
-                                 Text="{Binding CollectionHandle.CollectionVM.Identifier, Mode=OneWay}"
+                                 Text="{Binding CollectionVM.Identifier, Mode=OneWay}"
                                  VerticalAlignment="Center" MaxLength="50"
                                  Margin="0" BorderThickness="0" MinWidth="150">
                             <!-- TODO: reimplement set focus on textbox when it becomes visible -->
@@ -273,7 +273,7 @@
                         Text="{Binding TabsVM.ActiveTab.FilterVM.FilteredCodices.Count, Mode=OneWay, FallbackValue=0}" />
                     /
                     <Run
-                        Text="{Binding TabsVM.ActiveTab.CollectionHandle.CollectionVM.Collection.AllCodices.Count, Mode=OneWay, FallbackValue=0}" />
+                        Text="{Binding TabsVM.ActiveTab.CollectionVM.Collection.AllCodices.Count, Mode=OneWay, FallbackValue=0}" />
                 </TextBlock>
             </StackPanel>
 
@@ -461,9 +461,9 @@
             <Panel DragDrop.AllowDrop="True">
                 <!--Layout-->
                 <ContentControl Content="{Binding CurrentLayout}"
-                                IsVisible="{Binding !!CollectionHandle.CollectionVM.Collection.AllCodices.Count}"/>
+                                IsVisible="{Binding !!CollectionVM.Collection.AllCodices.Count}"/>
                 
-                <main:WelcomeView IsVisible="{Binding !CollectionHandle.CollectionVM.Collection.AllCodices.Count}"/>
+                <main:WelcomeView IsVisible="{Binding !CollectionVM.Collection.AllCodices.Count}"/>
             </Panel>
         </DockPanel>
     </DockPanel>

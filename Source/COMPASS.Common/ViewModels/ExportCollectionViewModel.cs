@@ -21,7 +21,7 @@ namespace COMPASS.Common.ViewModels
 {
     public class ExportCollectionViewModel : WizardViewModel
     {
-        public ExportCollectionViewModel() : this(TabsViewModel.GetInstance().ActiveTab!.CollectionHandle.CollectionVM.Collection) { }
+        public ExportCollectionViewModel() : this(TabsViewModel.GetInstance().ActiveTab!.CollectionVM.Collection) { }
         public ExportCollectionViewModel(CodexCollection collectionToExport)
         {
             CollectionToExport = collectionToExport;

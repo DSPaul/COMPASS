@@ -25,7 +25,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     #region CTOR
     
     public ImportFilesViewModel(bool autoImport) : 
-        this(TabsViewModel.GetInstance().ActiveTab?.CollectionHandle.CollectionVM.Identifier ?? 
+        this(TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier ?? 
              throw new NoTabException("There is no open tab, so no collection to import the files to"), 
             autoImport) { }
     public ImportFilesViewModel(string targetCollectionId, bool autoImport)

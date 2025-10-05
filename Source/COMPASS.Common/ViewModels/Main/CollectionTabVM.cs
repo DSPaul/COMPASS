@@ -48,18 +48,6 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     
     private CollectionHandle _collectionHandle;
     
-    public CollectionHandle CollectionHandle
-    {
-        get => _collectionHandle;
-        private set
-        {
-            if (SetProperty(ref _collectionHandle, value))
-            {
-                PreferencesService.GetInstance().Preferences.UIState.StartupCollection = _collectionHandle.CollectionVM.Identifier;
-                //Collection doesn't get loaded here because it's async, happens in ChangeToCollection
-            }
-        }
-    }
     public CodexCollectionVM CollectionVM => _collectionHandle.CollectionVM;
     
     public IReadOnlyCollection<CodexCollectionVM> AllCodexCollections => CollectionManager.CollectionVms;
@@ -145,7 +133,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     {
         if (!CollectionManager.IsLegalCollectionName(newName)) return;
 
-        CollectionHandle.CollectionVM.RenameCollection(newName!);
+        CollectionVM.RenameCollection(newName!);
         EditCollectionVisibility = false;
     }
 
@@ -154,7 +142,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     public AsyncRelayCommand DeleteCollectionCommand => _deleteCollectionCommand ??= new(RaiseDeleteCollectionWarning);
     private async Task RaiseDeleteCollectionWarning()
     {
-        int codexCount = CollectionHandle.CollectionVM.Collection.AllCodices.Count;
+        int codexCount = CollectionVM.Collection.AllCodices.Count;
         
         if (codexCount > 0)
         {
@@ -214,13 +202,13 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     private void Export()
     {
         //open wizard
-        ExportCollectionViewModel exportCollectionVM = new(CollectionHandle.CollectionVM.Collection);
+        ExportCollectionViewModel exportCollectionVM = new(CollectionVM.Collection);
         ExportCollectionWizard wizard = new(exportCollectionVM);
         wizard.Show();
     }
 
     private AsyncRelayCommand? _exportTagsCommand;
-    public AsyncRelayCommand ExportTagsCommand => _exportTagsCommand ??= new(CollectionHandle.CollectionVM.ExportTags);
+    public AsyncRelayCommand ExportTagsCommand => _exportTagsCommand ??= new(CollectionVM.ExportTags);
 
     //Import Collection
     private AsyncRelayCommand? _importCommand;
@@ -261,7 +249,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         //Are you sure?
         Notification areYouSure = Notification.AreYouSureNotification;
         areYouSure.Title = "Confirm merge";
-        areYouSure.Body = $"You are about to merge '{CollectionHandle.CollectionVM.Identifier}' into '{collectionToMergeInto}'. \n" +
+        areYouSure.Body = $"You are about to merge '{CollectionVM.Identifier}' into '{collectionToMergeInto}'. \n" +
                        $"This will copy all items, tags and preferences to the chosen collection. \n" +
                        $"Are you sure you want to continue?";
         await ServiceResolver.Resolve<INotificationService>().ShowDialog(areYouSure);
@@ -272,16 +260,16 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         {
             if (targetCollectionHandle == null)
             {
-                Logger.Warn($"Failed to load merge {CollectionHandle.CollectionVM.Identifier} into {collectionToMergeInto} " +
+                Logger.Warn($"Failed to load merge {CollectionVM.Identifier} into {collectionToMergeInto} " +
                             $"because the target collection could not be loaded.");
                 return;
             }
             
-            targetCollectionHandle.CollectionVM.Collection.MergeWith(CollectionHandle.CollectionVM.Collection);
+            targetCollectionHandle.CollectionVM.Collection.MergeWith(CollectionVM.Collection);
             targetCollectionHandle.Save();
         }
 
-        Notification doneNotification = new("Merge Success", $"Successfully merged '{CollectionHandle.CollectionVM.Identifier}' into '{collectionToMergeInto}'");
+        Notification doneNotification = new("Merge Success", $"Successfully merged '{CollectionVM.Identifier}' into '{collectionToMergeInto}'");
 
         //TODO toast notifications
         //await ServiceResolver.Resolve<INotificationService>().ShowToast(doneNotification);
@@ -335,9 +323,9 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         
         FilterVM.ReFilter(true);
 
-        OnPropertyChanged(nameof(ActiveCollection));
+        OnPropertyChanged(nameof(CollectionVM));
         CollectionChanged?.Invoke(this, EventArgs.Empty);
-        
+
         await newHandle.CollectionVM.AutoImport();
     }
     

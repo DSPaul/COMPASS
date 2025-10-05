@@ -32,7 +32,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             _editedCodex = toEdit;
             //apply all changes to new codex so they can be canceled, only copy changes over after OK is clicked
-            _tempCodex = _editedCodex == null ? CodexOperations.CreateNewCodex(TabVM.CollectionHandle.CollectionVM.Collection) : new(_editedCodex);
+            _tempCodex = _editedCodex == null ? CodexOperations.CreateNewCodex(TabVM.CollectionVM.Collection) : new(_editedCodex);
 
             TempCodex.LoadCover();
 

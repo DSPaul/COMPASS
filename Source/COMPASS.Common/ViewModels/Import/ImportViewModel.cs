@@ -93,7 +93,7 @@ namespace COMPASS.Common.ViewModels.Import
 
         public static async Task ImportFilesAsync(IList<string> paths, string? targetCollectionId = null)
         {
-            targetCollectionId ??= TabsViewModel.GetInstance().ActiveTab?.CollectionHandle.CollectionVM.Identifier 
+            targetCollectionId ??= TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier 
                                    ?? throw new NoTabException("There is no open tab, so no collection to import the files to");
 
             using CollectionHandle targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId) 

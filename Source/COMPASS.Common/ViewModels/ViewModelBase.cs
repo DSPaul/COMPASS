@@ -16,7 +16,7 @@ namespace COMPASS.Common.ViewModels
             {
                 CollectionTabVM tabVm = TabsViewModel.GetInstance().ActiveTab 
                                         ?? throw new NoTabException("No collection is active because there is no active tab");
-                return tabVm.CollectionHandle.CollectionVM.Collection;
+                return tabVm.CollectionVM.Collection;
             }
         }
     }

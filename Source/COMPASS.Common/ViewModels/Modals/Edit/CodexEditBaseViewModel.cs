@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
@@ -28,7 +27,7 @@ public abstract class CodexEditBaseViewModel: ViewModelBase, IModalViewModel, IC
     
     protected ObservableCollection<CheckableTreeNode<Tag>>? _allTagsAsTreeNodes;
     public ObservableCollection<CheckableTreeNode<Tag>> AllTagsAsTreeNodes => _allTagsAsTreeNodes ??= 
-        new(TabVM.CollectionHandle.CollectionVM.Collection.RootTags.Select(tag => new CheckableTreeNode<Tag>(tag)));
+        new(TabVM.CollectionVM.Collection.RootTags.Select(tag => new CheckableTreeNode<Tag>(tag)));
 
     protected HashSet<CheckableTreeNode<Tag>> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
     

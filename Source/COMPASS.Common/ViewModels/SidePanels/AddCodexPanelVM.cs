@@ -22,7 +22,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         private async Task Import(ImportSource source)
         {
             var importVm = new ImportViewModel( 
-                TabsViewModel.GetInstance().ActiveTab?.CollectionHandle.CollectionVM.Identifier
+                TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier
                 ?? throw new NoTabException("No tab was found, so no collection to import to"));
             await importVm.Import(source);
         }
