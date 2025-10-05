@@ -2,8 +2,10 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.XmlDtos;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels;
+using COMPASS.Common.ViewModels.Main;
 
 namespace Tests.Sources
 {
@@ -17,14 +19,9 @@ namespace Tests.Sources
         public void Init()
         {
             _ = new MainViewModel();
-            if (!MainViewModel.CollectionVM.CollectionDirectories.Contains(TEST_COLLECTION))
+            if (!CollectionManager.CollectionNames.Contains(TEST_COLLECTION))
             {
-                MainViewModel.CollectionVM.CreateAndLoadCollection(TEST_COLLECTION).Wait();
-            }
-            else
-            {
-                MainViewModel.CollectionVM.CurrentCollection = new(TEST_COLLECTION);
-                MainViewModel.CollectionVM.Refresh().Wait();
+                using var handle = CollectionManager.CreateAndLoadCollection(TEST_COLLECTION).Result;
             }
         }
 
@@ -36,7 +33,7 @@ namespace Tests.Sources
                 SourceURL = TEST_URL
             };
 
-            var source = MetaDataSource.GetSource(MetaDataSourceType.Homebrewery);
+            var source = MetaDataSource.GetSource(MetaDataSourceType.Homebrewery, new CodexCollection("TEST_COLLECTION"));
 
             SourceMetaData response = await source!.GetMetaData(sources);
 
@@ -54,7 +51,7 @@ namespace Tests.Sources
         public async Task GetCoverFromHomeBrewery()
         {
             //Setup
-            var source = MetaDataSource.GetSource(MetaDataSourceType.Homebrewery);
+            var source = MetaDataSource.GetSource(MetaDataSourceType.Homebrewery, new CodexCollection("TEST_COLLECTION"));
             var sources = new SourceSet()
             {
                 SourceURL = TEST_URL

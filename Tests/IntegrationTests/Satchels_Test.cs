@@ -1,9 +1,5 @@
 ﻿using Avalonia.Headless.NUnit;
-using COMPASS.Common.Models;
-using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.ViewModels;
-using COMPASS.Common.ViewModels.Import;
-using Tests.DataGenerators;
+using COMPASS.Common.ViewModels.Main;
 
 namespace Tests.IntegrationTests
 {
