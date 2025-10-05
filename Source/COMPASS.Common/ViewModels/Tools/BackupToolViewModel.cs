@@ -86,7 +86,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             //TODO should probably just restart after restore
             
             //restore collection that was open
-            var defaultCollectionVM = await CollectionManager.GetOrCreateInitialCollectionVM();
+            using var defaultCollectionVM = await CollectionManager.GetOrCreateInitialCollectionVM();
             var tabVm = TabsViewModel.GetInstance();
             if (tabVm.ActiveTab == null)
             {

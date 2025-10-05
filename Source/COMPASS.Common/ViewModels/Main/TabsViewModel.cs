@@ -64,6 +64,7 @@ public class TabsViewModel : ViewModelBase
         
         Tabs.Remove(tab);
         TabClosed?.Invoke(this, tab);
+        tab.Dispose();
         
         //if last remaining tab is closed, reopen a new one
         if (!Tabs.Any())
