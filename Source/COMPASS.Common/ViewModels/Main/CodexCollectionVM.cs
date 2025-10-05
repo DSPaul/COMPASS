@@ -7,6 +7,7 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 
@@ -16,7 +17,7 @@ public class CodexCollectionVM : ViewModelBase
 {
     public CodexCollectionVM(string identifier, CodexCollection collection, ICodexCollectionStorageService storageService)
     {
-        Identifier = identifier;
+        _identifier = identifier;
         Collection = collection;
             
         _storageService = storageService;
@@ -31,7 +32,12 @@ public class CodexCollectionVM : ViewModelBase
     /// <summary>
     /// A string that identifies this collection, such as its path
     /// </summary>
-    public string Identifier { get; private set; }
+    private string _identifier;
+    public string Identifier 
+    { 
+        get =>  _identifier; 
+        private set => SetProperty(ref _identifier, value); 
+    }
 
     /// <summary>
     /// The owners of the collection 
