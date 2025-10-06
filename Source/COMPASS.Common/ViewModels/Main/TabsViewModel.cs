@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
@@ -18,7 +19,7 @@ public class TabsViewModel : ViewModelBase
 
     #region Properties
     
-    public List<CollectionTabVM> Tabs { get; } = [];
+    public ObservableCollection<CollectionTabVM> Tabs { get; } = [];
 
     public Stack<CodexCollectionVM> ClosedTabs { get; } = [];
 
@@ -28,6 +29,7 @@ public class TabsViewModel : ViewModelBase
         get => _tabIndex;
         set
         {
+            value = Math.Clamp(value, 0, Tabs.Count - 1);
             SetProperty(ref _tabIndex, value);
             OnPropertyChanged(nameof(ActiveTab));
             TabChanged?.Invoke(this, ActiveTab);
@@ -76,7 +78,7 @@ public class TabsViewModel : ViewModelBase
         TabIndex = Tabs.Count - 1;
     }
     
-    private void CloseTab(CollectionTabVM? tab)
+    public void CloseTab(CollectionTabVM? tab)
     {
         if (tab == null)
         {

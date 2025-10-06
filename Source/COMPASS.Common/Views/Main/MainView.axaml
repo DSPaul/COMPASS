@@ -5,7 +5,6 @@
              xmlns:layoutViews="using:COMPASS.Common.Views.Layouts"
              xmlns:layoutVms="using:COMPASS.Common.ViewModels.Layouts"
              xmlns:vm="using:COMPASS.Common.ViewModels.Main"
-             xmlns:managers="using:COMPASS.Common.Services.StateManagers"
              xmlns:views="using:COMPASS.Common.Views"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:converters="using:COMPASS.Common.Converters"
@@ -64,132 +63,8 @@
                    VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
 
             <!--Collection Selection-->
-            <Border Grid.Column="1" IsHitTestVisible="True"
-                    Background="{StaticResource UIElementBackground}"
-                    CornerRadius="4" Margin="0,5" Height="35"
-                    DataContext="{Binding TabsVM.ActiveTab}">
-                <Border.Styles>
-                    <Style Selector="controls|IconButton">
-                        <Setter Property="Padding" Value="0" />
-                        <Setter Property="Margin" Value="3" />
-                        <Setter Property="Template">
-                            <ControlTemplate>
-                                <materialIcons:MaterialIcon Kind="{TemplateBinding Icon}"
-                                                            Height="25" Width="25"
-                                                            Foreground="{TemplateBinding Foreground}"
-                                                            Classes="ZoomOnHover" />
-                            </ControlTemplate>
-                        </Setter>
-                    </Style>
-                </Border.Styles>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
-                    <!--Collection Dropdown-->
-                    <ComboBox SelectedItem="{Binding CollectionVM, Mode=OneWay}"
-                              IsHitTestVisible="True" VerticalAlignment="Stretch"
-                              Background="Transparent" MinWidth="100"
-                              DisplayMemberBinding="{Binding Identifier}"
-                              ItemsSource="{Binding AllCodexCollections, Mode=OneWay}"
-                              SelectionChanged="CollectionComboBox_SelectionChanged" />
-                    <Rectangle Fill="{StaticResource Separator}" Width="2" />
-                    <!--Create Collection-->
-                    <controls:IconButton Icon="FolderPlus"
-                                         Foreground="{StaticResource CollectionIconFill}"
-                                         ToolTip.Tip="Create New Collection"
-                                         IsVisible="{Binding !CreateCollectionVisibility}"
-                                         Command="{Binding ToggleCreateCollectionCommand}" />
-                    <StackPanel Orientation="Horizontal" x:Name="CollectionCreation"
-                                IsVisible="{Binding CreateCollectionVisibility}">
-                        <TextBox x:Name="NewCollectionName" Watermark="New Collection" VerticalAlignment="Center"
-                                 BorderBrush="{StaticResource DarkUIElementBackground}"
-                                 Margin="0" BorderThickness="0" MinWidth="150" MaxLength="50"
-                                 Background="Transparent">
-                            <!-- TODO: reimplement set focus on textbox when it becomes visible -->
-                            <!--   <TextBox.Style> -->
-                            <!--     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"> -->
-                            <!--       <Style.Triggers> -->
-                            <!--         <DataTrigger Binding="{Binding ElementName=CollectionCreation, Path=IsVisible}" Value="true"> -->
-                            <!--           <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=NewCollectionName}" /> -->
-                            <!--         </DataTrigger> -->
-                            <!--         <DataTrigger Binding="{Binding ElementName=CollectionCreation, Path=IsVisible}" Value="false"> -->
-                            <!--           <Setter Property="Text" Value=""/> -->
-                            <!--         </DataTrigger> -->
-                            <!--       </Style.Triggers> -->
-                            <!--     </Style> -->
-                            <!--   </TextBox.Style> -->
-                        </TextBox>
-                        <controls:IconButton Icon="Check" Foreground="{StaticResource AcceptFill}"
-                                             IsVisible="{Binding $self.IsEffectivelyEnabled}"
-                                             IsDefault="{Binding #NewCollectionName.IsFocused}"
-                                             Command="{Binding CreateCollectionCommand}"
-                                             CommandParameter="{Binding #NewCollectionName.Text}" />
-                        <controls:IconButton Icon="Close"
-                                             Foreground="{StaticResource CancelFill}"
-                                             Command="{Binding ToggleCreateCollectionCommand}" />
-                    </StackPanel>
-                    <Rectangle Fill="{StaticResource Separator}" Width="2" />
-                    <!--Edit Collection-->
-                    <controls:IconButton Icon="FolderEdit" Foreground="{StaticResource CollectionIconFill}"
-                                         ToolTip.Tip="Rename Collection"
-                                         Command="{Binding ToggleEditCollectionCommand}"
-                                         IsVisible="{Binding !EditCollectionVisibility}" />
-                    <StackPanel Orientation="Horizontal" x:Name="CollectionEditing"
-                                VerticalAlignment="Stretch"
-                                IsVisible="{Binding EditCollectionVisibility}">
-                        <TextBox x:Name="EditCollectionName"
-                                 Background="Transparent"
-                                 Text="{Binding CollectionVM.Identifier, Mode=OneWay}"
-                                 VerticalAlignment="Center" MaxLength="50"
-                                 Margin="0" BorderThickness="0" MinWidth="150">
-                            <!-- TODO: reimplement set focus on textbox when it becomes visible -->
-                            <!-- <TextBox.Style> -->
-                            <!--   <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"> -->
-                            <!--     <Style.Triggers> -->
-                            <!--       <DataTrigger Binding="{Binding ElementName=CollectionEditing, Path=IsVisible}" Value="true"> -->
-                            <!--         <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=EditCollectionName}" /> -->
-                            <!--       </DataTrigger> -->
-                            <!--     </Style.Triggers> -->
-                            <!--   </Style> -->
-                            <!-- </TextBox.Style> -->
-                        </TextBox>
-                        <controls:IconButton Icon="Check" Foreground="{StaticResource AcceptFill}"
-                                             IsDefault="{Binding #EditCollectionName.IsFocused}"
-                                             Command="{Binding EditCollectionNameCommand}"
-                                             CommandParameter="{Binding #EditCollectionName.Text}" />
-                        <controls:IconButton Icon="Close" Foreground="{StaticResource CancelFill}"
-                                             Command="{Binding ToggleEditCollectionCommand}" />
-                    </StackPanel>
-                    <Rectangle Fill="{StaticResource Separator}" Width="2" />
-                    <!--More Options Collection-->
-                    <controls:IconButton Icon="DotsVertical"
-                                         Foreground="{StaticResource CollectionIconFill}"
-                                         ToolTip.Tip="More Actions" Width="15">
-                        <Button.Flyout>
-                            <MenuFlyout>
-                                <MenuItem Header="Import..." ToolTip.Tip="Import a Collection"
-                                          Command="{Binding ImportCommand}"
-                                          Icon="{materialIcons:MaterialIconExt Kind=FolderDownload}" />
-                                <MenuItem Header="Export..."
-                                          ToolTip.Tip="Share this Collection with other COMPASS users"
-                                          Command="{Binding ExportCommand}"
-                                          Icon="{materialIcons:MaterialIconExt Kind=FolderUpload}" />
-                                <MenuItem Header="Merge into " ItemsSource="{x:Static managers:CollectionManager.CollectionNames}"
-                                          Icon="{materialIcons:MaterialIconExt Kind=FolderMove}">
-                                    <MenuItem.Styles>
-                                        <Style Selector="MenuItem MenuItem">
-                                            <Setter Property="Command"
-                                                    Value="{Binding Path=$parent[MenuItem].((vm:CollectionTabVM)DataContext).MergeCollectionIntoCommand}" />
-                                            <Setter Property="CommandParameter" Value="{Binding $self.Header}" />
-                                        </Style>
-                                    </MenuItem.Styles>
-                                </MenuItem>
-                                <MenuItem Header="Delete" ToolTip.Tip="Delete this Collection"
-                                          Command="{Binding DeleteCollectionCommand}"
-                                          Icon="{materialIcons:MaterialIconExt Kind=Delete}" />
-                            </MenuFlyout>
-                        </Button.Flyout>
-                    </controls:IconButton>
-                </StackPanel>
-            </Border>
+            <main:TabStrip Grid.Column="1" IsHitTestVisible="True"
+                           DataContext="{Binding TabsVM}"/>
 
             <!--Search Bar-->
             <Border Grid.Column="3" IsHitTestVisible="True"

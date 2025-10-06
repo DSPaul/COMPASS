@@ -11,6 +11,7 @@
         <Setter Property="Margin" Value="3" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Height" Value="20" />
+        <Setter Property="CornerRadius" Value="5" />
         <Style Selector="^[Background=Transparent] /template/ materialIcons|MaterialIcon">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{StaticResource TextMutedColor}" />
@@ -22,7 +23,7 @@
             <ControlTemplate TargetType="controls:IconButton">
                 <Border Padding="{TemplateBinding Padding}"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="5">
+                        CornerRadius="{TemplateBinding CornerRadius}">
                     <materialIcons:MaterialIcon
                         Kind="{TemplateBinding Icon}"
                         Foreground="{TemplateBinding Foreground}"

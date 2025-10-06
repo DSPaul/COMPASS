@@ -44,6 +44,19 @@ public partial class MainView : UserControl
                     }
                 }
                 break;
+            case Key.T:
+                {
+                    if (e.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift))
+                    {
+                        TabsViewModel.GetInstance().ReopenTab();
+                    }
+                    if (e.KeyModifiers == KeyModifiers.Control)
+                    {
+                        TabsViewModel.GetInstance().CreateTab();
+                    }
+                    e.Handled = true;
+                }
+                break;
 
             case Key.F5:
                 {
@@ -56,16 +69,6 @@ public partial class MainView : UserControl
                 break;
         }
 
-    }
-
-    private async void CollectionComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        //only refresh if the selection changes from one collection to another
-        //so both an added and removed collection
-        if (e.AddedItems.Count > 0 && e.RemovedItems.Count > 0 && ActiveTabVM != null)
-        {
-            await ActiveTabVM.ChangeToCollection(e.AddedItems.Cast<CodexCollectionVM>().First());
-        }
     }
 
     private void LayoutSelection_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
