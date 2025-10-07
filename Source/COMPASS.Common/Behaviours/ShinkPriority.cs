@@ -91,10 +91,12 @@ namespace COMPASS.Common.Behaviours
 
             // Check if everything fits
             double availableWidth = grid.Bounds.Width + 1; // Add a pixel margin to counter imprecision
-            double totalDesiredWidth = columns.Sum(c => c.GetPreferredSize());
+            double totalActualWidth = columns.Sum(c => c.Definition.ActualWidth);
 
-            if (totalDesiredWidth < availableWidth) 
+            if (totalActualWidth < availableWidth) 
             {
+                double totalDesiredWidth = columns.Sum(c => c.GetPreferredSize());
+                
                 //If room to grow, reset
                 if (totalDesiredWidth + 10 < availableWidth && //Only reset if sufficient space too meaningfully grow
                     grid.GetValue(ActivePriorityProperty) > 0) //Only reset if anything has been shrunk
@@ -174,7 +176,9 @@ namespace COMPASS.Common.Behaviours
 
                 if (OrigWidth.IsAbsolute)
                 {
-                    return OrigWidth.Value;
+                    //If we just take value, it won't grow until it can be full size
+                    var preferred = Math.Min(Definition.ActualWidth, OrigWidth.Value);
+                    return Math.Max(Definition.MinWidth, preferred);
                 }
 
                 return Definition.ActualWidth;
