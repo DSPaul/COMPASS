@@ -12,7 +12,10 @@
     <Grid ColumnDefinitions="*, Auto">
         <ListBox ItemsSource="{Binding Tabs}"
                  SelectedIndex="{Binding TabIndex}"
-                 Background="Transparent">
+                 MinWidth="235"
+                 Background="Transparent" HorizontalAlignment="Left"
+                 ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto">
             <ListBox.Styles>
                 <Style Selector="ListBoxItem > Border">
                     <Setter Property="Background" Value="{StaticResource Layer5}"/>
@@ -227,6 +230,7 @@
                 </ControlTheme>
             </ListBox.ItemContainerTheme>
         </ListBox>
+
         <controls:IconButton Grid.Column="1"
                              Icon="Plus" ToolTip.Tip="Open a new tab"
                              Command="{Binding CreateTabCommand}"

@@ -11,6 +11,7 @@
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:filters="clr-namespace:COMPASS.Common.Models.Filters"
              xmlns:main="clr-namespace:COMPASS.Common.Views.Main"
+             xmlns:behaviours="clr-namespace:COMPASS.Common.Behaviours"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="COMPASS.Common.Views.Main.MainView" FontSize="16"
              x:DataType="vm:MainViewModel"
@@ -41,6 +42,7 @@
 
         <!--  Title bar -->
         <Grid DockPanel.Dock="Top"
+              behaviours:ShinkPriority.Enable="True"
               x:Name="TitleBar"
               Height="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}">
             <!-- Should be this but bugged rn https://github.com/AvaloniaUI/Avalonia/issues/16066
@@ -48,12 +50,13 @@
               Background="{StaticResource TitlebarBackground}">-->
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" /> <!-- Logo -->
-                <ColumnDefinition Width="auto" /> <!-- Collections -->
+                <ColumnDefinition Width="auto" behaviours:ShinkPriority.ColumnShrinkPriority="2"/> <!-- Tabs -->
                 <ColumnDefinition Width="*" />    <!-- Spacing -->
-                <ColumnDefinition Width="auto" /> <!-- Searchbar -->
+                <ColumnDefinition Width="600" MinWidth="250"
+                                  behaviours:ShinkPriority.ColumnShrinkPriority="1"/> <!-- Searchbar -->
                 <ColumnDefinition Width="*" />    <!-- Spacing -->
-                <ColumnDefinition Width="auto" /> <!-- Settings -->
-                <ColumnDefinition Width="135" />
+                <ColumnDefinition Width="auto"/> <!-- Settings Button -->
+                <ColumnDefinition Width="135" />  <!-- Window controls -->
                 <!-- Window controls TODO make this dynamic for different platforms-->
             </Grid.ColumnDefinitions>
 
@@ -68,7 +71,7 @@
 
             <!--Search Bar-->
             <Border Grid.Column="3" IsHitTestVisible="True"
-                    Width="300" MinWidth="100" Height="35" CornerRadius="4"
+                    Height="35" CornerRadius="4"
                     Background="{StaticResource UIElementBackground}"
                     OpacityMask="#FF222222" Margin="10,5"
                     DataContext="{Binding TabsVM.ActiveTab.FilterVM}">
