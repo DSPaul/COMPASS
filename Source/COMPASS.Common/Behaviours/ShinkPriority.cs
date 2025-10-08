@@ -94,7 +94,10 @@ namespace COMPASS.Common.Behaviours
             double totalActualWidth = columns.Sum(c => c.Definition.ActualWidth);
 
             if (totalActualWidth < availableWidth) 
-            {
+            { 
+                //TODO improve this: with current logic, grow will only happen if sum of desired width of ALL colmuns fits in available widt, 
+                //should be more gradual, only the previous priority will be grown and thus be considered, the other columns still use actualWidth
+                //or something like that, idk
                 double totalDesiredWidth = columns.Sum(c => c.GetPreferredSize());
                 
                 //If room to grow, reset
