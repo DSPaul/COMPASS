@@ -1,6 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:vm ="clr-namespace:COMPASS.Common.ViewModels.Main"
+                    xmlns:view ="clr-namespace:COMPASS.Common.Views.Main"
                     xmlns:layoutVm ="clr-namespace:COMPASS.Common.ViewModels.Layouts"
                     xmlns:managers ="clr-namespace:COMPASS.Common.Services.StateManagers"
                     xmlns:materialIcons="using:Material.Icons.Avalonia">
@@ -8,9 +9,11 @@
         <StackPanel Orientation="Horizontal">
             <UserControl Content="{StaticResource CodexContextMenu}" Height="500" Width="250"/>
             <UserControl Content="{StaticResource MultiCodexContextMenu}" Height="500" Width="250"/>
+            <UserControl Content="{StaticResource TabContextMenu}" Height="500" Width="250"/>
         </StackPanel>
         
     </Design.PreviewWith>
+    
     
     <ContextMenu x:Key="CodexContextMenu" x:DataType="layoutVm:LayoutViewModel">
         <MenuItem Header="Open Locally" 
@@ -172,5 +175,13 @@
                   CommandParameter="{Binding SelectedCodices}"
                   Icon="{materialIcons:MaterialIconExt Kind=DeleteForever}"/>
     </ContextMenu>
-    <!--#endregion-->
+    
+    <ContextMenu x:Key="TabContextMenu" x:DataType="vm:CollectionTabVM">
+        <MenuItem Header="Duplicate Tab" 
+                  Command="{Binding $parent[view:TabStrip].((vm:TabsViewModel)DataContext).DuplicateTabCommand}"
+                  CommandParameter="{Binding}"/>
+        <MenuItem Header="Close Tab" 
+                  Command="{Binding $parent[view:TabStrip].((vm:TabsViewModel)DataContext).CloseTabCommand}"
+                  CommandParameter="{Binding}"/>
+    </ContextMenu>
 </ResourceDictionary>

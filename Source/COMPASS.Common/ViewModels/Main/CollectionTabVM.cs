@@ -8,6 +8,7 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
@@ -25,16 +26,17 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         this(CollectionManager.GetOrCreateInitialCollectionVM().Result)
     { }
 
-    public CollectionTabVM(CodexCollectionVM collectionVm) : this(collectionVm.Load() ?? CollectionManager.GetOrCreateInitialCollectionVM().Result)
+    public CollectionTabVM(CodexCollectionVM collectionVm, FiltersState? filtersState = null, CodexLayout? layout = null) : 
+        this(collectionVm.Load() ?? CollectionManager.GetOrCreateInitialCollectionVM().Result, filtersState, layout)
     { }
     
-    public CollectionTabVM(CollectionHandle collectionHandle)
+    public CollectionTabVM(CollectionHandle collectionHandle, FiltersState? filtersState = null, CodexLayout? layout = null)
     {
         _collectionHandle = collectionHandle;
         
-        _filterVM = new(_collectionHandle.CollectionVM.Collection.AllCodices);
+        _filterVM = new(_collectionHandle.CollectionVM.Collection.AllCodices, filtersState);
         _tagsVM = new(_collectionHandle.CollectionVM.Collection, _filterVM);
-        _currentLayout = LayoutViewModel.GetLayout();
+        _currentLayout = LayoutViewModel.GetLayout(layout);
         CodexCommands = new(_collectionHandle);
     }
 

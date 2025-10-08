@@ -6,6 +6,7 @@
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:managers="clr-namespace:COMPASS.Common.Services.StateManagers"
              xmlns:vm="using:COMPASS.Common.ViewModels.Main"
+             xmlns:behaviours="clr-namespace:COMPASS.Common.Behaviours"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Main.TabStrip"
              x:DataType="vm:TabsViewModel">
@@ -15,7 +16,8 @@
                  MinWidth="235"
                  Background="Transparent" HorizontalAlignment="Left"
                  ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                 ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                 ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                 behaviours:MouseWheelBehavior.ScrollDirection="Horizontal">
             <ListBox.Styles>
                 <Style Selector="ListBoxItem > Border">
                     <Setter Property="Background" Value="{StaticResource Layer5}"/>
@@ -184,7 +186,8 @@
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="vm:CollectionTabVM">
                     <Border CornerRadius="4" Margin="0,5" Height="35"
-                            PointerPressed="InputElement_OnPointerPressed">
+                            PointerPressed="InputElement_OnPointerPressed"
+                            ContextMenu="{StaticResource TabContextMenu}">
                         <StackPanel Orientation="Horizontal">
                             <ContentControl x:Name="TabHeader" Content="{Binding}" VerticalAlignment="Center"/>
                             <controls:IconButton Theme="{StaticResource IconOnly}"

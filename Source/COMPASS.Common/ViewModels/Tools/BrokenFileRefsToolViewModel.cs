@@ -8,6 +8,7 @@ using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
@@ -67,8 +68,10 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel, IDispo
         //if not, open a new tab to apply the filter
         //Always open new tab for now
         var tabsVm = TabsViewModel.GetInstance();
-        tabsVm.CreateTab(SelectedCollectionVm);
-        tabsVm.ActiveTab!.FilterVM.AddFilter(new HasBrokenPathFilter());
+        FiltersState filtersState = new();
+        filtersState.IncludedFilters.Add(new HasBrokenPathFilter());
+        CollectionTabVM tabVM = new CollectionTabVM(SelectedCollectionVm, filtersState, CodexLayout.List);
+        tabsVm.AddTab(tabVM);
     }
 
     //Rename the refs

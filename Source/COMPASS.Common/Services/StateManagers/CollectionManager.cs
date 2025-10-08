@@ -190,6 +190,11 @@ namespace COMPASS.Common.Services.StateManagers
         {
             return _allCollectionVms.Any(c => c.Identifier == collectionIdentifier);
         }
+        
+        public static CodexCollectionVM? GetCollectionVM(string collectionIdentifier)
+        {
+            return _allCollectionVms.SingleOrDefault(c => c.Identifier == collectionIdentifier);
+        }
     
         public static CollectionHandle? LoadCollection(string collectionIdentifier)
         {

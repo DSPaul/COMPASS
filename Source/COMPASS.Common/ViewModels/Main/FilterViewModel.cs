@@ -18,7 +18,7 @@ namespace COMPASS.Common.ViewModels.Main
 {
     public class FilterViewModel : ViewModelBase
     {
-        public FilterViewModel(ObservableCollection<Codex> allCodices)
+        public FilterViewModel(ObservableCollection<Codex> allCodices, FiltersState? filtersState = null)
         {
             _allCodices = allCodices;
 
@@ -28,6 +28,20 @@ namespace COMPASS.Common.ViewModels.Main
             _includedCodices = [.. _allCodices];
             _excludedCodices = [];
 
+            if (filtersState != null)
+            {
+                if (filtersState.IncludedFilters.Any())
+                {
+                    IncludedFilters = new(filtersState.IncludedFilters);
+                    UpdateIncludedCodices(false);
+                }
+                if (filtersState.ExcludedFilters.Any())
+                {
+                    ExcludedFilters = new(filtersState.ExcludedFilters);
+                    UpdateExcludedCodices(false);
+                }
+            }
+
             IncludedFilters.CollectionChanged += (_, _) => UpdateIncludedCodices();
             ExcludedFilters.CollectionChanged += (_, _) => UpdateExcludedCodices();
 
@@ -36,7 +50,7 @@ namespace COMPASS.Common.ViewModels.Main
 
             PopulateMetaDataCollections();
 
-            ApplyFilters();
+            ReFilter();
         }
 
         #region Fields
@@ -392,6 +406,12 @@ namespace COMPASS.Common.ViewModels.Main
             FileTypeList = new(FileTypeList.Order());
             DomainList = new(DomainList.Order());
         });
+
+        public FiltersState GetFiltersState() => new FiltersState()
+            {
+                IncludedFilters = IncludedFilters.ToList(),
+                ExcludedFilters = ExcludedFilters.ToList()
+            };
 
         //------------- Adding, Removing, ect ------------//
 

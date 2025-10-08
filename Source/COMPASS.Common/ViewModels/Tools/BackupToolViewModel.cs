@@ -87,14 +87,14 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             
             //restore collection that was open
             using var defaultCollectionVM = await CollectionManager.GetOrCreateInitialCollectionVM();
-            var tabVm = TabsViewModel.GetInstance();
-            if (tabVm.ActiveTab == null)
+            var tabsVm = TabsViewModel.GetInstance();
+            if (tabsVm.ActiveTab == null)
             {
-                tabVm.CreateTab(defaultCollectionVM.CollectionVM);
+                tabsVm.CreateTab();
             }
             else
             {
-                await tabVm.ActiveTab.ChangeToCollection(defaultCollectionVM);
+                await tabsVm.ActiveTab.ChangeToCollection(defaultCollectionVM);
             }
             _lw?.Close();
         }
