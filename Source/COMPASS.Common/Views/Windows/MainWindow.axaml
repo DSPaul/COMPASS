@@ -11,22 +11,23 @@
         ExtendClientAreaTitleBarHeightHint="45"
         Closing="Window_Closing"
         Title="COMPASS" Background="{StaticResource WindowBackground}">
-  <Window.Styles>
-    <Style Selector="CaptionButtons">
-      <Setter Property="MaxHeight" Value="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}"/>
-    </Style>
-    <Style Selector="CaptionButtons Button">
-      <Setter Property="Height" Value="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}"/>
-    </Style>
-  </Window.Styles>
+    <Window.Styles>
+        <Style Selector="CaptionButtons">
+            <Setter Property="MaxHeight" Value="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}" />
+        </Style>
+        <Style Selector="CaptionButtons Button">
+            <Setter Property="Height" Value="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}" />
+        </Style>
+    </Window.Styles>
 
-  <Grid Margin="{Binding $parent[Window].OffScreenMargin}">
-    <!-- Title bar background -->
-    <Border Background="{StaticResource TitlebarBackground}"
-            VerticalAlignment="Top"
-            Height="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}"
-            IsHitTestVisible="False"/>
-      <main:MainView />
-  </Grid>
+    <Panel Margin="{Binding $parent[Window].OffScreenMargin}">
+        <!-- Title bar background -->
+        <Border Background="{StaticResource TitlebarBackground}"
+                VerticalAlignment="Top"
+                Height="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}"
+                IsHitTestVisible="False" />
+        <main:MainView />
+    </Panel>
+
 
 </Window>

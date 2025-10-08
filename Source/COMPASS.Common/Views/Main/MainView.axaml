@@ -59,8 +59,7 @@
                 <ColumnDefinition Width="135" />  <!-- Window controls -->
                 <!-- Window controls TODO make this dynamic for different platforms-->
             </Grid.ColumnDefinitions>
-
-            <!-- <ContentControl Content="{StaticResource CompassLogo}" Grid.Column="0" Margin="10,0" HorizontalAlignment="Left"/> -->
+            
             <Image Source="/Assets/CompassLogo.png" Height="30" Width="30" Margin="15, 0"
                    IsHitTestVisible="False"
                    VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
