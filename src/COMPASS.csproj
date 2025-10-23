@@ -14,21 +14,11 @@
 
   <ItemGroup>
     <None Remove="Media\CompassLogo.png" />
-    <None Remove="gs\gsdll64.dll" />
-    <None Remove="gs\gswin64c.exe" />
   </ItemGroup>
 
   <ItemGroup>
 
     <Content Include="COMPASS.ico" />
-
-    <Content Include="gs\gsdll64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Content Include="gs\gswin64c.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
 
     <Resource Include="Media\CompassLogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -66,7 +56,7 @@
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="OpenCvSharp4.Extensions" Version="4.11.0.20250507" />
     <PackageReference Include="OpenCvSharp4.Windows" Version="4.11.0.20250507" />
-    <PackageReference Include="ScrapySharp" Version="3.0.0" />
+    <PackageReference Include="PDFtoImage" Version="5.1.1" />
     <PackageReference Include="Selenium.Support" Version="4.37.0" />
     <PackageReference Include="Selenium.WebDriver" Version="4.37.0" />
     <PackageReference Include="SharpCompress" Version="0.41.0" />

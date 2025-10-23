@@ -87,20 +87,20 @@ namespace COMPASS.ViewModels.Sources
                 return false;
             }
 
-            try //image.Read can throw exception if file can not be opened/read
+            if (String.IsNullOrEmpty(codex.CoverArt))
             {
-                using (MagickImage image = new())
+                Logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
+                return false;
+            }
+
+            try //reading an image can throw exception if file can not be opened/read
+            {
+                using (var pdfStream = new FileStream(codex.Sources.Path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    await image.ReadAsync(codex.Sources.Path, ReadSettings);
-                    image.Format = MagickFormat.Png;
-
-                    //some pdf's are transparent, expecting a white page underneath
-                    image.BackgroundColor = new MagickColor("#FFFFFF");
-                    image.Alpha(AlphaOption.Remove);
-
-                    await CoverService.SaveCover(codex, image);
+                    IOService.EnsureFoldersExists(codex.CoverArt);
+                    PDFtoImage.Conversion.SavePng(codex.CoverArt, pdfStream, options: ReadOptions);
                 }
-                codex.RefreshThumbnail();
+                CoverService.CreateThumbnail(codex);
                 return true;
             }
             catch (Exception ex)
@@ -127,5 +127,12 @@ namespace COMPASS.ViewModels.Sources
             FrameCount = 1, // Number of pages
             Defines = PDFReadDefines,
         };
+
+        private static PDFtoImage.RenderOptions? _readOptions;
+        private static PDFtoImage.RenderOptions ReadOptions => _readOptions ??= 
+            new PDFtoImage.RenderOptions(
+                BackgroundColor: SkiaSharp.SKColor.Parse("#FFFFFF"),
+                Width: 850, 
+                WithAspectRatio: true);
     }
 }
