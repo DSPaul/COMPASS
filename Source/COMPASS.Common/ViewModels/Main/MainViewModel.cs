@@ -5,11 +5,9 @@ using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.Views.Windows;
-using ImageMagick;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -35,8 +33,6 @@ namespace COMPASS.Common.ViewModels.Main
 
             //Start timer that periodically checks if there is an internet connection
             InitConnectionTimer();
-
-            MagickNET.SetGhostscriptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "gs"));
         }
 
         #region Init Functions

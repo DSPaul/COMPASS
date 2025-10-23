@@ -6,9 +6,7 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Main;
 using ImageMagick;
-using ImageMagick.Formats;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
@@ -79,25 +77,24 @@ namespace COMPASS.Common.Sources
             return metaData;
         }
 
-        public override async Task<IMagickImage?> FetchCover(SourceSet sources)
+        public override Task<IMagickImage?> FetchCover(SourceSet sources)
         {
             //return false if the file doesn't exist
             if (!IOService.IsPDFFile(sources.Path) ||
                 !File.Exists(sources.Path))
             {
-                return null;
+                return Task.FromResult<IMagickImage?>(null);
             }
-
-            try //image.Read can throw exception if the file can not be opened/read
+            
+            try //reading an image can throw exception if file can not be opened/read
             {
-                MagickImage image = new();
-                await image.ReadAsync(sources.Path, ReadSettings);
-                image.Format = MagickFormat.Png;
-
-                //some pdf's are transparent, expecting a white page underneath
-                image.BackgroundColor = new MagickColor("#FFFFFF");
-                image.Alpha(AlphaOption.Remove);
-                return image;
+                using var pdfStream = new FileStream(sources.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                using var imageStream = new MemoryStream();
+#pragma warning disable CA1416
+                PDFtoImage.Conversion.SavePng(imageStream, pdfStream, options: ReadOptions);
+#pragma warning restore CA1416
+                imageStream.Position = 0;
+                return Task.FromResult<IMagickImage?>(new MagickImage(imageStream));
             }
             catch (Exception ex)
             {
@@ -105,24 +102,15 @@ namespace COMPASS.Common.Sources
                 Logger.Error(logMsg, ex);
                 LogEntry logEntry = new(Severity.Warning, logMsg);
                 ProgressVM.AddLogEntry(logEntry);
-                return null;
+                return Task.FromException<IMagickImage?>(ex);
             }
         }
-
-        private static readonly PdfReadDefines PDFReadDefines = new()
-        {
-            HideAnnotations = true,
-            UseCropBox = true,
-        };
-
-        //Lazy load read Settings and make it static because takes a lot of time to construct according to profiler
-        private static MagickReadSettings? _readSettings;
-        private static MagickReadSettings ReadSettings => _readSettings ??= new()
-        {
-            Density = new Density(100),
-            FrameIndex = 0, // First page
-            FrameCount = 1, // Number of pages
-            Defines = PDFReadDefines,
-        };
+        
+        private static PDFtoImage.RenderOptions? _readOptions;
+        private static PDFtoImage.RenderOptions ReadOptions => _readOptions ??= 
+            new PDFtoImage.RenderOptions(
+                BackgroundColor: SkiaSharp.SKColor.Parse("#FFFFFF"), //some pdf's are transparent, expecting a white page underneath
+                Width: 850, 
+                WithAspectRatio: true);
     }
 }
