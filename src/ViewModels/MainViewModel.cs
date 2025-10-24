@@ -68,7 +68,15 @@ namespace COMPASS.ViewModels
             string? runningExePath = Process.GetCurrentProcess().MainModule?.FileName;
             if (!String.IsNullOrWhiteSpace(runningExePath))
             {
-                AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath)?.ToBitmap();
+                try
+                {
+                    AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath)?.ToBitmap();
+                }
+                catch (Exception ex)
+                {
+                    // This has failed once because of missing dlls, not that important anyway so just log an error
+                    Logger.Error("Could not extract application icon for auto-updater", ex);
+                }
             }
 #if DEBUG
             //AutoUpdater.InstalledVersion = new("0.2.0"); //for testing only
