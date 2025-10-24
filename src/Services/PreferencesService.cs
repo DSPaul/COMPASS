@@ -36,17 +36,28 @@ namespace COMPASS.Services
 
                 string tempFileName = PreferencesFilePath + ".tmp";
 
+
                 lock (writeLocker)
                 {
+                    //cleanup any previous temp file
+                    File.Delete(tempFileName);
+
+                    //Write to the temp file
                     using (var writer = XmlWriter.Create(tempFileName, XmlService.XmlWriteSettings))
                     {
                         XmlSerializer serializer = new(typeof(PreferencesDto));
                         serializer.Serialize(writer, dto);
                     }
 
+                    // Verify the temp file was written successfully and has content
+                    if (!File.Exists(tempFileName) || new FileInfo(tempFileName).Length <= 0)
+                    {
+                        Logger.Error($"Failed to write preferences to {tempFileName}", new Exception());
+                        return;
+                    }
+
                     //if successfully written to the tmp file, move to actual path
                     File.Move(tempFileName, PreferencesFilePath, true);
-                    File.Delete(tempFileName);
                 }
             }
             catch (UnauthorizedAccessException ex)
@@ -65,7 +76,13 @@ namespace COMPASS.Services
 
         public Preferences? LoadPreferences()
         {
-            if (File.Exists(PreferencesFilePath))
+            if (!File.Exists(PreferencesFilePath))
+            {
+                Logger.Warn($"{PreferencesFilePath} does not exist.", new FileNotFoundException());
+                return null;
+            }
+
+            try
             {
                 //Label of codexProperties should still be deserialized for backwards compatibility
                 var overrides = new XmlAttributeOverrides();
@@ -76,20 +93,25 @@ namespace COMPASS.Services
                 XmlSerializer serializer = new(typeof(PreferencesDto), overrides);
                 if (serializer.Deserialize(reader) is PreferencesDto prefsDto)
                 {
-                    return prefsDto is null ? new() : prefsDto.ToModel();
+                    return prefsDto.ToModel();
                 }
-                else
-                {
-                    Logger.Error($"{PreferencesFilePath} could not be read.", new Exception());
-                    return null;
-                }
+                
+                Logger.Error($"{PreferencesFilePath} could not be read.", new Exception());
             }
-            else
+            catch (XmlException ex)
             {
-                Logger.Warn($"{PreferencesFilePath} does not exist.", new FileNotFoundException());
-                return null;
+                Logger.Error($"XML parsing error in {PreferencesFilePath}. File may be corrupted or empty.", ex);
             }
-        }
+            catch (InvalidOperationException ex) when (ex.InnerException is XmlException)
+            {
+                Logger.Error($"XML deserialization error in {PreferencesFilePath}. File may be corrupted or empty.", ex);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Unexpected error loading preferences from {PreferencesFilePath}", ex);
+            }
 
+            return null;
+        }
     }
 }
