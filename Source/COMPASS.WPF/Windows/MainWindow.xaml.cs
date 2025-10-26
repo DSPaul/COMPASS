@@ -73,6 +73,7 @@ namespace COMPASS.Windows
                     mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
                     mmi.ptMaxSize.X = Math.Abs(rcWorkArea.Right - rcWorkArea.Left);
                     mmi.ptMaxSize.Y = Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top);
+                    mmi.ptMaxTrackSize = mmi.ptMaxSize;
                 }
 
                 Marshal.StructureToPtr(mmi, lParam, true);
