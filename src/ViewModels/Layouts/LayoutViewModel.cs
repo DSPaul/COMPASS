@@ -1,10 +1,12 @@
 ﻿using COMPASS.Models;
 using COMPASS.Services;
+using COMPASS.Tools;
 using COMPASS.ViewModels.Import;
 using GongSolutions.Wpf.DragDrop;
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 
 namespace COMPASS.ViewModels.Layouts
@@ -72,35 +74,52 @@ namespace COMPASS.ViewModels.Layouts
         {
             if (dropInfo.Data is DataObject data)
             {
-                var paths = data.GetFileDropList();
-
-                var folders = paths.Cast<string>().Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
-                var files = paths.Cast<string>().Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
-
-                //check for folder import
-                if (folders.Any())
+                try
                 {
-                    ImportFolderViewModel folderImportVM = new(manuallyTriggered: true)
+                    var paths = data.GetFileDropList();
+
+                    if (paths == null || paths.Count == 0)
                     {
-                        RecursiveDirectories = folders,
-                        Files = files
-                    };
-                    await folderImportVM.Import();
+                        Logger.Warn("No file paths found in drag-drop data");
+                        return;
+                    }
+
+                    var folders = paths.Cast<string>().Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
+                    var files = paths.Cast<string>().Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
+
+                    //check for folder import
+                    if (folders.Any())
+                    {
+                        ImportFolderViewModel folderImportVM = new(manuallyTriggered: true)
+                        {
+                            RecursiveDirectories = folders,
+                            Files = files
+                        };
+                        await folderImportVM.Import();
+                    }
+                    //If no files or folders, to nothing
+                    else if (!files.Any())
+                    {
+                        return;
+                    }
+                    //Check if its a cmpss file, do import if so
+                    else if (files.Count == 1 && files.First().EndsWith(Constants.SatchelExtension))
+                    {
+                        await MainViewModel.CollectionVM.ImportSatchelAsync(files.First());
+                    }
+                    //If none of the above, just import the files
+                    else
+                    {
+                        await ImportViewModel.ImportFilesAsync(files);
+                    }
                 }
-                //If no files or folders, to nothing
-                else if (!files.Any())
+                catch (COMException ex)
                 {
-                    return;
+                    Logger.Error($"COM error accessing drag-drop data during Drop", ex);
                 }
-                //Check if its a cmpss file, do import if so
-                else if (files.Count == 1 && files.First().EndsWith(Constants.SatchelExtension))
+                catch (Exception ex)
                 {
-                    await MainViewModel.CollectionVM.ImportSatchelAsync(files.First());
-                }
-                //If none of the above, just import the files
-                else
-                {
-                    await ImportViewModel.ImportFilesAsync(files);
+                    Logger.Error($"Unexpected error during drag-drop operation", ex);
                 }
             }
         }

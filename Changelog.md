@@ -1,5 +1,18 @@
 # CHANGELOG
-## COMPASS v1.8.8 (28 June 2025)
+## COMPASS v1.8.9 (26 October 2025)
+
+### Improvements
+
+- Improved performance of pdf thumbnail generation
+
+### Fixes
+
+- Fixed "Create Tag Group" creating regular tags instead
+- Fixed content extending out of window bounds when maximized
+- Fixed a crash when preferences file is corrupted
+- Fixed rare crash when displaying the update notification
+- Fixed multiple possible crashes when dropping files
+## COMPASS v1.8.8 (28 June 2025)
 
 ### Fixes
 - Fix crashes on commands in context menu when no items are selected.
