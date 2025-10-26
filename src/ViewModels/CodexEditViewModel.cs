@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -254,28 +255,51 @@ namespace COMPASS.ViewModels
 
         public void DragOver(IDropInfo dropInfo)
         {
-            if (dropInfo.Data is DataObject data
-                && data.GetFileDropList().Count == 1
-                && IOService.IsImageFile(data.GetFileDropList().Cast<string>().First()))
+            try
             {
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Copy;
+                if (dropInfo.Data is DataObject data &&
+                    data.GetFileDropList() is { Count: 1 } fileDropList &&
+                    IOService.IsImageFile(fileDropList.Cast<string>().First()))
+                {
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                    dropInfo.Effects = DragDropEffects.Copy;
+                    return;
+                }
             }
-            else
+            catch (COMException ex)
             {
-                dropInfo.Effects = DragDropEffects.None;
+                Logger.Error($"COM error accessing drag-drop data during DragOver", ex);
             }
+            catch (Exception ex)
+            {
+                Logger.Error($"Unexpected error accessing drag-drop data during DragOver", ex);
+            }
+
+            dropInfo.Effects = DragDropEffects.None;
         }
 
         public void Drop(IDropInfo dropInfo)
         {
-            if (dropInfo.Data is DataObject data
-                && data.GetFileDropList().Count == 1
-                && IOService.IsImageFile(data.GetFileDropList().Cast<string>().First()))
+            try
             {
-                string path = data.GetFileDropList().Cast<string>().First();
-                CoverService.GetCoverFromImage(path, TempCodex);
-                RefreshCover();
+                if (dropInfo.Data is DataObject data &&
+                    data.GetFileDropList() is { Count: 1 } fileDropList &&
+                    fileDropList.Cast<string>().Single() is string imgPath &&
+                    IOService.IsImageFile(imgPath))
+                {
+                    {
+                        CoverService.GetCoverFromImage(imgPath, TempCodex);
+                        RefreshCover();
+                    }
+                }
+            }
+            catch (COMException ex)
+            {
+                Logger.Error($"COM error accessing drag-drop data during Drop", ex);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Unexpected error during drag-drop operation", ex);
             }
         }
         #endregion
