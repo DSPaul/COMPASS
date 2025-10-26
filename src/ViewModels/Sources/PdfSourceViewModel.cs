@@ -78,19 +78,19 @@ namespace COMPASS.ViewModels.Sources
             return codex;
         }
 
-        public override async Task<bool> FetchCover(Codex codex)
+        public override Task<bool> FetchCover(Codex codex)
         {
             //return false if file doesn't exist
             if (!IOService.IsPDFFile(codex.Sources.Path) ||
                 !File.Exists(codex.Sources.Path))
             {
-                return false;
+                return Task.FromResult(false);
             }
 
             if (String.IsNullOrEmpty(codex.CoverArt))
             {
                 Logger.Error("Trying to write cover img to empty path", new InvalidOperationException());
-                return false;
+                return Task.FromResult(false);
             }
 
             try //reading an image can throw exception if file can not be opened/read
@@ -101,14 +101,14 @@ namespace COMPASS.ViewModels.Sources
                     PDFtoImage.Conversion.SavePng(codex.CoverArt, pdfStream, options: ReadOptions);
                 }
                 CoverService.CreateThumbnail(codex);
-                return true;
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 Logger.Error($"Failed to generate cover from {Path.GetFileName(codex.Sources.Path)}", ex);
                 LogEntry logEntry = new(Severity.Warning, $"Failed to generate cover from {codex.Title}");
                 ProgressVM.AddLogEntry(logEntry);
-                return false;
+                return Task.FromResult(false);
             }
         }
 

@@ -45,8 +45,8 @@ namespace Tests.IntegrationTests
 
                 Assert.IsTrue(importViewModel.ContentSelectorVM.HasCodices, "deserialized satchel has no Codices");
                 Assert.IsTrue(importViewModel.ContentSelectorVM.HasTags, "deserialized satchel has no Tags");
-                Assert.AreEqual(testCollection.AllCodices.Count, deserializedCollection.AllCodices.Count);
-                Assert.AreEqual(testCollection.AllTags.Count, deserializedCollection.AllTags.Count);
+                Assert.HasCount(testCollection.AllCodices.Count, deserializedCollection.AllCodices);
+                Assert.HasCount(testCollection.AllTags.Count, deserializedCollection.AllTags);
 
                 //Complete import to new Collection
                 importViewModel.CollectionName = "Imported_Satchel"; //cannot use a protect __ name because it is an illegal name
@@ -55,8 +55,8 @@ namespace Tests.IntegrationTests
 
                 importedCollection = MainViewModel.CollectionVM.CurrentCollection;
 
-                Assert.AreEqual(deserializedCollection.AllCodices.Count, importedCollection.AllCodices.Count);
-                Assert.AreEqual(deserializedCollection.AllTags.Count, importedCollection.AllTags.Count);
+                Assert.HasCount(deserializedCollection.AllCodices.Count, importedCollection.AllCodices);
+                Assert.HasCount(deserializedCollection.AllTags.Count, importedCollection.AllTags);
             }
             finally
             {

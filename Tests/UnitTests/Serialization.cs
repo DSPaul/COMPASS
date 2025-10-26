@@ -21,7 +21,7 @@ namespace Tests.UnitTests
 
             var newSatchelInfo = JsonSerializer.Deserialize<SatchelInfo>(json);
             Assert.IsNotNull(newSatchelInfo);
-            Assert.IsTrue(newSatchelInfo.CreationVersion == Reflection.Version);
+            Assert.AreEqual(Reflection.Version, newSatchelInfo.CreationVersion);
             Assert.IsTrue(newSatchelInfo.CreationDate < DateTime.Now);
         }
 
@@ -40,7 +40,7 @@ namespace Tests.UnitTests
 
             var satchelInfo = JsonSerializer.Deserialize<SatchelInfo>(json);
             Assert.IsNotNull(satchelInfo);
-            Assert.IsTrue(satchelInfo.CreationVersion == "1.200.0");
+            Assert.AreEqual("1.200.0", satchelInfo.CreationVersion);
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace Tests.UnitTests
 
             var satchelInfo = JsonSerializer.Deserialize<SatchelInfo>(json);
             Assert.IsNotNull(satchelInfo);
-            Assert.IsTrue(satchelInfo.MinTagsVersion == new SatchelInfo().MinTagsVersion);
+            Assert.AreEqual(new SatchelInfo().MinTagsVersion, satchelInfo.MinTagsVersion);
         }
 
         [TestMethod]
