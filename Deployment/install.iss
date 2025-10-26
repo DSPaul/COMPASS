@@ -39,7 +39,6 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "..\src\bin\Publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\src\bin\Publish\win-x64\Media\*"; DestDir: "{app}\Media"; Flags: ignoreversion
-Source: "..\src\bin\Publish\win-x64\selenium-manager\windows\*"; DestDir : "{app}\selenium-manager\windows"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
