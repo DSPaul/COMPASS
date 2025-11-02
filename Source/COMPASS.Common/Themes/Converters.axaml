@@ -7,4 +7,5 @@
   <conv:SeverityToColorConverter x:Key="SeverityToColorConverter"/>
   <conv:IsSmallerOrEqualConverter x:Key="IsSmallerOrEqualConverter" />
   <conv:PlusOneConverter x:Key="PlusOneConverter" />
+  <conv:EnumForRadioBtnConverter x:Key="EnumForRadioBtnConverter" />
 </ResourceDictionary>

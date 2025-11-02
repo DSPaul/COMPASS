@@ -19,6 +19,22 @@ namespace COMPASS.Common.Models.CodexProperties
 
         public string Label { get; }
 
+        private List<MetaDataSourceType> _sourcePriority = [];
+        /// <summary>
+        /// Ordered List of sources that can set this prop, used for logic
+        /// </summary>
+        public List<MetaDataSourceType> SourcePriority
+        {
+            get => _sourcePriority;
+            set => SetProperty(ref _sourcePriority, value);
+        }
+
+        private MetaDataOverwriteMode _overwriteMode = MetaDataOverwriteMode.IfEmpty;
+        public MetaDataOverwriteMode OverwriteMode
+        {
+            get => _overwriteMode;
+            set => SetProperty(ref _overwriteMode, value);
+        }        
         #endregion
 
         #region Methods
@@ -37,27 +53,6 @@ namespace COMPASS.Common.Models.CodexProperties
         public abstract bool HasNewValue(SourceMetaData toEvaluate, Codex reference);
 
         public override string ToString() => Label;
-        #endregion
-
-        #region Import Sources
-
-        private List<MetaDataSourceType> _sourcePriority = [];
-        /// <summary>
-        /// Ordered List of sources that can set this prop, used for logic
-        /// </summary>
-        public List<MetaDataSourceType> SourcePriority
-        {
-            get => _sourcePriority;
-            set => SetProperty(ref _sourcePriority, value);
-        }
-
-        private MetaDataOverwriteMode _overwriteMode = MetaDataOverwriteMode.IfEmpty;
-        public MetaDataOverwriteMode OverwriteMode
-        {
-            get => _overwriteMode;
-            set => SetProperty(ref _overwriteMode, value);
-        }
-
         #endregion
 
         #region Factory
