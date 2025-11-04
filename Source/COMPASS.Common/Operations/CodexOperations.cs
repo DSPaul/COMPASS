@@ -479,8 +479,8 @@ namespace COMPASS.Common.Operations
 
             if (chooseMetaDataVM.MetaDataProposals.Any())
             {
-                ChooseMetaDataWindow window = new(chooseMetaDataVM);
-                window.Show();
+                ModalWindow window = new(chooseMetaDataVM);
+                await window.ShowDialog(App.MainWindow);
             }
             
             //Save at the end
@@ -512,7 +512,6 @@ namespace COMPASS.Common.Operations
             foreach (var prop in PreferencesService.GetInstance().Preferences.ImportableCodexProperties)
             {
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
-                if (prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(existingMetaData)) continue;
                 if (prop is CoverProperty) continue; //Covers are done separately
 
                 //preferredMetadata will hold the metadata from the top preferred source
@@ -540,14 +539,16 @@ namespace COMPASS.Common.Operations
                     }
                 }
 
-                //if no value was found for this prop, do nothing
-                if (prop.IsEmpty(preferredMetadata)) continue;
-
-                if (prop.OverwriteMode == MetaDataOverwriteMode.Always || prop.IsEmpty(existingMetaData))
+                //if no (new) value was found for this prop, do nothing
+                if (prop.IsEmpty(preferredMetadata) || !prop.HasNewValue(preferredMetadata, codex)) continue;
+                
+                if ((prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && prop.IsEmpty(existingMetaData)) ||
+                    prop.OverwriteMode == MetaDataOverwriteMode.Always)
                 {
                     prop.Apply(preferredMetadata, codex);
                 }
-                else if (prop.OverwriteMode == MetaDataOverwriteMode.Ask && prop.HasNewValue(preferredMetadata, codex))
+                else if ((prop.OverwriteMode == MetaDataOverwriteMode.IfEmpty && !prop.IsEmpty(existingMetaData)) ||
+                         prop.OverwriteMode == MetaDataOverwriteMode.Ask )
                 {
                     prop.Copy(preferredMetadata, toAsk);
                     shouldAsk = true; //set shouldAsk to true when we found at lease one none empty prop that should be asked

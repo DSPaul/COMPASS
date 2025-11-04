@@ -51,6 +51,10 @@
         <DataTemplate DataType="vm:ChangeDataLocationViewModel">
             <views:ChangeDataLocationView/>
         </DataTemplate>
+        
+        <DataTemplate DataType="vm:ChooseMetaDataViewModel">
+            <views:ChooseMetaDataView/>
+        </DataTemplate>
     </Window.DataTemplates>
     
     <ContentControl  x:Name="ContentPresenter" Content="{Binding}"/>

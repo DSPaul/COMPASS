@@ -4,18 +4,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using COMPASS.Common.Models;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Modals;
+using COMPASS.Infra.ExtensionMethods;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.Modals
 {
     public class ChooseMetaDataViewModel : WizardViewModel
     {
         public List<MetaDataProposalViewModel> MetaDataProposals { get; } = [];
         
         public override string WindowTitle { get; } = "Choose which metadata to keep";
-            
-
+        
         private readonly Mutex _codicesListMutex = new();
         public void AddMetaDataProposal(Codex codex, SourceMetaData proposedMetaData)
         {
@@ -51,7 +49,7 @@ namespace COMPASS.Common.ViewModels
         {
             foreach (var proposal in MetaDataProposals)
             {
-                proposal.AppplyChoice();
+                proposal.ApplyChoice();
                 proposal.Dispose();
             }
             

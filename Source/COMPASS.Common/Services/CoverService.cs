@@ -116,8 +116,8 @@ namespace COMPASS.Common.Services
 
             if (chooseMetaDataVM.MetaDataProposals.Any())
             {
-                ChooseMetaDataWindow window = new(chooseMetaDataVM);
-                window.Show();
+                ModalWindow window = new(chooseMetaDataVM);
+                await window.ShowDialog(App.MainWindow);
             }
         }
 

@@ -13,42 +13,33 @@ public class MetaDataProposalViewModel : ViewModelBase, IDisposable
     public MetaDataProposalViewModel(Codex codex, SourceMetaData proposedMetaData)
     {
         Codex = codex;
-        ExistingMetaData = new(codex);
-        ProposedMetaData = proposedMetaData;
-        
-        _propsToAsk = PreferencesService.GetInstance().Preferences.ImportableCodexProperties
-            .Where(prop => prop.OverwriteMode == MetaDataOverwriteMode.Ask)
-            .ToList();
-        
-        foreach (var prop in _propsToAsk)
-        {
-            //Use the new value by default because it is probably more up to date
-            ShouldUseNewValue.Add(prop.Name, true);
-        }
-    }
+        ExistingMetaData = new(new(codex));
+        ProposedMetaData = new(proposedMetaData);
 
-    private readonly List<CodexProperty> _propsToAsk;
+        ShouldUseNewValue = PreferencesService.GetInstance().Preferences.ImportableCodexProperties
+                                              .ToDictionary(prop => prop.Name, _ => false);
+    }
     
     public Codex Codex { get; set; }
     
-    public SourceMetaData ExistingMetaData { get; set; }
-    public SourceMetaData ProposedMetaData { get; set; }
+    public SourceMetaDataViewModel ExistingMetaData { get; set; }
+    public SourceMetaDataViewModel ProposedMetaData { get; set; }
     
-    public Dictionary<string, bool> ShouldUseNewValue { get; } = [];
+    public Dictionary<string, bool> ShouldUseNewValue { get; }
     
-    public void AppplyChoice()
+    public void ApplyChoice()
     {
-        foreach (var prop in _propsToAsk)
+        var propsToApply = PreferencesService.GetInstance().Preferences.ImportableCodexProperties
+                                             .Where(prop => ShouldUseNewValue[prop.Name]);
+        foreach (CodexProperty? prop in propsToApply)
         {
-            if (ShouldUseNewValue[prop.Name])
-            {
-                prop.Apply(ProposedMetaData, Codex);
-            }
+            prop.Apply(ProposedMetaData.GetSource(), Codex);
         }
     }
 
     public void Dispose()
     {
-       ProposedMetaData.Cover?.Dispose();
+        ExistingMetaData.DeepDispose();
+        ProposedMetaData.DeepDispose();
     }
 }

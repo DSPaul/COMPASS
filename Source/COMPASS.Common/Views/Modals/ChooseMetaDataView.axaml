@@ -1,0 +1,214 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
+             xmlns:model="using:COMPASS.Common.Models"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:conv="using:COMPASS.Infra.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Views.Modals.ChooseMetaDataView"
+             x:DataType="vm:ChooseMetaDataViewModel"
+             MinHeight="400" Width="800">
+    <Grid RowDefinitions="auto,auto,*,auto">
+        <DockPanel Margin="40,10" >
+            <DockPanel.Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="FontSize" Value="16"/>
+                    <Setter Property="FontWeight" Value="Light"/>
+                </Style>
+            </DockPanel.Styles>
+            <TextBlock HorizontalAlignment="Right" DockPanel.Dock="Right">
+                <Run Text="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"/>
+                / 
+                <Run Text="{Binding MetaDataProposals.Count, Mode=OneTime}"/>
+            </TextBlock>
+            <TextBlock DockPanel.Dock="Bottom">
+                Current Item: 
+                <Run Text="{Binding CurrentProposal.ExistingMetaData.Title, Mode=OneWay}" 
+                     Foreground="{StaticResource AccentColorMuted}"/>
+            </TextBlock>
+            <TextBlock>
+                There are
+                <Run Text="{Binding MetaDataProposals.Count, Mode=OneTime}"/>
+                items with conflicts to resolve.
+            </TextBlock>
+        </DockPanel>
+        <ProgressBar Grid.Row="1" 
+                     Value="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"
+                     Maximum="{Binding MetaDataProposals.Count, Mode=OneTime}" 
+                     Height="12" Margin="10,0"
+                     Foreground="{StaticResource AccentColor}" 
+                     Background="{StaticResource UIElementBackground}"/>
+        <Border BorderBrush="{StaticResource DarkUIElementBackground}" Margin="10" BorderThickness="2"
+                Grid.Row="2" CornerRadius="5" Padding="10">
+            <Border.Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="TextWrapping" Value="Wrap"/>
+                    <Setter Property="Margin" Value="20,5"/>
+                </Style>
+            </Border.Styles>
+            <ScrollViewer DataContext="{Binding CurrentProposal}">
+                <Grid ColumnDefinitions="auto,auto,*,10,*"
+                      RowDefinitions="auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto">
+                    <Rectangle Grid.Column="1" Fill="{StaticResource Separator}" Width="3" Margin="20,5" Grid.RowSpan="100"/>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Metadata Type"/>
+                    <TextBlock Text="Current Value" Grid.Row="0" Grid.Column="2"/>
+                    <TextBlock Text="Newly Found Value" Grid.Row="0" Grid.Column="4"/>
+
+                    <Rectangle Grid.Row="1" Fill="{StaticResource Separator}" Height="3" Margin="20,5" Grid.ColumnSpan="5"
+                               Grid.Column="0" />
+                    
+                    <TextBlock Text="Title:" Grid.Row="2" Grid.Column="0"
+                               IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Title}"/>
+                    <RadioButton GroupName="Title" Grid.Column="2" Grid.Row="2" Classes="WrapText"
+                                 Content="{Binding ExistingMetaData.Title}" 
+                                 IsChecked="{Binding !ShouldUseNewValue[Title]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Title}"/>
+                    <RadioButton GroupName="Title" Grid.Column="4" Grid.Row="2" Classes="WrapText"
+                                 Content="{Binding ProposedMetaData.Title}" 
+                                 IsChecked="{Binding ShouldUseNewValue[Title]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Title}"/>
+
+                    <TextBlock Text="Authors:" Grid.Row="3" Grid.Column="0"
+                               IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Authors}"/>
+                    <RadioButton GroupName="Authors" Grid.Column="2" Grid.Row="3" Classes="WrapText"
+                                 Content="{Binding ExistingMetaData.AuthorsAsString}" 
+                                 IsChecked="{Binding !ShouldUseNewValue[Authors]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Authors}"/>
+                    <RadioButton GroupName="Authors" Grid.Column="4" Grid.Row="3" Classes="WrapText"
+                                 Content="{Binding ProposedMetaData.AuthorsAsString}" 
+                                 IsChecked="{Binding ShouldUseNewValue[Authors]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Authors}"/>
+
+                    <TextBlock Text="Publisher:" Grid.Row="4" Grid.Column="0"
+                               IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Publisher}"/>
+                    <RadioButton GroupName="Publisher" Grid.Column="2" Grid.Row="4" Classes="WrapText"
+                                 Content="{Binding ExistingMetaData.Publisher}" 
+                                 IsChecked="{Binding !ShouldUseNewValue[Publisher]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Publisher}"/>
+                    <RadioButton GroupName="Publisher" Grid.Column="4" Grid.Row="4" Classes="WrapText"
+                                 Content="{Binding ProposedMetaData.Publisher}" 
+                                 IsChecked="{Binding ShouldUseNewValue[Publisher]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Publisher}"/>
+
+                    <TextBlock Text="Version:" Grid.Row="5" Grid.Column="0"
+                               IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Version}"/>
+                    <RadioButton GroupName="Version" Grid.Column="2" Grid.Row="5"
+                                 Content="{Binding ExistingMetaData.Version}" 
+                                 IsChecked="{Binding !ShouldUseNewValue[Version]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Version}"/>
+                    <RadioButton GroupName="Version" Grid.Column="4" Grid.Row="5" 
+                                 Content="{Binding ProposedMetaData.Version}" 
+                                 IsChecked="{Binding ShouldUseNewValue[Version]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Version}"/>
+
+                    <TextBlock Text="Page count:" Grid.Row="6" Grid.Column="0"
+                               IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=PageCount}"/>
+                    <RadioButton GroupName="PageCount" Grid.Column="2" Grid.Row="6"
+                                 Content="{Binding ExistingMetaData.PageCount}" 
+                                 IsChecked="{Binding !ShouldUseNewValue[PageCount]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=PageCount}"/>
+                    <RadioButton GroupName="PageCount" Grid.Column="4" Grid.Row="6"
+                                 Content="{Binding ProposedMetaData.PageCount}" 
+                                 IsChecked="{Binding ShouldUseNewValue[PageCount]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=PageCount}"/>
+
+                    <TextBlock Text="Description:" Grid.Row="7" Grid.Column="0"
+                               IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Description}" Margin="20,0,20,5" VerticalAlignment="Bottom"/>
+                    <RadioButton GroupName="Description" Grid.Column="2" Grid.Row="7" Classes="WrapText"
+                                 Content="{Binding ExistingMetaData.Description}" 
+                                 IsChecked="{Binding !ShouldUseNewValue[Description]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Description}"/>
+                    <RadioButton GroupName="Description" Grid.Column="4" Grid.Row="7" Classes="WrapText"
+                                 Content="{Binding ProposedMetaData.Description}" 
+                                 IsChecked="{Binding ShouldUseNewValue[Description]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Description}"/>
+
+                    <TextBlock Text="Release Date:" Grid.Row="8" Grid.Column="0"
+                               IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=ReleaseDate}"/>
+                    <RadioButton GroupName="Release Date" Grid.Column="2" Grid.Row="8"
+                                 IsChecked="{Binding !ShouldUseNewValue[ReleaseDate]}"
+                                 Content="{Binding ExistingMetaData.ReleaseDate, StringFormat=dd/mm/yyyy}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=ReleaseDate}"/>
+                    <RadioButton GroupName="Release Date" Grid.Column="4" Grid.Row="8"
+                                 IsChecked="{Binding ShouldUseNewValue[ReleaseDate]}"
+                                 Content="{Binding ProposedMetaData.ReleaseDate, StringFormat=dd/mm/yyyy}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=ReleaseDate}"/>
+                    
+                    <TextBlock Text="Tags:" Grid.Row="8" Grid.Column="0"
+                               IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Tags}"/>
+                    <RadioButton GroupName="Tags" Grid.Column="2" Grid.Row="8" 
+                                 IsChecked="{Binding !ShouldUseNewValue[Tags]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Tags}">
+                        <RadioButton.Content>
+                            <ItemsControl Grid.Row="2" Grid.Column="0" Foreground="Black" Margin="3"
+                                          ItemsSource="{Binding ExistingMetaData.Tags, Mode=OneWay}" 
+                                          Background="{x:Null}" BorderBrush="{x:Null}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="model:Tag">
+                                        <controls:Chip Text="{Binding Name}" Margin="0,3"
+                                                       Background="{Binding BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </RadioButton.Content>
+                    </RadioButton>
+                    <RadioButton GroupName="Tags" Grid.Column="4" Grid.Row="8" IsChecked="{Binding ShouldUseNewValue[Tags]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Tags}">
+                        <RadioButton.Content>
+                            <ItemsControl Grid.Row="2" Grid.Column="0" Foreground="Black" Margin="3"
+                                    Background="{x:Null}" BorderBrush="{x:Null}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="model:Tag">
+                                        <controls:Chip Text="{Binding Name}" Margin="0,3"
+                                                       Background="{Binding BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.ItemsSource>
+                                    <MultiBinding Converter="{StaticResource CollectionUnionConverter}">
+                                        <Binding Path="ExistingMetaData.Tags" Mode="OneWay" />
+                                        <Binding Path="ProposedMetaData.Tags" Mode="OneWay" />
+                                    </MultiBinding>
+                                </ItemsControl.ItemsSource>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </RadioButton.Content>
+                    </RadioButton>
+
+                    <TextBlock Text="Cover/Thumbnail:" Grid.Row="8" Grid.Column="0"
+                               IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Cover}"/>
+                    <RadioButton GroupName="Tags" Grid.Column="2" Grid.Row="8" 
+                                 IsChecked="{Binding !ShouldUseNewValue[Cover]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Cover}">
+                        <RadioButton.Content>
+                            <Image Source="{Binding ExistingMetaData.Cover}" Width="200"/>
+                        </RadioButton.Content>
+                    </RadioButton>
+                    <RadioButton GroupName="Tags" Grid.Column="4" Grid.Row="8" IsChecked="{Binding ShouldUseNewValue[Cover]}"
+                                 IsVisible="{Binding ProposedMetaData, Converter={StaticResource IsMetaDataPropertyEmpty}, ConverterParameter=Cover}">
+                        <RadioButton.Content>
+                            <Image Source="{Binding ProposedMetaData.Cover}" Width="200"/>
+                        </RadioButton.Content>
+                    </RadioButton>
+                </Grid>
+            </ScrollViewer>
+        </Border>
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="3" Margin="10">
+            <Button Content="Back" Command="{Binding PrevStepCommand}" Classes="HideIfDisabled"/>
+            <Button Content="Next" Command="{Binding NextStepCommand}" Classes="HideIfDisabled"/>
+            <Button Content="Finish" Command="{Binding FinishCommand}" Classes="HideIfDisabled"
+                    Background="{StaticResource AccentColor}" />
+        </StackPanel>
+    </Grid>
+</UserControl>
