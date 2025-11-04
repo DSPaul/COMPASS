@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Avalonia.Controls.Documents;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models
 {

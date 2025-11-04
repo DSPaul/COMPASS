@@ -7,7 +7,7 @@ using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Tools;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.Controls;
 

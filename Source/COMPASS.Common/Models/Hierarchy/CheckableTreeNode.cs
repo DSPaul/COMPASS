@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using COMPASS.Common.Tools;
+using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models.Hierarchy
 {

@@ -20,6 +20,7 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Modals
 {

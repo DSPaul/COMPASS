@@ -19,6 +19,7 @@ using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Common.Views.Windows;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.SidePanels
 {

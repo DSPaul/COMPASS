@@ -4,10 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="using:COMPASS.Common.ViewModels.SidePanels"
-             xmlns:model="using:COMPASS.Common.Models"
+             xmlns:interface="using:COMPASS.Infra.Models.Interfaces"
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
              xmlns:controls="using:COMPASS.Common.Controls"
-             xmlns:converters="using:COMPASS.Common.Converters"
+             xmlns:converters="using:COMPASS.Infra.Converters"
              xmlns:views="using:COMPASS.Common.Views"
              xmlns:hierarchy="clr-namespace:COMPASS.Common.Models.Hierarchy"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
@@ -210,7 +210,7 @@ ItemsSource="{Binding Children}">
             <TreeView.Styles>
                 <Style Selector="TreeViewItem">
                     <Setter Property="IsExpanded"
-                            Value="{Binding $self.((model:IExpandable)DataContext).Expanded, Mode=TwoWay}" />
+                            Value="{Binding $self.((interface:IExpandable)DataContext).Expanded, Mode=TwoWay}" />
                 </Style>
             </TreeView.Styles>
         </TreeView>

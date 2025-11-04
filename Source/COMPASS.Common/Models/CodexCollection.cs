@@ -5,7 +5,8 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
-using COMPASS.Common.Tools;
+using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Models
 {

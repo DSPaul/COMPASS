@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
-using COMPASS.Common.Tools;
+using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.ViewModels.Selection;
 

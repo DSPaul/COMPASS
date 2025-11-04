@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using COMPASS.Common.Tools;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.Models.CodexProperties
 {

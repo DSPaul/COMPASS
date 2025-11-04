@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using Avalonia.Input;
-using COMPASS.Common.Models;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Interfaces;
 using FuzzySharp;
-using Org.BouncyCastle.Tls;
 
-namespace COMPASS.Common.Tools
+namespace COMPASS.Infra.ExtensionMethods
 {
-    public static class ExtensionMethods
+    public static class SystemExtensions
     {
         #region ObservableCollection Extensions
         /// <summary>
@@ -104,7 +101,7 @@ namespace COMPASS.Common.Tools
         public static string PadNumbers(this string input, int totalWidth = 8)
         {
             if (String.IsNullOrEmpty(input)) return input;
-            return Constants.RegexNumbersOnly().Replace(input, match => match.Value.PadLeft(totalWidth, '0'));
+            return RegexConstants.NumbersOnly().Replace(input, match => match.Value.PadLeft(totalWidth, '0'));
         }
 
         public static string RemoveDiacritics(this string text) =>
@@ -178,6 +175,23 @@ namespace COMPASS.Common.Tools
             }
         }
 
+        public static List<string> GetObsoleteProperties(this Type type)
+        {
+            List<string> obsoleteProperties = [];
+
+            // Check each property for the presence of the Obsolete attribute
+            PropertyInfo[] properties = type.GetProperties();
+            foreach (PropertyInfo property in properties)
+            {
+                if (Attribute.GetCustomAttribute(property, typeof(ObsoleteAttribute)) is ObsoleteAttribute)
+                {
+                    obsoleteProperties.Add(property.Name);
+                }
+            }
+
+            return obsoleteProperties;
+        }
+        
         #endregion
 
         #region EnumerableExtensions
@@ -229,9 +243,11 @@ namespace COMPASS.Common.Tools
             return l.All(item => EqualityComparer<TKey>.Default.Equals(keySelector(item), key));
         }
         #endregion
-
+        
         #region Drag & Drop
 
+        //TODO look at this
+        
         /// <summary>
         /// Tries to get an object of a certain type from the data
         /// </summary>

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using Avalonia.Data.Converters;
 
-namespace COMPASS.Common.Converters
+namespace COMPASS.Infra.Converters
 {
     public class MultiParamConverter : IMultiValueConverter
     {

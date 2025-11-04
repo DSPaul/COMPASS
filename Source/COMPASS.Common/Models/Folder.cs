@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Tools;
+using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models
 {

@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals.Edit"
              xmlns:model="using:COMPASS.Common.Models"
+             xmlns:interface="using:COMPASS.Infra.Models.Interfaces"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
-             xmlns:converters="using:COMPASS.Common.Converters"
+             xmlns:converters="using:COMPASS.Infra.Converters"
              xmlns:gif="using:Avalonia.Labs.Gif"
              xmlns:hierarchy="clr-namespace:COMPASS.Common.Models.Hierarchy"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="500"
@@ -248,7 +249,7 @@
                                     </dataTemplates:TagTreeDataTemplateSelector>
                                 </TreeView.ItemTemplate>
                                 <TreeView.Styles>
-                                    <Style Selector="TreeViewItem" x:DataType="model:IExpandable">
+                                    <Style Selector="TreeViewItem" x:DataType="interface:IExpandable">
                                         <Setter Property="IsExpanded" Value="{Binding Expanded}" />
                                     </Style>
                                 </TreeView.Styles>

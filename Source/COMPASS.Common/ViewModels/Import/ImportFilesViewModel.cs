@@ -13,6 +13,7 @@ using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.Views.Windows;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Import;
 

@@ -3,8 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.Models;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Selection;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Modals.Import
 {

@@ -10,6 +10,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
+using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models
 {
@@ -95,7 +98,7 @@ namespace COMPASS.Common.Models
                 OnPropertyChanged(nameof(SortingTitleContainsNumbers));
             }
         }
-        public bool SortingTitleContainsNumbers => Constants.RegexNumbersOnly().IsMatch(SortingTitle);
+        public bool SortingTitleContainsNumbers => RegexConstants.NumbersOnly().IsMatch(SortingTitle);
         public string ZeroPaddingExplainer =>
             "What's with all the 0's? \n \n" +
             "Zero-padding numbers ensures numerical sorting instead of alphabetical sorting. \n" +

@@ -8,6 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COMPASS.Infra", "Source\COMPASS.Infra\COMPASS.Infra.csproj", "{550EF5DC-20F9-4C22-8FA3-DA8AA4C6D931}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "COMPASS.Common", "Source\COMPASS.Common\COMPASS.Common.csproj", "{10718856-D256-44F3-9524-D85780E53955}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "COMPASS.WPF", "Source\COMPASS.WPF\COMPASS.WPF.csproj", "{793C5CC5-91E8-47D1-B791-E13B175D9B98}"
@@ -50,6 +52,10 @@ Global
 		{6F2602F3-33FD-4EAC-BDC9-ADB82200EC44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F2602F3-33FD-4EAC-BDC9-ADB82200EC44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F2602F3-33FD-4EAC-BDC9-ADB82200EC44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{550EF5DC-20F9-4C22-8FA3-DA8AA4C6D931}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{550EF5DC-20F9-4C22-8FA3-DA8AA4C6D931}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{550EF5DC-20F9-4C22-8FA3-DA8AA4C6D931}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{550EF5DC-20F9-4C22-8FA3-DA8AA4C6D931}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

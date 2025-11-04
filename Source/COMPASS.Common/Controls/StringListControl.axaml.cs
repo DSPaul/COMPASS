@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Tools;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.Controls;
 

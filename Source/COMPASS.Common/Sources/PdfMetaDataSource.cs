@@ -6,6 +6,7 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
+using COMPASS.Infra.Models;
 using ImageMagick;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
@@ -52,9 +53,9 @@ namespace COMPASS.Common.Sources
                     ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
                     string pageContent = PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(page), strategy);
                     //strip text of spaces
-                    pageContent = Constants.RegexWhitespace().Replace(pageContent, "");
+                    pageContent = RegexConstants.Whitespace().Replace(pageContent, "");
                     //search ISBN
-                    string isbn = Constants.RegexISBN().Match(pageContent).Value;
+                    string isbn = RegexConstants.ISBN().Match(pageContent).Value;
                     if (!string.IsNullOrEmpty(isbn))
                     {
                         sources.ISBN = isbn;

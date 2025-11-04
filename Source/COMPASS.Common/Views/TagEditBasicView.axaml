@@ -3,10 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
-             xmlns:conv="using:COMPASS.Common.Converters"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:view="using:COMPASS.Common.Views"
-             xmlns:converters="using:COMPASS.Common.Converters"
+             xmlns:conv="using:COMPASS.Infra.Converters"
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
              xmlns:models="using:COMPASS.Common.Models"
              xmlns:edit="clr-namespace:COMPASS.Common.ViewModels.Modals.Edit"
@@ -71,7 +70,7 @@
                                                   ItemsSource="{Binding Children}">
                                     <RadioButton>
                                        <controls:Chip Text="{Binding Item.Name}" Margin="0,3"
-                                                      Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
+                                                      Background="{Binding Item.BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"/>
                                     </RadioButton>
                                 </TreeDataTemplate>
                                 <TreeDataTemplate x:Key="GroupTag" DataType="hierarchy:TagTreeNode"
@@ -79,7 +78,7 @@
                                     <RadioButton>
                                         <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding Item.Name}" 
                                                         HorizontalAlignment="Stretch" Margin="0,3,20,3"
-                                                       Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
+                                                       Background="{Binding Item.BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"/>
                                     </RadioButton>
                                 </TreeDataTemplate>
                             </dataTemplates:TagTreeDataTemplateSelector>
@@ -132,11 +131,11 @@
                     <dataTemplates:TagDataTemplateSelector>
                         <DataTemplate x:Key="RegularTag" DataType="models:Tag">
                             <controls:Chip Text="{Binding LongName}" Margin="0,3"
-                                           Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
+                                           Background="{Binding BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"/>
                         </DataTemplate>
                         <DataTemplate x:Key="GroupTag" DataType="models:Tag">
                             <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding LongName}" 
-                                           Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
+                                           Background="{Binding BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"/>
                         </DataTemplate>
                     </dataTemplates:TagDataTemplateSelector>
                 </Button.DataTemplates>

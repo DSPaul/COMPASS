@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using Avalonia.Data.Converters;
 
-namespace COMPASS.Common.Converters;
+namespace COMPASS.Infra.Converters;
 
 public class AreEqualConverter : IMultiValueConverter
 {

@@ -1,10 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using System;
 using Avalonia.Controls.Primitives;
 
-namespace COMPASS.Common.Behaviours
+namespace COMPASS.Infra.Behaviours
 {
     /// <summary>
     /// Defines the scroll direction for mouse wheel behavior.

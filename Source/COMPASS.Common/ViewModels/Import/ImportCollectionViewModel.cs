@@ -8,9 +8,9 @@ using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Selection;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Import
 {

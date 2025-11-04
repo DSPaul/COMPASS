@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.ExtensionMethods;
 using ImageMagick;
 
 namespace COMPASS.Common.Sources

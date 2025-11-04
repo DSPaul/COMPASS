@@ -1,8 +1,7 @@
-using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 
-namespace COMPASS.Common.Converters;
+namespace COMPASS.Infra.Converters;
 
 /// <summary>
 /// Converter to bind enum value to radio buttons

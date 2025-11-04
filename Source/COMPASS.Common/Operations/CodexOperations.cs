@@ -24,6 +24,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.Services.StateManagers;
+using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Operations
 {

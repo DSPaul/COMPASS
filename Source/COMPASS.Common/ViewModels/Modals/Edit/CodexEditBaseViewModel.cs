@@ -6,8 +6,8 @@ using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit;
 

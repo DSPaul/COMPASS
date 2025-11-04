@@ -102,4 +102,7 @@
   <ItemGroup>
     <Folder Include="Assets\Fonts\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\COMPASS.Infra\COMPASS.Infra.csproj" />
+  </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 using Avalonia.Data.Converters;
 
-namespace COMPASS.Common.Converters;
+namespace COMPASS.Infra.Converters;
 
 public static class ObjectConverters
 {

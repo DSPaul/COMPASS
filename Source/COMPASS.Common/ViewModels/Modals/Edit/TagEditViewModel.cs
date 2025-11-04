@@ -1,13 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +15,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools;
 using Notification = COMPASS.Common.Models.Notification;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit

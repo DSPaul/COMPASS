@@ -8,6 +8,7 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
+using COMPASS.Infra.Models;
 using ImageMagick;
 using Newtonsoft.Json.Linq;
 
@@ -75,7 +76,7 @@ namespace COMPASS.Common.Sources
             //PageCount
             int pageCount = 0;
             if (details.SelectToken("pagination") is JToken pagination &&
-                int.TryParse(Constants.RegexNumbersOnly().Match(pagination.ToString()).Value, out pageCount))
+                int.TryParse(RegexConstants.NumbersOnly().Match(pagination.ToString()).Value, out pageCount))
             {
                 metaData.PageCount = pageCount;
             }

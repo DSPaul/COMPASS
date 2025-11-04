@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.Tools;
+using COMPASS.Infra.ExtensionMethods;
 using HtmlAgilityPack;
 using ImageMagick;
 

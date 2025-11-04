@@ -1,11 +1,8 @@
-using System;
 using Avalonia;
 using Avalonia.Controls;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
-namespace COMPASS.Common.Behaviours
+namespace COMPASS.Infra.Behaviours
 {
     /// <summary>
     /// Attached properties for priority-based column shrinking in Grid

@@ -1,7 +1,5 @@
-﻿using System;
-using Avalonia.Media;
-using COMPASS.Common.Tools;
-using FuzzySharp;
+﻿using Avalonia.Media;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.Models.Filters
 {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models.Hierarchy
 {

@@ -4,7 +4,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:models="using:COMPASS.Common.Models"
         xmlns:enums="using:COMPASS.Common.Models.Enums"
-        xmlns:converters="using:COMPASS.Common.Converters"
+        xmlns:converters="using:COMPASS.Infra.Converters"
+        xmlns:specialConverters="using:COMPASS.Common.Converters"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.NotificationWindow"
         WindowStartupLocation="CenterOwner"
@@ -15,7 +16,7 @@
     <Border BorderBrush="DimGray" BorderThickness="1" CornerRadius="10"
             Background="{StaticResource WindowBackground}">
         <Border.Resources>
-            <converters:SeverityToColorConverter InfoColor="#2091e4" x:Key="SeverityToColorConverter" />
+            <specialConverters:SeverityToColorConverter InfoColor="#2091e4" x:Key="SeverityToColorConverter" />
         </Border.Resources>
         <Grid>
             <Grid.ColumnDefinitions>

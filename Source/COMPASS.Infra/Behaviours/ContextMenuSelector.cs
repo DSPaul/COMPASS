@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 
-namespace COMPASS.Common.Behaviours
+namespace COMPASS.Infra.Behaviours
 {
     public class ContextMenuSelector : AvaloniaObject
     {

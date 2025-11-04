@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using Avalonia.Data.Converters;
 
-namespace COMPASS.Common.Converters;
+namespace COMPASS.Infra.Converters;
 
 /// <summary>
 /// A converter that compares two integers and returns true if the first number is smaller or equal to the second number

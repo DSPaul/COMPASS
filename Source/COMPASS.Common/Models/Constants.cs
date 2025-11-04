@@ -1,7 +1,5 @@
 ﻿using System.IO;
-using System.Text.RegularExpressions;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 
 namespace COMPASS.Common.Models
@@ -19,18 +17,7 @@ namespace COMPASS.Common.Models
 
         public static string InstallersPath => Path.Combine(ServiceResolver.Resolve<IEnvironmentVarsService>().CompassDataPath, "Installers");
         public const string AutoUpdateXMLPath = "https://raw.githubusercontent.com/DSPAUL/COMPASS/master/versionInfo.xml";
-
-        //Regex expresions
-        [GeneratedRegex(@"(978|979)[- ]?\d{1,5}[- ]?\d{1,7}[- ]?\d{1,6}[- ]?\d")]
-        public static partial Regex RegexISBN();
-
-        [GeneratedRegex(@"\s+")]
-        public static partial Regex RegexWhitespace();
-
-
-        [GeneratedRegex(@"\d+")]
-        public static partial Regex RegexNumbersOnly();
-
+        
         //Command line arguments
         public const string CmdArgNotifyCrashed = "notify_crashed";
     }

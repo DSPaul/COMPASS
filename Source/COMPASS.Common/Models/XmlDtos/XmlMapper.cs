@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Avalonia.Media;
 using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.Tools;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.Models.XmlDtos
 {

@@ -16,5 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\COMPASS.Common\COMPASS.Common.csproj" />
+    <ProjectReference Include="..\COMPASS.Infra\COMPASS.Infra.csproj" />
   </ItemGroup>
 </Project>

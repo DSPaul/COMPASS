@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
-using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Selection
 {
