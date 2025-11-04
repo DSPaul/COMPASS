@@ -332,6 +332,8 @@ namespace COMPASS.Common.ViewModels.Main
                 
             var newCodices = e.NewItems?.Cast<Codex>() ?? [];
             SubscribeToCodexProperties(newCodices);
+            
+            ReFilter();
         }
         
         private void SubscribeToCodexProperties(IEnumerable<Codex> codices)
