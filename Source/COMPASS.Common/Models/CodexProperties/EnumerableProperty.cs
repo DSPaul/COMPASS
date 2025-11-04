@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using COMPASS.Infra.ExtensionMethods;
 
@@ -43,7 +44,7 @@ namespace COMPASS.Common.Models.CodexProperties
         
         public override void Apply(SourceMetaData source, Codex codex)
         {
-            codex.SetProperty(Name, GetProp(source)?.ToList() ?? []); //make a new list
+            codex.SetProperty(Name, new ObservableCollection<T>(GetProp(source)?.ToList() ?? [])); //make a new list
         }
     }
 }
