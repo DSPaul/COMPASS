@@ -1,4 +1,4 @@
-﻿using COMPASS.Common.Tools;
+﻿using COMPASS.Common.Services;
 
 namespace COMPASS.Common.Models.ApiDtos
 {
@@ -9,7 +9,7 @@ namespace COMPASS.Common.Models.ApiDtos
             Error = exceptionMessage;
         }
 
-        public string Version => Reflection.Version;
+        public string Version => ApplicationService.Version;
 
         public string OperatingSystem { get; } = System.Runtime.InteropServices.RuntimeInformation.OSDescription;
 

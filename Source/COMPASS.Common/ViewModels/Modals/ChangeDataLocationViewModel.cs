@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -102,7 +101,7 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
         //Now that datapath has been changed, don't save on close because it would save to new location
         MainViewModel.SaveOnClose = false;
 
-        Utils.Restart(false);
+        ApplicationService.Restart(false);
     }
 
     private AsyncRelayCommand? _deleteDataCommand;

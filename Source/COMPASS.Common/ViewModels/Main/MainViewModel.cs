@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 
 namespace COMPASS.Common.ViewModels.Main
@@ -104,7 +105,7 @@ namespace COMPASS.Common.ViewModels.Main
             private set => SetProperty(ref _isOnline, value);
         }
 
-        public string VersionName => $"v{Reflection.Version}";
+        public string VersionName => $"v{ApplicationService.Version}";
         public ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
 
         #endregion

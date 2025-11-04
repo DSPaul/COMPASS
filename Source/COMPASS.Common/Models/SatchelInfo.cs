@@ -1,5 +1,5 @@
 ﻿using System;
-using COMPASS.Common.Tools;
+using COMPASS.Common.Services;
 
 namespace COMPASS.Common.Models
 {
@@ -8,7 +8,7 @@ namespace COMPASS.Common.Models
         /// <summary>
         /// Version of Compass used to create the satchel
         /// </summary>
-        public string CreationVersion { get; init; } = Reflection.Version;
+        public string CreationVersion { get; init; } = ApplicationService.Version;
 
         /// <summary>
         /// Date when the satchel was created

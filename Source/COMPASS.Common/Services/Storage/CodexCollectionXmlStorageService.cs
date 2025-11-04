@@ -4,7 +4,6 @@ using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.XmlDtos;
-using COMPASS.Common.Operations;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
@@ -268,7 +267,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
         //Obsolete properties should still be deserialized for backwards compatibility
         var overrides = new XmlAttributeOverrides();
         var obsoleteAttributes = new XmlAttributes { XmlIgnore = false };
-        var obsoleteProperties = Reflection.GetObsoleteProperties(type);
+        var obsoleteProperties = type.GetObsoleteProperties();
         foreach (string prop in obsoleteProperties)
         {
             overrides.Add(type, prop, obsoleteAttributes);
@@ -497,7 +496,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
             {
                 //No version information means we cannot ensure compatibility, so abort
                 string message =
-                    $"Cannot import {Path.GetFileName(satchelPath)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
+                    $"Cannot import {Path.GetFileName(satchelPath)} because it does not contain version info, and might therefor not be compatible with your version v{ApplicationService.Version}.";
                 Logger.Warn(message);
                 Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message, Severity.Warning);
                 await _windowedNotificationService.ShowDialog(warnNotification);
@@ -516,7 +515,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
             {
                 //No version information means we cannot ensure compatibility, so abort
                 string message =
-                    $"Cannot import {Path.GetFileName(satchelPath)} because it does not contain version info, and might therefor not be compatible with your version v{Reflection.Version}.";
+                    $"Cannot import {Path.GetFileName(satchelPath)} because it does not contain version info, and might therefor not be compatible with your version v{ApplicationService.Version}.";
                 Logger.Warn(message);
                 Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message, Severity.Warning);
                 await _windowedNotificationService.ShowDialog(warnNotification);
@@ -554,7 +553,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
             {
                 string message =
                     $"Cannot import {Path.GetFileName(satchelPath)} because it was created in a newer version of COMPASS (v{satchelInfo.CreationVersion}), " +
-                    $"and has indicated to be incompatible with your version v{Reflection.Version}. Please update and try again.";
+                    $"and has indicated to be incompatible with your version v{ApplicationService.Version}. Please update and try again.";
                 Logger.Warn(message);
                 Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message,
                     Severity.Warning);
