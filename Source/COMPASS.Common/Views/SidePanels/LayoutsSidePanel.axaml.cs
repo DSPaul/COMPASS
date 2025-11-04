@@ -1,7 +1,4 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Main;
 

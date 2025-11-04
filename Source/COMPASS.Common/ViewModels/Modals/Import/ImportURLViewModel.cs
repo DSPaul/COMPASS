@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -11,7 +10,6 @@ using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
-using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.Views.Windows;
 

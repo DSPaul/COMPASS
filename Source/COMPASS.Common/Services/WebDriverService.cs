@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;

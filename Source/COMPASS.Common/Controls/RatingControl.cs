@@ -9,7 +9,6 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using iText.Layout.Splitting;
 
 namespace COMPASS.Common.Controls;
 

@@ -1,9 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using COMPASS.Common.Models;
-using COMPASS.Common.Operations;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels;
-using NUnit.Framework.Constraints;
 
 namespace Tests.DataGenerators
 {

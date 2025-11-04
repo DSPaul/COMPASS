@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 
 namespace COMPASS.Linux.Services

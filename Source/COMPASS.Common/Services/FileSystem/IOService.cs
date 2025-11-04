@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;

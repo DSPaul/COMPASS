@@ -5,7 +5,6 @@ using Avalonia;
 using Avalonia.Svg.Skia;
 using COMPASS.Common;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;

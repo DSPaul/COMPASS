@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using COMPASS.Common.ViewModels.Import;
 
 namespace COMPASS.Common.Views.Modals.Import;
 

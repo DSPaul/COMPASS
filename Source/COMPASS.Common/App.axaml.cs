@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
@@ -7,7 +6,6 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
 

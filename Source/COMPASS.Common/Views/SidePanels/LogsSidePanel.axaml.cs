@@ -1,11 +1,4 @@
 using System.Collections.Specialized;
-using System.Linq;
-using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
-using COMPASS.Common.Models.Enums;
-using ExCSS;
-using OpenQA.Selenium;
-using LogEntry = COMPASS.Common.Models.LogEntry;
 
 namespace COMPASS.Common.Views.SidePanels;
 

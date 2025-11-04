@@ -1,6 +1,4 @@
 ﻿using Avalonia.Controls;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels;

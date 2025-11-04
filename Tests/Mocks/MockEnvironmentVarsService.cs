@@ -1,4 +1,3 @@
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 
 namespace Tests.Mocks;

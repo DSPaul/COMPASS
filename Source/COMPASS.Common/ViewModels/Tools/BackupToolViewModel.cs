@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
@@ -13,7 +12,6 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
-using Org.BouncyCastle.Asn1.Ocsp;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 

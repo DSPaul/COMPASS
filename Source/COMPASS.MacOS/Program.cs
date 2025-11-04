@@ -1,6 +1,4 @@
-﻿using System;
-using Avalonia;
-using COMPASS.Common;
+﻿using COMPASS.Common;
 
 namespace COMPASS.MacOS;
 

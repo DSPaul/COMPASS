@@ -1,10 +1,8 @@
 ﻿using Avalonia.Headless.NUnit;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Sources;
-using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
 
 namespace Tests.Sources

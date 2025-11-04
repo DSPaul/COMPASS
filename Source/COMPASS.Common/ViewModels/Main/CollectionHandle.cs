@@ -1,5 +1,4 @@
 using System;
-using COMPASS.Common.Interfaces.ViewModels;
 
 namespace COMPASS.Common.ViewModels.Main;
 
