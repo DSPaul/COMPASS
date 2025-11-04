@@ -33,7 +33,7 @@ namespace COMPASS.Common.Sources
             return Task.FromResult(metaData);
         }
 
-        public override async Task<IMagickImage?> FetchCover(SourceSet sources)
+        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources)
         {
             if (String.IsNullOrEmpty(sources.SourceURL)) { return null; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Google Drive"));

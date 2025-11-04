@@ -2,7 +2,6 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.ViewModels;
-using COMPASS.Common.ViewModels.Main;
 using ImageMagick;
 
 namespace COMPASS.Common.Sources
@@ -45,7 +44,7 @@ namespace COMPASS.Common.Sources
 
         public abstract Task<SourceMetaData> GetMetaData(SourceSet sources);
 
-        public abstract Task<IMagickImage?> FetchCover(SourceSet sources);
+        public abstract Task<IMagickImage<byte>?> FetchCover(SourceSet sources);
         #endregion
     }
 }

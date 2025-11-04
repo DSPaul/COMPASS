@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Avalonia.Media.Imaging;
 using ImageMagick;
 
 namespace COMPASS.Common.Models;
@@ -9,7 +8,7 @@ namespace COMPASS.Common.Models;
 /// <summary>
 /// MetaData that can be provided by a metadata source
 /// </summary>
-public class SourceMetaData : IHasCodexMetadata
+public class SourceMetaData : IHasCodexMetadata, IDisposable
 {
     public SourceMetaData() { }
     
@@ -33,5 +32,10 @@ public class SourceMetaData : IHasCodexMetadata
     public int PageCount { get; set; }
     public string Version { get; set; } = "";
     public IList<Tag> Tags { get; set; } = [];
-    public IMagickImage? Cover { get; set; }
+    public IMagickImage<byte>? Cover { get; set; }
+
+    public void Dispose()
+    {
+        Cover?.Dispose();
+    }
 }

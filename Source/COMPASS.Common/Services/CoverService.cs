@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using COMPASS.Common.ViewModels.Modals;
 
 namespace COMPASS.Common.Services
 {
@@ -31,7 +32,7 @@ namespace COMPASS.Common.Services
         /// <exception cref="System.OperationCanceledException">The token has had cancellation requested.</exception>
         public static async Task GetAndApplyCover(Codex codex, ChooseMetaDataViewModel? chooseMetaDataViewModel = null)
         {
-            IMagickImage? coverFromSource = null;
+            IMagickImage<byte>? coverFromSource = null;
             try
             {
                 CodexProperty coverProp = PreferencesService.GetInstance().Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(Codex.Cover));
@@ -73,7 +74,7 @@ namespace COMPASS.Common.Services
                     if (!coverProp.HasNewValue(newMetaData, codex)) return;
 
                     //make a copy of cover because originals lifetime is limited to this method
-                    newMetaData.Cover = new MagickImage((IMagickImage<byte>)coverFromSource);
+                    newMetaData.Cover = new MagickImage(coverFromSource);
                     chooseMetaDataViewModel!.AddMetaDataProposal(codex, newMetaData);
                 }
                 else
@@ -202,10 +203,10 @@ namespace COMPASS.Common.Services
         }
 
         //Take screenshot of specific html element 
-        public static IMagickImage GetCroppedScreenShot(IWebDriver driver, IWebElement webElement)
+        public static IMagickImage<byte> GetCroppedScreenShot(IWebDriver driver, IWebElement webElement)
             => GetCroppedScreenShot(driver, webElement.Location, webElement.Size);
 
-        public static IMagickImage GetCroppedScreenShot(IWebDriver driver, System.Drawing.Point location, System.Drawing.Size size)
+        public static IMagickImage<byte> GetCroppedScreenShot(IWebDriver driver, System.Drawing.Point location, System.Drawing.Size size)
         {
             //take the screenshot
             Screenshot ss = ((ITakesScreenshot)driver).GetScreenshot();

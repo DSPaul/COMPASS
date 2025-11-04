@@ -2,10 +2,8 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Infra.Models;
@@ -101,7 +99,7 @@ namespace COMPASS.Common.Sources
             return metaData;
         }
 
-        public override async Task<IMagickImage?> FetchCover(SourceSet sources)
+        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources)
         {
             if (string.IsNullOrEmpty(sources.ISBN)) return null;
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from openlibrary.org"));

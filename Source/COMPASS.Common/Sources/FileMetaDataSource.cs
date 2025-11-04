@@ -16,7 +16,7 @@ namespace COMPASS.Common.Sources
         
         public override MetaDataSourceType Type => MetaDataSourceType.File;
 
-        public override Task<IMagickImage?> FetchCover(SourceSet sources) => throw new System.NotImplementedException();
+        public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources) => throw new System.NotImplementedException();
         public override bool IsValidSource(SourceSet sources) => sources.HasOfflineSource();
 
         public override Task<SourceMetaData> GetMetaData(SourceSet sources)

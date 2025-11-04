@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
@@ -27,7 +26,7 @@ namespace COMPASS.Common.Sources
 
             return Task.FromResult(metaData);
         }
-        public override async Task<IMagickImage?> FetchCover(SourceSet sources) => await Task.Run(() => 
+        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources) => await Task.Run(() => 
             CoverService.GetCoverFromImage(sources.Path));
     }
 }

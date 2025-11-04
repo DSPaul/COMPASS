@@ -19,7 +19,7 @@ namespace COMPASS.Common.Sources
         
         public override MetaDataSourceType Type => MetaDataSourceType.GenericURL;
 
-        public override Task<IMagickImage?> FetchCover(SourceSet sources) => throw new NotImplementedException();
+        public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources) => throw new NotImplementedException();
         public override bool IsValidSource(SourceSet sources) => sources.HasOnlineSource();
 
         public override async Task<SourceMetaData> GetMetaData(SourceSet sources)

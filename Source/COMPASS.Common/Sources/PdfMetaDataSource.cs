@@ -78,13 +78,13 @@ namespace COMPASS.Common.Sources
             return metaData;
         }
 
-        public override Task<IMagickImage?> FetchCover(SourceSet sources)
+        public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources)
         {
             //return false if the file doesn't exist
             if (!IOService.IsPDFFile(sources.Path) ||
                 !File.Exists(sources.Path))
             {
-                return Task.FromResult<IMagickImage?>(null);
+                return Task.FromResult<IMagickImage<byte>?>(null);
             }
             
             try //reading an image can throw exception if file can not be opened/read
@@ -95,7 +95,7 @@ namespace COMPASS.Common.Sources
                 PDFtoImage.Conversion.SavePng(imageStream, pdfStream, options: ReadOptions);
 #pragma warning restore CA1416
                 imageStream.Position = 0;
-                return Task.FromResult<IMagickImage?>(new MagickImage(imageStream));
+                return Task.FromResult<IMagickImage<byte>?>(new MagickImage(imageStream));
             }
             catch (Exception ex)
             {
@@ -103,7 +103,7 @@ namespace COMPASS.Common.Sources
                 Logger.Error(logMsg, ex);
                 LogEntry logEntry = new(Severity.Warning, logMsg);
                 ProgressVM.AddLogEntry(logEntry);
-                return Task.FromException<IMagickImage?>(ex);
+                return Task.FromResult<IMagickImage<byte>?>(null);
             }
         }
         

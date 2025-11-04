@@ -65,7 +65,7 @@ namespace COMPASS.Common.Sources
             return metaData;
         }
 
-        public override async Task<IMagickImage?> FetchCover(SourceSet sources)
+        public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources)
         {
             if (string.IsNullOrEmpty(sources.SourceURL)) { return null; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Homebrewery"));
