@@ -450,6 +450,10 @@ namespace COMPASS.Common.Operations
         {
             if (!codices.Any()) return;
 
+            //Because this is async and could continue when the tab or collection has already been closed
+            //This method should get its own handle
+            using CollectionHandle localCollectionHandle = CollectionManager.LoadCollection(_collectionHandle.CollectionVM.Identifier)!;
+            
             var progressVM = ProgressViewModel.GetInstance();
             progressVM.ResetCounter();
             progressVM.Text = "Getting MetaData";
@@ -478,7 +482,7 @@ namespace COMPASS.Common.Operations
             }
             
             //Save at the end
-            _collectionHandle.SaveCodices();
+            localCollectionHandle.SaveCodices();
         }
         private static async Task GetMetaData(Codex codex, ChooseMetaDataViewModel chooseMetaDataVM)
         {
