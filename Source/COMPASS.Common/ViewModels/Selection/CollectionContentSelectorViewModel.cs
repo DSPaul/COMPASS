@@ -187,7 +187,7 @@ namespace COMPASS.Common.ViewModels.Selection
                 var allSelectableTags = SelectableTags.Flatten().ToList();
                 foreach (var tag in assignedTags)
                 {
-                    allSelectableTags.Single(st => st.Item.ID == tag.ID).IsChecked = true;
+                    allSelectableTags.Single(st => st.Item.Id == tag.Id).IsChecked = true;
                 }
 
                 CuratedCollection.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).ToList();

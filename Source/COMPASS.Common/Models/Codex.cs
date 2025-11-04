@@ -16,7 +16,7 @@ using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models
 {
-    public class Codex : ObservableObject, IHasID, IHasCodexMetadata, IDisposable
+    public class Codex : ObservableObject, IHasId, IHasCodexMetadata, IDisposable
     {
         public readonly CodexCollection Collection;
 
@@ -41,7 +41,7 @@ namespace COMPASS.Common.Models
 
         #region COMPASS related Metadata
 
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         private string _coverArtPath = "";
         public string CoverArtPath
@@ -252,7 +252,7 @@ namespace COMPASS.Common.Models
             Authors = new(c.Authors);
             Publisher = c.Publisher;
             Version = c.Version;
-            ID = c.ID;
+            Id = c.Id;
             CoverArtPath = c.CoverArtPath;
             ThumbnailPath = c.ThumbnailPath;
             PhysicallyOwned = c.PhysicallyOwned;

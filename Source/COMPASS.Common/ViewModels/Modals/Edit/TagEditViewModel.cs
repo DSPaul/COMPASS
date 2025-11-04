@@ -226,7 +226,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             {
                 Tag newTag = new(TempTag)
                 {
-                    ID = Utils.GetAvailableID(ActiveCollection.AllTags)
+                    Id = Utils.GetAvailableId(ActiveCollection.AllTags)
                 };
                 ActiveCollection.AllTags.Add(newTag);
                 

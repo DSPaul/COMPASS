@@ -340,7 +340,7 @@
                                Text="ID:" />
                     <TextBlock Grid.Row="1" Grid.Column="1"
                                MinWidth="30" Margin="5"
-                               Text="{Binding TempCodex.ID}" />
+                               Text="{Binding TempCodex.Id}" />
 
                     <!-- Times opened -->
                     <TextBlock Grid.Row="1" Grid.Column="3"

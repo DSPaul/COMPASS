@@ -97,7 +97,7 @@ namespace COMPASS.Common.Models
             var tagsToImport = tagsList.Flatten();
             foreach (Tag tag in tagsToImport)
             {
-                tag.ID = Utils.GetAvailableID(AllTags);
+                tag.Id = Utils.GetAvailableId(AllTags);
                 AllTags.Add(tag);
             }
             RootTags.AddRange(tagsList);
@@ -124,7 +124,7 @@ namespace COMPASS.Common.Models
             foreach (var codex in source.AllCodices)
             {
                 //Give it a new id that is unique to this collection
-                codex.ID = Utils.GetAvailableID(AllCodices);
+                codex.Id = Utils.GetAvailableId(AllCodices);
 
                 //Move thumbnail and cover
                 thumbnailStorageService.MoveCodexDataToCollection(codex, this);

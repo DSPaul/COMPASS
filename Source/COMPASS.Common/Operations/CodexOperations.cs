@@ -187,7 +187,7 @@ namespace COMPASS.Common.Operations
         public static Codex CreateNewCodex(CodexCollection collection)
         {
             var codex = new Codex(collection);
-            codex.ID = Utils.GetAvailableID(collection.AllCodices);
+            codex.Id = Utils.GetAvailableId(collection.AllCodices);
             ServiceResolver.Resolve<IThumbnailStorageService>().InitCodexImagePaths(codex);
             return codex;
         }
@@ -323,7 +323,7 @@ namespace COMPASS.Common.Operations
                     movedCodex.CopyFrom(toMove);
 
                     movedCodex.Tags.Clear();
-                    movedCodex.ID = Utils.GetAvailableID(targetCollection.AllCodices);
+                    movedCodex.Id = Utils.GetAvailableId(targetCollection.AllCodices);
 
                     //Add Codex to target CodexCollection
                     targetCollection.AllCodices.Add(movedCodex);
@@ -449,7 +449,7 @@ namespace COMPASS.Common.Operations
             }
         }
         public async Task StartGetMetaDataProcess(IList<Codex> codices)
-        {
+        {            
             if (!codices.Any()) return;
 
             //Because this is async and could continue when the tab or collection has already been closed

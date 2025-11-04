@@ -50,7 +50,7 @@ namespace COMPASS.Common.Models.XmlDtos
             Codex codex = new(collection)
             {
                 // COMPASS related Metadata
-                ID = dto.ID,
+                Id = dto.ID,
                 ThumbnailPath = dto.ThumbnailPath,
                 CoverArtPath = dto.CoverArtPath,
 
@@ -83,7 +83,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 }
             };
 
-            codex.Tags = new(collection.AllTags.Where(tag => dto.TagIDs.Contains(tag.ID)));
+            codex.Tags = new(collection.AllTags.Where(tag => dto.TagIDs.Contains(tag.Id)));
 
             return codex;
         }
@@ -93,7 +93,7 @@ namespace COMPASS.Common.Models.XmlDtos
             CodexDto dto = new()
             {
                 // COMPASS related Metadata
-                ID = model.ID,
+                ID = model.Id,
                 ThumbnailPath = model.ThumbnailPath.Sanitize(),
                 CoverArtPath = model.CoverArtPath.Sanitize(),
 
@@ -111,7 +111,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 PhysicallyOwned = model.PhysicallyOwned,
                 Rating = model.Rating,
                 Favorite = model.Favorite,
-                TagIDs = model.Tags.Select(t => t.ID).ToList(),
+                TagIDs = model.Tags.Select(t => t.Id).ToList(),
 
                 //User behaviour metadata
                 DateAdded = model.DateAdded,
@@ -151,7 +151,7 @@ namespace COMPASS.Common.Models.XmlDtos
         {
             PreferencesDto dto = new()
             {
-                OpenFilePriorityIDs = prefs.OpenCodexPriority.Select(pf => pf.ID).ToList(),
+                OpenFilePriorityIDs = prefs.OpenCodexPriority.Select(pf => pf.Id).ToList(),
                 CodexProperties = prefs.ImportableCodexProperties.Select(prop => prop.ToDto()).ToList(),
                 ListLayoutPreferences = prefs.ListLayoutPreferences,
                 CardLayoutPreferences = prefs.CardLayoutPreferences,
@@ -180,12 +180,12 @@ namespace COMPASS.Common.Models.XmlDtos
             return new(Preferences.Preferences.OpenCodexFunctions.OrderBy(pf =>
             {
                 //get index in user preference
-                int index = priorityIds.IndexOf(pf.ID);
+                int index = priorityIds.IndexOf(pf.Id);
 
                 //if it was not found in preference, use its default ID
                 if (index < 0)
                 {
-                    return pf.ID;
+                    return pf.Id;
                 }
 
                 return index;
@@ -282,7 +282,7 @@ namespace COMPASS.Common.Models.XmlDtos
         {
             var model = new Tag()
             {
-                ID = dto.ID,
+                Id = dto.ID,
                 Name = dto.Content,
                 InternalBackgroundColor = dto.BackgroundColor?.ToModel(),
                 IsGroup = dto.IsGroup,
@@ -296,7 +296,7 @@ namespace COMPASS.Common.Models.XmlDtos
 
         public static TagDto ToDto(this Tag model) => new()
         {
-            ID = model.ID,
+            ID = model.Id,
             Content = Sanitize(model.Name),
             BackgroundColor = model.InternalBackgroundColor?.ToDto(),
             IsGroup = model.IsGroup,
@@ -341,7 +341,7 @@ namespace COMPASS.Common.Models.XmlDtos
             //(1.x -> 2.x) migrate Folder - Tag Links
             foreach (FolderTagPairDto pair in dto.FolderTagPairs)
             {
-                allTags.FirstOrDefault(t => t.ID == pair.TagID)?.LinkedGlobs.AddIfMissing(pair.Folder);
+                allTags.FirstOrDefault(t => t.Id == pair.TagID)?.LinkedGlobs.AddIfMissing(pair.Folder);
             }
 
             //(1.6.0 -> 1.7.0) migrate from AutoImportFoldersViewSource to AutoImportFolders 

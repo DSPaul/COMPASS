@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using COMPASS.Common.Interfaces;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -19,10 +18,10 @@ public class ThumbnailStorageService : IThumbnailStorageService
     private readonly string _collectionsPath;
     
     private string CoverArtDirectory(CodexCollection collection) => Path.Combine(_collectionsPath, collection.Name, "CoverArt");
-    private string DefaultCoverArtPath(Codex codex) => Path.Combine(CoverArtDirectory(codex.Collection), $"{codex.ID}.png");
+    private string DefaultCoverArtPath(Codex codex) => Path.Combine(CoverArtDirectory(codex.Collection), $"{codex.Id}.png");
     
     private string ThumbnailDirectory(CodexCollection collection) => Path.Combine(_collectionsPath, collection.Name, "Thumbnails");
-    private string DefaultThumbnailPath(Codex codex) => Path.Combine(ThumbnailDirectory(codex.Collection), $"{codex.ID}.png");
+    private string DefaultThumbnailPath(Codex codex) => Path.Combine(ThumbnailDirectory(codex.Collection), $"{codex.Id}.png");
 
     private bool EnsureDirectoriesExists(CodexCollection collection)
     {
@@ -48,8 +47,8 @@ public class ThumbnailStorageService : IThumbnailStorageService
             return;
         }
 
-        string newCoverPath = Path.Combine(CoverArtDirectory(targetCollection), $"{codex.ID}.png");
-        string newThumbnailPath = Path.Combine(ThumbnailDirectory(targetCollection), $"{codex.ID}.png");
+        string newCoverPath = Path.Combine(CoverArtDirectory(targetCollection), $"{codex.Id}.png");
+        string newThumbnailPath = Path.Combine(ThumbnailDirectory(targetCollection), $"{codex.Id}.png");
         
         //Move Cover file
         try

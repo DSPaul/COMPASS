@@ -11,14 +11,14 @@ namespace COMPASS.Common.Models
     /// supporting both synchronous and asynchronous operations.
     /// </summary>
     /// <typeparam name="T">Type of argument of the function</typeparam>
-    public class PreferableFunction<T> : IHasID
+    public class PreferableFunction<T> : IHasId
     {
         // For synchronous functions
         public PreferableFunction(string name, Func<T, bool> func, int id = -1)
         {
             Name = name;
             SyncFunction = func;
-            ID = id;
+            Id = id;
             IsAsync = false;
         }
 
@@ -27,14 +27,14 @@ namespace COMPASS.Common.Models
         {
             Name = name;
             AsyncFunction = asyncFunc;
-            ID = id;
+            Id = id;
             IsAsync = true;
         }
         
         public string Name { get; }
         
         // Implement IHasID
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         // Function properties
         public Func<T, bool>? SyncFunction { get; }

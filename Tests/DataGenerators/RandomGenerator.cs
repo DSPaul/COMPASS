@@ -61,7 +61,7 @@ namespace Tests.DataGenerators
         {
             InternalBackgroundColor = GetRandomColor(),
             Name = GetRandomString(),
-            ID = Random.Next(),
+            Id = Random.Next(),
             IsGroup = GetRandomBool(falseFreq: 5),
             //Give it a random number of children, to a max of depth, and each level decrease depth
             Children = new(Enumerable.Range(0, Random.Next(depth)).Select(_ => GetRandomTag(depth - 1)))
@@ -71,7 +71,7 @@ namespace Tests.DataGenerators
         {
             Codex codex = new(collection)
             {
-                ID = Random.Next(),
+                Id = Random.Next(),
                 Title = GetRandomString(),
                 SortingTitle = GetRandomString(),
                 Authors = new ObservableCollection<string>(GetRandomList<string>(maxLength: 3)),

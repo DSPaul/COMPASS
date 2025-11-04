@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
-using COMPASS.Common.Tools;
 
 namespace Tests.UnitTests.Models
 {
@@ -15,42 +14,42 @@ namespace Tests.UnitTests.Models
             //Setup
             Tag root = new()
             {
-                ID = 1,
+                Id = 1,
                 IsGroup = true,
                 Children = new ObservableCollection<Tag>()
                 {
                     new() //L1 that is a group
                     {
-                        ID = 2,
+                        Id = 2,
                         IsGroup = true,
                         Children = new ObservableCollection<Tag>()
                         {
                             new() //some L2 children
                             {
-                                ID = 3,
+                                Id = 3,
                                 IsGroup = false,
                             },
                             new() //some L2 children
                             {
-                                ID = 4,
+                                Id = 4,
                                 IsGroup = false,
                             },
                         }
                     },
                     new() //L1 that is not a group
                     {
-                        ID = 5,
+                        Id = 5,
                         IsGroup = false,
                         Children = new ObservableCollection<Tag>()
                         {
                             new() //some L2 children
                             {
-                                ID = 6,
+                                Id = 6,
                                 IsGroup = false,
                             },
                             new() //some L2 children
                             {
-                                ID = 7,
+                                Id = 7,
                                 IsGroup = false,
                             },
                         }

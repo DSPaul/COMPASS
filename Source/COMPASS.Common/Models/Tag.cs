@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia.Media;
@@ -10,7 +9,7 @@ using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Models
 {
-    public sealed class Tag : ObservableRecipient, IHasID, IHasChildren<Tag>
+    public sealed class Tag : ObservableRecipient, IHasId, IHasChildren<Tag>
     {
         public Tag() { }
 
@@ -21,7 +20,7 @@ namespace COMPASS.Common.Models
 
         public Tag(List<Tag> allTags)
         {
-            ID = Utils.GetAvailableID(allTags.Cast<IHasID>());
+            Id = Utils.GetAvailableId(allTags.Cast<IHasId>());
         }
 
         //Implement IHasChildren
@@ -69,10 +68,9 @@ namespace COMPASS.Common.Models
                 OnPropertyChanged(nameof(BackgroundColor));
             }
         }
-
-        //Implement IHasID
+        
         private int _id = -1;
-        public int ID
+        public int Id
         {
             get => _id;
             set => SetProperty(ref _id, value);
@@ -124,7 +122,7 @@ namespace COMPASS.Common.Models
         //can use copy over ctor to retain reference
         public void CopyFrom(Tag t)
         {
-            ID = t.ID;
+            Id = t.Id;
             Name = t.Name;
             Parent = t.Parent;
             IsGroup = t.IsGroup;

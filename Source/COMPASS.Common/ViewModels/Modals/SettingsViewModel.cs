@@ -113,7 +113,7 @@ namespace COMPASS.Common.ViewModels.Modals
 
         public bool PreferOnlineSource
         {
-            get => _preferencesService.Preferences.OpenCodexPriority.First().ID == Preferences.ONLINE_SOURCE_PRIORITY_ID;
+            get => _preferencesService.Preferences.OpenCodexPriority.First().Id == Preferences.ONLINE_SOURCE_PRIORITY_ID;
             set
             {
                 if (value == PreferOnlineSource) return;

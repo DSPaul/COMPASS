@@ -88,8 +88,8 @@
                                 <Setter Property="IsVisible">
                                     <MultiBinding Converter="{StaticResource AreNotEqualConverter}">
                                         <Binding
-                                            Path="$parent[TreeView].((edit:TagEditViewModel)DataContext).TempTag.ID" />
-                                        <Binding Path="Item.ID" />
+                                            Path="$parent[TreeView].((edit:TagEditViewModel)DataContext).TempTag.Id" />
+                                        <Binding Path="Item.Id" />
                                     </MultiBinding>
                                 </Setter>
 
