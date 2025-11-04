@@ -67,7 +67,7 @@ namespace COMPASS.Common.ViewModels.Import
 
             if (!files.Any()) return [];
 
-            var paths = files.Select(f => f.Path.AbsolutePath).ToList();
+            var paths = files.Select(f => f.Path.LocalPath).ToList();
 
             foreach (var file in files)
             {
