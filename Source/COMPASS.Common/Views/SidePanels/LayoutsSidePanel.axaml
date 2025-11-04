@@ -5,15 +5,16 @@
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:layouts="using:COMPASS.Common.ViewModels.Layouts"
              xmlns:vm="using:COMPASS.Common.ViewModels.Main"
+             xmlns:views="using:COMPASS.Common.Views.Main"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.SidePanels.LayoutsSidePanel"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:CollectionTabVM">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel >
             <ComboBox HorizontalAlignment="Stretch" VerticalAlignment="Center" 
                       Margin="15,10,15,0"
-                      ItemsSource="{Binding AllLayouts, Mode=OneTime}"
-                      SelectedIndex="{Binding TabsVM.ActiveTab.CurrentLayout.LayoutType, Mode=OneWay}"
+                      ItemsSource="{Binding $parent[views:MainView].((vm:MainViewModel)DataContext).AllLayouts, Mode=OneTime}"
+                      SelectedIndex="{Binding CurrentLayout.LayoutType, Mode=OneWay}"
                       SelectionChanged="LayoutSelection_OnSelectionChanged">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
@@ -26,7 +27,7 @@
             </ComboBox>
             <Rectangle Height="3" Fill="{StaticResource Separator}" Margin="0,10"/>
             <TextBlock Classes="Categorizer" Text="Customize layout"/>
-            <ContentControl DataContext="{Binding TabsVM.ActiveTab.CurrentLayout}" Content="{Binding}" Margin="20,10">
+            <ContentControl DataContext="{Binding CurrentLayout}" Content="{Binding}" Margin="20,10">
                 <ContentControl.DataTemplates>
                     <DataTemplate DataType="{x:Type layouts:ListLayoutViewModel}">
                         <StackPanel DataContext="{Binding Preferences}">
@@ -71,7 +72,7 @@
             </ContentControl>
             <Rectangle Height="3" Fill="{StaticResource Separator}" Margin="0,10"/>
             <TextBlock Classes="Categorizer" Text="Customize Info Panel"/>
-            <CheckBox Margin="10" IsChecked="{Binding TabsVM.ActiveTab.CurrentLayout.CodexInfoVM.AutoHide}">
+            <CheckBox Margin="10" IsChecked="{Binding CurrentLayout.CodexInfoVM.AutoHide}">
                 <TextBlock Text="Auto hide panel when nothing is selected." TextWrapping="Wrap" Width="200" Margin="5"/>
             </CheckBox>
         </StackPanel>
