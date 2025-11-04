@@ -361,12 +361,15 @@ namespace COMPASS.Common.ViewModels.Main
             {
                 return;
             }
-            
-            OnPropertyChanged(nameof(Favorites));
-            OnPropertyChanged(nameof(RecentCodices));
-            OnPropertyChanged(nameof(MostOpenedCodices));
-            PopulateMetaDataCollections();
-            ReFilter();
+
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                OnPropertyChanged(nameof(Favorites));
+                OnPropertyChanged(nameof(RecentCodices));
+                OnPropertyChanged(nameof(MostOpenedCodices));
+                PopulateMetaDataCollections();
+                ReFilter();
+            });
         }
         
         private void InitSortingProperties()
