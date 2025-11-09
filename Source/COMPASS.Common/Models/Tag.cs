@@ -9,7 +9,7 @@ using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Models
 {
-    public sealed class Tag : ObservableRecipient, IHasId, IHasChildren<Tag>
+    public sealed class Tag : ObservableRecipient, IHasId, IHasChildren<Tag>, ICloneable<Tag>
     {
         public Tag() { }
 
@@ -129,6 +129,13 @@ namespace COMPASS.Common.Models
             InternalBackgroundColor = t.InternalBackgroundColor;
             Children = new(t.Children);
             LinkedGlobs = new(t.LinkedGlobs);
+        }
+        
+        public Tag Clone()
+        {
+            var clone = new Tag();
+            clone.CopyFrom(this);
+            return clone;
         }
     }
 }

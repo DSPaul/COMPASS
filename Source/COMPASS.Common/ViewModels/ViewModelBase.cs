@@ -1,16 +1,22 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Exceptions;
+using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.ViewModels
 {
-    public abstract class ViewModelBase : ObservableObject
+    public abstract class ViewModelBase : ObservableObject, INotifyDataErrorInfo
     {
         /// <summary>
         /// Shortcut because we need this all over the place
         /// </summary>
-        public CodexCollection ActiveCollection
+        protected CodexCollection ActiveCollection
         {
             get
             {
@@ -19,5 +25,86 @@ namespace COMPASS.Common.ViewModels
                 return tabVm.CollectionVM.Collection;
             }
         }
+        
+        #region INotifyDataErrorInfo
+    
+        //list of errors per property
+        private readonly Dictionary<string, List<string>> _errors = [];
+    
+        public bool HasErrors => _errors.Any();
+    
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+    
+        public IEnumerable GetErrors(string? propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                return _errors.Values.SelectMany(e => e);
+            }
+        
+            return _errors.TryGetValue(propertyName, out var errors) ? errors : [];
+        }
+    
+        protected void AddError(string propertyName, string error)
+        {
+            if (!_errors.ContainsKey(propertyName))
+            {
+                _errors[propertyName] = [];
+            }
+        
+            if (!_errors[propertyName].Contains(error))
+            {
+                _errors[propertyName].Add(error);
+                OnErrorsChanged(propertyName);
+                OnPropertyChanged(nameof(HasErrors));
+            }
+        }
+    
+        private void ClearErrors(string? propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                var propertyNames = _errors.Keys.ToList();
+                _errors.Clear();
+        
+                foreach (var propName in propertyNames)
+                {
+                    OnErrorsChanged(propName);
+                }
+            }
+            else if (_errors.Remove(propertyName))
+            {
+                OnErrorsChanged(propertyName);
+            }
+        
+            OnPropertyChanged(nameof(HasErrors));
+        }
+    
+        private void OnErrorsChanged(string propertyName)
+        {
+            ErrorsChanged?.Invoke(this, new(propertyName));
+        }
+        
+        protected void Validate(string? propertyName = null)
+        {
+            ClearErrors(propertyName);
+            CustomValidate(propertyName);
+            
+            if (this is IConfirmable confirmable)
+            {
+                confirmable.ConfirmCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        /// <summary>
+        /// Define custom validation logic here
+        /// </summary>
+        /// <param name="propertyName"></param>
+        protected virtual void CustomValidate(string? propertyName)
+        {
+            
+        }
+
+        #endregion
     }
 }

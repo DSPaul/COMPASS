@@ -16,7 +16,7 @@
 
             <!-- Group -->
             <StackPanel Orientation="Horizontal">
-                <CheckBox Content="Is a group" IsChecked="{Binding TempTag.IsGroup}" />
+                <CheckBox Content="Is a group" IsChecked="{Binding WorkingCopy.IsGroup}" />
                 <!-- TODO add Info icon to explain groups-->
                 <controls:Explainer />
             </StackPanel>
@@ -51,8 +51,8 @@
                 </Grid>
                 <Rectangle Grid.Row="1" Fill="{StaticResource Separator}" Height="3" />
                 <controls:StringListControl Grid.Row="2" 
-                                            Items="{Binding TempTag.LinkedGlobs}"
-                                            ReadOnlyItems="{Binding TempTag.CalculatedLinkedGlobs}"
+                                            Items="{Binding WorkingCopy.LinkedGlobs}"
+                                            ReadOnlyItems="{Binding WorkingCopy.CalculatedLinkedGlobs}"
                                             ReadOnlyToolTip="The setting to link tags and folder with the same name is active. It can be turned off under settings => Metadata"
                                             MaxHeight="250"
                                             HorizontalAlignment="Stretch" MinWidth="300" Margin="5" />

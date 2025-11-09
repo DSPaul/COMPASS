@@ -24,43 +24,46 @@ using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
-    public class CodexEditViewModel : CodexEditBaseViewModel, IDisposable
+    public class CodexEditViewModel : EditViewModelBase<Codex>
     {
-        public CodexEditViewModel(Codex? toEdit = null, CollectionTabVM? tabVm = null) 
-            : base(tabVm ?? TabsViewModel.GetInstance().ActiveTab ?? throw new NoTabException("An active tab is expected when editing a codex"))
+        public CodexEditViewModel(Codex sourceCodex, bool createNew = false, CollectionTabVM? tabVm = null) 
+            : base(sourceCodex, createNew)
         {
-            _editedCodex = toEdit;
-            //apply all changes to new codex so they can be canceled, only copy changes over after OK is clicked
-            _tempCodex = _editedCodex == null ? CodexOperations.CreateNewCodex(TabVM.CollectionVM.Collection) : new(_editedCodex);
+            TabVM = tabVm ?? TabsViewModel.GetInstance().ActiveTab ?? throw new NoTabException("An active tab is expected when editing a codex");
+        
+            var publisherList = TabVM.FilterVM.PublisherList;
+            PublisherOptions = ["", ..publisherList];
 
-            TempCodex.LoadCover();
-
+            WorkingCopy.LoadCover();
             AuthorList = TabVM.FilterVM.AuthorList.ToList();
             
             //Apply right checkboxes in AllTags
             foreach (var node in AllTreeNodes)
             {
                 node.Expanded = false;
-                node.IsChecked = TempCodex.Tags.Contains(node.Item);
-                if (node.Children.Any(n => TempCodex.Tags.Contains(n.Item)))
+                node.IsChecked = WorkingCopy.Tags.Contains(node.Item);
+                if (node.Children.Any(n => WorkingCopy.Tags.Contains(n.Item)))
                 {
                     node.Expanded = true;
                 }
             }
         }
-
-        private readonly Codex? _editedCodex;
         
         #region Properties
+    
+        public CollectionTabVM TabVM { get; }
+    
+        protected ObservableCollection<CheckableTreeNode<Tag>>? _allTagsAsTreeNodes;
+        public ObservableCollection<CheckableTreeNode<Tag>> AllTagsAsTreeNodes => _allTagsAsTreeNodes ??= 
+            new(TabVM.CollectionVM.Collection.RootTags.Select(tag => new CheckableTreeNode<Tag>(tag)));
 
-        private bool CreateNewCodex => _editedCodex == null;
+        protected HashSet<CheckableTreeNode<Tag>> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
+    
+        public List<string> PublisherOptions { get; }
 
-        private Codex _tempCodex;
-        public Codex TempCodex
-        {
-            get => _tempCodex;
-            set => SetProperty(ref _tempCodex, value);
-        }
+        #endregion
+        
+        #region Properties
 
         private bool _showLoading = false;
         public bool ShowLoading
@@ -74,6 +77,46 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         #endregion
 
         #region Methods and Commands
+        
+        //TODO this doesn't work, must be on codex itself, make a vm for it
+        protected override void CustomValidate(string? propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                ValidatePageCount();
+                return;
+            }
+            
+            switch (propertyName)
+            {
+                case nameof(Codex.PageCount):
+                    ValidatePageCount();
+                    break;
+            }
+        }
+
+        private void ValidatePageCount()
+        {
+            if (WorkingCopy.PageCount < 0)
+            {
+                AddError(nameof(Codex.PageCount), "Pagecount must be a positive number.");
+            }
+        }
+
+        protected override void HandleCreateNew(Codex newCodex)
+        {
+            newCodex.Collection.AllCodices.Add(newCodex);
+        }
+
+        protected override void BeforeApply(Codex source, Codex proposal)
+        {
+            //Nothing to do
+        }
+
+        protected override void OnApplied(Codex source)
+        {
+            source.Collection.Save();
+        }
 
         private AsyncRelayCommand? _browsePathCommand;
         public AsyncRelayCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
@@ -84,13 +127,13 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             var files = await filesService.OpenFilesAsync(new()
             {
                 //TODO, this needs to be a folder, not a path
-                //SuggestedStartLocation = Path.GetDirectoryName(TempCodex.Sources.Path) ?? string.Empty
+                //SuggestedStartLocation = Path.GetDirectoryName(WorkingCopy.Sources.Path) ?? string.Empty
             });
 
             if (files.Any())
             {
                 using var file = files.Single();
-                TempCodex.Sources.Path = file.Path.AbsolutePath;
+                WorkingCopy.Sources.Path = file.Path.AbsolutePath;
             }
         }
 
@@ -98,9 +141,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public RelayCommand BrowseURLCommand => _browseURLCommand ??= new(BrowseURL);
         private void BrowseURL()
         {
-            if (CodexOperations.CanOpenCodexOnline(TempCodex))
+            if (CodexOperations.CanOpenCodexOnline(WorkingCopy))
             {
-                CodexOperations.OpenCodexOnline(TempCodex);
+                CodexOperations.OpenCodexOnline(WorkingCopy);
             }
         }
 
@@ -108,7 +151,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public RelayCommand BrowseISBNCommand => _browseISBNCommand ??= new(BrowseISBN);
         private void BrowseISBN()
         {
-            string url = $"https://openlibrary.org/search?q={TempCodex.Sources.ISBN}&mode=everything";
+            string url = $"https://openlibrary.org/search?q={WorkingCopy.Sources.ISBN}&mode=everything";
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
 
@@ -116,9 +159,8 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public RelayCommand TagCheckCommand => _tagCheckCommand ??= new(UpdateTagList);
         private void UpdateTagList()
         {
-            var tags = (ObservableCollection<Tag>)TempCodex.Tags;
-            tags.Clear();
-            tags.AddRange(CheckableTreeNode<Tag>.GetCheckedItems(AllTagsAsTreeNodes));
+            WorkingCopy.Tags.Clear();
+            WorkingCopy.Tags.AddRange(CheckableTreeNode<Tag>.GetCheckedItems(AllTagsAsTreeNodes));
         }
 
         private AsyncRelayCommand? _quickCreateTagCommand;
@@ -126,14 +168,14 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public async Task QuickCreateTag()
         {
             //keep track of the count to check of tags were created
-            int tagCount = TempCodex.Collection.RootTags.Count;
+            int tagCount = WorkingCopy.Collection.RootTags.Count;
 
-            TagEditViewModel tagEditVm = new(null, createNew: true);
+            TagEditViewModel tagEditVm = new(new Tag(), createNew: true);
             var modal = new ModalWindow(tagEditVm);
             await modal.ShowDialog(App.MainWindow); //TODO make this the window of the codex edit
 
             //TODO, we can now create tags outside of root, this is not longer correct
-            if (TempCodex.Collection.RootTags.Count > tagCount) //new tag was created
+            if (WorkingCopy.Collection.RootTags.Count > tagCount) //new tag was created
             {
                 //recalculate treeview source
                 _allTagsAsTreeNodes = null;
@@ -143,8 +185,8 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 foreach (CheckableTreeNode<Tag> t in AllTreeNodes)
                 {
                     t.Expanded = false;
-                    t.IsChecked = TempCodex.Tags.Contains(t.Item);
-                    if (t.Children.Any(node => TempCodex.Tags.Contains(node.Item))) t.Expanded = true;
+                    t.IsChecked = WorkingCopy.Tags.Contains(t.Item);
+                    if (t.Children.Any(node => WorkingCopy.Tags.Contains(node.Item))) t.Expanded = true;
                 }
 
                 //check the newly created tag
@@ -158,12 +200,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public AsyncRelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
         private async Task DeleteCodex()
         {
-            if (!CreateNewCodex)
+            if (!_createNew)
             {
-                await TabVM.CodexCommands.DeleteCodex(_editedCodex);
+                await TabVM.CodexCommands.DeleteCodex(_source);
             }
             
-            TempCodex.Dispose();
             CloseAction();
         }
 
@@ -179,7 +220,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             //get the cover
             try
             {
-                await CoverService.GetAndApplyCover(TempCodex);
+                await CoverService.GetAndApplyCover(WorkingCopy);
             }
             catch (OperationCanceledException)
             {
@@ -191,7 +232,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 coverProp.OverwriteMode = curSetting;
                 ShowLoading = false;
             }
-            TempCodex.LoadCover();
+            WorkingCopy.LoadCover();
         }
 
         private AsyncRelayCommand? _chooseCoverCommand;
@@ -211,43 +252,12 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 var img = CoverService.GetCoverFromImage(file.Path.AbsolutePath);
                 if (img != null)
                 {
-                    await CoverService.SaveCover(TempCodex, img);
+                    await CoverService.SaveCover(WorkingCopy, img);
                 }
-                TempCodex.LoadCover();
+                WorkingCopy.LoadCover();
             }
         }
 
-        #endregion
-
-        #region IConfirmable
-        
-        protected override void Confirm()
-        {
-            //Copy changes into Codex
-            if (!CreateNewCodex)
-            {
-                _editedCodex!.CopyFrom(TempCodex);
-                TempCodex.Dispose();
-            }
-            else
-            {
-                TempCodex.Collection.AllCodices.Add(TempCodex);
-            }
-
-            TempCodex.Collection.Save();
-
-            //Add new Authors, Publishers, ect. to metadata lists
-            //TODO check if we still need this, should be handled by event subscription in FilterVM
-            // _tabVm.FilterVM.PopulateMetaDataCollections();
-            // _tabVm.FilterVM.ReFilter();
-            CloseAction();
-        }
-        
-        protected override void Cancel()
-        {
-            TempCodex.Dispose();
-            CloseAction();
-        }
         #endregion
 
         #region  Drag and Drop
@@ -276,9 +286,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 var img = CoverService.GetCoverFromImage(path);
                 if (img != null)
                 {
-                    await CoverService.SaveCover(TempCodex, img);
+                    await CoverService.SaveCover(WorkingCopy, img);
                 }
-                TempCodex.LoadCover();
+                WorkingCopy.LoadCover();
             }
         }
         #endregion
@@ -289,9 +299,10 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         
         #endregion
 
-        public void Dispose()
+        public override void Dispose()
         {
-            _tempCodex.Dispose();
+            base.Dispose();
+            WorkingCopy.Dispose();
         }
     }
 }

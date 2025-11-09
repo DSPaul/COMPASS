@@ -226,6 +226,11 @@ namespace COMPASS.Infra.ExtensionMethods
             }
         }
 
+        public static IEnumerable<T> Without<T>(this IEnumerable<T> l, T element)
+        {
+            return l.Except([element]);
+        }
+
         public static bool SafeAny<T>(
             [NotNullWhen(true)] this IEnumerable<T>? l) 
             => l != null && l.Any();
@@ -240,8 +245,9 @@ namespace COMPASS.Infra.ExtensionMethods
 
             value = keySelector(l.First());
             TKey key = value;
-            return l.All(item => EqualityComparer<TKey>.Default.Equals(keySelector(item), key));
+            return l.Skip(1).All(item => EqualityComparer<TKey>.Default.Equals(keySelector(item), key));
         }
+        
         #endregion
         
         #region Drag & Drop

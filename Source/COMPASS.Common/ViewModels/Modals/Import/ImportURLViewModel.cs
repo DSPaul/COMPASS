@@ -186,11 +186,11 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             // ProgressWindow progressWindow = new(3);
             // progressWindow.Show(App.MainWindow);
 
-            Codex newCodex = await ImportURLAsync();
+            Codex importedCodex = await ImportURLAsync();
 
             if (ShowEditWhenDone)
             {
-                CodexEditViewModel vm = new(newCodex);
+                CodexEditViewModel vm = new(importedCodex);
                 ModalWindow editWindow = new(vm);
                 await editWindow.ShowDialog(App.MainWindow);
             }

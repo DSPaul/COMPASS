@@ -157,7 +157,7 @@ namespace COMPASS.Common.Operations
         public async Task EditCodex(Codex? toEdit)
         {
             if (toEdit is null) return;
-            ModalWindow editWindow = new(new CodexEditViewModel(toEdit: toEdit));
+            ModalWindow editWindow = new(new CodexEditViewModel(sourceCodex: toEdit));
             await editWindow.ShowDialog(App.MainWindow);
         }
 

@@ -28,7 +28,7 @@ namespace COMPASS.Common.ViewModels.Import
         private readonly string _targetcollectionId;
         
         public async Task Import(ImportSource source) => await Import(source, _targetcollectionId).ConfigureAwait(false);
-        public static async Task Import(ImportSource source, string targetCollectionId)
+        private async Task Import(ImportSource source, string targetCollectionId)
         {
             List<string> pathsToImport;
             switch (source)
@@ -77,9 +77,10 @@ namespace COMPASS.Common.ViewModels.Import
             return paths;
         }
 
-        private static async Task ImportManual()
+        private async Task ImportManual()
         {
-            CodexEditViewModel vm = new();
+            using var handle = CollectionManager.LoadCollection(_targetcollectionId);
+            CodexEditViewModel vm = new(CodexOperations.CreateNewCodex(handle!.CollectionVM.Collection), createNew: true);
             ModalWindow editWindow = new(vm);
             await editWindow.ShowDialog(App.MainWindow);
         }

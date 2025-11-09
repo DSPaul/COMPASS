@@ -4,21 +4,27 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Exceptions;
+using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
-    public class CodexBulkEditViewModel : CodexEditBaseViewModel
+    public class CodexBulkEditViewModel : ViewModelBase, IConfirmable, IModalViewModel
     {
-        public CodexBulkEditViewModel(List<Codex> toEdit, CollectionTabVM? tabVm = null) 
-            : base(tabVm ?? TabsViewModel.GetInstance().ActiveTab ?? throw new NoTabException("An active tab is expected when editing a codex"))
+        public CodexBulkEditViewModel(List<Codex> toEdit, CollectionTabVM? tabVm = null)
         {
             if (toEdit == null || toEdit.Count < 2)
             {
                 throw new InvalidOperationException("Bulk edit should only be performed on 2 or more codices");
             }
+         
+            TabVM = tabVm ?? TabsViewModel.GetInstance().ActiveTab ?? throw new NoTabException("An active tab is expected when editing a codex");
+        
+            var publisherList = TabVM.FilterVM.PublisherList;
+            PublisherOptions = ["", ..publisherList];
             
             _editedCodices = toEdit;
 
@@ -56,7 +62,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         private readonly List<string> _commonAuthors;
         
         #region Properties
-
+        
         private ObservableCollection<string> _authors;
         public ObservableCollection<string> Authors
         {
@@ -113,6 +119,16 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             set => SetProperty(ref _tagsToRemove, value);
         }
         
+        public CollectionTabVM TabVM { get; }
+    
+        protected ObservableCollection<CheckableTreeNode<Tag>>? _allTagsAsTreeNodes;
+        public ObservableCollection<CheckableTreeNode<Tag>> AllTagsAsTreeNodes => _allTagsAsTreeNodes ??= 
+            new(TabVM.CollectionVM.Collection.RootTags.Select(tag => new CheckableTreeNode<Tag>(tag)));
+
+        protected HashSet<CheckableTreeNode<Tag>> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
+    
+        public List<string> PublisherOptions { get; }
+        
         #endregion
 
         #region Methods and Commands
@@ -157,7 +173,13 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             // }
         }
         
-        protected override void Confirm()
+        #endregion
+        
+        #region IConfirmable
+    
+        private RelayCommand? _confirmCommand;
+        public IRelayCommand ConfirmCommand => _confirmCommand ??= new(Confirm);
+        private void Confirm()
         {
             //find added and removed authors
             var deletedAuthors = _commonAuthors.Except(Authors).ToList();
@@ -229,12 +251,21 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             }
             CloseAction();
         }
-        
+    
+        private RelayCommand? _cancelCommand;
+        public IRelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
+
+        protected virtual void Cancel()
+        {
+            CloseAction();
+        }
+
         #endregion
-        
-        #region IModalViewModel
-        
-        public override string WindowTitle => "Bulk edit items";
+
+        #region IModalWindow
+    
+        public string WindowTitle => "Bulk edit items";
+        public Action CloseAction { get; set; } = () => { };
 
         #endregion
 

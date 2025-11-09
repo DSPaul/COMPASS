@@ -214,7 +214,7 @@ namespace COMPASS.Common.ViewModels.Selection
         {
             CuratedCollection.AllCodices.Clear();
             CuratedCollection.AllCodices.AddRange(SelectableCodices.Where(x => x.Selected)
-                .Select(x => new Codex(x.Codex))); //make new codices to not modify the existing ones
+                .Select(x => x.Codex.Clone())); //clone codices to not modify the existing ones
 
             if (RemovePersonalData)
             {

@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:view="using:COMPASS.Common.Views"
              xmlns:conv="using:COMPASS.Infra.Converters"
@@ -19,7 +18,7 @@
         <!-- Name -->
         <StackPanel Orientation="Vertical" Spacing="3">
             <TextBlock Text="Name:" />
-            <TextBox Text="{Binding TempTag.Name, UpdateSourceTrigger=PropertyChanged}"
+            <TextBox Text="{Binding WorkingCopy.Name, UpdateSourceTrigger=PropertyChanged}"
                      Loaded="TagNameTextBox_OnLoaded" />
         </StackPanel>
 
@@ -27,12 +26,12 @@
         <StackPanel Spacing="3">
             <TextBlock Text="Color:" />
             <Button HorizontalAlignment="Stretch"
-                    Background="{Binding TempTag.InternalBackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}">
+                    Background="{Binding WorkingCopy.InternalBackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}">
                 <Button.Flyout>
                     <Flyout Placement="Right" HorizontalOffset="10">
                         <StackPanel>
                             <view:ColorPicker Height="135" Width="166"
-                                              SelectedColor="{Binding TempTag.InternalBackgroundColor, Mode=TwoWay, TargetNullValue=Black}" />
+                                              SelectedColor="{Binding WorkingCopy.InternalBackgroundColor, Mode=TwoWay, TargetNullValue=Black}" />
                             <Button Content="Same as parent" HorizontalAlignment="Center" Margin="0,5"
                                     Command="{Binding ColorSameAsParentCommand}" FontSize="12" />
                         </StackPanel>
@@ -41,13 +40,13 @@
                 <Button.Template>
                     <ControlTemplate>
                         <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{Binding TempTag.BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"
+                                BorderBrush="{Binding WorkingCopy.BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"
                                 BorderThickness="2" MinWidth="60" MinHeight="15" CornerRadius="5"
                                 VerticalAlignment="Center">
                             <TextBlock Text="Same as parent" TextWrapping="Wrap" Margin="15,0"
                                        Background="Transparent"
                                        HorizontalAlignment="Center" FontSize="12" TextAlignment="Center"
-                                       IsVisible="{Binding TempTag.InternalBackgroundColor, Converter={x:Static ObjectConverters.IsNull}}" />
+                                       IsVisible="{Binding WorkingCopy.InternalBackgroundColor, Converter={x:Static ObjectConverters.IsNull}}" />
                         </Border>
                     </ControlTemplate>
                 </Button.Template>
@@ -88,7 +87,7 @@
                                 <Setter Property="IsVisible">
                                     <MultiBinding Converter="{StaticResource AreNotEqualConverter}">
                                         <Binding
-                                            Path="$parent[TreeView].((edit:TagEditViewModel)DataContext).TempTag.Id" />
+                                            Path="$parent[TreeView].((edit:TagEditViewModel)DataContext).WorkingCopy.Id" />
                                         <Binding Path="Item.Id" />
                                     </MultiBinding>
                                 </Setter>
@@ -112,21 +111,21 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Parent:" />
             
             <Button Grid.Row="0" Grid.Column="2" Content="clear" Padding="10,2" Background="Transparent"
-                    IsVisible="{Binding TempTag.Parent, Converter={x:Static ObjectConverters.IsNotNull}}"
+                    IsVisible="{Binding WorkingCopy.Parent, Converter={x:Static ObjectConverters.IsNotNull}}"
                     Command="{Binding ClearParentCommand}" />
 
             <Button Grid.Row="1" Grid.Column="0"
                     Content="none" Flyout="{StaticResource TagTreeFlyout}"
-                    IsVisible="{Binding TempTag.Parent, Converter={x:Static ObjectConverters.IsNull}}"
+                    IsVisible="{Binding WorkingCopy.Parent, Converter={x:Static ObjectConverters.IsNull}}"
                     Background="Transparent" BorderBrush="{StaticResource Layer7}"
                     Padding="5,0" Margin="5,0" />
             
             <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
                     Flyout="{StaticResource TagTreeFlyout}"
-                    IsVisible="{Binding TempTag.Parent, Converter={x:Static ObjectConverters.IsNotNull}}"
-                    Content="{Binding TempTag.Parent}"
+                    IsVisible="{Binding WorkingCopy.Parent, Converter={x:Static ObjectConverters.IsNotNull}}"
+                    Content="{Binding WorkingCopy.Parent}"
                     Classes="BlankButton"
-                    Background="{Binding TempTag.Parent.BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}">
+                    Background="{Binding WorkingCopy.Parent.BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}">
                 <Button.DataTemplates>
                     <dataTemplates:TagDataTemplateSelector>
                         <DataTemplate x:Key="RegularTag" DataType="models:Tag">

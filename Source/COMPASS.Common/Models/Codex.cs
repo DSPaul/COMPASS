@@ -16,7 +16,7 @@ using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models
 {
-    public class Codex : ObservableObject, IHasId, IHasCodexMetadata, IDisposable
+    public class Codex : ObservableObject, IHasId, IHasCodexMetadata, ICloneable<Codex>, IDisposable
     {
         public readonly CodexCollection Collection;
 
@@ -30,7 +30,7 @@ namespace COMPASS.Common.Models
             _tags.CollectionChanged += OnCollectionChanged;
         }
 
-        public Codex(Codex codex) : this(codex.Collection)
+        private Codex(Codex codex) : this(codex.Collection)
         {
             CopyFrom(codex);
         }
@@ -265,6 +265,11 @@ namespace COMPASS.Common.Models
             DateAdded = c.DateAdded;
             Favorite = c.Favorite;
             OpenedCount = c.OpenedCount;
+        }
+
+        public Codex Clone()
+        {
+            return new(this);
         }
 
         public void RefreshThumbnail()

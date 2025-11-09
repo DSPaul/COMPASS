@@ -1,16 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services.FileSystem;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.Services.StateManagers;
@@ -21,60 +17,16 @@ using Notification = COMPASS.Common.Models.Notification;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
-    public class TagEditViewModel : ViewModelBase, IConfirmable, IModalViewModel
+    public class TagEditViewModel : EditViewModelBase<Tag>
     {
-        public TagEditViewModel(Tag? sourceTag, bool createNew) : base()
+        public TagEditViewModel(Tag sourceTag, bool createNew) : base(sourceTag, createNew)
         {
-            //if not creating a new tag, an existing tag should always be given
-            if (!createNew)
-            {
-                ArgumentNullException.ThrowIfNull(sourceTag);
-            }
-            
-            _sourceTag = sourceTag;
-            CreateNewTag = createNew;
-
-            _tempTag = sourceTag != null ? 
-                new(sourceTag) : 
-                new(ActiveCollection.AllTags);
-            
-            _tempTag.PropertyChanged += HandleTagPropertyChanged;
-
             _possibleParents = GetPossibleParents();
         }
 
-        private void HandleTagPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(Tag.Name))
-            {
-                ConfirmCommand.NotifyCanExecuteChanged();
-            }
-        }
-
         #region Properties
-
-        private readonly Tag? _sourceTag;
-        public bool CreateNewTag { get; init; }
-
-        //TempTag to work with
-        private Tag _tempTag;
-        public Tag TempTag
-        {
-            get => _tempTag;
-            set
-            {
-                _tempTag.PropertyChanged -= HandleTagPropertyChanged;
-
-                if (SetProperty(ref _tempTag, value))
-                {
-                    ConfirmCommand.NotifyCanExecuteChanged();
-                }
-                _tempTag.PropertyChanged += HandleTagPropertyChanged;
-            }
-        }
-
+        
         private ObservableCollection<TreeNode<Tag>> _possibleParents;
-
         public ObservableCollection<TreeNode<Tag>> PossibleParents
         {
             get => _possibleParents;
@@ -87,23 +39,83 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             }
         }
 
-        public bool HasPossibleParents => PossibleParents.Any(node => node.Item != _sourceTag);
+        public bool HasPossibleParents => PossibleParents.Any(node => node.Item != _source);
 
         public TreeNode<Tag>? SelectedParent
         {
-            get => PossibleParents.Flatten().FirstOrDefault(node => node.Item == TempTag.Parent);
-            set => TempTag.Parent = value?.Item;
+            get => PossibleParents.Flatten().FirstOrDefault(node => node.Item == WorkingCopy.Parent);
+            set => WorkingCopy.Parent = value?.Item;
         }
 
         #endregion
 
         #region Methods and Commands
 
-        private void Clear()
+        //TODO move this to a Tag VM because it doesn't work here
+        protected override void CustomValidate(string? propertyName)
         {
-            TempTag = _sourceTag != null ? 
-                new(_sourceTag) : 
-                new(ActiveCollection.AllTags);
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                ValidateName();
+                return;
+            }
+            
+            switch (propertyName)
+            {
+                case nameof(Tag.Name):
+                    ValidateName();
+                    break;
+            }
+        }
+
+        private void ValidateName()
+        {
+            if (string.IsNullOrEmpty(WorkingCopy.Name))
+            {
+                AddError(nameof(WorkingCopy.Name), "Name is required.");
+            }
+            
+            if (ActiveCollection.AllTags.Without(_source).Any(tag => tag.LongName == WorkingCopy.LongName))
+            {
+                AddError(nameof(WorkingCopy.Name), "Name must be unique within its parent.");
+            }
+        }
+
+        protected override void HandleCreateNew(Tag newTag)
+        {
+            newTag.Id = Utils.GetAvailableId(ActiveCollection.AllTags);
+            ActiveCollection.AllTags.Add(newTag);
+                
+            if (newTag.Parent == null)
+            {
+                ActiveCollection.RootTags.Add(newTag);
+            }
+            else
+            {
+                newTag.Parent.Children.Add(newTag);
+            }
+        }
+
+        protected override void BeforeApply(Tag source, Tag proposal)
+        {
+            //if parent didn't change, no changes needed
+            if (_source.Parent == WorkingCopy.Parent) return;
+            
+            //if the parent has changed, break the link with old parent
+            IList<Tag> siblings = _source.Parent == null ? ActiveCollection.RootTags : _source.Parent.Children;
+            siblings.Remove(_source);
+        }
+
+        protected override void OnApplied(Tag source)
+        {
+            //ensure parent-child link is bidirectional
+            IList<Tag> siblings = _source.Parent == null ? ActiveCollection.RootTags : _source.Parent.Children;
+            siblings.AddIfMissing(_source);
+        }
+
+        protected override void Clear()
+        {
+            base.Clear();
 
             //reset parents as new tag might have just been added
             PossibleParents = GetPossibleParents();
@@ -115,7 +127,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
             foreach (TreeNode<Tag> node in collection.Flatten())
             {
-                node.Expanded = node.Item.Children.Flatten().Contains(_tempTag.Parent); //expand all parents so that parent is visible
+                node.Expanded = node.Item.Children.Flatten().Contains(WorkingCopy.Parent); //expand all parents so that parent is visible
             }
 
             return new(collection);
@@ -123,11 +135,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
         private RelayCommand? _colorSameAsParentCommand;
         public RelayCommand ColorSameAsParentCommand => _colorSameAsParentCommand ??= new(SetColorSameAsParent);
-        private void SetColorSameAsParent() => TempTag.InternalBackgroundColor = null;
+        private void SetColorSameAsParent() => WorkingCopy.InternalBackgroundColor = null;
 
         private RelayCommand? _clearParentCommand;
         public RelayCommand ClearParentCommand => _clearParentCommand ??= new(ClearParent);
-        private void ClearParent() => TempTag.Parent = null;
+        private void ClearParent() => WorkingCopy.Parent = null;
 
         private RelayCommand? _detectLinksCommand;
         public RelayCommand DetectLinksCommand => _detectLinksCommand ??= new(DetectLinks, CanDetectLinks);
@@ -135,11 +147,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         private void DetectLinks()
         {
             //Can only detect links if tag exists
-            if (_sourceTag == null || CreateNewTag) return;
+            if (_createNew) return;
             
             var relevantCodices = ActiveCollection.AllCodices
                 .Where(codex => codex.Sources.HasOfflineSource() &&
-                                codex.Tags.Contains(_sourceTag))
+                                codex.Tags.Contains(_source))
                 .ToList();
 
             var splitFolders = relevantCodices.Select(codex => codex.Sources.Path)
@@ -157,28 +169,26 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
                 string glob = $"**/{folder}/**";
 
-                if (codicesInFolder.All(codex => codex.Tags.Contains(_sourceTag)) &&
-                    !TempTag.CalculatedLinkedGlobs.Contains(glob))
+                if (codicesInFolder.All(codex => codex.Tags.Contains(_source)) &&
+                    !WorkingCopy.CalculatedLinkedGlobs.Contains(glob))
                 {
-                    TempTag.LinkedGlobs.AddIfMissing(glob);
+                    WorkingCopy.LinkedGlobs.AddIfMissing(glob);
                 }
             }
         }
-
-        private bool CanDetectLinks() => !CreateNewTag;
+        private bool CanDetectLinks() => !_createNew;
 
         private AsyncRelayCommand? _applyLinksCommand;
         public AsyncRelayCommand ApplyLinksCommand => _applyLinksCommand ??= new(ApplyLinks, CanApplyChanges);
-
         private async Task ApplyLinks()
         {
             //Can only apply links if tag exists
-            if (_sourceTag == null || CreateNewTag) return;
+            if (_createNew) return;
             
-            var globs = TempTag.LinkedGlobs.Concat(TempTag.CalculatedLinkedGlobs).ToList();
+            var globs = WorkingCopy.LinkedGlobs.Concat(WorkingCopy.CalculatedLinkedGlobs).ToList();
             List<Codex> matchingCodices = ActiveCollection.AllCodices
                 .Where(codex => IOService.MatchesAnyGlob(codex.Sources.Path, globs) &&
-                                !codex.Tags.Contains(_sourceTag))
+                                !codex.Tags.Contains(_source))
                 .ToList();
 
             Notification notification;
@@ -206,95 +216,29 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             {
                 foreach (Codex codex in matchingCodices)
                 {
-                    codex.Tags.Add(_sourceTag);
+                    codex.Tags.Add(_source);
                 }
             }
         }
-
-        private bool CanApplyChanges() => !CreateNewTag;
+        private bool CanApplyChanges() => !_createNew;
 
         #endregion
 
         #region IConfirmable
-
-        private RelayCommand? _confirmCommand;
-        public IRelayCommand ConfirmCommand => _confirmCommand ??= new(Confirm, CanConfirm);
-        public void Confirm()
+        
+        protected override void Confirm()
         {
-            //Apply changes 
-            if (CreateNewTag)
-            {
-                Tag newTag = new(TempTag)
-                {
-                    Id = Utils.GetAvailableId(ActiveCollection.AllTags)
-                };
-                ActiveCollection.AllTags.Add(newTag);
-                
-                if (newTag.Parent == null)
-                {
-                    ActiveCollection.RootTags.Add(newTag);
-                }
-                else
-                {
-                    newTag.Parent.Children.Add(newTag);
-                }
-            }
-            else
-            {
-                //if not creating a new tag, an existing tag is always given
-                Debug.Assert(_sourceTag != null);
-                    
-                Tag? oldParent = _sourceTag.Parent;
-                _sourceTag.CopyFrom(TempTag);
-                
-                //handle parent changed
-                if (oldParent != _sourceTag.Parent)
-                {
-                    // remove the link with old parent
-                    if (oldParent == null)
-                    {
-                        ActiveCollection.RootTags.Remove(_sourceTag);
-                    }
-                    else
-                    {
-                        oldParent.Children.Remove(_sourceTag);
-                    }
-                    
-                    //add the link to new parent
-                    if (_sourceTag.Parent == null)
-                    {
-                        ActiveCollection.RootTags.Add(_sourceTag);
-                    }
-                    else
-                    {
-                        _sourceTag.Parent.Children.Add(_sourceTag);
-                    }
-                }
-            }
+            base.Confirm();
             
             ActiveCollection.Save();
-
             TabsViewModel.GetInstance().ActiveTab?.TagsVM.UpdateTagsAsTreeNodes();
-
-            //reset fields
-            Clear();
-            CloseAction();
         }
-        public bool CanConfirm() => !string.IsNullOrWhiteSpace(TempTag.Name);
-
-        private RelayCommand? _cancelCommand;
-        public IRelayCommand CancelCommand => _cancelCommand ??= new(Cancel);
-        public void Cancel()
-        {
-            Clear();
-            CloseAction();
-        }
+        
         #endregion
 
         #region  IModalViewModel
 
-        public string WindowTitle => CreateNewTag ? "Create new tag" : "Edit tag";
-        public Action CloseAction { get; set; } = () => { };
+        public override string WindowTitle => _createNew ? "Create new tag" : "Edit tag";
 
         #endregion
     }

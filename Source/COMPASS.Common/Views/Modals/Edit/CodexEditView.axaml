@@ -36,7 +36,7 @@
                    Classes="Categorizer" />
         <Panel Grid.Column="0" Grid.Row="1" Margin="10">
             <Image Width="300"
-                   IsVisible="{Binding !ShowLoading}" Source="{Binding TempCodex.Cover, Mode=OneWay}" />
+                   IsVisible="{Binding !ShowLoading}" Source="{Binding WorkingCopy.Cover, Mode=OneWay}" />
             <gif:GifImage Width="150" Height="150"
                           IsVisible="{Binding ShowLoading}"
                           Source="avares://COMPASS.Common/Assets/LoadingAnimation.gif"/>
@@ -116,17 +116,17 @@
                         <TextBlock Margin="3,10,3,3"
                                    Text="Title:" />
                         <TextBox Padding="5,0"
-                                 Text="{Binding TempCodex.Title, UpdateSourceTrigger=PropertyChanged}" />
+                                 Text="{Binding WorkingCopy.Title, UpdateSourceTrigger=PropertyChanged}" />
 
                         <!-- Sorting Title -->
                         <TextBlock Margin="3,10,3,3"
                                    Text="Sorting Title:" />
                         <Grid ColumnDefinitions="*, Auto" HorizontalAlignment="Stretch">
                             <TextBox
-                                Text="{Binding TempCodex.SortingTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Text="{Binding WorkingCopy.SortingTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Padding="5,0" HorizontalAlignment="Stretch" />
-                            <controls:Explainer Content="{Binding TempCodex.ZeroPaddingExplainer}"
-                                                IsVisible="{Binding TempCodex.SortingTitleContainsNumbers}"
+                            <controls:Explainer Content="{Binding WorkingCopy.ZeroPaddingExplainer}"
+                                                IsVisible="{Binding WorkingCopy.SortingTitleContainsNumbers}"
                                                 Grid.Column="1" Margin="6" />
                         </Grid>
 
@@ -134,7 +134,7 @@
                         <TextBlock Margin="3,10,3,3"
                                    Text="Authors:" />
                         <controls:MultiSelectAutoCompleteBox ItemsSource="{Binding AuthorList}"
-                                                             SelectedItems="{Binding TempCodex.Authors, Mode=TwoWay}"
+                                                             SelectedItems="{Binding WorkingCopy.Authors, Mode=TwoWay}"
                                                              Watermark="Add author" CanCreate="True"/>
 
                         <!-- Publisher -->
@@ -144,7 +144,7 @@
                         <ComboBox HorizontalAlignment="Stretch"
                                   BorderBrush="LightGray"
                                   Background="{DynamicResource TextControlBackground}"
-                                  SelectedItem="{Binding TempCodex.Publisher}"
+                                  SelectedItem="{Binding WorkingCopy.Publisher}"
                                   ItemsSource="{Binding PublisherOptions}" />
 
                         <!-- Smaller properties -->
@@ -156,42 +156,42 @@
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="Version:" />
                             <TextBox Grid.Row="0" Grid.Column="1"
-                                     Text="{Binding TempCodex.Version, Mode=TwoWay}" Margin="5,0" />
+                                     Text="{Binding WorkingCopy.Version, Mode=TwoWay}" Margin="5,0" />
 
                             <!--Page count -->
                             <TextBlock Grid.Row="1" Grid.Column="0"
                                        Text="Page count:" />
                             <!-- TODO have a look at validation -->
                             <TextBox Grid.Row="1" Grid.Column="1"
-                                     Text="{Binding TempCodex.PageCount}"
+                                     Text="{Binding WorkingCopy.PageCount}"
                                      MinWidth="30" Margin="5" />
 
                             <!-- Hard Copy -->
                             <TextBlock Grid.Row="2" Grid.Column="0" Margin="3,0"
                                        Text="Hard Copy:" />
                             <CheckBox Grid.Row="2" Grid.Column="1" Margin="3,0"
-                                      IsChecked="{Binding TempCodex.PhysicallyOwned, Mode=TwoWay}" />
+                                      IsChecked="{Binding WorkingCopy.PhysicallyOwned, Mode=TwoWay}" />
 
                             <!-- Release Date -->
                             <!-- TODO Add clear btn if not default  -->
                             <TextBlock Grid.Row="0" Grid.Column="3"
                                        Text="Release Date:" />
                             <CalendarDatePicker Grid.Row="0" Grid.Column="4" Width="140"
-                                                SelectedDate="{Binding TempCodex.ReleaseDate}" />
+                                                SelectedDate="{Binding WorkingCopy.ReleaseDate}" />
 
                             <!-- Rating -->
                             <!-- TODO Add clear btn if not default  -->
                             <TextBlock Grid.Row="1" Grid.Column="3"
                                        Text="Rating:" />
                             <controls:RatingControl Grid.Column="4" Grid.Row="1" Margin="5"
-                                                    Value="{Binding TempCodex.Rating, Mode=TwoWay}"
+                                                    Value="{Binding WorkingCopy.Rating, Mode=TwoWay}"
                                                     CanClear="True"/>
 
                             <!-- Favorite -->
                             <TextBlock Grid.Row="2" Grid.Column="3" Margin="3,0"
                                        Text="Favorite:" />
                             <CheckBox Grid.Row="2" Grid.Column="4" Margin="3,0"
-                                      IsChecked="{Binding TempCodex.Favorite, Mode=TwoWay}" VerticalAlignment="Bottom" />
+                                      IsChecked="{Binding WorkingCopy.Favorite, Mode=TwoWay}" VerticalAlignment="Bottom" />
 
                         </Grid>
 
@@ -199,7 +199,7 @@
                         <Grid ColumnDefinitions="Auto, *">
                             <TextBlock Grid.Column="0" Text="Tags:" />
                             <ItemsControl Grid.Column="1"
-                                          ItemsSource="{Binding TempCodex.OrderedTags}"
+                                          ItemsSource="{Binding WorkingCopy.OrderedTags}"
                                           Background="{x:Null}" BorderBrush="{x:Null}"
                                           VerticalAlignment="Center">
                                 <ItemsControl.ItemsPanel>
@@ -263,7 +263,7 @@
             </TabItem>
 
             <TabItem Header="Description">
-                <TextBox Text="{Binding TempCodex.Description, Mode=TwoWay}" MinHeight="250"
+                <TextBox Text="{Binding WorkingCopy.Description, Mode=TwoWay}" MinHeight="250"
                          AcceptsReturn="True" TextWrapping="Wrap" VerticalAlignment="Stretch"
                          VerticalContentAlignment="Top"/>
             </TabItem>
@@ -288,7 +288,7 @@
                     <TextBlock Grid.Row="0" Grid.Column="0"
                                Text="Path:" />
                     <TextBox Grid.Row="0" Grid.Column="1"
-                             Text="{Binding TempCodex.Sources.Path, Mode=TwoWay}"
+                             Text="{Binding WorkingCopy.Sources.Path, Mode=TwoWay}"
                              TextWrapping="Wrap" Padding="3" Margin="10" />
                     <controls:IconButton Grid.Row="0" Grid.Column="2"
                                          Command="{Binding BrowsePathCommand}"
@@ -299,7 +299,7 @@
                     <TextBlock Grid.Row="1" Grid.Column="0"
                                Text="Source URL:" />
                     <TextBox Grid.Row="1" Grid.Column="1"
-                             Text="{Binding TempCodex.Sources.SourceURL, Mode=TwoWay}"
+                             Text="{Binding WorkingCopy.Sources.SourceURL, Mode=TwoWay}"
                              TextWrapping="Wrap" Padding="3" Margin="10" />
                     <controls:IconButton Grid.Row="1" Grid.Column="2"
                                          Command="{Binding BrowseURLCommand}"
@@ -309,7 +309,7 @@
                     <TextBlock Grid.Row="2" Grid.Column="0"
                                Text="ISBN:" />
                     <TextBox Grid.Row="2" Grid.Column="1"
-                             Text="{Binding TempCodex.Sources.ISBN, Mode=TwoWay}"
+                             Text="{Binding WorkingCopy.Sources.ISBN, Mode=TwoWay}"
                              TextWrapping="Wrap" Padding="3" Margin="10" />
                     <controls:IconButton Grid.Row="2" Grid.Column="2"
                                          Command="{Binding BrowseISBNCommand}"
@@ -326,13 +326,13 @@
                     <TextBlock Grid.Row="0" Grid.Column="0"
                                Text="Date Added:" />
                     <CalendarDatePicker Grid.Row="0" Grid.Column="1"
-                                        SelectedDate="{Binding TempCodex.DateAdded, Mode=OneWay}" />
+                                        SelectedDate="{Binding WorkingCopy.DateAdded, Mode=OneWay}" />
 
                     <!-- Last opened -->
                     <TextBlock Grid.Row="0" Grid.Column="3"
                                Text="Last Opened:" />
                     <CalendarDatePicker
-                        SelectedDate="{Binding TempCodex.LastOpened, Mode=OneWay, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
+                        SelectedDate="{Binding WorkingCopy.LastOpened, Mode=OneWay, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
                         Grid.Column="4" Grid.Row="0" />
 
                     <!-- ID -->
@@ -340,13 +340,13 @@
                                Text="ID:" />
                     <TextBlock Grid.Row="1" Grid.Column="1"
                                MinWidth="30" Margin="5"
-                               Text="{Binding TempCodex.Id}" />
+                               Text="{Binding WorkingCopy.Id}" />
 
                     <!-- Times opened -->
                     <TextBlock Grid.Row="1" Grid.Column="3"
                                Text="Times Opened:" />
                     <TextBlock Grid.Row="1" Grid.Column="4"
-                               Text="{Binding TempCodex.OpenedCount}"
+                               Text="{Binding WorkingCopy.OpenedCount}"
                                MinWidth="30" Margin="5" />
                 </Grid>
             </TabItem>

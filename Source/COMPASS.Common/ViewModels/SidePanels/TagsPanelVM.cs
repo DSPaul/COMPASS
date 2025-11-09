@@ -158,7 +158,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         //Add Tag Buttons
         private RelayCommand? _addTagCommand;
         public RelayCommand AddTagCommand => _addTagCommand ??= new(AddTag);
-        public void AddTag() => AddTagViewModel = new TagEditViewModel(null, true);
+        public void AddTag() => AddTagViewModel = new TagEditViewModel(new Tag(), true);
 
 
         private RelayCommand? _addGroupCommand;
