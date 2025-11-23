@@ -4,6 +4,9 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <!-- Some user have crash when opening trying to pick a file with the windows file explorer
+         Setting CET compatibility to false is suggested in https://github.com/dotnet/wpf/issues/10305-->
+    <CETCompat>false</CETCompat>
     <RootNamespace>COMPASS</RootNamespace>
     <AssemblyName>COMPASS</AssemblyName>
     <ApplicationIcon>COMPASS.ico</ApplicationIcon>
