@@ -68,6 +68,13 @@ namespace COMPASS.ViewModels
 
         #region Methods and Commands
 
+        private RelayCommand? _clearRatingCommand;
+        public RelayCommand ClearRatingCommand => _clearRatingCommand ??= new(ClearRating);
+        private void ClearRating()
+        {
+            _tempCodex.Rating = 0;
+        }
+
         private RelayCommand? _browsePathCommand;
         public RelayCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
         private void BrowsePath()

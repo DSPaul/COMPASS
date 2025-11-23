@@ -56,7 +56,7 @@ namespace COMPASS.Models
             set => _serializableBackgroundColor = value;
         }
 
-        private Color? _serializableBackgroundColor = Colors.DarkGray;
+        private Color? _serializableBackgroundColor;
         public Color? SerializableBackgroundColor
         {
             get => _serializableBackgroundColor;
