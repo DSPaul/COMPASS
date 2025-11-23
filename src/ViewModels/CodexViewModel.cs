@@ -293,9 +293,14 @@ namespace COMPASS.ViewModels
                     tempCodex.SetImagePaths(targetCollection);
 
                     if (Path.Exists(toMove.CoverArt))
+                    {
                         File.Copy(toMove.CoverArt, tempCodex.CoverArt, true);
-                    if (Path.Exists(toMove.CoverArt))
+                    }
+
+                    if (Path.Exists(toMove.Thumbnail))
+                    {
                         File.Copy(toMove.Thumbnail, tempCodex.Thumbnail, true);
+                    }
 
                     //Delete codex in original collection
                     MainViewModel.CollectionVM.CurrentCollection.DeleteCodex(toMove);
