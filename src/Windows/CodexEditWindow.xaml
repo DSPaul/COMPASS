@@ -216,7 +216,14 @@
                                       Grid.Column="1" Grid.Row="2" Margin="2,0"/>
 
                             <TextBlock Text="Rating:"  Grid.Column="3" Grid.Row="1"/>
-                            <materialDesign:RatingBar Value="{Binding TempCodex.Rating, Mode=TwoWay}" Margin="5"  Grid.Column="4" Grid.Row="1"/>
+                            <StackPanel Orientation="Horizontal" Grid.Column="4" Grid.Row="1">
+                                <materialDesign:RatingBar Value="{Binding TempCodex.Rating, Mode=TwoWay}" Margin="5"  />
+                                <Button Command="{Binding ClearRatingCommand}" Opacity="0.8"
+                                        ToolTip="Clear rating" Height="18"
+                                        Style="{StaticResource IconBtn}" Margin="5 0"
+                                        tools:AP.IconKind="Clear"
+                                        Visibility="{Binding TempCodex.Rating, Converter={StaticResource ToVisibilityConverter}}"/>
+                            </StackPanel >
 
                             <TextBlock Text="Favorite:" VerticalAlignment="Stretch" Grid.Column="3" Grid.Row="2" Margin="3,0,3,0"/>
                             <CheckBox IsChecked="{Binding TempCodex.Favorite, Mode=TwoWay}" VerticalAlignment="Bottom"
