@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Avalonia.Media;
 
 namespace COMPASS.Common.Models.Filters
 {
@@ -7,10 +6,6 @@ namespace COMPASS.Common.Models.Filters
     {
         public HasBrokenPathFilter() : base(FilterType.HasBrokenPath)
         { }
-
-        public override Color BackgroundColor => Colors.Gold;
-
-        public override string Content => "Has broken path";
 
         public override bool Apply(Codex codex) =>
             codex.Sources.HasOfflineSource() && !Path.Exists(codex.Sources.Path);

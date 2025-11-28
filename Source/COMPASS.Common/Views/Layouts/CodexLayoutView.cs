@@ -3,6 +3,7 @@ using System.Linq;
 using Avalonia.Controls;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Layouts;
+using COMPASS.Common.ViewModels.ModelVMs;
 
 namespace COMPASS.Common.Views.Layouts;
 
@@ -21,7 +22,7 @@ public class CodexLayoutView : UserControl
         if (sender is Control control && 
             control.DataContext is LayoutViewModel vm)
         {
-            vm.SelectedCodices = selectedCodices?.Cast<Codex>().ToList() ?? [];
+            vm.SelectedCodices = selectedCodices?.Cast<CodexViewModel>().ToList() ?? [];
         }
     }
 }

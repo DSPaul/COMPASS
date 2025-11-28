@@ -6,7 +6,7 @@
              xmlns:vm="using:COMPASS.Common.ViewModels.Main"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.SidePanels.FiltersSidePanel"
-             x:DataType="vm:FilterViewModel">
+             x:DataType="vm:FiltersViewModel">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid RowDefinitions="auto, auto, auto, *, auto">
             

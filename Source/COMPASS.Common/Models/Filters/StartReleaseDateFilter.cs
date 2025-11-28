@@ -1,5 +1,4 @@
 ﻿using System;
-using Avalonia.Media;
 
 namespace COMPASS.Common.Models.Filters
 {
@@ -7,9 +6,7 @@ namespace COMPASS.Common.Models.Filters
     {
         public StartReleaseDateFilter(DateTime date) : base(FilterType.StartReleaseDate, date)
         { }
-
-        public override string Content => $"After: {(FilterValue as DateTime?)?.ToShortDateString()}";
-        public override Color BackgroundColor => Colors.DeepSkyBlue;
+        
         public override bool Apply(Codex codex) => FilterValue is DateTime date && codex.ReleaseDate >= date;
     }
 }

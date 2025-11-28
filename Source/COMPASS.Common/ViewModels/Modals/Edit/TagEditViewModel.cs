@@ -11,23 +11,27 @@ using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
 using Notification = COMPASS.Common.Models.Notification;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
-    public class TagEditViewModel : EditViewModelBase<Tag>
+    public class TagEditViewModel : EditViewModelBase<TagViewModel, Tag>
     {
-        public TagEditViewModel(Tag sourceTag, bool createNew) : base(sourceTag, createNew)
+        private readonly CodexCollectionVM _codexCollectionVm;
+        
+        public TagEditViewModel(Tag sourceTag, CodexCollectionVM collectionVm, bool createNew) : base(sourceTag, createNew, tag => new TagViewModel(tag, collectionVm))
         {
+            _codexCollectionVm = collectionVm;
             _possibleParents = GetPossibleParents();
         }
 
         #region Properties
         
-        private ObservableCollection<TreeNode<Tag>> _possibleParents;
-        public ObservableCollection<TreeNode<Tag>> PossibleParents
+        private ObservableCollection<TreeNode<TagViewModel>> _possibleParents;
+        public ObservableCollection<TreeNode<TagViewModel>> PossibleParents
         {
             get => _possibleParents;
             set
@@ -39,9 +43,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             }
         }
 
-        public bool HasPossibleParents => PossibleParents.Any(node => node.Item != _source);
+        public bool HasPossibleParents => PossibleParents.Any(node => node.Item.GetModel() != _source);
 
-        public TreeNode<Tag>? SelectedParent
+        public TreeNode<TagViewModel>? SelectedParent
         {
             get => PossibleParents.Flatten().FirstOrDefault(node => node.Item == WorkingCopy.Parent);
             set => WorkingCopy.Parent = value?.Item;
@@ -51,65 +55,37 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
         #region Methods and Commands
 
-        //TODO move this to a Tag VM because it doesn't work here
-        protected override void CustomValidate(string? propertyName)
-        {
-            if (string.IsNullOrEmpty(propertyName))
-            {
-                ValidateName();
-                return;
-            }
-            
-            switch (propertyName)
-            {
-                case nameof(Tag.Name):
-                    ValidateName();
-                    break;
-            }
-        }
-
-        private void ValidateName()
-        {
-            if (string.IsNullOrEmpty(WorkingCopy.Name))
-            {
-                AddError(nameof(WorkingCopy.Name), "Name is required.");
-            }
-            
-            if (ActiveCollection.AllTags.Without(_source).Any(tag => tag.LongName == WorkingCopy.LongName))
-            {
-                AddError(nameof(WorkingCopy.Name), "Name must be unique within its parent.");
-            }
-        }
-
         protected override void HandleCreateNew(Tag newTag)
         {
-            newTag.Id = Utils.GetAvailableId(ActiveCollection.AllTags);
-            ActiveCollection.AllTags.Add(newTag);
+            newTag.Id = Utils.GetAvailableId(_codexCollectionVm.Collection.AllTags);
+            _codexCollectionVm.Collection.AllTags.Add(newTag);
                 
             if (newTag.Parent == null)
             {
-                ActiveCollection.RootTags.Add(newTag);
+                _codexCollectionVm.Collection.RootTags.Add(newTag);
             }
             else
             {
                 newTag.Parent.Children.Add(newTag);
             }
+            
+            _codexCollectionVm.Collection.TagsChanged();
         }
 
         protected override void BeforeApply(Tag source, Tag proposal)
         {
             //if parent didn't change, no changes needed
-            if (_source.Parent == WorkingCopy.Parent) return;
+            if (_source.Parent == WorkingCopy.Parent?.GetModel()) return;
             
             //if the parent has changed, break the link with old parent
-            IList<Tag> siblings = _source.Parent == null ? ActiveCollection.RootTags : _source.Parent.Children;
+            IList<Tag> siblings = _source.Parent == null ? _codexCollectionVm.Collection.RootTags : _source.Parent.Children;
             siblings.Remove(_source);
         }
 
         protected override void OnApplied(Tag source)
         {
             //ensure parent-child link is bidirectional
-            IList<Tag> siblings = _source.Parent == null ? ActiveCollection.RootTags : _source.Parent.Children;
+            IList<Tag> siblings = _source.Parent == null ? _codexCollectionVm.Collection.RootTags : _source.Parent.Children;
             siblings.AddIfMissing(_source);
         }
 
@@ -121,11 +97,14 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             PossibleParents = GetPossibleParents();
         }
 
-        private ObservableCollection<TreeNode<Tag>> GetPossibleParents()
+        private ObservableCollection<TreeNode<TagViewModel>> GetPossibleParents()
         {
-            var collection = ActiveCollection.RootTags.Select(tag => new TreeNode<Tag>(tag)).ToList();
+            var collection = _codexCollectionVm.Collection.RootTags
+                .Select(_codexCollectionVm.GetTagVm)
+                .Select(tagVm => new TreeNode<TagViewModel>(tagVm))
+                .ToList();
 
-            foreach (TreeNode<Tag> node in collection.Flatten())
+            foreach (var node in collection.Flatten())
             {
                 node.Expanded = node.Item.Children.Flatten().Contains(WorkingCopy.Parent); //expand all parents so that parent is visible
             }
@@ -149,7 +128,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             //Can only detect links if tag exists
             if (_createNew) return;
             
-            var relevantCodices = ActiveCollection.AllCodices
+            var relevantCodices = _codexCollectionVm.Collection.AllCodices
                 .Where(codex => codex.Sources.HasOfflineSource() &&
                                 codex.Tags.Contains(_source))
                 .ToList();
@@ -160,7 +139,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
             foreach (string folder in splitFolders)
             {
-                var codicesInFolder = ActiveCollection.AllCodices
+                var codicesInFolder = _codexCollectionVm.Collection.AllCodices
                     .Where(codex => codex.Sources.HasOfflineSource())
                     .Where(codex => codex.Sources.Path.Contains(@"\" + folder + @"\"))
                     .ToList();
@@ -186,7 +165,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             if (_createNew) return;
             
             var globs = WorkingCopy.LinkedGlobs.Concat(WorkingCopy.CalculatedLinkedGlobs).ToList();
-            List<Codex> matchingCodices = ActiveCollection.AllCodices
+            List<Codex> matchingCodices = _codexCollectionVm.Collection.AllCodices
                 .Where(codex => IOService.MatchesAnyGlob(codex.Sources.Path, globs) &&
                                 !codex.Tags.Contains(_source))
                 .ToList();
@@ -230,7 +209,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             base.Confirm();
             
-            ActiveCollection.Save();
+            _codexCollectionVm.Collection.Save();
             TabsViewModel.GetInstance().ActiveTab?.TagsVM.UpdateTagsAsTreeNodes();
         }
         

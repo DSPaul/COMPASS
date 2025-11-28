@@ -91,8 +91,7 @@ namespace COMPASS.Common.ViewModels.Modals
         public AsyncRelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
         private async Task DeleteCodex()
         {
-            var collectionHandle = Codex.Collection.Load() ?? throw new LoadException(Codex.Collection.Name);
-            await new CodexOperations(collectionHandle).DeleteCodex(Codex);
+            await CodexOperations.DeleteCodex(Codex);
             MarkAsResolved(false);
         }
         

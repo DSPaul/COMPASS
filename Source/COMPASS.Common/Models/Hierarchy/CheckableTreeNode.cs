@@ -9,10 +9,10 @@ namespace COMPASS.Common.Models.Hierarchy
 {
     public class CheckableTreeNode<T> : TreeNode<T>, IHasChildren<CheckableTreeNode<T>> where T : class, IHasChildren<T>
     {
-        public CheckableTreeNode(T item, bool containerOnly = false) : base (item)
+        public CheckableTreeNode(T item, bool containerOnly = false, bool propagateChanges = false) : base (item)
         {
             ContainerOnly = containerOnly;
-            Children = new(item.Children.Select(child => new CheckableTreeNode<T>(child, containerOnly)));
+            Children = new(item.Children.Select(child => new CheckableTreeNode<T>(child, containerOnly, propagateChanges)));
 
             // Children.CollectionChanged += (_, _) =>
             // {
@@ -30,18 +30,23 @@ namespace COMPASS.Common.Models.Hierarchy
         /// </summary>
         public bool ContainerOnly { get; set; }
 
+        /// <summary>
+        /// Indicates that changes will propagate up and down
+        /// A parent is automatically get checked if all children are checked
+        /// All children will get checked if a parent is checked, ect. 
+        /// </summary>
+        public bool PropagateChanges { get; set; }
+        
+
         private bool? _isChecked = false;
         public bool? IsChecked
         {
             get => _isChecked;
             set
             {
-                if (_isChecked != value)
+                if (SetProperty(ref _isChecked, value) && PropagateChanges)
                 {
-                    SetProperty(ref _isChecked, value);
-                    //Propagate changes upward
                     Parent?.Update();
-                    //propagate changes downwards
                     PropagateDown(value);
                 }
             }
@@ -121,9 +126,10 @@ namespace COMPASS.Common.Models.Hierarchy
             return Item;
         }
 
-        public static IEnumerable<T> GetCheckedItems(IEnumerable<CheckableTreeNode<T>> items) =>
-            items.Where(item => item.IsChecked != false)
-                 .Select(item => item.GetCheckedItems()!);
-            
+        public static IEnumerable<T> GetCheckedItems(IEnumerable<CheckableTreeNode<T>> items)
+        {
+            return items.Where(item => item.IsChecked != false)
+                .Select(item => item.GetCheckedItems()!);
+        }
     }
 }

@@ -9,7 +9,7 @@
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:converters="using:COMPASS.Infra.Converters"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
-             xmlns:filters="clr-namespace:COMPASS.Common.Models.Filters"
+             xmlns:modelVms="clr-namespace:COMPASS.Common.ViewModels.ModelVMs"
              xmlns:main="clr-namespace:COMPASS.Common.Views.Main"
              xmlns:behaviours="using:COMPASS.Infra.Behaviours"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
@@ -73,7 +73,7 @@
                     Height="35" CornerRadius="4"
                     Background="{StaticResource UIElementBackground}"
                     OpacityMask="#FF222222" Margin="10,5"
-                    DataContext="{Binding TabsVM.ActiveTab.FilterVM}">
+                    DataContext="{Binding TabsVM.ActiveTab.FiltersVM}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -147,7 +147,7 @@
                 <TextBlock Margin="10,0" FontSize="16" FontWeight="Regular" >
                     Items Shown:
                     <Run
-                        Text="{Binding TabsVM.ActiveTab.FilterVM.FilteredCodices.Count, Mode=OneWay, FallbackValue=0}" />
+                        Text="{Binding TabsVM.ActiveTab.FiltersVM.FilteredCodices.Count, Mode=OneWay, FallbackValue=0}" />
                     /
                     <Run
                         Text="{Binding TabsVM.ActiveTab.CollectionVM.Collection.AllCodices.Count, Mode=OneWay, FallbackValue=0}" />
@@ -225,9 +225,9 @@
             <Grid DockPanel.Dock="Top" x:Name="ViewsGrid" 
                   ColumnDefinitions="*, *, Auto, Auto, Auto, Auto">
                 <Grid.DataTemplates>
-                    <DataTemplate DataType="{x:Type filters:Filter}">
+                    <DataTemplate DataType="{x:Type modelVms:FilterViewModel}">
                         <Button Classes="BlankButton"
-                                Command="{Binding $parent[ItemsControl].((vm:FilterViewModel)DataContext).RemoveFromItemsControlCommand}"
+                                Command="{Binding $parent[ItemsControl].((vm:FiltersViewModel)DataContext).RemoveFromItemsControlCommand}"
                                 CommandParameter="{Binding}" Cursor="Hand">
                             <Button.Template>
                                 <ControlTemplate>
@@ -244,7 +244,7 @@
                 <Border CornerRadius="5" Grid.Column="0" BorderBrush="ForestGreen" BorderThickness="3"
                         VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}"
-                        DataContext="{Binding FilterVM}">
+                        DataContext="{Binding FiltersVM}">
                     <Panel>
                         <TextBlock Text="INCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Margin="5, 2" Foreground="Gray" FontSize="20"
@@ -263,7 +263,7 @@
                 <Border CornerRadius="5" Grid.Column="1" BorderBrush="OrangeRed" BorderThickness="3"
                         VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0,5,0" Background="{StaticResource FiltersBackground}"
-                        DataContext="{Binding FilterVM}">
+                        DataContext="{Binding FiltersVM}">
                     <Panel>
                         <TextBlock Text="EXCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Margin="5 2" Foreground="Gray" FontSize="20"
@@ -283,7 +283,7 @@
                 <!--#region Other Controls-->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="7" 
                             Margin="0,0,10,0" Height="32">
-                    <controls:IconButton Icon="FilterRemove" Command="{Binding FilterVM.ClearFiltersCommand}"
+                    <controls:IconButton Icon="FilterRemove" Command="{Binding FiltersVM.ClearFiltersCommand}"
                                          Theme="{StaticResource IconOnly}" Classes="ZoomOnHover" Background="Transparent"
                                          Height="32" ToolTip.Tip="Clear Filters" />
                     
@@ -292,7 +292,7 @@
                     <controls:IconButton Icon="Sort" CornerRadius="3" VerticalAlignment="Stretch">
                         <controls:IconButton.Flyout>
                             <Flyout>
-                                <views:SortingChoice DataContext="{Binding FilterVM}"/>
+                                <views:SortingChoice DataContext="{Binding FiltersVM}"/>
                             </Flyout>
                         </controls:IconButton.Flyout>
                     </controls:IconButton>

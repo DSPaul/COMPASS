@@ -12,7 +12,7 @@ public class HierarchicalSelectorViewmodel<T> : ViewModelBase where T : class, I
 
     public HierarchicalSelectorViewmodel(IList<T> options)
     {
-        _optionsRoot = options.Select(x => new CheckableTreeNode<T>(x)).ToList();
+        _optionsRoot = options.Select(x => new CheckableTreeNode<T>(x, propagateChanges:true)).ToList();
         TotalOptionsCount = _optionsRoot.Flatten().Count();
         
         foreach (var x in _optionsRoot)

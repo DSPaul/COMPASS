@@ -6,6 +6,7 @@ using Avalonia.Data;
 using Avalonia.Metadata;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
+using COMPASS.Common.ViewModels.ModelVMs;
 
 namespace COMPASS.Common.DataTemplates
 {
@@ -22,15 +23,25 @@ namespace COMPASS.Common.DataTemplates
         public InstancedBinding? ItemsSelector(object item) => GetTemplate(item).ItemsSelector(item);
 
         // Check if we can accept the provided data
-        public bool Match(object? data) => data is TreeNode<Tag> || data is Tag;
+        public bool Match(object? data) => 
+            data is TreeNode<TagViewModel> || 
+            data is TreeNode<Tag> || 
+            data is TagViewModel ||
+            data is Tag;
 
         private ITreeDataTemplate GetTemplate(object? param)
         {
             bool isGroup;
             switch (param)
             {
+                case TreeNode<TagViewModel> node:
+                    isGroup = node.Item.IsGroup;
+                    break;
                 case TreeNode<Tag> node:
                     isGroup = node.Item.IsGroup;
+                    break;
+                case TagViewModel tag:
+                    isGroup = tag.IsGroup;
                     break;
                 case Tag tag:
                     isGroup = tag.IsGroup;

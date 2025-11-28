@@ -112,7 +112,7 @@
                     <StackPanel Orientation="Horizontal" Grid.Row="10" Grid.ColumnSpan="2" Grid.Column="0">
                         <TextBlock Text="Tags:" VerticalAlignment="Top" Margin="5,5,10,5"/>
                         <!-- TODO: make itemsSource OrderedTags again once that is figured out -->
-                        <ItemsControl ItemsSource="{Binding Tags, Mode=OneWay}" 
+                        <ItemsControl ItemsSource="{Binding OrderedTags, Mode=OneWay}" 
                                       Background="{x:Null}" BorderBrush="{x:Null}"  
                                       Foreground="Black" FontSize="15" VerticalAlignment="Bottom">
                             <!-- TODO: keep functionality of dd:DragDrop.IsDragSource="True" -->

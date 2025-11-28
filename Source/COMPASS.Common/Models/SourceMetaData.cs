@@ -34,6 +34,19 @@ public class SourceMetaData : IHasCodexMetadata, IDisposable
     public IList<Tag> Tags { get; set; } = [];
     public IMagickImage<byte>? Cover { get; set; }
 
+    public static readonly List<string> ImportableProperties =
+    [
+        nameof(Title),
+        nameof(Authors),
+        nameof(Publisher),
+        nameof(Version),
+        nameof(PageCount),
+        nameof(Tags),
+        nameof(Description),
+        nameof(ReleaseDate),
+        nameof(Cover)
+    ];
+    
     public void Dispose()
     {
         Cover?.Dispose();

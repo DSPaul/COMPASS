@@ -198,8 +198,7 @@
                         </Button>
                     </TreeDataTemplate>
 
-                    <TreeDataTemplate x:Key="GroupTag" DataType="hierarchy:TagTreeNode"
-ItemsSource="{Binding Children}">
+                    <TreeDataTemplate x:Key="GroupTag" DataType="hierarchy:TagTreeNode" ItemsSource="{Binding Children}">
                         <controls:Chip Theme="{StaticResource GroupChip}" Margin="0,3,20,3"
                                        Text="{Binding Item.Name}" HorizontalAlignment="Stretch"
                                        Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"

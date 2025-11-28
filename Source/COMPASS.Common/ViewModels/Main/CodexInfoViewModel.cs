@@ -2,6 +2,7 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Services;
+using COMPASS.Common.ViewModels.ModelVMs;
 
 namespace COMPASS.Common.ViewModels.Main
 {
@@ -13,10 +14,10 @@ namespace COMPASS.Common.ViewModels.Main
             _preferencesService = PreferencesService.GetInstance();
         }
         
-        private FilterViewModel? _FilterVm => TabsViewModel.GetInstance().ActiveTab?.FilterVM;
+        private FiltersViewModel? _FilterVm => TabsViewModel.GetInstance().ActiveTab?.FiltersVM;
 
         private readonly PreferencesService _preferencesService;
-        private Codex? _displayedCodex;
+        private CodexViewModel? _displayedCodex;
 
         //whether the codex info panel is active
         public bool ShowCodexInfo
@@ -33,12 +34,12 @@ namespace COMPASS.Common.ViewModels.Main
         //what the visibility is actually bound to
         public bool ShowInfo => AutoHide ? ShowCodexInfo && DisplayedCodex is not null : ShowCodexInfo;
 
-        public Codex? DisplayedCodex
+        public CodexViewModel? DisplayedCodex
         {
             get => _displayedCodex;
             set
             {
-                Codex? prevCodex = _displayedCodex;
+                CodexViewModel? prevCodex = _displayedCodex;
                 if (SetProperty(ref _displayedCodex, value))
                 {
                     prevCodex?.DisposeCover();
@@ -70,8 +71,12 @@ namespace COMPASS.Common.ViewModels.Main
         public RelayCommand<string> AddPublisherFilterCommand => _addPublisherFilterCommand ??= new(AddPublisherFilter);
         private void AddPublisherFilter(string? publisher) => _FilterVm?.AddFilter(new PublisherFilter(publisher ?? ""));
 
-        private RelayCommand<Tag>? _addTagFilterCommand;
-        public RelayCommand<Tag> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilter);
-        private void AddTagFilter(Tag? tag) => _FilterVm?.AddFilter(new TagFilter(tag!));
+        private RelayCommand<TagViewModel>? _addTagFilterCommand;
+        public RelayCommand<TagViewModel> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilter);
+        private void AddTagFilter(TagViewModel? tagVm)
+        {
+            if (tagVm == null) return;
+            _FilterVm?.AddFilter(new TagFilter(tagVm));
+        }
     }
 }

@@ -24,6 +24,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.Services.StateManagers;
+using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
 
@@ -31,16 +32,6 @@ namespace COMPASS.Common.Operations
 {
     public class CodexOperations
     {
-        public CodexOperations(CollectionHandle collectionHandle)
-        {
-            _collectionHandle = collectionHandle;
-        }
-        
-        /// <summary>
-        /// the handle of the collection containing the codices on which these operations works
-        /// </summary>
-        private readonly CollectionHandle _collectionHandle;
-        
         #region Open Codex
 
         //Open Codex wherever
@@ -58,8 +49,6 @@ namespace COMPASS.Common.Operations
         }
 
         //Open codex Offline
-        private AsyncRelayCommand<Codex>? _openCodexLocallyCommand;
-        public AsyncRelayCommand<Codex> OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(OpenCodexLocally, CanOpenCodexLocally);
         public static async Task<bool> OpenCodexLocally(Codex? toOpen)
         {
             if (toOpen is null) return false;
@@ -89,8 +78,6 @@ namespace COMPASS.Common.Operations
         }
 
         //Open codex Online
-        private RelayCommand<Codex>? _openCodexOnlineCommand;
-        public RelayCommand<Codex> OpenCodexOnlineCommand => _openCodexOnlineCommand ??= new(codex => OpenCodexOnline(codex), CanOpenCodexOnline);
         public static bool OpenCodexOnline(Codex? toOpen)
         {
             if (!CanOpenCodexOnline(toOpen)) return false;
@@ -121,7 +108,7 @@ namespace COMPASS.Common.Operations
         //Open Multiple Files
         private AsyncRelayCommand<IList>? _openSelectedCodicesCommand;
         public AsyncRelayCommand<IList> OpenSelectedCodicesCommand => 
-            _openSelectedCodicesCommand ??= new(async l => await OpenSelectedCodices(l?.Cast<Codex>().ToList()));
+            _openSelectedCodicesCommand ??= new(async l => await OpenSelectedCodices(l?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList()));
         public static async Task<bool> OpenSelectedCodices(IList<Codex>? toOpen)
         {
             if (!toOpen.SafeAny()) return false;
@@ -152,9 +139,8 @@ namespace COMPASS.Common.Operations
         #region Edit Codex
 
         //Edit File
-        private AsyncRelayCommand<Codex>? _editCodexCommand;
-        public AsyncRelayCommand<Codex> EditCodexCommand => _editCodexCommand ??= new(EditCodex);
-        public async Task EditCodex(Codex? toEdit)
+
+        public static async Task EditCodex(Codex? toEdit)
         {
             if (toEdit is null) return;
             ModalWindow editWindow = new(new CodexEditViewModel(sourceCodex: toEdit));
@@ -166,7 +152,7 @@ namespace COMPASS.Common.Operations
         public AsyncRelayCommand<IList> EditCodicesCommand => _editCodicesCommand ??= new(EditCodices);
         public async Task EditCodices(IList? toEdit)
         {
-            List<Codex>? toEditList = toEdit?.Cast<Codex>().ToList();
+            List<Codex>? toEditList = toEdit?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList();
             if (!toEditList.SafeAny()) return;
 
             if (toEditList.Count == 1)
@@ -197,8 +183,6 @@ namespace COMPASS.Common.Operations
         #region Toggle Favorite 
 
         //Toggle Favorite
-        private RelayCommand<Codex>? _favoriteCodexCommand;
-        public RelayCommand<Codex> FavoriteCodexCommand => _favoriteCodexCommand ??= new(FavoriteCodex);
         public static void FavoriteCodex(Codex? toFavorite)
         {
             if (toFavorite is null) return;
@@ -212,7 +196,7 @@ namespace COMPASS.Common.Operations
         public RelayCommand<IList> FavoriteCodicesCommand => _favoriteCodicesCommand ??= new(FavoriteCodices);
         private static void FavoriteCodices(IList? toFavorite)
         {
-            List<Codex>? toFavoriteList = toFavorite?.Cast<Codex>().ToList();
+            List<Codex>? toFavoriteList = toFavorite?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList();
             if (!toFavoriteList.SafeAny()) return;
             if (toFavoriteList.Count == 1)
             {
@@ -233,8 +217,6 @@ namespace COMPASS.Common.Operations
         #endregion
 
         //Show in Explorer
-        private RelayCommand<Codex>? _showInExplorerCommand;
-        public RelayCommand<Codex> ShowInExplorerCommand => _showInExplorerCommand ??= new(ShowInExplorer, CanOpenCodexLocally);
         public static void ShowInExplorer(Codex? toShow)
         {
             if (string.IsNullOrEmpty(toShow?.Sources.Path) || !File.Exists(toShow.Sources.Path)) return;
@@ -258,12 +240,7 @@ namespace COMPASS.Common.Operations
 
             //par contains 2 parameters
             string targetCollectionIdentifier = (string)par[0];
-            List<Codex> toMoveList = par[1] switch
-            {
-                Codex codex => [codex],
-                IList list => list.Cast<Codex>().ToList(),
-                _ => []
-            };
+            List<Codex> toMoveList = ((IList)par[1]).Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList();
 
             await MoveToCollection(targetCollectionIdentifier, toMoveList);
         }
@@ -273,7 +250,7 @@ namespace COMPASS.Common.Operations
         /// </summary>
         /// <param name="targetCollectionIdentifier"></param>
         /// <param name="toMoveList"></param>
-        private async Task MoveToCollection(string targetCollectionIdentifier, List<Codex> toMoveList)
+        public static async Task MoveToCollection(string targetCollectionIdentifier, List<Codex> toMoveList)
         {
             if (!toMoveList.Any())
             {
@@ -284,10 +261,17 @@ namespace COMPASS.Common.Operations
             CodexCollection sourceCollection = toMoveList[0].Collection;
             Debug.Assert(toMoveList.All(codex => codex.Collection == sourceCollection));
 
+            using var sourceCollectionHandle = sourceCollection.Load();
+            if (sourceCollectionHandle == null)
+            {
+                Logger.Warn($"Failed to move codices from {sourceCollection.Name} because they could not be loaded");
+                return;
+            }
+
             //Check if target Collection is valid
             if (targetCollectionIdentifier == sourceCollection.Name)
             {
-                Logger.Warn($"Target Collection {targetCollectionIdentifier} is invalid");
+                Logger.Warn($"Target collection {targetCollectionIdentifier} cannot be the same as source collection");
                 return;
             }
 
@@ -338,15 +322,13 @@ namespace COMPASS.Common.Operations
                 await DeleteCodices(toMoveList, false);
 
                 //Save source and target collections
-                _collectionHandle.SaveCodices();
+                sourceCollectionHandle.SaveCodices();
                 targetCollectionHandle.SaveCodices();
             }
         }
 
         //Delete Codex
-        private AsyncRelayCommand<Codex>? _deleteCodexCommand;
-        public AsyncRelayCommand<Codex> DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
-        public async Task DeleteCodex(Codex? toDelete)
+        public static async Task DeleteCodex(Codex? toDelete)
         {
             if (toDelete == null) return;
             await DeleteCodices([toDelete], true);
@@ -359,7 +341,8 @@ namespace COMPASS.Common.Operations
             var codicesToDelete = codices?.Cast<Codex>().ToList() ?? [];
             await DeleteCodices(codicesToDelete, true);
         });
-        public async Task DeleteCodices(IList<Codex> codicesToDelete, bool askForConfirmation)
+        
+        public static async Task DeleteCodices(IList<Codex> codicesToDelete, bool askForConfirmation)
         {
             if (!codicesToDelete.Any()) return;
             
@@ -400,7 +383,6 @@ namespace COMPASS.Common.Operations
                     thumbnailStorageService.OnCodexDeleted(codexToDelete);
 
                     Logger.Info($"Removed {codexToDelete.Title} from {collection.Name}");
-                    codexToDelete.Dispose();
                 }
                 
                 collectionHandle.SaveCodices();
@@ -408,19 +390,18 @@ namespace COMPASS.Common.Operations
         }
 
         //Banish Codex
-        private AsyncRelayCommand<Codex>? _banishCodexCommand;
-        public AsyncRelayCommand<Codex> BanishCodexCommand => _banishCodexCommand ??= new(async (codex) =>
+        public static async Task BanishCodex(Codex? codex)
         {
             if (codex == null) return;
             await BanishCodices(new List<Codex>() { codex });
-        });
+        }
 
         //Banish Codices
         private AsyncRelayCommand<IList>? _banishCodicesCommand;
         public AsyncRelayCommand<IList> BanishCodicesCommand => _banishCodicesCommand ??= new(BanishCodices);
-        private async Task BanishCodices(IList? toBanish)
+        private static async Task BanishCodices(IList? toBanish)
         {
-            var codicesToBanish = toBanish?.Cast<Codex>().ToList() ?? [];
+            var codicesToBanish = toBanish?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList() ?? [];
             if (!codicesToBanish.SafeAny()) return;
 
             var codicesByCollections = codicesToBanish.GroupBy(codex => codex.Collection);
@@ -433,9 +414,8 @@ namespace COMPASS.Common.Operations
             await DeleteCodices(codicesToBanish, true);
         }
 
-        private AsyncRelayCommand<Codex>? _getMetaDataCommand;
-        public AsyncRelayCommand<Codex> GetMetaDataCommand => _getMetaDataCommand ??= new(StartGetMetaDataProcess);
-        public async Task StartGetMetaDataProcess(Codex? codex)
+        //Get Metadata
+        public static async Task StartGetMetaDataProcess(Codex? codex)
         {
             try
             {
@@ -448,13 +428,28 @@ namespace COMPASS.Common.Operations
                 await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
             }
         }
-        public async Task StartGetMetaDataProcess(IList<Codex> codices)
+        public static async Task StartGetMetaDataProcess(IList<Codex> codices)
         {            
             if (!codices.Any()) return;
 
-            //Because this is async and could continue when the tab or collection has already been closed
-            //This method should get its own handle
-            using CollectionHandle localCollectionHandle = CollectionManager.LoadCollection(_collectionHandle.CollectionVM.Identifier)!;
+            var codicesGroupedByCollection = codices.GroupBy(codex => codex.Collection).ToList();
+            
+            //If spread over multiple collection, to them one collection at a time
+            if (codicesGroupedByCollection.Count > 1)
+            {
+                foreach (var group in codicesGroupedByCollection)
+                {
+                    await StartGetMetaDataProcess(group.ToList());
+                }
+                return;
+            }
+            
+            using CollectionHandle? localCollectionHandle = codices.First().Collection.Load();
+            if (localCollectionHandle == null)
+            {
+                Logger.Warn("Could not get metadata for items as they could not be loaded");
+                return;;
+            }
             
             var progressVM = ProgressViewModel.GetInstance();
             progressVM.ResetCounter();
@@ -570,7 +565,7 @@ namespace COMPASS.Common.Operations
         {
             try
             {
-                await StartGetMetaDataProcess(codices?.Cast<Codex>().ToList() ?? []);
+                await StartGetMetaDataProcess(codices?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList() ?? []);
             }
             catch (OperationCanceledException ex)
             {
@@ -578,10 +573,9 @@ namespace COMPASS.Common.Operations
                 await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
             }
         }
-
-        private AsyncRelayCommand<Codex>? _getCoverCommand;
-        public AsyncRelayCommand<Codex> GetCoverCommand => _getCoverCommand ??= new(GetCover);
-        private static async Task GetCover(Codex? codex)
+        
+        //Get Cover
+        public static async Task GetCover(Codex? codex)
         {
             if (codex is null) return;
             await CoverService.GetAndApplyCover([codex]);
@@ -590,7 +584,7 @@ namespace COMPASS.Common.Operations
         private AsyncRelayCommand<IList>? _getCoverBulkCommand;
         public AsyncRelayCommand<IList> GetCoverBulkCommand => _getCoverBulkCommand ??= new(GetCoverBulk);
         private static async Task GetCoverBulk(IList? codices) =>
-            await CoverService.GetAndApplyCover(codices?.Cast<Codex>().ToList() ?? []);
+            await CoverService.GetAndApplyCover(codices?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList() ?? []);
 
         //TODO remove this, HandleKeyDownOnCodex should be called directly
         // public static void DataGridHandleKeyDown(object? sender, KeyEventArgs e)
@@ -599,7 +593,7 @@ namespace COMPASS.Common.Operations
         {
             if (selectedItems is null) return;
 
-            List<Codex> codices = selectedItems.Cast<Codex>().ToList();
+            List<Codex> codices = selectedItems.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList();
             int count = selectedItems.Count;
 
             if (count > 0)

@@ -1,5 +1,4 @@
 ﻿using System;
-using Avalonia.Media;
 
 namespace COMPASS.Common.Models.Filters
 {
@@ -11,19 +10,13 @@ namespace COMPASS.Common.Models.Filters
             FilterValue = filterValue;
         }
 
-        public FilterType Type { get; init; }
-        public object? FilterValue { get; init; }
+        public FilterType Type { get; }
+        public object? FilterValue { get; }
 
         /// <summary>
         /// Allow multiple filters of this type to be active at once
         /// </summary>
         public bool AllowMultiple { get; init; }
-
-        #region ITag
-        public abstract Color BackgroundColor { get; }
-
-        public abstract string Content { get; }
-        #endregion
 
         public abstract bool Apply(Codex codex);
 
@@ -55,7 +48,7 @@ namespace COMPASS.Common.Models.Filters
             return !(lhs == rhs);
         }
 
-        public override int GetHashCode() => Content.GetHashCode();
+        public override int GetHashCode() => HashCode.Combine(FilterValue, Type);
 
         #endregion
 

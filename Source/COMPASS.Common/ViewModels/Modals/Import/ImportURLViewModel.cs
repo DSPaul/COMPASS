@@ -119,7 +119,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                     return newCodex;
                 }
                 
-                await new CodexOperations(collectionHandle).StartGetMetaDataProcess(newCodex)
+                await CodexOperations.StartGetMetaDataProcess(newCodex)
                 .ContinueWith(_ =>
                 {
                     progressVM.AddLogEntry(new(Severity.Info, "Metadata loaded."));

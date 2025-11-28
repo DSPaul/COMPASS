@@ -8,6 +8,7 @@ using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
@@ -23,7 +24,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
          
             TabVM = tabVm ?? TabsViewModel.GetInstance().ActiveTab ?? throw new NoTabException("An active tab is expected when editing a codex");
         
-            var publisherList = TabVM.FilterVM.PublisherList;
+            var publisherList = TabVM.FiltersVM.PublisherList;
             PublisherOptions = ["", ..publisherList];
             
             _editedCodices = toEdit;
@@ -105,15 +106,15 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             set => SetProperty(ref _version, value);
         }
         
-        private ObservableCollection<Tag> _tagsToAdd = [];
-        public ObservableCollection<Tag> TagsToAdd
+        private ObservableCollection<TagViewModel> _tagsToAdd = [];
+        public ObservableCollection<TagViewModel> TagsToAdd
         {
             get => _tagsToAdd;
             set => SetProperty(ref _tagsToAdd, value);
         }
 
-        private ObservableCollection<Tag> _tagsToRemove = [];
-        public ObservableCollection<Tag> TagsToRemove
+        private ObservableCollection<TagViewModel> _tagsToRemove = [];
+        public ObservableCollection<TagViewModel> TagsToRemove
         {
             get => _tagsToRemove;
             set => SetProperty(ref _tagsToRemove, value);
@@ -121,11 +122,13 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         
         public CollectionTabVM TabVM { get; }
     
-        protected ObservableCollection<CheckableTreeNode<Tag>>? _allTagsAsTreeNodes;
-        public ObservableCollection<CheckableTreeNode<Tag>> AllTagsAsTreeNodes => _allTagsAsTreeNodes ??= 
-            new(TabVM.CollectionVM.Collection.RootTags.Select(tag => new CheckableTreeNode<Tag>(tag)));
+        protected ObservableCollection<CheckableTreeNode<TagViewModel>>? _allTagsAsTreeNodes;
+        public ObservableCollection<CheckableTreeNode<TagViewModel>> AllTagsAsTreeNodes => _allTagsAsTreeNodes ??= 
+            new(TabVM.CollectionVM.Collection.RootTags
+                .Select(TabVM.CollectionVM.GetTagVm)
+                .Select(tagVm => new CheckableTreeNode<TagViewModel>(tagVm)));
 
-        protected HashSet<CheckableTreeNode<Tag>> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
+        protected HashSet<CheckableTreeNode<TagViewModel>> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
     
         public List<string> PublisherOptions { get; }
         
@@ -133,10 +136,10 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
         #region Methods and Commands
 
-        private RelayCommand<Tag>? _addTagCommand;
-        public RelayCommand<Tag> AddTagCommand => _addTagCommand ??= new(AddTag);
+        private RelayCommand<TagViewModel>? _addTagCommand;
+        public RelayCommand<TagViewModel> AddTagCommand => _addTagCommand ??= new(AddTag);
 
-        private void AddTag(Tag? t)
+        private void AddTag(TagViewModel? t)
         {
             if (t is null) return;
             if (!TagsToAdd.Contains(t)) TagsToAdd.Add(t);
@@ -144,10 +147,10 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             TagsToRemove.Remove(t);
         }
 
-        private RelayCommand<Tag>? _removeTagCommand;
-        public RelayCommand<Tag> RemoveTagCommand => _removeTagCommand ??= new(RemoveTag);
+        private RelayCommand<TagViewModel>? _removeTagCommand;
+        public RelayCommand<TagViewModel> RemoveTagCommand => _removeTagCommand ??= new(RemoveTag);
 
-        private void RemoveTag(Tag? t)
+        private void RemoveTag(TagViewModel? t)
         {
             if (t is null) return;
             if (!TagsToRemove.Contains(t)) TagsToRemove.Add(t);
@@ -155,9 +158,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             TagsToAdd.Remove(t);
         }
 
-        private RelayCommand<Tag>? _removeFromItemsControlCommand;
-        public RelayCommand<Tag> RemoveFromItemsControlCommand => _removeFromItemsControlCommand ??= new(RemoveTagFromItemsControl);
-        private void RemoveTagFromItemsControl(Tag? t)
+        private RelayCommand<TagViewModel>? _removeFromItemsControlCommand;
+        public RelayCommand<TagViewModel> RemoveFromItemsControlCommand => _removeFromItemsControlCommand ??= new(RemoveTagFromItemsControl);
+        private void RemoveTagFromItemsControl(TagViewModel? t)
         {
             if (t is null) return;
             TagsToAdd.Remove(t);
@@ -231,22 +234,20 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             }
 
             //Update lists of all authors, publishers, ect.
-            TabsViewModel.GetInstance().ActiveTab?.FilterVM.PopulateMetaDataCollections();
+            TabsViewModel.GetInstance().ActiveTab?.FiltersVM.PopulateMetaDataCollections();
 
             //Add and remove Tags
-            foreach (Codex f in _editedCodices)
+            foreach (Codex codex in _editedCodices)
             {
                 if (TagsToAdd.Count > 0)
                 {
                     //add all tags from TagsToAdd
-                    foreach (Tag t in TagsToAdd) f.Tags.Add(t);
-                    //remove duplicates
-                    f.Tags = new(f.Tags.Distinct());
+                    foreach (TagViewModel t in TagsToAdd) codex.Tags.AddIfMissing(t.GetModel());
                 }
                 if (TagsToRemove.Count > 0)
                 {
                     //remove Tags from TagsToRemove
-                    foreach (Tag t in TagsToRemove) f.Tags.Remove(t);
+                    foreach (TagViewModel t in TagsToRemove) codex.Tags.Remove(t.GetModel());
                 }
             }
             CloseAction();

@@ -1,22 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.Tools;
 using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models
 {
-    public class Codex : ObservableObject, IHasId, IHasCodexMetadata, ICloneable<Codex>, IDisposable
+    public class Codex : ObservableObject, IHasId, IHasCodexMetadata, ICloneable<Codex>
     {
         public readonly CodexCollection Collection;
 
@@ -25,9 +15,6 @@ namespace COMPASS.Common.Models
         public Codex(CodexCollection collection)
         {
             Collection = collection;
-            
-            _authors.CollectionChanged += OnCollectionChanged;
-            _tags.CollectionChanged += OnCollectionChanged;
         }
 
         private Codex(Codex codex) : this(codex.Collection)
@@ -57,16 +44,6 @@ namespace COMPASS.Common.Models
             set => SetProperty(ref _thumbnailPath, value);
         }
 
-        private Bitmap? _thumbnail;
-        public Task<Bitmap?> Thumbnail => _thumbnail == null ? LoadThumbnail() : Task.FromResult<Bitmap?>(_thumbnail);
-
-        private Bitmap? _cover;
-        public Bitmap? Cover
-        {
-            get => _cover; 
-            set => SetProperty(ref _cover, value);
-        }
-
         #endregion
 
         #region Codex related Metadata
@@ -75,13 +52,7 @@ namespace COMPASS.Common.Models
         public string Title
         {
             get => _title;
-            set
-            {
-                if (value is null) return;
-                SetProperty(ref _title, value);
-                OnPropertyChanged(nameof(SortingTitle));
-                OnPropertyChanged(nameof(SortingTitleContainsNumbers));
-            }
+            set => SetProperty(ref _title, value);
         }
 
         private string _userDefinedSortingTitle = "";
@@ -91,45 +62,15 @@ namespace COMPASS.Common.Models
         public string UserDefinedSortingTitle => _userDefinedSortingTitle;
         public string SortingTitle
         {
-            get => (String.IsNullOrEmpty(_userDefinedSortingTitle) ? _title : _userDefinedSortingTitle).PadNumbers();
-            set
-            {
-                SetProperty(ref _userDefinedSortingTitle, value);
-                OnPropertyChanged(nameof(SortingTitleContainsNumbers));
-            }
+            get => (string.IsNullOrEmpty(_userDefinedSortingTitle) ? _title : _userDefinedSortingTitle).PadNumbers();
+            set =>  SetProperty(ref _userDefinedSortingTitle, value);
         }
-        public bool SortingTitleContainsNumbers => RegexConstants.NumbersOnly().IsMatch(SortingTitle);
-        public string ZeroPaddingExplainer =>
-            "What's with all the 0's? \n \n" +
-            "Zero-padding numbers ensures numerical sorting instead of alphabetical sorting. \n" +
-            "Consider the numbers 1, 2, 13, and 20. \n" +
-            "Without zero-padding, they would be sorted alphabetically as 1, 13, 2, 20. \n" +
-            "However, with zero-padding, the order becomes 01, 02, 13, 20. \n";
 
         private ObservableCollection<string> _authors = [];
         public ObservableCollection<string> Authors
         {
             get => _authors;
-            set
-            {
-                _authors.CollectionChanged -= OnCollectionChanged;
-                SetProperty(ref _authors, value);
-                _authors.CollectionChanged += OnCollectionChanged;
-                OnPropertyChanged(nameof(AuthorsAsString));
-            }
-        }
-        public string AuthorsAsString
-        {
-            get
-            {
-                string str = Authors.Count switch
-                {
-                    1 => Authors[0],
-                    > 1 => String.Join(", ", Authors.OrderBy(a => a)),
-                    _ => ""
-                };
-                return str;
-            }
+            set => SetProperty(ref _authors, value);
         }
 
         private string _publisher = "";
@@ -175,17 +116,8 @@ namespace COMPASS.Common.Models
         public ObservableCollection<Tag> Tags
         {
             get => _tags;
-            set
-            {
-                _tags.CollectionChanged -= OnCollectionChanged;
-                _tags = value;
-                _tags.CollectionChanged += OnCollectionChanged;
-                OnPropertyChanged(nameof(OrderedTags));
-            }
+            set => SetProperty(ref _tags, value);
         }
-
-        //order them in same order as allTags by starting with allTags and keeping the ones we need using intersect
-        public IEnumerable<Tag> OrderedTags => Collection.AllTags.Intersect(_tags) ?? _tags;
 
         private bool _physicallyOwned;
         public bool PhysicallyOwned
@@ -272,12 +204,6 @@ namespace COMPASS.Common.Models
             return new(this);
         }
 
-        public void RefreshThumbnail()
-        {
-            DisposeThumbnail();
-            OnPropertyChanged(nameof(Thumbnail));
-        }
-
         public void ClearPersonalData()
         {
             Favorite = false;
@@ -287,88 +213,16 @@ namespace COMPASS.Common.Models
             LastOpened = default;
             Rating = 0;
         }
-
-        public void LoadCover()
-        {
-            try
-            {
-                Cover = File.Exists(CoverArtPath) ? 
-                    new(CoverArtPath) : 
-                    AssetsService.GetPlaceholder(this);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Failed to load thumbnail", ex);
-            }
-        }
-
-        private async Task<Bitmap?> LoadThumbnail()
-        {
-            try
-            {
-                if (File.Exists(ThumbnailPath))
-                {
-                    return await Task.Run(() => _thumbnail = new Bitmap(ThumbnailPath));
-                }
-                else
-                {
-                    return _thumbnail = AssetsService.GetPlaceholder(this);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Failed to load thumbnail", ex);
-                return null;
-            }
-        }
-
-        private void OnCollectionChanged(object? o, NotifyCollectionChangedEventArgs args)
-        {
-            if (o == _tags) OnPropertyChanged(nameof(OrderedTags));
-            if (o == _authors) OnPropertyChanged(nameof(AuthorsAsString));
-        }
         
-        public void Dispose()
-        {
-            DisposeThumbnail();
-            DisposeCover();
-            
-            _authors.CollectionChanged -= OnCollectionChanged;
-            _tags.CollectionChanged -= OnCollectionChanged;
-        }
-
-        public void DisposeThumbnail()
-        {
-            if (_thumbnail != null && !AssetsService.IsSharedAsset(_thumbnail))
-            {
-                _thumbnail.Dispose();
-            }
-            _thumbnail = null;
-        }
-        
-        public void DisposeCover()
-        {
-            if (_cover != null && !AssetsService.IsSharedAsset(_cover))
-            {
-                _cover.Dispose();
-            }
-            _cover = null;
-        }
+        public void NotifyCoverChanged() => CoverChanged?.Invoke(this, EventArgs.Empty);
         
         #endregion
 
-        public static readonly List<CodexProperty> ImportableMetadataProperties =
-        [
-            CodexProperty.GetInstance(nameof(Title))!,
-            CodexProperty.GetInstance(nameof(Authors))!,
-            CodexProperty.GetInstance(nameof(Publisher))!,
-            CodexProperty.GetInstance(nameof(Version))!,
-            CodexProperty.GetInstance(nameof(PageCount))!,
-            CodexProperty.GetInstance(nameof(Tags))!,
-            CodexProperty.GetInstance(nameof(Description))!,
-            CodexProperty.GetInstance(nameof(ReleaseDate))!,
-            CodexProperty.GetInstance(nameof(Cover))!
-        ];
+        #region Events
+
+        public event EventHandler<EventArgs>? CoverChanged;
+
+        #endregion
     }
 }
 

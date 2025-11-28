@@ -6,7 +6,7 @@
              xmlns:view="using:COMPASS.Common.Views"
              xmlns:conv="using:COMPASS.Infra.Converters"
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
-             xmlns:models="using:COMPASS.Common.Models"
+             xmlns:modelVm="using:COMPASS.Common.ViewModels.ModelVMs"
              xmlns:edit="clr-namespace:COMPASS.Common.ViewModels.Modals.Edit"
              xmlns:hierarchy="clr-namespace:COMPASS.Common.Models.Hierarchy"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="250"
@@ -128,11 +128,11 @@
                     Background="{Binding WorkingCopy.Parent.BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}">
                 <Button.DataTemplates>
                     <dataTemplates:TagDataTemplateSelector>
-                        <DataTemplate x:Key="RegularTag" DataType="models:Tag">
+                        <DataTemplate x:Key="RegularTag" DataType="modelVm:TagViewModel">
                             <controls:Chip Text="{Binding LongName}" Margin="0,3"
                                            Background="{Binding BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"/>
                         </DataTemplate>
-                        <DataTemplate x:Key="GroupTag" DataType="models:Tag">
+                        <DataTemplate x:Key="GroupTag" DataType="modelVm:TagViewModel">
                             <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding LongName}" 
                                            Background="{Binding BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"/>
                         </DataTemplate>

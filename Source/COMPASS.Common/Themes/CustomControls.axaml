@@ -361,7 +361,7 @@
             </ControlTemplate>
         </Setter>
     </ControlTheme>
-
+    
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="10">

@@ -55,12 +55,14 @@ namespace COMPASS.Common.ViewModels
 
         private RelayCommand? _applyActiveFiltersCommand;
         public RelayCommand ApplyActiveFiltersCommand => _applyActiveFiltersCommand ??=
-            new(ApplyActiveFilters, () => TabsViewModel.GetInstance().ActiveTab?.FilterVM.HasActiveFilters ?? false);
+            new(ApplyActiveFilters, () => TabsViewModel.GetInstance().ActiveTab?.FiltersVM.HasActiveFilters ?? false);
         private void ApplyActiveFilters()
         {
             foreach (var selectableCodex in ContentSelectorVM.SelectableCodices)
             {
-                selectableCodex.Selected = TabsViewModel.GetInstance().ActiveTab!.FilterVM.FilteredCodices!.Contains(selectableCodex.Codex);
+                selectableCodex.Selected = TabsViewModel.GetInstance().ActiveTab!.FiltersVM.FilteredCodices
+                                                        .Select(codexVm => codexVm.GetModel())
+                                                        .Contains(selectableCodex.Codex);
             }
             ContentSelectorVM.RaiseSelectedCodicesCountChanged();
         }

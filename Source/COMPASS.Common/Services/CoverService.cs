@@ -35,7 +35,7 @@ namespace COMPASS.Common.Services
             IMagickImage<byte>? coverFromSource = null;
             try
             {
-                CodexProperty coverProp = PreferencesService.GetInstance().Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(Codex.Cover));
+                CodexProperty coverProp = PreferencesService.GetInstance().Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetaData.Cover));
 
                 switch (coverProp.OverwriteMode)
                 {
@@ -136,7 +136,7 @@ namespace COMPASS.Common.Services
             {
                 await image.WriteAsync(destCodex.CoverArtPath);
                 CreateThumbnail(destCodex, image);
-                destCodex.RefreshThumbnail();
+                destCodex.NotifyCoverChanged();
             }
         }
 

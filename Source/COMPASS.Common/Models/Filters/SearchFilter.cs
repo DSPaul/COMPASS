@@ -1,5 +1,4 @@
-﻿using Avalonia.Media;
-using COMPASS.Infra.ExtensionMethods;
+﻿using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.Models.Filters
 {
@@ -8,10 +7,6 @@ namespace COMPASS.Common.Models.Filters
         public SearchFilter(string searchTerm) : base(FilterType.Search, searchTerm)
         {
         }
-
-        public override Color BackgroundColor => Colors.Salmon;
-
-        public override string Content => $"Search: {FilterValue}";
 
         public override bool Apply(Codex codex)
         {

@@ -65,7 +65,7 @@
         </controls:CollapsableTabItem>
 
         <controls:CollapsableTabItem Header="Filters" Icon="Filter">
-            <panels:FiltersSidePanel DataContext="{Binding TabsVM.ActiveTab.FilterVM}" />
+            <panels:FiltersSidePanel DataContext="{Binding TabsVM.ActiveTab.FiltersVM}" />
         </controls:CollapsableTabItem>
 
         <controls:CollapsableTabItem Header="Layouts" Icon="ViewDashboardEdit">

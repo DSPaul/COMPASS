@@ -216,6 +216,7 @@ namespace COMPASS.Common.ViewModels.Import
             _collectionToImportHandle.Dispose();
             //temporary import collection has served its purpose, can be deleted
             _collectionToImportHandle.CollectionVM.DeleteCollection();
+            _collectionToImportHandle.CollectionVM.Dispose();
         }
     }
 }

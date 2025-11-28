@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Metadata;
 using COMPASS.Common.Models;
+using COMPASS.Common.ViewModels.ModelVMs;
 
 namespace COMPASS.Common.DataTemplates
 {
@@ -19,7 +20,7 @@ namespace COMPASS.Common.DataTemplates
         public Control? Build(object? param) => GetTemplate(param).Build(param);
 
         // Check if we can accept the provided data
-        public bool Match(object? data) => data is Tag;
+        public bool Match(object? data) => data is Tag || data is TagViewModel;
 
         private IDataTemplate GetTemplate(object? param)
         {
@@ -28,6 +29,9 @@ namespace COMPASS.Common.DataTemplates
             {
                 case Tag tag:
                     isGroup = tag.IsGroup;
+                    break;
+                case TagViewModel tagVm:
+                    isGroup = tagVm.IsGroup;
                     break;
                 default:
                     throw new Exception($"{nameof(TagDataTemplateSelector)} does not support param of type {param?.GetType().Name}");

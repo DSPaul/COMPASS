@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using COMPASS.Common.DependencyInjection;
@@ -10,25 +12,43 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
+using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Main;
 
-public class CodexCollectionVM : ViewModelBase
+public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
 {
-    public CodexCollectionVM(string identifier, CodexCollection collection, ICodexCollectionStorageService storageService)
+    public CodexCollectionVM(string identifier, CodexCollection collection, ICodexCollectionStorageService storageService) : base(collection)
     {
         _identifier = identifier;
-        Collection = collection;
             
+        collection.AllCodices.CollectionChanged += OnAllCodicesCollectionChanged;
+        
         _storageService = storageService;
         _notificationService = ServiceResolver.Resolve<INotificationService>();
     }
 
+    private void OnAllCodicesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        var oldCodices = e.OldItems?.Cast<Codex>() ?? [];
+        var oldCodexVms = AllCodexVms.Where(vm => oldCodices.Contains(vm.GetModel())).ToList();
+        foreach (var codexVm in oldCodexVms)
+        {
+            AllCodexVms.Remove(codexVm);
+            codexVm.Dispose();
+        }
+                
+        var newCodices = e.NewItems?.Cast<Codex>() ?? [];
+        AllCodexVms.AddRange(newCodices.Select(codex => new CodexViewModel(codex, this)));
+    }
+
     private readonly ICodexCollectionStorageService _storageService;
     private readonly INotificationService _notificationService;
-        
-    public CodexCollection Collection { get; }
+
+    public CodexCollection Collection => _model;
+    public ObservableCollection<CodexViewModel> AllCodexVms { get; } = [];
+    private Dictionary<Tag,TagViewModel> AllTagVms { get; } = [];
         
     /// <summary>
     /// A string that identifies this collection, such as its path
@@ -64,6 +84,9 @@ public class CodexCollectionVM : ViewModelBase
         if (loadResult == 0) //0 means success
         {
             Owners.Add(handle);
+            
+            //Create vms
+            AllCodexVms.AddRange(Collection.AllCodices.Select(x => new CodexViewModel(x, this)));
             return handle;
         }
         else if (loadResult < 0)
@@ -78,7 +101,7 @@ public class CodexCollectionVM : ViewModelBase
             Notification error = new("Failed to Load Collection", $"Could not load {Collection.Name}. \n" + msg, Severity.Error);
             _notificationService.ShowDialog(error);
         }
-            
+        
         return null;
     }
 
@@ -90,7 +113,15 @@ public class CodexCollectionVM : ViewModelBase
         if (!Owners.Any())
         {
             _storageService.Unload(Collection);
-            Collection.Dispose();
+            foreach (CodexViewModel codexVm in AllCodexVms)
+            {
+                codexVm.Dispose();
+            }
+
+            foreach (TagViewModel tagVm in AllTagVms.Values)
+            {
+                tagVm.Dispose();
+            }
         }
     }
 
@@ -118,6 +149,17 @@ public class CodexCollectionVM : ViewModelBase
         }
     }
     #endregion
+
+    public TagViewModel GetTagVm(Tag tag)
+    {
+        if (!AllTagVms.TryGetValue(tag, out TagViewModel? tagVm))
+        {
+            tagVm = new(tag, this);
+            AllTagVms.Add(tag, tagVm);
+        }
+        
+        return tagVm;
+    }
     
     public async Task AutoImport()
     {

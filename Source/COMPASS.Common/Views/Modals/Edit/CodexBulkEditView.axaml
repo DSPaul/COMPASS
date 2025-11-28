@@ -8,6 +8,7 @@
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
              xmlns:interface="using:COMPASS.Infra.Models.Interfaces"
              xmlns:model="using:COMPASS.Common.Models"
+             xmlns:modelVm="using:COMPASS.Common.ViewModels.ModelVMs"
              xmlns:hierarchy="using:COMPASS.Common.Models.Hierarchy"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="500"
@@ -32,7 +33,7 @@
 
         <TextBlock Text="Authors:" Margin="0,10" />
         <controls:MultiSelectAutoCompleteBox Grid.Row="1" Grid.Column="0" 
-                                             ItemsSource="{Binding TabVM.FilterVM.AuthorList}"
+                                             ItemsSource="{Binding TabVM.FiltersVM.AuthorList}"
                                              SelectedItems="{Binding Authors, Mode=TwoWay}"
                                              Watermark="Add author" CanCreate="True"/>
 
@@ -83,7 +84,7 @@
               RowDefinitions="auto,auto">
 
             <Grid.DataTemplates>
-                <DataTemplate DataType="{x:Type model:Tag}">
+                <DataTemplate DataType="{x:Type modelVm:TagViewModel}">
                         <Button Classes="BlankButton"
                                 Command="{Binding $parent[ItemsControl].((vm:CodexBulkEditViewModel)DataContext).RemoveFromItemsControlCommand}"
                                 CommandParameter="{Binding}" Cursor="Hand">

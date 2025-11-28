@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.Main"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.SortingChoice"
-             x:DataType="vm:FilterViewModel">
+             x:DataType="vm:FiltersViewModel">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="10">
             <StackPanel Orientation="Horizontal" 

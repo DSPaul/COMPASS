@@ -1,5 +1,4 @@
-﻿using Avalonia.Media;
-using COMPASS.Common.Models.CodexProperties;
+﻿using COMPASS.Common.Models.CodexProperties;
 
 namespace COMPASS.Common.Models.Filters
 {
@@ -10,10 +9,6 @@ namespace COMPASS.Common.Models.Filters
         }
 
         private CodexProperty prop => (CodexProperty)FilterValue!;
-
-        public override Color BackgroundColor => Colors.LightSlateGray;
-
-        public override string Content => $"Has value for '{prop.Label}'";
 
         public override bool Apply(Codex codex) => !prop.IsEmpty(codex);
     }

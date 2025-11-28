@@ -3,37 +3,43 @@ using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.ViewModels;
+using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit;
 
-public abstract class EditViewModelBase<T> : ViewModelBase, IConfirmable, IModalViewModel, IDisposable where T : ObservableObject, ICloneable<T>
+public abstract class EditViewModelBase<TViewModel, TModel> : ViewModelBase, IConfirmable, IModalViewModel, IDisposable 
+    where TViewModel : ModelViewModelBase<TModel>
+    where TModel : ObservableObject, ICloneable<TModel>
 {
     /// <summary>
     /// Create an edit viewmodel to edit or create 1 object
     /// </summary>
     /// <param name="source"> Either an object to edit, or a template in case of createNew </param>
     /// <param name="createNew"> Indicates that a new object should be created, rather than edit an existing object </param>
-    public EditViewModelBase(T source, bool createNew)
+    /// <param name="createViewModel"> A method to create a viewmodel from a model </param>
+    public EditViewModelBase(TModel source, bool createNew, Func<TModel, TViewModel> createViewModel)
     {
         _source = source;
         _createNew =  createNew;
+        _createViewModel = createViewModel;
 
-        _workingCopy = source.Clone();
+        _workingCopy = createViewModel(source.Clone());
         _workingCopy.PropertyChanged += HandleWorkingCopyPropertyChanged;
     }
     
-    protected readonly T _source;
+    protected readonly TModel _source;
     protected readonly bool _createNew;
+    private readonly Func<TModel, TViewModel> _createViewModel;
     
     #region Properties
     
     //Temporary copy to work with
-    private T? _workingCopy;
-    public T WorkingCopy
+    private TViewModel? _workingCopy;
+    public TViewModel WorkingCopy
     {
         get => _workingCopy!;
-        protected set
+        private set
         {
             if (_workingCopy != null)
             {
@@ -52,13 +58,10 @@ public abstract class EditViewModelBase<T> : ViewModelBase, IConfirmable, IModal
     #endregion
 
     #region Abstract Methods
-
-    /// <summary>
-    /// Define optional validation
-    /// </summary>
-    protected abstract void HandleCreateNew(T newObj);
-    protected abstract void BeforeApply(T source, T proposal);
-    protected abstract void OnApplied(T source);
+    
+    protected abstract void HandleCreateNew(TModel newObj);
+    protected abstract void BeforeApply(TModel source, TModel proposal);
+    protected abstract void OnApplied(TModel source);
     #endregion
 
     #region Private methods
@@ -73,7 +76,7 @@ public abstract class EditViewModelBase<T> : ViewModelBase, IConfirmable, IModal
 
     protected virtual void Clear()
     {
-        WorkingCopy = _source.Clone();
+        WorkingCopy = _createViewModel(_source.Clone());
     }
 
     #endregion
@@ -94,7 +97,7 @@ public abstract class EditViewModelBase<T> : ViewModelBase, IConfirmable, IModal
     {
         if (WorkingCopy is INotifyDataErrorInfo hasErrorInfo)
         {
-            return hasErrorInfo.HasErrors;
+            return !hasErrorInfo.HasErrors;
         }
         
         return true;
@@ -102,16 +105,18 @@ public abstract class EditViewModelBase<T> : ViewModelBase, IConfirmable, IModal
 
     protected virtual void Confirm()
     {
+        TModel model = WorkingCopy.GetModel();
+        
         //Apply changes 
         if (_createNew)
         {
-            T newObj = WorkingCopy.Clone();
+            TModel newObj = model.Clone();
             HandleCreateNew(newObj);
         }
         else
         {
-            BeforeApply(_source, WorkingCopy);
-            _source.CopyFrom(WorkingCopy);
+            BeforeApply(_source, model);
+            _source.CopyFrom(model);
             OnApplied(_source);
         }
 

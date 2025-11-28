@@ -9,6 +9,7 @@ using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.ViewModels.ModelVMs;
 using Material.Icons;
 
 namespace COMPASS.Common.ViewModels.Layouts
@@ -54,11 +55,11 @@ namespace COMPASS.Common.ViewModels.Layouts
         
         public CodexInfoViewModel CodexInfoVM { get; }
         
-        public FilterViewModel? FilterVM => TabsViewModel.GetInstance().ActiveTab?.FilterVM;
+        public FiltersViewModel? FiltersVM => TabsViewModel.GetInstance().ActiveTab?.FiltersVM;
         public CodexOperations? CodexCommands => TabsViewModel.GetInstance().ActiveTab?.CodexCommands;
         
-        private Codex? _selectedCodex;
-        public Codex? SelectedCodex
+        private CodexViewModel? _selectedCodex;
+        public CodexViewModel? SelectedCodex
         {
             get => _selectedCodex;
             set
@@ -70,8 +71,8 @@ namespace COMPASS.Common.ViewModels.Layouts
             }
         }
         
-        private IList<Codex>? _selectedCodices;
-        public IList<Codex>? SelectedCodices
+        private IList<CodexViewModel>? _selectedCodices;
+        public IList<CodexViewModel>? SelectedCodices
         {
             get => _selectedCodices;
             set => SetProperty(ref _selectedCodices, value);
@@ -96,12 +97,12 @@ namespace COMPASS.Common.ViewModels.Layouts
         
         private void OnTabChanged(object? sender, CollectionTabVM? selectedTab)
         {
-            OnPropertyChanged(nameof(FilterVM));
+            OnPropertyChanged(nameof(FiltersVM));
         }
         
         public void OnCollectionChanged(object? sender, EventArgs? eventArgs)
         {
-            OnPropertyChanged(nameof(FilterVM));
+            OnPropertyChanged(nameof(FiltersVM));
         }
         
         public void OnDragOver(object? sender, DragEventArgs e)

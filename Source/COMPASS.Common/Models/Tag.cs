@@ -13,12 +13,7 @@ namespace COMPASS.Common.Models
     {
         public Tag() { }
 
-        public Tag(Tag tag)
-        {
-            CopyFrom(tag);
-        }
-
-        public Tag(List<Tag> allTags)
+        public Tag(IEnumerable<Tag> allTags)
         {
             Id = Utils.GetAvailableId(allTags.Cast<IHasId>());
         }
@@ -42,32 +37,20 @@ namespace COMPASS.Common.Models
         public string Name
         {
             get => _name;
-            set
-            {
-                if (SetProperty(ref _name, value))
-                {
-                    OnPropertyChanged(nameof(LongName));
-                    OnPropertyChanged(nameof(CalculatedLinkedGlobs));
-                }
-            }
+            set => SetProperty(ref _name, value);
         }
 
         public string LongName => $"{Parent?.LongName}{(Parent == null ? "" : " > ")}{Name}";
-
-        //Color bound to the UI
-        public Color BackgroundColor => _internalBackgroundColor ?? Parent?.BackgroundColor ?? Colors.DarkGray;
-
+        
         //Internally stored color, can be null to indicate it should follow the color of the parent tag
         private Color? _internalBackgroundColor;
         public Color? InternalBackgroundColor
         {
             get => _internalBackgroundColor;
-            set
-            {
-                SetProperty(ref _internalBackgroundColor, value);
-                OnPropertyChanged(nameof(BackgroundColor));
-            }
+            set => SetProperty(ref _internalBackgroundColor, value);
         }
+        
+        public Color BackgroundColor => _internalBackgroundColor ?? Parent?.BackgroundColor ?? Colors.DarkGray;
         
         private int _id = -1;
         public int Id
@@ -80,13 +63,7 @@ namespace COMPASS.Common.Models
         public Tag? Parent
         {
             get => _parent;
-            set
-            {
-                if (SetProperty(ref _parent, value) && InternalBackgroundColor == null)
-                {
-                    OnPropertyChanged(nameof(BackgroundColor));
-                }
-            }
+            set => SetProperty(ref _parent, value);
         }
 
         // Group tags are important for filtering

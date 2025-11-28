@@ -1,19 +1,15 @@
-﻿using Avalonia.Media;
+﻿using COMPASS.Common.ViewModels.ModelVMs;
 
 namespace COMPASS.Common.Models.Filters
 {
     internal class TagFilter : Filter
     {
-        public TagFilter(Tag tag) : base(FilterType.Tag, tag)
+        public TagFilter(TagViewModel tagVm) : base(FilterType.Tag, tagVm)
         {
             AllowMultiple = true;
         }
 
-        public override Color BackgroundColor => ((Tag)FilterValue!).BackgroundColor;
-
-        public override string Content => ((Tag)FilterValue!).Name;
-
-        //Tag logic is contained in the FilterViewmodel, so here just make it match everything
+        //Tag logic is contained in the FiltersViewmodel, so here just make it match everything
         public override bool Apply(Codex codex) => true;
     }
 }

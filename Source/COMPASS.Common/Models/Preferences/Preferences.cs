@@ -4,6 +4,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Operations;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.Models.Preferences
 {
@@ -12,7 +13,7 @@ namespace COMPASS.Common.Models.Preferences
         public Preferences()
         {
             _openCodexPriority = new(OpenCodexFunctions);
-            ImportableCodexProperties = Codex.ImportableMetadataProperties.ToList();
+            ImportableCodexProperties = SourceMetaData.ImportableProperties.Select(CodexProperty.GetInstance).RemoveNulls().ToList();
             ListLayoutPreferences = new();
             CardLayoutPreferences = new();
             TileLayoutPreferences = new();

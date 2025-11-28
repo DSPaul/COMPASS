@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.Models.CodexProperties
 {
+    /// <summary>
+    /// Provides functionality to set the property from metata sources, and enables some filter logic
+    /// </summary>
     public abstract class CodexProperty : ObservableObject
     {
         protected CodexProperty(string propName, string? label = null)
@@ -59,17 +63,17 @@ namespace COMPASS.Common.Models.CodexProperties
 
         public static CodexProperty? GetInstance(string propName) => propName switch
         {
-            nameof(Codex.Title) => new StringProperty(propName),
-            nameof(Codex.Authors) => new EnumerableProperty<string>(propName),
-            nameof(Codex.Publisher) => new StringProperty(propName),
-            nameof(Codex.Version) => new StringProperty(propName),
-            nameof(Codex.PageCount) => new NumberProperty<int>(propName, label: "Page count"),
-            nameof(Codex.Tags) => new TagsProperty(propName),
-            nameof(Codex.Description) => new StringProperty(propName),
-            nameof(Codex.ReleaseDate) => new DateTimeProperty(propName, label: "Release Date"),
-            nameof(Codex.Cover) => new CoverProperty(propName, label: "Cover Art"),
-            nameof(Codex.Rating) => new NumberProperty<int>(propName),
-            nameof(Codex.Sources.ISBN) => new StringProperty($"{nameof(Codex.Sources)}.{nameof(Codex.Sources.ISBN)}", label: "ISBN"),
+            nameof(CodexViewModel.Title) => new StringProperty(propName),
+            nameof(CodexViewModel.Authors) => new EnumerableProperty<string>(propName),
+            nameof(CodexViewModel.Publisher) => new StringProperty(propName),
+            nameof(CodexViewModel.Version) => new StringProperty(propName),
+            nameof(CodexViewModel.PageCount) => new NumberProperty<int>(propName, label: "Page count"),
+            nameof(CodexViewModel.Tags) => new TagsProperty(propName),
+            nameof(CodexViewModel.Description) => new StringProperty(propName),
+            nameof(CodexViewModel.ReleaseDate) => new DateTimeProperty(propName, label: "Release Date"),
+            nameof(CodexViewModel.Cover) => new CoverProperty(propName, label: "Cover Art"),
+            nameof(CodexViewModel.Rating) => new NumberProperty<int>(propName),
+            nameof(SourceSet.ISBN) => new StringProperty($"{nameof(CodexViewModel.Sources)}.{nameof(Codex.Sources.ISBN)}", label: "ISBN"),
             _ => null //could occur when a new preference file with new props is loaded into an older version of compass
         };
 

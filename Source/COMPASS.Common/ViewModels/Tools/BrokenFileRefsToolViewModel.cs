@@ -150,7 +150,7 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel, IDispo
     {
         if (SelectedCollectionVm is null || _selectedCollectionHandle is null) return;
         
-        await new CodexOperations(_selectedCollectionHandle).DeleteCodices(BrokenCodices.ToList(), true);
+        await CodexOperations.DeleteCodices(BrokenCodices.ToList(), true);
         BrokenCodicesChanged();
     }
 

@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals.Edit"
-             xmlns:model="using:COMPASS.Common.Models"
+             xmlns:modelVm="using:COMPASS.Common.ViewModels.ModelVMs"
              xmlns:interface="using:COMPASS.Infra.Models.Interfaces"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
@@ -110,113 +110,114 @@
 
             <TabItem Header="General">
                 <Grid ColumnDefinitions="*, Auto, Auto">
-                    <StackPanel Name="MainProperties" Grid.Column="0">
+                    <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Name="MainProperties" >
+                            <!-- Title -->
+                            <TextBlock Margin="3,10,3,3"
+                                       Text="Title:" />
+                            <TextBox Padding="5,0"
+                                     Text="{Binding WorkingCopy.Title, UpdateSourceTrigger=PropertyChanged}" />
 
-                        <!-- Title -->
-                        <TextBlock Margin="3,10,3,3"
-                                   Text="Title:" />
-                        <TextBox Padding="5,0"
-                                 Text="{Binding WorkingCopy.Title, UpdateSourceTrigger=PropertyChanged}" />
+                            <!-- Sorting Title -->
+                            <TextBlock Margin="3,10,3,3"
+                                       Text="Sorting Title:" />
+                            <Grid ColumnDefinitions="*, Auto" HorizontalAlignment="Stretch">
+                                <TextBox
+                                    Text="{Binding WorkingCopy.SortingTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Padding="5,0" HorizontalAlignment="Stretch" />
+                                <controls:Explainer Content="{Binding WorkingCopy.ZeroPaddingExplainer}"
+                                                    IsVisible="{Binding WorkingCopy.SortingTitleContainsNumbers}"
+                                                    Grid.Column="1" Margin="6" />
+                            </Grid>
 
-                        <!-- Sorting Title -->
-                        <TextBlock Margin="3,10,3,3"
-                                   Text="Sorting Title:" />
-                        <Grid ColumnDefinitions="*, Auto" HorizontalAlignment="Stretch">
-                            <TextBox
-                                Text="{Binding WorkingCopy.SortingTitle, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                Padding="5,0" HorizontalAlignment="Stretch" />
-                            <controls:Explainer Content="{Binding WorkingCopy.ZeroPaddingExplainer}"
-                                                IsVisible="{Binding WorkingCopy.SortingTitleContainsNumbers}"
-                                                Grid.Column="1" Margin="6" />
-                        </Grid>
+                            <!-- Authors -->
+                            <TextBlock Margin="3,10,3,3"
+                                       Text="Authors:" />
+                            <controls:MultiSelectAutoCompleteBox ItemsSource="{Binding AuthorList}"
+                                                                 SelectedItems="{Binding WorkingCopy.Authors, Mode=TwoWay}"
+                                                                 Watermark="Add author" CanCreate="True"/>
 
-                        <!-- Authors -->
-                        <TextBlock Margin="3,10,3,3"
-                                   Text="Authors:" />
-                        <controls:MultiSelectAutoCompleteBox ItemsSource="{Binding AuthorList}"
-                                                             SelectedItems="{Binding WorkingCopy.Authors, Mode=TwoWay}"
-                                                             Watermark="Add author" CanCreate="True"/>
+                            <!-- Publisher -->
+                            <TextBlock Margin="3,10,3,3"
+                                       Text="Publisher:" />
+                            <!-- TODO allow creating new elements, keep an eye on avalonia #18094 -->
+                            <ComboBox HorizontalAlignment="Stretch"
+                                      BorderBrush="LightGray"
+                                      Background="{DynamicResource TextControlBackground}"
+                                      SelectedItem="{Binding WorkingCopy.Publisher}"
+                                      ItemsSource="{Binding PublisherOptions}" />
 
-                        <!-- Publisher -->
-                        <TextBlock Margin="3,10,3,3"
-                                   Text="Publisher:" />
-                        <!-- TODO allow creating new elements, keep an eye on avalonia #18094 -->
-                        <ComboBox HorizontalAlignment="Stretch"
-                                  BorderBrush="LightGray"
-                                  Background="{DynamicResource TextControlBackground}"
-                                  SelectedItem="{Binding WorkingCopy.Publisher}"
-                                  ItemsSource="{Binding PublisherOptions}" />
+                            <!-- Smaller properties -->
+                            <Grid Margin="0,10" RowSpacing="5"
+                                  ColumnDefinitions="*, *, 0.5*, *, 1.5*"
+                                  RowDefinitions="Auto, Auto, Auto">
 
-                        <!-- Smaller properties -->
-                        <Grid Margin="0,10" RowSpacing="5"
-                              ColumnDefinitions="*, *, 0.5*, *, 1.5*"
-                              RowDefinitions="Auto, Auto, Auto">
+                                <!-- Version -->
+                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                           Text="Version:" />
+                                <TextBox Grid.Row="0" Grid.Column="1"
+                                         Text="{Binding WorkingCopy.Version, Mode=TwoWay}" Margin="5,0" />
 
-                            <!-- Version -->
-                            <TextBlock Grid.Row="0" Grid.Column="0"
-                                       Text="Version:" />
-                            <TextBox Grid.Row="0" Grid.Column="1"
-                                     Text="{Binding WorkingCopy.Version, Mode=TwoWay}" Margin="5,0" />
+                                <!--Page count -->
+                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                           Text="Page count:" />
+                                <!-- TODO have a look at validation -->
+                                <TextBox Grid.Row="1" Grid.Column="1"
+                                         Text="{Binding WorkingCopy.PageCount}"
+                                         MinWidth="30" Margin="5" />
 
-                            <!--Page count -->
-                            <TextBlock Grid.Row="1" Grid.Column="0"
-                                       Text="Page count:" />
-                            <!-- TODO have a look at validation -->
-                            <TextBox Grid.Row="1" Grid.Column="1"
-                                     Text="{Binding WorkingCopy.PageCount}"
-                                     MinWidth="30" Margin="5" />
+                                <!-- Hard Copy -->
+                                <TextBlock Grid.Row="2" Grid.Column="0" Margin="3,0"
+                                           Text="Hard Copy:" />
+                                <CheckBox Grid.Row="2" Grid.Column="1" Margin="3,0"
+                                          IsChecked="{Binding WorkingCopy.PhysicallyOwned, Mode=TwoWay}" />
 
-                            <!-- Hard Copy -->
-                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="3,0"
-                                       Text="Hard Copy:" />
-                            <CheckBox Grid.Row="2" Grid.Column="1" Margin="3,0"
-                                      IsChecked="{Binding WorkingCopy.PhysicallyOwned, Mode=TwoWay}" />
+                                <!-- Release Date -->
+                                <!-- TODO Add clear btn if not default  -->
+                                <TextBlock Grid.Row="0" Grid.Column="3"
+                                           Text="Release Date:" />
+                                <CalendarDatePicker Grid.Row="0" Grid.Column="4" Width="140"
+                                                    SelectedDate="{Binding WorkingCopy.ReleaseDate}" />
 
-                            <!-- Release Date -->
-                            <!-- TODO Add clear btn if not default  -->
-                            <TextBlock Grid.Row="0" Grid.Column="3"
-                                       Text="Release Date:" />
-                            <CalendarDatePicker Grid.Row="0" Grid.Column="4" Width="140"
-                                                SelectedDate="{Binding WorkingCopy.ReleaseDate}" />
+                                <!-- Rating -->
+                                <!-- TODO Add clear btn if not default  -->
+                                <TextBlock Grid.Row="1" Grid.Column="3"
+                                           Text="Rating:" />
+                                <controls:RatingControl Grid.Column="4" Grid.Row="1" Margin="5"
+                                                        Value="{Binding WorkingCopy.Rating, Mode=TwoWay}"
+                                                        CanClear="True"/>
 
-                            <!-- Rating -->
-                            <!-- TODO Add clear btn if not default  -->
-                            <TextBlock Grid.Row="1" Grid.Column="3"
-                                       Text="Rating:" />
-                            <controls:RatingControl Grid.Column="4" Grid.Row="1" Margin="5"
-                                                    Value="{Binding WorkingCopy.Rating, Mode=TwoWay}"
-                                                    CanClear="True"/>
+                                <!-- Favorite -->
+                                <TextBlock Grid.Row="2" Grid.Column="3" Margin="3,0"
+                                           Text="Favorite:" />
+                                <CheckBox Grid.Row="2" Grid.Column="4" Margin="3,0"
+                                          IsChecked="{Binding WorkingCopy.Favorite, Mode=TwoWay}" VerticalAlignment="Bottom" />
 
-                            <!-- Favorite -->
-                            <TextBlock Grid.Row="2" Grid.Column="3" Margin="3,0"
-                                       Text="Favorite:" />
-                            <CheckBox Grid.Row="2" Grid.Column="4" Margin="3,0"
-                                      IsChecked="{Binding WorkingCopy.Favorite, Mode=TwoWay}" VerticalAlignment="Bottom" />
+                            </Grid>
 
-                        </Grid>
-
-                        <!-- Tags -->
-                        <Grid ColumnDefinitions="Auto, *">
-                            <TextBlock Grid.Column="0" Text="Tags:" />
-                            <ItemsControl Grid.Column="1"
-                                          ItemsSource="{Binding WorkingCopy.OrderedTags}"
-                                          Background="{x:Null}" BorderBrush="{x:Null}"
-                                          VerticalAlignment="Center">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="model:Tag">
-                                        <controls:Chip
-                                            Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
-                                            Text="{Binding Name}" Margin="2" />
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Grid>
-                    </StackPanel>
+                            <!-- Tags -->
+                            <Grid ColumnDefinitions="Auto, *">
+                                <TextBlock Grid.Column="0" Text="Tags:" />
+                                <ItemsControl Grid.Column="1"
+                                              ItemsSource="{Binding WorkingCopy.OrderedTags}"
+                                              Background="{x:Null}" BorderBrush="{x:Null}"
+                                              VerticalAlignment="Center">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="modelVm:TagViewModel">
+                                            <controls:Chip
+                                                Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
+                                                Text="{Binding Name}" Margin="2" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
 
                     <Rectangle Grid.Column="1" Fill="{StaticResource Separator}" Width="3" Margin="10,0" />
 

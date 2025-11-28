@@ -36,36 +36,31 @@ public partial class MainView : UserControl
 
             case Key.I:
                 // Ctrl + I toggle info
+                if (e.KeyModifiers == KeyModifiers.Control && ActiveTabVM != null)
                 {
-                    if (e.KeyModifiers == KeyModifiers.Control && ActiveTabVM != null)
-                    {
-                        ActiveTabVM.CurrentLayout.CodexInfoVM.ShowCodexInfo = !ActiveTabVM.CurrentLayout.CodexInfoVM.ShowCodexInfo;
-                        e.Handled = true;
-                    }
+                    ActiveTabVM.CurrentLayout.CodexInfoVM.ShowCodexInfo = !ActiveTabVM.CurrentLayout.CodexInfoVM.ShowCodexInfo;
+                    e.Handled = true;
                 }
                 break;
             case Key.T:
+                if (e.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift))
                 {
-                    if (e.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift))
-                    {
-                        TabsViewModel.GetInstance().ReopenTab();
-                    }
-                    if (e.KeyModifiers == KeyModifiers.Control)
-                    {
-                        TabsViewModel.GetInstance().CreateTab();
-                    }
+                    TabsViewModel.GetInstance().ReopenTab();
+                    e.Handled = true;
+                }
+                else if (e.KeyModifiers == KeyModifiers.Control)
+                {
+                    TabsViewModel.GetInstance().CreateTab();
                     e.Handled = true;
                 }
                 break;
 
             case Key.F5:
+                if (ActiveTabVM != null)
                 {
-                    if (ActiveTabVM != null)
-                    {
-                        await ActiveTabVM.Refresh();
-                    }
-                    e.Handled = true;
+                    await ActiveTabVM.Refresh();
                 }
+                e.Handled = true;
                 break;
         }
 

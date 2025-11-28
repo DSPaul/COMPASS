@@ -1,12 +1,14 @@
+using COMPASS.Common.ViewModels.ModelVMs;
+
 namespace COMPASS.Common.Models.Hierarchy;
 
 //Compiled bindings don't like generics, so do this to help it
-public class TagTreeNode : TreeNode<Tag>
+public class TagTreeNode : TreeNode<TagViewModel>
 {
-    public TagTreeNode(Tag tag) : base(tag) { }
+    public TagTreeNode(TagViewModel tagVm) : base(tagVm) { }
 }
 
-public class CheckableTagTreeNode : CheckableTreeNode<Tag>
+public class CheckableTagTreeNode : CheckableTreeNode<TagViewModel>
 {
-    public CheckableTagTreeNode(Tag tag) : base(tag) { }
+    public CheckableTagTreeNode(TagViewModel tagVm) : base(tagVm) { }
 }

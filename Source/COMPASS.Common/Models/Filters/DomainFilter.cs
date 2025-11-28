@@ -1,6 +1,4 @@
-﻿using Avalonia.Media;
-
-namespace COMPASS.Common.Models.Filters
+﻿namespace COMPASS.Common.Models.Filters
 {
     internal class DomainFilter : Filter
     {
@@ -8,10 +6,6 @@ namespace COMPASS.Common.Models.Filters
         {
             AllowMultiple = true;
         }
-
-        public override Color BackgroundColor => Colors.MediumTurquoise;
-
-        public override string Content => $"From: {FilterValue}";
 
         public override bool Apply(Codex codex) =>
             FilterValue is string domain &&

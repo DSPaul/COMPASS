@@ -9,10 +9,6 @@ namespace COMPASS.Common.Models.Filters
             AllowMultiple = true;
         }
 
-        public override Color BackgroundColor => Colors.OrangeRed;
-
-        public override string Content => $"File Type: {FilterValue}";
-
         public override bool Apply(Codex codex) => FilterValue is string extension && codex.Sources.FileType == extension;
     }
 }

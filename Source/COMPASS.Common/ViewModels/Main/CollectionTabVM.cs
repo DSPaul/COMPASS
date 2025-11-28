@@ -34,10 +34,10 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     {
         _collectionHandle = collectionHandle;
         
-        _filterVM = new(_collectionHandle.CollectionVM.Collection.AllCodices, filtersState);
-        _tagsVM = new(_collectionHandle.CollectionVM.Collection, _filterVM);
+        _filtersVM = new(_collectionHandle.CollectionVM.AllCodexVms, filtersState);
+        _tagsVM = new(_collectionHandle.CollectionVM, _filtersVM);
         _currentLayout = LayoutViewModel.GetLayout(layout);
-        CodexCommands = new(_collectionHandle);
+        CodexCommands = new();
     }
 
     #region events
@@ -54,11 +54,11 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     
     public IReadOnlyCollection<CodexCollectionVM> AllCodexCollections => CollectionManager.CollectionVms;
     
-    private FilterViewModel _filterVM;
-    public FilterViewModel FilterVM
+    private FiltersViewModel _filtersVM;
+    public FiltersViewModel FiltersVM
     {
-        get => _filterVM;
-        private set => SetProperty(ref _filterVM, value);
+        get => _filtersVM;
+        private set => SetProperty(ref _filtersVM, value);
     }
 
     private TagsPanelVM _tagsVM;
@@ -319,11 +319,11 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         //TODO: check if this is still needed
         //CurrentLayout?.UpdateDoVirtualization();
         
-        FilterVM = new(newHandle.CollectionVM.Collection.AllCodices);
-        TagsVM = new(newHandle.CollectionVM.Collection, FilterVM);
-        CodexCommands = new(newHandle);
+        FiltersVM = new(newHandle.CollectionVM.AllCodexVms);
+        TagsVM = new(newHandle.CollectionVM, FiltersVM);
+        CodexCommands = new();
         
-        FilterVM.ReFilter(true);
+        FiltersVM.ReFilter(true);
 
         OnPropertyChanged(nameof(CollectionVM));
         CollectionChanged?.Invoke(this, EventArgs.Empty);

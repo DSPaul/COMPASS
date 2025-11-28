@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -10,7 +9,7 @@ using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Models
 {
-    public class CodexCollection : ObservableObject, IDisposable
+    public class CodexCollection : ObservableObject
     {
         public CodexCollection(string identifier)
         {
@@ -30,7 +29,7 @@ namespace COMPASS.Common.Models
             set => SetProperty(ref _name, value);
         }
 
-        public List<Tag> AllTags { get; set; } = [];
+        public ObservableCollection<Tag> AllTags { get; set; } = [];
 
         private List<Tag> _rootTags = [];
         public List<Tag> RootTags
@@ -87,7 +86,8 @@ namespace COMPASS.Common.Models
 
         public void TagsChanged()
         {
-            AllTags = RootTags.Flatten().ToList();
+            AllTags = new(RootTags.Flatten());
+            OnPropertyChanged(nameof(RootTags));
         }
 
         public void AddTags(IEnumerable<Tag> tags)
@@ -98,11 +98,10 @@ namespace COMPASS.Common.Models
             foreach (Tag tag in tagsToImport)
             {
                 tag.Id = Utils.GetAvailableId(AllTags);
-                AllTags.Add(tag);
             }
             RootTags.AddRange(tagsList);
             
-            OnPropertyChanged(nameof(RootTags));
+            TagsChanged();
         }
 
         private void ImportCodicesFrom(CodexCollection source)
@@ -152,6 +151,12 @@ namespace COMPASS.Common.Models
 
         public void DeleteTag(Tag toDelete)
         {
+            //Remove from all codices
+            foreach (var codex in AllCodices)
+            {
+                codex.Tags.Remove(toDelete);
+            }
+            
             //Recursive loop to delete all children
             if (toDelete.Children.Count > 0)
             {
@@ -170,14 +175,6 @@ namespace COMPASS.Common.Models
             else
             {
                 toDelete.Parent.Children.Remove(toDelete);
-            }
-        }
-
-        public void Dispose()
-        {
-            foreach (Codex codex in AllCodices)
-            {
-                codex.Dispose();
             }
         }
     }

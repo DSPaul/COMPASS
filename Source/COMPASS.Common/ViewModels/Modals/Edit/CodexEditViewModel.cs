@@ -19,23 +19,24 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
-    public class CodexEditViewModel : EditViewModelBase<Codex>
+    public class CodexEditViewModel : EditViewModelBase<CodexViewModel, Codex>
     {
         public CodexEditViewModel(Codex sourceCodex, bool createNew = false, CollectionTabVM? tabVm = null) 
-            : base(sourceCodex, createNew)
+            : base(sourceCodex, createNew, codex => new CodexViewModel(codex, (tabVm ?? TabsViewModel.GetInstance().ActiveTab)!.CollectionVM))
         {
             TabVM = tabVm ?? TabsViewModel.GetInstance().ActiveTab ?? throw new NoTabException("An active tab is expected when editing a codex");
         
-            var publisherList = TabVM.FilterVM.PublisherList;
+            var publisherList = TabVM.FiltersVM.PublisherList;
             PublisherOptions = ["", ..publisherList];
 
             WorkingCopy.LoadCover();
-            AuthorList = TabVM.FilterVM.AuthorList.ToList();
+            AuthorList = TabVM.FiltersVM.AuthorList.ToList();
             
             //Apply right checkboxes in AllTags
             foreach (var node in AllTreeNodes)
@@ -53,11 +54,13 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
     
         public CollectionTabVM TabVM { get; }
     
-        protected ObservableCollection<CheckableTreeNode<Tag>>? _allTagsAsTreeNodes;
-        public ObservableCollection<CheckableTreeNode<Tag>> AllTagsAsTreeNodes => _allTagsAsTreeNodes ??= 
-            new(TabVM.CollectionVM.Collection.RootTags.Select(tag => new CheckableTreeNode<Tag>(tag)));
+        protected ObservableCollection<CheckableTreeNode<TagViewModel>>? _allTagsAsTreeNodes;
+        public ObservableCollection<CheckableTreeNode<TagViewModel>> AllTagsAsTreeNodes => _allTagsAsTreeNodes ??= 
+            new(TabVM.CollectionVM.Collection.RootTags
+                .Select(TabVM.CollectionVM.GetTagVm)
+                .Select(tagVm => new CheckableTreeNode<TagViewModel>(tagVm)));
 
-        protected HashSet<CheckableTreeNode<Tag>> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
+        protected HashSet<CheckableTreeNode<TagViewModel>> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
     
         public List<string> PublisherOptions { get; }
 
@@ -77,31 +80,6 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         #endregion
 
         #region Methods and Commands
-        
-        //TODO this doesn't work, must be on codex itself, make a vm for it
-        protected override void CustomValidate(string? propertyName)
-        {
-            if (string.IsNullOrEmpty(propertyName))
-            {
-                ValidatePageCount();
-                return;
-            }
-            
-            switch (propertyName)
-            {
-                case nameof(Codex.PageCount):
-                    ValidatePageCount();
-                    break;
-            }
-        }
-
-        private void ValidatePageCount()
-        {
-            if (WorkingCopy.PageCount < 0)
-            {
-                AddError(nameof(Codex.PageCount), "Pagecount must be a positive number.");
-            }
-        }
 
         protected override void HandleCreateNew(Codex newCodex)
         {
@@ -141,9 +119,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public RelayCommand BrowseURLCommand => _browseURLCommand ??= new(BrowseURL);
         private void BrowseURL()
         {
-            if (CodexOperations.CanOpenCodexOnline(WorkingCopy))
+            if (CodexOperations.CanOpenCodexOnline(WorkingCopy.GetModel()))
             {
-                CodexOperations.OpenCodexOnline(WorkingCopy);
+                CodexOperations.OpenCodexOnline(WorkingCopy.GetModel());
             }
         }
 
@@ -159,30 +137,29 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public RelayCommand TagCheckCommand => _tagCheckCommand ??= new(UpdateTagList);
         private void UpdateTagList()
         {
-            WorkingCopy.Tags.Clear();
-            WorkingCopy.Tags.AddRange(CheckableTreeNode<Tag>.GetCheckedItems(AllTagsAsTreeNodes));
+            WorkingCopy.GetModel().Tags.Clear();
+            WorkingCopy.GetModel().Tags.AddRange(AllTagsAsTreeNodes.Flatten().Where(node => node.IsChecked == true).Select(node => node.Item.GetModel()));
         }
 
         private AsyncRelayCommand? _quickCreateTagCommand;
         public AsyncRelayCommand QuickCreateTagCommand => _quickCreateTagCommand ??= new(QuickCreateTag);
         public async Task QuickCreateTag()
         {
-            //keep track of the count to check of tags were created
-            int tagCount = WorkingCopy.Collection.RootTags.Count;
+            //keep track of the count to check if tags were created
+            int tagCount = TabVM.CollectionVM.Collection.AllTags.Count;
 
-            TagEditViewModel tagEditVm = new(new Tag(), createNew: true);
+            TagEditViewModel tagEditVm = new(new Tag(), TabVM.CollectionVM, createNew: true);
             var modal = new ModalWindow(tagEditVm);
             await modal.ShowDialog(App.MainWindow); //TODO make this the window of the codex edit
-
-            //TODO, we can now create tags outside of root, this is not longer correct
-            if (WorkingCopy.Collection.RootTags.Count > tagCount) //new tag was created
+            
+            if (TabVM.CollectionVM.Collection.AllTags.Count > tagCount) //new tag was created
             {
                 //recalculate treeview source
                 _allTagsAsTreeNodes = null;
                 OnPropertyChanged(nameof(AllTagsAsTreeNodes));
 
                 //Apply right checkboxes in AllTags
-                foreach (CheckableTreeNode<Tag> t in AllTreeNodes)
+                foreach (CheckableTreeNode<TagViewModel> t in AllTreeNodes)
                 {
                     t.Expanded = false;
                     t.IsChecked = WorkingCopy.Tags.Contains(t.Item);
@@ -202,7 +179,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             if (!_createNew)
             {
-                await TabVM.CodexCommands.DeleteCodex(_source);
+                await CodexOperations.DeleteCodex(_source);
             }
             
             CloseAction();
@@ -214,13 +191,13 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             ShowLoading = true;
             //make it so cover always gets overwritten if this case, store old value first
-            CodexProperty coverProp = PreferencesService.GetInstance().Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(Codex.Cover));
+            CodexProperty coverProp = PreferencesService.GetInstance().Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetaData.Cover));
             MetaDataOverwriteMode curSetting = coverProp.OverwriteMode;
             coverProp.OverwriteMode = MetaDataOverwriteMode.Always;
             //get the cover
             try
             {
-                await CoverService.GetAndApplyCover(WorkingCopy);
+                await CoverService.GetAndApplyCover(WorkingCopy.GetModel());
             }
             catch (OperationCanceledException)
             {
@@ -252,7 +229,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 var img = CoverService.GetCoverFromImage(file.Path.AbsolutePath);
                 if (img != null)
                 {
-                    await CoverService.SaveCover(WorkingCopy, img);
+                    await CoverService.SaveCover(WorkingCopy.GetModel(), img);
                 }
                 WorkingCopy.LoadCover();
             }
@@ -286,7 +263,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 var img = CoverService.GetCoverFromImage(path);
                 if (img != null)
                 {
-                    await CoverService.SaveCover(WorkingCopy, img);
+                    await CoverService.SaveCover(WorkingCopy.GetModel(), img);
                 }
                 WorkingCopy.LoadCover();
             }

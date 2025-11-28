@@ -44,8 +44,7 @@ namespace COMPASS.Infra.ExtensionMethods
         /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
         /// <param name="toAdd"></param>
-        public static void AddRange<T>(
-        this ObservableCollection<T> collection, IEnumerable<T> toAdd)
+        public static void AddRange<T>(this ObservableCollection<T> collection, IEnumerable<T> toAdd)
         {
             if (toAdd == null) throw new ArgumentNullException(nameof(toAdd));
             foreach (var i in toAdd)
@@ -55,7 +54,22 @@ namespace COMPASS.Infra.ExtensionMethods
         }
 
         /// <summary>
-        /// Sort an obervable collection in place
+        /// Same as addRange of lists.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <param name="toRemove"></param>
+        public static void RemoveRange<T>(this IList<T> collection, IEnumerable<T> toRemove)
+        {
+            if (toRemove == null) throw new ArgumentNullException(nameof(toRemove));
+            foreach (var item in toRemove)
+            {
+                collection.Remove(item);
+            }
+        }
+        
+        /// <summary>
+        /// Sort an observable collection in place
         /// </summary>
         /// <param name="collection"></param>
         /// <param name="keySelector"></param>
@@ -229,6 +243,11 @@ namespace COMPASS.Infra.ExtensionMethods
         public static IEnumerable<T> Without<T>(this IEnumerable<T> l, T element)
         {
             return l.Except([element]);
+        }
+
+        public static IEnumerable<T> RemoveNulls<T>(this IEnumerable<T?> l)
+        {
+            return l.Where(item => item is not null).Cast<T>();
         }
 
         public static bool SafeAny<T>(

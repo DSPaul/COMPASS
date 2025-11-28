@@ -143,7 +143,7 @@ public class TabsViewModel : ViewModelBase
     {
         public TabState(CollectionTabVM tabVM) : this(
             tabVM.CollectionVM, 
-            tabVM.FilterVM.GetFiltersState(), 
+            tabVM.FiltersVM.GetFiltersState(), 
             tabVM.CurrentLayout.LayoutType) { }
         
         

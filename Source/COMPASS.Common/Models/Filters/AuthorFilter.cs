@@ -1,6 +1,4 @@
-﻿using Avalonia.Media;
-
-namespace COMPASS.Common.Models.Filters
+﻿namespace COMPASS.Common.Models.Filters
 {
     internal class AuthorFilter : Filter
     {
@@ -8,9 +6,7 @@ namespace COMPASS.Common.Models.Filters
         {
             AllowMultiple = true;
         }
-
-        public override string Content => $"Author: {FilterValue}";
-        public override Color BackgroundColor => Colors.Orange;
+        
         public override bool Apply(Codex codex) => FilterValue is string author && codex.Authors.Contains(author);
     }
 }

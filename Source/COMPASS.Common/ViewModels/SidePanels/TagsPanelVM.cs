@@ -17,6 +17,7 @@ using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Modals.Import;
+using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.ExtensionMethods;
@@ -25,18 +26,18 @@ namespace COMPASS.Common.ViewModels.SidePanels
 {
     public class TagsPanelVM : ViewModelBase, IDealsWithTabControl
     {
-        public TagsPanelVM(CodexCollection codexCollection, FilterViewModel filterVM)
+        public TagsPanelVM(CodexCollectionVM codexCollectionVm, FiltersViewModel filtersVM)
         {
-            _codexCollection = codexCollection;
+            _codexCollectionVm = codexCollectionVm;
 
-            codexCollection.PropertyChanged += OnCollectionChanged;
+            codexCollectionVm.Collection.PropertyChanged += OnCollectionChanged;
             
-            _filterVM = filterVM;
+            _filtersVM = filtersVM;
             UpdateTagsAsTreeNodes();
         }
 
-        private readonly CodexCollection _codexCollection;
-        private readonly FilterViewModel _filterVM;
+        private readonly CodexCollectionVM _codexCollectionVm;
+        private readonly FiltersViewModel _filtersVM;
 
         #region Properties
         
@@ -83,8 +84,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
         }
         
         //TreeViewSource with hierarchy
-        private ObservableCollection<TreeNode<Tag>> _tagsAsTreeNodes = [];
-        public ObservableCollection<TreeNode<Tag>> TagsAsTreeNodes
+        private ObservableCollection<TreeNode<TagViewModel>> _tagsAsTreeNodes = [];
+        public ObservableCollection<TreeNode<TagViewModel>> TagsAsTreeNodes
         {
             get => _tagsAsTreeNodes;
             set => SetProperty(ref _tagsAsTreeNodes, value);
@@ -103,7 +104,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         
         private void OnTagParentChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(Tag.Parent))
+            if (e.PropertyName == nameof(TagViewModel.Parent))
             {
                 UpdateTagsAsTreeNodes();
             }
@@ -111,26 +112,31 @@ namespace COMPASS.Common.ViewModels.SidePanels
         
         public void UpdateTagsAsTreeNodes()
         {
-            List<TreeNode<Tag>> tagsAsTreeNodes = _codexCollection.RootTags.Select(tag => new TreeNode<Tag>(tag)).ToList();
-            List<TreeNode<Tag>> newNodes = tagsAsTreeNodes.Flatten().ToList();
+            List<TreeNode<TagViewModel>> tagsAsTreeNodes = 
+                _codexCollectionVm.Collection.RootTags
+                    .Select(_codexCollectionVm.GetTagVm)
+                    .Select(tagVm => new TreeNode<TagViewModel>(tagVm))
+                    .ToList();
+            
+            List<TreeNode<TagViewModel>> newNodes = tagsAsTreeNodes.Flatten().ToList();
 
             // transfer expanded property
             if (TagsAsTreeNodes.Any())
             {
                 var oldNodes = TagsAsTreeNodes.Flatten().ToList();
-                foreach (TreeNode<Tag> node in oldNodes)
+                foreach (TreeNode<TagViewModel> node in oldNodes)
                 {
                     node.Item.PropertyChanged -= OnTagParentChanged;
                 }
                 
-                foreach (TreeNode<Tag> newNode in newNodes)
+                foreach (TreeNode<TagViewModel> newNode in newNodes)
                 {
                     newNode.Expanded = oldNodes.Find(n => n.Item == newNode.Item)?.Expanded ?? newNode.Expanded;
                 }
             }
             
             //Update the tree when a tag switches parent
-            foreach (TreeNode<Tag> node in newNodes)
+            foreach (TreeNode<TagViewModel> node in newNodes)
             {
                 node.Item.PropertyChanged += OnTagParentChanged;
             }
@@ -158,7 +164,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         //Add Tag Buttons
         private RelayCommand? _addTagCommand;
         public RelayCommand AddTagCommand => _addTagCommand ??= new(AddTag);
-        public void AddTag() => AddTagViewModel = new TagEditViewModel(new Tag(), true);
+        public void AddTag() => AddTagViewModel = new TagEditViewModel(new Tag(), _codexCollectionVm, true);
 
 
         private RelayCommand? _addGroupCommand;
@@ -169,16 +175,16 @@ namespace COMPASS.Common.ViewModels.SidePanels
             {
                 IsGroup = true,
             };
-            AddGroupViewModel = new TagEditViewModel(newTag, true);
+            AddGroupViewModel = new TagEditViewModel(newTag, _codexCollectionVm, true);
         }
 
-        private RelayCommand<Tag?>? _addTagFilterCommand;
-        public RelayCommand<Tag?> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
-        public void AddTagFilterHelper(Tag? tag)
+        private RelayCommand<TagViewModel?>? _addTagFilterCommand;
+        public RelayCommand<TagViewModel?> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
+        private void AddTagFilterHelper(TagViewModel? tagVm)
         {
-            if (tag != null)
+            if (tagVm != null)
             {
-                _filterVM.AddFilter(new TagFilter(tag), ModeIsInclude);
+                _filtersVM.AddFilter(new TagFilter(tagVm), ModeIsInclude);
             }
         }
 
@@ -242,7 +248,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         
         #region Drag & Drop Tags Treeview
         //Drop on Treeview Behaviour
-        //TODO: used to have to call the default implemenation of drag and drop here, not sure 
+        //TODO: used to have to call the default implementation of drag and drop here, not sure 
         void OnDrop(object sender, DragEventArgs e)
         {
             // Drag & Drop will modify the Collection of Treeview nodes that the treeview is bound to
@@ -255,14 +261,14 @@ namespace COMPASS.Common.ViewModels.SidePanels
             }
 
             // Cannot do TreeRoot = ExtractTagsFromTreeViewSource(TreeViewSource); because that changes ref of TreeRoot
-            _codexCollection.RootTags.Clear();
-            _codexCollection.RootTags.AddRange(newRootTags);
+            _codexCollectionVm.Collection.RootTags.Clear();
+            _codexCollectionVm.Collection.RootTags.AddRange(newRootTags);
         }
         
         //TODO move this somewhere else
-        private Tag ToTag(TreeNode<Tag> node)
+        private Tag ToTag(TreeNode<TagViewModel> node)
         {
-            Tag tag = node.Item;
+            Tag tag = node.Item.GetModel();
             
             //add children according to treeview
             tag.Children = new(node.Children.Select(ToTag));
@@ -278,29 +284,29 @@ namespace COMPASS.Common.ViewModels.SidePanels
         #endregion
 
         #region Tag Context Menu
-        private AsyncRelayCommand<Tag?>? _createChildCommand;
-        public AsyncRelayCommand<Tag?> CreateChildCommand => _createChildCommand ??= new(CreateChildTag);
-        private async Task CreateChildTag(Tag? referenceTag)
+        private AsyncRelayCommand<TagViewModel?>? _createChildCommand;
+        public AsyncRelayCommand<TagViewModel?> CreateChildCommand => _createChildCommand ??= new(CreateChildTag);
+        private async Task CreateChildTag(TagViewModel? referenceTag)
         {
             if (referenceTag is not null)
             {
                 Tag newTag = new(ActiveCollection.AllTags)
                 {
-                    Parent = referenceTag
+                    Parent = referenceTag.GetModel()
                 };
-                ModalWindow modal = new(new TagEditViewModel(newTag, true));
+                ModalWindow modal = new(new TagEditViewModel(newTag, _codexCollectionVm, true));
                 await modal.ShowDialog(App.MainWindow);
             }
         }
 
-        private RelayCommand<Tag?>? _sortChildrenCommand;
-        public RelayCommand<Tag?> SortChildrenCommand => _sortChildrenCommand ??= new(SortChildren, CanSortChildren);
-        public void SortChildren(Tag? parentTag)
+        private RelayCommand<TagViewModel?>? _sortChildrenCommand;
+        public RelayCommand<TagViewModel?> SortChildrenCommand => _sortChildrenCommand ??= new(SortChildren, CanSortChildren);
+        private void SortChildren(TagViewModel? parentTag)
         {
-            RecursiveSortChildren(parentTag);
+            RecursiveSortChildren(parentTag?.GetModel());
             UpdateTagsAsTreeNodes();
         }
-        public void RecursiveSortChildren(Tag? tag)
+        private void RecursiveSortChildren(Tag? tag)
         {
             if (tag is null) return;
             tag.Children = new(tag.Children.OrderBy(t => t.Name));
@@ -310,47 +316,41 @@ namespace COMPASS.Common.ViewModels.SidePanels
             }
         }
         
-        public bool CanSortChildren(Tag? tag) => tag?.Children.Any() == true;
+        private bool CanSortChildren(TagViewModel? tagVm) => tagVm?.Children.Any() == true;
 
         private RelayCommand? _sortAllTagsCommand;
         public RelayCommand SortAllTagsCommand => _sortAllTagsCommand ??= new(SortAllTags);
-        public void SortAllTags()
+        private void SortAllTags()
         {
             Tag t = new()
             {
-                Children = new(ActiveCollection.RootTags)
+                Children = new(_codexCollectionVm.Collection.RootTags)
             };
             RecursiveSortChildren(t);
             ActiveCollection.RootTags = t.Children.ToList();
             UpdateTagsAsTreeNodes();
         }
 
-        private AsyncRelayCommand<Tag?>? _editTagCommand;
-        public AsyncRelayCommand<Tag?> EditTagCommand => _editTagCommand ??= new(EditTag);
-        public async Task EditTag(Tag? toEdit)
+        private AsyncRelayCommand<TagViewModel?>? _editTagCommand;
+        public AsyncRelayCommand<TagViewModel?> EditTagCommand => _editTagCommand ??= new(EditTag);
+        private async Task EditTag(TagViewModel? toEdit)
         {
             if (toEdit is null) return;
-            ModalWindow modal = new(new TagEditViewModel(toEdit, false));
+            ModalWindow modal = new(new TagEditViewModel(toEdit.GetModel(), _codexCollectionVm, false));
             await modal.ShowDialog(App.MainWindow);
         }
 
-        private RelayCommand<Tag?>? _deleteTagCommand;
-        public RelayCommand<Tag?> DeleteTagCommand => _deleteTagCommand ??= new(DeleteTag);
+        private RelayCommand<TagViewModel?>? _deleteTagCommand;
+        public RelayCommand<TagViewModel?> DeleteTagCommand => _deleteTagCommand ??= new(DeleteTag);
 
-        public void DeleteTag(Tag? toDelete)
+        private void DeleteTag(TagViewModel? toDelete)
         {
-            //tag to delete is context, because DeleteTag is called from context menu
             if (toDelete is null) return;
-            ActiveCollection.DeleteTag(toDelete);
-            _filterVM.RemoveFilter(new TagFilter(toDelete));
+            
+            _codexCollectionVm.Collection.DeleteTag(toDelete.GetModel());
+            _filtersVM.RemoveFilter(ModelVmFactory.GetFilterViewModel(new TagFilter(toDelete)));
 
-            //Go over all files and remove the tag from tag list
-            foreach (var f in _codexCollection.AllCodices)
-            {
-                f.Tags.Remove(toDelete);
-            }
-
-            _codexCollection.Save();
+            _codexCollectionVm.Collection.Save();
 
             UpdateTagsAsTreeNodes();
         }

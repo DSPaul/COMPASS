@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.ViewModels;
@@ -26,10 +27,11 @@ namespace COMPASS.Common.ViewModels
             }
         }
         
-        #region INotifyDataErrorInfo
+        #region INotifyDataErrorInfo / Validation
     
         //list of errors per property
         private readonly Dictionary<string, List<string>> _errors = [];
+        private readonly Dictionary<string, Action> _validationMethods = [];
     
         public bool HasErrors => _errors.Any();
     
@@ -88,21 +90,29 @@ namespace COMPASS.Common.ViewModels
         protected void Validate(string? propertyName = null)
         {
             ClearErrors(propertyName);
-            CustomValidate(propertyName);
+
+            //validate
+            if (propertyName == null)
+            {
+                foreach (var validationMethod in _validationMethods.Values)
+                {
+                    validationMethod.Invoke();
+                }
+            }
+            else if(_validationMethods.TryGetValue(propertyName, out var validationMethod))
+            {
+                validationMethod.Invoke();
+            }
             
             if (this is IConfirmable confirmable)
             {
-                confirmable.ConfirmCommand.NotifyCanExecuteChanged();
+                Dispatcher.UIThread.Invoke(confirmable.ConfirmCommand.NotifyCanExecuteChanged);
             }
         }
 
-        /// <summary>
-        /// Define custom validation logic here
-        /// </summary>
-        /// <param name="propertyName"></param>
-        protected virtual void CustomValidate(string? propertyName)
+        protected void AddValidation(string propertyName, Action validator)
         {
-            
+            _validationMethods[propertyName] = validator;
         }
 
         #endregion

@@ -146,7 +146,7 @@ namespace COMPASS.Common.ViewModels.Import
             //now get metadata and cover async
             try
             {
-                await new CodexOperations(targetCollectionHandle).StartGetMetaDataProcess(newCodices);
+                await CodexOperations.StartGetMetaDataProcess(newCodices);
                 await CoverService.GetAndApplyCover(newCodices);
             }
             catch (OperationCanceledException ex)
@@ -158,7 +158,7 @@ namespace COMPASS.Common.ViewModels.Import
 
             foreach (Codex codex in newCodices)
             {
-                codex.RefreshThumbnail();
+                codex.NotifyCoverChanged();
             }
         }
     }

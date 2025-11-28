@@ -566,4 +566,43 @@
         </Style>
     </Style>
 
+        <!-- Validation Error template -->
+    <Style Selector="DataValidationErrors">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid RowDefinitions="* auto" 
+                      ColumnDefinitions="* auto">
+                    <ContentPresenter Grid.ColumnSpan="2"
+                                      Name="PART_ContentPresenter"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      CornerRadius="{TemplateBinding CornerRadius}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Content="{TemplateBinding Content}"
+                                      Padding="{TemplateBinding Padding}"/>
+                    <TextBlock  Grid.Row="1" Grid.Column="0" 
+                                Foreground="Red" Text="Invalid Value"
+                                DataContext="{TemplateBinding Owner}"
+                                IsVisible="{Binding (DataValidationErrors.HasErrors)}"/>
+                    <materialIcons:MaterialIcon Grid.Row="1" Grid.Column="1"
+                                                IsVisible="{Binding (DataValidationErrors.HasErrors)}"
+                                                DataContext="{TemplateBinding Owner}"
+                                                Kind="InfoCircleOutline"
+                                                Foreground="Red" ToolTip.ShowDelay="0">
+                        <materialIcons:MaterialIcon.Styles>
+                            <Style Selector="ToolTip">
+                                <Setter Property="Background" Value="Red"/>
+                                <Setter Property="BorderBrush" Value="Red"/>
+                            </Style>
+                        </materialIcons:MaterialIcon.Styles>
+                        <ToolTip.Tip>
+                            <ItemsControl ItemsSource="{Binding (DataValidationErrors.Errors)}"/>
+                        </ToolTip.Tip>
+                    </materialIcons:MaterialIcon>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    
 </Styles>
