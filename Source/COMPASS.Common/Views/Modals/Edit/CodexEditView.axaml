@@ -180,7 +180,6 @@
                                                     SelectedDate="{Binding WorkingCopy.ReleaseDate}" />
 
                                 <!-- Rating -->
-                                <!-- TODO Add clear btn if not default  -->
                                 <TextBlock Grid.Row="1" Grid.Column="3"
                                            Text="Rating:" />
                                 <controls:RatingControl Grid.Column="4" Grid.Row="1" Margin="5"

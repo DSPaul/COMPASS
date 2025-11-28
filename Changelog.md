@@ -1,5 +1,16 @@
 # CHANGELOG
-## COMPASS v1.8.9 (26 October 2025)
+## COMPASS v1.8.10 (23 November 2025)
+
+### Improvements
+
+- Add a button to the codex edit window to clear the rating. 
+- Change the default tag color from gray to Same as Parent. 
+
+### Fixes
+
+- Fix a crash when moving an item without thumbnail to a different collection
+- Potentially fix a crash when opening the file selector dialog
+## COMPASS v1.8.9 (26 October 2025)
 
 ### Improvements
 
