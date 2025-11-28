@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using COMPASS.Common.Models;
+using COMPASS.Common.Services;
 
 namespace Tests.UnitTests
 {
@@ -18,7 +19,7 @@ namespace Tests.UnitTests
             Assert.That(newSatchelInfo, Is.Not.Null);
             Assert.Multiple(() =>
             {
-                Assert.That(newSatchelInfo.CreationVersion, Is.EqualTo(Reflection.Version));
+                Assert.That(newSatchelInfo.CreationVersion, Is.EqualTo(ApplicationService.Version));
                 Assert.That(newSatchelInfo.CreationDate, Is.LessThan(DateTime.Now));
             });
         }

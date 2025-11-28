@@ -1,8 +1,10 @@
-﻿using System.Collections.ObjectModel;
-using System.Text;
-using Avalonia.Media;
+﻿using Avalonia.Media;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
+using COMPASS.Infra.ExtensionMethods;
+using System.Collections.ObjectModel;
+using System.Text;
 
 namespace Tests.DataGenerators
 {
@@ -101,7 +103,7 @@ namespace Tests.DataGenerators
         public static Preferences GetRandomPreferences() => new()
         {
             AutoLinkFolderTagSameName = true,
-            ImportableCodexProperties = Codex.ImportableMetadataProperties,
+            ImportableCodexProperties = SourceMetaData.ImportableProperties.Select(CodexProperty.GetInstance).RemoveNulls().ToList(),
             CardLayoutPreferences = new CardLayoutPreferences()
             {
                 ShowAuthor = GetRandomBool(),

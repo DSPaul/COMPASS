@@ -1,15 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <LangVersion>14</LangVersion>
-    </PropertyGroup>
-
     <ItemGroup>
-      <PackageReference Include="Avalonia" Version="11.3.8" />
+      <PackageReference Include="Autofac" Version="9.0.0" />
+      <PackageReference Include="Avalonia" Version="11.3.9" />
       <PackageReference Include="FuzzySharp" Version="2.0.2" />
     </ItemGroup>
-
 </Project>

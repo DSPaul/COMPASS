@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -21,6 +17,7 @@ using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.SidePanels
 {

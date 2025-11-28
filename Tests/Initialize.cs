@@ -2,6 +2,8 @@
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Tools;
 using Tests.Mocks;
+using Autofac;
+using COMPASS.Infra.Tools;
 
 namespace Tests
 {
@@ -13,6 +15,8 @@ namespace Tests
         {
             //init the container
             var builder = new ContainerBuilder();
+
+            builder.RegisterModule<CommonModule>();
 
             builder.RegisterType<MockNotificationService>().As<INotificationService>();
             builder.RegisterType<MockEnvironmentVarsService>().As<IEnvironmentVarsService>();

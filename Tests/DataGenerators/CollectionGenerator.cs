@@ -18,12 +18,15 @@ namespace Tests.DataGenerators
 
             //create tags and codices
             collection.AddTags(RandomGenerator.GetRandomList<Tag>());
-            collection.AllCodices.AddRange(RandomGenerator.GetRandomList<Codex>());
+            foreach (var codex in RandomGenerator.GetRandomList<Codex>())
+            {
+                collection.AllCodices.Add(codex);
+            }
 
             //assign tags to codices
             foreach (var c in collection.AllCodices)
             {
-                c.Tags = new ObservableCollection<Tag>(RandomGenerator.GetRandomElements(collection.AllTags, Random.Next(0, 4)));
+                c.Tags = new ObservableCollection<Tag>(RandomGenerator.GetRandomElements<Tag>(collection.AllTags.ToList(), Random.Next(0, 4)));
             }
 
             //TODO add settings

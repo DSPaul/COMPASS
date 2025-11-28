@@ -1,8 +1,4 @@
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
@@ -12,6 +8,7 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
+using COMPASS.Infra.Tools;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 
@@ -20,12 +17,10 @@ namespace COMPASS.Common.ViewModels.Tools;
 public class BackupToolViewModel : ViewModelBase, IToolViewModel
 {
     private LoadingWindow? _lw;
-    private readonly PreferencesService _preferencesService;
     private readonly IEnvironmentVarsService _environmentVarsService;
 
     public BackupToolViewModel()
     {
-        _preferencesService = PreferencesService.GetInstance();
         _environmentVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
     }
     

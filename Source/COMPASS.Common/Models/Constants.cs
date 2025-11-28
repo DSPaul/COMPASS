@@ -1,6 +1,5 @@
-﻿using System.IO;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
+﻿using COMPASS.Common.Interfaces.Services;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Models
 {

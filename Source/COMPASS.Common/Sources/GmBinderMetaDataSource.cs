@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using COMPASS.Common.DependencyInjection;
+﻿using System.Diagnostics;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -12,6 +7,7 @@ using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals.Import;
+using COMPASS.Infra.Tools;
 using HtmlAgilityPack;
 using ImageMagick;
 using OpenQA.Selenium;

@@ -1,6 +1,10 @@
 <Project>
   <PropertyGroup>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>default</LangVersion>
+    <TargetFramework>net10.0</TargetFramework>
     <AvaloniaVersion>11.0.10</AvaloniaVersion>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 </Project>

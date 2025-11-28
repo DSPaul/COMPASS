@@ -1,15 +1,12 @@
-using System;
 using System.Diagnostics;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.ApiDtos;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Tools;
 

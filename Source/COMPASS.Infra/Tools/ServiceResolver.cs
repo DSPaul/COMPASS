@@ -1,7 +1,6 @@
-using System;
 using Autofac;
 
-namespace COMPASS.Common.DependencyInjection;
+namespace COMPASS.Infra.Tools;
 
 public static class ServiceResolver
 {

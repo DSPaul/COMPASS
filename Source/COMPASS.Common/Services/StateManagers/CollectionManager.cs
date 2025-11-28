@@ -1,16 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Services.StateManagers
 {

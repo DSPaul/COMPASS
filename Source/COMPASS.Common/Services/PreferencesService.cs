@@ -1,15 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Xml;
+﻿using System.Xml;
 using System.Xml.Serialization;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Services
 {

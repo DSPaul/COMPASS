@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
@@ -11,6 +9,7 @@ using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Common.Views.Windows;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.SidePanels
 {

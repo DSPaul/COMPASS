@@ -1,10 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Exceptions;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
@@ -12,6 +6,7 @@ using COMPASS.Common.Operations;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals
 {

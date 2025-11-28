@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
@@ -177,7 +174,7 @@ public class RatingControl : TemplatedControl
 
     private void StarsPresenter_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (e.Source is Path star)
+        if (e.Source is Avalonia.Controls.Shapes.Path star)
         {
             Value = star.DataContext as int? ?? 0;
         }

@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
@@ -7,11 +6,9 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals;
 
