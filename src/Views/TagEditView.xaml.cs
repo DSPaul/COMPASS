@@ -14,7 +14,7 @@ namespace COMPASS.Views
         }
 
         //makes objects lose focus when clicked away
-        private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e) => MainGrid.Focus();
+        private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e) => Keyboard.ClearFocus();
 
         private void TagNameTextBox_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {

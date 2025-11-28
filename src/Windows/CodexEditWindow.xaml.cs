@@ -22,7 +22,7 @@ namespace COMPASS.Windows
             AuthorsComboBox.ApplyTemplate();
         }
 
-        private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e) => MainGrid.Focus();
+        private void MainGrid_MouseDown(object sender, MouseButtonEventArgs e) => Keyboard.ClearFocus();
 
         // https://serialseb.com/blog/2007/09/03/wpf-tips-6-preventing-scrollviewer-from/
         private void treeView_PreviewMouseWheel(object sender, MouseWheelEventArgs e)

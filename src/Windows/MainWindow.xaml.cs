@@ -29,7 +29,7 @@ namespace COMPASS.Windows
         private readonly MainViewModel MainViewModel;
 
         //Deselects when you click away
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e) => MainGrid.Focus();
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e) => Keyboard.ClearFocus();
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
