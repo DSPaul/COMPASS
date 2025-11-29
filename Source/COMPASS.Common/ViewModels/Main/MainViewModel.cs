@@ -6,6 +6,7 @@ using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.Views.Windows;
 using System.Diagnostics;
 using System.Reflection;
+using Avalonia.Controls;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
@@ -16,10 +17,12 @@ namespace COMPASS.Common.ViewModels.Main
     public class MainViewModel : ViewModelBase
     {
         private readonly IWebService _webService;
+        private readonly IUIService _uiService;
         
         public MainViewModel()
         {
             _webService = ServiceResolver.Resolve<IWebService>();
+            _uiService = ServiceResolver.Resolve<IUIService>();
             
             Logger.Init();
             InitLayouts();
@@ -97,6 +100,8 @@ namespace COMPASS.Common.ViewModels.Main
 
         #region Properties
 
+        private GridLength WindowControlsSpacing => _uiService.WindowControlsSpacing;
+        
         public static bool SaveOnClose { get; set; } = true;
 
         private bool _isOnline;

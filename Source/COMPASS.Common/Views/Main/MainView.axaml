@@ -56,8 +56,7 @@
                                   behaviours:ShinkPriority.ColumnShrinkPriority="1"/> <!-- Searchbar -->
                 <ColumnDefinition Width="*" />    <!-- Spacing -->
                 <ColumnDefinition Width="auto"/> <!-- Settings Button -->
-                <ColumnDefinition Width="135" />  <!-- Window controls -->
-                <!-- Window controls TODO make this dynamic for different platforms-->
+                <ColumnDefinition Width="{Binding WindowControlsSpacing, Mode=OneTime}" />  <!-- Window controls -->
             </Grid.ColumnDefinitions>
             
             <Image Source="/Assets/CompassLogo.png" Height="30" Width="30" Margin="15, 0"

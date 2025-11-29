@@ -54,6 +54,7 @@ class Program
         //Register Linux specific dependencies
         builder.RegisterType<EnvironmentVarsService>().As<IEnvironmentVarsService>();
         builder.RegisterType<IOService>().As<IIOService>();
+        builder.RegisterType<UIService>().As<IUIService>();
         builder.RegisterType<WebDriverService>().As<IWebDriverService>().InstancePerLifetimeScope();
 
         ServiceResolver.Initialize(builder.Build());
