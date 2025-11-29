@@ -1,25 +1,27 @@
-﻿using System;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.Views.Windows;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals.Import
 {
     public class ImportURLViewModel : ViewModelBase, IModalViewModel, IConfirmable
     {
-
+        private readonly IWebService _webService;
+        
         public ImportURLViewModel(ImportSource importSource)
         {
+            _webService = ServiceResolver.Resolve<IWebService>();
+            
             _importSource = importSource;
             switch (importSource)
             {
@@ -169,7 +171,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 ImportError = $"'{InputURL}' is not a valid URL for {SourceName}";
                 return;
             }
-            if (!IOService.PingURL())
+            if (!_webService.CheckConnection())
             {
                 ImportError = "You need to be connected to the internet to import an online source.";
                 return;

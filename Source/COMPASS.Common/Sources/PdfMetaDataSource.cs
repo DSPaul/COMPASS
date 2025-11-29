@@ -1,12 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Infra.Models;
+using COMPASS.Infra.Tools;
 using ImageMagick;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
@@ -20,7 +17,7 @@ namespace COMPASS.Common.Sources
             base(targetCollection) { }
         
         public override MetaDataSourceType Type => MetaDataSourceType.PDF;
-        public override bool IsValidSource(SourceSet sources) => IOService.IsPDFFile(sources.Path);
+        public override bool IsValidSource(SourceSet sources) => FileFormatUtils.IsPDFFile(sources.Path);
 
         public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
         {
@@ -81,7 +78,7 @@ namespace COMPASS.Common.Sources
         public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources)
         {
             //return false if the file doesn't exist
-            if (!IOService.IsPDFFile(sources.Path) ||
+            if (!FileFormatUtils.IsPDFFile(sources.Path) ||
                 !File.Exists(sources.Path))
             {
                 return Task.FromResult<IMagickImage<byte>?>(null);

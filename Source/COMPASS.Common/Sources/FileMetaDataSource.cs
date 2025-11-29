@@ -1,10 +1,7 @@
-﻿using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using COMPASS.Common.Models;
+﻿using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools;
 using ImageMagick;
 
 namespace COMPASS.Common.Sources
@@ -13,7 +10,6 @@ namespace COMPASS.Common.Sources
     {
         public FileMetaDataSource(CodexCollection targetCollection) :  
             base(targetCollection) { }
-        
         public override MetaDataSourceType Type => MetaDataSourceType.File;
 
         public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources) => throw new System.NotImplementedException();
@@ -30,7 +26,7 @@ namespace COMPASS.Common.Sources
             foreach (Tag tag in TargetCollection.AllTags)
             {
                 var globs = tag.LinkedGlobs.Concat(tag.CalculatedLinkedGlobs).ToList();
-                if (IOService.MatchesAnyGlob(sources.Path, globs))
+                if (PathUtils.MatchesAnyGlob(sources.Path, globs))
                 {
                     metaData.Tags.AddIfMissing(tag);
                 }

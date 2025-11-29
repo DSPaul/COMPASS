@@ -52,8 +52,9 @@ class Program
         builder.RegisterModule<CommonModule>();
 
         //Register Linux specific dependencies
-        builder.RegisterType<EnvironmentVarsService>().As<IEnvironmentVarsService>().SingleInstance();
-        builder.RegisterInstance<IWebDriverService>(new WebDriverService());
+        builder.RegisterType<EnvironmentVarsService>().As<IEnvironmentVarsService>();
+        builder.RegisterType<IOService>().As<IIOService>();
+        builder.RegisterType<WebDriverService>().As<IWebDriverService>().InstancePerLifetimeScope();
 
         ServiceResolver.Initialize(builder.Build());
     }

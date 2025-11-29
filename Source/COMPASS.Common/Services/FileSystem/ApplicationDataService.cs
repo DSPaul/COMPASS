@@ -11,21 +11,14 @@ using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.Services.FileSystem;
 
-public class ApplicationDataService : IApplicationDataService
+public class ApplicationDataService(
+    IEnvironmentVarsService envVarsService,
+    IIOService ioService,
+    INotificationService notificationService)
+    : IApplicationDataService
 {
-    private readonly IEnvironmentVarsService _envVarsService;
-    private readonly INotificationService _notificationService;
-    
     const string ROOT_DIRECTORY_NAME = "COMPASS";
-    
-    public ApplicationDataService(
-        IEnvironmentVarsService envVarsService,
-        INotificationService notificationService)
-    {
-        _envVarsService = envVarsService;
-        _notificationService = notificationService;
-    }
-    
+
     public async Task<bool> UpdateRootDirectory(string newPath)
     {
         if (string.IsNullOrWhiteSpace(newPath) || !Path.Exists(newPath)) { return false; }
@@ -47,14 +40,14 @@ public class ApplicationDataService : IApplicationDataService
         }
 
         //check if the path is actually different
-        if (newPath == _envVarsService.CompassDataPath)
+        if (newPath == envVarsService.CompassDataPath)
         {
             return false;
         }
 
         //If there is existing data, Give users the choice between moving or copying
         var vm = new ChangeDataLocationViewModel(newPath);
-        if (Path.Exists(_envVarsService.CompassDataPath))
+        if (Path.Exists(envVarsService.CompassDataPath))
         {
             ModalWindow window = new(vm);
             await window.ShowDialog(App.MainWindow);
@@ -78,12 +71,12 @@ public class ApplicationDataService : IApplicationDataService
         {
             ConfirmText = "Continue"
         };
-        await _notificationService.ShowDialog(pickNewPath);
+        await notificationService.ShowDialog(pickNewPath);
 
         bool success = false;
         while (!success)
         {
-            string? newPath = await IOService.PickFolder();
+            string? newPath = await ioService.PickFolder();
             if (!string.IsNullOrWhiteSpace(newPath) && Path.Exists(newPath))
             {
                 success = await UpdateRootDirectory(newPath);
@@ -92,7 +85,7 @@ public class ApplicationDataService : IApplicationDataService
             {
                 Notification notValid = new("Invalid path", $"{newPath} is not a valid path, please try again",
                     Severity.Warning);
-                await _notificationService.ShowDialog(notValid);
+                await notificationService.ShowDialog(notValid);
             }
         }
     }

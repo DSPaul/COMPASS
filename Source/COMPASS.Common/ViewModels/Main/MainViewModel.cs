@@ -1,25 +1,26 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.Views.Windows;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Main
 {
     public class MainViewModel : ViewModelBase
     {
+        private readonly IWebService _webService;
+        
         public MainViewModel()
         {
+            _webService = ServiceResolver.Resolve<IWebService>();
+            
             Logger.Init();
             InitLayouts();
             CollectionManager.DiscoverCollections();
@@ -77,11 +78,11 @@ namespace COMPASS.Common.ViewModels.Main
         {
             //Start internet checkup timer
             DispatcherTimer checkConnectionTimer = new();
-            checkConnectionTimer.Tick += (_, _) => Task.Run(() => IsOnline = IOService.PingURL());
+            checkConnectionTimer.Tick += (_, _) => Task.Run(() => IsOnline = _webService.CheckConnection());
             checkConnectionTimer.Interval = new TimeSpan(0, 0, 10);
             checkConnectionTimer.Start();
             //to check right away on startup
-            Task.Run(() => IsOnline = IOService.PingURL());
+            Task.Run(() => IsOnline = _webService.CheckConnection());
         }
 
         private void InitLayouts() => AllLayouts = Assembly.GetExecutingAssembly()

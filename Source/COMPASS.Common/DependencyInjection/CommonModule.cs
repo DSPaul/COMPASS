@@ -22,6 +22,7 @@ namespace COMPASS.Common.DependencyInjection
             
             builder.RegisterType<FilesService>().As<IFilesService>();
             builder.RegisterType<ApplicationDataService>().As<IApplicationDataService>();
+            builder.RegisterType<WebService>().As<IWebService>();
         }
     }
 }

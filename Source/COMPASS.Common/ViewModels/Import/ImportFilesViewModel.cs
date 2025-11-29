@@ -1,7 +1,6 @@
 using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
@@ -14,6 +13,8 @@ namespace COMPASS.Common.ViewModels.Import;
 
 public class ImportFilesViewModel : ViewModelBase, IDisposable
 {
+    private readonly IIOService _ioService;
+    
     private readonly bool _autoImport;
     private readonly CollectionHandle _targetCollectionHandle;
     private CodexCollection _TargetCollection => _targetCollectionHandle.CollectionVM.Collection;
@@ -25,7 +26,9 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
              throw new NoTabException("There is no open tab, so no collection to import the files to"), 
             autoImport) { }
     public ImportFilesViewModel(string targetCollectionId, bool autoImport)
-    {
+    {        
+        _ioService = ServiceResolver.Resolve<IIOService>();
+        
         var handle = CollectionManager.LoadCollection(targetCollectionId);
         if (handle != null)
         {
@@ -96,7 +99,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     /// <returns> A bool indicating whether the user successfully chose a set of folders </returns>
     private async Task<bool> LetUserSelectFolders()
     {
-        var selectedPaths = await IOService.TryPickFolders().ConfigureAwait(false);
+        var selectedPaths = await _ioService.TryPickFolders().ConfigureAwait(false);
         RecursiveDirectories = [.. selectedPaths];
         return selectedPaths.Any();
     }
@@ -143,11 +146,11 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
             .Concat(ExistingFolders.Flatten().Select(f => f.FullPath));
         foreach (var folder in directoriesToSearch)
         {
-            toImport.AddRange(IOService.TryGetFilesInFolder(folder));
+            toImport.AddRange(_ioService.TryGetFilesInFolder(folder));
         }
 
         //3. Filter out doubles and banished paths
-        return toImport.Distinct().Where(path => !IOService.MatchesAnyGlob(path, _TargetCollection.Info.BanishedPaths)).ToList();
+        return toImport.Distinct().Where(path => !PathUtils.MatchesAnyGlob(path, _TargetCollection.Info.BanishedPaths)).ToList();
     }
 
     /// <summary>

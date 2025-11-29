@@ -4,7 +4,6 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Selection;
@@ -140,7 +139,7 @@ namespace COMPASS.Common.ViewModels
                 var itemsWithOfflineSource = ContentSelectorVM.CuratedCollection.AllCodices
                     .Where(codex => codex.Sources.HasOfflineSource())
                     .ToList();
-                string commonFolder = IOService.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Sources.Path).ToList());
+                string commonFolder = PathUtils.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Sources.Path).ToList());
                 foreach (Codex codex in itemsWithOfflineSource)
                 {
                     string relativePath = codex.Sources.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);

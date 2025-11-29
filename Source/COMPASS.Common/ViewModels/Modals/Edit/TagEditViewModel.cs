@@ -1,14 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Hierarchy;
-using COMPASS.Common.Services.FileSystem;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
@@ -166,7 +161,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             
             var globs = WorkingCopy.LinkedGlobs.Concat(WorkingCopy.CalculatedLinkedGlobs).ToList();
             List<Codex> matchingCodices = _codexCollectionVm.Collection.AllCodices
-                .Where(codex => IOService.MatchesAnyGlob(codex.Sources.Path, globs) &&
+                .Where(codex => PathUtils.MatchesAnyGlob(codex.Sources.Path, globs) &&
                                 !codex.Tags.Contains(_source))
                 .ToList();
 

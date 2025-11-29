@@ -1,7 +1,6 @@
 ﻿using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Sources;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
@@ -9,13 +8,11 @@ using COMPASS.Common.Views.Windows;
 using ImageMagick;
 using ImageMagick.Factories;
 using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.ViewModels.Modals;
+using COMPASS.Infra.Tools;
+using iText.Signatures.Validation.Lotl;
 
 namespace COMPASS.Common.Services
 {
@@ -130,9 +127,11 @@ namespace COMPASS.Common.Services
                 return;
             }
 
+            var ioService = ServiceResolver.Resolve<IIOService>();
+            
             if (image.Width > CoverWidth) image.Resize(CoverWidth, 0);
-
-            if (IOService.EnsureDirectoryExists(destCodex.CoverArtPath))
+            
+            if (ioService.EnsureDirectoryExists(destCodex.CoverArtPath))
             {
                 await image.WriteAsync(destCodex.CoverArtPath);
                 CreateThumbnail(destCodex, image);
@@ -145,7 +144,7 @@ namespace COMPASS.Common.Services
             //check if it's a valid file
             if (string.IsNullOrEmpty(imagePath) ||
                 !Path.Exists(imagePath) ||
-                !IOService.IsImageFile(imagePath))
+                !FileFormatUtils.IsImageFile(imagePath))
             {
                 return null;
             }
@@ -179,6 +178,8 @@ namespace COMPASS.Common.Services
                 image = new MagickImage(c.CoverArtPath);
                 ownsImage = true;
             }
+            
+            var ioService = ServiceResolver.Resolve<IIOService>();
 
             try
             {
@@ -187,7 +188,7 @@ namespace COMPASS.Common.Services
                 uint height = image.Height;
                 uint newHeight = newWidth / width * height;
                 //create thumbnail
-                if (IOService.EnsureDirectoryExists(c.ThumbnailPath))
+                if (ioService.EnsureDirectoryExists(c.ThumbnailPath))
                 {
                     image.Thumbnail(newWidth, newHeight);
                     image.Write(c.ThumbnailPath);

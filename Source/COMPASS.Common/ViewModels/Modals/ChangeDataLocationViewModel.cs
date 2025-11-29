@@ -18,11 +18,13 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
     private string _newDataLocation;
 
     private readonly IEnvironmentVarsService _envVarsService;
+    private readonly IIOService _ioService;
     private readonly INotificationService _notificationService;
 
     public ChangeDataLocationViewModel(string newDataLocation)
     {
         _envVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
+        _ioService = ServiceResolver.Resolve<IIOService>();
         _notificationService = ServiceResolver.Resolve<INotificationService>();
 
         _currentDataLocation = _envVarsService.CompassDataPath;
@@ -49,7 +51,7 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
     {
         CloseAction();
 
-        bool success = await IOService.CopyDataAsync(CurrentDataLocation, NewDataLocation);
+        bool success = await _ioService.CopyDataAsync(CurrentDataLocation, NewDataLocation);
 
         if (success)
         {
@@ -67,7 +69,7 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
     {
         CloseAction();
 
-        bool success = await IOService.CopyDataAsync(CurrentDataLocation, NewDataLocation);
+        bool success = await _ioService.CopyDataAsync(CurrentDataLocation, NewDataLocation);
         if (success)
         {
             ChangeToNewDataLocation();

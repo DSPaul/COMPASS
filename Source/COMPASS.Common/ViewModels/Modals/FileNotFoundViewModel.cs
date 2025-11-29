@@ -3,7 +3,6 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Infra.Tools;
@@ -40,7 +39,7 @@ namespace COMPASS.Common.ViewModels.Modals
                 //find the replaced part of the path
                 string oldPath = Codex.Sources.Path;
                 string newPath = file.Path.AbsolutePath;
-                var (toReplace, replaceWith) = IOService.GetDifferingRoot(oldPath, newPath);
+                var (toReplace, replaceWith) = PathUtils.GetDifferingRoot(oldPath, newPath);
 
                 //fix the path of this codex
                 Codex.Sources.Path = newPath;

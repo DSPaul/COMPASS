@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
+using COMPASS.Infra.Tools;
 using HtmlAgilityPack;
 using ImageMagick;
 
@@ -11,8 +10,13 @@ namespace COMPASS.Common.Sources
 {
     public class DndBeyondMetaDataSource : MetaDataSource
     {
-        public DndBeyondMetaDataSource(CodexCollection targetCollection) :  
-            base(targetCollection) { }
+        private IWebService _webService;
+
+        public DndBeyondMetaDataSource(CodexCollection targetCollection) :
+            base(targetCollection)
+        {
+            _webService = ServiceResolver.Resolve<IWebService>();
+        }
         
         public override MetaDataSourceType Type => MetaDataSourceType.DnDBeyond;
 
@@ -26,7 +30,7 @@ namespace COMPASS.Common.Sources
             
             //Scrape metadata by going to store page, get to store page by using that /credits redirects there
             ProgressVM.AddLogEntry(new(Severity.Info, $"Connecting to DnD Beyond"));
-            HtmlDocument? doc = await IOService.ScrapeSite(String.Concat(sources.SourceURL, "/credits"));
+            HtmlDocument? doc = await _webService.ScrapeSite(String.Concat(sources.SourceURL, "/credits"));
             HtmlNode? src = doc?.DocumentNode;
 
             return metaData;
@@ -38,7 +42,7 @@ namespace COMPASS.Common.Sources
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument? doc = await IOService.ScrapeSite(String.Concat(sources.SourceURL, "/credits"));
+                HtmlDocument? doc = await _webService.ScrapeSite(String.Concat(sources.SourceURL, "/credits"));
                 HtmlNode? src = doc?.DocumentNode;
                 if (src is null) return null;
 
@@ -47,7 +51,7 @@ namespace COMPASS.Common.Sources
                 //download the file
                 if (!string.IsNullOrEmpty(imgURL))
                 {
-                    return await IOService.DownloadImageAsync(imgURL);
+                    return await _webService.DownloadImageAsync(imgURL);
                 }
             }
             catch (Exception ex)

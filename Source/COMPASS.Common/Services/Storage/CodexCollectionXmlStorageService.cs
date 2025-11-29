@@ -22,28 +22,15 @@ using Notification = COMPASS.Common.Models.Notification;
 
 namespace COMPASS.Common.Services.Storage;
 
-public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
+public class CodexCollectionXmlStorageService(
+    IApplicationDataService applicationDataService,
+    IEnvironmentVarsService environmentVarsService,
+    IFilesService filesService,
+    IIOService ioService,
+    INotificationService windowedNotificationService)
+    : ICodexCollectionStorageService
 {
-    public CodexCollectionXmlStorageService(
-        IEnvironmentVarsService environmentVarsService,
-        INotificationService windowedNotificationService,
-        IFilesService filesService,
-        IApplicationDataService applicationDataService)
-    {
-        _environmentVarsService = environmentVarsService;
-        _filesService = filesService;
-        _windowedNotificationService = windowedNotificationService;
-        _applicationDataService = applicationDataService;
-
-        _collectionsPath = Path.Combine(environmentVarsService.CompassDataPath, "Collections");
-    }
-
-    private readonly INotificationService _windowedNotificationService;
-    private readonly IEnvironmentVarsService _environmentVarsService;
-    private readonly IFilesService _filesService;
-    private readonly IApplicationDataService _applicationDataService;
-
-    private string _collectionsPath;
+    private string _collectionsPath = Path.Combine(environmentVarsService.CompassDataPath, "Collections");
     private readonly Lock _codicesLocker = new();
     private readonly Lock _tagsLocker = new();
     private readonly Lock _infoLocker = new();
@@ -96,10 +83,10 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
             catch (Exception ex)
             {
                 Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
-                string msg = $"Failed to create a folder to store user data at {_environmentVarsService.CompassDataPath}, " +
+                string msg = $"Failed to create a folder to store user data at {environmentVarsService.CompassDataPath}, " +
                              $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
-                _applicationDataService.RequireNewCompassDataLocation(msg).Wait();
-                _collectionsPath = Path.Combine(_environmentVarsService.CompassDataPath, "Collections");
+                applicationDataService.RequireNewCompassDataLocation(msg).Wait();
+                _collectionsPath = Path.Combine(environmentVarsService.CompassDataPath, "Collections");
             }
         }
     }
@@ -289,7 +276,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
             {
                 Details = ex.ToString()
             };
-            await _windowedNotificationService.ShowDialog(failedFolderCreation);
+            await windowedNotificationService.ShowDialog(failedFolderCreation);
         }
     }
 
@@ -467,7 +454,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
     {
         FilePickerOpenOptions options = new()
         {
-            FileTypeFilter = [_filesService.SatchelExtensionFilter],
+            FileTypeFilter = [filesService.SatchelExtensionFilter],
             AllowMultiple = false,
             Title = "Choose a COMPASS Satchel file to import",
         };
@@ -475,7 +462,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
         if (satchelPath == null)
         {
             //ask for satchel file using fileDialog
-            var files = await _filesService.OpenFilesAsync(options);
+            var files = await filesService.OpenFilesAsync(options);
 
             if (!files.Any()) return null;
             using var file = files.Single();
@@ -493,7 +480,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
                     $"Cannot import {Path.GetFileName(satchelPath)} because it does not contain version info, and might therefor not be compatible with your version v{ApplicationService.Version}.";
                 Logger.Warn(message);
                 Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message, Severity.Warning);
-                await _windowedNotificationService.ShowDialog(warnNotification);
+                await windowedNotificationService.ShowDialog(warnNotification);
                 return null;
             }
 
@@ -512,7 +499,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
                     $"Cannot import {Path.GetFileName(satchelPath)} because it does not contain version info, and might therefor not be compatible with your version v{ApplicationService.Version}.";
                 Logger.Warn(message);
                 Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message, Severity.Warning);
-                await _windowedNotificationService.ShowDialog(warnNotification);
+                await windowedNotificationService.ShowDialog(warnNotification);
                 return null;
             }
 
@@ -551,7 +538,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
                 Logger.Warn(message);
                 Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message,
                     Severity.Warning);
-                await _windowedNotificationService.ShowDialog(warnNotification);
+                await windowedNotificationService.ShowDialog(warnNotification);
                 return null;
             }
         }
@@ -580,7 +567,7 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
         string tmpCollectionPath = Path.Combine(_collectionsPath, $"__{fileName}");
 
         //make sure any previous temp data is gone
-        IOService.ClearTmpData(tmpCollectionPath);
+        ioService.ClearTmpData(tmpCollectionPath);
 
         //unzip the file to tmp folder
         using ZipArchive archive = ZipArchive.Open(zipFile);
@@ -605,9 +592,9 @@ public class CodexCollectionXmlStorageService : ICodexCollectionStorageService
 
     public async Task ExportTags(CodexCollection collection)
     {
-        var savedFile = await _filesService.SaveFileAsync(new()
+        var savedFile = await filesService.SaveFileAsync(new()
         {
-            FileTypeChoices = [_filesService.SatchelExtensionFilter],
+            FileTypeChoices = [filesService.SatchelExtensionFilter],
             SuggestedFileName = $"{collection.Name}_Tags",
             DefaultExtension = Constants.SatchelExtension,
         });

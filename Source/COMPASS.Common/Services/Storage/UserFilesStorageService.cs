@@ -9,14 +9,12 @@ using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Services.Storage;
 
-public class UserFilesStorageService : IUserFilesStorageService
+public class UserFilesStorageService(
+    IEnvironmentVarsService environmentVarsService,
+    IIOService ioService
+    ) : IUserFilesStorageService
 {
-    public UserFilesStorageService(IEnvironmentVarsService environmentVarsService)
-    {
-        _collectionsPath = Path.Combine(environmentVarsService.CompassDataPath, "Collections");
-    }
-    
-    private readonly string _collectionsPath;
+    private readonly string _collectionsPath = Path.Combine(environmentVarsService.CompassDataPath, "Collections");
     
 
     #region IUserFilesStorageService
@@ -43,7 +41,7 @@ public class UserFilesStorageService : IUserFilesStorageService
         string userFilesPath = UserFilesDirectory(collection);
         try
         {
-            IOService.EnsureDirectoryExists(userFilesPath);
+            ioService.EnsureDirectoryExists(userFilesPath);
             return true;
         }
         catch (Exception ex)
@@ -94,7 +92,7 @@ public class UserFilesStorageService : IUserFilesStorageService
             {
                 try
                 {
-                    IOService.EnsureDirectoryExists(newDir);
+                    ioService.EnsureDirectoryExists(newDir);
                 }
                 catch (Exception ex)
                 {

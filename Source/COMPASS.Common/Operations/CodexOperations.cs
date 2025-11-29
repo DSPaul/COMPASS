@@ -86,8 +86,9 @@ namespace COMPASS.Common.Operations
             catch (Exception ex)
             {
                 Logger.Error($"Failed to open {toOpen!.Sources.SourceURL}", ex);
+                var webService = ServiceResolver.Resolve<IWebService>();
                 //fails if no internet, pinging 8.8.8.8 DNS instead of server because some sites like gm binder block ping
-                if (!IOService.PingURL()) Logger.Warn($"Cannot open this item online when not connected to the internet", ex);
+                if (!webService.CheckConnection()) Logger.Warn($"Cannot open this item online when not connected to the internet", ex);
                 return false;
             }
 
@@ -213,10 +214,11 @@ namespace COMPASS.Common.Operations
         //Show in Explorer
         public static void ShowInExplorer(Codex? toShow)
         {
-            if (string.IsNullOrEmpty(toShow?.Sources.Path) || !File.Exists(toShow.Sources.Path)) return;
-            string? folderPath = Path.GetDirectoryName(toShow.Sources.Path);
-            if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath)) return;
-            IOService.ShowInExplorer(folderPath);
+            string? filePath = toShow?.Sources.Path;
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) return;
+            
+            var ioService = ServiceResolver.Resolve<IIOService>();
+            ioService.ShowInExplorer(filePath);
         }
 
         //Move Codex to other CodexCollection

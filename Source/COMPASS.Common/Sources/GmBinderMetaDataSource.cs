@@ -3,7 +3,6 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals.Import;
@@ -16,8 +15,13 @@ namespace COMPASS.Common.Sources
 {
     public class GmBinderMetaDataSource : MetaDataSource
     {
-        public GmBinderMetaDataSource(CodexCollection targetCollection) :  
-            base(targetCollection) { }
+        private readonly IWebService _webService;
+        
+        public GmBinderMetaDataSource(CodexCollection targetCollection) :
+            base(targetCollection)
+        {
+            _webService = ServiceResolver.Resolve<IWebService>();
+        }
         
         public override MetaDataSourceType Type => MetaDataSourceType.GmBinder;
 
@@ -34,7 +38,7 @@ namespace COMPASS.Common.Sources
             };
             
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from GM Binder"));
-            HtmlDocument? doc = await IOService.ScrapeSite(sources.SourceURL);
+            HtmlDocument? doc = await _webService.ScrapeSite(sources.SourceURL);
             HtmlNode? src = doc?.DocumentNode;
 
             if (doc is null || src is null)

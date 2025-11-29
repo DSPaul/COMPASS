@@ -11,7 +11,6 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
@@ -239,7 +238,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             if (e.Data is DataObject data
                 && data.GetFiles()?.Count() == 1
-                && IOService.IsImageFile(data.GetFiles()?.Select(f => f.Path.AbsolutePath).First() ?? ""))
+                && FileFormatUtils.IsImageFile(data.GetFiles()?.Select(f => f.Path.AbsolutePath).First() ?? ""))
             {
                 e.DragEffects = DragDropEffects.Copy;
             }
@@ -253,7 +252,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             if (e.Data is DataObject data
                 && data.GetFiles()?.Count() == 1
-                && IOService.IsImageFile(data.GetFiles()?.Select(f => f.Path.AbsolutePath).First() ?? ""))
+                && FileFormatUtils.IsImageFile(data.GetFiles()?.Select(f => f.Path.AbsolutePath).First() ?? ""))
             {
                 string path = data.GetFiles()!.Select(f => f.Path.AbsolutePath).First();
                 var img = CoverService.GetCoverFromImage(path);

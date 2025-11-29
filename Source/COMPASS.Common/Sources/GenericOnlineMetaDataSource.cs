@@ -1,12 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Net;
-using System.Threading.Tasks;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools;
 using HtmlAgilityPack;
 using ImageMagick;
 
@@ -14,8 +12,13 @@ namespace COMPASS.Common.Sources
 {
     public class GenericOnlineMetaDataSource : MetaDataSource
     {
-        public GenericOnlineMetaDataSource(CodexCollection targetCollection) :  
-            base(targetCollection) { }
+        private readonly IWebService _webService;
+
+        public GenericOnlineMetaDataSource(CodexCollection targetCollection) :
+            base(targetCollection)
+        {
+            _webService = ServiceResolver.Resolve<IWebService>();
+        }
         
         public override MetaDataSourceType Type => MetaDataSourceType.GenericURL;
 
@@ -30,7 +33,7 @@ namespace COMPASS.Common.Sources
 
             // Scrape metadata
             ProgressVM.AddLogEntry(new(Severity.Info, $"Extracting metadata from website header"));
-            HtmlDocument? doc = await IOService.ScrapeSite(sources.SourceURL);
+            HtmlDocument? doc = await _webService.ScrapeSite(sources.SourceURL);
             HtmlNode? src = doc?.DocumentNode;
 
             if (src is null)
@@ -64,7 +67,7 @@ namespace COMPASS.Common.Sources
             foreach (Tag tag in TargetCollection.AllTags)
             {
                 var globs = tag.LinkedGlobs.Concat(tag.CalculatedLinkedGlobs).ToList();
-                if (IOService.MatchesAnyGlob(sources.SourceURL, globs))
+                if (PathUtils.MatchesAnyGlob(sources.SourceURL, globs))
                 {
                     metaData.Tags.AddIfMissing(tag);
                 }

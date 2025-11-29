@@ -8,14 +8,12 @@ using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Services.Storage;
 
-public class ThumbnailStorageService : IThumbnailStorageService
+public class ThumbnailStorageService(
+    IEnvironmentVarsService environmentVarsService,
+    IIOService ioService) 
+    : IThumbnailStorageService
 {
-    public ThumbnailStorageService(IEnvironmentVarsService environmentVarsService)
-    {
-        _collectionsPath = Path.Combine(environmentVarsService.CompassDataPath, "Collections");
-    }
-
-    private readonly string _collectionsPath;
+    private readonly string _collectionsPath = Path.Combine(environmentVarsService.CompassDataPath, "Collections");
     
     private string CoverArtDirectory(CodexCollection collection) => Path.Combine(_collectionsPath, collection.Name, "CoverArt");
     private string DefaultCoverArtPath(Codex codex) => Path.Combine(CoverArtDirectory(codex.Collection), $"{codex.Id}.png");
@@ -25,8 +23,8 @@ public class ThumbnailStorageService : IThumbnailStorageService
 
     private bool EnsureDirectoriesExists(CodexCollection collection)
     {
-        bool coverArtDirExists = IOService.EnsureDirectoryExists(CoverArtDirectory(collection));
-        bool thumbnailDirExists = IOService.EnsureDirectoryExists(ThumbnailDirectory(collection));
+        bool coverArtDirExists = ioService.EnsureDirectoryExists(CoverArtDirectory(collection));
+        bool thumbnailDirExists = ioService.EnsureDirectoryExists(ThumbnailDirectory(collection));
         
         return coverArtDirExists && thumbnailDirExists;
     }

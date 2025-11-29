@@ -3,7 +3,6 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals.Import;
@@ -18,8 +17,13 @@ namespace COMPASS.Common.Sources
 {
     public class HomebreweryMetaDataSource : MetaDataSource
     {
-        public HomebreweryMetaDataSource(CodexCollection targetCollection) :  
-            base(targetCollection) { }
+        private readonly IWebService _webService;
+
+        public HomebreweryMetaDataSource(CodexCollection targetCollection) :
+            base(targetCollection)
+        {
+            _webService = ServiceResolver.Resolve<IWebService>();
+        }
         
         public override MetaDataSourceType Type => MetaDataSourceType.Homebrewery;
         public override bool IsValidSource(SourceSet sources)
@@ -37,7 +41,7 @@ namespace COMPASS.Common.Sources
             };
 
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from Homebrewery"));
-            JObject? metadata = await IOService.GetJsonAsync(uri);
+            JObject? metadata = await _webService.GetJsonAsync(uri);
 
             if (metadata is null || !metadata.HasValues)
             {

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Infra.Models;
+using COMPASS.Infra.Tools;
 using ImageMagick;
 using Newtonsoft.Json.Linq;
 
@@ -14,8 +12,13 @@ namespace COMPASS.Common.Sources
 {
     public class ISBNMetaDataSource : MetaDataSource
     {
-        public ISBNMetaDataSource(CodexCollection targetCollection) :  
-            base(targetCollection) { }
+        private readonly IWebService _webService;
+
+        public ISBNMetaDataSource(CodexCollection targetCollection) :
+            base(targetCollection)
+        {
+            _webService = ServiceResolver.Resolve<IWebService>();
+        }
         
         public override MetaDataSourceType Type => MetaDataSourceType.ISBN;
         public override bool IsValidSource(SourceSet sources) => !String.IsNullOrWhiteSpace(sources.ISBN);
@@ -29,7 +32,7 @@ namespace COMPASS.Common.Sources
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading Metadata from openlibrary.org"));
             string uri = $"https://openlibrary.org/api/books?bibkeys=ISBN:{sources.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
 
-            JObject? openLibraryData = await IOService.GetJsonAsync(uri);
+            JObject? openLibraryData = await _webService.GetJsonAsync(uri);
 
             if (openLibraryData is null || !openLibraryData.HasValues)
             {
@@ -106,7 +109,7 @@ namespace COMPASS.Common.Sources
             try
             {
                 string uri = $"https://openlibrary.org/isbn/{sources.ISBN}.json";
-                JObject? metadata = await IOService.GetJsonAsync(uri);
+                JObject? metadata = await _webService.GetJsonAsync(uri);
 
                 if (metadata is not { HasValues: true })
                 {
@@ -121,7 +124,7 @@ namespace COMPASS.Common.Sources
                 string? imgId = metadata.SelectToken("covers[0]")?.ToString();
                 if (imgId is null) return null;
                 string imgURL = $"https://covers.openlibrary.org/b/id/{imgId}.jpg";
-                return await IOService.DownloadImageAsync(imgURL);
+                return await _webService.DownloadImageAsync(imgURL);
             }
             catch (Exception ex)
             {

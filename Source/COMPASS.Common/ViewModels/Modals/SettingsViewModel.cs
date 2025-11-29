@@ -9,7 +9,6 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
@@ -26,9 +25,10 @@ namespace COMPASS.Common.ViewModels.Modals
         {
             //TODO use tabToOpen 
             
-            _preferencesService = PreferencesService.GetInstance();
-            _environmentVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
             _applicationDataService = ServiceResolver.Resolve<IApplicationDataService>();
+            _environmentVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
+            _ioService = ServiceResolver.Resolve<IIOService>();
+            _preferencesService = PreferencesService.GetInstance();
             
 
             SelectedCollectionVm = CollectionManager.CollectionVms.SingleOrDefault(vm => vm.Identifier == ActiveCollection.Name);
@@ -49,9 +49,10 @@ namespace COMPASS.Common.ViewModels.Modals
             }
         }
 
-        private readonly PreferencesService _preferencesService;
-        private readonly IEnvironmentVarsService _environmentVarsService;
         private readonly IApplicationDataService _applicationDataService;
+        private readonly IEnvironmentVarsService _environmentVarsService;
+        private readonly IIOService _ioService;
+        private readonly PreferencesService _preferencesService;
         
         
         private CollectionHandle? _selectedCollectionHandle;
@@ -191,7 +192,7 @@ namespace COMPASS.Common.ViewModels.Modals
         public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(path =>
         {
             if (string.IsNullOrEmpty(path) || !Path.Exists(path)) return;
-            IOService.ShowInExplorer(path);
+            _ioService.ShowInExplorer(path);
         });
 
         #region Auto import folders
@@ -225,7 +226,7 @@ namespace COMPASS.Common.ViewModels.Modals
         private AsyncRelayCommand? _pickAutoImportDirectoryCommand;
         public AsyncRelayCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(PickAutoImportDirectory);
 
-        private async Task PickAutoImportDirectory() => await AddAutoImportDirectory(await IOService.PickFolder().ConfigureAwait(false));
+        private async Task PickAutoImportDirectory() => await AddAutoImportDirectory(await _ioService.PickFolder().ConfigureAwait(false));
         private async Task AddAutoImportDirectory(string? dir)
         {
             if (!String.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))

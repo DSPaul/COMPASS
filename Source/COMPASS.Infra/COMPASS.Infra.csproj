@@ -4,4 +4,16 @@
       <PackageReference Include="Avalonia" Version="11.3.9" />
       <PackageReference Include="FuzzySharp" Version="2.0.2" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Interfaces\Services\" />
+      <Folder Include="Services\" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.FileSystemGlobbing">
+        <HintPath>..\..\..\..\..\.nuget\packages\microsoft.extensions.filesystemglobbing\10.0.0\lib\net10.0\Microsoft.Extensions.FileSystemGlobbing.dll</HintPath>
+      </Reference>
+      <Reference Include="Newtonsoft.Json">
+        <HintPath>..\..\..\..\..\.nuget\packages\newtonsoft.json\13.0.4\lib\net6.0\Newtonsoft.Json.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 </Project>

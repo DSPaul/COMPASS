@@ -1,9 +1,7 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using COMPASS.Common.Models;
+﻿using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
+using COMPASS.Infra.Tools;
 using ImageMagick;
 
 namespace COMPASS.Common.Sources
@@ -15,7 +13,7 @@ namespace COMPASS.Common.Sources
         
         public override MetaDataSourceType Type => MetaDataSourceType.Image;
 
-        public override bool IsValidSource(SourceSet sources) => File.Exists(sources.Path) && IOService.IsImageFile(sources.Path);
+        public override bool IsValidSource(SourceSet sources) => File.Exists(sources.Path) && FileFormatUtils.IsImageFile(sources.Path);
 
         public override Task<SourceMetaData> GetMetaData(SourceSet sources)
         {

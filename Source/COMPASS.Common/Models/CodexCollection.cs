@@ -8,6 +8,9 @@ namespace COMPASS.Common.Models
 {
     public class CodexCollection : ObservableObject
     {
+        private IUserFilesStorageService _userFilesStorageService => field ??= ServiceResolver.Resolve<IUserFilesStorageService>();
+        private IThumbnailStorageService _thumbnailStorageService => field ??=  ServiceResolver.Resolve<IThumbnailStorageService>();
+        
         public CodexCollection(string identifier)
         {
             _name = identifier;
@@ -103,14 +106,11 @@ namespace COMPASS.Common.Models
 
         private void ImportCodicesFrom(CodexCollection source)
         {
-            var userFilesStorageService = ServiceResolver.Resolve<IUserFilesStorageService>();
-            var thumbnailStorageService = ServiceResolver.Resolve<IThumbnailStorageService>();
-            
             //if import includes files, make sure directory exists to copy files into
             bool canImportFiles = false;
-            if (userFilesStorageService.HasUserFiles(source))
+            if (_userFilesStorageService.HasUserFiles(source))
             {
-                canImportFiles = userFilesStorageService.EnsureDirectoryExists(this);
+                canImportFiles = _userFilesStorageService.EnsureDirectoryExists(this);
                 if (!canImportFiles)
                 {
                     //TODO add a notification or similar that files will not be imported
@@ -123,12 +123,12 @@ namespace COMPASS.Common.Models
                 codex.Id = Utils.GetAvailableId(AllCodices);
 
                 //Move thumbnail and cover
-                thumbnailStorageService.MoveCodexDataToCollection(codex, this);
+                _thumbnailStorageService.MoveCodexDataToCollection(codex, this);
 
                 //move user files included in import
                 if (canImportFiles)
                 {
-                    userFilesStorageService.MoveCodexDataToCollection(codex, this, source, copy: true);
+                    _userFilesStorageService.MoveCodexDataToCollection(codex, this, source, copy: true);
                 }
                 AllCodices.Add(codex);
             }

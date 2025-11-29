@@ -1,12 +1,11 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals.Import;
+using COMPASS.Infra.Tools;
 using HtmlAgilityPack;
 using ImageMagick;
 
@@ -14,8 +13,13 @@ namespace COMPASS.Common.Sources
 {
     public class GoogleDriveMetaDataSource : MetaDataSource
     {
-        public GoogleDriveMetaDataSource(CodexCollection targetCollection) :  
-            base(targetCollection) { }
+        private readonly IWebService _webService;
+
+        public GoogleDriveMetaDataSource(CodexCollection targetCollection) :
+            base(targetCollection)
+        {
+            _webService = ServiceResolver.Resolve<IWebService>();
+        }
         
         public override MetaDataSourceType Type => MetaDataSourceType.GoogleDrive;
         public override bool IsValidSource(SourceSet soures) =>
@@ -40,7 +44,7 @@ namespace COMPASS.Common.Sources
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument? doc = await IOService.ScrapeSite(sources.SourceURL);
+                HtmlDocument? doc = await _webService.ScrapeSite(sources.SourceURL);
                 HtmlNode? src = doc?.DocumentNode;
                 if (src is null) return null;
 
@@ -59,7 +63,7 @@ namespace COMPASS.Common.Sources
 
                 if (!string.IsNullOrEmpty(imgURL))
                 {
-                    return await IOService.DownloadImageAsync(imgURL);
+                    return await _webService.DownloadImageAsync(imgURL);
                 }
             }
             catch (Exception ex)
