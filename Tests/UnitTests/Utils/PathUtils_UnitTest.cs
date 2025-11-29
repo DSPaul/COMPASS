@@ -1,9 +1,10 @@
 ﻿using COMPASS.Common.Services.FileSystem;
+using COMPASS.Infra.Tools;
 
-namespace Tests.UnitTests
+namespace Tests.UnitTests.Utils
 {
     [TestFixture]
-    public class IOService_UnitTest
+    public class PathUtils_UnitTest
     {
         [Test]
         public void TestGetDifferingRoot_Normal()
@@ -12,7 +13,7 @@ namespace Tests.UnitTests
             string path1 = @"a\path\to\a\file.txt";
             string path2 = @"another\root\that goes\to\a\file.txt";
 
-            var (r1, r2) = IOService.GetDifferingRoot(path1, path2);
+            var (r1, r2) = PathUtils.GetDifferingRoot(path1, path2);
 
             Assert.Multiple(() =>
             {
@@ -26,7 +27,7 @@ namespace Tests.UnitTests
         {
             string path1 = @"a\path\to\a\file.txt";
 
-            var (r1, r2) = IOService.GetDifferingRoot(path1, path1);
+            var (r1, r2) = PathUtils.GetDifferingRoot(path1, path1);
 
             Assert.Multiple(() =>
             {
@@ -41,7 +42,7 @@ namespace Tests.UnitTests
             string path1 = @"a\path\to\a\file.txt";
             string path2 = @"a\file.txt";
 
-            var (r1, r2) = IOService.GetDifferingRoot(path1, path2);
+            var (r1, r2) = PathUtils.GetDifferingRoot(path1, path2);
 
             Assert.Multiple(() =>
             {
@@ -56,7 +57,7 @@ namespace Tests.UnitTests
             string path1 = @"a\path\to\a\file.txt";
             string path2 = @"another\root\that goes\to\anotherfile.txt";
 
-            var (r1, r2) = IOService.GetDifferingRoot(path1, path2);
+            var (r1, r2) = PathUtils.GetDifferingRoot(path1, path2);
 
             Assert.Multiple(() =>
             {
