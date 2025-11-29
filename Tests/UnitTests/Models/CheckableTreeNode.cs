@@ -58,7 +58,7 @@ namespace Tests.UnitTests.Models
                 }
             };
 
-            checkableRoot = new(root, containerOnly: root.IsGroup);
+            checkableRoot = new(root, containerOnly: root.IsGroup, propagateChanges: true);
             foreach (var item in checkableRoot.Children.Flatten())
             {
                 item.ContainerOnly = item.Item.IsGroup;

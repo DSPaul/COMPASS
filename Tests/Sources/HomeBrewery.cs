@@ -10,7 +10,7 @@ namespace Tests.Sources
     [TestFixture]
     public class HomeBrewery
     {
-        const string TEST_COLLECTION = "__unitTests";
+        const string TEST_COLLECTION = "unitTests";
         private const string TEST_URL = @"https://homebrewery.naturalcrit.com/share/FegJIEB2KUUo";
 
         [OneTimeSetUp]

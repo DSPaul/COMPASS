@@ -14,8 +14,7 @@ namespace Tests.UnitTests.Models
         public void MapCodex()
         {
             // -2: Sources are 3 props in dto, but only 1 in model
-            // +1: Cover & coverpath in source, only coverpath in dto
-            int expectedDiff = -1;
+            int expectedDiff = -2;
 
             AssertAllPropMapped(typeof(Codex), typeof(CodexDto), expectedDiff);
 

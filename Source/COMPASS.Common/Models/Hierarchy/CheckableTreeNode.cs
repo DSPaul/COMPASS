@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models.Interfaces;
 
@@ -12,6 +9,7 @@ namespace COMPASS.Common.Models.Hierarchy
         public CheckableTreeNode(T item, bool containerOnly = false, bool propagateChanges = false) : base (item)
         {
             ContainerOnly = containerOnly;
+            PropagateChanges = propagateChanges;
             Children = new(item.Children.Select(child => new CheckableTreeNode<T>(child, containerOnly, propagateChanges)));
 
             // Children.CollectionChanged += (_, _) =>

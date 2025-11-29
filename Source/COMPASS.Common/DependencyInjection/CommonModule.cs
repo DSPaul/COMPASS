@@ -14,7 +14,7 @@ namespace COMPASS.Common.DependencyInjection
         {
             // Notification Service
             builder.RegisterType<NotificationService>().As<INotificationService>();
-            
+
             //Storage Services
             builder.RegisterType<CodexCollectionXmlStorageService>().Keyed<ICodexCollectionStorageService>(StorageStrategy.Xml);
             builder.RegisterType<ThumbnailStorageService>().As<IThumbnailStorageService>();
