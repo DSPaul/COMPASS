@@ -38,7 +38,7 @@ public partial class App : Application
                 desktop.MainWindow = MainWindow =_splashScreenWindow = new SplashScreenWindow();
                 
                 // delegate actual application start to when UI thread has time again
-                Dispatcher.UIThread.Post(() => CompleteApplicationStart(), DispatcherPriority.Background);
+                Dispatcher.UIThread.Post(CompleteApplicationStart, DispatcherPriority.Background);
             }
         }
 
@@ -53,10 +53,7 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            //Build container
             var mainWindow = new MainWindow();
-            
-            //load and set vm
             var mainVm =  new MainViewModel();
             mainWindow.DataContext = mainVm;
 

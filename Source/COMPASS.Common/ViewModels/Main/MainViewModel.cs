@@ -100,7 +100,7 @@ namespace COMPASS.Common.ViewModels.Main
 
         #region Properties
 
-        private GridLength WindowControlsSpacing => _uiService.WindowControlsSpacing;
+        public GridLength WindowControlsSpacing => _uiService.WindowControlsSpacing;
         
         public static bool SaveOnClose { get; set; } = true;
 
