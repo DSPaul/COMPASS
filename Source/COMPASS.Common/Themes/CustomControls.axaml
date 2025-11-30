@@ -310,21 +310,22 @@
     </ControlTheme>
     
     <!-- MultiSelect Autocomplete box -->
-    <ControlTheme x:Key="{x:Type controls:MultiSelectAutoCompleteBox}" TargetType="controls:MultiSelectAutoCompleteBox">
+    <ControlTheme x:Key="{x:Type controls:ImprovedComboBox}" TargetType="controls:ImprovedComboBox">
         <Setter Property="BorderBrush" Value="LightGray"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="5"/>
         
         <Setter Property="Template">
-            <ControlTemplate TargetType="controls:MultiSelectAutoCompleteBox">
+            <ControlTemplate TargetType="controls:ImprovedComboBox">
 
                 <Border BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{TemplateBinding CornerRadius}"
                         Background="{DynamicResource TextControlBackground}">
                     <Grid RowDefinitions="Auto *" ColumnDefinitions="* Auto">
-                        <WrapPanel Grid.Row="0" Grid.Column="0">
-                            <ItemsControl ItemsSource="{TemplateBinding SelectedItems}" VerticalAlignment="Center">
+                        <controls:StretchingWrapPanel Grid.Row="0" Grid.Column="0">
+                            <ItemsControl ItemsSource="{TemplateBinding SelectedItems}" VerticalAlignment="Center"
+                                          IsVisible="{TemplateBinding SelectionMode, Converter={x:Static converters:ObjectConverters.AreEqual}, ConverterParameter={x:Static SelectionMode.Multiple}}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <WrapPanel />
@@ -332,7 +333,7 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Button Command="{Binding $parent[controls:MultiSelectAutoCompleteBox].RemoveItemCommand}"
+                                        <Button Command="{Binding $parent[controls:ImprovedComboBox].RemoveItemCommand}"
                                                 CommandParameter="{Binding}"
                                                 Classes="BlankButton">
                                             <controls:Chip Theme="{StaticResource Removable}" Margin="2,0"
@@ -343,11 +344,10 @@
                             </ItemsControl>
                             <TextBox Name="PART_Input" 
                                      MinWidth="100"
-                                     Theme="{x:Null}"
                                      Background="Transparent"
                                      Watermark="{TemplateBinding Watermark}"
                                      Text="{TemplateBinding Text, Mode=TwoWay}" 
-                                     HorizontalAlignment="Stretch" 
+                                     HorizontalAlignment="Stretch"
                                      BorderThickness="0">
                                 <!-- Disable Focussed styling, outer control with highlight this -->
                                 <TextBox.Resources>
@@ -356,7 +356,7 @@
                                     <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
                                 </TextBox.Resources>
                             </TextBox>
-                        </WrapPanel>
+                        </controls:StretchingWrapPanel>
                         <controls:IconButton Name="PART_Chevron"
                                              Grid.Row="0" Grid.Column="1"
                                              Theme="{StaticResource IconOnly}"
@@ -382,7 +382,7 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="10">
-                <controls:MultiSelectAutoCompleteBox Watermark="Create item"/>
+                <controls:ImprovedComboBox Watermark="Create item"/>
                 <ComboBox IsEditable="True" HorizontalAlignment="Stretch"></ComboBox>
                 
                 <controls:FilterModeSelector />

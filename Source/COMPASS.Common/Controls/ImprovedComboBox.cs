@@ -16,27 +16,27 @@ namespace COMPASS.Common.Controls;
 [TemplatePart("PART_SuggestionPopup", typeof(Popup))]
 [TemplatePart("PART_Suggestions", typeof(SelectingItemsControl))]
 [TemplatePart("PART_Chevron", typeof(IconButton))]
-public class MultiSelectAutoCompleteBox : ListBox
+public class ImprovedComboBox : ListBox
 {
     private TextBox? _inputTextBox;
     private Popup? _suggestionPopup;
     private SelectingItemsControl? _suggestionsControl;
     private IconButton? _chevronBtn;
-    
-    public MultiSelectAutoCompleteBox()
-    {
-        SuggestedItems = [];
-    }
-    
+
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
-
+        
         // if we had a control template before, we need to unsubscribe any event listeners
+        SelectionChanged -= OnSelectionChanged;
+        LostFocus -= OnLostFocus;
+        
         if(_inputTextBox != null)
         {
             _inputTextBox.KeyDown -= InputTextBoxOnKeyDown;
+            _inputTextBox.KeyUp -= InputTextBoxOnKeyUp;
             _inputTextBox.GotFocus -= InputTextBoxOnGotFocus;
+            _inputTextBox.PointerReleased -= InputTextBoxOnPointerReleased;
         }
         if (_suggestionPopup != null)
         {
@@ -53,10 +53,14 @@ public class MultiSelectAutoCompleteBox : ListBox
         _suggestionsControl = e.NameScope.Find("PART_Suggestions") as SelectingItemsControl;
         _chevronBtn = e.NameScope.Find("PART_Chevron") as IconButton;
         
+        SelectionChanged += OnSelectionChanged;
+        LostFocus += OnLostFocus;
         if(_inputTextBox != null)
         {
             _inputTextBox.KeyDown += InputTextBoxOnKeyDown;
+            _inputTextBox.KeyUp += InputTextBoxOnKeyUp;
             _inputTextBox.GotFocus += InputTextBoxOnGotFocus;
+            _inputTextBox.PointerReleased += InputTextBoxOnPointerReleased;
         }
         if (_suggestionPopup != null)
         {
@@ -66,6 +70,20 @@ public class MultiSelectAutoCompleteBox : ListBox
         {
             _chevronBtn.Click += ChevronBtnOnClick;
         }
+    }
+
+    private void OnLostFocus(object? sender, RoutedEventArgs e)
+    {
+        //TODO this causes crash
+        // if (_inputTextBox?.IsFocused != true && !CanCreate)
+        // {
+        //     Text = string.Empty;
+        // }
+    }
+
+    private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        UpdateSuggestions();
     }
 
     #region Events
@@ -84,6 +102,10 @@ public class MultiSelectAutoCompleteBox : ListBox
                 if (_suggestionPopup is { IsOpen: true })
                 {
                     AcceptSuggestion();
+                    if (SelectionMode == SelectionMode.Single)
+                    {
+                        _suggestionPopup.Close();
+                    }
                     e.Handled = true;
                 }
                 break;
@@ -102,7 +124,25 @@ public class MultiSelectAutoCompleteBox : ListBox
         }
     }
     
+    private void InputTextBoxOnKeyUp(object? sender, KeyEventArgs e)
+    {
+        //some key such as backspace are not captured by keyup
+        
+        if (e.Key == Key.Back && _suggestionPopup is {IsOpen: false} && SuggestedItems.Count > 0)
+        {
+            _suggestionPopup.Open();
+        }
+    }
+    
     private void InputTextBoxOnGotFocus(object? sender, GotFocusEventArgs e)
+    {
+        if (_suggestionPopup is {IsOpen: false} && SuggestedItems.Count > 0)
+        {
+            _suggestionPopup.Open();
+        }
+    }
+    
+    private void InputTextBoxOnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (_suggestionPopup is {IsOpen: false} && SuggestedItems.Count > 0)
         {
@@ -127,6 +167,7 @@ public class MultiSelectAutoCompleteBox : ListBox
         {
             _suggestionPopup.Open();
             _inputTextBox?.Focus();
+            _inputTextBox?.CaretIndex = _inputTextBox?.Text?.Length ?? 0;
         }
     }
     
@@ -134,7 +175,7 @@ public class MultiSelectAutoCompleteBox : ListBox
     
     #region Properties
 
-    public static readonly DirectProperty<MultiSelectAutoCompleteBox, string> TextProperty = AvaloniaProperty.RegisterDirect<MultiSelectAutoCompleteBox, string>(
+    public static readonly DirectProperty<ImprovedComboBox, string> TextProperty = AvaloniaProperty.RegisterDirect<ImprovedComboBox, string>(
         nameof(Text), o => o.Text, (o, v) => o.Text = v);
 
     public string Text
@@ -147,7 +188,7 @@ public class MultiSelectAutoCompleteBox : ListBox
         }
     } = "";
 
-    public static readonly StyledProperty<string?> WatermarkProperty = TextBox.WatermarkProperty.AddOwner<MultiSelectAutoCompleteBox>();
+    public static readonly StyledProperty<string?> WatermarkProperty = TextBox.WatermarkProperty.AddOwner<ImprovedComboBox>();
 
     public string? Watermark
     {
@@ -155,7 +196,7 @@ public class MultiSelectAutoCompleteBox : ListBox
         set => SetValue(WatermarkProperty, value);
     }
 
-    public static readonly StyledProperty<bool> CanCreateProperty = AvaloniaProperty.Register<MultiSelectAutoCompleteBox, bool>(
+    public static readonly StyledProperty<bool> CanCreateProperty = AvaloniaProperty.Register<ImprovedComboBox, bool>(
         nameof(CanCreate));
 
     public bool CanCreate
@@ -164,16 +205,16 @@ public class MultiSelectAutoCompleteBox : ListBox
         set => SetValue(CanCreateProperty, value);
     }
     
-    public static readonly DirectProperty<MultiSelectAutoCompleteBox, ObservableCollection<object>> SuggestedItemsProperty =
-        AvaloniaProperty.RegisterDirect<MultiSelectAutoCompleteBox, ObservableCollection<object>>(
+    public static readonly DirectProperty<ImprovedComboBox, ObservableCollection<object>> SuggestedItemsProperty =
+        AvaloniaProperty.RegisterDirect<ImprovedComboBox, ObservableCollection<object>>(
             nameof(SuggestedItems), o => o.SuggestedItems);
 
-    public ObservableCollection<object> SuggestedItems { get; }
-    
+    public ObservableCollection<object> SuggestedItems { get; } = [];
+
     #endregion
 
-    public static readonly DirectProperty<MultiSelectAutoCompleteBox, ICommand> RemoveItemCommandProperty =
-        AvaloniaProperty.RegisterDirect<MultiSelectAutoCompleteBox, ICommand>(
+    public static readonly DirectProperty<ImprovedComboBox, ICommand> RemoveItemCommandProperty =
+        AvaloniaProperty.RegisterDirect<ImprovedComboBox, ICommand>(
             nameof(RemoveItemCommand), o => o.RemoveItemCommand);
 
     private RelayCommand<object>? _removeItemCommand;
@@ -197,7 +238,7 @@ public class MultiSelectAutoCompleteBox : ListBox
         //Filter items based on text
         var filtered = ItemsSource
             .Cast<object>()
-            .Except(SelectedItems?.Cast<object>() ?? []) //Already selected items should not be suggested again
+            .Except(SelectionMode == SelectionMode.Multiple ? SelectedItems?.Cast<object>() ?? [] : []) //In multi select, already selected items should not be suggested again
             .Where(x => x != null && x.ToString().MatchesFuzzy(Text))
             .OrderBy(x => x.ToString());
 
@@ -209,7 +250,7 @@ public class MultiSelectAutoCompleteBox : ListBox
 
         //Add new item if CanCreate is set
         if (CanCreate && !string.IsNullOrWhiteSpace(Text) &&
-            SuggestedItems.All(item => item.ToString() != Text))
+            ItemsSource.Cast<object>().All(item => item.ToString() != Text))
         {
             SuggestedItems.Add(new NewItem(Text));
         }
@@ -234,11 +275,25 @@ public class MultiSelectAutoCompleteBox : ListBox
             }
             else
             {
-                SelectedItems.Add(_suggestionsControl.SelectedItem);
+                if (SelectionMode == SelectionMode.Single)
+                {
+                    SelectedItem = _suggestionsControl.SelectedItem;
+                    Text = SelectedItem?.ToString() ?? "";
+                    _inputTextBox?.CaretIndex = Text.Length;
+                }
+                else
+                {
+                    SelectedItems.Add(_suggestionsControl.SelectedItem);
+                }
             }
         }
         _suggestionPopup?.Close();
-        Text = string.Empty;
+
+        //clear textbox if multiple entry is allowed
+        if (SelectionMode != SelectionMode.Single)
+        {
+            Text = string.Empty;
+        }
     }
 
     class NewItem

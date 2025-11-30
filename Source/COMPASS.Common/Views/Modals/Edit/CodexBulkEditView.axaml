@@ -32,7 +32,7 @@
         </Grid.Styles>
 
         <TextBlock Text="Authors:" Margin="0,10" />
-        <controls:MultiSelectAutoCompleteBox Grid.Row="1" Grid.Column="0" 
+        <controls:ImprovedComboBox Grid.Row="1" Grid.Column="0" 
                                              ItemsSource="{Binding TabVM.FiltersVM.AuthorList}"
                                              SelectedItems="{Binding Authors, Mode=TwoWay}"
                                              Watermark="Add author" CanCreate="True"/>

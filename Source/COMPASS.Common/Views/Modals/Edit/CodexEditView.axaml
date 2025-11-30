@@ -133,19 +133,18 @@
                             <!-- Authors -->
                             <TextBlock Margin="3,10,3,3"
                                        Text="Authors:" />
-                            <controls:MultiSelectAutoCompleteBox ItemsSource="{Binding AuthorList}"
-                                                                 SelectedItems="{Binding WorkingCopy.Authors, Mode=TwoWay}"
-                                                                 Watermark="Add author" CanCreate="True"/>
+                            <controls:ImprovedComboBox ItemsSource="{Binding AuthorList}"
+                                                       SelectionMode="Multiple"
+                                                       SelectedItems="{Binding WorkingCopy.Authors, Mode=TwoWay}"
+                                                       Watermark="Add author" CanCreate="True"/>
 
                             <!-- Publisher -->
                             <TextBlock Margin="3,10,3,3"
                                        Text="Publisher:" />
-                            <!-- TODO allow creating new elements, keep an eye on avalonia #18094 -->
-                            <ComboBox HorizontalAlignment="Stretch"
-                                      BorderBrush="LightGray"
-                                      Background="{DynamicResource TextControlBackground}"
-                                      SelectedItem="{Binding WorkingCopy.Publisher}"
-                                      ItemsSource="{Binding PublisherOptions}" />
+                            <controls:ImprovedComboBox ItemsSource="{Binding PublisherOptions}"
+                                                       SelectionMode="Single"
+                                                       Text="{Binding WorkingCopy.Publisher, Mode=TwoWay}"
+                                                       CanCreate="True"/>
 
                             <!-- Smaller properties -->
                             <Grid Margin="0,10" RowSpacing="5"
