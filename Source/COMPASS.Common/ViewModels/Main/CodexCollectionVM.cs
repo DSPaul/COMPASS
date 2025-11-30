@@ -113,11 +113,13 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
             {
                 codexVm.Dispose();
             }
+            AllCodexVms.Clear();
 
             foreach (TagViewModel tagVm in AllTagVms.Values)
             {
                 tagVm.Dispose();
             }
+            AllTagVms.Clear();
         }
     }
 
