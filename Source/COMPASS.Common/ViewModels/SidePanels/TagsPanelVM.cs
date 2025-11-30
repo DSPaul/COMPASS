@@ -181,7 +181,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         {
             if (tagVm != null)
             {
-                _filtersVM.AddFilter(new TagFilter(tagVm), ModeIsInclude);
+                _filtersVM.ActivateFilter(new TagFilter(tagVm), ModeIsInclude);
             }
         }
 

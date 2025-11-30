@@ -7,12 +7,9 @@ using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 
@@ -95,13 +92,16 @@ namespace COMPASS.Common.ViewModels.Main
             set => SetProperty(ref _searchTerm, value);
         }
 
-        public List<Filter> BooleanFilters { get; } =
+        
+        private List<Filter> _booleanFilters =
         [
             new OfflineSourceFilter(),
             new OnlineSourceFilter(),
             new PhysicalSourceFilter(),
             new FavoriteFilter()
         ];
+
+        public List<FilterViewModel> BooleanFilters => field ??= _booleanFilters.Select(ModelVmFactory.GetFilterViewModel).ToList();
 
         #region Clear selection on comboboxes
 
@@ -128,7 +128,7 @@ namespace COMPASS.Common.ViewModels.Main
             {
                 if (String.IsNullOrEmpty(value)) return;
                 Filter authorFilter = new AuthorFilter(value);
-                AddFilter(authorFilter, Include);
+                ActivateFilter(authorFilter, Include);
                 ClearSelection();
             }
         }
@@ -146,7 +146,7 @@ namespace COMPASS.Common.ViewModels.Main
             {
                 if (String.IsNullOrEmpty(value)) return;
                 Filter publisherFilter = new PublisherFilter(value);
-                AddFilter(publisherFilter, Include);
+                ActivateFilter(publisherFilter, Include);
                 ClearSelection();
             }
         }
@@ -164,7 +164,7 @@ namespace COMPASS.Common.ViewModels.Main
             {
                 if (String.IsNullOrEmpty(value)) return;
                 Filter fileExtensionFilter = new FileExtensionFilter(value);
-                AddFilter(fileExtensionFilter, Include);
+                ActivateFilter(fileExtensionFilter, Include);
                 ClearSelection();
             }
         }
@@ -181,7 +181,7 @@ namespace COMPASS.Common.ViewModels.Main
             {
                 if (String.IsNullOrEmpty(value)) return;
                 Filter domainFilter = new DomainFilter(value);
-                AddFilter(domainFilter, Include);
+                ActivateFilter(domainFilter, Include);
                 ClearSelection();
             }
         }
@@ -199,7 +199,7 @@ namespace COMPASS.Common.ViewModels.Main
                 if (value is not null)
                 {
                     Filter notEmptyFilter = new NotEmptyFilter(value);
-                    AddFilter(notEmptyFilter, Include);
+                    ActivateFilter(notEmptyFilter, Include);
                     ClearSelection();
                 }
             }
@@ -232,7 +232,7 @@ namespace COMPASS.Common.ViewModels.Main
                 SetProperty(ref _startReleaseDate, value);
                 if (value is null) return;
                 Filter startDateFilter = new StartReleaseDateFilter(value.Value);
-                AddFilter(startDateFilter, Include);
+                ActivateFilter(startDateFilter, Include);
             }
         }
 
@@ -245,7 +245,7 @@ namespace COMPASS.Common.ViewModels.Main
                 if (value != null)
                 {
                     Filter stopDateFilter = new StopReleaseDateFilter(value.Value);
-                    AddFilter(stopDateFilter, Include);
+                    ActivateFilter(stopDateFilter, Include);
                 }
             }
         }
@@ -261,7 +261,7 @@ namespace COMPASS.Common.ViewModels.Main
                 if (value is > 0 and < 6)
                 {
                     Filter minRatFilter = new MinimumRatingFilter(value);
-                    AddFilter(minRatFilter, Include);
+                    ActivateFilter(minRatFilter, Include);
                 }
             }
         }
@@ -430,15 +430,13 @@ namespace COMPASS.Common.ViewModels.Main
         }
 
         // Add Filter
-        public void AddFilter(Filter? filter, bool include = true)
-        {
-            if (filter is null) return;
+        private RelayCommand<FilterViewModel>? _activateFilterCommand;
+        public RelayCommand<FilterViewModel> ActivateFilterCommand => _activateFilterCommand ??= new(vm => ActivateFilter(vm, Include));
 
-            //TODO: check how keyboard shortcuts are done in avalonia
-            //if (Keyboard.Modifiers == ModifierKeys.Alt)
-            //{
-            //    include = false;
-            //}
+        private void ActivateFilter(FilterViewModel? filterVm, bool include = true)
+        {
+            if (filterVm == null) return;
+            var filter = filterVm.GetModel();
 
             ObservableCollection<FilterViewModel> target = include ? IncludedFilters : ExcludedFilters;
             ObservableCollection<FilterViewModel> other = !include ? IncludedFilters : ExcludedFilters;
@@ -448,11 +446,16 @@ namespace COMPASS.Common.ViewModels.Main
             {
                 target.RemoveWhere(f => f.Type == filter.Type);
             }
-
-            FilterViewModel filterVm = ModelVmFactory.GetFilterViewModel(filter);
             
             target.AddIfMissing(filterVm);
             other.Remove(filterVm); //filter should never occur in both include and exclude so remove from other
+        }
+        
+        public void ActivateFilter(Filter? filter, bool include = true)
+        {
+            if (filter is null) return;
+            FilterViewModel filterVm = ModelVmFactory.GetFilterViewModel(filter);
+            ActivateFilter(filterVm, include);
         }
 
         private RelayCommand<string>? _searchCommand;
@@ -462,7 +465,7 @@ namespace COMPASS.Common.ViewModels.Main
             if (!String.IsNullOrEmpty(searchTerm))
             {
                 Filter searchFilter = new SearchFilter(searchTerm);
-                AddFilter(searchFilter);
+                ActivateFilter(searchFilter);
             }
             else
             {
@@ -653,12 +656,12 @@ namespace COMPASS.Common.ViewModels.Main
             //Move From Treeview
             if (e.Data.GetValue<TreeNode<TagViewModel>>() is { Item.IsGroup: false } node)
             {
-                AddFilter(new TagFilter(node.Item), toIncluded);
+                ActivateFilter(new TagFilter(node.Item), toIncluded);
             }
             //Move Filter to included/excluded
             else if (e.Data.GetValue<Filter>() is Filter draggedFilter)
             {
-                AddFilter(draggedFilter, toIncluded);
+                ActivateFilter(draggedFilter, toIncluded);
             }
         }
         #endregion
