@@ -33,8 +33,8 @@
                 <TextBlock Text="Author:"/>
                 <Panel>
                     <ComboBox ItemsSource="{Binding AuthorList}" FontSize="15"
-                              SelectedItem="{Binding NoneSelection, Mode=OneWay}"
-                              SelectedValue="{Binding SelectedAuthor, Mode=OneWayToSource}"/>
+                              SelectionChanged="ClearOnSelectionChanged"
+                              SelectedItem="{Binding SelectedAuthor}"/>
                     <TextBlock Text="-- Select Author --" IsHitTestVisible="False"
                                HorizontalAlignment="Center" Margin="0,0,20,0"/>
                 </Panel>
@@ -42,8 +42,8 @@
                 <TextBlock Text="Publisher:" Margin="0,10,0,0"/>
                 <Panel>
                     <ComboBox ItemsSource="{Binding PublisherList}" FontSize="15"
-                              SelectedItem="{Binding NoneSelection, Mode=OneWay}"
-                              SelectedValue="{Binding SelectedPublisher,  Mode=OneWayToSource}"/>
+                              SelectionChanged="ClearOnSelectionChanged"
+                              SelectedItem="{Binding SelectedPublisher}"/>
                     <TextBlock Text="-- Select Publisher --" IsHitTestVisible="False"
                                HorizontalAlignment="Center" Margin="0,0,20,0"/>
                 </Panel>
@@ -87,8 +87,8 @@
                 <TextBlock Text="File Type:" Margin="0,5"/>
                 <Panel>
                     <ComboBox ItemsSource="{Binding FileTypeList}" FontSize="15"
-                              SelectedItem="{Binding NoneSelection, Mode=OneWay}"
-                              SelectedValue="{Binding SelectedFileType, Mode=OneWayToSource}" />
+                              SelectionChanged="ClearOnSelectionChanged"
+                              SelectedItem="{Binding SelectedFileType}"/>
                     <TextBlock Text="-- Select File Type --" IsHitTestVisible="False" 
                                HorizontalAlignment="Center" Margin="0,0,20,0"/>
                 </Panel>
@@ -96,8 +96,8 @@
                 <TextBlock Text="Source Website:" Margin="0,5"/>
                 <Panel>
                     <ComboBox ItemsSource="{Binding DomainList}" FontSize="15"
-                              SelectedItem="{Binding NoneSelection, Mode=OneWay}"
-                              SelectedValue="{Binding SelectedDomain,  Mode=OneWayToSource}" />
+                              SelectionChanged="ClearOnSelectionChanged"
+                              SelectedItem="{Binding SelectedDomain}"/>
                     <TextBlock Text="-- Select Website --" IsHitTestVisible="False" 
                                HorizontalAlignment="Center" Margin="0,0,20,0"/>
                 </Panel>
@@ -106,8 +106,8 @@
                 <Panel>
                     <ComboBox ItemsSource="{Binding PossibleEmptyProperties}" DisplayMemberBinding="{Binding Label}"
                               FontSize="15"
-                              SelectedItem="{Binding NoneSelection, Mode=OneWay}"
-                              SelectedValue="{Binding SelectedNotEmptyProperty,  Mode=OneWayToSource}" />
+                              SelectionChanged="ClearOnSelectionChanged"
+                              SelectedItem="{Binding SelectedNotEmptyProperty}"/>
                     <TextBlock Text="-- Select Property --" IsHitTestVisible="False" 
                                HorizontalAlignment="Center" Margin="0,0,20,0"/>
                 </Panel>

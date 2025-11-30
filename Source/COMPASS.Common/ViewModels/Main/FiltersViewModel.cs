@@ -112,14 +112,6 @@ namespace COMPASS.Common.ViewModels.Main
             set => SetProperty(ref _noneSelection, value);
         }
 
-        private void ClearSelection()
-        {
-            //Just setting it to null doesn't work due to one way binding, 
-            //value actually needs to change
-            NoneSelection = "";
-            NoneSelection = null;
-        }
-
         #endregion
 
         public string SelectedAuthor
@@ -129,7 +121,6 @@ namespace COMPASS.Common.ViewModels.Main
                 if (String.IsNullOrEmpty(value)) return;
                 Filter authorFilter = new AuthorFilter(value);
                 ActivateFilter(authorFilter, Include);
-                ClearSelection();
             }
         }
 
@@ -147,7 +138,6 @@ namespace COMPASS.Common.ViewModels.Main
                 if (String.IsNullOrEmpty(value)) return;
                 Filter publisherFilter = new PublisherFilter(value);
                 ActivateFilter(publisherFilter, Include);
-                ClearSelection();
             }
         }
 
@@ -165,7 +155,6 @@ namespace COMPASS.Common.ViewModels.Main
                 if (String.IsNullOrEmpty(value)) return;
                 Filter fileExtensionFilter = new FileExtensionFilter(value);
                 ActivateFilter(fileExtensionFilter, Include);
-                ClearSelection();
             }
         }
         private ObservableCollection<string> _fileTypeList = [];
@@ -182,7 +171,6 @@ namespace COMPASS.Common.ViewModels.Main
                 if (String.IsNullOrEmpty(value)) return;
                 Filter domainFilter = new DomainFilter(value);
                 ActivateFilter(domainFilter, Include);
-                ClearSelection();
             }
         }
         private ObservableCollection<string> _domainList = [];
@@ -200,7 +188,6 @@ namespace COMPASS.Common.ViewModels.Main
                 {
                     Filter notEmptyFilter = new NotEmptyFilter(value);
                     ActivateFilter(notEmptyFilter, Include);
-                    ClearSelection();
                 }
             }
         }
