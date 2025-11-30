@@ -322,31 +322,48 @@
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{TemplateBinding CornerRadius}"
                         Background="{DynamicResource TextControlBackground}">
-                    <StackPanel>
-                        <ItemsControl ItemsSource="{TemplateBinding SelectedItems}" VerticalAlignment="Center">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Command="{Binding $parent[controls:MultiSelectAutoCompleteBox].RemoveItemCommand}"
-                                            CommandParameter="{Binding}"
-                                            Classes="BlankButton">
-                                        <controls:Chip Theme="{StaticResource Removable}" Margin="2,0"
-                                                       Background="LightSlateGray" Name="{Binding $self.DataContext}"/>
-                                    </Button>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                        <TextBox Name="PART_Input" 
-                                 Background="Transparent"
-                                 Watermark="{TemplateBinding Watermark}"
-                                 Text="{TemplateBinding Text, Mode=TwoWay}" 
-                                 HorizontalAlignment="Stretch" 
-                                 BorderThickness="0"/>
+                    <Grid RowDefinitions="Auto *" ColumnDefinitions="* Auto">
+                        <WrapPanel Grid.Row="0" Grid.Column="0">
+                            <ItemsControl ItemsSource="{TemplateBinding SelectedItems}" VerticalAlignment="Center">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Command="{Binding $parent[controls:MultiSelectAutoCompleteBox].RemoveItemCommand}"
+                                                CommandParameter="{Binding}"
+                                                Classes="BlankButton">
+                                            <controls:Chip Theme="{StaticResource Removable}" Margin="2,0"
+                                                           Background="LightSlateGray" Name="{Binding $self.DataContext}"/>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBox Name="PART_Input" 
+                                     MinWidth="100"
+                                     Theme="{x:Null}"
+                                     Background="Transparent"
+                                     Watermark="{TemplateBinding Watermark}"
+                                     Text="{TemplateBinding Text, Mode=TwoWay}" 
+                                     HorizontalAlignment="Stretch" 
+                                     BorderThickness="0">
+                                <!-- Disable Focussed styling, outer control with highlight this -->
+                                <TextBox.Resources>
+                                    <SolidColorBrush x:Key="TextControlBackgroundFocused">Transparent</SolidColorBrush>
+                                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver">Transparent</SolidColorBrush>
+                                    <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
+                                </TextBox.Resources>
+                            </TextBox>
+                        </WrapPanel>
+                        <controls:IconButton Name="PART_Chevron"
+                                             Grid.Row="0" Grid.Column="1"
+                                             Theme="{StaticResource IconOnly}"
+                                             Margin="5"
+                                             Icon="ChevronDown"/>
                         <Popup Name="PART_SuggestionPopup" 
+                               Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                IsLightDismissEnabled="True"
                                MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
                                MaxHeight="300">
@@ -355,7 +372,7 @@
                                      HorizontalAlignment="Stretch">
                             </ListBox>
                         </Popup>
-                    </StackPanel>
+                    </Grid>
                 </Border>
 
             </ControlTemplate>
@@ -365,6 +382,9 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="10">
+                <controls:MultiSelectAutoCompleteBox Watermark="Create item"/>
+                <ComboBox IsEditable="True" HorizontalAlignment="Stretch"></ComboBox>
+                
                 <controls:FilterModeSelector />
 
                 <StackPanel Orientation="Horizontal">

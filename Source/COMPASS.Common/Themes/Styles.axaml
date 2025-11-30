@@ -529,7 +529,6 @@
         </Style>
     </Style>
 
-
     <!-- contextmenu -->
     <Style Selector="MenuItem">
         <Style Selector="^ materialIcons|MaterialIcon">
@@ -565,8 +564,8 @@
             <Setter Property="HorizontalContentAlignment" Value="Center" />
         </Style>
     </Style>
-
-        <!-- Validation Error template -->
+    
+    <!-- Validation Error template -->
     <Style Selector="DataValidationErrors">
         <Setter Property="Template">
             <ControlTemplate>

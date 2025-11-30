@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Infra.ExtensionMethods;
 
@@ -14,11 +15,13 @@ namespace COMPASS.Common.Controls;
 [TemplatePart("PART_Input", typeof(TextBox))]
 [TemplatePart("PART_SuggestionPopup", typeof(Popup))]
 [TemplatePart("PART_Suggestions", typeof(SelectingItemsControl))]
+[TemplatePart("PART_Chevron", typeof(IconButton))]
 public class MultiSelectAutoCompleteBox : ListBox
 {
     private TextBox? _inputTextBox;
     private Popup? _suggestionPopup;
     private SelectingItemsControl? _suggestionsControl;
+    private IconButton? _chevronBtn;
     
     public MultiSelectAutoCompleteBox()
     {
@@ -30,30 +33,38 @@ public class MultiSelectAutoCompleteBox : ListBox
         base.OnApplyTemplate(e);
 
         // if we had a control template before, we need to unsubscribe any event listeners
-        if(_inputTextBox is not null)
+        if(_inputTextBox != null)
         {
             _inputTextBox.KeyDown -= InputTextBoxOnKeyDown;
+            _inputTextBox.GotFocus -= InputTextBoxOnGotFocus;
         }
-
-        if (_suggestionPopup is not null)
+        if (_suggestionPopup != null)
         {
             _suggestionPopup.PointerReleased -= SuggestionPopupOnPointerReleased;
+        }
+        if (_chevronBtn != null)
+        {
+            _chevronBtn.Click -= ChevronBtnOnClick;
         }
         
         // try to find the control with the given name
         _inputTextBox = e.NameScope.Find("PART_Input") as TextBox;
         _suggestionPopup = e.NameScope.Find("PART_SuggestionPopup") as Popup;
         _suggestionsControl = e.NameScope.Find("PART_Suggestions") as SelectingItemsControl;
+        _chevronBtn = e.NameScope.Find("PART_Chevron") as IconButton;
         
         if(_inputTextBox != null)
         {
             _inputTextBox.KeyDown += InputTextBoxOnKeyDown;
+            _inputTextBox.GotFocus += InputTextBoxOnGotFocus;
         }
-
-
         if (_suggestionPopup != null)
         {
             _suggestionPopup.PointerReleased += SuggestionPopupOnPointerReleased;
+        }
+        if (_chevronBtn != null)
+        {
+            _chevronBtn.Click += ChevronBtnOnClick;
         }
     }
 
@@ -61,36 +72,41 @@ public class MultiSelectAutoCompleteBox : ListBox
 
     private void InputTextBoxOnKeyDown(object? sender, KeyEventArgs e)
     {
+        if (_suggestionPopup is {IsOpen: false} && SuggestedItems.Count > 0)
+        {
+            _suggestionPopup.Open();
+        }
+        
         switch (e.Key)
         {
             case Key.Enter:
             case Key.Tab:
-                AcceptSuggestion();
-                e.Handled = true;
+                if (_suggestionPopup is { IsOpen: true })
+                {
+                    AcceptSuggestion();
+                    e.Handled = true;
+                }
                 break;
             case Key.Down:
-                if (_suggestionPopup is {IsOpen: false})
-                {
-                    _suggestionPopup.Open();
-                }
-                else if (_suggestionsControl != null && _suggestionsControl.SelectedIndex < _suggestionsControl.ItemCount )
+                if (_suggestionsControl != null && _suggestionsControl.SelectedIndex < _suggestionsControl.ItemCount )
                 {
                     _suggestionsControl.SelectedIndex++;
                 }
                 break;
             case Key.Up:
-                if (_suggestionPopup is {IsOpen: false})
-                {
-                    _suggestionPopup.Open();
-                }
-                else if (_suggestionsControl != null && _suggestionsControl.SelectedIndex > 0)
+                if (_suggestionsControl is { SelectedIndex: > 0 })
                 {
                     _suggestionsControl.SelectedIndex--;
                 }
                 break;
-            default:
-                _suggestionPopup?.Open();
-                break;
+        }
+    }
+    
+    private void InputTextBoxOnGotFocus(object? sender, GotFocusEventArgs e)
+    {
+        if (_suggestionPopup is {IsOpen: false} && SuggestedItems.Count > 0)
+        {
+            _suggestionPopup.Open();
         }
     }
     
@@ -99,24 +115,37 @@ public class MultiSelectAutoCompleteBox : ListBox
         AcceptSuggestion();
     }
     
+    private void ChevronBtnOnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_suggestionPopup == null) return;
+        
+        if(_suggestionPopup.IsOpen)
+        {
+            _suggestionPopup.Close();
+        }
+        else
+        {
+            _suggestionPopup.Open();
+            _inputTextBox?.Focus();
+        }
+    }
+    
     #endregion
     
     #region Properties
-    
-    private string _text = "";
 
     public static readonly DirectProperty<MultiSelectAutoCompleteBox, string> TextProperty = AvaloniaProperty.RegisterDirect<MultiSelectAutoCompleteBox, string>(
         nameof(Text), o => o.Text, (o, v) => o.Text = v);
 
     public string Text
     {
-        get => _text;
+        get;
         set
         {
-            SetAndRaise(TextProperty, ref _text, value);
+            SetAndRaise(TextProperty, ref field, value);
             UpdateSuggestions();
         }
-    }
+    } = "";
 
     public static readonly StyledProperty<string?> WatermarkProperty = TextBox.WatermarkProperty.AddOwner<MultiSelectAutoCompleteBox>();
 
