@@ -6,6 +6,7 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Infra.Tools;
+using COMPASS.Linux.DepencyInjection;
 using COMPASS.Linux.Services;
 
 namespace COMPASS.Linux;
@@ -50,12 +51,7 @@ class Program
 
         // Register Common Modules
         builder.RegisterModule<CommonModule>();
-
-        //Register Linux specific dependencies
-        builder.RegisterType<EnvironmentVarsService>().As<IEnvironmentVarsService>();
-        builder.RegisterType<IOService>().As<IIOService>();
-        builder.RegisterType<UIService>().As<IUIService>();
-        builder.RegisterType<WebDriverService>().As<IWebDriverService>().InstancePerLifetimeScope();
+        builder.RegisterModule<LinuxModule>();
 
         ServiceResolver.Initialize(builder.Build());
     }

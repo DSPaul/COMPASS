@@ -38,7 +38,7 @@ namespace COMPASS.Common.ViewModels.Modals
             OnPropertyChanged(nameof(CurrentProposal));
         }
 
-        protected override Task Finish()
+        public override Task Finish()
         {
             ApplyChoices();
             CloseAction();

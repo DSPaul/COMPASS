@@ -59,10 +59,10 @@ namespace COMPASS.Common.ViewModels.Selection
                     if (_tagsRoot != null) return _tagsRoot;
                     
                     //convert to nodes
-                    _tagsRoot = new CheckableTreeNode<Tag>(new Tag(), containerOnly: true)
+                    _tagsRoot = new CheckableTreeNode<Tag>(new Tag(), containerOnly: true, propagateChanges: true)
                     {
                         Children = new(_collection.RootTags
-                            .Select(t => new CheckableTreeNode<Tag>(t, containerOnly: t.IsGroup)))
+                            .Select(t => new CheckableTreeNode<Tag>(t, containerOnly: t.IsGroup, propagateChanges: true)))
                     };
                     //init expanded, checked and container only
                     foreach (var node in _tagsRoot.Children.Flatten())

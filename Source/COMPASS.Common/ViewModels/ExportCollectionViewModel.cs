@@ -65,7 +65,7 @@ namespace COMPASS.Common.ViewModels
         public bool IncludeFiles { get; set; }
         public bool IncludeCoverArt { get; set; }
 
-        protected override async Task Finish()
+        public override async Task Finish()
         {
             ApplyChoices();
 
@@ -183,7 +183,7 @@ namespace COMPASS.Common.ViewModels
                 //TODO find new way to track progress
 
                 //Export
-                await Task.Run(() => archive.SaveTo(targetPath, CompressionType.None));
+                await archive.SaveToAsync(targetPath, CompressionType.None);
 
                 progressVM.IncrementCounter();
                 Logger.Info($"Exported {CollectionToExport.Name} to {targetPath}");
@@ -196,7 +196,7 @@ namespace COMPASS.Common.ViewModels
             }
             finally
             {
-                storageService.DeleteCollection(ContentSelectorVM.CuratedCollection);
+                storageService.DeleteCollection(ContentSelectorVM.CuratedCollection.Name);
             }
         }
 

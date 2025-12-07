@@ -107,7 +107,7 @@ namespace COMPASS.Common.ViewModels.Import
         protected override bool ShowFinishButton() => base.ShowFinishButton() &&
                                                       !(CurrentStep == _overviewStep && !MergeIntoCollection && !IsCollectionNameLegal);
 
-        protected override async Task Finish()
+        public override async Task Finish()
         {
             //if we do a quick import, set all the things in the contentSelector have the right value
             if (!AdvancedImport)

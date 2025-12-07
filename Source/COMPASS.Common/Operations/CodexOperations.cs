@@ -101,9 +101,8 @@ namespace COMPASS.Common.Operations
         }
 
         //Open Multiple Files
-        private AsyncRelayCommand<IList>? _openSelectedCodicesCommand;
         public AsyncRelayCommand<IList> OpenSelectedCodicesCommand => 
-            _openSelectedCodicesCommand ??= new(async l => await OpenSelectedCodices(l?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList()));
+            field ??= new(async l => await OpenSelectedCodices(l?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList()));
         public static async Task<bool> OpenSelectedCodices(IList<Codex>? toOpen)
         {
             if (!toOpen.SafeAny()) return false;
@@ -143,8 +142,7 @@ namespace COMPASS.Common.Operations
         }
 
         //Edit Multiple files
-        private AsyncRelayCommand<IList>? _editCodicesCommand;
-        public AsyncRelayCommand<IList> EditCodicesCommand => _editCodicesCommand ??= new(EditCodices);
+        public AsyncRelayCommand<IList> EditCodicesCommand => field ??= new(EditCodices);
         public async Task EditCodices(IList? toEdit)
         {
             List<Codex>? toEditList = toEdit?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList();
@@ -187,8 +185,7 @@ namespace COMPASS.Common.Operations
         }
 
         //Toggle Favorite
-        private RelayCommand<IList>? _favoriteCodicesCommand;
-        public RelayCommand<IList> FavoriteCodicesCommand => _favoriteCodicesCommand ??= new(FavoriteCodices);
+        public RelayCommand<IList> FavoriteCodicesCommand => field ??= new(FavoriteCodices);
         private static void FavoriteCodices(IList? toFavorite)
         {
             List<Codex>? toFavoriteList = toFavorite?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList();
@@ -222,8 +219,7 @@ namespace COMPASS.Common.Operations
         }
 
         //Move Codex to other CodexCollection
-        private AsyncRelayCommand<IList<object>>? _moveToCollectionCommand;
-        public AsyncRelayCommand<IList<object>> MoveToCollectionCommand => _moveToCollectionCommand ??= new(MoveToCollection);
+        public AsyncRelayCommand<IList<object>> MoveToCollectionCommand => field ??= new(MoveToCollection);
         public async Task MoveToCollection(IList<object>? par)
         {
             if (par == null) return;
@@ -331,8 +327,7 @@ namespace COMPASS.Common.Operations
         }
 
         //Delete Codices
-        private AsyncRelayCommand<IList>? _deleteCodicesCommand;
-        public AsyncRelayCommand<IList> DeleteCodicesCommand => _deleteCodicesCommand ??= new(async (codices) =>
+        public AsyncRelayCommand<IList> DeleteCodicesCommand => field ??= new(async (codices) =>
         {
             var codicesToDelete = codices?.Cast<Codex>().ToList() ?? [];
             await DeleteCodices(codicesToDelete, true);
@@ -393,8 +388,7 @@ namespace COMPASS.Common.Operations
         }
 
         //Banish Codices
-        private AsyncRelayCommand<IList>? _banishCodicesCommand;
-        public AsyncRelayCommand<IList> BanishCodicesCommand => _banishCodicesCommand ??= new(BanishCodices);
+        public AsyncRelayCommand<IList> BanishCodicesCommand => field ??= new(BanishCodices);
         private static async Task BanishCodices(IList? toBanish)
         {
             var codicesToBanish = toBanish?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList() ?? [];
@@ -554,8 +548,7 @@ namespace COMPASS.Common.Operations
             ProgressViewModel.GetInstance().IncrementCounter();
         }
 
-        private AsyncRelayCommand<IList>? _getMetaDataBulkCommand;
-        public AsyncRelayCommand<IList> GetMetaDataBulkCommand => _getMetaDataBulkCommand ??= new(GetMetaDataBulk);
+        public AsyncRelayCommand<IList> GetMetaDataBulkCommand => field ??= new(GetMetaDataBulk);
 
         private async Task GetMetaDataBulk(IList? codices)
         {
@@ -577,8 +570,7 @@ namespace COMPASS.Common.Operations
             await CoverService.GetAndApplyCover([codex]);
         }
 
-        private AsyncRelayCommand<IList>? _getCoverBulkCommand;
-        public AsyncRelayCommand<IList> GetCoverBulkCommand => _getCoverBulkCommand ??= new(GetCoverBulk);
+        public AsyncRelayCommand<IList> GetCoverBulkCommand => field ??= new(GetCoverBulk);
         private static async Task GetCoverBulk(IList? codices) =>
             await CoverService.GetAndApplyCover(codices?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList() ?? []);
 

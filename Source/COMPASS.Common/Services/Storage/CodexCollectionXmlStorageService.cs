@@ -610,7 +610,7 @@ public class CodexCollectionXmlStorageService(
         archive.AddEntry(TagsFileName, TagsDataFilePath(collection.Name));
 
         //Export
-        archive.SaveTo(targetPath, CompressionType.None);
+        await archive.SaveToAsync(targetPath, CompressionType.None);
         Logger.Info($"Exported Tags from {collection.Name} to {targetPath}");
     }
 
@@ -648,26 +648,26 @@ public class CodexCollectionXmlStorageService(
 
     #region Delete
 
-    public void DeleteCollection(CodexCollection toDelete)
+    public void DeleteCollection(string collectionId)
     {
         //if Dir name of toDelete is empty, it will delete the entire collections folder
-        if (string.IsNullOrEmpty(toDelete.Name))
+        if (string.IsNullOrEmpty(collectionId))
             return;
 
         //nothing to delete if the collection was never saved
-        if (!Directory.Exists(CollectionDataPath(toDelete.Name)))
+        if (!Directory.Exists(CollectionDataPath(collectionId)))
             return;
 
         try
         {
             //sometimes completing delete fails because a files are locked, retry could help with that
-            Utils.Retry<IOException>(3, () => Directory.Delete(CollectionDataPath(toDelete.Name), true),
-                onFailedAttempt: (ex) => Logger.Warn($"Failed to delete collection {toDelete.Name}, retrying...", ex)
+            Utils.Retry<IOException>(3, () => Directory.Delete(CollectionDataPath(collectionId), true),
+                onFailedAttempt: (ex) => Logger.Warn($"Failed to delete collection {collectionId}, retrying...", ex)
             );
         }
         catch (Exception ex)
         {
-            Logger.Error($"Failed to delete collection {toDelete.Name}", ex);
+            Logger.Error($"Failed to delete collection {collectionId}", ex);
         }
     }
 

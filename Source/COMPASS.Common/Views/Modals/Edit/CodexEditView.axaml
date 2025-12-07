@@ -160,7 +160,7 @@
                                 <!--Page count -->
                                 <TextBlock Grid.Row="1" Grid.Column="0"
                                            Text="Page count:" />
-                                <!-- TODO have a look at validation -->
+
                                 <TextBox Grid.Row="1" Grid.Column="1"
                                          Text="{Binding WorkingCopy.PageCount}"
                                          MinWidth="30" Margin="5" />

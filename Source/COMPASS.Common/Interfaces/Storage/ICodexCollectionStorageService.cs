@@ -51,5 +51,5 @@ public interface ICodexCollectionStorageService
     #endregion
 
     void OnCollectionRenamed(string oldname, string newName);
-    void DeleteCollection(CodexCollection collection);
+    void DeleteCollection(string collectionId);
 }

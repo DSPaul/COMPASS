@@ -7,6 +7,7 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Infra.Tools;
+using COMPASS.Windows.DepencyInjection;
 using COMPASS.Windows.Services;
 
 namespace COMPASS.Windows;
@@ -56,15 +57,9 @@ class Program
     {
         var builder = new ContainerBuilder();
 
-        // Register Common Modules
         builder.RegisterModule<CommonModule>();
+        builder.RegisterModule<WindowsModule>();
 
-        //Register windows specific dependencies
-        builder.RegisterType<EnvironmentVarsService>().As<IEnvironmentVarsService>();
-        builder.RegisterType<IOService>().As<IIOService>();
-        builder.RegisterType<UIService>().As<IUIService>();
-        builder.RegisterType<WebDriverService>().As<IWebDriverService>().InstancePerLifetimeScope();
-        
         ServiceResolver.Initialize(builder.Build());
     }
 }

@@ -36,8 +36,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         }
         else
         {
-            //TODO probably throw a custom exception to indicate the target could not be loaded
-            throw new Exception("Target Collection not found");
+            throw new LoadException(targetCollectionId, "Target Collection not found");
         }
         _autoImport = autoImport;
     }

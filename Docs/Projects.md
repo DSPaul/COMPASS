@@ -1,15 +1,22 @@
-# Projects
+# Project Hierarchy
 
-## Hierarchy
-
+```mermaid
+graph TD;
+    Infra-->Common;
+    Common-->Windows; 
+    Common-->Linux;
+    Common-->Tests.Common;
+    Tests.Common-->UnitTests;
+    Tests.Common-->IntegrationTests.Common;
+    Tests.Common-->IntegrationTests.Windows;
+    Tests.Common-->IntegrationTests.Linux;
+    Windows-->IntegrationTests.Windows;
+    Linux-->IntegrationTests.Linux;
 ```
-Infra -> Common -> Windows
-                -> Linux
-                -> MacOS
-                -> Tests
-```
 
-## Projects
+# Project Details
+
+## Lib
 
 ### Infra
 
@@ -19,12 +26,27 @@ For code that could be found in any .NET Avalonia project.
 
 All code shared between all target platforms.
 
-### Windows, Linux, MacOS
+## Desktop
+### Windows, Linux
 
 Entry points for the different platforms, contain platform specific implementations of interfaces. 
 
-### Tests
+## Tests
 
-Unit and integration tests of platform independent code.
+### Common
+
+Class library for data generators, comparitors, mocks, ect.
+
+### Unit tests
+
+Platform independant unit tests
+
+### IntegrationTest.Common
+
+Platform independant integration tests
+
+### IntegrationTest.Windows & IntegrationTests.Linux
+
+Plaform dependant integration tests
 
 

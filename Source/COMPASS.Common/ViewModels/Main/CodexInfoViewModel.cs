@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Models;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.ModelVMs;
@@ -17,7 +16,6 @@ namespace COMPASS.Common.ViewModels.Main
         private FiltersViewModel? _FilterVm => TabsViewModel.GetInstance().ActiveTab?.FiltersVM;
 
         private readonly PreferencesService _preferencesService;
-        private CodexViewModel? _displayedCodex;
 
         //whether the codex info panel is active
         public bool ShowCodexInfo
@@ -36,14 +34,14 @@ namespace COMPASS.Common.ViewModels.Main
 
         public CodexViewModel? DisplayedCodex
         {
-            get => _displayedCodex;
+            get;
             set
             {
-                CodexViewModel? prevCodex = _displayedCodex;
-                if (SetProperty(ref _displayedCodex, value))
+                CodexViewModel? prevCodex = field;
+                if (SetProperty(ref field, value))
                 {
                     prevCodex?.DisposeCover();
-                    _displayedCodex?.LoadCover();
+                    field?.LoadCover();
                     OnPropertyChanged(nameof(ShowInfo));
                 }
             }
@@ -60,19 +58,15 @@ namespace COMPASS.Common.ViewModels.Main
             }
         }
 
-        private RelayCommand? _toggleCodexInfoCommand;
-        public RelayCommand ToggleCodexInfoCommand => _toggleCodexInfoCommand ??= new(() => ShowCodexInfo = !ShowCodexInfo);
+        public RelayCommand ToggleCodexInfoCommand => field ??= new(() => ShowCodexInfo = !ShowCodexInfo);
 
-        private RelayCommand<string>? _addAuthorFilterCommand;
-        public RelayCommand<string> AddAuthorFilterCommand => _addAuthorFilterCommand ??= new(AddAuthorFilter);
+        public RelayCommand<string> AddAuthorFilterCommand => field ??= new(AddAuthorFilter);
         private void AddAuthorFilter(string? author) => _FilterVm?.ActivateFilter(new AuthorFilter(author ?? ""));
 
-        private RelayCommand<string>? _addPublisherFilterCommand;
-        public RelayCommand<string> AddPublisherFilterCommand => _addPublisherFilterCommand ??= new(AddPublisherFilter);
+        public RelayCommand<string> AddPublisherFilterCommand => field ??= new(AddPublisherFilter);
         private void AddPublisherFilter(string? publisher) => _FilterVm?.ActivateFilter(new PublisherFilter(publisher ?? ""));
 
-        private RelayCommand<TagViewModel>? _addTagFilterCommand;
-        public RelayCommand<TagViewModel> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilter);
+        public RelayCommand<TagViewModel> AddTagFilterCommand => field ??= new(AddTagFilter);
         private void AddTagFilter(TagViewModel? tagVm)
         {
             if (tagVm == null) return;

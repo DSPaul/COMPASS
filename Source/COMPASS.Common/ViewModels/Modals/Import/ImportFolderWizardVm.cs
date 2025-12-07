@@ -154,7 +154,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             return files.Where(path => _collectionInfo.FiletypePreferences[Path.GetExtension(path)]).ToList();
         }
         
-        protected override Task Finish()
+        public override Task Finish()
         {
             //Update the Auto Import Folders
             if (AddAutoImportFolders)

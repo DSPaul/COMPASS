@@ -204,7 +204,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         if (!CanDeleteCollection()) return false;
         
         CollectionManager.RemoveCollection(this);
-        _storageService.DeleteCollection(Collection);
+        _storageService.DeleteCollection(Identifier);
         return true;
     }
 
