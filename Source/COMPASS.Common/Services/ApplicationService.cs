@@ -12,22 +12,9 @@ public static class ApplicationService
 
     public static string GetVersion()
     {
-        try
-        {
-            Version? version = Assembly.GetExecutingAssembly().GetName().Version;
-
-            if (version == null)
-            {
-                Logger.Warn("Version could not be found");
-                return "Unknown version";
-            }
-            
-            return $"{version.Major}.{version.Minor}.{version.Revision}";
-        }
-        catch
-        {
-            return "2.0.0";
-        }
+        return Assembly.GetExecutingAssembly()
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+            .InformationalVersion ?? "Unknown";
     }
     
     public static void Shutdown()

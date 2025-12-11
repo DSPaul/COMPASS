@@ -188,7 +188,7 @@
             <Button Grid.Column="5"
                     Command="{Binding OpenSettingsCommand}" CommandParameter="About" 
                     FontSize="16" FontWeight="Regular"
-                    Content="{Binding VersionName, FallbackValue=v2.0.0}"
+                    Content="{Binding VersionName, FallbackValue=v0.0.0}"
                     ToolTip.Tip="Go to 'About'"
                     VerticalAlignment="Stretch"
                     Padding="10,0" Margin="0">

@@ -18,6 +18,7 @@ using System.Xml.Serialization;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
+using NuGet.Versioning;
 using Notification = COMPASS.Common.Models.Notification;
 
 namespace COMPASS.Common.Services.Storage;
@@ -503,34 +504,34 @@ public class CodexCollectionXmlStorageService(
                 return null;
             }
 
-            var currentVersion = Assembly.GetExecutingAssembly().GetName().Version!;
-            var minVersions = new List<Version> { currentVersion }; //keep a list of min requirements
+            SemanticVersion currentVersion = SemanticVersion.Parse(ApplicationService.Version);
+            var minVersions = new List<SemanticVersion> { currentVersion }; //keep a list of min requirements
 
             var filesInZip = archive.Entries.Select(entry => entry.Key).ToList();
 
             //Check Codex version
             if (filesInZip.Contains(CodicesFileName))
             {
-                Version minCodexVersion = Version.Parse(satchelInfo.MinCodexInfoVersion);
+                SemanticVersion minCodexVersion = SemanticVersion.Parse(satchelInfo.MinCodexInfoVersion);
                 minVersions.Add(minCodexVersion);
             }
 
             //Check tags version
             if (filesInZip.Contains(TagsFileName))
             {
-                Version minVersion = Version.Parse(satchelInfo.MinTagsVersion);
+                SemanticVersion minVersion = SemanticVersion.Parse(satchelInfo.MinTagsVersion);
                 minVersions.Add(minVersion);
             }
 
             //Check collection info version
             if (filesInZip.Contains(CollectionInfoFileName))
             {
-                Version minVersion = Version.Parse(satchelInfo.MinCollectionInfoVersion);
+                SemanticVersion minVersion = SemanticVersion.Parse(satchelInfo.MinCollectionInfoVersion);
                 minVersions.Add(minVersion);
             }
 
             //current version must exceed all min versions
-            if (minVersions.Max() > currentVersion)
+            if (minVersions.Any() && minVersions.Max()! > currentVersion)
             {
                 string message =
                     $"Cannot import {Path.GetFileName(satchelPath)} because it was created in a newer version of COMPASS (v{satchelInfo.CreationVersion}), " +

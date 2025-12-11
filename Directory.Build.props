@@ -5,7 +5,13 @@
     <LangVersion>default</LangVersion>
     <TargetFramework>net10.0</TargetFramework>
     <AvaloniaVersion>11.3.9</AvaloniaVersion>
-    <Version>2.0.0</Version>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <Version>2.0.0-alpha.1</Version>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
   </PropertyGroup>
 </Project>

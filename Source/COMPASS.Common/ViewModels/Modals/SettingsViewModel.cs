@@ -347,7 +347,7 @@ namespace COMPASS.Common.ViewModels.Modals
         }
         
         #region Tab: About
-        public string Version => "Version: " + Assembly.GetExecutingAssembly().GetName().Version?.ToString()[0..5];
+        public string Version => "Version: " + ApplicationService.GetVersion();
 
         private RelayCommand? _checkForUpdatesCommand;
         public RelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);
