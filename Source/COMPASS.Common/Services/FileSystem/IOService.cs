@@ -2,6 +2,7 @@
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.Views.Windows;
@@ -90,7 +91,7 @@ namespace COMPASS.Common.Services.FileSystem
             progressVM.ResetCounter();
             progressVM.Text = "Copying Files";
 
-            progressWindow.Show();
+            progressWindow.Show(WindowManager.ActiveWindow);
 
             try
             {

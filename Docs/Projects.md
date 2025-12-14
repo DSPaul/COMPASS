@@ -6,6 +6,7 @@ graph TD;
     Common-->Windows; 
     Common-->Linux;
     Common-->Tests.Common;
+    Common-->Tests.UI;
     Tests.Common-->UnitTests;
     Tests.Common-->IntegrationTests.Common;
     Tests.Common-->IntegrationTests.Windows;
@@ -49,4 +50,6 @@ Platform independant integration tests
 
 Plaform dependant integration tests
 
+### Test.UI
+A simple application to test UI Components
 

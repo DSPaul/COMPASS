@@ -1,0 +1,13 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:materialIcons="clr-namespace:Material;assembly=Material.Icons.Avalonia"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Views.UnderConstruction">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <avalonia:MaterialIcon Kind="AccountHardHat" HorizontalAlignment="Center"/> 
+        <TextBlock Text="This feature is under construction."/>
+    </StackPanel>
+</UserControl>

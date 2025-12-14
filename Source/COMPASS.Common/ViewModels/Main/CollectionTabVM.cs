@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
@@ -202,7 +203,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         //open wizard
         ExportCollectionViewModel exportCollectionVM = new(CollectionVM.Collection);
         ExportCollectionWizard wizard = new(exportCollectionVM);
-        wizard.Show();
+        wizard.Show(WindowManager.ActiveWindow);
     }
 
     private AsyncRelayCommand? _exportTagsCommand;
@@ -230,7 +231,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         CodexCollectionVM toImportVm = new(extractedCollectionName, toImport, storageService);
         ImportCollectionViewModel importCollectionVM = new(toImportVm);
         ModalWindow wizard = new(importCollectionVM);
-        wizard.Show();
+        wizard.Show(WindowManager.ActiveWindow);
     }
 
     //Merge Collection into another

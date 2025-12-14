@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using COMPASS.Common.Interfaces.Services;
+﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.Services
@@ -10,7 +10,7 @@ namespace COMPASS.Common.Services
         public async Task ShowDialog(Notification notification)
         {
             var window = new NotificationWindow(notification);
-            await window.ShowDialog(App.MainWindow);
+            await window.ShowDialog(WindowManager.ActiveWindow);
         }
     }
 }

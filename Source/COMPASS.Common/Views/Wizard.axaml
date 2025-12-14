@@ -29,10 +29,7 @@
                              IsVisible="{Binding Steps.Count, ConverterParameter = 1,
                         Converter={x:Static conv:IntConverters.IsGreaterThanConverter}}"
                              Value="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"
-                             Maximum="{Binding Steps.Count, Mode=OneWay}" Height="12" Margin="10,0"
-                             Foreground="{StaticResource AccentColor}"
-                             Background="{StaticResource UIElementBackground}"
-                             Classes="Rounded" />
+                             Maximum="{Binding Steps.Count, Mode=OneWay}" Margin="10,0"/>
 
                 <Border Grid.Row="2"
                         BorderBrush="{StaticResource DarkUIElementBackground}"

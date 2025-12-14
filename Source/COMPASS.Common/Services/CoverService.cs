@@ -10,6 +10,7 @@ using ImageMagick.Factories;
 using OpenQA.Selenium;
 using System.Diagnostics;
 using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Infra.Tools;
 using iText.Signatures.Validation.Lotl;
@@ -114,8 +115,7 @@ namespace COMPASS.Common.Services
 
             if (chooseMetaDataVM.MetaDataProposals.Any())
             {
-                ModalWindow window = new(chooseMetaDataVM);
-                await window.ShowDialog(App.MainWindow);
+                await WindowManager.OpenModal(chooseMetaDataVM);
             }
         }
 

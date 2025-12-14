@@ -5,6 +5,7 @@ using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using COMPASS.Common.Services;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
@@ -28,14 +29,14 @@ public partial class App : Application
             if (!string.IsNullOrEmpty(crashMsg))
             {
                 var crashNotification = CrashHandler.GetCrashNotification(crashMsg);
-                MainWindow = new NotificationWindow(crashNotification);
-                MainWindow.Closing += (s,e) => CrashHandler.OnCrashNotificationClosing(e, crashNotification, crashMsg);
-                desktop.MainWindow = MainWindow;
+                var crashWindow = new NotificationWindow(crashNotification);
+                crashWindow.Closing += (s,e) => CrashHandler.OnCrashNotificationClosing(e, crashNotification, crashMsg);
+                desktop.MainWindow = WindowManager.MainWindow = crashWindow;
             }
             else
             {
                 // Open splash screen
-                desktop.MainWindow = MainWindow =_splashScreenWindow = new SplashScreenWindow();
+                desktop.MainWindow = WindowManager.MainWindow =_splashScreenWindow = new SplashScreenWindow();
                 
                 // delegate actual application start to when UI thread has time again
                 Dispatcher.UIThread.Post(CompleteApplicationStart, DispatcherPriority.Background);
@@ -46,8 +47,6 @@ public partial class App : Application
     }
 
     private SplashScreenWindow? _splashScreenWindow;
-    
-    public static Window MainWindow { get; private set; } = null!;
 
     private void CompleteApplicationStart()
     {
@@ -64,7 +63,7 @@ public partial class App : Application
             
             //must be done after window is shown, as notification service will use it as parent
             //and showing a notification on a non visible window causes a crash
-            MainWindow = mainWindow; 
+            WindowManager.MainWindow = mainWindow; 
 
             // Finally, close the splash screen
             _splashScreenWindow?.Close();

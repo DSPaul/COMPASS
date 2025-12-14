@@ -5,6 +5,7 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.Views.Windows;
@@ -49,8 +50,7 @@ public class ApplicationDataService(
         var vm = new ChangeDataLocationViewModel(newPath);
         if (Path.Exists(envVarsService.CompassDataPath))
         {
-            ModalWindow window = new(vm);
-            await window.ShowDialog(App.MainWindow);
+            await WindowManager.OpenModal(vm);
         }
         //If not, just change over
         else

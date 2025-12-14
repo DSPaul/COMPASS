@@ -166,9 +166,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         
         if (folderImportWizardVm.Steps.Any())
         {
-            ModalWindow importFolderWindow = new(folderImportWizardVm);
-            await importFolderWindow.ShowDialog(App.MainWindow).ConfigureAwait(false);
-
+            await WindowManager.OpenModal(folderImportWizardVm);
             if (!folderImportWizardVm.Finished)
             {
                 return [];

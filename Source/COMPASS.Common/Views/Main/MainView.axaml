@@ -161,11 +161,8 @@
                 <TextBlock Text="{Binding ProgressVM.FullText, FallbackValue=Stuff in Progress, Mode=OneWay}"
                            Margin="20,0"
                            FontFamily="Segoe UI" />
-                <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" Height="12" Width="200"
-                             Value="{Binding ProgressVM.Percentage, FallbackValue=100, Mode=OneWay}"
-                             Classes="Rounded"
-                             Foreground="{StaticResource AccentColor}"
-                             Background="{StaticResource UIElementBackground}" />
+                <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" Width="200"
+                             Value="{Binding ProgressVM.Percentage, FallbackValue=100, Mode=OneWay}"/>
                 <controls:IconButton
                     Icon="CloseCircleOutline"
                     Margin="5,0"

@@ -144,8 +144,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             int tagCount = TabVM.CollectionVM.Collection.AllTags.Count;
 
             TagEditViewModel tagEditVm = new(new Tag(), TabVM.CollectionVM, createNew: true);
-            var modal = new ModalWindow(tagEditVm);
-            await modal.ShowDialog(App.MainWindow); //TODO make this the window of the codex edit
+            await WindowManager.OpenModal(tagEditVm);
             
             if (TabVM.CollectionVM.Collection.AllTags.Count > tagCount) //new tag was created
             {

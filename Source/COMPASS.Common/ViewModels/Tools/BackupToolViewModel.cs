@@ -45,7 +45,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             string targetPath = saveFile.Path.AbsolutePath;
             saveFile.Dispose();
             _lw = new("Compressing to Zip File");
-            _lw.Show();
+            _lw.Show(WindowManager.ActiveWindow);
 
             //save first
             CollectionManager.SaveAllCollections();
@@ -72,7 +72,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             using var file = files.Single();
             string targetPath = file.Path.AbsolutePath;
             _lw = new("Restoring Backup");
-            _lw.Show();
+            _lw.Show(WindowManager.ActiveWindow);
 
             await Task.Run(() => ExtractZip(targetPath));
 

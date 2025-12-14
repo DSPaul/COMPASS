@@ -4,6 +4,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.LoadingWindow"
+        xmlns:gif="using:Avalonia.Labs.Gif" 
+        Height="200" Width="300" SystemDecorations="None"
+        WindowStartupLocation="CenterOwner"
         Title="LoadingWindow">
-  Welcome to Avalonia!
+    <Border Background="{StaticResource WindowBackground}" CornerRadius="5" 
+            BorderThickness="2" BorderBrush="{StaticResource PopupOutline}">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="15"/>
+        </Border.Effect>
+        <Grid RowDefinitions="Auto, *">
+            <TextBlock x:Name="LoadingTextBlock" Text="Working" TextAlignment="Center"
+                       HorizontalAlignment="Center" Margin="20" TextWrapping="Wrap"/>
+            <gif:GifImage Grid.Row="1" Width="100" Height="100" VerticalAlignment="Center"
+                          Source="avares://COMPASS.Common/Assets/LoadingAnimation.gif"/>
+        </Grid>
+    </Border>
 </Window>

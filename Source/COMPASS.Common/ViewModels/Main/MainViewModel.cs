@@ -104,11 +104,10 @@ namespace COMPASS.Common.ViewModels.Main
         
         public static bool SaveOnClose { get; set; } = true;
 
-        private bool _isOnline;
         public bool IsOnline
         {
-            get => _isOnline;
-            private set => SetProperty(ref _isOnline, value);
+            get;
+            private set => SetProperty(ref field, value);
         }
 
         public string VersionName => $"v{ApplicationService.Version}";
@@ -129,30 +128,27 @@ namespace COMPASS.Common.ViewModels.Main
         #region Commands and Methods
 
         //Open settings
-        private RelayCommand<string>? _openSettingsCommand;
-        public RelayCommand<string> OpenSettingsCommand => _openSettingsCommand ??= new(OpenSettings);
+        public RelayCommand<string> OpenSettingsCommand => field ??= new(OpenSettings);
         private void OpenSettings(string? tab = "")
         {
-            var settingsWindow = new ModalWindow(new SettingsViewModel(tab ?? ""));
-            settingsWindow.Show(App.MainWindow);
+            var settingsVm = new SettingsViewModel(tab ?? "");
+            var settingsWindow = new ModalWindow(settingsVm);
+            settingsWindow.Show(WindowManager.ActiveWindow);
         }
 
         //TODO reimplement this, should probably be moved out of settings viewmodel
         public RelayCommand CheckForUpdatesCommand => new(() => { }); //SettingsViewModel.CheckForUpdatesCommand;
 
-        private RelayCommand<string>? _navigateToCommand;
-        public RelayCommand<string> NavigateToCommand => _navigateToCommand ??= new(url =>
+        public RelayCommand<string> NavigateToCommand => field ??= new(url =>
         {
             if (string.IsNullOrEmpty(url)) return;
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         });
 
-        private RelayCommand? _navigateToLinkTree;
-        public RelayCommand NavigateToLinkTree => _navigateToLinkTree ??= new(()
+        public RelayCommand NavigateToLinkTree => field ??= new(()
             => Process.Start(new ProcessStartInfo(@"https://linktr.ee/compassapp") { UseShellExecute = true }));
 
-        private RelayCommand? _navigateToKofi;
-        public RelayCommand NavigateToKofi => _navigateToKofi ??= new(()
+        public RelayCommand NavigateToKofi => field ??= new(()
             => Process.Start(new ProcessStartInfo(@"https://ko-fi.com/pauldesmul") { UseShellExecute = true }));
         
         #endregion

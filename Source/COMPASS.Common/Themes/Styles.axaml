@@ -604,4 +604,11 @@
         </Setter>
     </Style>
     
+    <Style Selector="ProgressBar">
+        <Setter Property="Foreground" Value="{StaticResource AccentColor}"/>
+        <Setter Property="Background" Value="{StaticResource UIElementBackground}"/>
+        <Setter Property="Height" Value="12"/>
+        <Setter Property="CornerRadius" Value="10"/>
+    </Style>
+    
 </Styles>

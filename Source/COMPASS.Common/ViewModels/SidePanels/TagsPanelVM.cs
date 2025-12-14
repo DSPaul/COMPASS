@@ -39,10 +39,9 @@ namespace COMPASS.Common.ViewModels.SidePanels
         #region Properties
         
         //Selected tab from tabControl with options to add tags
-        private int _selectedTab = 0;
         public int SelectedTab
         {
-            get => _selectedTab;
+            get;
             set
             {
                 if (value > 0) Collapsed = false;
@@ -55,39 +54,37 @@ namespace COMPASS.Common.ViewModels.SidePanels
                         AddGroup();
                         break;
                 }
-                PrevSelectedTab = _selectedTab;
-                SetProperty(ref _selectedTab, value);
+
+                PrevSelectedTab = field;
+                SetProperty(ref field, value);
             }
-        }
+        } = 0;
 
         public int PrevSelectedTab { get ; set ; }
-        
-        private bool _collapsed = false;
+
         public bool Collapsed
         {
-            get => _collapsed;
+            get;
             set
             {
-                SetProperty(ref _collapsed, value);
+                SetProperty(ref field, value);
                 if (value) SelectedTab = 0;
             }
-        }
+        } = false;
 
-        private bool _modeIsInclude = true;
         public bool ModeIsInclude
         {
-            get => _modeIsInclude;
-            set => SetProperty(ref _modeIsInclude, value);
-        }
-        
+            get;
+            set => SetProperty(ref field, value);
+        } = true;
+
         //TreeViewSource with hierarchy
-        private ObservableCollection<TreeNode<TagViewModel>> _tagsAsTreeNodes = [];
         public ObservableCollection<TreeNode<TagViewModel>> TagsAsTreeNodes
         {
-            get => _tagsAsTreeNodes;
-            set => SetProperty(ref _tagsAsTreeNodes, value);
-        }
-        
+            get;
+            set => SetProperty(ref field, value);
+        } = [];
+
         #endregion
 
         private void OnCollectionChanged(object? sender, PropertyChangedEventArgs e)
@@ -143,29 +140,25 @@ namespace COMPASS.Common.ViewModels.SidePanels
 
         #region Commands
         //Tag Creation ViewModel
-        private TagEditViewModel? _addTagViewModel;
         public TagEditViewModel? AddTagViewModel
         {
-            get => _addTagViewModel;
-            set => SetProperty(ref _addTagViewModel, value);
+            get;
+            set => SetProperty(ref field, value);
         }
 
         //Group Creation ViewModel
-        private TagEditViewModel? _addGroupViewModel;
         public TagEditViewModel? AddGroupViewModel
         {
-            get => _addGroupViewModel;
-            set => SetProperty(ref _addGroupViewModel, value);
+            get;
+            set => SetProperty(ref field, value);
         }
 
         //Add Tag Buttons
-        private RelayCommand? _addTagCommand;
-        public RelayCommand AddTagCommand => _addTagCommand ??= new(AddTag);
+        public RelayCommand AddTagCommand => field ??= new(AddTag);
         public void AddTag() => AddTagViewModel = new TagEditViewModel(new Tag(), _codexCollectionVm, true);
 
 
-        private RelayCommand? _addGroupCommand;
-        public RelayCommand AddGroupCommand => _addGroupCommand ??= new(AddGroup);
+        public RelayCommand AddGroupCommand => field ??= new(AddGroup);
         public void AddGroup()
         {
             Tag newTag = new()
@@ -175,8 +168,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
             AddGroupViewModel = new TagEditViewModel(newTag, _codexCollectionVm, true);
         }
 
-        private RelayCommand<TagViewModel?>? _addTagFilterCommand;
-        public RelayCommand<TagViewModel?> AddTagFilterCommand => _addTagFilterCommand ??= new(AddTagFilterHelper);
+        public RelayCommand<TagViewModel?> AddTagFilterCommand => field ??= new(AddTagFilterHelper);
         private void AddTagFilterHelper(TagViewModel? tagVm)
         {
             if (tagVm != null)
@@ -185,17 +177,14 @@ namespace COMPASS.Common.ViewModels.SidePanels
             }
         }
 
-        private RelayCommand? _importTagsFromOtherCollectionsCommand;
-        public RelayCommand ImportTagsFromOtherCollectionsCommand => _importTagsFromOtherCollectionsCommand ??= new(ImportTagsFromOtherCollections);
-        public void ImportTagsFromOtherCollections()
+        public AsyncRelayCommand ImportTagsFromOtherCollectionsCommand => field ??= new(ImportTagsFromOtherCollections);
+        public async Task ImportTagsFromOtherCollections()
         {
             var importVM = new ImportTagsViewModel(CollectionManager.CollectionNames);
-            var w = new ModalWindow(importVM);
-            w.Show();
+            await WindowManager.OpenModal(importVM);
         }
 
-        private AsyncRelayCommand? _importTagsFromSatchelCommand;
-        public AsyncRelayCommand ImportTagsFromSatchelCommand => _importTagsFromSatchelCommand ??= new(ImportTagsFromSatchel);
+        public AsyncRelayCommand ImportTagsFromSatchelCommand => field ??= new(ImportTagsFromSatchel);
         public async Task ImportTagsFromSatchel()
         {
             var collectionStorageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(StorageStrategy.Xml);
@@ -217,11 +206,10 @@ namespace COMPASS.Common.ViewModels.SidePanels
             }
 
             var w = new ModalWindow(importVM);
-            w.Show();
+            w.Show(WindowManager.ActiveWindow);
         }
 
-        private RelayCommand? _exportTagsCommand;
-        public RelayCommand ExportTagsCommand => _exportTagsCommand ??= new(ExportTags);
+        public RelayCommand ExportTagsCommand => field ??= new(ExportTags);
         public void ExportTags()
         {
             var vm = new ExportCollectionViewModel
@@ -238,7 +226,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
             }
 
             var w = new ExportCollectionWizard(vm);
-            w.Show();
+            w.Show(WindowManager.ActiveWindow);
         }
 
         #endregion
@@ -281,8 +269,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
         #endregion
 
         #region Tag Context Menu
-        private AsyncRelayCommand<TagViewModel?>? _createChildCommand;
-        public AsyncRelayCommand<TagViewModel?> CreateChildCommand => _createChildCommand ??= new(CreateChildTag);
+
+        public AsyncRelayCommand<TagViewModel?> CreateChildCommand => field ??= new(CreateChildTag);
         private async Task CreateChildTag(TagViewModel? referenceTag)
         {
             if (referenceTag is not null)
@@ -291,13 +279,12 @@ namespace COMPASS.Common.ViewModels.SidePanels
                 {
                     Parent = referenceTag.GetModel()
                 };
-                ModalWindow modal = new(new TagEditViewModel(newTag, _codexCollectionVm, true));
-                await modal.ShowDialog(App.MainWindow);
+                var vm = new TagEditViewModel(newTag, _codexCollectionVm, true);
+                await WindowManager.OpenModal(vm);
             }
         }
 
-        private RelayCommand<TagViewModel?>? _sortChildrenCommand;
-        public RelayCommand<TagViewModel?> SortChildrenCommand => _sortChildrenCommand ??= new(SortChildren, CanSortChildren);
+        public RelayCommand<TagViewModel?> SortChildrenCommand => field ??= new(SortChildren, CanSortChildren);
         private void SortChildren(TagViewModel? parentTag)
         {
             RecursiveSortChildren(parentTag?.GetModel());
@@ -315,8 +302,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         
         private bool CanSortChildren(TagViewModel? tagVm) => tagVm?.Children.Any() == true;
 
-        private RelayCommand? _sortAllTagsCommand;
-        public RelayCommand SortAllTagsCommand => _sortAllTagsCommand ??= new(SortAllTags);
+        public RelayCommand SortAllTagsCommand => field ??= new(SortAllTags);
         private void SortAllTags()
         {
             Tag t = new()
@@ -328,17 +314,15 @@ namespace COMPASS.Common.ViewModels.SidePanels
             UpdateTagsAsTreeNodes();
         }
 
-        private AsyncRelayCommand<TagViewModel?>? _editTagCommand;
-        public AsyncRelayCommand<TagViewModel?> EditTagCommand => _editTagCommand ??= new(EditTag);
+        public AsyncRelayCommand<TagViewModel?> EditTagCommand => field ??= new(EditTag);
         private async Task EditTag(TagViewModel? toEdit)
         {
             if (toEdit is null) return;
-            ModalWindow modal = new(new TagEditViewModel(toEdit.GetModel(), _codexCollectionVm, false));
-            await modal.ShowDialog(App.MainWindow);
+            var vm = new TagEditViewModel(toEdit.GetModel(), _codexCollectionVm, false);
+            await WindowManager.OpenModal(vm);
         }
 
-        private RelayCommand<TagViewModel?>? _deleteTagCommand;
-        public RelayCommand<TagViewModel?> DeleteTagCommand => _deleteTagCommand ??= new(DeleteTag);
+        public RelayCommand<TagViewModel?> DeleteTagCommand => field ??= new(DeleteTag);
 
         private void DeleteTag(TagViewModel? toDelete)
         {

@@ -6,6 +6,7 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.ApiDtos;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Tools;
@@ -99,7 +100,7 @@ public static class CrashHandler
         //Close window from main thread
         await Dispatcher.UIThread.InvokeAsync(() => 
         {
-            App.MainWindow.Close();
+            WindowManager.MainWindow.Close();
         });
     }
 }

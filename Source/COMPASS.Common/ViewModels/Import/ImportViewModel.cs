@@ -77,15 +77,13 @@ namespace COMPASS.Common.ViewModels.Import
         {
             using var handle = CollectionManager.LoadCollection(_targetcollectionId);
             CodexEditViewModel vm = new(CodexOperations.CreateNewCodex(handle!.CollectionVM.Collection), createNew: true);
-            ModalWindow editWindow = new(vm);
-            await editWindow.ShowDialog(App.MainWindow);
+            await WindowManager.OpenModal(vm);
         }
 
         private static async Task ImportURL(ImportSource source)
         {
             ImportURLViewModel importVM = new(source);
-            ModalWindow window = new(importVM);
-            await window.ShowDialog(App.MainWindow);
+            await WindowManager.OpenModal(importVM);
         }
 
         public static async Task ImportFilesAsync(IList<string> paths, string? targetCollectionId = null)

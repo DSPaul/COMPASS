@@ -60,7 +60,7 @@ namespace COMPASS.Common.Operations
                 Logger.Warn($"Failed to open {toOpen.Sources.Path}", ex);
 
                 var fileNotFoundVM = new FileNotFoundViewModel(toOpen);
-                await new ModalWindow(fileNotFoundVM).ShowDialog(App.MainWindow);
+                await WindowManager.OpenModal(fileNotFoundVM);
                 return fileNotFoundVM.FixedAndOpenedCodex;
             }
         }
@@ -137,8 +137,8 @@ namespace COMPASS.Common.Operations
         public static async Task EditCodex(Codex? toEdit)
         {
             if (toEdit is null) return;
-            ModalWindow editWindow = new(new CodexEditViewModel(sourceCodex: toEdit));
-            await editWindow.ShowDialog(App.MainWindow);
+            var codexEditVm = new CodexEditViewModel(sourceCodex: toEdit);
+            await WindowManager.OpenModal(codexEditVm);
         }
 
         //Edit Multiple files
@@ -155,8 +155,7 @@ namespace COMPASS.Common.Operations
             }
 
             CodexBulkEditViewModel vm = new(toEdit: toEditList);
-            ModalWindow window = new(vm);
-            await window.ShowDialog(App.MainWindow);
+            await WindowManager.OpenModal(vm);
         }
 
         #endregion
@@ -464,8 +463,7 @@ namespace COMPASS.Common.Operations
 
             if (chooseMetaDataVM.MetaDataProposals.Any())
             {
-                ModalWindow window = new(chooseMetaDataVM);
-                await window.ShowDialog(App.MainWindow);
+                await WindowManager.OpenModal(chooseMetaDataVM);
             }
             
             //Save at the end

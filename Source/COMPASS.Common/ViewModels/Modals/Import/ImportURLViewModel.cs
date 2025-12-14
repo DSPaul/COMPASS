@@ -81,7 +81,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         private async Task OpenBarcodeScanner()
         {
             BarcodeScanWindow bcScanWindow = new();
-            await bcScanWindow.ShowDialog(App.MainWindow);
+            await bcScanWindow.ShowDialog(WindowManager.ActiveWindow);
             if (!string.IsNullOrEmpty(bcScanWindow.DecodedString))
             {
                 InputURL = bcScanWindow.DecodedString;
@@ -193,8 +193,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             if (ShowEditWhenDone)
             {
                 CodexEditViewModel vm = new(importedCodex);
-                ModalWindow editWindow = new(vm);
-                await editWindow.ShowDialog(App.MainWindow);
+                await WindowManager.OpenModal(vm);
             }
         }
 

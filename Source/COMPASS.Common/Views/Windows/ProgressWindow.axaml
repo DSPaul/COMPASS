@@ -2,8 +2,51 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:COMPASS.Common.ViewModels"
+        xmlns:specialConverters="using:COMPASS.Common.Converters"
+        xmlns:controls="clr-namespace:COMPASS.Common.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.ProgressWindow"
-        Title="ProgressWindow">
-  Welcome to Avalonia!
+        x:DataType="vm:ProgressViewModel" SystemDecorations="None"
+        Background="Transparent"
+        Title="Progress Window" Height="250" Width="450" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <specialConverters:SeverityToColorConverter x:Key="SeverityToColorConverter" />
+    </Window.Resources>
+    <Border Background="{StaticResource WindowBackground}" CornerRadius="5" 
+            BorderThickness="2" BorderBrush="{StaticResource PopupOutline}">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="15"/>
+        </Border.Effect>
+        <Grid >
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <DockPanel>
+                    <TextBlock Text="{Binding FullText, Mode=OneWay, FallbackValue=Stuff in Progress}" 
+                               FontSize="20" DockPanel.Dock="Left"/>
+                    <controls:IconButton 
+                        Icon="Close" Background="{StaticResource CancelFill}" 
+                        ToolTip.Tip="Close"
+                        Theme="{StaticResource IconOnly}" CornerRadius="3"
+                        DockPanel.Dock="Right" HorizontalAlignment="Right" Click="Close_Click" 
+                        Width="20" Height="20"/>
+                </DockPanel>
+                <ProgressBar x:Name="ProgBar" Minimum="0" Maximum="100" 
+                             Value="{Binding Percentage, FallbackValue=30, Mode=OneWay}" 
+                                Width="400" Margin="0,5" ValueChanged="ProgBar_OnValueChanged"/>
+                <Border Height="175" Width="400" Background="{StaticResource LogBackground}" 
+                        CornerRadius="5" BorderBrush="{StaticResource LogBorder}" BorderThickness="1" Margin="0,5">
+                    <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="LogsControl" BorderThickness="0" ItemsSource="{Binding Log, Mode=OneWay}" Margin="10,5">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Msg, FallbackValue=Message}" FontSize="12"  TextWrapping="Wrap"
+                                               Foreground="{Binding Severity, Mode=OneWay,Converter={StaticResource SeverityToColorConverter}}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </Border>
 </Window>
