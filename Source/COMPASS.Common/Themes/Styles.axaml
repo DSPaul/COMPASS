@@ -310,16 +310,32 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
-                    <Grid ColumnDefinitions="Auto, *" Background="Transparent">
-                        <materialIcons:MaterialIcon Height="20" Width="20" Kind="CheckboxBlankOutline" />
-                        <ContentPresenter Content="{TemplateBinding Content}"
-                                          Margin="5,0" Grid.Column="1"
-                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
-                    </Grid>
+                    <Border CornerRadius="5" Background="Transparent" Name="OuterBorder">
+                        <Grid ColumnDefinitions="Auto, *" Background="Transparent">
+                            <materialIcons:MaterialIcon Height="20" Width="20" Kind="CheckboxBlankOutline" />
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                              Margin="5,0" Grid.Column="1"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                        </Grid>
+                    </Border>
+                    
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
 
+        <!-- filled style -->
+        <Style Selector="^.Filled">
+            <Style Selector="^/template/ Border#OuterBorder">
+                <Setter Property="Padding" Value="5" />
+            </Style>
+            
+            <Style Selector="^:checked">
+                <Style Selector="^/template/ Border#OuterBorder">
+                    <Setter Property="Background" Value="{StaticResource AccentColorMuted}" />
+                </Style>
+            </Style>
+        </Style>
+        
         <Style Selector="^[IsEffectivelyEnabled=true]">
             <Setter Property="Cursor" Value="Hand" />
         </Style>
@@ -337,7 +353,7 @@
             <Style Selector="^/template/ materialIcons|MaterialIcon">
                 <Setter Property="Kind" Value="CheckboxMarkedOutline" />
             </Style>
-
+            
             <!-- readonly checked -->
             <Style Selector="^[IsHitTestVisible=false]">
                 <Style Selector="^/template/ materialIcons|MaterialIcon">
@@ -492,6 +508,44 @@
         <!-- Class for text wrapping-->
         <Style Selector="^.WrapText AccessText">
             <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+    </Style>
+    
+    <Style Selector="RadioButton.Container">
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Background" Value="{StaticResource DarkUIElementBackground}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="StatusBorder"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="10"
+                        BorderThickness="4"
+                        HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalAlignment}">
+                    <ContentPresenter
+                        Name="PART_ContentPresenter"
+                        IsEnabled="{TemplateBinding IsChecked}"
+                        Margin="{TemplateBinding Padding}"
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                        Content="{TemplateBinding Content}"
+                        Foreground="{TemplateBinding Foreground}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- hover state -->
+        <Style Selector="^:pointerover /template/ Border#StatusBorder">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}" />
+        </Style>
+
+        <!-- Checked state -->
+        <Style Selector="^:checked">
+            <Style Selector="^ /template/ Border#StatusBorder">
+                <Setter Property="BorderBrush" Value="{StaticResource AccentColor}" />
+            </Style>
         </Style>
     </Style>
 

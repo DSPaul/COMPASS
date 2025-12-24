@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.ViewModels;
 
@@ -17,10 +14,9 @@ namespace COMPASS.Common.ViewModels
         
         public virtual ObservableCollection<WizardStepViewModel> Steps { get; } = [];
 
-        private int _stepCounter = 0;
         public int StepCounter
         {
-            get => _stepCounter;
+            get;
             protected set
             {
                 if (value <= 0)
@@ -32,15 +28,20 @@ namespace COMPASS.Common.ViewModels
                     Finish();
                 }
 
-                SetProperty(ref _stepCounter, value);
+                SetProperty(ref field, value);
                 OnStepsChanged();
             }
-        }
+        } = 0;
 
         protected void OnStepsChanged()
         {
-            OnPropertyChanged(nameof(CurrentStep));
-            RefreshNavigationBtns();
+            //Steps can temporarily be empty because the observable collection cannot be reassigned, so we clear and refill instead
+            //don't update the UI yet if that happens, we will update when the first item to be added back in
+            if (Steps.Count > 0)
+            {
+                OnPropertyChanged(nameof(CurrentStep));
+                RefreshNavigationBtns();
+            }
         }
 
         private void StepChangeHandler(object? sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -57,22 +58,18 @@ namespace COMPASS.Common.ViewModels
 
         public WizardStepViewModel CurrentStep => StepCounter >= Steps.Count ? Steps.Last() : Steps[StepCounter];
 
-        private RelayCommand? _cancelCommand;
-        public RelayCommand CancelCommand => _cancelCommand ??= new(CancelAction ?? CloseAction);
+        public RelayCommand CancelCommand => field ??= new(CancelAction ?? CloseAction);
         protected virtual Action? CancelAction { get; } = null;
 
-        private RelayCommand? _nextStepCommand;
-        public RelayCommand NextStepCommand => _nextStepCommand ??= new(NextStep, ShowNextButton);
+        public RelayCommand NextStepCommand => field ??= new(NextStep, ShowNextButton);
         protected virtual void NextStep() => StepCounter++;
         protected virtual bool ShowNextButton() => StepCounter < Steps.Count - 1;
 
-        private RelayCommand? _prevStepCommand;
-        public RelayCommand PrevStepCommand => _prevStepCommand ??= new(PrevStep, ShowBackButton);
+        public RelayCommand PrevStepCommand => field ??= new(PrevStep, ShowBackButton);
         protected virtual void PrevStep() => StepCounter--;
         protected virtual bool ShowBackButton() => StepCounter > 0;
 
-        private AsyncRelayCommand? _finishCommand;
-        public AsyncRelayCommand FinishCommand => _finishCommand ??= new(Finish, ShowFinishButton);
+        public AsyncRelayCommand FinishCommand => field ??= new(Finish, ShowFinishButton);
         public virtual Task Finish()
         {
             CloseAction();

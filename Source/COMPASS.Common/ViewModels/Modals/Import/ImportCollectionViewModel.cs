@@ -9,7 +9,7 @@ using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
 
-namespace COMPASS.Common.ViewModels.Import
+namespace COMPASS.Common.ViewModels.Modals.Import
 {
     public class ImportCollectionViewModel : WizardViewModel, IDisposable
     {
@@ -22,6 +22,8 @@ namespace COMPASS.Common.ViewModels.Import
         public ImportCollectionViewModel(CodexCollectionVM collectionVmToImport)
         {
             CollectionToImport = collectionVmToImport.Collection;
+            TargetCollection = TabsViewModel.GetInstance().ActiveTab?.CollectionVM;
+            CollectionVms = CollectionManager.CollectionVms.ToList(); 
             
             //Collection will have format '__<name><extension>'
             CollectionName = CollectionToImport.Name.Substring(2, CollectionToImport.Name.Length - 2 - Constants.SatchelExtension.Length);
@@ -31,7 +33,7 @@ namespace COMPASS.Common.ViewModels.Import
             _collectionToImportHandle = collectionVmToImport.Load() ?? throw new LoadException(collectionVmToImport.Identifier);
             
             ContentSelectorVM = new(CollectionToImport);
-
+            
             UpdateSteps();
 
             //if files were included in compass file, set paths of codices to those files
@@ -50,32 +52,32 @@ namespace COMPASS.Common.ViewModels.Import
 
         public CodexCollection CollectionToImport { get; } //collection that was in the satchel
 
+        public IList<CodexCollectionVM> CollectionVms { get; } 
+        
+        public CodexCollectionVM? TargetCollection { get; set => SetProperty(ref field, value); }
+        
         /// <summary>
         /// Indicates that the tags should all be imported in a new, separate group
         /// </summary>
-        public bool ImportTagsSeparatly { get; set; } = false;
+        public bool ImportTagsSeparately { get; set; } = false;
 
         //OVERVIEW STEP
-        private bool _mergeIntoCollection = false;
-
         public bool MergeIntoCollection
         {
-            get => _mergeIntoCollection;
+            get;
             set
             {
-                SetProperty(ref _mergeIntoCollection, value);
+                SetProperty(ref field, value);
                 RefreshNavigationBtns();
             }
-        }
-
-        private string _collectionName = "Unnamed Collection";
+        } = false;
 
         public string CollectionName
         {
-            get => _collectionName;
+            get;
             set
             {
-                SetProperty(ref _collectionName, value);
+                SetProperty(ref field, value);
                 OnPropertyChanged(nameof(IsCollectionNameLegal));
                 RefreshNavigationBtns();
             }
@@ -87,17 +89,15 @@ namespace COMPASS.Common.ViewModels.Import
         public bool ImportAllCodices { get; set; } = true;
         public bool ImportAllSettings { get; set; } = true;
 
-        private bool _advancedImport = false;
-
         public bool AdvancedImport
         {
-            get => _advancedImport;
+            get;
             set
             {
-                SetProperty(ref _advancedImport, value);
+                SetProperty(ref field, value);
                 UpdateSteps();
             }
-        }
+        } = false;
 
 
         //Don't show on overview tab if new collection is chosen with illegal name
@@ -153,7 +153,7 @@ namespace COMPASS.Common.ViewModels.Import
                     case NotificationAction.Cancel:
                         return;
                     case NotificationAction.Confirm:
-                        ImportTagsSeparatly = true;
+                        ImportTagsSeparately = true;
                         ContentSelectorVM.OnlyTagsOnCodices = true;
                         break;
                     case NotificationAction.Decline:
@@ -166,34 +166,27 @@ namespace COMPASS.Common.ViewModels.Import
             //Apply the selection
             ContentSelectorVM.ApplyAllSelections();
 
-            CollectionHandle targetCollectionHandle;
-            if (MergeIntoCollection)
+            CollectionHandle? targetCollectionHandle = null;
+            try
             {
-                targetCollectionHandle = ActiveCollection.Load() ?? throw new LoadException(ActiveCollection.Name);
-            }
-            else
-            {
-                var newHandle = await CollectionManager.CreateAndLoadCollection(CollectionName);
-                if (newHandle == null)
-                {
-                    //TODO
-                    throw new Exception($"Collection {CollectionName} could not be created");
-                }
-                else
-                {
-                    targetCollectionHandle = newHandle;
-                }
-            }
-            
-            //Save the changes to a permanent collection
-            CodexCollection targetCollection = MergeIntoCollection
-                ? ActiveCollection
-                : targetCollectionHandle.CollectionVM.Collection;
+                targetCollectionHandle = MergeIntoCollection ? 
+                    TargetCollection?.Load() : 
+                    await CollectionManager.CreateAndLoadCollection(CollectionName);
 
-            targetCollection.MergeWith(ContentSelectorVM.CuratedCollection, ImportTagsSeparatly);
-            targetCollection.Save();
-            targetCollectionHandle.Dispose();
-            CloseAction();
+                if (targetCollectionHandle == null)
+                {
+                    throw new LoadException(MergeIntoCollection ? TargetCollection!.Identifier : CollectionName);
+                }
+
+                //Save the changes to a permanent collection
+                targetCollectionHandle.CollectionVM.Collection.MergeWith(ContentSelectorVM.CuratedCollection, ImportTagsSeparately);
+                targetCollectionHandle.Save();
+            }
+            finally
+            {
+                targetCollectionHandle?.Dispose();
+                CloseAction();
+            }
         }
 
         private void UpdateSteps()

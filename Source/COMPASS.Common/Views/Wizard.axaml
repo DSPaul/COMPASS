@@ -25,12 +25,15 @@
                         <Run Text="{Binding Steps.Count, Mode=OneWay}" />
                     </TextBlock>
                 </DockPanel>
+                
+                <!-- Progress Indication -->
                 <ProgressBar Grid.Row="1"
                              IsVisible="{Binding Steps.Count, ConverterParameter = 1,
                         Converter={x:Static conv:IntConverters.IsGreaterThanConverter}}"
                              Value="{Binding StepCounter, Mode=OneWay, Converter={StaticResource PlusOneConverter}}"
                              Maximum="{Binding Steps.Count, Mode=OneWay}" Margin="10,0"/>
 
+                <!-- Content -->
                 <Border Grid.Row="2"
                         BorderBrush="{StaticResource DarkUIElementBackground}"
                         Margin="10" BorderThickness="2"
@@ -38,6 +41,7 @@
                     <ContentPresenter Content="{TemplateBinding Content}"/>
                 </Border>
 
+                <!-- Wizard navigation  -->
                 <StackPanel Grid.Row="3" HorizontalAlignment="Right"
                             Orientation="Horizontal" Margin="10" Spacing="5">
                     <controls:IconButton Classes="Outline" Content="Cancel"

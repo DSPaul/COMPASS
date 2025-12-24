@@ -398,8 +398,8 @@
 
     <ControlTemplate TargetType="RadioButton" x:Key="BigRadioButton">
         <Border x:Name="Border" HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-        Background="{StaticResource CardBackground}" Margin="20" CornerRadius="10" 
-        BorderBrush="{StaticResource AccentColorMuted}">
+            Background="{StaticResource CardBackground}" Margin="20" CornerRadius="10" 
+            BorderBrush="{StaticResource AccentColorMuted}">
             <ContentPresenter Content="{TemplateBinding Content}" 
                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>

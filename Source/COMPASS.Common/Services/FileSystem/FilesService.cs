@@ -30,7 +30,7 @@ namespace COMPASS.Common.Services.FileSystem
         public FilePickerFileType SatchelExtensionFilter =>
             new("COMPASS Satchel File")
             {
-                Patterns = [$"*.{Constants.SatchelExtension}"]
+                Patterns = [$"*{Constants.SatchelExtension}"]
             };
 
 

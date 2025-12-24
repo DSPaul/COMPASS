@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
@@ -9,8 +8,8 @@ using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Layouts;
+using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.ViewModels.SidePanels;
 using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.Tools;
@@ -76,20 +75,18 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     public CodexOperations CodexCommands { get; private set; }
     
     //show edit Collection Stuff
-    private bool _createCollectionVisibility = false;
     public bool CreateCollectionVisibility
     {
-        get => _createCollectionVisibility;
-        set => SetProperty(ref _createCollectionVisibility, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = false;
 
     //show edit Collection Stuff
-    private bool _editCollectionVisibility = false;
     public bool EditCollectionVisibility
     {
-        get => _editCollectionVisibility;
-        set => SetProperty(ref _editCollectionVisibility, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = false;
 
     #endregion
     
@@ -100,17 +97,14 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         await ChangeToCollection(_collectionHandle.CollectionVM);
     }
 
-    private RelayCommand? _toggleCreateCollectionCommand;
-    public RelayCommand ToggleCreateCollectionCommand => _toggleCreateCollectionCommand ??= new(ToggleCreateCollection);
+    public RelayCommand ToggleCreateCollectionCommand => field ??= new(ToggleCreateCollection);
     private void ToggleCreateCollection() => CreateCollectionVisibility = !CreateCollectionVisibility;
 
-    private RelayCommand? _toggleEditCollectionCommand;
-    public RelayCommand ToggleEditCollectionCommand => _toggleEditCollectionCommand ??= new(ToggleEditCollection);
+    public RelayCommand ToggleEditCollectionCommand => field ??= new(ToggleEditCollection);
     private void ToggleEditCollection() => EditCollectionVisibility = !EditCollectionVisibility;
 
     // Create CodexCollection
-    private AsyncRelayCommand<string>? _createCollectionCommand;
-    public AsyncRelayCommand<string> CreateCollectionCommand => _createCollectionCommand ??= new(
+    public AsyncRelayCommand<string> CreateCollectionCommand => field ??= new(
         CreateCollection, 
         name => CollectionManager.IsLegalCollectionName(name));
     private async Task CreateCollection(string? name)
@@ -124,8 +118,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     }
 
     // Rename Collection
-    private RelayCommand<string>? _editCollectionNameCommand;
-    public RelayCommand<string> EditCollectionNameCommand => _editCollectionNameCommand ??= new(
+    public RelayCommand<string> EditCollectionNameCommand => field ??= new(
         EditCollectionName,
         name => CollectionManager.IsLegalCollectionName(name));
     private void EditCollectionName(string? newName)
@@ -137,8 +130,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     }
 
     // Delete Collection
-    private AsyncRelayCommand? _deleteCollectionCommand;
-    public AsyncRelayCommand DeleteCollectionCommand => _deleteCollectionCommand ??= new(RaiseDeleteCollectionWarning);
+    public AsyncRelayCommand DeleteCollectionCommand => field ??= new(RaiseDeleteCollectionWarning);
     private async Task RaiseDeleteCollectionWarning()
     {
         int codexCount = CollectionVM.Collection.AllCodices.Count;
@@ -196,8 +188,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     }
 
     //Export Collection
-    private RelayCommand? _exportCommand;
-    public RelayCommand ExportCommand => _exportCommand ??= new(Export);
+    public RelayCommand ExportCommand => field ??= new(Export);
     private void Export()
     {
         //open wizard
@@ -206,12 +197,10 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         wizard.Show(WindowManager.ActiveWindow);
     }
 
-    private AsyncRelayCommand? _exportTagsCommand;
-    public AsyncRelayCommand ExportTagsCommand => _exportTagsCommand ??= new(CollectionVM.ExportTags);
+    public AsyncRelayCommand ExportTagsCommand => field ??= new(CollectionVM.ExportTags);
 
     //Import Collection
-    private AsyncRelayCommand? _importCommand;
-    public AsyncRelayCommand ImportCommand => _importCommand ??= new(ImportSatchelAsync);
+    public AsyncRelayCommand ImportCommand => field ??= new(ImportSatchelAsync);
 
     private async Task ImportSatchelAsync() => await ImportSatchelAsync(null);
     public async Task ImportSatchelAsync(string? path)
@@ -235,8 +224,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     }
 
     //Merge Collection into another
-    private AsyncRelayCommand<string>? _mergeCollectionIntoCommand;
-    public AsyncRelayCommand<string> MergeCollectionIntoCommand => _mergeCollectionIntoCommand ??= new(MergeIntoCollection);
+    public AsyncRelayCommand<string> MergeCollectionIntoCommand => field ??= new(MergeIntoCollection);
     private async Task MergeIntoCollection(string? collectionToMergeInto)
     {
         if (string.IsNullOrEmpty(collectionToMergeInto) ||
@@ -275,8 +263,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     }
     
     //Change Layout
-    private RelayCommand<CodexLayout>? _changeLayoutCommand;
-    public RelayCommand<CodexLayout> ChangeLayoutCommand => _changeLayoutCommand ??= new(ChangeLayout);
+    public RelayCommand<CodexLayout> ChangeLayoutCommand => field ??= new(ChangeLayout);
     private void ChangeLayout(CodexLayout layout) => CurrentLayout = LayoutViewModel.GetLayout(layout);
     
     #endregion

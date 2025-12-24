@@ -20,6 +20,9 @@
         Closed="TopLevel_OnClosed">
     
     <Window.DataTemplates>
+        
+        
+        <!-- Modals -->
         <DataTemplate DataType="editVm:TagEditViewModel">
             <editViews:TagEditView/>
         </DataTemplate>
@@ -55,6 +58,12 @@
         <DataTemplate DataType="vm:ChooseMetaDataViewModel">
             <views:ChooseMetaDataView/>
         </DataTemplate>
+        
+        <!-- Wizards -->
+        <DataTemplate DataType="importVm:ImportCollectionViewModel">
+            <importViews:ImportCollectionWizard/>
+        </DataTemplate>
+        
     </Window.DataTemplates>
     
     <ContentControl  x:Name="ContentPresenter" Content="{Binding}"/>
