@@ -21,13 +21,16 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         
         public ImportCollectionViewModel(CodexCollectionVM collectionVmToImport)
         {
+            AddValidation(nameof(MergeIntoCollection), ValidateTarget);
+            AddValidation(nameof(CollectionName), ValidateTarget);
+            AddValidation(nameof(TargetCollection), ValidateTarget);
+            
             CollectionToImport = collectionVmToImport.Collection;
             TargetCollection = TabsViewModel.GetInstance().ActiveTab?.CollectionVM;
             CollectionVms = CollectionManager.CollectionVms.ToList(); 
-            
             //Collection will have format '__<name><extension>'
             CollectionName = CollectionToImport.Name.Substring(2, CollectionToImport.Name.Length - 2 - Constants.SatchelExtension.Length);
-            
+
             //temporarily register the collection to the manager so it can be loaded and read
             CollectionManager.RegisterCollection(collectionVmToImport);
             _collectionToImportHandle = collectionVmToImport.Load() ?? throw new LoadException(collectionVmToImport.Identifier);
@@ -48,6 +51,8 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             }
         }
 
+        #region Properties
+        
         public CollectionContentSelectorViewModel ContentSelectorVM { get; }
 
         public CodexCollection CollectionToImport { get; } //collection that was in the satchel
@@ -62,28 +67,9 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         public bool ImportTagsSeparately { get; set; } = false;
 
         //OVERVIEW STEP
-        public bool MergeIntoCollection
-        {
-            get;
-            set
-            {
-                SetProperty(ref field, value);
-                RefreshNavigationBtns();
-            }
-        } = false;
+        public bool MergeIntoCollection { get; set => SetProperty(ref field, value); }
 
-        public string CollectionName
-        {
-            get;
-            set
-            {
-                SetProperty(ref field, value);
-                OnPropertyChanged(nameof(IsCollectionNameLegal));
-                RefreshNavigationBtns();
-            }
-        }
-
-        public bool IsCollectionNameLegal => CollectionManager.IsLegalCollectionName(CollectionName);
+        public string CollectionName { get; set => SetProperty(ref field, value); }
 
         public bool ImportAllTags { get; set; } = true;
         public bool ImportAllCodices { get; set; } = true;
@@ -98,15 +84,11 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 UpdateSteps();
             }
         } = false;
-
-
-        //Don't show on overview tab if new collection is chosen with illegal name
-        protected override bool ShowNextButton() => base.ShowNextButton() &&
-                                                    !(CurrentStep == _overviewStep && !MergeIntoCollection && !IsCollectionNameLegal);
-
-        protected override bool ShowFinishButton() => base.ShowFinishButton() &&
-                                                      !(CurrentStep == _overviewStep && !MergeIntoCollection && !IsCollectionNameLegal);
-
+        
+        #endregion
+        
+        #region Wizard Viewmodel Overrides
+        
         public override async Task Finish()
         {
             //if we do a quick import, set all the things in the contentSelector have the right value
@@ -201,6 +183,37 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             }
         }
 
+        #endregion
+
+        #region Methods
+
+        private void ValidateTarget()
+        {
+            //Because a change in MergeIntoCollection can change validity, clear errors on the other props manually
+            _overviewStep.ClearErrors(nameof(CollectionName));
+            _overviewStep.ClearErrors(nameof(TargetCollection));
+            ClearErrors(nameof(CollectionName));
+            ClearErrors(nameof(TargetCollection));
+            
+            if (!MergeIntoCollection && !CollectionManager.IsLegalCollectionName(CollectionName))
+            {
+                //Error on step to block next
+                _overviewStep.AddError(nameof(CollectionName), "Collection name is invalid");
+                //Error on vm to show in UI
+                AddError(nameof(CollectionName), "Collection name is invalid");
+            }
+            
+            if (MergeIntoCollection && TargetCollection == null)
+            {
+                //Error on step to block next
+                _overviewStep.AddError(nameof(TargetCollection), "Please select a target collection");
+                //Error on vm to show in UI
+                AddError(nameof(TargetCollection), "Please select a target collection");
+            }
+        }
+
+        #endregion
+        
         public void Dispose()
         {
             _collectionToImportHandle.Dispose();

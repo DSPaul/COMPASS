@@ -28,7 +28,7 @@ namespace COMPASS.Common.ViewModels
         }
         
         #region INotifyDataErrorInfo / Validation
-    
+        
         //list of errors per property
         private readonly Dictionary<string, List<string>> _errors = [];
         private readonly Dictionary<string, Action> _validationMethods = [];
@@ -47,7 +47,7 @@ namespace COMPASS.Common.ViewModels
             return _errors.TryGetValue(propertyName, out var errors) ? errors : [];
         }
     
-        protected void AddError(string propertyName, string error)
+        public void AddError(string propertyName, string error)
         {
             if (!_errors.ContainsKey(propertyName))
             {
@@ -62,7 +62,7 @@ namespace COMPASS.Common.ViewModels
             }
         }
     
-        private void ClearErrors(string? propertyName)
+        public void ClearErrors(string? propertyName)
         {
             if (string.IsNullOrEmpty(propertyName))
             {
@@ -87,7 +87,7 @@ namespace COMPASS.Common.ViewModels
             ErrorsChanged?.Invoke(this, new(propertyName));
         }
         
-        protected void Validate(string? propertyName = null)
+        public void Validate(string? propertyName = null)
         {
             ClearErrors(propertyName);
 
@@ -108,7 +108,11 @@ namespace COMPASS.Common.ViewModels
             {
                 Dispatcher.UIThread.Invoke(confirmable.ConfirmCommand.NotifyCanExecuteChanged);
             }
+
+            OnValidated(propertyName);
         }
+
+        protected virtual void OnValidated(string? propertyName) {}
 
         protected void AddValidation(string propertyName, Action validator)
         {

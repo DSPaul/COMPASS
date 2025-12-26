@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.ViewModels;
 
@@ -33,6 +34,15 @@ namespace COMPASS.Common.ViewModels
             }
         } = 0;
 
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            if (e.PropertyName != nameof(HasErrors))
+            {
+                Validate(e.PropertyName);
+            }
+        }
+        
         protected void OnStepsChanged()
         {
             //Steps can temporarily be empty because the observable collection cannot be reassigned, so we clear and refill instead
@@ -63,7 +73,7 @@ namespace COMPASS.Common.ViewModels
 
         public RelayCommand NextStepCommand => field ??= new(NextStep, ShowNextButton);
         protected virtual void NextStep() => StepCounter++;
-        protected virtual bool ShowNextButton() => StepCounter < Steps.Count - 1;
+        protected virtual bool ShowNextButton() => !CurrentStep.HasErrors && StepCounter < Steps.Count - 1;
 
         public RelayCommand PrevStepCommand => field ??= new(PrevStep, ShowBackButton);
         protected virtual void PrevStep() => StepCounter--;
@@ -75,8 +85,14 @@ namespace COMPASS.Common.ViewModels
             CloseAction();
             return Task.CompletedTask;
         }
-        protected virtual bool ShowFinishButton() => StepCounter == Steps.Count - 1;
-        
+        protected virtual bool ShowFinishButton() => !CurrentStep.HasErrors && StepCounter == Steps.Count - 1;
+
+        protected override void OnValidated(string? propertyName)
+        {
+            base.OnValidated(propertyName);
+            RefreshNavigationBtns();
+        }
+
         public abstract string WindowTitle { get; }
         public Action CloseAction { get; set; } = () => { };
     }
