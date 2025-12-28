@@ -62,7 +62,7 @@ public class CodexCollectionXmlStorageService(
             return Directory
                 .GetDirectories(_collectionsPath)
                 .Select(dir => Path.GetFileName(dir))
-                .Where(dir => CollectionManager.IsLegalCollectionName(dir, []))
+                .Where(dir => CollectionManager.IsValidCollectionName(dir, out _, []))
                 .Select(dir => new CodexCollection(dir))
                 .ToList();
         }

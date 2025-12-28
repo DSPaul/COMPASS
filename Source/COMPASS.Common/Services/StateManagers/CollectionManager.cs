@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -24,18 +25,48 @@ namespace COMPASS.Common.Services.StateManagers
 
         #region Methods
     
-        public static bool IsLegalCollectionName(string? dirName, IList<CodexCollectionVM>? existingCollections = null)
+        public static bool IsValidCollectionName(string? proposedName, [NotNullWhen(false)] out string? invalidReason, IList<CodexCollectionVM>? existingCollections = null)
         {
             existingCollections ??= _allCollectionVms;
-        
-            bool legal =
-                !string.IsNullOrWhiteSpace(dirName)
-                && dirName.IndexOfAny(Path.GetInvalidPathChars()) < 0
-                && dirName.IndexOfAny(Path.GetInvalidFileNameChars()) < 0
-                && existingCollections.All(col => col.Identifier != dirName)
-                && dirName.Length < 100
-                && (dirName.Length < 2 || dirName[..2] != "__"); //reserved for protected folders
-            return legal;
+            invalidReason = null;
+            
+            //Not empty
+            if (string.IsNullOrWhiteSpace(proposedName))
+            {
+                invalidReason = "Collection name cannot be empty";
+                return false;
+            }
+
+            //No invalid chars
+            var invalidChars = Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).ToArray();
+            if (proposedName.IndexOfAny(invalidChars) is var invalidCharIndex && invalidCharIndex >= 0)
+            {
+                invalidReason = $"Character ${invalidChars[invalidCharIndex]} is not allowed";
+                return false;
+            }
+
+            //Must be unique
+            if (existingCollections.Any(col => col.Identifier == proposedName))
+            {
+                invalidReason = $"Collection {proposedName} already exists";
+                return false;
+            }
+            
+            //Not too long
+            if (proposedName.Length > 127)
+            {
+                invalidReason = $"Collection name is too long";
+                return false;
+            }
+            
+            //Cannot start with __, reserved
+            if (proposedName.Length >= 2 && proposedName[..2] == "__")
+            {
+                invalidReason = $"Collection name should not start with 2 underscores";
+                return false;
+            }
+
+            return true;
         }
     
         public static void DiscoverCollections()
@@ -73,11 +104,10 @@ namespace COMPASS.Common.Services.StateManagers
         /// <exception cref="InvalidOperationException"></exception>
         public static async Task<CodexCollectionVM> CreateCollection(string identifier)
         {
-            if (!IsLegalCollectionName(identifier, _allCollectionVms))
+            if (!IsValidCollectionName(identifier, out string? invalidReason, _allCollectionVms))
             {
-                string msg = $"{identifier} is not a valid collection name";
-                Logger.Warn(msg);
-                throw new InvalidOperationException(msg);
+                Logger.Warn(invalidReason);
+                throw new InvalidOperationException(invalidReason);
             }
 
             CodexCollection newCollection = new(identifier);

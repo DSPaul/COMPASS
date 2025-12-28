@@ -3,15 +3,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:views="using:COMPASS.Common.Views"
-             xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals.Import"
+             xmlns:conv="using:COMPASS.Common.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Modals.Import.ImportCollectionWizard"
              MinHeight="650" MinWidth="1200"
              x:DataType="vm:ImportCollectionViewModel">
     <views:Wizard>
-        <views:Wizard.DataTemplates>
-            <dataTemplates:WizardStepTemplateSelector>
+        <views:Wizard.Resources>
+            <conv:WizardStepTemplateSelector x:Key="WizardStepTemplateSelector">
                 <DataTemplate x:Key="Overview" x:DataType="vm:ImportCollectionViewModel">
                     <Grid ColumnDefinitions="*,auto,*" RowDefinitions="Auto, Auto *,*"
                           ColumnSpacing="20" RowSpacing="20">
@@ -26,21 +26,7 @@
                                      Classes="Container">
                             <StackPanel Spacing="10">
                                 <TextBlock Text="Create new collection" HorizontalAlignment="Center" FontSize="20"/>
-                                <TextBox Text="{Binding CollectionName, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" HorizontalContentAlignment="Center">
-                                    <!-- TODO add validation per wizard step that also blocks next on invalid -->
-                                    <!-- <TextBox.Style> -->
-                                    <!--     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"> -->
-                                    <!--         <Style.Triggers> -->
-                                    <!--             <DataTrigger Binding="{Binding IsCollectionNameLegal}" Value="False"> -->
-                                    <!--                 <Setter Property="BorderBrush" Value="{StaticResource CancelFill}"/> -->
-                                    <!--             </DataTrigger> -->
-                                    <!--         </Style.Triggers> -->
-                                    <!--     </Style> -->
-                                    <!-- </TextBox.Style> -->
-                                </TextBox>
-                                <!-- <TextBlock Text="Invalid Collection Name" Foreground="{StaticResource CancelFill}" -->
-                                <!--            Visibility="{Binding IsCollectionNameLegal, Converter={StaticResource ToVisibilityConverter}, -->
-                                <!--             ConverterParameter=True}"/> -->
+                                <TextBox Text="{Binding CollectionName, UpdateSourceTrigger=PropertyChanged}" MinWidth="200" HorizontalContentAlignment="Center"/>
                             </StackPanel>
                         </RadioButton>
                         <RadioButton Grid.Row="3" Grid.Column="0" 
@@ -92,10 +78,11 @@
                         </RadioButton>
                     </Grid>
                 </DataTemplate>
-            </dataTemplates:WizardStepTemplateSelector>
-        </views:Wizard.DataTemplates>
+            </conv:WizardStepTemplateSelector>
+        </views:Wizard.Resources>
         
-        <ContentControl Content="{Binding}"/>
+        <ContentControl Content="{Binding}" 
+                        ContentTemplate="{Binding CurrentStep, Converter={StaticResource WizardStepTemplateSelector}}"/>
         
         <!-- <ContentControl> -->
         <!--     <ContentControl.Style> -->

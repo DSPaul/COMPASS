@@ -106,7 +106,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     // Create CodexCollection
     public AsyncRelayCommand<string> CreateCollectionCommand => field ??= new(
         CreateCollection, 
-        name => CollectionManager.IsLegalCollectionName(name));
+        name => CollectionManager.IsValidCollectionName(name, out _));
     private async Task CreateCollection(string? name)
     {
         CollectionHandle? newCollectionHandle = await CollectionManager.CreateAndLoadCollection(name);
@@ -120,10 +120,10 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     // Rename Collection
     public RelayCommand<string> EditCollectionNameCommand => field ??= new(
         EditCollectionName,
-        name => CollectionManager.IsLegalCollectionName(name));
+        name => CollectionManager.IsValidCollectionName(name, out _));
     private void EditCollectionName(string? newName)
     {
-        if (!CollectionManager.IsLegalCollectionName(newName)) return;
+        if (!CollectionManager.IsValidCollectionName(newName, out _)) return;
 
         CollectionVM.RenameCollection(newName!);
         EditCollectionVisibility = false;

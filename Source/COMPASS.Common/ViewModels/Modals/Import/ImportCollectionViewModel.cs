@@ -195,12 +195,12 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             ClearErrors(nameof(CollectionName));
             ClearErrors(nameof(TargetCollection));
             
-            if (!MergeIntoCollection && !CollectionManager.IsLegalCollectionName(CollectionName))
+            if (!MergeIntoCollection && !CollectionManager.IsValidCollectionName(CollectionName, out string? invalidReason))
             {
                 //Error on step to block next
-                _overviewStep.AddError(nameof(CollectionName), "Collection name is invalid");
+                _overviewStep.AddError(nameof(CollectionName), invalidReason);
                 //Error on vm to show in UI
-                AddError(nameof(CollectionName), "Collection name is invalid");
+                AddError(nameof(CollectionName), invalidReason);
             }
             
             if (MergeIntoCollection && TargetCollection == null)
