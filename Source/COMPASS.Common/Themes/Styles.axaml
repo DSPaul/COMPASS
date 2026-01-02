@@ -608,6 +608,10 @@
     <Style Selector="ListBox">
         <Setter Property="ScrollViewer.AllowAutoHide" Value="False" />
     </Style>
+    
+    <Style Selector="DataGrid">
+        <Setter Property="ScrollViewer.AllowAutoHide" Value="False" />
+    </Style>
 
     <!-- containers -->
     <Style Selector="UniformGrid.ButtonStrip">

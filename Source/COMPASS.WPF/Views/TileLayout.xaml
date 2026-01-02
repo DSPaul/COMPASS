@@ -16,7 +16,7 @@
         <converters:UriToBitmapConverter x:Key="UriToBitmapConverter" />
     </UserControl.Resources>
 
-    <ListView x:Name="TileLayoutListBox" FocusVisualStyle="{x:Null}" 
+    <ListView FocusVisualStyle="{x:Null}" 
             ItemsSource="{Binding MVM.CollectionVM.FilterVM.FilteredCodices}"  
             Background="{x:Null}" BorderBrush="{x:Null}" VerticalContentAlignment="Top" 
             ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="10,0" SelectionMode="Extended"

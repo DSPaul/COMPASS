@@ -93,7 +93,7 @@
                     <TextBlock Text="{Binding Version}"  Grid.Column="1" Grid.Row="4"/>
 
                     <TextBlock Text="Release Date:" Grid.Column="0" Grid.Row="5"/>
-                    <TextBlock Text="{Binding ReleaseDate, StringFormat=dd/MM/yyyy}"
+                    <TextBlock Text="{Binding ReleaseDateAsString}"
                                     Grid.Column="1" Grid.Row="5"/>
 
                     <TextBlock Text="PageCount:"  Grid.Column="0" Grid.Row="6"/>

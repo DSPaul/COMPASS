@@ -53,10 +53,9 @@ namespace COMPASS.Infra.Behaviours
                     case SelectingItemsControl selectingControl:
                         selectingControl.SelectionChanged += OnSelectionChanged;
                         break;
-                    //TODO check this out when datagrid is added
-                    // case DataGrid dataGrid:
-                    //     dataGrid.SelectionChanged += OnSelectionChanged;
-                    //     break;
+                    case DataGrid dataGrid:
+                        dataGrid.SelectionChanged += OnSelectionChanged;
+                        break;
                 }
             }
         }
@@ -66,8 +65,7 @@ namespace COMPASS.Infra.Behaviours
             int itemCount = sender switch
             {
                 ListBox listBox => listBox.SelectedItems?.Count ?? 0,
-                //TODO check this out when datagrid is added
-                //DataGrid dataGrid => dataGrid.SelectedItems?.Count ?? 0,
+                DataGrid dataGrid => dataGrid.SelectedItems?.Count ?? 0,
                 _ => 0
             };
             

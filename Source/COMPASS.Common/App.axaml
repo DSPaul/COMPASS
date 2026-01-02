@@ -6,6 +6,7 @@
     <FluentTheme/>
     <materialIcons:MaterialIconStyles />
     <StyleInclude Source="avares://COMPASS.Common/Themes/Styles.axaml" />
+    <StyleInclude Source="avares://COMPASS.Common/Themes/Controls/DataGrid.axaml"/>
   </Application.Styles>
   <Application.Resources>
     <ResourceDictionary>

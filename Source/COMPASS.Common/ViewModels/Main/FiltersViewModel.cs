@@ -362,6 +362,19 @@ namespace COMPASS.Common.ViewModels.Main
             }
         }
 
+        public void UpdateSortProperty(string sortProperty)
+        {
+            if (SortProperty == sortProperty)
+            {
+                SortAscending = !SortAscending;
+            }
+            else
+            {
+                SortProperty = sortProperty;
+                SortAscending = true;
+            }
+        }
+
         public void PopulateMetaDataCollections() => Dispatcher.UIThread.Invoke(() =>
         {
             foreach (CodexViewModel vm in _allCodexVms)

@@ -55,6 +55,7 @@
     <!-- <PackageReference Include="ZXing.Net" Version="0.16.9" /> -->
     <!-- <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.12" /> -->
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.10" />
     <PackageReference Include="Avalonia.Labs.Gif" Version="11.3.1" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.10" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.10" />
@@ -68,9 +69,9 @@
     <PackageReference Include="itext" Version="9.4.0" />
     <PackageReference Include="itext.bouncy-castle-adapter" Version="9.4.0" />
     <PackageReference Include="log4net" Version="3.2.0" />
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.0" />
-    <PackageReference Include="Magick.NET.AvaloniaMediaImaging" Version="1.1.8" />
-    <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.13" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.1" />
+    <PackageReference Include="Magick.NET.AvaloniaMediaImaging" Version="1.1.9" />
+    <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.14" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NuGet.Versioning" Version="7.0.1" />

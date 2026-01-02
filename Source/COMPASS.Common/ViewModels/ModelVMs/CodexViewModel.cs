@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
@@ -39,6 +34,7 @@ public class CodexViewModel : ModelViewModelBase<Codex>
         _derivedProperties.Add(nameof(Codex.Authors), [nameof(AuthorsAsString)]);
         _derivedProperties.Add(nameof(Codex.Tags), [nameof(OrderedTags)]);
         _derivedProperties.Add(nameof(Codex.ThumbnailPath), [nameof(Thumbnail)]);
+        _derivedProperties.Add(nameof(Codex.ReleaseDate), [nameof(ReleaseDateAsString)]);
         
         //Validation
         AddValidation(nameof(PageCount), ValidatePageCount);
@@ -75,7 +71,6 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     /// <summary>
     /// Sorting title defined by the user, will only have a value if it is different from the title
     /// </summary>
-    public string UserDefinedSortingTitle => _model.UserDefinedSortingTitle;
     public string SortingTitle
     {
         get => (string.IsNullOrEmpty(_model.UserDefinedSortingTitle) ? _model.Title : _model.UserDefinedSortingTitle).PadNumbers();
@@ -121,6 +116,8 @@ public class CodexViewModel : ModelViewModelBase<Codex>
         get => _model.ReleaseDate;
         set => _model.ReleaseDate = value;
     }
+
+    public string ReleaseDateAsString => ReleaseDate == null ? "" : ReleaseDate.Value.ToString("dd/MM/yyyy");
     
     public int PageCount
     {
@@ -300,38 +297,35 @@ public class CodexViewModel : ModelViewModelBase<Codex>
 
     #region Commands
 
+    //Open codex
+    public AsyncRelayCommand OpenCodexCommand => field ??= new(OpenCodex, CanOpenCodex);
+    private async Task<bool> OpenCodex() => await CodexOperations.OpenCodex(_model);
+    private bool CanOpenCodex() => CodexOperations.CanOpenCodex(_model);
+    
     //Open codex Offline
-    private AsyncRelayCommand? _openCodexLocallyCommand;
-    public AsyncRelayCommand OpenCodexLocallyCommand => _openCodexLocallyCommand ??= new(OpenCodexLocally, CanOpenCodexLocally);
+    public AsyncRelayCommand OpenCodexLocallyCommand => field ??= new(OpenCodexLocally, CanOpenCodexLocally);
     private async Task<bool> OpenCodexLocally() => await CodexOperations.OpenCodexLocally(_model);
     private bool CanOpenCodexLocally() => CodexOperations.CanOpenCodexLocally(_model);
 
     //Open codex Online
-    private RelayCommand? _openCodexOnlineCommand;
-    public RelayCommand OpenCodexOnlineCommand => _openCodexOnlineCommand ??= new(OpenCodexOnline, CanOpenCodexOnline);
+    public RelayCommand OpenCodexOnlineCommand => field ??= new(OpenCodexOnline, CanOpenCodexOnline);
     private void OpenCodexOnline() => CodexOperations.OpenCodexOnline(_model);
     private bool CanOpenCodexOnline() => CodexOperations.CanOpenCodexOnline(_model);
     
-
     //Edit File
-    private AsyncRelayCommand? _editCodexCommand;
-    public AsyncRelayCommand EditCodexCommand => _editCodexCommand ??= new(EditCodex);
+    public AsyncRelayCommand EditCodexCommand => field ??= new(EditCodex);
     private async Task EditCodex() => await CodexOperations.EditCodex(_model);
     
-
     //Toggle Favorite
-    private RelayCommand? _favoriteCodexCommand;
-    public RelayCommand FavoriteCodexCommand => _favoriteCodexCommand ??= new(FavoriteCodex);
+    public RelayCommand FavoriteCodexCommand => field ??= new(FavoriteCodex);
     private void FavoriteCodex() => CodexOperations.FavoriteCodex(_model);
 
     //Show in Explorer
-    private RelayCommand? _showInExplorerCommand;
-    public RelayCommand ShowInExplorerCommand => _showInExplorerCommand ??= new(ShowInExplorer, CanOpenCodexLocally);
+    public RelayCommand ShowInExplorerCommand => field ??= new(ShowInExplorer, CanOpenCodexLocally);
     private void ShowInExplorer() => CodexOperations.ShowInExplorer(_model);
     
     //Move Codex to other CodexCollection
-    private AsyncRelayCommand<string>? _moveToCollectionCommand;
-    public AsyncRelayCommand<string> MoveToCollectionCommand => _moveToCollectionCommand ??= new(MoveToCollection);
+    public AsyncRelayCommand<string> MoveToCollectionCommand => field ??= new(MoveToCollection);
     private async Task MoveToCollection(string? targetCollectionIdentifier)
     {
         if (string.IsNullOrEmpty(targetCollectionIdentifier)) return;
@@ -339,27 +333,21 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     }
     
     //Delete Codex
-    private AsyncRelayCommand? _deleteCodexCommand;
-    public AsyncRelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
+    public AsyncRelayCommand DeleteCodexCommand => field ??= new(DeleteCodex);
     private async Task DeleteCodex() => await CodexOperations.DeleteCodex(_model);
     
 
     //Banish Codex
-    private AsyncRelayCommand? _banishCodexCommand;
-    public AsyncRelayCommand BanishCodexCommand => _banishCodexCommand ??= new(BanishCodex);
+    public AsyncRelayCommand BanishCodexCommand => field ??= new(BanishCodex);
     private async Task BanishCodex() => await CodexOperations.BanishCodex(_model);
 
     //Get Metadata
-    private AsyncRelayCommand? _getMetaDataCommand;
-    public AsyncRelayCommand GetMetaDataCommand => _getMetaDataCommand ??= new(StartGetMetaDataProcess);
+    public AsyncRelayCommand GetMetaDataCommand => field ??= new(StartGetMetaDataProcess);
     private async Task StartGetMetaDataProcess() => await CodexOperations.StartGetMetaDataProcess(_model);
     
     //Get Cover
-    private AsyncRelayCommand? _getCoverCommand;
-    public AsyncRelayCommand GetCoverCommand => _getCoverCommand ??= new(GetCover);
+    public AsyncRelayCommand GetCoverCommand => field ??= new(GetCover);
     private async Task GetCover() => await CodexOperations.GetCover(_model);
-        
-        
-
+    
     #endregion
 }

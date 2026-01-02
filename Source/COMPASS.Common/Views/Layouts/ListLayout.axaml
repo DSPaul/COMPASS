@@ -2,7 +2,197 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Layouts"
+             xmlns:modelVm="using:COMPASS.Common.ViewModels.ModelVMs"
+             xmlns:behav="using:COMPASS.Infra.Behaviours"
+             xmlns:conv="using:COMPASS.Infra.Converters"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:materialDesign="using:Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="vm:ListLayoutViewModel"
              x:Class="COMPASS.Common.Views.Layouts.ListLayout">
-  list Layout
+    <DataGrid
+        Background="Transparent" Margin="10" Padding="10"
+        BorderBrush="Transparent"
+        ItemsSource="{Binding FiltersVM.FilteredCodices}"
+        SelectionMode="Extended" CornerRadius="5"
+        CanUserResizeColumns="True" CanUserReorderColumns="True"
+        SelectedItem="{Binding SelectedCodex, Mode=TwoWay}"
+        IsReadOnly="True" FontSize="14"
+        behav:ContextMenuSelector.SingleSelectContextMenu="{StaticResource CodexContextMenu}"
+        behav:ContextMenuSelector.MultiSelectContextMenu="{StaticResource MultiCodexContextMenu}"
+        Sorting="DataGrid_OnSorting"
+        KeyDown="DataGrid_OnKeyDown"
+        DoubleTapped="DataGrid_OnDoubleTapped"
+        SelectionChanged="DataGrid_SelectionChanged">
+        <!-- TODO restore drag & drop of tags -->
+        <DataGrid.Styles>
+            <Style Selector="DataGridColumnHeader">
+                <Setter Property="ContextMenu">
+                    <Setter.Value>
+                        <ContextMenu IsEnabled="True" Placement="Bottom">
+                            <MenuItem Header="Author" ToggleType="CheckBox" IsChecked="{Binding Preferences.ShowAuthor, Mode=TwoWay}" />
+                            <MenuItem Header="Publisher" ToggleType="CheckBox" IsChecked="{Binding Preferences.ShowPublisher, Mode=TwoWay}" />
+                            <MenuItem Header="Rating" ToggleType="CheckBox" IsChecked="{Binding Preferences.ShowRating, Mode=TwoWay}" />
+                            <MenuItem Header="Release Date" ToggleType="CheckBox" IsChecked="{Binding Preferences.ShowReleaseDate, Mode=TwoWay}" />
+                            <MenuItem Header="Date Added" ToggleType="CheckBox" IsChecked="{Binding Preferences.ShowDateAdded, Mode=TwoWay}" />
+                            <MenuItem Header="ISBN" ToggleType="CheckBox" IsChecked="{Binding Preferences.ShowISBN, Mode=TwoWay}" />
+                            <MenuItem Header="Tags" ToggleType="CheckBox" IsChecked="{Binding Preferences.ShowTags, Mode=TwoWay}" />
+                            <MenuItem Header="Version" ToggleType="CheckBox" IsChecked="{Binding Preferences.ShowVersion, Mode=TwoWay}" />
+                            <MenuItem Header="File Icons" ToggleType="CheckBox" IsChecked="{Binding Preferences.ShowFileIcons, Mode=TwoWay}" />
+                        </ContextMenu>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Background" Value="Transparent"/>
+            </Style>
+            <Style Selector="TextBlock">
+                <Setter Property="TextWrapping" Value="Wrap" />
+            </Style>
+            <Style Selector="DataGridRow">
+                
+            </Style>
+        </DataGrid.Styles>
+        <!-- <DataGrid.RowStyle> -->
+        <!--     <Style TargetType="{x:Type DataGridRow}"> -->
+        <!--         <EventSetter Event="MouseDoubleClick" Handler="HandleDoubleClick" /> -->
+        <!--         <Setter Property="Background" Value="{x:Null}"/> -->
+        <!--         <Setter Property="ContextMenu" Value="{StaticResource MultiCodexContextMenu}"/> -->
+        <!--         <Setter Property="Template"> -->
+        <!--             <Setter.Value> -->
+        <!--                 <ControlTemplate TargetType="{x:Type DataGridRow}"> -->
+        <!--                     <Border x:Name="DGR_Border" BorderThickness="0" SnapsToDevicePixels="True"  -->
+        <!--                             CornerRadius="5" Background="{TemplateBinding Background}"> -->
+        <!--                         <SelectiveScrollingGrid> -->
+        <!--                             <SelectiveScrollingGrid.ColumnDefinitions> -->
+        <!--                                 <ColumnDefinition Width="Auto"/> -->
+        <!--                                 <ColumnDefinition Width="*"/> -->
+        <!--                             </SelectiveScrollingGrid.ColumnDefinitions> -->
+        <!--                             <SelectiveScrollingGrid.RowDefinitions> -->
+        <!--                                 <RowDefinition Height="*"/> -->
+        <!--                                 <RowDefinition Height="0"/> -->
+        <!--                             </SelectiveScrollingGrid.RowDefinitions> -->
+        <!--                             <DataGridCellsPresenter Grid.Column="1" ItemsPanel="{TemplateBinding ItemsPanel}"  -->
+        <!--                                                     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/> -->
+        <!--                             <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1"  -->
+        <!--                                                       SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen, ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical},  -->
+        <!--                                                         Converter={x:Static DataGrid.RowDetailsScrollingConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"  -->
+        <!--                                                       Visibility="{TemplateBinding DetailsVisibility}"/> -->
+        <!--                             <DataGridRowHeader Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" -->
+        <!--                                                SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"  -->
+        <!--                                                Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Row},  -->
+        <!--                                 Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/> -->
+        <!--                         </SelectiveScrollingGrid> -->
+        <!--                     </Border> -->
+        <!--                 </ControlTemplate> -->
+        <!--             </Setter.Value> -->
+        <!--         </Setter> -->
+        <!--         <Style.Triggers> -->
+        <!--             <Trigger Property="IsSelected" Value="True"> -->
+        <!--                 <Setter Property="Background" Value="{StaticResource ListSelected}"/> -->
+        <!--             </Trigger> -->
+        <!--             <Trigger Property="IsMouseOver" Value="True"> -->
+        <!--                 <Setter Property="Background" Value="{StaticResource ListHover}"/> -->
+        <!--             </Trigger> -->
+        <!--             <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Value="1"> -->
+        <!--                 <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/> -->
+        <!--             </DataTrigger> -->
+        <!--         </Style.Triggers> -->
+        <!--     </Style> -->
+        <!-- </DataGrid.RowStyle> -->
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="TITLE" Binding="{Binding Title}" SortMemberPath="SortingTitle"
+                                Width="3*" MinWidth="100" CanUserSort="True"
+                                IsVisible="{Binding Preferences.ShowTitle}" />
+
+            <DataGridTextColumn Header="AUTHORS" Binding="{Binding AuthorsAsString}"
+                                Width="2*" MinWidth="100" CanUserSort="True"
+                                IsVisible="{Binding Preferences.ShowAuthor}" />
+
+            <DataGridTextColumn Header="PUBLISHER" Binding="{Binding Publisher}"
+                                Width="2*" MinWidth="100" CanUserSort="True"
+                                IsVisible="{Binding Preferences.ShowPublisher}" />
+            
+            <DataGridTextColumn Header="RELEASE DATE" Binding="{Binding ReleaseDateAsString}" SortMemberPath="ReleaseDate"
+                                Width="*" MinWidth="100" CanUserSort="True"
+                                IsVisible="{Binding Preferences.ShowReleaseDate}" />
+
+            <DataGridTextColumn Header="DATE ADDED" Binding="{Binding DateAdded, StringFormat=dd/MM/yyyy}"
+                                Width="*" MinWidth="100" CanUserSort="True"
+                                IsVisible="{Binding Preferences.ShowDateAdded}" />
+
+            <DataGridTextColumn Header="VERSION" Binding="{Binding Version}"
+                                Width="*" MinWidth="20" CanUserSort="True"
+                                IsVisible="{Binding Preferences.ShowVersion}" />
+
+            <DataGridTemplateColumn Header="RATING" SortMemberPath="Rating"
+                                    Width="*" MinWidth="120" CanUserSort="True"
+                                    IsVisible="{Binding Preferences.ShowRating}">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <controls:RatingControl Value="{Binding Rating, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <DataGridTextColumn Header="ISBN" Binding="{Binding Sources.ISBN}"
+                                Width="*" MinWidth="150"
+                                IsVisible="{Binding Preferences.ShowISBN}" />
+
+            <DataGridTemplateColumn Header="TAGS" Width="5*" MinWidth="50"
+                                    IsVisible="{Binding Preferences.ShowTags}">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <ItemsControl ItemsSource="{Binding OrderedTags, Mode=OneWay}"
+                                      Background="Transparent" BorderBrush="{x:Null}"
+                                      Foreground="Black"
+                                      VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="modelVm:TagViewModel">
+                                    <controls:Chip
+                                        Background="{Binding BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"
+                                        Text="{Binding Name}" Margin="2"
+                                        ToolTip.Tip="{Binding LongName}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <DataGridTemplateColumn Header="" MinWidth="70" Width="*" CanUserResize="False"
+                                    IsVisible="{Binding Preferences.ShowFileIcons}">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <StackPanel x:Name="OwnedIconsStackPanel" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <controls:IconButton Command="{Binding OpenCodexLocallyCommand}" ToolTip.Tip="Open Locally"
+                                                 Background="Transparent" Classes="HideIfDisabled"
+                                                 Theme="{StaticResource IconOnly}" Icon="FileOutline" />
+                            <controls:IconButton Command="{Binding OpenCodexOnlineCommand}" ToolTip.Tip="Open Online"
+                                                 Background="Transparent" Classes="HideIfDisabled"
+                                                 Theme="{StaticResource IconOnly}" Icon="Web" />
+
+                            <materialDesign:MaterialIcon Kind="Bookshelf" Margin="5"
+                                                         IsVisible="{Binding PhysicallyOwned}"
+                                                         ToolTip.Tip="Physically Owned" />
+                        </StackPanel>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <DataGridTemplateColumn Header="" Width="25" MinWidth="25" CanUserResize="False"
+                                    IsVisible="{Binding Preferences.ShowEditIcon}">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <controls:IconButton Command="{Binding EditCodexCommand}" ToolTip.Tip="Edit"
+                                             Theme="{StaticResource IconOnly}" Icon="Pencil" />
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+        </DataGrid.Columns>
+    </DataGrid>
 </UserControl>

@@ -8,7 +8,12 @@ namespace COMPASS.Common.Views.Windows;
 
 public partial class ProgressWindow : Window
 {
-    public ProgressWindow(int bars = 1)
+    public ProgressWindow(): this(1)
+    {
+        
+    }
+    
+    public ProgressWindow(int bars)
     {
         DataContext = ProgressViewModel.GetInstance();
         _totalBars = bars;

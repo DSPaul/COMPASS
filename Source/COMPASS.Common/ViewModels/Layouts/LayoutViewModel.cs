@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
@@ -57,25 +53,23 @@ namespace COMPASS.Common.ViewModels.Layouts
         
         public FiltersViewModel? FiltersVM => TabsViewModel.GetInstance().ActiveTab?.FiltersVM;
         public CodexOperations? CodexCommands => TabsViewModel.GetInstance().ActiveTab?.CodexCommands;
-        
-        private CodexViewModel? _selectedCodex;
+
         public CodexViewModel? SelectedCodex
         {
-            get => _selectedCodex;
+            get;
             set
             {
-                if (SetProperty(ref _selectedCodex, value))
+                if (SetProperty(ref field, value))
                 {
-                    CodexInfoVM.DisplayedCodex = _selectedCodex;
+                    CodexInfoVM.DisplayedCodex = field;
                 }
             }
         }
-        
-        private IList<CodexViewModel>? _selectedCodices;
+
         public IList<CodexViewModel>? SelectedCodices
         {
-            get => _selectedCodices;
-            set => SetProperty(ref _selectedCodices, value);
+            get;
+            set => SetProperty(ref field, value);
         }
 
         //TODO check if this is still needed, remove abstract for now so derived classes can skip it

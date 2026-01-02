@@ -4,8 +4,8 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels;
-using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Infra.Tools;
 using COMPASS.Tests.Common.DataGenerators;
 

@@ -41,6 +41,8 @@ namespace COMPASS.Common.Operations
 
             return success;
         }
+        
+        public static bool CanOpenCodex(Codex codex) => CanOpenCodexLocally(codex) || CanOpenCodexOnline(codex);
 
         //Open codex Offline
         public static async Task<bool> OpenCodexLocally(Codex? toOpen)
@@ -571,10 +573,7 @@ namespace COMPASS.Common.Operations
         public AsyncRelayCommand<IList> GetCoverBulkCommand => field ??= new(GetCoverBulk);
         private static async Task GetCoverBulk(IList? codices) =>
             await CoverService.GetAndApplyCover(codices?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList() ?? []);
-
-        //TODO remove this, HandleKeyDownOnCodex should be called directly
-        // public static void DataGridHandleKeyDown(object? sender, KeyEventArgs e)
-        //     => HandleKeyDownOnCodex((sender as DataGrid)?.SelectedItems, e);
+        
         public async void HandleKeyDownOnCodex(IList? selectedItems, KeyEventArgs e)
         {
             if (selectedItems is null) return;
