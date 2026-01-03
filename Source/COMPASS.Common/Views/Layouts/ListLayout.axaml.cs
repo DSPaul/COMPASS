@@ -46,10 +46,8 @@ public partial class ListLayout : CodexLayoutView
             dataGrid.DataContext is ListLayoutViewModel vm &&
             e.Column.CanUserSort)
         {
-            vm.FiltersVM?.UpdateSortProperty(GetSortPropertyName(e.Column));
+            vm.FiltersVM.UpdateSortProperty(GetSortPropertyName(e.Column));
         }
-        
-        //TODO get this working the other way, so update from filterVM should update sorting of dataGrid
     }
     
     private string GetSortPropertyName(DataGridColumn column)

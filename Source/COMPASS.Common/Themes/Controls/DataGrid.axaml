@@ -60,7 +60,7 @@
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="MinHeight" Value="20" />
             <Setter Property="CornerRadius" Value="5" />
-            <Setter Property="Padding" Value="15 0 0 0"/>
+            <Setter Property="Padding" Value="10 0 0 0"/>
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border x:Name="CellBorder"

@@ -163,12 +163,8 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     #endregion
 
     #region User behaviour metadata
-    public DateTime DateAdded
-    {
-        get => _model.DateAdded;
-        set => _model.DateAdded = value;
-    }
-    
+    public DateTime DateAdded => _model.DateAdded;
+
     public DateTime LastOpened
     {
         get => _model.LastOpened;

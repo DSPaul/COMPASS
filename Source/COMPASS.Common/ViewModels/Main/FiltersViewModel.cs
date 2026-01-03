@@ -53,6 +53,8 @@ namespace COMPASS.Common.ViewModels.Main
             ReFilter();
         }
 
+        public event EventHandler? CodicesUpdated;
+
         #region Fields
 
         private readonly PreferencesService _preferencesService = PreferencesService.GetInstance();
@@ -270,6 +272,7 @@ namespace COMPASS.Common.ViewModels.Main
                     _preferencesService.Preferences.UIState.SortDirection = value;
                     ApplySorting();
                     OnPropertyChanged();
+                    CodicesUpdated?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
@@ -284,6 +287,7 @@ namespace COMPASS.Common.ViewModels.Main
                     _preferencesService.Preferences.UIState.SortProperty = value;
                     ApplySorting();
                     OnPropertyChanged();
+                    CodicesUpdated?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
@@ -605,6 +609,8 @@ namespace COMPASS.Common.ViewModels.Main
             }
 
             ApplySorting();
+
+            CodicesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         public void ReFilter(bool force = false)
