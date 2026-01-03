@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models.Hierarchy
@@ -19,8 +20,8 @@ namespace COMPASS.Common.Models.Hierarchy
             }
         }
         
-        private ObservableCollection<TreeNode<T>> _children = [];
-        public ObservableCollection<TreeNode<T>> Children
+        private RangeObservableCollection<TreeNode<T>> _children = [];
+        public RangeObservableCollection<TreeNode<T>> Children
         {
             get => _children;
             set => SetProperty(ref _children, value);

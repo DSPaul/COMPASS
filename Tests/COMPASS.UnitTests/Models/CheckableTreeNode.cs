@@ -2,6 +2,7 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Models;
 
 namespace COMPASS.UnitTests.Models
 {
@@ -17,14 +18,14 @@ namespace COMPASS.UnitTests.Models
             {
                 Id = 1,
                 IsGroup = true,
-                Children = new ObservableCollection<Tag>()
-                {
+                Children =
+                [
                     new() //L1 that is a group
                     {
                         Id = 2,
                         IsGroup = true,
-                        Children = new ObservableCollection<Tag>()
-                        {
+                        Children =
+                        [
                             new() //some L2 children
                             {
                                 Id = 3,
@@ -35,14 +36,14 @@ namespace COMPASS.UnitTests.Models
                                 Id = 4,
                                 IsGroup = false,
                             },
-                        }
+                        ]
                     },
                     new() //L1 that is not a group
                     {
                         Id = 5,
                         IsGroup = false,
-                        Children = new ObservableCollection<Tag>()
-                        {
+                        Children =
+                        [
                             new() //some L2 children
                             {
                                 Id = 6,
@@ -53,9 +54,9 @@ namespace COMPASS.UnitTests.Models
                                 Id = 7,
                                 IsGroup = false,
                             },
-                        }
+                        ]
                     },
-                }
+                ]
             };
 
             checkableRoot = new(root, containerOnly: root.IsGroup, propagateChanges: true);

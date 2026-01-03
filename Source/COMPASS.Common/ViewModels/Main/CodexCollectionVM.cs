@@ -9,6 +9,7 @@ using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Main;
@@ -43,7 +44,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     private readonly INotificationService _notificationService;
 
     public CodexCollection Collection => _model;
-    public ObservableCollection<CodexViewModel> AllCodexVms { get; } = [];
+    public RangeObservableCollection<CodexViewModel> AllCodexVms { get; } = [];
     private Dictionary<Tag,TagViewModel> AllTagVms { get; } = [];
         
     /// <summary>

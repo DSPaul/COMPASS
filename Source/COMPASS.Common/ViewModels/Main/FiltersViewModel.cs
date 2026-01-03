@@ -7,17 +7,18 @@ using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
+using COMPASS.Common.ViewModels.ModelVMs;
+using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Models;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Main
 {
     public class FiltersViewModel : ViewModelBase
     {
-        public FiltersViewModel(ObservableCollection<CodexViewModel> allCodexVms, FiltersState? filtersState = null)
+        public FiltersViewModel(RangeObservableCollection<CodexViewModel> allCodexVms, FiltersState? filtersState = null)
         {
             _allCodexVms = allCodexVms;
 
@@ -56,7 +57,7 @@ namespace COMPASS.Common.ViewModels.Main
 
         private readonly PreferencesService _preferencesService = PreferencesService.GetInstance();
         
-        private readonly ObservableCollection<CodexViewModel> _allCodexVms;
+        private readonly RangeObservableCollection<CodexViewModel> _allCodexVms;
         private readonly int _itemsShown = 15;
         public int ItemsShown => Math.Min(_itemsShown, FilteredCodices?.Count ?? 0);
         
@@ -74,11 +75,11 @@ namespace COMPASS.Common.ViewModels.Main
             set => SetProperty(ref _include, value);
         }
 
-        public ObservableCollection<FilterViewModel> IncludedFilters { get; set; } = [];
-        public ObservableCollection<FilterViewModel> ExcludedFilters { get; set; } = [];
+        public RangeObservableCollection<FilterViewModel> IncludedFilters { get; set; } = [];
+        public RangeObservableCollection<FilterViewModel> ExcludedFilters { get; set; } = [];
         public bool HasActiveFilters => IncludedFilters.Any() || ExcludedFilters.Any();
 
-        public ObservableCollection<CodexViewModel> FilteredCodices { get; } = [];
+        public RangeObservableCollection<CodexViewModel> FilteredCodices { get; } = [];
 
         public ObservableCollection<CodexViewModel> Favorites => new(FilteredCodices.Where(c => c.Favorite));
         public List<CodexViewModel> RecentCodices => FilteredCodices.OrderByDescending(c => c.LastOpened).ToList().GetRange(0, ItemsShown);
@@ -337,7 +338,8 @@ namespace COMPASS.Common.ViewModels.Main
         {
             //Do not refilter on props that don't affect filters
             if (e.PropertyName == nameof(CodexViewModel.Cover) ||
-                e.PropertyName == nameof(CodexViewModel.Thumbnail))
+                e.PropertyName == nameof(CodexViewModel.Thumbnail) ||
+                e.PropertyName == nameof(CodexViewModel.HasErrors))
             {
                 return;
             }
@@ -425,8 +427,8 @@ namespace COMPASS.Common.ViewModels.Main
         }
         public void RemoveFilterType(FilterType filterType)
         {
-            IncludedFilters.RemoveWhere(filter => filter.Type == filterType);
-            ExcludedFilters.RemoveWhere(filter => filter.Type == filterType);
+            IncludedFilters.RemoveAll(filter => filter.Type == filterType);
+            ExcludedFilters.RemoveAll(filter => filter.Type == filterType);
         }
 
         // Add Filter
@@ -438,13 +440,13 @@ namespace COMPASS.Common.ViewModels.Main
             if (filterVm == null) return;
             var filter = filterVm.GetModel();
 
-            ObservableCollection<FilterViewModel> target = include ? IncludedFilters : ExcludedFilters;
-            ObservableCollection<FilterViewModel> other = !include ? IncludedFilters : ExcludedFilters;
+            var target = include ? IncludedFilters : ExcludedFilters;
+            var other = !include ? IncludedFilters : ExcludedFilters;
 
             //if Filter does not allow multiple instances, remove previous instance(s) of that Filter before adding
             if (!filter.AllowMultiple && target.Any(f => f.Type == filter.Type))
             {
-                target.RemoveWhere(f => f.Type == filter.Type);
+                target.RemoveAll(f => f.Type == filter.Type);
             }
             
             target.AddIfMissing(filterVm);
@@ -594,14 +596,14 @@ namespace COMPASS.Common.ViewModels.Main
 
             if (force || !FilteredCodices.SequenceEqual(filteredCodexVms))
             {
-                FilteredCodices.Clear();
-                FilteredCodices.AddRange(filteredCodexVms);
+                FilteredCodices.ReplaceRange(filteredCodexVms);
                 //Also apply filtering to these lists
                 OnPropertyChanged(nameof(Favorites));
                 OnPropertyChanged(nameof(RecentCodices));
                 OnPropertyChanged(nameof(MostOpenedCodices));
                 OnPropertyChanged(nameof(RecentlyAddedCodices));
             }
+
             ApplySorting();
         }
 

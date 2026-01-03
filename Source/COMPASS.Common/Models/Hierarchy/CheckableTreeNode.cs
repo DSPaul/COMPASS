@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models.Hierarchy
@@ -56,8 +57,8 @@ namespace COMPASS.Common.Models.Hierarchy
         /// <param name="value"></param>
         private void InternalSetChecked(bool? value) => SetProperty(ref _isChecked, value, nameof(IsChecked));
 
-        private ObservableCollection<CheckableTreeNode<T>> _children = [];
-        public new ObservableCollection<CheckableTreeNode<T>> Children
+        private RangeObservableCollection<CheckableTreeNode<T>> _children = [];
+        public new RangeObservableCollection<CheckableTreeNode<T>> Children
         {
             get => _children;
             set
@@ -116,8 +117,7 @@ namespace COMPASS.Common.Models.Hierarchy
         {
             if (IsChecked == false) return default;
 
-            Item.Children.Clear();
-            Item.Children.AddRange(
+            Item.Children.ReplaceRange(
                 Children.Where(child => child.IsChecked != false)
                         .Select(child => child.GetCheckedItems()!));
 

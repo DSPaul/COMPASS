@@ -251,8 +251,7 @@ namespace COMPASS.Common.ViewModels.Modals
 
         public void OnBanishedPathsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            SelectedCollection?.Info.BanishedPaths.Clear();
-            SelectedCollection?.Info.BanishedPaths.AddRange(BanishedPaths);
+            SelectedCollection?.Info.BanishedPaths.ReplaceRange(BanishedPaths);
         }
         
         #endregion

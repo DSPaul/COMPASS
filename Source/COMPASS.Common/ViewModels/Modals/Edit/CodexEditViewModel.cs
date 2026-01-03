@@ -132,8 +132,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public RelayCommand TagCheckCommand => _tagCheckCommand ??= new(UpdateTagList);
         private void UpdateTagList()
         {
-            WorkingCopy.GetModel().Tags.Clear();
-            WorkingCopy.GetModel().Tags.AddRange(AllTagsAsTreeNodes.Flatten().Where(node => node.IsChecked == true).Select(node => node.Item.GetModel()));
+            WorkingCopy.GetModel().Tags.ReplaceRange(AllTagsAsTreeNodes.Flatten().Where(node => node.IsChecked == true).Select(node => node.Item.GetModel()));
         }
 
         private AsyncRelayCommand? _quickCreateTagCommand;

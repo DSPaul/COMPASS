@@ -5,6 +5,7 @@ using Avalonia.Media;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.ViewModels.ModelVMs;
@@ -32,7 +33,7 @@ public class TagViewModel : ModelViewModelBase<Tag>, IHasChildren<TagViewModel>
         set => _model.Parent = value?._model;
     }
     
-    public ObservableCollection<TagViewModel> Children => new (_model.Children.Select(_codexCollectionVm.GetTagVm));
+    public RangeObservableCollection<TagViewModel> Children => new (_model.Children.Select(_codexCollectionVm.GetTagVm));
     
     public string Name
     {

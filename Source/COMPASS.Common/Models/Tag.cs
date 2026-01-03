@@ -4,6 +4,7 @@ using System.Linq;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Services;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
 using COMPASS.Infra.Tools;
 
@@ -19,8 +20,8 @@ namespace COMPASS.Common.Models
         }
 
         //Implement IHasChildren
-        private ObservableCollection<Tag> _children = [];
-        public ObservableCollection<Tag> Children
+        private RangeObservableCollection<Tag> _children = [];
+        public RangeObservableCollection<Tag> Children
         {
             get => _children;
             set

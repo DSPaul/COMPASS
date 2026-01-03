@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models
@@ -112,8 +113,8 @@ namespace COMPASS.Common.Models
 
         #region User related Metadata
 
-        private ObservableCollection<Tag> _tags = [];
-        public ObservableCollection<Tag> Tags
+        private RangeObservableCollection<Tag> _tags = [];
+        public RangeObservableCollection<Tag> Tags
         {
             get => _tags;
             set => SetProperty(ref _tags, value);

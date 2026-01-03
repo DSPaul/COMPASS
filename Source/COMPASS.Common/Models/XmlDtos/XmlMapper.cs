@@ -292,7 +292,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 LinkedGlobs = new(dto.LinkedGlobs)
             };
 
-            model.Children = new ObservableCollection<Tag>(dto.Children.Select(child => child.ToModel(model)));
+            model.Children = new(dto.Children.Select(child => child.ToModel(model)));
             return model;
         }
 

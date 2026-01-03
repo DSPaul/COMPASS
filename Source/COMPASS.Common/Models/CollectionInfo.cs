@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using COMPASS.Infra.ExtensionMethods;
+﻿using COMPASS.Infra.Models;
 
 namespace COMPASS.Common.Models
 {
@@ -20,9 +18,9 @@ namespace COMPASS.Common.Models
 
         #region Folders to Auto Import
         
-        public ObservableCollection<Folder> AutoImportFolders { get; set; } = [];
+        public RangeObservableCollection<Folder> AutoImportFolders { get; set; } = [];
 
-        public ObservableCollection<string> BanishedPaths { get; set; } = [];
+        public RangeObservableCollection<string> BanishedPaths { get; set; } = [];
         #endregion
 
         #region File Type preferences for auto import

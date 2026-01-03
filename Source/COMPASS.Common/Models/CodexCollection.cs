@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Models
@@ -46,8 +47,8 @@ namespace COMPASS.Common.Models
             }
         }
 
-        private ObservableCollection<Codex> _allCodices = [];
-        public ObservableCollection<Codex> AllCodices
+        private RangeObservableCollection<Codex> _allCodices = [];
+        public RangeObservableCollection<Codex> AllCodices
         {
             get => _allCodices;
             set => SetProperty(ref _allCodices, value);

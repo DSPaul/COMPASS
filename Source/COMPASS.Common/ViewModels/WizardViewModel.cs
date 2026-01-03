@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.ViewModels;
+using COMPASS.Infra.Models;
 
 namespace COMPASS.Common.ViewModels
 {
@@ -13,7 +14,7 @@ namespace COMPASS.Common.ViewModels
             Steps.CollectionChanged += StepChangeHandler;
         }
         
-        public virtual ObservableCollection<WizardStepViewModel> Steps { get; } = [];
+        public virtual RangeObservableCollection<WizardStepViewModel> Steps { get; } = [];
 
         public int StepCounter
         {

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Tools;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models
@@ -13,7 +9,7 @@ namespace COMPASS.Common.Models
     {
         public Folder(string path)
         {
-            _fullPath = path.Trim(Path.DirectorySeparatorChar).Trim(Path.AltDirectorySeparatorChar);;
+            _fullPath = path.Trim(Path.DirectorySeparatorChar).Trim(Path.AltDirectorySeparatorChar);
         }
 
         /// <summary>
@@ -29,8 +25,8 @@ namespace COMPASS.Common.Models
             set => SetProperty(ref _fullPath, value);
         }
 
-        private ObservableCollection<Folder>? _subFolders;
-        public ObservableCollection<Folder> SubFolders
+        private RangeObservableCollection<Folder>? _subFolders;
+        public RangeObservableCollection<Folder> SubFolders
         {
             get
             {
@@ -44,7 +40,7 @@ namespace COMPASS.Common.Models
         public string Name => Path.GetFileName(FullPath);
         
         //Proxy for Subfolder, to implement IHasChildren
-        public ObservableCollection<Folder> Children
+        public RangeObservableCollection<Folder> Children
         {
             get => SubFolders;
             set => SubFolders = value;

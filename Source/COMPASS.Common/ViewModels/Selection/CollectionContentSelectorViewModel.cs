@@ -212,8 +212,7 @@ namespace COMPASS.Common.ViewModels.Selection
 
         public void ApplySelectedCodices()
         {
-            CuratedCollection.AllCodices.Clear();
-            CuratedCollection.AllCodices.AddRange(SelectableCodices.Where(x => x.Selected)
+            CuratedCollection.AllCodices.ReplaceRange(SelectableCodices.Where(x => x.Selected)
                 .Select(x => x.Codex.Clone())); //clone codices to not modify the existing ones
 
             if (RemovePersonalData)

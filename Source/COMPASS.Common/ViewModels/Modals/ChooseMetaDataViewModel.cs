@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using COMPASS.Common.Models;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Models;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
@@ -22,7 +23,7 @@ namespace COMPASS.Common.ViewModels.Modals
             _codicesListMutex.ReleaseMutex();
         }
 
-        public override ObservableCollection<WizardStepViewModel> Steps => 
+        public override RangeObservableCollection<WizardStepViewModel> Steps => 
             new(MetaDataProposals.Select(choice => new WizardStepViewModel(choice.Codex.Title)));
         public MetaDataProposalViewModel CurrentProposal => MetaDataProposals[StepCounter];
 
