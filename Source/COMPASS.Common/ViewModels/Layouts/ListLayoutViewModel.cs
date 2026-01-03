@@ -1,13 +1,15 @@
-﻿using COMPASS.Common.Models.Enums;
+﻿using System.Collections.Specialized;
+using Avalonia.Collections;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services;
-using Material.Icons;
+using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
     public class ListLayoutViewModel : LayoutViewModel
     {
-        public ListLayoutViewModel() : base()
+        public ListLayoutViewModel(CollectionTabVM tabVM) : base(tabVM)
         {
             Preferences = PreferencesService.GetInstance().Preferences.ListLayoutPreferences;
         }
@@ -18,9 +20,7 @@ namespace COMPASS.Common.ViewModels.Layouts
         //    MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdList;
 
         public ListLayoutPreferences Preferences { get; }
+        
         public override CodexLayout LayoutType => CodexLayout.List;
-        public override string Name  => "List";
-        public override MaterialIconKind Icon  => MaterialIconKind.ViewHeadline;
-
     }
 }

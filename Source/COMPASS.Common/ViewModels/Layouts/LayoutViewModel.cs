@@ -6,34 +6,33 @@ using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using Material.Icons;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
-    public abstract class LayoutViewModel : ViewModelBase
+    public abstract class LayoutViewModel : ViewModelBase, IDisposable
     {
-        public LayoutViewModel()
+        public LayoutViewModel(CollectionTabVM tabVM)
         {
-            var tabsVm = TabsViewModel.GetInstance();
-            tabsVm.TabCreated += OnTabCreated;
-            tabsVm.TabClosed += OnTabClosed;
-            tabsVm.TabChanged += OnTabChanged;
-            
-            CodexInfoVM = new CodexInfoViewModel();
+            _tabViewModel = tabVM;
+            CodexInfoVM = new();
+            FiltersVM = _tabViewModel.FiltersVM;
+            tabVM.CollectionChanged += OnCollectionChanged;
         }
+
+        private CollectionTabVM _tabViewModel;
 
         // Should put this function separate Factory class for proper factory pattern,
         // but I don't see the point, seems a lot of boilerplate without real advantages
-        public static LayoutViewModel GetLayout(CodexLayout? layout = null)
+        public static LayoutViewModel GetLayout(CollectionTabVM tabVM, CodexLayout? layout = null)
         {
             layout ??= PreferencesService.GetInstance().Preferences.UIState.StartupLayout;
             PreferencesService.GetInstance().Preferences.UIState.StartupLayout = (CodexLayout)layout;
             return layout switch
             {
-                CodexLayout.Home => new HomeLayoutViewModel(),
-                CodexLayout.List => new ListLayoutViewModel(),
-                CodexLayout.Card => new CardLayoutViewModel(),
-                CodexLayout.Tile => new TileLayoutViewModel(),
+                CodexLayout.Home => new HomeLayoutViewModel(tabVM),
+                CodexLayout.List => new ListLayoutViewModel(tabVM),
+                CodexLayout.Card => new CardLayoutViewModel(tabVM),
+                CodexLayout.Tile => new TileLayoutViewModel(tabVM),
                 _ => throw new NotImplementedException(layout.ToString())
             };
         }
@@ -42,16 +41,17 @@ namespace COMPASS.Common.ViewModels.Layouts
         //public void UpdateDoVirtualization() => OnPropertyChanged(nameof(DoVirtualization));
 
         #region Properties
-        
+
         public abstract CodexLayout LayoutType { get; }
-        public abstract string Name { get; }
-        public abstract MaterialIconKind Icon { get; }
-        
-        public string LongName => $"{Name} Layout";
         
         public CodexInfoViewModel CodexInfoVM { get; }
-        
-        public FiltersViewModel? FiltersVM => TabsViewModel.GetInstance().ActiveTab?.FiltersVM;
+
+        public FiltersViewModel FiltersVM
+        {
+            get;
+            set => SetProperty(ref field, value);
+        }
+
         public CodexOperations? CodexCommands => TabsViewModel.GetInstance().ActiveTab?.CodexCommands;
 
         public CodexViewModel? SelectedCodex
@@ -75,30 +75,14 @@ namespace COMPASS.Common.ViewModels.Layouts
         //TODO check if this is still needed, remove abstract for now so derived classes can skip it
         //public abstract bool DoVirtualization { get; }
         public bool DoVirtualization { get; }
-        
-            
+
         #endregion
 
-        private void OnTabCreated(object? sender, CollectionTabVM createdCollectionTabVM)
+        protected virtual void OnCollectionChanged(object? sender, EventArgs? eventArgs)
         {
-            createdCollectionTabVM.CollectionChanged += OnCollectionChanged;
+            FiltersVM = _tabViewModel.FiltersVM;
         }
-        
-        private void OnTabClosed(object? sender, CollectionTabVM removedCollectionTabVM)
-        {
-            removedCollectionTabVM.CollectionChanged -= OnCollectionChanged;
-        }
-        
-        private void OnTabChanged(object? sender, CollectionTabVM? selectedTab)
-        {
-            OnPropertyChanged(nameof(FiltersVM));
-        }
-        
-        public void OnCollectionChanged(object? sender, EventArgs? eventArgs)
-        {
-            OnPropertyChanged(nameof(FiltersVM));
-        }
-        
+
         public void OnDragOver(object? sender, DragEventArgs e)
         {
             if (e.Data is DataObject)
@@ -134,24 +118,31 @@ namespace COMPASS.Common.ViewModels.Layouts
                     };
                     await folderImportVM.Import();
                 }
-                else switch (files.Count)
-                {
-                    //If no files or folders, to nothing
-                    case 0:
-                        return;
-                    //Check if it's a satchel file, do import if so
-                    case 1 when files.First().EndsWith(Constants.SatchelExtension):
-                        if (TabsViewModel.GetInstance().ActiveTab is CollectionTabVM activeTab)
-                        {
-                            await activeTab.ImportSatchelAsync(files.First());
-                        }
-                        break;
-                    //If none of the above, just import the files
-                    default:
-                        await ImportViewModel.ImportFilesAsync(files);
-                        break;
-                }
+                else
+                    switch (files.Count)
+                    {
+                        //If no files or folders, to nothing
+                        case 0:
+                            return;
+                        //Check if it's a satchel file, do import if so
+                        case 1 when files.First().EndsWith(Constants.SatchelExtension):
+                            if (TabsViewModel.GetInstance().ActiveTab is CollectionTabVM activeTab)
+                            {
+                                await activeTab.ImportSatchelAsync(files.First());
+                            }
+
+                            break;
+                        //If none of the above, just import the files
+                        default:
+                            await ImportViewModel.ImportFilesAsync(files);
+                            break;
+                    }
             }
+        }
+
+        public void Dispose()
+        {
+            _tabViewModel.CollectionChanged -= OnCollectionChanged;
         }
     }
 }

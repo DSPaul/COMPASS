@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
+using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Main;
 
@@ -71,9 +72,9 @@ public partial class MainView : UserControl
         if (sender is ComboBox cb && 
             ActiveTabVM != null &&
             e.AddedItems.Count > 0 &&
-            e.AddedItems[0] is LayoutViewModel layoutVm)
+            e.AddedItems[0] is Layout layout)
         {
-            ActiveTabVM.ChangeLayoutCommand.Execute(layoutVm.LayoutType);
+            ActiveTabVM.ChangeLayoutCommand.Execute(layout.LayoutType);
         }
     }
 }

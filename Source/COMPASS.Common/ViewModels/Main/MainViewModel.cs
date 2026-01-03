@@ -8,9 +8,12 @@ using System.Diagnostics;
 using System.Reflection;
 using Avalonia.Controls;
 using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Infra.Tools;
+using Material.Icons;
 
 namespace COMPASS.Common.ViewModels.Main
 {
@@ -88,13 +91,13 @@ namespace COMPASS.Common.ViewModels.Main
             Task.Run(() => IsOnline = _webService.CheckConnection());
         }
 
-        private void InitLayouts() => AllLayouts = Assembly.GetExecutingAssembly()
-                                 .GetTypes()
-                                 .Where(t => !t.IsAbstract && typeof(LayoutViewModel).IsAssignableFrom(t))
-                                 .Select(Activator.CreateInstance)
-                                 .OfType<LayoutViewModel>()
-                                 .OrderBy(l => l.LayoutType)
-                                 .ToList();
+        private void InitLayouts() => AllLayouts = 
+            [
+                new(CodexLayout.Home, "Home", MaterialIconKind.Home),
+                new(CodexLayout.List, "List", MaterialIconKind.ViewHeadline),
+                new(CodexLayout.Card, "Card", MaterialIconKind.FormatListText),
+                new(CodexLayout.Tile, "Tile", MaterialIconKind.ViewGrid),
+            ];
 
         #endregion
 
@@ -119,7 +122,7 @@ namespace COMPASS.Common.ViewModels.Main
         
         public TabsViewModel TabsVM { get; }
 
-        public IList<LayoutViewModel> AllLayouts { get; private set; } = [];
+        public IList<Layout> AllLayouts { get; private set; } = [];
 
         public LeftDockViewModel LeftDockVM { get; init; }
 

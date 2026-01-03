@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Main;
 
@@ -16,9 +17,9 @@ public partial class LayoutsSidePanel : SidePanel
         if (sender is ComboBox cb && 
             cb.DataContext is CollectionTabVM vm &&
             e.AddedItems.Count > 0 &&
-            e.AddedItems[0] is LayoutViewModel layoutVm)
+            e.AddedItems[0] is Layout layout)
         {
-            vm.ChangeLayoutCommand.Execute(layoutVm.LayoutType);
+            vm.ChangeLayoutCommand.Execute(layout.LayoutType);
         }
     }
 }

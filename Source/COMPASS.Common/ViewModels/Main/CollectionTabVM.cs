@@ -32,7 +32,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         
         _filtersVM = new(_collectionHandle.CollectionVM.AllCodexVms, filtersState);
         _tagsVM = new(_collectionHandle.CollectionVM, _filtersVM);
-        _currentLayout = LayoutViewModel.GetLayout(layout);
+        _currentLayout = LayoutViewModel.GetLayout(this, layout);
         CodexCommands = new();
     }
 
@@ -264,8 +264,12 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     
     //Change Layout
     public RelayCommand<CodexLayout> ChangeLayoutCommand => field ??= new(ChangeLayout);
-    private void ChangeLayout(CodexLayout layout) => CurrentLayout = LayoutViewModel.GetLayout(layout);
-    
+    private void ChangeLayout(CodexLayout layout)
+    {
+        _currentLayout.Dispose();
+        CurrentLayout = LayoutViewModel.GetLayout(this, layout);
+    }
+
     #endregion
     
     #region Methods
@@ -327,6 +331,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     public void Dispose()
     {
         _collectionHandle.Dispose();
+        _currentLayout.Dispose();
     }
 
     #endregion

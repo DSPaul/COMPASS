@@ -1,13 +1,13 @@
 ﻿using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services;
-using Material.Icons;
+using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
     public class TileLayoutViewModel : LayoutViewModel
     {
-        public TileLayoutViewModel() : base()
+        public TileLayoutViewModel(CollectionTabVM tabVM) : base(tabVM)
         {
             Preferences = PreferencesService.GetInstance().Preferences.TileLayoutPreferences;
         }
@@ -17,8 +17,7 @@ namespace COMPASS.Common.ViewModels.Layouts
         //                                         && MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdTile;
 
         public TileLayoutPreferences Preferences { get; }
+        
         public override CodexLayout LayoutType => CodexLayout.Tile;
-        public override string Name  => "Tile";
-        public override MaterialIconKind Icon  => MaterialIconKind.ViewGrid;
     }
 }

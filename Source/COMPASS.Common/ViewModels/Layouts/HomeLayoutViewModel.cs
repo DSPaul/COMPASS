@@ -1,13 +1,13 @@
 ﻿using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services;
-using Material.Icons;
+using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
     internal class HomeLayoutViewModel : LayoutViewModel
     {
-        public HomeLayoutViewModel() : base()
+        public HomeLayoutViewModel(CollectionTabVM tabVM) : base(tabVM)
         {
             Preferences = PreferencesService.GetInstance().Preferences.HomeLayoutPreferences;
         }
@@ -15,8 +15,7 @@ namespace COMPASS.Common.ViewModels.Layouts
         //public override bool DoVirtualization => false;
 
         public HomeLayoutPreferences Preferences { get; set; }
+        
         public override CodexLayout LayoutType => CodexLayout.Home;
-        public override string Name  => "Home";
-        public override MaterialIconKind Icon  => MaterialIconKind.Home;
     }
 }
