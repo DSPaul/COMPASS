@@ -48,16 +48,9 @@
                       ToolTip.Tip="Export tags to a file" />
         </ContextMenu>
     </UserControl.Resources>
-    <Grid RowSpacing="10" Margin="0 10">
+    <Grid RowSpacing="10" Margin="0 10" RowDefinitions="auto,auto,auto,*">
         <!-- Grid instead of StackPanel so height is capped and scrolling works -->
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        
+
         <!-- Tag creation -->
         <TabControl Grid.Row="0" Margin="20 0" Background="Transparent"
                     BorderThickness="0" Padding="2,0" HorizontalAlignment="Stretch"
@@ -153,10 +146,10 @@
             </controls:CollapsableTabItem>
         </TabControl>
         
-        <Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="2" />
+        <Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="1" />
 
         <!-- Include Exclude selection -->
-        <Grid Grid.Row="3" ColumnDefinitions="*, Auto"
+        <Grid Grid.Row="2" ColumnDefinitions="*, Auto"
                     HorizontalAlignment="Stretch" VerticalAlignment="Top"
                     Margin="20 0"
                     ColumnSpacing="10">
@@ -178,7 +171,7 @@
         </Grid>
 
         <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="Transparent"
-                  Grid.Row="4" Margin="5 0" Classes="NoSelection"
+                  Grid.Row="3" Margin="5 0" Classes="NoSelection"
                   ItemsSource="{Binding Path=TagsAsTreeNodes, Mode=TwoWay}"
                   DragDrop.AllowDrop="True"
                   ContextMenu="{StaticResource AllTagsContextMenu}">
