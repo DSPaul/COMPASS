@@ -46,13 +46,8 @@ namespace COMPASS.Common.Models
                 TagsChanged();
             }
         }
-
-        private RangeObservableCollection<Codex> _allCodices = [];
-        public RangeObservableCollection<Codex> AllCodices
-        {
-            get => _allCodices;
-            set => SetProperty(ref _allCodices, value);
-        }
+        
+        public RangeObservableCollection<Codex> AllCodices { get; } = [];
 
         public CollectionInfo Info { get; set; } = new();
 

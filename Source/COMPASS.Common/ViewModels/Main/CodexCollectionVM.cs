@@ -81,9 +81,6 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         if (loadResult == 0) //0 means success
         {
             Owners.Add(handle);
-            
-            //Create vms
-            AllCodexVms.AddRange(Collection.AllCodices.Select(x => new CodexViewModel(x, this)));
             return handle;
         }
         else if (loadResult < 0)

@@ -201,7 +201,7 @@ public class CodexCollectionXmlStorageService(
             }
         }
 
-        collection.AllCodices = new(dtos.Select(dto => dto.ToModel(collection)));
+        collection.AllCodices.ReplaceRange(dtos.Select(dto => dto.ToModel(collection)));
 
         collection.LoadedCodices = true;
         return true;
