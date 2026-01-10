@@ -231,13 +231,13 @@ namespace COMPASS.Common.ViewModels.Selection
             CuratedCollection.Info.AutoImportFolders.Clear();
             if (SelectAutoImportFolders)
             {
-                CuratedCollection.Info.AutoImportFolders = new(selectedFolders);
+                CuratedCollection.Info.AutoImportFolders.ReplaceRange(selectedFolders);
             }
 
             CuratedCollection.Info.BanishedPaths.Clear();
             if (SelectBanishedFiles)
             {
-                CuratedCollection.Info.BanishedPaths = new(BanishedPaths.Where(x => x.Selected).Select(x => x.Path));
+                CuratedCollection.Info.BanishedPaths.ReplaceRange(BanishedPaths.Where(x => x.Selected).Select(x => x.Path));
             }
 
             CuratedCollection.Info.FiletypePreferences.Clear();

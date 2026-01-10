@@ -34,17 +34,13 @@ namespace COMPASS.Common.Models
                 return _subFolders ??= new(FindSubFolders());
             }
 
-            set => SetProperty(ref _subFolders, value);
+            init => SetProperty(ref _subFolders, value);
         }
 
         public string Name => Path.GetFileName(FullPath);
         
         //Proxy for Subfolder, to implement IHasChildren
-        public RangeObservableCollection<Folder> Children
-        {
-            get => SubFolders;
-            set => SubFolders = value;
-        }
+        public RangeObservableCollection<Folder> Children => SubFolders;
         
         private IEnumerable<Folder> FindSubFolders()
         {

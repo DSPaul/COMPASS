@@ -23,6 +23,7 @@ namespace COMPASS.Common.ViewModels.Modals
             _codicesListMutex.ReleaseMutex();
         }
 
+        //TODO do not create a new collection on every get
         public override RangeObservableCollection<WizardStepViewModel> Steps => 
             new(MetaDataProposals.Select(choice => new WizardStepViewModel(choice.Codex.Title)));
         public MetaDataProposalViewModel CurrentProposal => MetaDataProposals[StepCounter];

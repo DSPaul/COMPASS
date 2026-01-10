@@ -61,7 +61,7 @@ namespace COMPASS.Common.Models.Hierarchy
         public new RangeObservableCollection<CheckableTreeNode<T>> Children
         {
             get => _children;
-            set
+            init
             {
                 SetProperty(ref _children, value);
                 Update();

@@ -28,7 +28,7 @@ public static class CollectionGenerator
         //assign tags to codices
         foreach (var c in collection.AllCodices)
         {
-            c.Tags = new(RandomGenerator.GetRandomElements<Tag>(collection.AllTags.ToList(), Random.Next(0, 4)));
+            c.Tags.ReplaceRange(RandomGenerator.GetRandomElements<Tag>(collection.AllTags.ToList(), Random.Next(0, 4)));
         }
 
         //TODO add settings

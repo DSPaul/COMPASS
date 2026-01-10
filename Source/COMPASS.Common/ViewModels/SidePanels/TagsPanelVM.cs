@@ -256,7 +256,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
             Tag tag = node.Item.GetModel();
             
             //add children according to treeview
-            tag.Children = new(node.Children.Select(ToTag));
+            tag.Children.ReplaceRange(node.Children.Select(ToTag));
 
             //set parentID for all the children
             foreach (Tag childTag in tag.Children)
@@ -293,7 +293,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         private void RecursiveSortChildren(Tag? tag)
         {
             if (tag is null) return;
-            tag.Children = new(tag.Children.OrderBy(t => t.Name));
+            tag.Children.ReplaceRange(tag.Children.OrderBy(t => t.Name).ToList());
             foreach (Tag child in tag.Children)
             {
                 RecursiveSortChildren(child);

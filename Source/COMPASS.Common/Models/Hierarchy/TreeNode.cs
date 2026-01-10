@@ -20,12 +20,7 @@ namespace COMPASS.Common.Models.Hierarchy
             }
         }
         
-        private RangeObservableCollection<TreeNode<T>> _children = [];
-        public RangeObservableCollection<TreeNode<T>> Children
-        {
-            get => _children;
-            set => SetProperty(ref _children, value);
-        }
+        public RangeObservableCollection<TreeNode<T>> Children { get; }
 
         private bool _expanded = true;
         public bool Expanded

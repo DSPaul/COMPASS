@@ -24,7 +24,7 @@ namespace COMPASS.Common.Models
         public RangeObservableCollection<Tag> Children
         {
             get => _children;
-            set
+            init
             {
                 SetProperty(ref _children, value);
                 foreach (var child in _children)
@@ -105,7 +105,7 @@ namespace COMPASS.Common.Models
             Parent = t.Parent;
             IsGroup = t.IsGroup;
             InternalBackgroundColor = t.InternalBackgroundColor;
-            Children = new(t.Children);
+            Children.ReplaceRange(t.Children);
             LinkedGlobs = new(t.LinkedGlobs);
         }
         

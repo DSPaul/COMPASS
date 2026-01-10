@@ -5,6 +5,7 @@ using System.Text;
 using Avalonia.Media;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Infra.ExtensionMethods;
+using Microsoft.Extensions.DependencyModel.Resolution;
 
 namespace COMPASS.Common.Models.XmlDtos
 {
@@ -80,10 +81,10 @@ namespace COMPASS.Common.Models.XmlDtos
                     SourceURL = dto.SourceURL,
                     Path = dto.Path,
                     ISBN = dto.ISBN,
-                }
+                },
+                
+                Tags = new(collection.AllTags.Where(tag => dto.TagIDs.Contains(tag.Id)))
             };
-
-            codex.Tags = new(collection.AllTags.Where(tag => dto.TagIDs.Contains(tag.Id)));
 
             return codex;
         }
@@ -292,7 +293,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 LinkedGlobs = new(dto.LinkedGlobs)
             };
 
-            model.Children = new(dto.Children.Select(child => child.ToModel(model)));
+            model.Children.ReplaceRange(dto.Children.Select(child => child.ToModel(model)));
             return model;
         }
 
@@ -349,7 +350,7 @@ namespace COMPASS.Common.Models.XmlDtos
             //(1.6.0 -> 1.7.0) migrate from AutoImportFoldersViewSource to AutoImportFolders 
             if (dto.AutoImportDirectories.SafeAny() && !dto.AutoImportFolders.Any())
             {
-                collectionInfo.AutoImportFolders = new(dto.AutoImportDirectories!.Select(dir => new Folder(dir)));
+                collectionInfo.AutoImportFolders.ReplaceRange(dto.AutoImportDirectories!.Select(dir => new Folder(dir)));
             }
 
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -373,13 +374,9 @@ namespace COMPASS.Common.Models.XmlDtos
         {
             var folder = new Folder(dto.FullPath)
             {
-                HasAllSubFolders = dto.HasAllSubFolders
+                HasAllSubFolders = dto.HasAllSubFolders,
+                SubFolders = dto.SubFolders != null ? new(dto.SubFolders.Select(ToModel)) : null!
             };
-
-            if (dto.SubFolders != null)
-            {
-                folder.SubFolders = new(dto.SubFolders.Select(ToModel));
-            }
             
             return folder;
         }

@@ -117,7 +117,7 @@ namespace COMPASS.Common.Models
         public RangeObservableCollection<Tag> Tags
         {
             get => _tags;
-            set => SetProperty(ref _tags, value);
+            init => SetProperty(ref _tags, value);
         }
 
         private bool _physicallyOwned;
@@ -193,7 +193,7 @@ namespace COMPASS.Common.Models
             ReleaseDate = c.ReleaseDate;
             Rating = c.Rating;
             PageCount = c.PageCount;
-            Tags = new(c.Tags);
+            Tags.ReplaceRange(c.Tags);
             LastOpened = c.LastOpened;
             DateAdded = c.DateAdded;
             Favorite = c.Favorite;

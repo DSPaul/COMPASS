@@ -18,9 +18,9 @@ namespace COMPASS.Common.Models
 
         #region Folders to Auto Import
         
-        public RangeObservableCollection<Folder> AutoImportFolders { get; set; } = [];
+        public RangeObservableCollection<Folder> AutoImportFolders { get; init; } = [];
 
-        public RangeObservableCollection<string> BanishedPaths { get; set; } = [];
+        public RangeObservableCollection<string> BanishedPaths { get; init; } = [];
         #endregion
 
         #region File Type preferences for auto import

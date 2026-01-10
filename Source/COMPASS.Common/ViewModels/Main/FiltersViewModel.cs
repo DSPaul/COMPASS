@@ -13,6 +13,7 @@ using COMPASS.Infra.Models;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Main
 {
@@ -76,8 +77,8 @@ namespace COMPASS.Common.ViewModels.Main
             set => SetProperty(ref field, value);
         } = true;
 
-        public RangeObservableCollection<FilterViewModel> IncludedFilters { get; set; } = [];
-        public RangeObservableCollection<FilterViewModel> ExcludedFilters { get; set; } = [];
+        public RangeObservableCollection<FilterViewModel> IncludedFilters { get; } = [];
+        public RangeObservableCollection<FilterViewModel> ExcludedFilters { get; } = [];
         public bool HasActiveFilters => IncludedFilters.Any() || ExcludedFilters.Any();
 
         public RangeObservableCollection<CodexViewModel> FilteredCodices { get; } = [];
