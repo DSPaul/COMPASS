@@ -81,6 +81,8 @@
             </conv:WizardStepTemplateSelector>
         </views:Wizard.Resources>
         
+        <!-- TODO: Other steps -->
+        
         <ContentControl Content="{Binding}" 
                         ContentTemplate="{Binding CurrentStep, Converter={StaticResource WizardStepTemplateSelector}}"/>
         

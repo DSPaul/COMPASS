@@ -59,32 +59,32 @@
             <DataGridTextColumn Header="TITLE" Binding="{Binding Title}" SortMemberPath="SortingTitle"
                                 Width="3*" MinWidth="100" CanUserSort="True"
                                 x:DataType="modelVm:CodexViewModel"
-                                IsVisible="{Binding $parent[layouts:ListLayout].DataContext.Preferences.ShowTitle}" />
+                                IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowTitle}" />
 
             <DataGridTextColumn Header="AUTHORS" Binding="{Binding AuthorsAsString}"
                                 Width="2*" MinWidth="100" CanUserSort="True"
                                 x:DataType="modelVm:CodexViewModel"
-                                IsVisible="{Binding $parent[layouts:ListLayout].DataContext.Preferences.ShowAuthor}" />
+                                IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowAuthor}" />
 
             <DataGridTextColumn Header="PUBLISHER" Binding="{Binding Publisher}"
                                 Width="2*" MinWidth="100" CanUserSort="True"
                                 x:DataType="modelVm:CodexViewModel"
-                                IsVisible="{Binding $parent[layouts:ListLayout].DataContext.Preferences.ShowPublisher}" />
+                                IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowPublisher}" />
             
             <DataGridTextColumn Header="RELEASE DATE" Binding="{Binding ReleaseDateAsString}" SortMemberPath="ReleaseDate"
                                 Width="*" MinWidth="100" CanUserSort="True"
                                 x:DataType="modelVm:CodexViewModel"
-                                IsVisible="{Binding $parent[layouts:ListLayout].DataContext.Preferences.ShowReleaseDate}" />
+                                IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowReleaseDate}" />
 
             <DataGridTextColumn Header="DATE ADDED" Binding="{Binding DateAdded, StringFormat=dd/MM/yyyy}"
                                 Width="*" MinWidth="100" CanUserSort="True"
                                 x:DataType="modelVm:CodexViewModel"
-                                IsVisible="{Binding $parent[layouts:ListLayout].DataContext.Preferences.ShowDateAdded}" />
+                                IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowDateAdded}" />
 
             <DataGridTextColumn Header="VERSION" Binding="{Binding Version}"
                                 Width="*" MinWidth="20" CanUserSort="True"
                                 x:DataType="modelVm:CodexViewModel"
-                                IsVisible="{Binding $parent[layouts:ListLayout].DataContext.Preferences.ShowVersion}" />
+                                IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowVersion}" />
 
             <DataGridTemplateColumn Header="RATING" SortMemberPath="Rating"
                                     Width="*" MinWidth="120" CanUserSort="True"
@@ -99,7 +99,7 @@
             <DataGridTextColumn Header="ISBN" Binding="{Binding Sources.ISBN}"
                                 Width="*" MinWidth="150"
                                 x:DataType="modelVm:CodexViewModel"
-                                IsVisible="{Binding $parent[layouts:ListLayout].DataContext.Preferences.ShowISBN}" />
+                                IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowISBN}" />
 
             <DataGridTemplateColumn Header="TAGS" Width="5*" MinWidth="50"
                                     IsVisible="{Binding Preferences.ShowTags}">

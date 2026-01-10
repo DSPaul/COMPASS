@@ -33,7 +33,7 @@ namespace COMPASS.Common.ViewModels.Layouts
 
         private void OnFilteredCodicesChanged(object? sender, EventArgs e)
         {
-            if (CodexCollectionView == null || FiltersVM == null)
+            if (CodexCollectionView == null)
             {
                 return;
             }

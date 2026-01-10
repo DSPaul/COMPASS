@@ -310,8 +310,6 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         FiltersVM = new(newHandle.CollectionVM.AllCodexVms);
         TagsVM = new(newHandle.CollectionVM, FiltersVM);
         CodexCommands = new();
-        
-        FiltersVM.ReFilter(true);
 
         OnPropertyChanged(nameof(CollectionVM));
         CollectionChanged?.Invoke(this, EventArgs.Empty);
@@ -319,11 +317,6 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         await newHandle.CollectionVM.AutoImport();
     }
     
-    
-    private void OnCollectionsChanged(object? sender, EventArgs e)
-    {
-        OnPropertyChanged(nameof(AllCodexCollections));
-    }
     #endregion
 
     #region IDisposable

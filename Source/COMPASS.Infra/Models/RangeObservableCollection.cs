@@ -451,13 +451,6 @@ namespace COMPASS.Infra.Models
 
         #endregion Public Methods
 
-
-        //------------------------------------------------------
-        //
-        //  Protected Methods
-        //
-        //------------------------------------------------------
-
         #region Protected Methods
 
         /// <summary>
@@ -511,13 +504,6 @@ namespace COMPASS.Infra.Models
         protected virtual IDisposable DeferEvents() => new DeferredEventsCollection(this);
 
         #endregion Protected Methods
-
-
-        //------------------------------------------------------
-        //
-        //  Private Methods
-        //
-        //------------------------------------------------------
 
         #region Private Methods
 
@@ -574,12 +560,6 @@ namespace COMPASS.Infra.Models
         }
 
         #endregion Private Methods
-
-        //------------------------------------------------------
-        //
-        //  Private Types
-        //
-        //------------------------------------------------------
 
         #region Private Types
         sealed class DeferredEventsCollection : List<NotifyCollectionChangedEventArgs>, IDisposable
