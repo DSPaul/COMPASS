@@ -6,6 +6,7 @@ namespace COMPASS.Common.Models.Filters
     {
         public SearchFilter(string searchTerm) : base(FilterType.Search, searchTerm)
         {
+            RelatedProperties.Add(nameof(Codex.Title));   
         }
 
         public override bool Apply(Codex codex)

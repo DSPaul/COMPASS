@@ -6,6 +6,7 @@ namespace COMPASS.Common.Models.Filters
     {
         public NotEmptyFilter(CodexProperty filterValue) : base(FilterType.Empty, filterValue)
         {
+            RelatedProperties.Add(filterValue.Name);
         }
 
         private CodexProperty prop => (CodexProperty)FilterValue!;

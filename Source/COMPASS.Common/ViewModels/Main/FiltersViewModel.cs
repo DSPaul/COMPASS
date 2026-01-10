@@ -22,6 +22,10 @@ namespace COMPASS.Common.ViewModels.Main
         {
             _allCodexVms = allCodexVms;
 
+            //We want a single event at the end of the constructor 
+            _codicesUpdatedNotifier = new (e => CodicesUpdated?.Invoke(this, e));
+            using var updateScope = DelayUpdateEvents();
+                
             // Load sorting from settings
             InitSortingProperties();
 
@@ -30,16 +34,8 @@ namespace COMPASS.Common.ViewModels.Main
 
             if (filtersState != null)
             {
-                if (filtersState.IncludedFilters.Any())
-                {
-                    IncludedFilters = new(filtersState.IncludedFilters.Select(ModelVmFactory.GetFilterViewModel));
-                    UpdateIncludedCodices(false);
-                }
-                if (filtersState.ExcludedFilters.Any())
-                {
-                    ExcludedFilters = new(filtersState.ExcludedFilters.Select(ModelVmFactory.GetFilterViewModel));
-                    UpdateExcludedCodices(false);
-                }
+                IncludedFilters = new(filtersState.IncludedFilters.Select(ModelVmFactory.GetFilterViewModel));
+                ExcludedFilters = new(filtersState.ExcludedFilters.Select(ModelVmFactory.GetFilterViewModel));
             }
 
             IncludedFilters.CollectionChanged += (_, _) => UpdateIncludedCodices();
@@ -54,28 +50,31 @@ namespace COMPASS.Common.ViewModels.Main
         }
 
         public event EventHandler? CodicesUpdated;
+        private readonly EventDeferralScope _codicesUpdatedNotifier;
 
         #region Fields
 
         private readonly PreferencesService _preferencesService = PreferencesService.GetInstance();
         
         private readonly RangeObservableCollection<CodexViewModel> _allCodexVms;
-        private readonly int _itemsShown = 15;
-        public int ItemsShown => Math.Min(_itemsShown, FilteredCodices?.Count ?? 0);
-        
+
+        public int ItemsShown
+        {
+            get => Math.Min(field, FilteredCodices?.Count ?? 0);
+        } = 15;
+
         private HashSet<CodexViewModel> _includedCodices;
         private HashSet<CodexViewModel> _excludedCodices;
-
+        
         #endregion
 
         #region Properties
 
-        private bool _include = true;
         public bool Include
         {
-            get => _include;
-            set => SetProperty(ref _include, value);
-        }
+            get;
+            set => SetProperty(ref field, value);
+        } = true;
 
         public RangeObservableCollection<FilterViewModel> IncludedFilters { get; set; } = [];
         public RangeObservableCollection<FilterViewModel> ExcludedFilters { get; set; } = [];
@@ -88,14 +87,12 @@ namespace COMPASS.Common.ViewModels.Main
         public List<CodexViewModel> MostOpenedCodices => FilteredCodices.OrderByDescending(c => c.OpenedCount).ToList().GetRange(0, ItemsShown);
         public List<CodexViewModel> RecentlyAddedCodices => FilteredCodices.OrderByDescending(c => c.DateAdded).ToList().GetRange(0, ItemsShown);
 
-        private string _searchTerm = "";
         public string SearchTerm
         {
-            get => _searchTerm;
-            set => SetProperty(ref _searchTerm, value);
-        }
+            get;
+            set => SetProperty(ref field, value);
+        } = "";
 
-        
         private List<Filter> _booleanFilters =
         [
             new OfflineSourceFilter(),
@@ -105,17 +102,6 @@ namespace COMPASS.Common.ViewModels.Main
         ];
 
         public List<FilterViewModel> BooleanFilters => field ??= _booleanFilters.Select(ModelVmFactory.GetFilterViewModel).ToList();
-
-        #region Clear selection on comboboxes
-
-        private string? _noneSelection;
-        public string? NoneSelection
-        {
-            get => _noneSelection;
-            set => SetProperty(ref _noneSelection, value);
-        }
-
-        #endregion
 
         public string SelectedAuthor
         {
@@ -127,12 +113,11 @@ namespace COMPASS.Common.ViewModels.Main
             }
         }
 
-        private ObservableCollection<string> _authorList = [];
         public ObservableCollection<string> AuthorList
         {
-            get => _authorList;
-            set => SetProperty(ref _authorList, value);
-        }
+            get;
+            set => SetProperty(ref field, value);
+        } = [];
 
         public string SelectedPublisher
         {
@@ -144,12 +129,11 @@ namespace COMPASS.Common.ViewModels.Main
             }
         }
 
-        private ObservableCollection<string> _publisherList = [];
         public ObservableCollection<string> PublisherList
         {
-            get => _publisherList;
-            set => SetProperty(ref _publisherList, value);
-        }
+            get;
+            set => SetProperty(ref field, value);
+        } = [];
 
         public string SelectedFileType
         {
@@ -160,12 +144,12 @@ namespace COMPASS.Common.ViewModels.Main
                 ActivateFilter(fileExtensionFilter, Include);
             }
         }
-        private ObservableCollection<string> _fileTypeList = [];
+
         public ObservableCollection<string> FileTypeList
         {
-            get => _fileTypeList;
-            set => SetProperty(ref _fileTypeList, value);
-        }
+            get;
+            set => SetProperty(ref field, value);
+        } = [];
 
         public string SelectedDomain
         {
@@ -176,12 +160,12 @@ namespace COMPASS.Common.ViewModels.Main
                 ActivateFilter(domainFilter, Include);
             }
         }
-        private ObservableCollection<string> _domainList = [];
+
         public ObservableCollection<string> DomainList
         {
-            get => _domainList;
-            set => SetProperty(ref _domainList, value);
-        }
+            get;
+            set => SetProperty(ref field, value);
+        } = [];
 
         public CodexProperty SelectedNotEmptyProperty
         {
@@ -211,15 +195,13 @@ namespace COMPASS.Common.ViewModels.Main
         ];
 
         //Selected Start and Stop Release Dates
-        private DateTime? _startReleaseDate;
-        private DateTime? _stopReleaseDate;
 
         public DateTime? StartReleaseDate
         {
-            get => _startReleaseDate;
+            get;
             set
             {
-                SetProperty(ref _startReleaseDate, value);
+                SetProperty(ref field, value);
                 if (value is null) return;
                 Filter startDateFilter = new StartReleaseDateFilter(value.Value);
                 ActivateFilter(startDateFilter, Include);
@@ -228,10 +210,10 @@ namespace COMPASS.Common.ViewModels.Main
 
         public DateTime? StopReleaseDate
         {
-            get => _stopReleaseDate;
+            get;
             set
             {
-                SetProperty(ref _stopReleaseDate, value);
+                SetProperty(ref field, value);
                 if (value != null)
                 {
                     Filter stopDateFilter = new StopReleaseDateFilter(value.Value);
@@ -241,13 +223,12 @@ namespace COMPASS.Common.ViewModels.Main
         }
 
         //Selected minimum rating
-        private int _minRating;
         public int MinRating
         {
-            get => _minRating;
+            get;
             set
             {
-                SetProperty(ref _minRating, value);
+                SetProperty(ref field, value);
                 if (value is > 0 and < 6)
                 {
                     Filter minRatFilter = new MinimumRatingFilter(value);
@@ -272,7 +253,6 @@ namespace COMPASS.Common.ViewModels.Main
                     _preferencesService.Preferences.UIState.SortDirection = value;
                     ApplySorting();
                     OnPropertyChanged();
-                    CodicesUpdated?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
@@ -287,7 +267,6 @@ namespace COMPASS.Common.ViewModels.Main
                     _preferencesService.Preferences.UIState.SortProperty = value;
                     ApplySorting();
                     OnPropertyChanged();
-                    CodicesUpdated?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
@@ -340,21 +319,27 @@ namespace COMPASS.Common.ViewModels.Main
 
         private void OnCodexPropsChanged(object? _,  PropertyChangedEventArgs e)
         {
-            //Do not refilter on props that don't affect filters
-            if (e.PropertyName == nameof(CodexViewModel.Cover) ||
-                e.PropertyName == nameof(CodexViewModel.Thumbnail) ||
-                e.PropertyName == nameof(CodexViewModel.HasErrors))
-            {
-                return;
-            }
+            PopulateMetaDataCollections();
 
+            bool influencesSort = e.PropertyName == SortProperty;
+            bool influencesFilter = IncludedFilters.Concat(ExcludedFilters)
+                                                   .SelectMany(filerVM => filerVM.GetModel().RelatedProperties)
+                                                   .Contains(e.PropertyName);
+            
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                OnPropertyChanged(nameof(Favorites));
-                OnPropertyChanged(nameof(RecentCodices));
-                OnPropertyChanged(nameof(MostOpenedCodices));
-                PopulateMetaDataCollections();
-                ReFilter();
+                using var updateScope = DelayUpdateEvents();
+                if (influencesFilter)
+                {
+                    OnPropertyChanged(nameof(Favorites));
+                    OnPropertyChanged(nameof(RecentCodices));
+                    OnPropertyChanged(nameof(MostOpenedCodices));
+                    ReFilter();
+                }
+                else if (influencesSort)
+                {
+                    ApplySorting();
+                }
             });
         }
         
@@ -421,8 +406,7 @@ namespace COMPASS.Common.ViewModels.Main
         //------------- Adding, Removing, ect ------------//
 
         // Remove Filter
-        private RelayCommand<FilterViewModel>? _removeFromItemsControlCommand;
-        public RelayCommand<FilterViewModel> RemoveFromItemsControlCommand => _removeFromItemsControlCommand ??= new(RemoveFilter);
+        public RelayCommand<FilterViewModel> RemoveFromItemsControlCommand => field ??= new(RemoveFilter);
         public void RemoveFilter(FilterViewModel? filter)
         {
             if (filter is null) return;
@@ -436,8 +420,7 @@ namespace COMPASS.Common.ViewModels.Main
         }
 
         // Add Filter
-        private RelayCommand<FilterViewModel>? _activateFilterCommand;
-        public RelayCommand<FilterViewModel> ActivateFilterCommand => _activateFilterCommand ??= new(vm => ActivateFilter(vm, Include));
+        public RelayCommand<FilterViewModel> ActivateFilterCommand => field ??= new(vm => ActivateFilter(vm, Include));
 
         private void ActivateFilter(FilterViewModel? filterVm, bool include = true)
         {
@@ -447,6 +430,8 @@ namespace COMPASS.Common.ViewModels.Main
             var target = include ? IncludedFilters : ExcludedFilters;
             var other = !include ? IncludedFilters : ExcludedFilters;
 
+            using var updateScope = DelayUpdateEvents();
+            
             //if Filter does not allow multiple instances, remove previous instance(s) of that Filter before adding
             if (!filter.AllowMultiple && target.Any(f => f.Type == filter.Type))
             {
@@ -464,8 +449,7 @@ namespace COMPASS.Common.ViewModels.Main
             ActivateFilter(filterVm, include);
         }
 
-        private RelayCommand<string>? _searchCommand;
-        public RelayCommand<string> SearchCommand => _searchCommand ??= new(SearchCommandHelper);
+        public RelayCommand<string> SearchCommand => field ??= new(SearchCommandHelper);
         private void SearchCommandHelper(string? searchTerm)
         {
             if (!String.IsNullOrEmpty(searchTerm))
@@ -480,8 +464,7 @@ namespace COMPASS.Common.ViewModels.Main
         }
 
         //Clear Filters
-        private RelayCommand? _clearFiltersCommand;
-        public RelayCommand ClearFiltersCommand => _clearFiltersCommand ??= new(ClearFilters);
+        public RelayCommand ClearFiltersCommand => field ??= new(ClearFilters);
         public void ClearFilters()
         {
             StartReleaseDate = null;
@@ -589,7 +572,14 @@ namespace COMPASS.Common.ViewModels.Main
         }
         //------------------------------------//
 
-        private void ApplySorting() => FilteredCodices?.Sort(c => c.GetPropertyValue(SortProperty), SortDirection);
+        private void ApplySorting()
+        {
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                FilteredCodices?.Sort(c => c.GetPropertyValue(SortProperty), SortDirection);
+                _codicesUpdatedNotifier.Notify();
+            });
+        }
 
         private void ApplyFilters(bool force = false)
         {
@@ -600,17 +590,18 @@ namespace COMPASS.Common.ViewModels.Main
 
             if (force || !FilteredCodices.SequenceEqual(filteredCodexVms))
             {
-                FilteredCodices.ReplaceRange(filteredCodexVms);
-                //Also apply filtering to these lists
-                OnPropertyChanged(nameof(Favorites));
-                OnPropertyChanged(nameof(RecentCodices));
-                OnPropertyChanged(nameof(MostOpenedCodices));
-                OnPropertyChanged(nameof(RecentlyAddedCodices));
+                Dispatcher.UIThread.Invoke(() =>
+                {
+                    FilteredCodices.ReplaceRange(filteredCodexVms);
+                    //Also apply filtering to these lists
+                    OnPropertyChanged(nameof(Favorites));
+                    OnPropertyChanged(nameof(RecentCodices));
+                    OnPropertyChanged(nameof(MostOpenedCodices));
+                    OnPropertyChanged(nameof(RecentlyAddedCodices));
+                });
             }
 
             ApplySorting();
-
-            CodicesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         public void ReFilter(bool force = false)
@@ -626,9 +617,11 @@ namespace COMPASS.Common.ViewModels.Main
                 Logger.Warn("Something when wrong during filtering", ex);
             }
         }
-
+        
+        public EventDeferralScope.DeferralScope DelayUpdateEvents() => _codicesUpdatedNotifier.BeginDeferral();
+        
         #endregion
-
+        
         #region Drag Drop Handlers
         //Drop on Treeview Behaviour
         void OnDragOver(object sender, DragEventArgs e)

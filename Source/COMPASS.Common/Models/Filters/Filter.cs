@@ -14,13 +14,17 @@ namespace COMPASS.Common.Models.Filters
         public object? FilterValue { get; }
 
         /// <summary>
+        /// A list of property names that the filter looks at
+        /// </summary>
+        public List<string> RelatedProperties { get; } = [];
+        
+        /// <summary>
         /// Allow multiple filters of this type to be active at once
         /// </summary>
         public bool AllowMultiple { get; init; }
 
         public abstract bool Apply(Codex codex);
-
-
+        
         #region IEquatable
         public override bool Equals(object? obj) => Equals(obj as Filter);
 

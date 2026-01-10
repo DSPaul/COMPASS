@@ -5,6 +5,7 @@
         public DomainFilter(string domain) : base(FilterType.Domain, domain)
         {
             AllowMultiple = true;
+            RelatedProperties.Add(nameof(Codex.Sources));
         }
 
         public override bool Apply(Codex codex) =>

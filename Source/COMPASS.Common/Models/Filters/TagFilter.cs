@@ -7,6 +7,7 @@ namespace COMPASS.Common.Models.Filters
         public TagFilter(TagViewModel tagVm) : base(FilterType.Tag, tagVm)
         {
             AllowMultiple = true;
+            RelatedProperties.Add(nameof(Codex.Tags));
         }
 
         //Tag logic is contained in the FiltersViewmodel, so here just make it match everything
