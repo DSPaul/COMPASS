@@ -3,7 +3,6 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
@@ -74,7 +73,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             _lw = new("Restoring Backup");
             _lw.Show(WindowManager.ActiveWindow);
 
-            await Task.Run(() => ExtractZip(targetPath));
+            await ExtractZip(targetPath);
 
             //TODO should probably just restart after restore
             
@@ -93,7 +92,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
         }
     }
 
-    private void ExtractZip(string sourcePath)
+    private async Task ExtractZip(string sourcePath)
     {
         if (!Path.Exists(sourcePath))
         {
@@ -101,7 +100,8 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             return;
         }
 
+        //TODO add progress reporting
         using ZipArchive archive = ZipArchive.Open(sourcePath);
-        archive.ExtractToDirectory(_environmentVarsService.CompassDataPath);
+        await archive.WriteToDirectoryAsync(_environmentVarsService.CompassDataPath);
     }
 }

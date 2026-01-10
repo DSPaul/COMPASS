@@ -11,7 +11,6 @@ using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
 using System.Diagnostics;
-using System.Reflection;
 using System.Text.Json;
 using System.Xml;
 using System.Xml.Serialization;
@@ -580,8 +579,7 @@ public class CodexCollectionXmlStorageService(
         progressVM.TotalAmount = 1;
 
         //extract
-        await Task.Run(() =>
-            archive.ExtractToDirectory(tmpCollectionPath, progressReport: progressVM.UpdateFromPercentage));
+        await archive.WriteToDirectoryAsync(tmpCollectionPath, progress: progressVM);
 
         progressVM.IncrementCounter();
         return tmpCollectionPath;

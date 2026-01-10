@@ -3,10 +3,11 @@ using System.Threading;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
+using SharpCompress.Common;
 
 namespace COMPASS.Common.ViewModels
 {
-    public class ProgressViewModel : ViewModelBase
+    public class ProgressViewModel : ViewModelBase, IProgress<ProgressReport>
     {
 
         #region Singleton pattern
@@ -17,35 +18,32 @@ namespace COMPASS.Common.ViewModels
 
         #endregion
 
-        private ObservableCollection<LogEntry> _log = [];
         public ObservableCollection<LogEntry> Log
         {
-            get => _log;
-            set => SetProperty(ref _log, value);
-        }
+            get;
+            set => SetProperty(ref field, value);
+        } = [];
 
 
-        private int _counter;
         public int Counter
         {
-            get => _counter;
+            get;
             private set
             {
-                SetProperty(ref _counter, value);
+                SetProperty(ref field, value);
                 OnPropertyChanged(nameof(Percentage));
                 OnPropertyChanged(nameof(FullText));
                 OnPropertyChanged(nameof(WorkInProgress));
             }
         }
 
-        private int _totalAmount;
         public int TotalAmount
         {
-            get => _totalAmount;
+            get;
             set
             {
-                if (value == _totalAmount) return;
-                SetProperty(ref _totalAmount, value);
+                if (value == field) return;
+                SetProperty(ref field, value);
                 OnPropertyChanged(nameof(Percentage));
                 OnPropertyChanged(nameof(FullText));
                 OnPropertyChanged(nameof(WorkInProgress));
@@ -66,16 +64,15 @@ namespace COMPASS.Common.ViewModels
         /// </summary>
         public bool ShowCount { get; set; } = true;
 
-        private string _text = "";
         public string Text
         {
-            get => _text;
+            get;
             set
             {
-                SetProperty(ref _text, value);
+                SetProperty(ref field, value);
                 OnPropertyChanged(nameof(FullText));
             }
-        }
+        } = "";
 
         public string FullText
         {
@@ -98,10 +95,13 @@ namespace COMPASS.Common.ViewModels
             _progressMutex.ReleaseMutex();
         }
 
-        public void UpdateFromPercentage(double percentage)
+        public void Report(ProgressReport report)
         {
-            TotalAmount = 100;
-            Counter = (int)(percentage * 100);
+            if (report.PercentComplete != null)
+            {
+                TotalAmount = 100;
+                Counter = (int)report.PercentComplete;
+            }
         }
 
         public void ResetCounter()
