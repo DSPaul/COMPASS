@@ -3,6 +3,7 @@ using Avalonia.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.ViewModels.ModelVMs;
 
 namespace COMPASS.Common.Views.Layouts;
 
@@ -21,9 +22,9 @@ public partial class TileLayout : CodexLayoutView
 
     private async void Codex_DoubleTapped(object? sender, TappedEventArgs e)
     {
-        if (sender is Grid { DataContext: Codex codex })
+        if (sender is Grid { DataContext: CodexViewModel codexVm })
         {
-            await CodexOperations.OpenCodex(codex);
+            await CodexOperations.OpenCodex(codexVm.GetModel());
         }
     }
 }
