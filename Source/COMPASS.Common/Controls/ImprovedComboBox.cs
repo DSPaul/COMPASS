@@ -9,6 +9,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Models;
 
 namespace COMPASS.Common.Controls;
 
@@ -70,20 +71,38 @@ public class ImprovedComboBox : ListBox
         {
             _chevronBtn.Click += ChevronBtnOnClick;
         }
+        
+        UpdateSuggestions();
+        if (SelectionMode == SelectionMode.Single)
+        {
+            Text = SelectedItem?.ToString() ?? "";
+        }
     }
 
     private void OnLostFocus(object? sender, RoutedEventArgs e)
     {
-        //TODO this causes crash
-        // if (_inputTextBox?.IsFocused != true && !CanCreate)
-        // {
-        //     Text = string.Empty;
-        // }
+        if (_inputTextBox?.IsFocused != true && !CanCreate)
+        {
+            Text = string.Empty;
+        }
     }
 
     private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        UpdateSuggestions();
+        //This event should handle selection changed of the ImprovedCombobox itself, 
+        //bubbling events from the suggestions can also trigger this, we don't want taht
+        if (e.Source == this)
+        {
+            if (SelectionMode != SelectionMode.Single)
+            {
+                UpdateSuggestions();
+            }
+            else
+            {
+                _suggestionsControl?.SelectedItem = e.AddedItems.Count > 0 ? e.AddedItems[0] : null;
+            }
+        }
+        
     }
 
     #region Events
@@ -183,8 +202,10 @@ public class ImprovedComboBox : ListBox
         get;
         set
         {
-            SetAndRaise(TextProperty, ref field, value);
-            UpdateSuggestions();
+            if (SetAndRaise(TextProperty, ref field, value))
+            {
+                UpdateSuggestions();
+            }
         }
     } = "";
 
@@ -209,7 +230,7 @@ public class ImprovedComboBox : ListBox
         AvaloniaProperty.RegisterDirect<ImprovedComboBox, ObservableCollection<object>>(
             nameof(SuggestedItems), o => o.SuggestedItems);
 
-    public ObservableCollection<object> SuggestedItems { get; } = [];
+    public RangeObservableCollection<object> SuggestedItems { get; } = [];
 
     #endregion
 
@@ -228,38 +249,38 @@ public class ImprovedComboBox : ListBox
     
     private void UpdateSuggestions()
     {
-        SuggestedItems.Clear();
-
+        object? prevSelected = _suggestionsControl?.SelectedItem;
+        
         if (ItemsSource == null)
         {
+            SuggestedItems.Clear();
             return;
         }
         
         //Filter items based on text
-        var filtered = ItemsSource
+        var newSuggestions = ItemsSource
             .Cast<object>()
             .Except(SelectionMode == SelectionMode.Multiple ? SelectedItems?.Cast<object>() ?? [] : []) //In multi select, already selected items should not be suggested again
             .Where(x => x != null && x.ToString().MatchesFuzzy(Text))
-            .OrderBy(x => x.ToString());
-
-        //Add them to suggestions
-        foreach (var item in filtered)
-        {
-            SuggestedItems.Add(item);
-        }
+            .OrderBy(x => x.ToString())
+            .ToList();
 
         //Add new item if CanCreate is set
         if (CanCreate && !string.IsNullOrWhiteSpace(Text) &&
             ItemsSource.Cast<object>().All(item => item.ToString() != Text))
         {
-            SuggestedItems.Add(new NewItem(Text));
+            newSuggestions.Add(new NewItem(Text));
         }
+        
+        //Add them to suggestions
+        SuggestedItems.ReplaceRange(newSuggestions);
 
-        //Reset selection index to top
-        if (_suggestionsControl is { Items.Count: > 0 })
-        {
-            _suggestionsControl.SelectedIndex = 0;
-        }
+         //Reset selection index to top if previously selected item is no longer selectable
+         if (_suggestionsControl is { Items.Count: > 0 } && 
+             Items.All(item => item != prevSelected))
+         {
+             _suggestionsControl.SelectedIndex = 0;
+         }
     }
 
     private void AcceptSuggestion()

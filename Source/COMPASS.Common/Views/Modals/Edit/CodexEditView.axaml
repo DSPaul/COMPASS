@@ -143,7 +143,7 @@
                                        Text="Publisher:" />
                             <controls:ImprovedComboBox ItemsSource="{Binding PublisherOptions}"
                                                        SelectionMode="Single"
-                                                       Text="{Binding WorkingCopy.Publisher, Mode=TwoWay}"
+                                                       SelectedItem="{Binding WorkingCopy.Publisher, Mode=TwoWay}"
                                                        CanCreate="True"/>
 
                             <!-- Smaller properties -->

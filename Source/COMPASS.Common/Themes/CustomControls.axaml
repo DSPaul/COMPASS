@@ -309,7 +309,7 @@
         </Setter>
     </ControlTheme>
     
-    <!-- MultiSelect Autocomplete box -->
+    <!-- ImprovedComboBox -->
     <ControlTheme x:Key="{x:Type controls:ImprovedComboBox}" TargetType="controls:ImprovedComboBox">
         <Setter Property="BorderBrush" Value="LightGray"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -317,14 +317,13 @@
         
         <Setter Property="Template">
             <ControlTemplate TargetType="controls:ImprovedComboBox">
-
                 <Border BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{TemplateBinding CornerRadius}"
                         Background="{DynamicResource TextControlBackground}">
                     <Grid RowDefinitions="Auto *" ColumnDefinitions="* Auto">
                         <controls:StretchingWrapPanel Grid.Row="0" Grid.Column="0">
-                            <ItemsControl ItemsSource="{TemplateBinding SelectedItems}" VerticalAlignment="Center"
+                            <ItemsControl ItemsSource="{TemplateBinding SelectedItems, Mode=OneWay}" VerticalAlignment="Center"
                                           IsVisible="{TemplateBinding SelectionMode, Converter={x:Static converters:ObjectConverters.AreEqual}, ConverterParameter={x:Static SelectionMode.Multiple}}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -368,7 +367,7 @@
                                MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
                                MaxHeight="300">
                             <ListBox Name="PART_Suggestions"
-                                     ItemsSource="{TemplateBinding SuggestedItems}" 
+                                     ItemsSource="{TemplateBinding SuggestedItems}"
                                      HorizontalAlignment="Stretch">
                             </ListBox>
                         </Popup>
