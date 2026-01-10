@@ -1,6 +1,6 @@
 using COMPASS.Infra.ExtensionMethods;
 
-namespace COMPASS.Common.Tools;
+namespace COMPASS.Infra.Tools;
 
 /// <summary>
 /// A class for batching/deferring events within a scope.
