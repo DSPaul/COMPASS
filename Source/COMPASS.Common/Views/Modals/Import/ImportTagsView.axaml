@@ -8,7 +8,7 @@
              x:Class="COMPASS.Common.Views.Modals.Import.ImportTagsView"
              x:DataType="vm:ImportTagsViewModel">
     <Grid RowDefinitions="*,auto,auto">
-        <views:TagSelectorView DataContext="{Binding TagsSelectorVM}" />
+        <views:TagsSelectorView DataContext="{Binding TagsSelectorVM}" />
         <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/>
         <Button Content="Import" Margin="5" Grid.Row="2"
                 Background="{StaticResource AccentColorMuted}"

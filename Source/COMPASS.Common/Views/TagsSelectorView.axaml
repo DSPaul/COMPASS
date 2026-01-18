@@ -8,7 +8,7 @@
              xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.Selection"
              xmlns:controls="clr-namespace:COMPASS.Common.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="COMPASS.Common.Views.TagSelectorView"
+             x:Class="COMPASS.Common.Views.TagsSelectorView"
              x:DataType="vm:TagsSelectorViewModel">
     <Grid ColumnDefinitions="auto,auto,*">
         <ListBox Width="200" Background="Transparent" BorderThickness="0"

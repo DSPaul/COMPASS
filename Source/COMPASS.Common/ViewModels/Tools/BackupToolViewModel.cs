@@ -49,7 +49,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             //save first
             CollectionManager.SaveAllCollections();
 
-            var collectionStorageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(StorageStrategy.Xml);
+            var collectionStorageService = ServiceResolver.Resolve<IImportExportService>();
             await Task.Run(() => collectionStorageService.CompressUserDataToZip(targetPath));
 
             _lw.Close();

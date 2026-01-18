@@ -180,14 +180,14 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public AsyncRelayCommand ImportTagsFromOtherCollectionsCommand => field ??= new(ImportTagsFromOtherCollections);
         public async Task ImportTagsFromOtherCollections()
         {
-            var importVM = new ImportTagsViewModel(CollectionManager.CollectionNames);
+            var importVM = new ImportTagsViewModel(CollectionManager.CollectionNames, ActiveCollection.Name);
             await WindowManager.OpenModal(importVM);
         }
 
         public AsyncRelayCommand ImportTagsFromSatchelCommand => field ??= new(ImportTagsFromSatchel);
         public async Task ImportTagsFromSatchel()
         {
-            var collectionStorageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(StorageStrategy.Xml);
+            var collectionStorageService = ServiceResolver.Resolve<IImportExportService>();
             var collectionToImport = await collectionStorageService.OpenSatchel();
 
             if (collectionToImport == null)
@@ -196,7 +196,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
                 return;
             }
 
-            var importVM = new ImportTagsViewModel(collectionToImport);
+            var importVM = new ImportTagsViewModel(collectionToImport, ActiveCollection.Name);
 
             if (!importVM.TagsSelectorVM.HasTags)
             {

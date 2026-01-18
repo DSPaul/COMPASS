@@ -1,41 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.ViewModels.Selection;
 
 namespace COMPASS.Common.ViewModels.Modals.Import
 {
     public class ImportTagsViewModel : ViewModelBase, IDisposable, IModalViewModel
     {
-        public ImportTagsViewModel(string collectionId) : this([collectionId]) { }
+        public ImportTagsViewModel(string importCollectionId, string targetCollectionId) : this([importCollectionId], targetCollectionId) { }
 
-        public ImportTagsViewModel(IEnumerable<string> collectionIds)
+        public ImportTagsViewModel(IEnumerable<string> importCollectionIds, string targetCollectionId)
         {
             WindowTitle = "Import Tags";
 
             //Load all the collections
+            _targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId) ?? throw new LoadException(targetCollectionId);
+
             //TODO optimize so only tags get loaded
-            List<CodexCollection> collections = new List<CodexCollection>();
-            foreach (var collectionId in collectionIds)
+            List<CodexCollectionVM> collectionVms = [];
+            foreach (var collectionId in importCollectionIds)
             {
                 var handle = CollectionManager.LoadCollection(collectionId);
                 if (handle != null)
                 {
                     _collectionHandles.Add(handle);
-                    collections.Add(handle.CollectionVM.Collection);
+                    collectionVms.Add(handle.CollectionVM);
                 }
             }
             
-            TagsSelectorVM = new TagsSelectorViewModel(collections);
+            TagsSelectorVM = new TagsSelectorViewModel(collectionVms);
         }
 
         private readonly IList<CollectionHandle> _collectionHandles = [];
+        private readonly CollectionHandle _targetCollectionHandle;
         
         public TagsSelectorViewModel TagsSelectorVM { get; set; }
 
@@ -46,11 +48,11 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         {
             foreach (var template in TagsSelectorVM.TagCollections)
             {
-                var selectedTags = CheckableTreeNode<Tag>.GetCheckedItems(template.TagsRoot.Children).ToList();
+                var selectedTags = CheckableTreeNode.GetCheckedModels<TagViewModel, Tag>(template.TagsRoot.Children).ToList();
+
                 if (selectedTags.Any())
                 {
-                    //TODO might make the target collection a dropdown later on
-                    ActiveCollection.AddTags(selectedTags);
+                    _targetCollectionHandle.CollectionVM.Collection.AddTags(selectedTags);
                 }
             }
             CloseAction.Invoke();
@@ -65,6 +67,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             {
                 collectionHandle.Dispose();
             }
+            _targetCollectionHandle.Dispose();
         }
 
     }

@@ -205,9 +205,8 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     private async Task ImportSatchelAsync() => await ImportSatchelAsync(null);
     public async Task ImportSatchelAsync(string? path)
     {
-        //satchels contain data in xml format
-        var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(StorageStrategy.Xml);
-        var extractedCollectionName = await storageService.OpenSatchel(path);
+        var importService = ServiceResolver.Resolve<IImportExportService>();
+        var extractedCollectionName = await importService.OpenSatchel(path);
 
         if (extractedCollectionName == null)
         {
@@ -217,7 +216,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         
         //open wizard, which will handle the rest of the import process
         CodexCollection toImport = new(extractedCollectionName);
-        CodexCollectionVM toImportVm = new(extractedCollectionName, toImport, storageService);
+        CodexCollectionVM toImportVm = new(extractedCollectionName, toImport, StorageStrategy.Xml);
         ImportCollectionViewModel importCollectionVM = new(toImportVm);
         ModalWindow wizard = new(importCollectionVM);
         wizard.Show(WindowManager.ActiveWindow);

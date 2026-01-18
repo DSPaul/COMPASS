@@ -1,18 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces.Repos;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Hierarchy;
+using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools;
+using System.Collections;
 
 namespace COMPASS.Common.ViewModels.Selection
 {
     /// <summary>
     /// Class with logic to select only a subset of the content in a collection for import and export purposes
     /// </summary>
-    public class CollectionContentSelectorViewModel : WizardViewModel
+    public class CollectionContentSelectorViewModel : WizardViewModel, IDisposable
     {
         public CollectionContentSelectorViewModel(CodexCollection collection)
         {
@@ -24,8 +27,11 @@ namespace COMPASS.Common.ViewModels.Selection
             HasSettings = CompleteCollection.Info.ContainsSettings();
             UpdateSteps();
 
+            //The create a temporary vm to be used in the UI
+            _createdCollectionVm = new CodexCollectionVM(collection.Name, collection, StorageStrategy.Memory);
+            
             //Put Tags in Checkable Wrapper
-            TagsSelectorVM = new(collection);
+            TagsSelectorVM = new(_createdCollectionVm);
 
             //Put codices in dictionary so they can be labeled true/false for import
             SelectableCodices = CompleteCollection.AllCodices.Select(codex => new SelectableCodex(codex, this)).ToList();
@@ -44,6 +50,8 @@ namespace COMPASS.Common.ViewModels.Selection
         public static readonly WizardStepViewModel TagsStep = new("Select Tags", "SelectTags");
         public static readonly WizardStepViewModel ItemsStep = new("Select Items", "SelectItems");
         public static readonly WizardStepViewModel SettingsStep = new("Select Settings", "SelectSettings");
+
+        private readonly CodexCollectionVM _createdCollectionVm;
 
         /// <summary>
         /// Complete collections whose content will be sub selected
@@ -68,8 +76,8 @@ namespace COMPASS.Common.ViewModels.Selection
         //TAGS STEP
         public TagsSelectorViewModel TagsSelectorVM { get; set; }
 
-        public IEnumerable<CheckableTreeNode<Tag>> SelectableTags =>
-            TagsSelectorVM.SelectedTagCollection?.TagsRoot.Children ?? Enumerable.Empty<CheckableTreeNode<Tag>>();
+        public IEnumerable<CheckableTreeNode<TagViewModel>> SelectableTags =>
+            TagsSelectorVM.SelectedTagCollection?.TagsRoot.Children ?? Enumerable.Empty<CheckableTreeNode<TagViewModel>>();
 
         /// <summary>
         /// Indicates that only tags that are present on codices should be imported
@@ -190,11 +198,11 @@ namespace COMPASS.Common.ViewModels.Selection
                     allSelectableTags.Single(st => st.Item.Id == tag.Id).IsChecked = true;
                 }
 
-                CuratedCollection.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).ToList();
+                CuratedCollection.RootTags = CheckableTreeNode.GetCheckedModels<TagViewModel, Tag>(SelectableTags).ToList();
             }
             else //otherwise use the users choice
             {
-                CuratedCollection.RootTags = CheckableTreeNode<Tag>.GetCheckedItems(SelectableTags).ToList();
+                CuratedCollection.RootTags = CheckableTreeNode.GetCheckedModels<TagViewModel, Tag>(SelectableTags).ToList();
 
                 //Remove the tags that didn't make it from codices
                 var removedTags = CompleteCollection.AllTags.Except(CuratedCollection.RootTags.Flatten()).ToList();
@@ -278,6 +286,11 @@ namespace COMPASS.Common.ViewModels.Selection
             {
                 Steps.Add(SettingsStep);
             }
+        }
+
+        public void Dispose()
+        {
+            _createdCollectionVm.Dispose();
         }
     }
 }

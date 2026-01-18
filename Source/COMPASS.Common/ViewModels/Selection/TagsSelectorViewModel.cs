@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.Hierarchy;
+using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Selection
@@ -10,15 +9,17 @@ namespace COMPASS.Common.ViewModels.Selection
     //TODO make this use the more generic HierachicalSelectorViewmodel
     public class TagsSelectorViewModel : ViewModelBase
     {
-        public TagsSelectorViewModel(IEnumerable<CodexCollection> collections)
+        #region ctor
+        public TagsSelectorViewModel(IEnumerable<CodexCollectionVM> collectionVms)
         {
-            TagCollections = collections.Select(c => new TagCollection(c)).ToList();
+            TagCollections = collectionVms.Select(c => new TagCollection(c)).ToList();
             SelectedTagCollection = TagCollections.FirstOrDefault();
         }
 
-        public TagsSelectorViewModel(CodexCollection collection) : this([collection]) { }
+        public TagsSelectorViewModel(CodexCollectionVM collectionVm) : this([collectionVm]) { }
 
-        
+        #endregion
+
         private List<TagCollection> _tagCollections = [];
         public List<TagCollection> TagCollections
         {
@@ -40,18 +41,18 @@ namespace COMPASS.Common.ViewModels.Selection
         
         public class TagCollection : ObservableObject
         {
-            public TagCollection(CodexCollection collection)
+            public TagCollection(CodexCollectionVM collectionVm)
             {
-                _collection = collection;
-                Name = collection.Name;
+                _collectionVm = collectionVm;
+                Name = collectionVm.Identifier;
             }
 
-            private readonly CodexCollection _collection;
+            private readonly CodexCollectionVM _collectionVm;
 
             public string Name { get; set; }
 
-            private CheckableTreeNode<Tag>? _tagsRoot = null;
-            public CheckableTreeNode<Tag> TagsRoot
+            private CheckableTreeNode<TagViewModel>? _tagsRoot = null;
+            public CheckableTreeNode<TagViewModel> TagsRoot
             {
                 get
                 {
@@ -59,10 +60,10 @@ namespace COMPASS.Common.ViewModels.Selection
                     if (_tagsRoot != null) return _tagsRoot;
                     
                     //convert to nodes
-                    _tagsRoot = new CheckableTreeNode<Tag>(new Tag(), containerOnly: true, propagateChanges: true)
+                    _tagsRoot = new CheckableTreeNode<TagViewModel>(new(new(), _collectionVm), containerOnly: true, propagateChanges: true)
                     {
-                        Children = new(_collection.RootTags
-                            .Select(t => new CheckableTreeNode<Tag>(t, containerOnly: t.IsGroup, propagateChanges: true)))
+                        Children = new(_collectionVm.Collection.RootTags
+                            .Select(t => new CheckableTreeNode<TagViewModel>(_collectionVm.GetTagVm(t), containerOnly: t.IsGroup, propagateChanges: true)))
                     };
                     //init expanded, checked and container only
                     foreach (var node in _tagsRoot.Children.Flatten())
@@ -76,7 +77,7 @@ namespace COMPASS.Common.ViewModels.Selection
                 }
             }
 
-            public int ImportCount => CheckableTreeNode<Tag>.GetCheckedItems(TagsRoot.Children).Flatten().Count();
+            public int ImportCount => CheckableTreeNode.GetCheckedItems(TagsRoot.Children).Flatten().Count();
         }
     }
 }

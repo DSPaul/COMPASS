@@ -1,5 +1,6 @@
-﻿using System.Collections.ObjectModel;
-using COMPASS.Infra.ExtensionMethods;
+﻿using Avalonia.Controls.ApplicationLifetimes;
+using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
 
@@ -72,6 +73,8 @@ namespace COMPASS.Common.Models.Hierarchy
             }
         }
 
+        public new RangeObservableCollection<CheckableTreeNode<T>> SelectableChildren => _children;
+
         public CheckableTreeNode<T>? Parent { get; set; }
 
         public void PropagateDown(bool? isChecked)
@@ -123,11 +126,22 @@ namespace COMPASS.Common.Models.Hierarchy
 
             return Item;
         }
+    }
 
-        public static IEnumerable<T> GetCheckedItems(IEnumerable<CheckableTreeNode<T>> items)
+    public static class CheckableTreeNode
+    {
+        public static IEnumerable<T> GetCheckedItems<T>(IEnumerable<CheckableTreeNode<T>> items) 
+            where T : class, IHasChildren<T>
         {
             return items.Where(item => item.IsChecked != false)
                 .Select(item => item.GetCheckedItems()!);
+        }
+
+        public static IEnumerable<TModel> GetCheckedModels<TViewModel, TModel>(IEnumerable<CheckableTreeNode<TViewModel>> items)
+            where TViewModel : ModelViewModelBase<TModel>, IHasChildren<TViewModel> where TModel : ObservableObject
+        {
+            return items.Where(item => item.IsChecked != false)
+                .Select(item => item.GetCheckedItems()!.GetModel());
         }
     }
 }

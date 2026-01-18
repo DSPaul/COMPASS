@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace COMPASS.Common.Views;
 
-public partial class TagSelectorView : UserControl
+public partial class TagsSelectorView : UserControl
 {
-    public TagSelectorView()
+    public TagsSelectorView()
     {
         InitializeComponent();
     }

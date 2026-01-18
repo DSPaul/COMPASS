@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Net.Http.Headers;
+using System.Text.Json;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
@@ -71,10 +73,10 @@ namespace COMPASS.Common.ViewModels
 
             CloseAction?.Invoke();
 
-            string? targetPath = await ChooseDestination();
-            if (targetPath is null) return;
+            IStorageFile? targetFile = await ChooseDestination();
+            if (targetFile is null) return;
 
-            await ExportToFile(targetPath);
+            await ExportToFile(targetFile);
         }
 
         public void ApplyChoices()
@@ -105,99 +107,22 @@ namespace COMPASS.Common.ViewModels
             ContentSelectorVM.ApplyAllSelections();
         }
 
-        private async Task<string?> ChooseDestination()
+        private async Task<IStorageFile?> ChooseDestination()
         {
             var filesService = ServiceResolver.Resolve<IFilesService>();
 
-            using var saveFile = await filesService.SaveFileAsync(new()
+            return await filesService.SaveFileAsync(new()
             {
                 FileTypeChoices = [filesService.SatchelExtensionFilter],
                 SuggestedFileName = CollectionToExport.Name,
                 DefaultExtension = Constants.SatchelExtension
             });
-
-            return saveFile?.Path.AbsolutePath;
         }
 
-        public async Task ExportToFile(string targetPath)
+        public async Task ExportToFile(IStorageFile targetFile)
         {
-            var progressVM = ProgressViewModel.GetInstance();
-
-            StorageStrategy targetFormat = StorageStrategy.Xml; //Could add new formats in the future
-            var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(targetFormat);
-            
-            try
-            {
-                
-                //make sure to save first
-                await storageService.AllocateNewCollection(ContentSelectorVM.CuratedCollection);
-                storageService.Save(ContentSelectorVM.CuratedCollection);
-
-                using var archive = ZipArchive.Create();
-
-                //Change Codex Path to relative and add those files if the options is set
-                var itemsWithOfflineSource = ContentSelectorVM.CuratedCollection.AllCodices
-                    .Where(codex => codex.Sources.HasOfflineSource())
-                    .ToList();
-                string commonFolder = PathUtils.GetCommonFolder(itemsWithOfflineSource.Select(codex => codex.Sources.Path).ToList());
-                foreach (Codex codex in itemsWithOfflineSource)
-                {
-                    string relativePath = codex.Sources.Path[commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
-
-                    //Add the file
-                    if (IncludeFiles && File.Exists(codex.Sources.Path))
-                    {
-                        archive.AddEntry(Path.Combine("Files", relativePath), codex.Sources.Path);
-                        //keep the relative path, will be used during import to link the included files
-                        codex.Sources.Path = relativePath;
-                    }
-
-                    //absolute path is user specific, so counts as personal data 
-                    if (ContentSelectorVM.RemovePersonalData)
-                    {
-                        codex.Sources.Path = relativePath;
-                    }
-
-                    //Add cover art
-                    if (IncludeCoverArt && File.Exists(codex.CoverArtPath))
-                    {
-                        archive.AddEntry(Path.Combine("CoverArt", Path.GetFileName(codex.CoverArtPath)), codex.CoverArtPath);
-                    }
-                }
-
-                //Save changes
-                storageService.SaveCodices(ContentSelectorVM.CuratedCollection);
-
-                //Now add files
-                storageService.AddCollectionToArchive(archive, ContentSelectorVM.CuratedCollection);
-
-                //Add the version so we can check compatibility when importing
-                SatchelInfo info = new();
-                archive.AddEntry(Constants.SatchelInfoFileName, new MemoryStream(JsonSerializer.SerializeToUtf8Bytes(info)));
-
-                //Progress reporting
-                progressVM.Text = "Exporting Collection";
-                progressVM.ShowCount = false;
-                progressVM.ResetCounter();
-                progressVM.TotalAmount = 1;
-                //TODO find new way to track progress
-
-                //Export
-                await archive.SaveToAsync(targetPath, CompressionType.None);
-
-                progressVM.IncrementCounter();
-                Logger.Info($"Exported {CollectionToExport.Name} to {targetPath}");
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Export failed", ex);
-                progressVM.Clear();
-                CloseAction?.Invoke();
-            }
-            finally
-            {
-                storageService.DeleteCollection(ContentSelectorVM.CuratedCollection.Name);
-            }
+            var exportService = ServiceResolver.Resolve<IImportExportService>();
+            await exportService.ExportCollection(ContentSelectorVM.CuratedCollection, targetFile, IncludeFiles, IncludeCoverArt);           
         }
 
         public void UpdateSteps()

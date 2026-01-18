@@ -1,8 +1,8 @@
-﻿using COMPASS.Common.DependencyInjection;
+﻿using Autofac;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Tests.Common.Mocks;
-using Autofac;
 using COMPASS.Infra.Tools;
+using COMPASS.Tests.Common.Mocks;
 using Logger = COMPASS.Common.Tools.Logger;
 
 namespace COMPASS.IntegrationTests.Common

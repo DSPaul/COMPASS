@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using COMPASS.Common.Interfaces.Repos;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -73,8 +74,8 @@ namespace COMPASS.Common.Services.StateManagers
         {
             foreach (StorageStrategy strategy in Enum.GetValues<StorageStrategy>())
             {
-                var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(strategy);
-                storageService.EnsureDirectoryExists();
+                var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(strategy);
+                storageService.Init();
             
                 var foundCollections = storageService.GetAllCollections();
                 foreach (CodexCollection collection in foundCollections)
@@ -113,7 +114,7 @@ namespace COMPASS.Common.Services.StateManagers
             CodexCollection newCollection = new(identifier);
         
             //save to xml by default
-            var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(StorageStrategy.Xml);
+            var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
             await storageService.AllocateNewCollection(newCollection);
             var newCollectionVm = new CodexCollectionVM(newCollection.Name, newCollection, storageService);
             RegisterCollection(newCollectionVm);

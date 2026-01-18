@@ -31,20 +31,22 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public AsyncRelayCommand ImportBooksFromSatchelCommand => _importBooksFromSatchelCommand ??= new(ImportBooksFromSatchel);
         public async Task ImportBooksFromSatchel()
         {
-            //satches store data in xml format
-            var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionStorageService>(StorageStrategy.Xml);
-            var extractedCollectionName = await storageService.OpenSatchel();
+            //satchels store data in xml format
+            var importService = ServiceResolver.Resolve<IImportExportService>();
+            var extractedCollectionName = await importService.OpenSatchel();
 
             if (extractedCollectionName == null)
             {
                 Logger.Warn("Failed to open file");
                 return;
             }
-            
+
             //Create importCollection ready to merge into an existing collection
             CodexCollection toImport = new(extractedCollectionName);
-            CodexCollectionVM toImportVm = new(extractedCollectionName, toImport, storageService);
-            var vm = new ImportCollectionViewModel(toImportVm)
+            CodexCollectionVM toImportVm = new(extractedCollectionName, toImport, StorageStrategy.Xml);
+            
+            var targetCollectionVm = TabsViewModel.GetInstance().ActiveTab!.CollectionVM;
+            var vm = new ImportCollectionViewModel(toImportVm, targetCollectionVm)
             {
                 //set in advanced mode as a sort of preview
                 AdvancedImport = true,

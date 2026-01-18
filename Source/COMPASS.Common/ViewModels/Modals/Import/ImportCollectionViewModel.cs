@@ -19,14 +19,14 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
         private readonly CollectionHandle _collectionToImportHandle;
         
-        public ImportCollectionViewModel(CodexCollectionVM collectionVmToImport)
+        public ImportCollectionViewModel(CodexCollectionVM collectionVmToImport, CodexCollectionVM? targetCollection = null)
         {
             AddValidation(nameof(MergeIntoCollection), ValidateTarget);
             AddValidation(nameof(CollectionName), ValidateTarget);
             AddValidation(nameof(TargetCollection), ValidateTarget);
             
             CollectionToImport = collectionVmToImport.Collection;
-            TargetCollection = TabsViewModel.GetInstance().ActiveTab?.CollectionVM;
+            TargetCollection = targetCollection ?? TabsViewModel.GetInstance().ActiveTab?.CollectionVM;
             CollectionVms = CollectionManager.CollectionVms.ToList(); 
             //Collection will have format '__<name><extension>'
             CollectionName = CollectionToImport.Name.Substring(2, CollectionToImport.Name.Length - 2 - Constants.SatchelExtension.Length);

@@ -90,7 +90,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
         #region Subfolder Select Step
         
-        public HierarchicalSelectorViewmodel<Folder>? SelectSubfoldersVM { get; set; }
+        public HierarchicalSelectorViewModel<Folder>? SelectSubfoldersVM { get; set; }
         
         #endregion
 

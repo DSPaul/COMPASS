@@ -1,16 +1,14 @@
-using System.Collections.Generic;
-using System.Linq;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.ViewModels.Selection;
 
-public class HierarchicalSelectorViewmodel<T> : ViewModelBase where T : class, IHasChildren<T>
+public class HierarchicalSelectorViewModel<T> : ViewModelBase where T : class, IHasChildren<T>
 {
     private IList<CheckableTreeNode<T>> _optionsRoot;
 
-    public HierarchicalSelectorViewmodel(IList<T> options)
+    public HierarchicalSelectorViewModel(IList<T> options)
     {
         _optionsRoot = options.Select(x => new CheckableTreeNode<T>(x, propagateChanges:true)).ToList();
         TotalOptionsCount = _optionsRoot.Flatten().Count();
@@ -28,7 +26,7 @@ public class HierarchicalSelectorViewmodel<T> : ViewModelBase where T : class, I
     }
     public int TotalOptionsCount { get; }
     
-    public IList<T> SelectedOptions => CheckableTreeNode<T>.GetCheckedItems(OptionsRoot).ToList();
+    public IList<T> SelectedOptions => CheckableTreeNode.GetCheckedItems(OptionsRoot).ToList();
     public int SelectedOptionsCount => SelectedOptions.Flatten().Count();
     
     /// <summary>

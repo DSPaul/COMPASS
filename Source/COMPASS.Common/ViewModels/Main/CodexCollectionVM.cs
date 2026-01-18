@@ -1,5 +1,5 @@
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using COMPASS.Common.Interfaces.Repos;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -16,14 +16,21 @@ namespace COMPASS.Common.ViewModels.Main;
 
 public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
 {
-    public CodexCollectionVM(string identifier, CodexCollection collection, ICodexCollectionStorageService storageService) : base(collection)
+    public CodexCollectionVM(string identifier, CodexCollection collection, ICodexCollectionRepository repo) 
+        : base(collection)
     {
         _identifier = identifier;
             
         collection.AllCodices.CollectionChanged += OnAllCodicesCollectionChanged;
         
-        _storageService = storageService;
+        _repo = repo;
         _notificationService = ServiceResolver.Resolve<INotificationService>();
+        _importExportService = ServiceResolver.Resolve<IImportExportService>();
+    }
+
+    public CodexCollectionVM(string identifier, CodexCollection collection, StorageStrategy storageStrat) 
+        :this(identifier, collection, ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(storageStrat))
+    {
     }
 
     private void OnAllCodicesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -40,8 +47,9 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         AllCodexVms.AddRange(newCodices.Select(codex => new CodexViewModel(codex, this)));
     }
 
-    private readonly ICodexCollectionStorageService _storageService;
+    public readonly ICodexCollectionRepository _repo;
     private readonly INotificationService _notificationService;
+    private readonly IImportExportService _importExportService;
 
     public CodexCollection Collection => _model;
     public RangeObservableCollection<CodexViewModel> AllCodexVms { get; } = [];
@@ -77,7 +85,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
             return handle;
         }
             
-        int loadResult = _storageService.Load(Collection);
+        int loadResult = _repo.Load(Collection);
         if (loadResult == 0) //0 means success
         {
             Owners.Add(handle);
@@ -106,7 +114,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         //if no more owners, collection can be unloaded
         if (!Owners.Any())
         {
-            _storageService.Unload(Collection);
+            _repo.Unload(Collection);
             foreach (CodexViewModel codexVm in AllCodexVms)
             {
                 codexVm.Dispose();
@@ -125,7 +133,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     {
         if (Owners.Contains(handle))
         {
-            _storageService.Save(Collection);
+            _repo.Save(Collection);
         }
         else
         {
@@ -137,7 +145,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     {
         if (Owners.Contains(handle))
         {
-            _storageService.SaveCodices(Collection);
+            _repo.SaveCodices(Collection);
         }
         else
         {
@@ -174,7 +182,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         
         //TODO, check if CollectionManager should be notified of name changes for AllCollectionNames list
         
-        _storageService.OnCollectionRenamed(oldName, newCollectionName);
+        _repo.OnCollectionRenamed(oldName, newCollectionName);
         ServiceResolver.Resolve<IThumbnailStorageService>().OnCollectionRenamed(Collection);
 
         Logger.Info($"Renamed {oldName} to {newCollectionName}");
@@ -202,12 +210,12 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         if (!CanDeleteCollection()) return false;
         
         CollectionManager.RemoveCollection(this);
-        _storageService.DeleteCollection(Identifier);
+        _repo.DeleteCollection(Identifier);
         return true;
     }
 
     public async Task ExportTags()
     {
-        await _storageService.ExportTags(Collection);
+        await _importExportService.ExportTags(Collection);
     }
 }
