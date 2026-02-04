@@ -1,19 +1,11 @@
-﻿using System.Net.Http.Headers;
-using System.Text.Json;
-using Avalonia.Platform.Storage;
+﻿using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Selection;
-using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
-using SharpCompress.Archives;
-using SharpCompress.Archives.Zip;
-using SharpCompress.Common;
 
 namespace COMPASS.Common.ViewModels
 {

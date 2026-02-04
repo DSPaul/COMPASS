@@ -1,15 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-      <PackageReference Include="Autofac" Version="9.0.0" />
-      <PackageReference Include="Avalonia" Version="11.3.10" />
-      <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.10" />
-      <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.1.1" />
-      <PackageReference Include="FuzzySharp" Version="2.0.2" />
-      <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.1" />
+      <AvaloniaXaml Remove="Interfaces\**" />
+      <AvaloniaXaml Remove="Services\**" />
+      <Compile Remove="Interfaces\**" />
+      <Compile Remove="Services\**" />
+      <EmbeddedResource Remove="Interfaces\**" />
+      <EmbeddedResource Remove="Services\**" />
+      <None Remove="Interfaces\**" />
+      <None Remove="Services\**" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Interfaces\Services\" />
-      <Folder Include="Services\" />
+      <PackageReference Include="Autofac" Version="9.0.0" />
+      <PackageReference Include="Avalonia" Version="11.3.11" />
+      <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.11" />
+      <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.1.1" />
+      <PackageReference Include="FuzzySharp" Version="2.0.2" />
+      <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.2" />
     </ItemGroup>
     <ItemGroup>
       <Reference Include="Microsoft.Extensions.FileSystemGlobbing">

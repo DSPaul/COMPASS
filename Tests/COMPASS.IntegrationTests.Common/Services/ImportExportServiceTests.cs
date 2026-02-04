@@ -14,6 +14,7 @@ using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
 using System.Text.Json;
+using Constants = COMPASS.Common.Models.Constants;
 
 namespace COMPASS.IntegrationTests.Common.Services
 {
