@@ -1,0 +1,36 @@
+app-id: info.compassapp.COMPASS
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.dotnet10
+command: compass
+
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  - --share=network
+  - --filesystem=home
+
+modules:
+  - name: compass
+    buildsystem: simple
+
+  - build-options:
+      append-path: /usr/lib/sdk/dotnet10/bin
+      append-ld-library-path: /usr/lib/sdk/dotnet10/lib
+      prepend-pkg-config-path: /usr/lib/sdk/dotnet10/lib/pkgconfig
+    build-commands:
+      - install.sh
+      - dotnet publish Source/COMPASS.Linux/COMPASS.Linux.csproj
+          --configuration Release
+          --runtime linux-x64
+          --self-contained
+      - cp -r --remove-destination /run/build/YourProject/bin/Release/net10.0/publish/ /app/bin/
+    
+    sources:
+      - type: git
+        url: https://github.com/DSPaul/COMPASS
+        branch: Avalonia

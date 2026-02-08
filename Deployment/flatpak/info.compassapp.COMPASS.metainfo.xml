@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component type="desktop-application">
+  <id>info.compassapp.COMPASS</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  
+  <name>COMPASS</name>
+  <summary>A TTRPG resource manager, bringing all your books, maps, etc. in one place.</summary>
+  
+  <description>
+    <p>
+      COMPASS is a desktop application that helps you organize all your Tabletop RPG resources.
+      It provides powerful tools to catalog and manage your digital library of rulebooks, adventures,
+      maps, and other gaming materials. Supports PDFs, images, and weblinks.
+    </p>
+    <p>Key Features:</p>
+    <ul>
+      <li>Automatic metadata extraction from PDFs and webpages (title, author, release date)</li>
+      <li>Advanced hierarchical tagging system to replace folder chaos</li>
+      <li>Multiple collections, each with their own set of tags</li>
+      <li>Four different layouts to view your collection</li>
+      <li>Fuzzy search with advanced filtering and sorting</li>
+      <li>Share your collection with others, including metadata, tags and files</li>
+      <li>No vendor lock-in - all data saved in human-readable XML</li>
+      <li>Cross-platform support with a modern UI</li>
+    </ul>
+  </description>
+  
+  <url type="homepage">https://compassapp.info</url>
+  <url type="bugtracker">https://github.com/DSPaul/COMPASS/issues</url>
+  
+  <developer_name>DSPaul</developer_name>
+  
+  <launchable type="desktop-id">info.compassapp.COMPASS.desktop</launchable>
+  
+  <screenshots>
+    <screenshot type="default">
+      <caption>Home Layout</caption>
+      <image>https://raw.githubusercontent.com/DSPaul/COMPASS/master/Docs/Screenshots/Home_Layout.png</image>
+    </screenshot>
+  </screenshots>
+  
+  <releases>
+    <release version="2.0.0" date="2026-01-01">
+      <description>
+        <p>Initial Flatpak release</p>
+      </description>
+    </release>
+  </releases>
+  
+  <content_rating type="oars-1.1" />
+</component>

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=COMPASS
+GenericName=TTRPG Resource Manager
+Comment=Organize and manage your Tabletop RPG resources
+Exec=compass %F
+Icon=info.compassapp.COMPASS
+Terminal=false
+Categories=Office;Utility;FileManager;
+MimeType=application/pdf;image/png;image/jpeg;image/webp;
+Keywords=ttrpg;rpg;tabletop;document;manager;organizer;library;rulebook;pdf;
+StartupNotify=true
+StartupWMClass=COMPASS.Linux
