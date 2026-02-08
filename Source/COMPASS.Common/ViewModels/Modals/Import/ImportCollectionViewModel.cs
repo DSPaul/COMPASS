@@ -25,11 +25,11 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             AddValidation(nameof(CollectionName), ValidateTarget);
             AddValidation(nameof(TargetCollection), ValidateTarget);
             
-            CollectionToImport = collectionVmToImport.Collection;
+            CollectionVMToImport = collectionVmToImport;
             TargetCollection = targetCollection ?? TabsViewModel.GetInstance().ActiveTab?.CollectionVM;
             CollectionVms = CollectionManager.CollectionVms.ToList(); 
             //Collection will have format '__<name><extension>'
-            CollectionName = CollectionToImport.Name.Substring(2, CollectionToImport.Name.Length - 2 - Constants.SatchelExtension.Length);
+            CollectionName = collectionVmToImport.Identifier.Substring(2, collectionVmToImport.Identifier.Length - 2 - Constants.SatchelExtension.Length);
 
             _collectionToImportHandle = collectionVmToImport.Load() ?? throw new LoadException(collectionVmToImport.Identifier);
             
@@ -53,7 +53,8 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         
         public CollectionContentSelectorViewModel ContentSelectorVM { get; }
 
-        public CodexCollection CollectionToImport { get; } //collection that was in the satchel
+        public CodexCollection CollectionToImport => CollectionVMToImport.Collection;
+        public CodexCollectionVM CollectionVMToImport { get; } //collection that was in the satchel
 
         public IList<CodexCollectionVM> CollectionVms { get; } 
         

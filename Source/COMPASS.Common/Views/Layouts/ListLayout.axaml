@@ -50,9 +50,6 @@
             <Style Selector="TextBlock">
                 <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
-            <Style Selector="DataGridRow">
-                
-            </Style>
         </DataGrid.Styles>
 
         <DataGrid.Columns>

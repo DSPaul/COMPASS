@@ -3,7 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:views="using:COMPASS.Common.Views"
+             xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals.Import"
+             xmlns:selectionVm="using:COMPASS.Common.ViewModels.Selection"
+             xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:conv="using:COMPASS.Common.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Modals.Import.ImportCollectionWizard"
@@ -81,6 +84,52 @@
         <DataTemplate x:Key="SelectTags" x:DataType="vm:ImportCollectionViewModel">
           <views:TagsSelectorView DataContext="{Binding ContentSelectorVM.TagsSelectorVM}" />
         </DataTemplate>
+        <DataTemplate x:Key="SelectItems" x:DataType="vm:ImportCollectionViewModel">
+          <Grid RowDefinitions="auto,auto,*">
+            <StackPanel Orientation="Horizontal" Margin="20,0">
+              <CheckBox Content="Reset personal data on all items" IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/>
+              <controls:Explainer VerticalAlignment="Bottom" Margin="0,6"
+                                  Content="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last opened &#x0a; - Times opened &#x0a; - Date added"/>
+            </StackPanel>
+            <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/>
+            <DataGrid
+              Grid.Row="2"
+              Background="Transparent" Margin="10" Padding="10"
+              BorderBrush="Transparent"
+              ItemsSource="{Binding ContentSelectorVM.SelectableCodices}"
+              SelectionMode="Extended" CornerRadius="5"
+              CanUserResizeColumns="True"
+              IsReadOnly="True">
+              <DataGrid.Styles>
+                <Style Selector="TextBlock">
+                  <Setter Property="TextWrapping" Value="Wrap" />
+                </Style>
+              </DataGrid.Styles>
+              <DataGrid.Columns>
+                <DataGridTemplateColumn Header="IMPORT" Width="auto" MinWidth="70">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <CheckBox IsChecked="{Binding Selected, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"
+                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=SelectedItems}"
+                                Command="{Binding ItemCheckedCommand}" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="TITLE" Binding="{Binding Codex.Title}" Width="*" MinWidth="100" CanUserSort="True" />
+                <DataGridTemplateColumn Header="FILE" Width="*" MinWidth="100" CanUserSort="True">
+                  <DataTemplate DataType="selectionVm:CollectionContentSelectorViewModel+SelectableCodex">
+                    <DockPanel>
+                      <materialIcons:MaterialIcon Kind="Warning" Foreground="{StaticResource WarningFill}" DockPanel.Dock="Right"
+                                                  IsVisible="{Binding !PathExits}" ToolTip.Tip="This file could not be found"/>
+                      <TextBlock Text ="{Binding Codex.Sources.FileName}"/>
+                    </DockPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="URL" Binding="{Binding Codex.Sources.SourceURL}" Width="*" MinWidth="100" CanUserSort="True"/>
+              </DataGrid.Columns>
+            </DataGrid>
+          </Grid>
+        </DataTemplate>
       </conv:WizardStepTemplateSelector>
     </views:Wizard.Resources>
 
@@ -93,143 +142,6 @@
     <!--     <ContentControl.Style> -->
     <!--         <Style TargetType="ContentControl"> -->
     <!--             <Style.Triggers> -->
-    <!--                 <DataTrigger Binding="{Binding CurrentStep}" Value="Overview"> -->
-    <!--                     <Setter Property="Content"> -->
-    <!--                         <Setter.Value> -->
-
-    <!--                         </Setter.Value> -->
-    <!--                     </Setter> -->
-    <!--                 </DataTrigger> -->
-    <!--                 <DataTrigger Binding="{Binding CurrentStep}" Value="Items"> -->
-    <!--                     <Setter Property="Content"> -->
-    <!--                         <Setter.Value> -->
-    <!--                             <Grid Visibility="{Binding CurrentStep, ConverterParameter=Items, Converter={StaticResource ShowInStepConverter}}"> -->
-    <!--                                 <Grid.RowDefinitions> -->
-    <!--                                     <RowDefinition Height="auto"/> -->
-    <!--                                     <RowDefinition Height="auto"/> -->
-    <!--                                     <RowDefinition Height="*"/> -->
-    <!--                                 </Grid.RowDefinitions> -->
-    <!--                                 <StackPanel Orientation="Horizontal" Margin="20,0"> -->
-    <!--                                     <CheckBox Content="Reset personal data on all items" IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/> -->
-    <!--                                     <materialDesign:PackIcon Kind="InfoOutline" VerticalAlignment="Bottom" Margin="0,6" Foreground="{StaticResource TextMutedColor}" Style="{StaticResource ToolTipIcon}" -->
-    <!--                                             ToolTip="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last opened &#x0a; - Times opened &#x0a; - Date added"/> -->
-    <!--                                 </StackPanel> -->
-    <!--                                 <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/> -->
-    <!--                                 <DataGrid x:Name="ListLayoutGrid" ItemsSource="{Binding ContentSelectorVM.SelectableCodices, IsAsync=True}" -->
-    <!--                                         Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{StaticResource TextColor}" Margin="10,0" -->
-    <!--                                         CanUserAddRows="False" SelectionMode="Extended" AutoGenerateColumns="False" Grid.Row="2" -->
-    <!--                                         RowHeaderWidth="0" GridLinesVisibility="None" CanUserResizeColumns="True" ColumnHeaderStyle="{StaticResource BasicDataGridColumnHeaderStyle}" -->
-    <!--                                         VerticalGridLinesBrush="#FF484848" HorizontalGridLinesBrush="#FF484848" ClipToBounds="True"> -->
-    <!--                                     <DataGrid.Resources> -->
-    <!--                                         <Style TargetType="{x:Type TextBlock}" x:Key="default"> -->
-    <!--                                             <Setter Property="TextWrapping" Value="Wrap"/> -->
-    <!--                                             <Setter Property="FontSize" Value="16"/> -->
-    <!--                                             <Setter Property="Margin" Value="0,0,10,0"/> -->
-    <!--                                         </Style> -->
-    <!--                                     </DataGrid.Resources> -->
-    <!--                                     <DataGrid.ItemContainerStyle> -->
-    <!--                                         <Style TargetType="{x:Type DataGridRow}"> -->
-    <!--                                             <Setter Property="HorizontalContentAlignment" Value="Left"/> -->
-    <!--                                         </Style> -->
-    <!--                                     </DataGrid.ItemContainerStyle> -->
-    <!--                                     <DataGrid.RowStyle> -->
-    <!--                                         <Style TargetType="{x:Type DataGridRow}"> -->
-    <!--                                             <Setter Property="Background" Value="{x:Null}"/> -->
-    <!--                                             <Setter Property="Template"> -->
-    <!--                                                 <Setter.Value> -->
-    <!--                                                     <ControlTemplate TargetType="{x:Type DataGridRow}"> -->
-    <!--                                                             <Border x:Name="DGR_Border" BorderThickness="0" SnapsToDevicePixels="True"  -->
-    <!--                                                                     CornerRadius="5" Background="{TemplateBinding Background}"> -->
-    <!--                                                                 <SelectiveScrollingGrid> -->
-    <!--                                                                     <SelectiveScrollingGrid.ColumnDefinitions> -->
-    <!--                                                                         <ColumnDefinition Width="Auto"/> -->
-    <!--                                                                         <ColumnDefinition Width="*"/> -->
-    <!--                                                                     </SelectiveScrollingGrid.ColumnDefinitions> -->
-    <!--                                                                 <SelectiveScrollingGrid.RowDefinitions> -->
-    <!--                                                                     <RowDefinition Height="*"/> -->
-    <!--                                                                     <RowDefinition Height="0"/> -->
-    <!--                                                                 </SelectiveScrollingGrid.RowDefinitions> -->
-    <!--                                                                 <DataGridCellsPresenter Grid.Column="1" ItemsPanel="{TemplateBinding ItemsPanel}"  -->
-    <!--                                                                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/> -->
-    <!--                                                                 <DataGridDetailsPresenter Grid.Column="1" Grid.Row="1"  -->
-    <!--                                                                         SelectiveScrollingGrid.SelectiveScrollingOrientation="{Binding AreRowDetailsFrozen,  -->
-    <!--                                                                         ConverterParameter={x:Static SelectiveScrollingOrientation.Vertical},  -->
-    <!--                                                                         Converter={x:Static DataGrid.RowDetailsScrollingConverter},  -->
-    <!--                                                                         RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"  -->
-    <!--                                                                         Visibility="{TemplateBinding DetailsVisibility}"/> -->
-    <!--                                                                 <DataGridRowHeader Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" -->
-    <!--                                                                         SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"  -->
-    <!--                                                                         Visibility="{Binding HeadersVisibility, ConverterParameter={x:Static DataGridHeadersVisibility.Row},  -->
-    <!--                                                                         Converter={x:Static DataGrid.HeadersVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"/> -->
-    <!--                                                                 </SelectiveScrollingGrid> -->
-    <!--                                                             </Border> -->
-    <!--                                                     </ControlTemplate> -->
-    <!--                                                 </Setter.Value> -->
-    <!--                                             </Setter> -->
-    <!--                                             <Style.Triggers> -->
-    <!--                                                 <Trigger Property="IsSelected" Value="True"> -->
-    <!--                                                     <Setter Property="Background" Value="{StaticResource ListSelected}"/> -->
-    <!--                                                 </Trigger> -->
-    <!--                                                 <Trigger Property="IsMouseOver" Value="True"> -->
-    <!--                                                     <Setter Property="Background" Value="{StaticResource ListHover}"/> -->
-    <!--                                                 </Trigger> -->
-    <!--                                                 <DataTrigger Binding="{Binding SelectedItems.Count, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" Value="1"> -->
-    <!--                                                     <Setter Property="ContextMenu" Value="{StaticResource CodexContextMenu}"/> -->
-    <!--                                                 </DataTrigger> -->
-    <!--                                             </Style.Triggers> -->
-    <!--                                         </Style> -->
-    <!--                                     </DataGrid.RowStyle> -->
-    <!--                                     <DataGrid.Columns> -->
-    <!--                                         <DataGridTemplateColumn Header="IMPORT" Width="auto" MinWidth="70"> -->
-    <!--                                             <DataGridTemplateColumn.CellTemplate> -->
-    <!--                                                 <DataTemplate> -->
-    <!--                                                     <CheckBox IsChecked="{Binding Selected, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" -->
-    <!--                                                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=SelectedItems}" -->
-    <!--                                                               Command="{Binding ItemCheckedCommand}" /> -->
-    <!--                                                 </DataTemplate> -->
-    <!--                                             </DataGridTemplateColumn.CellTemplate> -->
-    <!--                                         </DataGridTemplateColumn> -->
-    <!--                                         <DataGridTemplateColumn Header="TITLE" Width="*" MinWidth="100" CanUserSort="True" SortMemberPath="SortingTitle"> -->
-    <!--                                             <DataGridTemplateColumn.CellTemplate> -->
-    <!--                                                 <DataTemplate> -->
-    <!--                                                     <TextBlock Text ="{Binding Codex.Title}" Style="{StaticResource default}" Margin="5,0"/> -->
-    <!--                                                 </DataTemplate> -->
-    <!--                                             </DataGridTemplateColumn.CellTemplate> -->
-    <!--                                         </DataGridTemplateColumn> -->
-    <!--                                         <DataGridTemplateColumn Header="FILE" Width="*" MinWidth="100" CanUserSort="True"> -->
-    <!--                                             <DataGridTemplateColumn.CellTemplate> -->
-    <!--                                                 <DataTemplate> -->
-    <!--                                                     <DockPanel> -->
-    <!--                                                         <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" DockPanel.Dock="Right" -->
-    <!--                                                              Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}" -->
-    <!--                                                              ToolTip="This file could not be found" Style="{StaticResource ToolTipIcon}"/> -->
-    <!--                                                         <TextBlock Text ="{Binding Codex.Sources.FileName}" Style="{StaticResource default}"/> -->
-    <!--                                                     </DockPanel> -->
-    <!--                                                 </DataTemplate> -->
-    <!--                                             </DataGridTemplateColumn.CellTemplate> -->
-    <!--                                         </DataGridTemplateColumn> -->
-    <!--                                         <DataGridTemplateColumn Header="URL" Width="*" MinWidth="100" CanUserSort="True"> -->
-    <!--                                             <DataGridTemplateColumn.CellTemplate> -->
-    <!--                                                 <DataTemplate> -->
-    <!--                                                     <TextBlock Text ="{Binding Codex.Sources.SourceURL}" Style="{StaticResource default}"/> -->
-    <!--                                                 </DataTemplate> -->
-    <!--                                             </DataGridTemplateColumn.CellTemplate> -->
-    <!--                                         </DataGridTemplateColumn> -->
-    <!--                                     </DataGrid.Columns> -->
-    <!--                                 </DataGrid> -->
-    <!--                             </Grid> -->
-    <!--                         </Setter.Value> -->
-    <!--                     </Setter> -->
-    <!--                 </DataTrigger> -->
-    <!--                 <DataTrigger Binding="{Binding CurrentStep}" Value="Tags"> -->
-    <!--                     <Setter Property="Content"> -->
-    <!--                         <Setter.Value> -->
-    <!--                             <Grid Visibility="{Binding CurrentStep, ConverterParameter=Tags, Converter={StaticResource ShowInStepConverter}}"> -->
-    <!--                                 <views:TagsSelectorView DataContext="{Binding ContentSelectorVM.TagsSelectorVM}" /> -->
-    <!--                             </Grid> -->
-    <!--                         </Setter.Value> -->
-    <!--                     </Setter> -->
-    <!--                 </DataTrigger> -->
     <!--                 <DataTrigger Binding="{Binding CurrentStep}" Value="Settings"> -->
     <!--                     <Setter Property="Content"> -->
     <!--                         <Setter.Value> -->
