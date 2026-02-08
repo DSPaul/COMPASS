@@ -85,16 +85,39 @@
           <views:TagsSelectorView DataContext="{Binding ContentSelectorVM.TagsSelectorVM}" />
         </DataTemplate>
         <DataTemplate x:Key="SelectItems" x:DataType="vm:ImportCollectionViewModel">
-          <Grid RowDefinitions="auto,auto,*">
-            <StackPanel Orientation="Horizontal" Margin="20,0">
-              <CheckBox Content="Reset personal data on all items" IsChecked="{Binding ContentSelectorVM.RemovePersonalData}"/>
-              <controls:Explainer VerticalAlignment="Bottom" Margin="0,6"
-                                  Content="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last opened &#x0a; - Times opened &#x0a; - Date added"/>
-            </StackPanel>
+          <Grid RowDefinitions="auto,auto,*" RowSpacing="10">
+            <Expander HorizontalAlignment="Stretch" Margin="20,0" IsExpanded="False">
+              <Expander.Header>
+                <Grid ColumnDefinitions="Auto, *, Auto">
+                    <StackPanel Orientation="Horizontal" Spacing="10" Grid.Column="0">
+                      <TextBlock Text="Personal Data to Reset" VerticalAlignment="Center"/>
+                      <controls:Explainer VerticalAlignment="Center"
+                                          Content="Selected fields will be reset to their default values (e.g. Rating -> 0, DateAdded -> Now). &#x0a;Unselected fields will be imported as-is."/>
+                    </StackPanel>
+                    <CheckBox Grid.Column="2" 
+                              Content="Select All" 
+                              IsChecked="{Binding ContentSelectorVM.RemoveAllPersonalData}" 
+                              VerticalAlignment="Center"
+                              Margin="10,0,0,0"/>
+                </Grid>
+              </Expander.Header>
+              <ItemsControl ItemsSource="{Binding ContentSelectorVM.PersonalDataSelectors}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <CheckBox Content="{Binding DisplayName}" IsChecked="{Binding Selected}" Margin="10,5"/>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Expander>
             <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/>
             <DataGrid
               Grid.Row="2"
-              Background="Transparent" Margin="10" Padding="10"
+              Background="Transparent" Padding="10"
               BorderBrush="Transparent"
               ItemsSource="{Binding ContentSelectorVM.SelectableCodices}"
               SelectionMode="Extended" CornerRadius="5"
@@ -106,7 +129,7 @@
                 </Style>
               </DataGrid.Styles>
               <DataGrid.Columns>
-                <DataGridTemplateColumn Header="IMPORT" Width="auto" MinWidth="70">
+                <DataGridTemplateColumn Header="IMPORT" Width="Auto" MinWidth="50">
                   <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                       <CheckBox IsChecked="{Binding Selected, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"

@@ -1,14 +1,15 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Reflection;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Interfaces.Repos;
+using COMPASS.Common.Attributes;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Tools;
 using System.Collections;
+using System.ComponentModel;
 
 namespace COMPASS.Common.ViewModels.Selection
 {
@@ -43,6 +44,17 @@ namespace COMPASS.Common.ViewModels.Selection
                 .Select(x => new ObservableKeyValuePair<string, bool>(x))
                 .OrderByDescending(x => x.Value)
                 .ToList();
+
+            PersonalDataSelectors = typeof(Codex)
+                .GetProperties()
+                .Where(p => Attribute.IsDefined(p, typeof(PersonalDataAttribute)))
+                .Select(p => new PersonalPropertySelectorViewModel(p.Name, p.GetCustomAttribute<PersonalDataAttribute>()!.DisplayName))
+                .ToList();
+
+            foreach (var selector in PersonalDataSelectors)
+            {
+                selector.PropertyChanged += OnPersonalDataSelectorPropertyChanged;
+            }
         }
         
         public override string WindowTitle { get; } = "Choose content";
@@ -56,18 +68,12 @@ namespace COMPASS.Common.ViewModels.Selection
         /// <summary>
         /// Complete collections whose content will be sub selected
         /// </summary>
-        public CodexCollection CompleteCollection { get; set; }
-
-        private CodexCollection? _curatedCollection;
+        public CodexCollection CompleteCollection { get; }
 
         /// <summary>
         /// Curated collection that contains only the selected items 
         /// </summary>
-        public CodexCollection CuratedCollection
-        {
-            get => _curatedCollection ??= new($"{CompleteCollection.Name}_Curated");
-            set => _curatedCollection = value;
-        }
+        public CodexCollection CuratedCollection => field ??= new($"{CompleteCollection.Name}_Curated");
 
         public bool HasTags { get; set; }
         public bool HasCodices { get; set; }
@@ -89,50 +95,56 @@ namespace COMPASS.Common.ViewModels.Selection
         public int SelectedCodicesCount => SelectableCodices.Count(s => s.Selected);
         public void RaiseSelectedCodicesCountChanged() => OnPropertyChanged(nameof(SelectedCodicesCount));
 
-        public bool RemovePersonalData { get; set; } = true;
+        public List<PersonalPropertySelectorViewModel> PersonalDataSelectors { get; }
+
+        public bool RemoveAllPersonalData
+        {
+            get => PersonalDataSelectors.All(s => s.Selected);
+            set
+            {
+                foreach (var s in PersonalDataSelectors) s.Selected = value;
+                OnPropertyChanged();
+            }
+        }
 
         //SETTINGS STEP
 
         //Auto Import Folders
-        private bool _selectAutoImportFolders = false;
 
         public bool SelectAutoImportFolders
         {
-            get => _selectAutoImportFolders;
-            set => SetProperty(ref _selectAutoImportFolders, value);
+            get;
+            set => SetProperty(ref field, value);
         }
 
         public List<SelectableWithPathHelper> AutoImportFolders { get; init; }
 
         //Banished paths
-        private bool _selectBanishedFiles = false;
 
         public bool SelectBanishedFiles
         {
-            get => _selectBanishedFiles;
-            set => SetProperty(ref _selectBanishedFiles, value);
+            get;
+            set => SetProperty(ref field, value);
         }
 
         public List<SelectableWithPathHelper> BanishedPaths { get; init; }
 
         //File type preferences
-        private bool _selectFileTypePrefs = false;
 
         public bool SelectFileTypePrefs
         {
-            get => _selectFileTypePrefs;
-            set => SetProperty(ref _selectFileTypePrefs, value);
+            get;
+            set => SetProperty(ref field, value);
         }
 
         public List<ObservableKeyValuePair<string, bool>> FileTypePrefs { get; init; }
 
         //Tag-Folder links
-        private bool _selectFolderTagLinks = false;
 
         public bool SelectFolderTagLinks
         {
-            get => _selectFolderTagLinks;
-            set => SetProperty(ref _selectFolderTagLinks, value);
+            get;
+            set => SetProperty(ref field, value);
         }
 
         #region Helper classes
@@ -145,12 +157,10 @@ namespace COMPASS.Common.ViewModels.Selection
                 Selected = PathExits;
             }
 
-            private bool _selected;
-
             public bool Selected
             {
-                get => _selected;
-                set => SetProperty(ref _selected, value);
+                get;
+                set => SetProperty(ref field, value);
             }
 
             public string Path { get; set; }
@@ -170,9 +180,7 @@ namespace COMPASS.Common.ViewModels.Selection
 
             public Codex Codex { get; }
 
-            private RelayCommand<IList>? _itemCheckedCommand;
-
-            public RelayCommand<IList> ItemCheckedCommand => _itemCheckedCommand ??= new((items) =>
+            public RelayCommand<IList> ItemCheckedCommand => field ??= new((items) =>
             {
                 items?.Cast<SelectableCodex>()
                     .ToList()
@@ -223,11 +231,12 @@ namespace COMPASS.Common.ViewModels.Selection
             CuratedCollection.AllCodices.ReplaceRange(SelectableCodices.Where(x => x.Selected)
                 .Select(x => x.Codex.Clone())); //clone codices to not modify the existing ones
 
-            if (RemovePersonalData)
+            var propertiesToReset = PersonalDataSelectors.Where(pd => pd.Selected).Select(pd => pd.PropertyName);
+            foreach (var prop in propertiesToReset)
             {
                 foreach (var codex in CuratedCollection.AllCodices)
                 {
-                    codex.ClearPersonalData();
+                    codex.ResetPersonalProperty(prop);
                 }
             }
         }
@@ -287,10 +296,23 @@ namespace COMPASS.Common.ViewModels.Selection
                 Steps.Add(SettingsStep);
             }
         }
+        
+        private void OnPersonalDataSelectorPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(PersonalPropertySelectorViewModel.Selected))
+            {
+                OnPropertyChanged(nameof(RemoveAllPersonalData));
+            }
+        }
 
         public void Dispose()
         {
             _createdCollectionVm.Dispose();
+            foreach (var selector in PersonalDataSelectors)
+            {
+                selector.PropertyChanged -= OnPersonalDataSelectorPropertyChanged;
+            }
         }
     }
 }
+

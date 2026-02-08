@@ -74,7 +74,7 @@ namespace COMPASS.Common.Models.Hierarchy
             }
         }
 
-        public new RangeObservableCollection<CheckableTreeNode<T>> SelectableChildren => _children;
+        public RangeObservableCollection<CheckableTreeNode<T>> SelectableChildren => _children;
 
         public CheckableTreeNode<T>? Parent { get; set; }
 

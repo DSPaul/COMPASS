@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.Attributes;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
@@ -121,6 +121,7 @@ namespace COMPASS.Common.Models
         }
 
         private bool _physicallyOwned;
+        [PersonalData("Physically Owned")]
         public bool PhysicallyOwned
         {
             get => _physicallyOwned;
@@ -128,6 +129,7 @@ namespace COMPASS.Common.Models
         }
 
         private int _rating;
+        [PersonalData("Rating")]
         public int Rating
         {
             get => _rating;
@@ -135,6 +137,7 @@ namespace COMPASS.Common.Models
         }
 
         private bool _favorite;
+        [PersonalData("Favorite")]
         public bool Favorite
         {
             get => _favorite;
@@ -146,6 +149,7 @@ namespace COMPASS.Common.Models
         #region User behaviour metadata
 
         private DateTime _dateAdded = DateTime.Now;
+        [PersonalData("Date Added")]
         public DateTime DateAdded
         {
             get => _dateAdded;
@@ -153,6 +157,7 @@ namespace COMPASS.Common.Models
         }
 
         private DateTime _lastOpened;
+        [PersonalData("Last Opened")]
         public DateTime LastOpened
         {
             get => _lastOpened;
@@ -160,6 +165,7 @@ namespace COMPASS.Common.Models
         }
 
         private int _openedCount;
+        [PersonalData("Opened Count")]
         public int OpenedCount
         {
             get => _openedCount;
@@ -205,14 +211,19 @@ namespace COMPASS.Common.Models
             return new(this);
         }
 
-        public void ClearPersonalData()
+        public void ResetPersonalProperty(string propertyName)
         {
-            Favorite = false;
-            PhysicallyOwned = false;
-            DateAdded = DateTime.Now;
-            OpenedCount = 0;
-            LastOpened = default;
-            Rating = 0;
+            if (propertyName == nameof(DateAdded))
+            {
+                DateAdded = DateTime.Now;
+                return;
+            }
+
+            var prop = GetType().GetProperty(propertyName);
+            if (prop != null && prop.CanWrite && Attribute.IsDefined(prop, typeof(PersonalDataAttribute)))
+            {
+                prop.SetValue(this, default);
+            }
         }
         
         public void NotifyCoverChanged() => CoverChanged?.Invoke(this, EventArgs.Empty);
