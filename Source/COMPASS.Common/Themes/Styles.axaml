@@ -257,6 +257,9 @@
         <Style Selector="^:empty /template/ Panel#PART_ExpandCollapseChevronContainer">
             <Setter Property="Width" Value="{StaticResource TreeViewItemExpandCollapseChevronSize}" />
         </Style>
+      <Style Selector="^:empty /template/ ToggleButton#PART_ExpandCollapseChevron">
+        <Setter Property="IsVisible" Value="False" />
+      </Style>
     </Style>
 
     <Style Selector="TreeView.NoSelection TreeViewItem">

@@ -42,6 +42,10 @@
         <DataTemplate DataType="importVm:ImportFolderWizardVm">
             <importViews:ImportFolderWizard/>
         </DataTemplate>
+
+      <DataTemplate DataType="importVm:ImportTagsViewModel">
+        <importViews:ImportTagsView/>
+      </DataTemplate>
         
         <DataTemplate DataType="vm:FileNotFoundViewModel">
             <views:FileNotFoundView/>

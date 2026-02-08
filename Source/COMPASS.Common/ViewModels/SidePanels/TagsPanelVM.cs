@@ -187,8 +187,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public AsyncRelayCommand ImportTagsFromSatchelCommand => field ??= new(ImportTagsFromSatchel);
         public async Task ImportTagsFromSatchel()
         {
-            var collectionStorageService = ServiceResolver.Resolve<IImportExportService>();
-            var collectionToImport = await collectionStorageService.OpenSatchel();
+            var importService = ServiceResolver.Resolve<IImportExportService>();
+            var collectionToImport = await importService.OpenSatchel();
 
             if (collectionToImport == null)
             {

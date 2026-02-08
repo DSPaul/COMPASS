@@ -16,16 +16,18 @@
                  SelectedItem="{Binding SelectedTagCollection}">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="vm:TagsSelectorViewModel+TagCollection">
-                    <StackPanel Orientation="Vertical" Margin="20,10">
-                        <TextBlock Text="{Binding Name}"/>
-                        <Border Background="{StaticResource AccentColorMuted}" CornerRadius="3" 
-                                HorizontalAlignment="Left" Margin="0,5,0,0"
-                                IsVisible="{Binding !!ImportCount}">
-                            <TextBlock FontSize="12" Margin="5,1">
-                                <Run Text="{Binding ImportCount, Mode=OneWay}"></Run> tags selected
-                            </TextBlock>
-                        </Border>
-                    </StackPanel>
+                  <Border Background="Transparent">
+                      <StackPanel Orientation="Vertical" Margin="20,10">
+                          <TextBlock Text="{Binding Name}"/>
+                          <Border Background="{StaticResource AccentColorMuted}" CornerRadius="3" 
+                                  HorizontalAlignment="Left" Margin="0,5,0,0"
+                                  IsVisible="{Binding !!ImportCount}">
+                              <TextBlock FontSize="12" Margin="5,1">
+                                  <Run Text="{Binding ImportCount, Mode=OneWay}"></Run> tags selected
+                              </TextBlock>
+                          </Border>
+                      </StackPanel>
+                  </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <ListBox.ItemContainerTheme>
@@ -60,7 +62,7 @@
                     <dataTemplates:TagTreeDataTemplateSelector>
                         <TreeDataTemplate x:Key="RegularTag" DataType="hierarchy:CheckableTagTreeNode"
                                           ItemsSource="{Binding Children}">
-                            <Border CornerRadius="5" Margin="0,3"
+                          <Border CornerRadius="5" Margin="0,3" HorizontalAlignment="Left"
                                     Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}">
                                 <CheckBox Margin="5,0,0,0" 
                                           IsChecked="{Binding IsChecked}" 
@@ -70,13 +72,14 @@
                         <TreeDataTemplate x:Key="GroupTag" DataType="hierarchy:CheckableTagTreeNode"
                                           ItemsSource="{Binding Children}">
                             <StackPanel Margin="0,3" 
+                                        HorizontalAlignment="Left"
                                         Background="Transparent">
                                 <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}"
                                           Content="{Binding Item.Name, Converter={x:Static converters:StringConverters.ToUpperConverter}}" 
                                           Foreground="{StaticResource TextMutedColor}"
                                           FontSize="15" FontWeight="Bold"/>
                                 <Rectangle
-                                    Fill="{Binding Item.BackgroundColor}"
+                                    Fill="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
                                     Height="2" HorizontalAlignment="Stretch"
                                     VerticalAlignment="Bottom" />
                             </StackPanel>

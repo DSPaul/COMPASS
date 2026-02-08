@@ -38,7 +38,7 @@ namespace COMPASS.IntegrationTests.Common.Services
             zip.AddEntry(Constants.SatchelInfoFileName, GenerateStreamFromString(JsonSerializer.Serialize(info)));
             zip.AddEntry("Tags.xml", GenerateStreamFromString("pseudo data"));
 
-            string path = Path.GetTempPath() + Guid.NewGuid().ToString() + Constants.SatchelExtension;
+            string path = Path.GetTempPath() + Guid.NewGuid() + Constants.SatchelExtension;
             await zip.SaveToAsync(path, CompressionType.None);
 
             //Because satchel does not contain a codexInfo file, should work

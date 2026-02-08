@@ -77,7 +77,7 @@ namespace COMPASS.Common.ViewModels.Selection
                 }
             }
 
-            public int ImportCount => CheckableTreeNode.GetCheckedItems(TagsRoot.Children).Flatten().Count();
+            public int ImportCount => TagsRoot.Children.Flatten().Count(i => i.IsChecked != false);
         }
     }
 }

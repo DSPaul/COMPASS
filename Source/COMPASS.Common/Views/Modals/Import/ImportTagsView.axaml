@@ -10,6 +10,7 @@
     <Grid RowDefinitions="*,auto,auto">
         <views:TagsSelectorView DataContext="{Binding TagsSelectorVM}" />
         <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/>
+        <!--TODO Switch this to proper confirm commands-->
         <Button Content="Import" Margin="5" Grid.Row="2"
                 Background="{StaticResource AccentColorMuted}"
                 Command="{Binding ImportTagsCommand}"/>

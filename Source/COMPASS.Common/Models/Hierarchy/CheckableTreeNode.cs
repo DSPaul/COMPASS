@@ -44,11 +44,12 @@ namespace COMPASS.Common.Models.Hierarchy
             get => _isChecked;
             set
             {
-                if (SetProperty(ref _isChecked, value) && PropagateChanges)
+                if (InternalSetChecked(value) && PropagateChanges)
                 {
-                    Parent?.Update();
                     PropagateDown(value);
+                    Parent?.Update();
                 }
+                Updated?.Invoke(this, IsChecked);
             }
         }
 
@@ -56,7 +57,7 @@ namespace COMPASS.Common.Models.Hierarchy
         /// Used to set the checked property without triggering updates up and down
         /// </summary>
         /// <param name="value"></param>
-        private void InternalSetChecked(bool? value) => SetProperty(ref _isChecked, value, nameof(IsChecked));
+        private bool InternalSetChecked(bool? value) => SetProperty(ref _isChecked, value, nameof(IsChecked));
 
         private RangeObservableCollection<CheckableTreeNode<T>> _children = [];
         public new RangeObservableCollection<CheckableTreeNode<T>> Children
@@ -134,7 +135,7 @@ namespace COMPASS.Common.Models.Hierarchy
             where T : class, IHasChildren<T>
         {
             return items.Where(item => item.IsChecked != false)
-                .Select(item => item.GetCheckedItems()!);
+                        .Select(item => item.GetCheckedItems()!);
         }
 
         public static IEnumerable<TModel> GetCheckedModels<TViewModel, TModel>(IEnumerable<CheckableTreeNode<TViewModel>> items)
