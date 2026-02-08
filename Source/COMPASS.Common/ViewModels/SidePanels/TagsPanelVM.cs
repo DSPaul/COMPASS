@@ -188,25 +188,39 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public async Task ImportTagsFromSatchel()
         {
             var importService = ServiceResolver.Resolve<IImportExportService>();
-            var collectionToImport = await importService.OpenSatchel();
+            var importCollectionId = await importService.OpenSatchel();
 
-            if (collectionToImport == null)
+            if (importCollectionId == null)
             {
                 Logger.Warn("Failed to open file");
                 return;
             }
 
-            var importVM = new ImportTagsViewModel(collectionToImport, ActiveCollection.Name);
+            CodexCollection toImport = new(importCollectionId);
+            CodexCollectionVM toImportVm = new(importCollectionId, toImport, StorageStrategy.Xml);
+            var handle = toImportVm.Load();
 
-            if (!importVM.TagsSelectorVM.HasTags)
+            if (handle == null)
             {
-                Notification noTagsFound = new("No Tags found", $"{collectionToImport[2..]} does not contain tags");
+                Logger.Warn("Failed to read file");
+                return;
+            }
+
+            var tagImportVM = new ImportTagsViewModel(handle, ActiveCollection.Name);
+
+            if (!tagImportVM.TagsSelectorVM.HasTags)
+            {
+                Notification noTagsFound = new("No Tags found", $"{importCollectionId[2..]} does not contain tags");
                 await ServiceResolver.Resolve<INotificationService>().ShowDialog(noTagsFound);
                 return;
             }
 
-            var w = new ModalWindow(importVM);
-            w.Show(WindowManager.ActiveWindow);
+            var w = new ModalWindow(tagImportVM);
+            await w.ShowDialog(WindowManager.ActiveWindow);
+
+            //Delete satchel when done
+            toImportVm.DeleteCollection();
+            toImportVm.Dispose();
         }
 
         public RelayCommand ExportTagsCommand => field ??= new(ExportTags);

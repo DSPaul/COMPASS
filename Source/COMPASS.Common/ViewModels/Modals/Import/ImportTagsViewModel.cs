@@ -13,27 +13,25 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     public class ImportTagsViewModel : ViewModelBase, IDisposable, IModalViewModel
     {
         public ImportTagsViewModel(string importCollectionId, string targetCollectionId) : this([importCollectionId], targetCollectionId) { }
+        public ImportTagsViewModel(CollectionHandle importCollectionHandle, string targetCollectionId) : this([importCollectionHandle], targetCollectionId) { }
 
-        public ImportTagsViewModel(IEnumerable<string> importCollectionIds, string targetCollectionId)
+        public ImportTagsViewModel(IEnumerable<string> importCollectionIds, string targetCollectionId) :
+            this(importCollectionIds.Select(id => CollectionManager.LoadCollection(id) ?? throw new LoadException(id)), targetCollectionId) { }
+
+
+        public ImportTagsViewModel(IEnumerable<CollectionHandle> importCollectionHandles, string targetCollectionId)
         {
             WindowTitle = "Import Tags";
 
-            //Load all the collections
+            //Load the target collection
             _targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId) ?? throw new LoadException(targetCollectionId);
 
-            //TODO optimize so only tags get loaded
-            List<CodexCollectionVM> collectionVms = [];
-            foreach (var collectionId in importCollectionIds)
+            foreach (var handle in importCollectionHandles)
             {
-                var handle = CollectionManager.LoadCollection(collectionId);
-                if (handle != null)
-                {
-                    _collectionHandles.Add(handle);
-                    collectionVms.Add(handle.CollectionVM);
-                }
+                _collectionHandles.Add(handle);
             }
-            
-            TagsSelectorVM = new TagsSelectorViewModel(collectionVms);
+
+            TagsSelectorVM = new TagsSelectorViewModel(_collectionHandles.Select(h => h.CollectionVM));
         }
 
         private readonly IList<CollectionHandle> _collectionHandles = [];

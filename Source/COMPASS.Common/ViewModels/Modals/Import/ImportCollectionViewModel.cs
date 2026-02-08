@@ -31,8 +31,6 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             //Collection will have format '__<name><extension>'
             CollectionName = CollectionToImport.Name.Substring(2, CollectionToImport.Name.Length - 2 - Constants.SatchelExtension.Length);
 
-            //temporarily register the collection to the manager so it can be loaded and read
-            CollectionManager.RegisterCollection(collectionVmToImport);
             _collectionToImportHandle = collectionVmToImport.Load() ?? throw new LoadException(collectionVmToImport.Identifier);
             
             ContentSelectorVM = new(CollectionToImport);
