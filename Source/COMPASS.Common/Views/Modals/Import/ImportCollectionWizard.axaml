@@ -85,34 +85,20 @@
         </DataTemplate>
         <DataTemplate x:Key="SelectItems" x:DataType="vm:ImportCollectionViewModel">
           <Grid RowDefinitions="auto,auto,*" RowSpacing="10">
-            <Expander HorizontalAlignment="Stretch" Margin="20,0" IsExpanded="False">
-              <Expander.Header>
-                <Grid ColumnDefinitions="Auto, *, Auto">
-                    <StackPanel Orientation="Horizontal" Spacing="10" Grid.Column="0">
-                      <TextBlock Text="Personal Data to Reset" VerticalAlignment="Center"/>
-                      <controls:Explainer VerticalAlignment="Center"
-                                          Content="Selected fields will be reset to their default values (e.g. Rating -> 0, DateAdded -> Now). &#x0a;Unselected fields will be imported as-is."/>
-                    </StackPanel>
-                    <CheckBox Grid.Column="2" 
-                              Content="Select All" 
-                              IsChecked="{Binding ContentSelectorVM.PersonalDataSelector.SelectAll}" 
-                              VerticalAlignment="Center"
-                              Margin="10,0,0,0"/>
-                </Grid>
-              </Expander.Header>
-              <ItemsControl ItemsSource="{Binding ContentSelectorVM.PersonalDataSelector.SelectableItems}">
-                <ItemsControl.ItemsPanel>
-                  <ItemsPanelTemplate>
-                    <WrapPanel />
-                  </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate>
-                    <CheckBox Content="{Binding DisplayName}" IsChecked="{Binding Selected}" Margin="10,5"/>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </Expander>
+            <views:ItemsSelectorView DataContext="{Binding ContentSelectorVM.PersonalDataSelector}" Margin="20,0">
+              <views:ItemsSelectorView.Title>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <TextBlock Text="Personal Data to Reset" VerticalAlignment="Center"/>
+                  <controls:Explainer VerticalAlignment="Center"
+                                      Content="Selected fields will be reset to their default values (e.g. Rating -> 0, DateAdded -> Now). &#x0a;Unselected fields will be imported as-is."/>
+                </StackPanel>
+              </views:ItemsSelectorView.Title>
+              <views:ItemsSelectorView.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel/>
+                </ItemsPanelTemplate>
+              </views:ItemsSelectorView.ItemsPanel>
+            </views:ItemsSelectorView>
             <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="1"/>
             <DataGrid
               Grid.Row="2"
@@ -158,86 +144,54 @@
         </DataTemplate>
         <DataTemplate x:Key="SelectSettings" x:DataType="vm:ImportCollectionViewModel">
             <ScrollViewer DataContext="{Binding ContentSelectorVM}">
-                <StackPanel>
+                <StackPanel Spacing="10">
                     <StackPanel.Resources>
-                        <DataTemplate x:Key="PathTemplate" x:DataType="selectionVm:CollectionContentSelectorViewModel+SelectableWithPathHelper">
-                            <Border BorderBrush="{StaticResource AccentColorMuted}"
-                                                BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
-                                <CheckBox IsChecked="{Binding Selected}" HorizontalContentAlignment="Stretch">
-                                    <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,auto">
-                                        <TextBlock Text="{Binding Item}" Margin="0" TextWrapping="Wrap"/>
-                                        <controls:Explainer Grid.Column="1"
-                                                            Icon="Warning" 
-                                                            Foreground="{StaticResource WarningFill}" 
-                                                            IsVisible="{Binding !PathExits}"
-                                                            Content="This path could not be found"
-                                                            Margin="5 0"/>
-                                    </Grid>
-                                </CheckBox>
-                            </Border>
-                        </DataTemplate>
+                      <DataTemplate x:Key="PathTemplate" x:CompileBindings="False">
+                        <!--x:DataType="{x:Type=selectionVm:ItemSelectorVm, x:TypeArguments:selectionVm:CollectionContentSelectorViewModel+SelectableWithPathHelper}"-->
+                        <Border BorderBrush="{StaticResource AccentColorMuted}"
+                                BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
+                          <CheckBox IsChecked="{Binding Selected}" HorizontalContentAlignment="Stretch">
+                            <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,auto">
+                              <TextBlock Text="{Binding DisplayName}" Margin="0" TextWrapping="Wrap"/>
+                              <controls:Explainer Grid.Column="1"
+                                                  Icon="Warning"
+                                                  Foreground="{StaticResource WarningFill}"
+                                                  IsVisible="{Binding !PathExits}"
+                                                  Content="This path could not be found"
+                                                  Margin="5 0"/>
+                            </Grid>
+                          </CheckBox>
+                        </Border>
+                      </DataTemplate>
                     </StackPanel.Resources>
-                    <!-- <controls:CheckableContainer CheckText="Directories to Auto Import from." -->
-                    <!--                             Visibility="{Binding AutoImportFolders.Count, Converter={StaticResource ToVisibilityConverter}}" -->
-                    <!--                             IsChecked="{Binding SelectAutoImportFolders}"> -->
-                    <!--     <ItemsControl ItemsSource="{Binding AutoImportFolders}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/> -->
-                    <!-- </controls:CheckableContainer> -->
-                    <!-- <controls:CheckableContainer CheckText="Banished files (Files to Exclude from future imports)" -->
-                    <!--                             Visibility="{Binding BanishedPaths.Count, Converter={StaticResource ToVisibilityConverter}}" -->
-                    <!--                             IsChecked="{Binding SelectBanishedFiles}"> -->
-                    <!--     <ItemsControl ItemsSource="{Binding BanishedPaths}" Margin="5" ItemTemplate="{StaticResource PathTemplate}"/> -->
-                    <!-- </controls:CheckableContainer> -->
-                    <!-- <controls:CheckableContainer CheckText="File types to include in imports (these will expand and overwrite your current file type preferences)" -->
-                    <!--                             Visibility="{Binding FileTypePrefs.Count, Converter={StaticResource ToVisibilityConverter}}" -->
-                    <!--                             IsChecked="{Binding SelectFileTypePrefs}"> -->
-                    <!--     <ItemsControl ItemsSource="{Binding FileTypePrefs}"> -->
-                    <!--         <ItemsControl.ItemsPanel> -->
-                    <!--             <ItemsPanelTemplate> -->
-                    <!--                 <WrapPanel IsItemsHost="True" MaxWidth="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/> -->
-                    <!--             </ItemsPanelTemplate> -->
-                    <!--         </ItemsControl.ItemsPanel> -->
-                    <!--         <ItemsControl.ItemTemplate> -->
-                    <!--             <DataTemplate> -->
-                    <!--                 <CheckBox Content="{Binding Key}" IsChecked="{Binding Value, Mode=OneTime}" IsHitTestVisible="False" Focusable="False" Margin="15"/> -->
-                    <!--             </DataTemplate> -->
-                    <!--         </ItemsControl.ItemTemplate> -->
-                    <!--     </ItemsControl> -->
-                    <!-- </controls:CheckableContainer> -->
-                    <!-- <controls:CheckableContainer CheckText="Folder-Tag Links" -->
-                    <!--                         Visibility="{Binding FolderTagLinks.Count, Converter={StaticResource ToVisibilityConverter}}" -->
-                    <!--                         IsChecked="{Binding SelectFolderTagLinks}"> -->
-                    <!--     <ItemsControl ItemsSource="{Binding FolderTagLinksVS.View}"  Grid.IsSharedSizeScope="True"> -->
-                    <!--         <ItemsControl.ItemTemplate> -->
-                    <!--             <DataTemplate> -->
-                    <!--                 <Border BorderBrush="{StaticResource AccentColorMuted}" BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5"> -->
-                    <!--                     <CheckBox IsChecked="{Binding Selected}" HorizontalAlignment="Stretch"> -->
-                    <!--                         <Grid > -->
-                    <!--                             <Grid.ColumnDefinitions> -->
-                    <!--                                 <ColumnDefinition Width="auto"/> -->
-                    <!--                                 <ColumnDefinition Width="auto"/> -->
-                    <!--                                 <ColumnDefinition Width="auto"/> -->
-                    <!--                                 <ColumnDefinition Width="auto"/> -->
-                    <!--                                 <ColumnDefinition Width="auto"/> -->
-                    <!--                             </Grid.ColumnDefinitions> -->
-                    <!--                             <TextBlock Text="{Binding Item}" Margin="0" TextWrapping="Wrap"/> -->
-                    <!--                             <materialDesign:PackIcon Kind="Link" Grid.Column="1" Margin="10,0"/> -->
-                    <!--                             <Border CornerRadius="5" Margin="10,0" Grid.Column="2" HorizontalAlignment="Left" -->
-                    <!--                                                 Background="{Binding Tag.BackgroundColor, Converter={StaticResource ColorToBrushConverter}}"> -->
-                    <!--                                 <TextBlock Text="{Binding Tag.Content}" Margin="7,0" Foreground="White" FontSize="15"/> -->
-                    <!--                             </Border> -->
-                    <!--                             <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" Grid.Column="3" -->
-                    <!--                                                                 Visibility="{Binding PathExits, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}" -->
-                    <!--                                                                 ToolTip="This path could not be found" Style="{StaticResource ToolTipIcon}"/> -->
-                    <!--                             <materialDesign:PackIcon Kind="Warning" Foreground="{StaticResource WarningFill}" Grid.Column="4" -->
-                    <!--                                                                 Visibility="{Binding TagExists, Converter={StaticResource ToVisibilityConverter}, ConverterParameter=true}" -->
-                    <!--                                                                 ToolTip="This Tag could not be found or was not selected for import" Style="{StaticResource ToolTipIcon}"/> -->
-                    <!--                         </Grid> -->
-                    <!--                     </CheckBox> -->
-                    <!--                 </Border> -->
-                    <!--             </DataTemplate> -->
-                    <!--         </ItemsControl.ItemTemplate> -->
-                    <!--     </ItemsControl> -->
-                    <!-- </controls:CheckableContainer> -->
+
+                    <views:ItemsSelectorView DataContext="{Binding AutoImportFoldersSelector}" 
+                                             Title="Directories to Auto Import from"
+                                             ItemTemplate="{StaticResource PathTemplate}"
+                                             Margin="20,0"/>
+
+                    <views:ItemsSelectorView DataContext="{Binding BanishedPathsSelector}" 
+                                             Title="Banished files (Files to Exclude from future imports)"
+                                             ItemTemplate="{StaticResource PathTemplate}"
+                                             Margin="20,0"/>
+
+                    <views:ItemsSelectorView DataContext="{Binding FileTypePrefsSelector}" 
+                                             Title="File types to include in imports"
+                                             Margin="20,0">
+                        <views:ItemsSelectorView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </views:ItemsSelectorView.ItemsPanel>
+                        <views:ItemsSelectorView.ItemTemplate>
+                            <DataTemplate x:CompileBindings="False">
+                                <CheckBox Content="{Binding DisplayName}" 
+                                          IsChecked="{Binding Item.Value}"
+                                          IsHitTestVisible="False"
+                                          Margin="15"/>
+                            </DataTemplate>
+                        </views:ItemsSelectorView.ItemTemplate>
+                    </views:ItemsSelectorView>
                 </StackPanel>
             </ScrollViewer>
         </DataTemplate>

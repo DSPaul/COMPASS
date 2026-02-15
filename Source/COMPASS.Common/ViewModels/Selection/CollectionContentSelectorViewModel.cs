@@ -36,12 +36,17 @@ namespace COMPASS.Common.ViewModels.Selection
             SelectableCodices = CompleteCollection.AllCodices.Select(codex => new SelectableCodex(codex, this)).ToList();
 
             //prep settings data for selection
-            AutoImportFolders = CompleteCollection.Info.AutoImportFolders.Select(folder => new SelectableWithPathHelper(folder.FullPath)).ToList();
-            BanishedPaths = CompleteCollection.Info.BanishedPaths.Select(path => new SelectableWithPathHelper(path)).ToList();
-            FileTypePrefs = CompleteCollection.Info.FiletypePreferences
-                .Select(x => new ObservableKeyValuePair<string, bool>(x))
-                .OrderByDescending(x => x.Value)
-                .ToList();
+            AutoImportFoldersSelector = new(
+                CompleteCollection.Info.AutoImportFolders.Select(folder => new SelectableWithPathHelper(folder.FullPath)));
+
+            BanishedPathsSelector = new(
+                CompleteCollection.Info.BanishedPaths.Select(path => new SelectableWithPathHelper(path)));
+
+            FileTypePrefsSelector = new(
+                CompleteCollection.Info.FiletypePreferences
+                    .OrderByDescending(x => x.Value)
+                    .Select(x => new ItemSelectorViewModel<ObservableKeyValuePair<string, bool>>(
+                        new ObservableKeyValuePair<string, bool>(x), x.Key)));
 
             var personalProps = typeof(Codex)
                 .GetProperties()
@@ -92,43 +97,11 @@ namespace COMPASS.Common.ViewModels.Selection
 
         //SETTINGS STEP
 
-        //Auto Import Folders
+        public ItemsSelectorViewModel<string> AutoImportFoldersSelector { get; init; }
 
-        public bool SelectAutoImportFolders
-        {
-            get;
-            set => SetProperty(ref field, value);
-        }
+        public ItemsSelectorViewModel<string> BanishedPathsSelector { get; init; }
 
-        public List<SelectableWithPathHelper> AutoImportFolders { get; init; }
-
-        //Banished paths
-
-        public bool SelectBanishedFiles
-        {
-            get;
-            set => SetProperty(ref field, value);
-        }
-
-        public List<SelectableWithPathHelper> BanishedPaths { get; init; }
-
-        //File type preferences
-
-        public bool SelectFileTypePrefs
-        {
-            get;
-            set => SetProperty(ref field, value);
-        }
-
-        public List<ObservableKeyValuePair<string, bool>> FileTypePrefs { get; init; }
-
-        //Tag-Folder links
-
-        public bool SelectFolderTagLinks
-        {
-            get;
-            set => SetProperty(ref field, value);
-        }
+        public ItemsSelectorViewModel<ObservableKeyValuePair<string, bool>> FileTypePrefsSelector { get; init; }
 
         #region Helper classes
 
@@ -217,25 +190,24 @@ namespace COMPASS.Common.ViewModels.Selection
 
         public void ApplySelectedPreferences()
         {
-            List<string> selectedFolderPaths = AutoImportFolders.Where(x => x.Selected).Select(x => x.Item).ToList();
-            List<Folder> selectedFolders = CompleteCollection.Info.AutoImportFolders.Where(f => selectedFolderPaths.Contains(f.FullPath)).ToList();
+            var selectedFolderPaths = AutoImportFoldersSelector.GetSelectedItems().ToList();
+            List<Folder> selectedFolders = CompleteCollection.Info.AutoImportFolders
+                .Where(f => selectedFolderPaths.Contains(f.FullPath)).ToList();
+
             CuratedCollection.Info.AutoImportFolders.Clear();
-            if (SelectAutoImportFolders)
-            {
-                CuratedCollection.Info.AutoImportFolders.ReplaceRange(selectedFolders);
-            }
+            CuratedCollection.Info.AutoImportFolders.ReplaceRange(selectedFolders);
 
             CuratedCollection.Info.BanishedPaths.Clear();
-            if (SelectBanishedFiles)
-            {
-                CuratedCollection.Info.BanishedPaths.ReplaceRange(BanishedPaths.Where(x => x.Selected).Select(x => x.Item));
-            }
+            CuratedCollection.Info.BanishedPaths.ReplaceRange(
+                BanishedPathsSelector.GetSelectedItems());
 
             CuratedCollection.Info.FiletypePreferences.Clear();
-            if (SelectFileTypePrefs)
+            var selectedFileTypes = FileTypePrefsSelector.GetSelectedItems()
+                .ToDictionary(x => x.Key, x => x.Value);
+
+            if (selectedFileTypes.Any())
             {
-                //for file types, select all or nothing because checking whether to select a checkbox becomes ridiculous
-                CuratedCollection.Info.FiletypePreferences = CompleteCollection.Info.FiletypePreferences;
+                CuratedCollection.Info.FiletypePreferences = selectedFileTypes;
             }
         }
 
@@ -275,6 +247,9 @@ namespace COMPASS.Common.ViewModels.Selection
         {
             _createdCollectionVm.Dispose();
             PersonalDataSelector.Dispose();
+            AutoImportFoldersSelector.Dispose();
+            BanishedPathsSelector.Dispose();
+            FileTypePrefsSelector.Dispose();
         }
     }
 }

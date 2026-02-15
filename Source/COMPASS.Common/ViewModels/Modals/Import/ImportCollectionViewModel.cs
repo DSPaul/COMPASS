@@ -106,10 +106,9 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 }
 
                 //Set it on all the settings
-                ContentSelectorVM.SelectAutoImportFolders = ImportAllSettings;
-                ContentSelectorVM.SelectBanishedFiles = ImportAllSettings;
-                ContentSelectorVM.SelectFileTypePrefs = ImportAllSettings;
-                ContentSelectorVM.SelectFolderTagLinks = ImportAllSettings;
+                ContentSelectorVM.AutoImportFoldersSelector.SelectAll = ImportAllSettings;
+                ContentSelectorVM.BanishedPathsSelector.SelectAll = ImportAllSettings;
+                ContentSelectorVM.FileTypePrefsSelector.SelectAll = ImportAllSettings;
             }
 
             //If we have tags and are doing an advanced import, but the tags step is missing, ask if we should still import them

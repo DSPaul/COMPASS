@@ -14,6 +14,10 @@ namespace COMPASS.Common.ViewModels.Selection
         public T Item { get; set; }
         public string DisplayName { get; }
 
-        public bool Selected { get; set => SetProperty(ref field, value); } = true;
+        public bool Selected
+        {
+            get;
+            set => SetProperty(ref field, value);
+        } = true;
     }
 }

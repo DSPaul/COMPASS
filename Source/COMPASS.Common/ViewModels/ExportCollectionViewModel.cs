@@ -89,10 +89,9 @@ namespace COMPASS.Common.ViewModels
                 }
 
                 //Set it on all the settings
-                ContentSelectorVM.SelectAutoImportFolders = ExportAllSettings;
-                ContentSelectorVM.SelectBanishedFiles = ExportAllSettings;
-                ContentSelectorVM.SelectFileTypePrefs = ExportAllSettings;
-                ContentSelectorVM.SelectFolderTagLinks = ExportAllSettings;
+                ContentSelectorVM.AutoImportFoldersSelector.SelectAll = ExportAllSettings;
+                ContentSelectorVM.BanishedPathsSelector.SelectAll = ExportAllSettings;
+                ContentSelectorVM.FileTypePrefsSelector.SelectAll = ExportAllSettings;
             }
 
             //Apply the selection

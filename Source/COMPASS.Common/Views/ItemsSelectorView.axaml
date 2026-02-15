@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:CompileBindings="False"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Views.ItemsSelectorView"
+             x:Name="Root">
+  <!--Datatype is a ItemsSelectorViewModel but that's generic so no compiled bindings possible-->
+  <UserControl.Resources>
+      <ItemsPanelTemplate x:Key="DefaultItemsPanel">
+          <StackPanel />
+      </ItemsPanelTemplate>
+      <DataTemplate x:Key="DefaultItemTemplate">
+          <CheckBox Content="{Binding DisplayName}" IsChecked="{Binding Selected}" Margin="5"/>
+      </DataTemplate>
+  </UserControl.Resources>
+
+  <Expander HorizontalAlignment="Stretch" IsExpanded="{Binding #Root.IsExpanded, Mode=TwoWay}">
+    <Expander.Header>
+      <Grid ColumnDefinitions="Auto, *, Auto">
+        <ContentPresenter Grid.Column="0" 
+                          Content="{Binding #Root.Title}"
+                          VerticalAlignment="Center"
+                          IsVisible="{Binding #Root.Title, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+        <CheckBox Grid.Column="2" 
+                  Content="Select All" 
+                  IsChecked="{Binding SelectAll}" 
+                  IsVisible="{Binding #Root.ShowSelectAll}"
+                  VerticalAlignment="Center"
+                  Margin="10,0,0,0"/>
+      </Grid>
+    </Expander.Header>
+
+    <ItemsControl ItemsSource="{Binding SelectableItems}"
+                  ItemsPanel="{Binding #Root.ItemsPanel, TargetNullValue={StaticResource DefaultItemsPanel}}"
+                  ItemTemplate="{Binding #Root.ItemTemplate, TargetNullValue={StaticResource DefaultItemTemplate}}">
+    </ItemsControl>
+  </Expander>
+</UserControl>
+
+
