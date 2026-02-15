@@ -249,6 +249,7 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <materialIcons:MaterialIcon Kind="{TemplateBinding Icon}" ToolTip.ShowDelay="0"
+                                            Foreground="{TemplateBinding Foreground}"
                                             ToolTip.Tip="{TemplateBinding Content}" />
             </ControlTemplate>
         </Setter>

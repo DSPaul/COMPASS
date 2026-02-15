@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Attributes;
 using COMPASS.Common.Models;
@@ -9,7 +8,6 @@ using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 using System.Collections;
-using System.ComponentModel;
 
 namespace COMPASS.Common.ViewModels.Selection
 {
@@ -45,16 +43,11 @@ namespace COMPASS.Common.ViewModels.Selection
                 .OrderByDescending(x => x.Value)
                 .ToList();
 
-            PersonalDataSelectors = typeof(Codex)
+            var personalProps = typeof(Codex)
                 .GetProperties()
-                .Where(p => Attribute.IsDefined(p, typeof(PersonalDataAttribute)))
-                .Select(p => new PersonalPropertySelectorViewModel(p.Name, p.GetCustomAttribute<PersonalDataAttribute>()!.DisplayName))
-                .ToList();
+                .Where(p => Attribute.IsDefined(p, typeof(PersonalDataAttribute)));
 
-            foreach (var selector in PersonalDataSelectors)
-            {
-                selector.PropertyChanged += OnPersonalDataSelectorPropertyChanged;
-            }
+            PersonalDataSelector = new(personalProps, p => p.GetCustomAttribute<PersonalDataAttribute>()!.DisplayName);
         }
         
         public override string WindowTitle { get; } = "Choose content";
@@ -95,17 +88,7 @@ namespace COMPASS.Common.ViewModels.Selection
         public int SelectedCodicesCount => SelectableCodices.Count(s => s.Selected);
         public void RaiseSelectedCodicesCountChanged() => OnPropertyChanged(nameof(SelectedCodicesCount));
 
-        public List<PersonalPropertySelectorViewModel> PersonalDataSelectors { get; }
-
-        public bool RemoveAllPersonalData
-        {
-            get => PersonalDataSelectors.All(s => s.Selected);
-            set
-            {
-                foreach (var s in PersonalDataSelectors) s.Selected = value;
-                OnPropertyChanged();
-            }
-        }
+        public ItemsSelectorViewModel<PropertyInfo> PersonalDataSelector { get; }
 
         //SETTINGS STEP
 
@@ -149,23 +132,14 @@ namespace COMPASS.Common.ViewModels.Selection
 
         #region Helper classes
 
-        public class SelectableWithPathHelper : ObservableObject
+        public class SelectableWithPathHelper : ItemSelectorViewModel<string>
         {
-            public SelectableWithPathHelper(string path)
+            public SelectableWithPathHelper(string path) : base(path)
             {
-                Path = path;
                 Selected = PathExits;
             }
 
-            public bool Selected
-            {
-                get;
-                set => SetProperty(ref field, value);
-            }
-
-            public string Path { get; set; }
-
-            public bool PathExits => !System.IO.Path.IsPathFullyQualified(Path) || System.IO.Path.Exists(Path);
+            public bool PathExits => !Path.IsPathFullyQualified(Item) || Path.Exists(Item);
         }
 
         public class SelectableCodex : SelectableWithPathHelper
@@ -180,7 +154,7 @@ namespace COMPASS.Common.ViewModels.Selection
 
             public Codex Codex { get; }
 
-            public RelayCommand<IList> ItemCheckedCommand => field ??= new((items) =>
+            public RelayCommand<IList> ItemCheckedCommand => field ??= new(items =>
             {
                 items?.Cast<SelectableCodex>()
                     .ToList()
@@ -231,19 +205,19 @@ namespace COMPASS.Common.ViewModels.Selection
             CuratedCollection.AllCodices.ReplaceRange(SelectableCodices.Where(x => x.Selected)
                 .Select(x => x.Codex.Clone())); //clone codices to not modify the existing ones
 
-            var propertiesToReset = PersonalDataSelectors.Where(pd => pd.Selected).Select(pd => pd.PropertyName);
+            var propertiesToReset = PersonalDataSelector.GetSelectedItems();
             foreach (var prop in propertiesToReset)
             {
                 foreach (var codex in CuratedCollection.AllCodices)
                 {
-                    codex.ResetPersonalProperty(prop);
+                    codex.ResetPersonalProperty(prop.Name);
                 }
             }
         }
 
         public void ApplySelectedPreferences()
         {
-            List<string> selectedFolderPaths = AutoImportFolders.Where(x => x.Selected).Select(x => x.Path).ToList();
+            List<string> selectedFolderPaths = AutoImportFolders.Where(x => x.Selected).Select(x => x.Item).ToList();
             List<Folder> selectedFolders = CompleteCollection.Info.AutoImportFolders.Where(f => selectedFolderPaths.Contains(f.FullPath)).ToList();
             CuratedCollection.Info.AutoImportFolders.Clear();
             if (SelectAutoImportFolders)
@@ -254,7 +228,7 @@ namespace COMPASS.Common.ViewModels.Selection
             CuratedCollection.Info.BanishedPaths.Clear();
             if (SelectBanishedFiles)
             {
-                CuratedCollection.Info.BanishedPaths.ReplaceRange(BanishedPaths.Where(x => x.Selected).Select(x => x.Path));
+                CuratedCollection.Info.BanishedPaths.ReplaceRange(BanishedPaths.Where(x => x.Selected).Select(x => x.Item));
             }
 
             CuratedCollection.Info.FiletypePreferences.Clear();
@@ -297,21 +271,10 @@ namespace COMPASS.Common.ViewModels.Selection
             }
         }
         
-        private void OnPersonalDataSelectorPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(PersonalPropertySelectorViewModel.Selected))
-            {
-                OnPropertyChanged(nameof(RemoveAllPersonalData));
-            }
-        }
-
         public void Dispose()
         {
             _createdCollectionVm.Dispose();
-            foreach (var selector in PersonalDataSelectors)
-            {
-                selector.PropertyChanged -= OnPersonalDataSelectorPropertyChanged;
-            }
+            PersonalDataSelector.Dispose();
         }
     }
 }
