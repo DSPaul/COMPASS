@@ -21,8 +21,6 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
         public ImportTagsViewModel(IEnumerable<CollectionHandle> importCollectionHandles, string targetCollectionId)
         {
-            WindowTitle = "Import Tags";
-
             //Load the target collection
             _targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId) ?? throw new LoadException(targetCollectionId);
 
@@ -32,6 +30,13 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             }
 
             TagsSelectorVM = new TagsSelectorViewModel(_collectionHandles.Select(h => h.CollectionVM));
+        }
+
+        public ImportTagsViewModel(CodexCollectionVM codexCollectionVM, string targetCollectionId)
+        {
+            //Load the target collection
+            _targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId) ?? throw new LoadException(targetCollectionId);
+            TagsSelectorVM = new TagsSelectorViewModel(codexCollectionVM);
         }
 
         private readonly IList<CollectionHandle> _collectionHandles = [];
@@ -56,7 +61,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             CloseAction.Invoke();
         }
 
-        public string WindowTitle { get; }
+        public string WindowTitle { get; } = "Import Tags";
         public Action CloseAction { get; set; } = () => { };
 
         public void Dispose()

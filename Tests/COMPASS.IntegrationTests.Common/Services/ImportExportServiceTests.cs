@@ -42,17 +42,17 @@ namespace COMPASS.IntegrationTests.Common.Services
             await zip.SaveToAsync(path, CompressionType.None);
 
             //Because satchel does not contain a codexInfo file, should work
-            var collectionId = await storageService.OpenSatchel(path);
-            Assert.That(collectionId, Is.Not.Null);
-            repo.DeleteCollection(collectionId);
+            var collection = await storageService.OpenSatchel(path);
+            Assert.That(collection, Is.Not.Null);
+            repo.DeleteCollection(collection.Name);
 
             //Now add a codex file
             zip.AddEntry("CodexInfo.xml", GenerateStreamFromString("Not important"));
             await zip.SaveToAsync(path, CompressionType.None);
 
             //Now that the codex file is added, should be null
-            collectionId = await storageService.OpenSatchel(path);
-            Assert.That(collectionId, Is.Null);
+            collection = await storageService.OpenSatchel(path);
+            Assert.That(collection, Is.Null);
 
             File.Delete(path);
         }
@@ -84,11 +84,9 @@ namespace COMPASS.IntegrationTests.Common.Services
             try
             {
                 //Deserialize Satchel
-                string? deserializedCollectionId = await importExportService.OpenSatchel(filePath);
-                Assert.That(!string.IsNullOrEmpty(deserializedCollectionId));
-                var deserializedCollection = new CodexCollection(deserializedCollectionId!);
-                deserializedCollectionVm = new CodexCollectionVM(deserializedCollectionId!, deserializedCollection, StorageStrategy.Xml);
-                await Task.Delay(100);
+                var deserializedCollection = await importExportService.OpenSatchel(filePath);
+                Assert.That(deserializedCollection, Is.Not.Null);
+                deserializedCollectionVm = new CodexCollectionVM(deserializedCollection, StorageStrategy.Xml);
                 ImportCollectionViewModel importViewModel = new(deserializedCollectionVm);
 
                 Assert.That(importViewModel.ContentSelectorVM.HasCodices, "deserialized satchel has no Codices");

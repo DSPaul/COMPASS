@@ -20,7 +20,9 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         : base(collection)
     {
         _identifier = identifier;
-            
+
+        //Create codex vms for existing codices in collection
+        AllCodexVms.AddRange(collection.AllCodices.Select(codex => new CodexViewModel(codex, this)));
         collection.AllCodices.CollectionChanged += OnAllCodicesCollectionChanged;
         
         _repo = repo;
@@ -30,6 +32,11 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
 
     public CodexCollectionVM(string identifier, CodexCollection collection, StorageStrategy storageStrat) 
         :this(identifier, collection, ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(storageStrat))
+    {
+    }
+
+    public CodexCollectionVM(CodexCollection collection, StorageStrategy storageStrat)
+        : this(collection.Name, collection, ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(storageStrat))
     {
     }
 

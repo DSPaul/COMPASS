@@ -206,17 +206,16 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     public async Task ImportSatchelAsync(string? path)
     {
         var importService = ServiceResolver.Resolve<IImportExportService>();
-        var extractedCollectionName = await importService.OpenSatchel(path);
+        var extractedCollection = await importService.OpenSatchel(path);
 
-        if (extractedCollectionName == null)
+        if (extractedCollection == null)
         {
             Logger.Warn("Failed to read file");
             return;
         }
         
         //open wizard, which will handle the rest of the import process
-        CodexCollection toImport = new(extractedCollectionName);
-        CodexCollectionVM toImportVm = new(extractedCollectionName, toImport, StorageStrategy.Xml);
+        CodexCollectionVM toImportVm = new(extractedCollection, StorageStrategy.Xml);
         ImportCollectionViewModel importCollectionVM = new(toImportVm);
         ModalWindow wizard = new(importCollectionVM);
         wizard.Show(WindowManager.ActiveWindow);

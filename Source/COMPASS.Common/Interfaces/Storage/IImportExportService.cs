@@ -9,10 +9,11 @@ public interface IImportExportService
 
     /// <summary>
     /// Unpack the satchel at the given location
+    /// Will be extracted to the default collection path as a temp collection
     /// </summary>
     /// <param name="satchelPath"></param>
-    /// <returns>The collection id of the extracted collection</returns>
-    Task<string?> OpenSatchel(string? satchelPath = null);
+    /// <returns> The loaded collection</returns>
+    Task<CodexCollection?> OpenSatchel(string? satchelPath = null);
 
     #endregion
 

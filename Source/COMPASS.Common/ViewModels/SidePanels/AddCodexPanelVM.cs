@@ -33,17 +33,16 @@ namespace COMPASS.Common.ViewModels.SidePanels
         {
             //satchels store data in xml format
             var importService = ServiceResolver.Resolve<IImportExportService>();
-            var extractedCollectionName = await importService.OpenSatchel();
+            var extractedCollection = await importService.OpenSatchel();
 
-            if (extractedCollectionName == null)
+            if (extractedCollection == null)
             {
                 Logger.Warn("Failed to open file");
                 return;
             }
 
             //Create importCollection ready to merge into an existing collection
-            CodexCollection toImport = new(extractedCollectionName);
-            CodexCollectionVM toImportVm = new(extractedCollectionName, toImport, StorageStrategy.Xml);
+            CodexCollectionVM toImportVm = new(extractedCollection, StorageStrategy.Xml);
             
             var targetCollectionVm = TabsViewModel.GetInstance().ActiveTab!.CollectionVM;
             var vm = new ImportCollectionViewModel(toImportVm, targetCollectionVm)
@@ -55,7 +54,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
 
             if (!vm.ContentSelectorVM.HasCodices)
             {
-                Notification noItemsFound = new("No items found", $"{extractedCollectionName[2..]} does not contain items to import");
+                Notification noItemsFound = new("No items found", $"{extractedCollection.Name[2..]} does not contain items to import");
                 await ServiceResolver.Resolve<INotificationService>().ShowDialog(noItemsFound);
                 return;
             }

@@ -32,12 +32,7 @@ public class ImportExportService(
 
     #region Import
 
-    /// <summary>
-    /// Unpack the satchel at the given location
-    /// </summary>
-    /// <param name="satchelPath"></param>
-    /// <returns> The collection id which is also the name of the extracted folder </returns>
-    public async Task<string?> OpenSatchel(string? satchelPath = null)
+    public async Task<CodexCollection?> OpenSatchel(string? satchelPath = null)
     {
         FilePickerOpenOptions options = new()
         {
@@ -56,6 +51,8 @@ public class ImportExportService(
             satchelPath = file.Path.AbsolutePath;
         }
 
+        string satchelName = Path.GetFileName(satchelPath);
+
         //Check compatibility
         using (ZipArchive archive = ZipArchive.Open(satchelPath))
         {
@@ -64,9 +61,9 @@ public class ImportExportService(
             {
                 //No version information means we cannot ensure compatibility, so abort
                 string message =
-                    $"Cannot import {Path.GetFileName(satchelPath)} because it does not contain version info, and might therefor not be compatible with your version v{ApplicationService.Version}.";
+                    $"Cannot import {satchelName} because it does not contain version info, and might therefor not be compatible with your version v{ApplicationService.Version}.";
                 Logger.Warn(message);
-                Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message, Severity.Warning);
+                Notification warnNotification = new($"Could not import {satchelName}", message, Severity.Warning);
                 await windowedNotificationService.ShowDialog(warnNotification);
                 return null;
             }
@@ -83,9 +80,9 @@ public class ImportExportService(
             {
                 //No version information means we cannot ensure compatibility, so abort
                 string message =
-                    $"Cannot import {Path.GetFileName(satchelPath)} because it does not contain version info, and might therefor not be compatible with your version v{ApplicationService.Version}.";
+                    $"Cannot import {satchelName} because it does not contain version info, and might therefor not be compatible with your version v{ApplicationService.Version}.";
                 Logger.Warn(message);
-                Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message, Severity.Warning);
+                Notification warnNotification = new($"Could not import {satchelName}", message, Severity.Warning);
                 await windowedNotificationService.ShowDialog(warnNotification);
                 return null;
             }
@@ -134,7 +131,23 @@ public class ImportExportService(
         try
         {
             string unzipLocation = await UnZipCollection(satchelPath);
-            return Path.GetFileName(unzipLocation);
+            var identifier = Path.GetFileName(unzipLocation);
+
+            //Load collection once
+            CodexCollection collection = new CodexCollection(identifier);
+            var xmlservice = ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
+            xmlservice.Load(collection);
+
+            //Image paths need to be updated to point to the dir where the files where extracted
+            var thumbnailService = ServiceResolver.Resolve<IThumbnailStorageService>();
+            foreach(var codex in collection.AllCodices)
+            {
+                thumbnailService.InitCodexImagePaths(codex);
+            }
+
+            xmlservice.SaveCodices(collection);
+
+            return collection;
         }
         catch (Exception ex)
         {
