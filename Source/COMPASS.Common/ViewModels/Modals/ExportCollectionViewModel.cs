@@ -7,7 +7,7 @@ using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Infra.Tools;
 
-namespace COMPASS.Common.ViewModels
+namespace COMPASS.Common.ViewModels.Modals
 {
     public class ExportCollectionViewModel : WizardViewModel
     {
@@ -47,11 +47,13 @@ namespace COMPASS.Common.ViewModels
             new(ApplyActiveFilters, () => TabsViewModel.GetInstance().ActiveTab?.FiltersVM.HasActiveFilters ?? false);
         private void ApplyActiveFilters()
         {
+            var filteredCodexIds = TabsViewModel.GetInstance().ActiveTab!.FiltersVM.FilteredCodices
+                                                .Select(codexVm => codexVm.Id)
+                                                .ToHashSet();
+
             foreach (var selectableCodex in ContentSelectorVM.SelectableCodices)
             {
-                selectableCodex.Selected = TabsViewModel.GetInstance().ActiveTab!.FiltersVM.FilteredCodices
-                                                        .Select(codexVm => codexVm.GetModel())
-                                                        .Contains(selectableCodex.Codex);
+                selectableCodex.Selected = filteredCodexIds.Contains(selectableCodex.Codex.Id);
             }
             ContentSelectorVM.RaiseSelectedCodicesCountChanged();
         }

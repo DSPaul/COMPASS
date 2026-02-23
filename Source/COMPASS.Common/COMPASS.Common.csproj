@@ -7,6 +7,9 @@
     <Compile Remove="Tools\BarcodeReader\**" />
     <EmbeddedResource Remove="Tools\BarcodeReader\**" />
     <None Remove="Tools\BarcodeReader\**" />
+    <Compile Update="Views\Modals\ExportCollectionWizard.axaml.cs">
+      <DependentUpon>ExportCollectionWizard.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\TagsSelectorView.axaml.cs">
       <DependentUpon>TagsSelectorView.axaml</DependentUpon>
     </Compile>

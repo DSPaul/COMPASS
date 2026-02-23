@@ -330,6 +330,7 @@
         <Style Selector="^.Filled">
             <Style Selector="^/template/ Border#OuterBorder">
                 <Setter Property="Padding" Value="5" />
+                <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
             </Style>
             
             <Style Selector="^:checked">
@@ -337,6 +338,7 @@
                     <Setter Property="Background" Value="{StaticResource AccentColorMuted}" />
                 </Style>
             </Style>
+            
         </Style>
         
         <Style Selector="^[IsEffectivelyEnabled=true]">
@@ -499,6 +501,8 @@
 
         <!-- Checked state -->
         <Style Selector="^:checked">
+            <Setter Property="Cursor" Value="Arrow" />
+            
             <Style Selector="^ /template/ Border#OuterRing">
                 <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}" />
             </Style>

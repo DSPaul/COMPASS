@@ -18,58 +18,62 @@
         x:DataType="viewModels:IModalViewModel"
         Title="{Binding WindowTitle}"
         Closed="TopLevel_OnClosed">
-    
-    <Window.DataTemplates>
-        
-        
-        <!-- Modals -->
-        <DataTemplate DataType="editVm:TagEditViewModel">
-            <editViews:TagEditView/>
-        </DataTemplate>
-        
-        <DataTemplate DataType="editVm:CodexEditViewModel">
-            <editViews:CodexEditView/>
-        </DataTemplate>
-        
-        <DataTemplate DataType="editVm:CodexBulkEditViewModel">
-            <editViews:CodexBulkEditView/>
-        </DataTemplate>
-        
-        <DataTemplate DataType="importVm:ImportURLViewModel">
-            <importViews:ImportURLView/>
-        </DataTemplate>
-        
-        <DataTemplate DataType="importVm:ImportFolderWizardVm">
-            <importViews:ImportFolderWizard/>
-        </DataTemplate>
 
-      <DataTemplate DataType="importVm:ImportTagsViewModel">
-        <importViews:ImportTagsView/>
-      </DataTemplate>
-        
-        <DataTemplate DataType="vm:FileNotFoundViewModel">
-            <views:FileNotFoundView/>
-        </DataTemplate>
-        
-        <DataTemplate DataType="vm:SettingsViewModel">
-            <views:SettingsView/>
-        </DataTemplate>
-        
-        <DataTemplate DataType="vm:ChangeDataLocationViewModel">
-            <views:ChangeDataLocationView/>
-        </DataTemplate>
-        
-        <DataTemplate DataType="vm:ChooseMetaDataViewModel">
-            <views:ChooseMetaDataView/>
-        </DataTemplate>
-        
-        <!-- Wizards -->
-        <DataTemplate DataType="importVm:ImportCollectionViewModel">
-            <importViews:ImportCollectionWizard/>
-        </DataTemplate>
-        
-    </Window.DataTemplates>
-    
-    <ContentControl  x:Name="ContentPresenter" Content="{Binding}"/>
-    
+  <Window.DataTemplates>
+
+
+    <!-- Modals -->
+    <DataTemplate DataType="editVm:TagEditViewModel">
+      <editViews:TagEditView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="editVm:CodexEditViewModel">
+      <editViews:CodexEditView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="editVm:CodexBulkEditViewModel">
+      <editViews:CodexBulkEditView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="importVm:ImportURLViewModel">
+      <importViews:ImportURLView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="importVm:ImportFolderWizardVm">
+      <importViews:ImportFolderWizard/>
+    </DataTemplate>
+
+    <DataTemplate DataType="importVm:ImportTagsViewModel">
+      <importViews:ImportTagsView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="vm:FileNotFoundViewModel">
+      <views:FileNotFoundView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="vm:SettingsViewModel">
+      <views:SettingsView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="vm:ChangeDataLocationViewModel">
+      <views:ChangeDataLocationView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="vm:ChooseMetaDataViewModel">
+      <views:ChooseMetaDataView/>
+    </DataTemplate>
+
+    <!-- Wizards -->
+    <DataTemplate DataType="importVm:ImportCollectionViewModel">
+      <importViews:ImportCollectionWizard/>
+    </DataTemplate>
+
+    <DataTemplate DataType="vm:ExportCollectionViewModel">
+      <views:ExportCollectionWizard/>
+    </DataTemplate>
+
+  </Window.DataTemplates>
+
+  <ContentControl  x:Name="ContentPresenter" Content="{Binding}"/>
+
 </Window>

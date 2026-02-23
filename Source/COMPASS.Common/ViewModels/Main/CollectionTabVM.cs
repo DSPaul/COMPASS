@@ -9,6 +9,7 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Layouts;
+using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.ViewModels.SidePanels;
 using COMPASS.Common.Views.Windows;
@@ -188,13 +189,12 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     }
 
     //Export Collection
-    public RelayCommand ExportCommand => field ??= new(Export);
-    private void Export()
+    public AsyncRelayCommand ExportCommand => field ??= new(Export);
+    private async Task Export()
     {
-        //open wizard
         ExportCollectionViewModel exportCollectionVM = new(CollectionVM.Collection);
-        ExportCollectionWizard wizard = new(exportCollectionVM);
-        wizard.Show(WindowManager.ActiveWindow);
+        ModalWindow wizard = new(exportCollectionVM);
+        await wizard.ShowDialog(WindowManager.ActiveWindow);
     }
 
     public AsyncRelayCommand ExportTagsCommand => field ??= new(CollectionVM.ExportTags);

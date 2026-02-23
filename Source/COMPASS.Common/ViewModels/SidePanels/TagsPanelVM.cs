@@ -11,6 +11,7 @@ using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.ViewModels.ModelVMs;
@@ -213,8 +214,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
             toImportVm.DeleteCollection();
         }
 
-        public RelayCommand ExportTagsCommand => field ??= new(ExportTags);
-        public void ExportTags()
+        public AsyncRelayCommand ExportTagsCommand => field ??= new(ExportTags);
+        public async Task ExportTags()
         {
             var vm = new ExportCollectionViewModel
             {
@@ -229,8 +230,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
                 codex.Selected = false;
             }
 
-            var w = new ExportCollectionWizard(vm);
-            w.Show(WindowManager.ActiveWindow);
+            var w = new ModalWindow(vm);
+            await w.ShowDialog(WindowManager.ActiveWindow);
         }
 
         #endregion

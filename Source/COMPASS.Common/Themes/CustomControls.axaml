@@ -379,6 +379,37 @@
         </Setter>
     </ControlTheme>
     
+    <!-- CheckableContainer -->
+    <ControlTheme x:Key="{x:Type controls:CheckableContainer}" TargetType="controls:CheckableContainer">
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:CheckableContainer">
+                <Border x:Name="OuterBorder" BorderThickness="2" CornerRadius="5"
+                        BorderBrush="{StaticResource ButtonBackground}">
+                    <StackPanel>
+                        <CheckBox Classes="Filled"
+                                  HorizontalAlignment="Stretch"
+                                  Content="{TemplateBinding Header}"
+                                  IsChecked="{TemplateBinding IsChecked, Mode=TwoWay}"
+                                  Margin="-2,-2,-2,0"/>
+                        <ContentPresenter x:Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Margin="10"
+                                          IsEnabled="{TemplateBinding IsChecked}"/>
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:checked /template/ Border#OuterBorder">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}"/>
+        </Style>
+
+        <Style Selector="^:not(:checked) /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="0.5"/>
+        </Style>
+    </ControlTheme>
+
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="10">

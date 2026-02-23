@@ -1,0 +1,220 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="using:COMPASS.Common.Views"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
+             xmlns:selectionVm="using:COMPASS.Common.ViewModels.Selection"
+             xmlns:conv="using:COMPASS.Common.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="COMPASS.Common.Views.Modals.ExportCollectionWizard"
+             MinHeight="650" MinWidth="1200"
+             x:DataType="vm:ExportCollectionViewModel">
+  <views:Wizard>
+    <views:Wizard.Resources>
+      <conv:WizardStepTemplateSelector x:Key="WizardStepTemplateSelector">
+        <DataTemplate x:Key="Overview" x:DataType="vm:ExportCollectionViewModel">
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="20" RowSpacing="20" Margin="20">
+            <RadioButton Grid.Column="0"
+                         GroupName="Advanced" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"
+                         Classes="Container" Background="{StaticResource Layer3}"
+                         IsChecked="{Binding !AdvancedExport}">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Quick Export" TextAlignment="Center" FontSize="20" Margin="20"/>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="5">
+                  <CheckBox Content="All Tags" Classes="Filled" 
+                            IsChecked="{Binding ExportAllTags}"
+                            HorizontalAlignment="Stretch"
+                            IsVisible="{Binding ContentSelectorVM.HasTags}" Margin="5"/>
+
+                  <controls:CheckableContainer Header="All Books/Items"
+                                               IsChecked="{Binding ExportAllCodices}"
+                                               IsVisible="{Binding ContentSelectorVM.HasCodices}"
+                                               Margin="5">
+                    <StackPanel>
+                      <StackPanel Orientation="Horizontal" Spacing="5" Margin="20,0">
+                        <CheckBox Content="Reset personal data on all items" IsChecked="{Binding ContentSelectorVM.PersonalDataSelector.SelectAll}"/>
+                        <controls:Explainer VerticalAlignment="Center"
+                                            Content="'Personal data' includes fields such as &#x0a; - Favorite &#x0a; - Physically owned &#x0a; - Rating &#x0a; - Last opened &#x0a; - Times opened &#x0a; - Date added"/>
+                      </StackPanel>
+                      <StackPanel Orientation="Horizontal" Spacing="5" Margin="20,0">
+                        <CheckBox Content="Include files that are referenced by these items" IsChecked="{Binding IncludeFiles}"/>
+                        <controls:Explainer VerticalAlignment="Center"
+                                            Content="This will include referenced files such as pdf's, images, etc. as part of the export"/>
+                      </StackPanel>
+                      <StackPanel Orientation="Horizontal" Spacing="5" Margin="20,0">
+                        <CheckBox Content="Include cover/thumbnails" IsChecked="{Binding IncludeCoverArt}"/>
+                        <controls:Explainer VerticalAlignment="Center"
+                                            Content="This will significantly increase the size of the export"/>
+                      </StackPanel>
+                    </StackPanel>
+                  </controls:CheckableContainer>
+
+                  <CheckBox Content="All Settings" Classes="Filled" 
+                            IsChecked="{Binding ExportAllSettings}"
+                            HorizontalAlignment="Stretch"
+                            IsVisible="{Binding ContentSelectorVM.HasSettings}" Margin="5"/>
+                </StackPanel>
+              </StackPanel>
+            </RadioButton>
+            <RadioButton Grid.Column="1"
+                         GroupName="Advanced" HorizontalContentAlignment="Center" VerticalAlignment="Stretch"
+                         Classes="Container" Background="{StaticResource Layer3}"
+                         IsChecked="{Binding AdvancedExport}">
+              <StackPanel>
+                <TextBlock Text="Advanced Export" TextAlignment="Center" FontSize="20"/>
+                <TextBlock Text="Pick And Choose" Foreground="{StaticResource TextMutedColor}"
+                           TextAlignment="Center"/>
+              </StackPanel>
+            </RadioButton>
+          </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="SelectTags" x:DataType="vm:ExportCollectionViewModel">
+          <views:TagsSelectorView DataContext="{Binding ContentSelectorVM.TagsSelectorVM}" />
+        </DataTemplate>
+        <DataTemplate x:Key="SelectItems" x:DataType="vm:ExportCollectionViewModel">
+          <Grid RowDefinitions="auto,auto,auto,auto,*" RowSpacing="10">
+            <views:ItemsSelectorView DataContext="{Binding ContentSelectorVM.PersonalDataSelector}" Margin="15,0">
+              <views:ItemsSelectorView.Title>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <TextBlock Text="Personal Data to Reset" VerticalAlignment="Center"/>
+                  <controls:Explainer VerticalAlignment="Center"
+                                      Content="Selected fields will be reset to their default values (e.g. Rating -> 0, DateAdded -> Now). &#x0a;Unselected fields will be exported as-is."/>
+                </StackPanel>
+              </views:ItemsSelectorView.Title>
+              <views:ItemsSelectorView.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel/>
+                </ItemsPanelTemplate>
+              </views:ItemsSelectorView.ItemsPanel>
+            </views:ItemsSelectorView>
+            <Grid Grid.Row="1" ColumnDefinitions="auto,auto,*" Margin="20,0" RowDefinitions="auto,auto">
+              <StackPanel Orientation="Horizontal" Spacing="5" Grid.Row="0" Grid.Column="0">
+                <CheckBox Content="Include files that are referenced by these items" IsChecked="{Binding IncludeFiles}"/>
+                <controls:Explainer VerticalAlignment="Center"
+                                    Content="This will include referenced files such as pdf's, images, etc. as part of the export"/>
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="5" Grid.Row="1" Grid.Column="0">
+                <CheckBox Content="Include cover/thumbnails" IsChecked="{Binding IncludeCoverArt}"/>
+                <controls:Explainer VerticalAlignment="Center"
+                                    Content="This will significantly increase the size of the export"/>
+              </StackPanel>
+              <controls:IconButton Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+                                   Content="Apply Active Filters"
+                                   Command="{Binding ApplyActiveFiltersCommand}"
+                                   Icon="Filter"
+                                   Classes="HideIfDisabled"
+                                   HorizontalAlignment="Left" Margin="20,0"/>
+              <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right">
+                <Run Text="{Binding ContentSelectorVM.SelectedCodicesCount, Mode=OneWay}"/>
+                /
+                <Run Text="{Binding ContentSelectorVM.SelectableCodices.Count, Mode=OneTime}"/>
+                Items Selected
+              </TextBlock>
+            </Grid>
+            <Rectangle Height="3" Fill="{StaticResource Separator}" Grid.Row="2"/>
+            <DataGrid
+              Grid.Row="4"
+              Background="Transparent" Padding="10, 0"
+              BorderBrush="Transparent"
+              ItemsSource="{Binding ContentSelectorVM.SelectableCodices}"
+              SelectionMode="Extended" CornerRadius="5"
+              CanUserResizeColumns="True"
+              IsReadOnly="True">
+              <DataGrid.Styles>
+                <Style Selector="TextBlock">
+                  <Setter Property="TextWrapping" Value="Wrap" />
+                </Style>
+              </DataGrid.Styles>
+              <DataGrid.Columns>
+                <DataGridTemplateColumn Header="EXPORT" Width="Auto" MinWidth="50">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <CheckBox IsChecked="{Binding Selected, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"
+                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=SelectedItems}"
+                                Command="{Binding ItemCheckedCommand}" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="TITLE" Binding="{Binding Codex.Title}" Width="*" MinWidth="100" CanUserSort="True" />
+                <DataGridTemplateColumn Header="FILE" Width="*" MinWidth="100" CanUserSort="True">
+                  <DataTemplate DataType="selectionVm:CollectionContentSelectorViewModel+SelectableCodex">
+                    <DockPanel>
+                      <controls:Explainer Icon="Warning"
+                                          Foreground="{StaticResource WarningFill}"
+                                          DockPanel.Dock="Right"
+                                          IsVisible="{Binding !PathExits}"
+                                          Content="This file could not be found"
+                                          Margin="5 0"/>
+                      <TextBlock Text="{Binding Codex.Sources.FileName}"/>
+                    </DockPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="URL" Binding="{Binding Codex.Sources.SourceURL}" Width="*" MinWidth="100" CanUserSort="True"/>
+              </DataGrid.Columns>
+            </DataGrid>
+          </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="SelectSettings" x:DataType="vm:ExportCollectionViewModel">
+          <ScrollViewer DataContext="{Binding ContentSelectorVM}">
+            <StackPanel Spacing="10">
+              <StackPanel.Resources>
+                <DataTemplate x:Key="PathTemplate" x:CompileBindings="False">
+                  <Border BorderBrush="{StaticResource AccentColorMuted}"
+                          BorderThickness="1" CornerRadius="5" Padding="5" Margin="10,5">
+                    <CheckBox IsChecked="{Binding Selected}" HorizontalContentAlignment="Stretch">
+                      <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,auto">
+                        <TextBlock Text="{Binding DisplayName}" Margin="0" TextWrapping="Wrap"/>
+                        <controls:Explainer Grid.Column="1"
+                                            Icon="Warning"
+                                            Foreground="{StaticResource WarningFill}"
+                                            IsVisible="{Binding !PathExits}"
+                                            Content="This path could not be found"
+                                            Margin="5 0"/>
+                      </Grid>
+                    </CheckBox>
+                  </Border>
+                </DataTemplate>
+              </StackPanel.Resources>
+
+              <views:ItemsSelectorView DataContext="{Binding AutoImportFoldersSelector}"
+                                       Title="Directories to Auto Import from"
+                                       ItemTemplate="{StaticResource PathTemplate}"
+                                       IsVisible="{Binding SelectableItems.Count}"
+                                       Margin="20,0"/>
+
+              <views:ItemsSelectorView DataContext="{Binding BanishedPathsSelector}"
+                                       Title="Banished files (Files to Exclude from future imports)"
+                                       ItemTemplate="{StaticResource PathTemplate}"
+                                       IsVisible="{Binding SelectableItems.Count}"
+                                       Margin="20,0"/>
+
+              <views:ItemsSelectorView DataContext="{Binding FileTypePrefsSelector}"
+                                       Title="File types to include in imports"
+                                       IsVisible="{Binding SelectableItems.Count}"
+                                       Margin="20,0">
+                <views:ItemsSelectorView.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel/>
+                  </ItemsPanelTemplate>
+                </views:ItemsSelectorView.ItemsPanel>
+                <views:ItemsSelectorView.ItemTemplate>
+                  <DataTemplate x:CompileBindings="False">
+                    <CheckBox Content="{Binding DisplayName}"
+                              IsChecked="{Binding Item.Value}"
+                              IsHitTestVisible="False"
+                              Margin="15"/>
+                  </DataTemplate>
+                </views:ItemsSelectorView.ItemTemplate>
+              </views:ItemsSelectorView>
+            </StackPanel>
+          </ScrollViewer>
+        </DataTemplate>
+      </conv:WizardStepTemplateSelector>
+    </views:Wizard.Resources>
+    <ContentControl Content="{Binding}"
+                    ContentTemplate="{Binding CurrentStep, Converter={StaticResource WizardStepTemplateSelector}}"/>
+
+  </views:Wizard>
+</UserControl>
