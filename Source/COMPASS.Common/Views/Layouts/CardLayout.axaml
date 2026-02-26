@@ -34,12 +34,13 @@
         </ListBox.ItemContainerTheme>
         <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
-                <WrapPanel HorizontalAlignment="Center" />
+                <controls:WrapGrid HorizontalContentAlignment="Center" />
             </ItemsPanelTemplate>
         </ListBox.ItemsPanel>
         <ListBox.ItemTemplate>
             <DataTemplate DataType="modelVm:CodexViewModel">
                 <Border CornerRadius="5" Margin="20" Width="400"
+                        BorderThickness="3"
                         Background="{StaticResource CardBackground}"
                         BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" 
                         DoubleTapped="Codex_DoubleTapped"
