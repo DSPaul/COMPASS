@@ -89,6 +89,20 @@
             <Setter Property="RenderTransform" Value="scale(1.1)" />
         </Style>
     </Style>
+  
+  <Style Selector=":is(Control).SmallZoomOnHover">
+    <Setter Property="Transitions">
+      <Setter.Value>
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform"
+                                         Duration="0:0:0.05" Easing="CubicEaseOut" />
+        </Transitions>
+      </Setter.Value>
+    </Setter>
+    <Style Selector="^:pointerover">
+      <Setter Property="RenderTransform" Value="scale(1.05)" />
+    </Style>
+  </Style>
 
     <Style Selector=":is(Control).HideIfDisabled">
         <Style Selector="^:disabled">
