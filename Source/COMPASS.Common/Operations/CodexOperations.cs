@@ -147,7 +147,11 @@ namespace COMPASS.Common.Operations
         public AsyncRelayCommand<IList> EditCodicesCommand => field ??= new(EditCodices);
         public async Task EditCodices(IList? toEdit)
         {
-            List<Codex>? toEditList = toEdit?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList();
+            List<Codex>? toEditList = toEdit?
+                .OfType<CodexViewModel>().Select(vm => vm.GetModel()) //could be codexVms
+                .Concat(toEdit.OfType<Codex>())                       //could just be codices
+                .ToList();
+
             if (!toEditList.SafeAny()) return;
 
             if (toEditList.Count == 1)
