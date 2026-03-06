@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+﻿﻿using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Platform.Storage;
 using COMPASS.Common.Interfaces.Repos;
@@ -13,6 +13,7 @@ using COMPASS.Tests.Common.DataGenerators;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
+using SharpCompress.Writers.Zip;
 using System.Text.Json;
 using Constants = COMPASS.Common.Models.Constants;
 
@@ -31,15 +32,18 @@ namespace COMPASS.IntegrationTests.Common.Services
                 MinTagsVersion = "1.0.0",
             };
 
+            string path = Path.GetTempPath() + Guid.NewGuid() + Constants.SatchelExtension;
             var storageService = ServiceResolver.Resolve<IImportExportService>();
             var repo = ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
 
-            using var zip = ZipArchive.Create();
-            zip.AddEntry(Constants.SatchelInfoFileName, GenerateStreamFromString(JsonSerializer.Serialize(info)));
-            zip.AddEntry("Tags.xml", GenerateStreamFromString("pseudo data"));
+            await using (var zip = await ZipArchive.CreateAsyncArchive())
+            {
+                await zip.AddEntryAsync(Constants.SatchelInfoFileName, GenerateStreamFromString(JsonSerializer.Serialize(info)));
+                await zip.AddEntryAsync("Tags.xml", GenerateStreamFromString("<?xml version=\"1.0\" encoding=\"utf-8\"?><ArrayOfTag />"));
 
-            string path = Path.GetTempPath() + Guid.NewGuid() + Constants.SatchelExtension;
-            await zip.SaveToAsync(path, CompressionType.None);
+                await using var fileStream1 = File.Create(path);
+                await zip.SaveToAsync(fileStream1, new ZipWriterOptions(CompressionType.None));
+            }
 
             //Because satchel does not contain a codexInfo file, should work
             var collection = await storageService.OpenSatchel(path);
@@ -47,8 +51,15 @@ namespace COMPASS.IntegrationTests.Common.Services
             repo.DeleteCollection(collection.Name);
 
             //Now add a codex file
-            zip.AddEntry("CodexInfo.xml", GenerateStreamFromString("Not important"));
-            await zip.SaveToAsync(path, CompressionType.None);
+            await using (var zip = await ZipArchive.CreateAsyncArchive())
+            {
+                await zip.AddEntryAsync(Constants.SatchelInfoFileName, GenerateStreamFromString(JsonSerializer.Serialize(info)));
+                await zip.AddEntryAsync("Tags.xml", GenerateStreamFromString("<?xml version=\"1.0\" encoding=\"utf-8\"?><ArrayOfTag />"));
+                await zip.AddEntryAsync("CodexInfo.xml", GenerateStreamFromString("Not important"));
+
+                await using var fileStream2 = File.Create(path);
+                await zip.SaveToAsync(fileStream2, new ZipWriterOptions(CompressionType.None));
+            }
 
             //Now that the codex file is added, should be null
             collection = await storageService.OpenSatchel(path);

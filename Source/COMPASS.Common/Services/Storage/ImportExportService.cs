@@ -11,6 +11,7 @@ using NuGet.Versioning;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
+using SharpCompress.Writers.Zip;
 using System.Text.Json;
 using Constants = COMPASS.Common.Models.Constants;
 using Notification = COMPASS.Common.Models.Notification;
@@ -54,9 +55,9 @@ public class ImportExportService(
         string satchelName = Path.GetFileName(satchelPath);
 
         //Check compatibility
-        using (ZipArchive archive = ZipArchive.Open(satchelPath))
+        await using (var archive = await ZipArchive.OpenAsyncArchive(satchelPath))
         {
-            var satchelInfoFile = archive.Entries.SingleOrDefault(entry => entry.Key == Constants.SatchelInfoFileName);
+            var satchelInfoFile = await archive.EntriesAsync.SingleOrDefaultAsync(entry => entry.Key == Constants.SatchelInfoFileName);
             if (satchelInfoFile == null)
             {
                 //No version information means we cannot ensure compatibility, so abort
@@ -69,11 +70,14 @@ public class ImportExportService(
             }
 
             //Read the file contents
-            using var stream = new MemoryStream();
-            satchelInfoFile.WriteTo(stream);
-            stream.Seek(0, SeekOrigin.Begin);
-            using StreamReader reader = new(stream);
-            string json = await reader.ReadToEndAsync();
+            string json = string.Empty;
+            using (var stream = new MemoryStream())
+            {
+                satchelInfoFile.WriteTo(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                using StreamReader reader = new(stream);
+                json = await reader.ReadToEndAsync();
+            }
 
             var satchelInfo = JsonSerializer.Deserialize<SatchelInfo>(json);
             if (satchelInfo == null)
@@ -90,7 +94,7 @@ public class ImportExportService(
             SemanticVersion currentVersion = SemanticVersion.Parse(ApplicationService.Version);
             var minVersions = new List<SemanticVersion> { currentVersion }; //keep a list of min requirements
 
-            var filesInZip = archive.Entries.Select(entry => entry.Key).ToList();
+            var filesInZip = await archive.EntriesAsync.Select(entry => entry.Key).ToListAsync();
 
             //Check Codex version
             if (filesInZip.Contains(CodicesFileName))
@@ -170,7 +174,7 @@ public class ImportExportService(
         ioService.ClearTmpData(tmpCollectionPath);
 
         //unzip the file to tmp folder
-        using ZipArchive archive = ZipArchive.Open(zipFile);
+        await using var archive = await ZipArchive.OpenAsyncArchive(zipFile);
 
         //report progress
         var progressVM = ProgressViewModel.GetInstance();
@@ -213,12 +217,12 @@ public class ImportExportService(
                 if (file == null) return;
             }
 
-            using var archive = ZipArchive.Create();
+            await using var archive = await ZipArchive.CreateAsyncArchive();
 
             //Add the files themselves as well as cover art if requested
             if (includeFiles)
             {
-                AddUserFilesToArchive(collection, archive);
+                await AddUserFilesToArchive(collection, archive);
             }
             else
             {
@@ -231,15 +235,16 @@ public class ImportExportService(
 
             if (includeCovers)
             {
-                AddCoversToArchive(collection, archive);
+                await AddCoversToArchive(collection, archive);
             }
 
             //Now add metadata files
-            AddCollectionToArchive(archive, collection);
+            await AddCollectionToArchive(archive, collection);
 
             //Add the version so we can check compatibility when importing
             SatchelInfo info = new();
-            archive.AddEntry(Constants.SatchelInfoFileName, new MemoryStream(JsonSerializer.SerializeToUtf8Bytes(info)));
+            using var infoStream = new MemoryStream(JsonSerializer.SerializeToUtf8Bytes(info));
+            await archive.AddEntryAsync(Constants.SatchelInfoFileName, infoStream);
 
             //Prepare progress reporting
             progressVM.Text = "Exporting Collection";
@@ -247,12 +252,11 @@ public class ImportExportService(
             progressVM.ResetCounter();
 
             //Write archive
-            var writerOptions = new SharpCompress.Writers.WriterOptions(CompressionType.None)
+            var writerOptions = new ZipWriterOptions(CompressionType.None)
             {
-                LeaveStreamOpen = false,
                 Progress = progressVM
             };
-            var stream = await file.OpenWriteAsync();
+            await using var stream = await file.OpenWriteAsync();
             await archive.SaveToAsync(stream, writerOptions);
 
             Logger.Info($"Exported {collection.Name} to {file.TryGetLocalPath()}");
@@ -283,22 +287,21 @@ public class ImportExportService(
         if (selectedFile == null) return;
 
         //Create archive
-        using var archive = ZipArchive.Create();
+        await using var archive = await ZipArchive.CreateAsyncArchive();
 
         //Add Tags
-        using (var stream = new MemoryStream())
+        using var stream = new MemoryStream();
+        bool savedTags = repo.SaveTags(collection, stream);
+        if (!savedTags)
         {
-            var tags = repo.SaveTags(collection, stream);
-            archive.AddEntry(TagsFileName, stream);
+            Logger.Warn($"Failed to save tags for {collection.Name} during export");
+            return;
         }
+        await archive.AddEntryAsync(TagsFileName, stream);
 
         //write archive
-        var options = new SharpCompress.Writers.WriterOptions(CompressionType.None)
-        {
-            LeaveStreamOpen = false
-        };
-
-        var targetStream = await selectedFile.OpenWriteAsync();
+        var options = new ZipWriterOptions(CompressionType.None);
+        await using var targetStream = await selectedFile.OpenWriteAsync();
         await archive.SaveToAsync(targetStream, options);
 
         Logger.Info($"Exported Tags from {collection.Name} to {selectedFile.TryGetLocalPath()}");
@@ -332,27 +335,27 @@ public class ImportExportService(
         }
     }
 
-    private void AddCollectionToArchive(ZipArchive archive, CodexCollection collection)
+    private async Task AddCollectionToArchive(IWritableAsyncArchive<ZipWriterOptions> archive, CodexCollection collection)
     {
         var repo = ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
 
         //Add codices
         var codicesStream = new MemoryStream();
         repo.SaveCodices(collection, codicesStream);
-        archive.AddEntry(CodicesFileName, codicesStream);
+        await archive.AddEntryAsync(CodicesFileName, codicesStream);
 
         //Add Tags
         var tagsStream = new MemoryStream();
         repo.SaveTags(collection, tagsStream);
-        archive.AddEntry(TagsFileName, tagsStream);
+        await archive.AddEntryAsync(TagsFileName, tagsStream);
 
         //Add Info
         var infoStream = new MemoryStream();
         repo.SaveInfo(collection, infoStream);
-        archive.AddEntry(CollectionInfoFileName, infoStream);
+        await archive.AddEntryAsync(CollectionInfoFileName, infoStream);
     }
     
-    private static void AddUserFilesToArchive(CodexCollection collection, ZipArchive archive)
+    private async static Task AddUserFilesToArchive(CodexCollection collection, IWritableAsyncArchive<ZipWriterOptions> archive)
     {
         //Change Codex Path to relative and add those files if the options is set
         var itemsWithOfflineSource = collection.AllCodices
@@ -366,7 +369,7 @@ public class ImportExportService(
             //Add the file
             if (File.Exists(codex.Sources.Path))
             {
-                archive.AddEntry(Path.Combine("Files", relativePath), codex.Sources.Path);
+                await archive.AddEntryAsync(Path.Combine("Files", relativePath), codex.Sources.Path);
             }
 
             //keep the relative path, will be used during import to link the included files
@@ -374,7 +377,7 @@ public class ImportExportService(
         }
     }
 
-    private static void AddCoversToArchive(CodexCollection collection, ZipArchive archive)
+    private async static Task AddCoversToArchive(CodexCollection collection, IWritableAsyncArchive<ZipWriterOptions> archive)
     {
         var itemsWithCovers = collection.AllCodices
             .Where(codex => codex.CoverArtPath != null && File.Exists(codex.CoverArtPath))
@@ -384,7 +387,7 @@ public class ImportExportService(
         {
             string relativePath = codex.CoverArtPath![commonFolder.Length..].TrimStart(Path.DirectorySeparatorChar);
             //Add the file
-            archive.AddEntry(Path.Combine("CoverArt", relativePath), codex.CoverArtPath!);
+            await archive.AddEntryAsync(Path.Combine("CoverArt", relativePath), codex.CoverArtPath!);
             //keep the relative path, will be used during import to link the included files
             codex.CoverArtPath = relativePath;
         }

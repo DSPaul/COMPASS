@@ -101,7 +101,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
         }
 
         //TODO add progress reporting
-        using ZipArchive archive = ZipArchive.Open(sourcePath);
+        await using var archive = await ZipArchive.OpenAsyncArchive(sourcePath);
         await archive.WriteToDirectoryAsync(_environmentVarsService.CompassDataPath);
     }
 }
