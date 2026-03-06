@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11222.15 d18.0
+VisualStudioVersion = 18.0.11222.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E241B1C4-362F-4508-8D9C-C287A341EF7F}"
 	ProjectSection(SolutionItems) = preProject
@@ -11,8 +11,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COMPASS.Infra", "Source\COMPASS.Infra\COMPASS.Infra.csproj", "{550EF5DC-20F9-4C22-8FA3-DA8AA4C6D931}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "COMPASS.Common", "Source\COMPASS.Common\COMPASS.Common.csproj", "{10718856-D256-44F3-9524-D85780E53955}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "COMPASS.WPF", "Source\COMPASS.WPF\COMPASS.WPF.csproj", "{793C5CC5-91E8-47D1-B791-E13B175D9B98}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "COMPASS.Windows", "Source\COMPASS.Windows\COMPASS.Windows.csproj", "{0BAB9820-19B5-4195-BA4B-8972E6242A2A}"
 EndProject
@@ -26,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Desktop", "Desktop", "{EFE9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A7F0AA7F-8AD1-43BF-B5BC-EC2BF2747246}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.UnitTests", "Tests\COMPASS.UnitTests\COMPASS.UnitTests.csproj", "{897F43CC-7EEE-495F-AA3E-F24017E6A92D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COMPASS.UnitTests", "Tests\COMPASS.UnitTests\COMPASS.UnitTests.csproj", "{897F43CC-7EEE-495F-AA3E-F24017E6A92D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COMPASS.IntegrationTests.Windows", "Tests\COMPASS.IntegrationTests.Windows\COMPASS.IntegrationTests.Windows.csproj", "{4D3C8E74-C78A-4BF1-81C9-230A3C6E1D7B}"
 EndProject
@@ -50,10 +48,6 @@ Global
 		{10718856-D256-44F3-9524-D85780E53955}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10718856-D256-44F3-9524-D85780E53955}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10718856-D256-44F3-9524-D85780E53955}.Release|Any CPU.Build.0 = Release|Any CPU
-		{793C5CC5-91E8-47D1-B791-E13B175D9B98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{793C5CC5-91E8-47D1-B791-E13B175D9B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{793C5CC5-91E8-47D1-B791-E13B175D9B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{793C5CC5-91E8-47D1-B791-E13B175D9B98}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0BAB9820-19B5-4195-BA4B-8972E6242A2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0BAB9820-19B5-4195-BA4B-8972E6242A2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BAB9820-19B5-4195-BA4B-8972E6242A2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
