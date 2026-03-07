@@ -70,7 +70,7 @@
                                     Background="{TemplateBinding Background}"
                                     ToolTip.Tip="{TemplateBinding Header}">
                                 <Border Classes="ZoomOnHover" Background="Transparent">
-                                    <materialIcons:MaterialIcon Height="20" Width="20" Margin="10,10,10,5"
+                                    <materialIcons:MaterialIcon Margin="10,10,10,5"
                                                                 HorizontalAlignment="Center"
                                                                 Kind="{TemplateBinding Icon}" />
                                 </Border>
@@ -88,11 +88,10 @@
                                     Background="{Binding $parent[controls:CollapsableTabItem].Background}">
                                 <StackPanel IsVisible="{Binding $parent[controls:CollapsableTabItem].Header, 
                                                 Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                        <materialIcons:MaterialIcon Height="20" Width="20" HorizontalAlignment="Center"
-                                                                    Margin="5"
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Spacing="10">
+                                        <materialIcons:MaterialIcon HorizontalAlignment="Center"
                                                                     Kind="{Binding $parent[controls:CollapsableTabItem].Icon}" />
-                                        <TextBlock Text="{Binding $parent[controls:CollapsableTabItem].Header}" FontSize="16" />
+                                        <TextBlock Text="{Binding $parent[controls:CollapsableTabItem].Header}"/>
                                     </StackPanel>
                                     <Rectangle Height="3" Fill="{StaticResource Separator}" />
                                     <ContentPresenter Content="{TemplateBinding Content}" Padding="5,0" />

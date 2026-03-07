@@ -3,6 +3,11 @@
     
     <Thickness x:Key="TreeViewItemExpandCollapseChevronMargin"> 0 </Thickness>
     
+    <!-- Fontsizes -->
+    <x:Double x:Key="FontSizeLarge">16</x:Double>
+    <x:Double x:Key="FontSizeNormal">14</x:Double>
+    <x:Double x:Key="FontSizeSmall">12</x:Double>
+    
     <!-- Slider -->
     <Thickness x:Key="SliderTopHeaderMargin">0,0,0,4</Thickness>
     <GridLength x:Key="SliderPreContentMargin">5</GridLength>

@@ -8,10 +8,8 @@
     <!--Icon Button-->
     <ControlTheme TargetType="controls:IconButton" x:Key="IconOnly">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Margin" Value="3" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="Height" Value="20" />
         <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="IconSize" Value="{Binding $self.FontSize}"/>
         <Style Selector="^[Background=Transparent] /template/ materialIcons|MaterialIcon">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{StaticResource TextMutedColor}" />
@@ -25,10 +23,9 @@
                         Background="{TemplateBinding Background}"
                         CornerRadius="{TemplateBinding CornerRadius}">
                     <materialIcons:MaterialIcon
+                        IconSize="{TemplateBinding IconSize}"
                         Kind="{TemplateBinding Icon}"
                         Foreground="{TemplateBinding Foreground}"
-                        Height="{x:Static sys:Double.NaN}"
-                        Width="{x:Static sys:Double.NaN}"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         IsVisible="{TemplateBinding IsVisible}">
@@ -47,6 +44,7 @@
         <!-- <Setter Property="Background" Value="{StaticResource ButtonBackground}" /> -->
         <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
         <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}" />
+        <Setter Property="IconSize" Value="{Binding $self.FontSize}"/>
 
         <Setter Property="Template">
             <ControlTemplate>
@@ -56,7 +54,6 @@
                             BorderThickness="2"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                            Margin="{TemplateBinding Margin}"
                             Padding="{TemplateBinding Padding}">
                         <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalAlignment}"
@@ -65,7 +62,8 @@
                                 <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon" />
                                 <ColumnDefinition Width="*" SharedSizeGroup="ButtonText" />
                             </Grid.ColumnDefinitions>
-                            <materialIcons:MaterialIcon Height="20" Width="20" Margin="5,0"
+                            <materialIcons:MaterialIcon Margin="5,0"
+                                                        IconSize="{TemplateBinding IconSize}"
                                                         IsVisible="{TemplateBinding Icon, Converter={x:Static ObjectConverters.IsNotNull}}"
                                                         Kind="{TemplateBinding Icon}" />
                             <ContentPresenter Grid.Column="1" Margin="5,0"
@@ -126,7 +124,7 @@
                         ToolTip.Tip="{TemplateBinding Header, Mode=OneWay}">
                     <Panel>
                         <StackPanel Orientation="Horizontal" Margin="10" Spacing="10">
-                            <materialIcons:MaterialIcon Height="35" Width="35"
+                            <materialIcons:MaterialIcon IconSize="25"
                                                         HorizontalAlignment="Center"
                                                         Kind="{TemplateBinding Icon}" />
                             <TextBlock Text="{TemplateBinding Header, Mode=OneWay}" 
@@ -187,8 +185,8 @@
                         <Style Selector="Path.star">
                             <Setter Property="Data"
                                     Value="M 3.9687501,0 5.1351364,2.3633569 7.7432556,2.7423389 5.8560028,4.5819556 6.3015226,7.1795363 3.96875,5.953125 1.6359772,7.1795361 2.0814972,4.5819556 0.19424448,2.7423387 2.8023636,2.3633569 Z" />
-                            <Setter Property="Width" Value="20" />
-                            <Setter Property="Height" Value="20" />
+                            <Setter Property="Width" Value="{StaticResource FontSizeLarge}" />
+                            <Setter Property="Height" Value="{StaticResource FontSizeLarge}" />
                             <Setter Property="Fill" Value="{StaticResource RatingControlUnselectedBrush}" />
                             <Setter Property="Stretch" Value="Uniform" />
                         </Style>
@@ -209,7 +207,7 @@
                             <!--We want to have the stars drawn horizontally. Therefore we change the ItemsPanel accordingly-->
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" Spacing="5" />
+                                    <StackPanel Orientation="Horizontal" Spacing="3" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
 

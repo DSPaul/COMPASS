@@ -21,5 +21,14 @@ namespace COMPASS.Common.Controls
             get => this.GetValue(IconProperty);
             set => SetValue(IconProperty, value);
         }
+
+        public static readonly StyledProperty<double> IconSizeProperty = AvaloniaProperty.Register<IconButton, double>(
+            nameof(IconSize));
+
+        public double IconSize
+        {
+            get => GetValue(IconSizeProperty);
+            set => SetValue(IconSizeProperty, value);
+        }
     }
 }

@@ -18,8 +18,10 @@
                     <Border BorderBrush="{StaticResource Separator}" BorderThickness="3" Width="250"
                             Background="{Binding $parent[controls:CollapsableTabItem].Background}">
                         <Grid RowDefinitions="auto, auto, *">
-                            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                <materialIcons:MaterialIcon Height="25" Width="25" HorizontalAlignment="Center"
+                            <StackPanel Grid.Row="0" 
+                                        Spacing="5"
+                                        Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                <materialIcons:MaterialIcon HorizontalAlignment="Center"
                                                             Margin="5"
                                                             Kind="{Binding $parent[controls:CollapsableTabItem].Icon}"
                                                             VerticalAlignment="Center" />
@@ -27,13 +29,13 @@
                                            VerticalAlignment="Center" FontSize="20" />
                             </StackPanel>
                             <ToggleButton Grid.Row="0" ToolTip.Tip="Collapse"
-                                          Cursor="Hand"
+                                          Cursor="Hand" Classes="ZoomOnHover" Margin="5"
+                                          Background="Transparent"
                                           IsChecked="{Binding $parent[TabControl].((vm:LeftDockViewModel)DataContext).Collapsed}"
-                                          Height="35" Width="35" HorizontalAlignment="Right">
+                                          HorizontalAlignment="Right">
                                 <ToggleButton.Template>
                                     <ControlTemplate>
-                                        <materialIcons:MaterialIcon Height="25" Width="25" Margin="5"
-                                                                    Background="Transparent" Kind="ArrowCollapseLeft" />
+                                        <materialIcons:MaterialIcon Background="Transparent" Kind="ArrowCollapseLeft" />
                                     </ControlTemplate>
                                 </ToggleButton.Template>
                             </ToggleButton>

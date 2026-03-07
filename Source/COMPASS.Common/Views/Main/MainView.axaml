@@ -73,11 +73,7 @@
                     Background="{StaticResource UIElementBackground}"
                     OpacityMask="#FF222222" Margin="10,5"
                     DataContext="{Binding TabsVM.ActiveTab.FiltersVM}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
+                <Grid ColumnDefinitions="*,auto">
                     <TextBox Grid.Column="0" x:Name="Searchbar" Watermark="Search (Ctrl+S)" Margin="0"
                              Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
                              Background="Transparent" BorderBrush="{x:Null}" />
@@ -107,14 +103,14 @@
                         <Separator/>
                         <MenuItem Header="Check for Updates" Command="{Binding CheckForUpdatesCommand}"
                                   Icon="{materialIcons:MaterialIconExt Kind=Autorenew}" />
-                        <MenuItem Header="{materialIcons:MaterialIconTextExt Kind=ArrowTopRight, Text=What\'s new, TextFirst=True}" 
+                        <MenuItem Header="{materialIcons:MaterialIconTextExt Kind=ArrowTopRight, Text=What\'s new, IconPlacement=Right, IconSize=10}" 
                                   Command="{Binding NavigateToCommand}" CommandParameter="https://compassapp.info/releases"
                                   Icon="{materialIcons:MaterialIconExt Kind=AlertDecagram}" />
                         <Separator/>
-                        <MenuItem Header="{materialIcons:MaterialIconTextExt Kind=ArrowTopRight, Text=Report a bug, TextFirst=True}" 
+                        <MenuItem Header="{materialIcons:MaterialIconTextExt Kind=ArrowTopRight, Text=Report a bug, IconPlacement=Right, IconSize=10}" 
                                   Command="{Binding NavigateToCommand}" CommandParameter="https://linktr.ee/compassapp"
                                   Icon="{materialIcons:MaterialIconExt Kind=Bug}" />
-                        <MenuItem Header="{materialIcons:MaterialIconTextExt Kind=ArrowTopRight, Text=Donate, TextFirst=True}"  
+                        <MenuItem Header="{materialIcons:MaterialIconTextExt Kind=ArrowTopRight, Text=Donate, IconPlacement=Right, IconSize=10}"  
                                   Command="{Binding NavigateToCommand}" CommandParameter="https://ko-fi.com/pauldesmul"
                                   Icon="{materialIcons:MaterialIconExt Kind=Heart}" />
                         <Separator/>
@@ -280,8 +276,9 @@
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="7" 
                             Margin="0,0,10,0" Height="32">
                     <controls:IconButton Icon="FilterRemove" Command="{Binding FiltersVM.ClearFiltersCommand}"
+                                         IconSize="20"
                                          Theme="{StaticResource IconOnly}" Classes="ZoomOnHover" Background="Transparent"
-                                         Height="32" ToolTip.Tip="Clear Filters" />
+                                         ToolTip.Tip="Clear Filters" />
                     
                     <Rectangle Width="2" Fill="Gray" />
 
@@ -312,7 +309,8 @@
                     <Rectangle Width="2" Fill="Gray"
                                IsVisible="{Binding !CurrentLayout.CodexInfoVM.ShowInfo}" />
                     
-                    <ToggleButton ToolTip.Tip="Show Book Info" Cursor="Hand"
+                    <ToggleButton ToolTip.Tip="Show Book Info" Cursor="Hand" Padding="0"
+                                  VerticalAlignment="Stretch"
                                   IsChecked="{Binding CurrentLayout.CodexInfoVM.ShowCodexInfo, Mode=TwoWay}"
                                   IsVisible="{Binding !CurrentLayout.CodexInfoVM.ShowInfo}">
                         <ToggleButton.Styles>
@@ -322,7 +320,7 @@
                         </ToggleButton.Styles>
                         <ToggleButton.Template>
                             <ControlTemplate>
-                                <materialIcons:MaterialIcon Height="30" Width="30" Kind="BookInformationVariant" />
+                                <materialIcons:MaterialIcon IconSize="25" Kind="BookInformationVariant" />
                             </ControlTemplate>
                         </ToggleButton.Template>
                     </ToggleButton>

@@ -14,20 +14,6 @@
              x:DataType="vm:SettingsViewModel"
              MinWidth="1000" MinHeight="500">
     <UserControl.Styles>
-        <!-- Option 1 -->
-        <!-- <Style Selector="TabItem"> -->
-        <!--     <Setter Property="CornerRadius" Value="5 0 0 5"/> -->
-        <!--     <Setter Property="Margin" Value="0 0 -10 5"/> -->
-        <!--     <Setter Property="FontSize" Value="16"/> -->
-        <!--     <Setter Property="Padding" Value="0,0,18,0"/> -->
-        <!-- </Style> -->
-        <!-- <Style Selector="TabControl /template/ ContentPresenter"> -->
-        <!--     <Setter Property="Background" Value="{StaticResource TabFocus}"/> -->
-        <!--     <Setter Property="CornerRadius" Value="5"/> -->
-        <!--     <Setter Property="Padding" Value="10"/> -->
-        <!-- </Style> -->
-
-        <!-- Option 2 -->
         <Style Selector="TabItem">
             <Setter Property="CornerRadius" Value="5" />
             <Setter Property="Margin" Value="5" />
@@ -114,21 +100,25 @@
                     <StackPanel>
                         <TextBlock Text="Manage Local Data" Classes="SectionTitle" />
                         <TextBlock Text="User data location:" Margin="0,10,0,5"/>
-                        <Grid  ColumnDefinitions="*,auto,auto, auto" ColumnSpacing="5">
+                        <Grid  ColumnDefinitions="*,auto,auto, auto" ColumnSpacing="10">
                             <TextBox IsReadOnly="True" Grid.Column="0" TextWrapping="Wrap"
                                      Text="{Binding CompassDataPath, Mode=OneWay}"/>
-                            <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}" 
+                            <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}"
+                                                 IconSize="20"
                                                  ToolTip.Tip="Show in explorer..." Icon="FolderOpen"
                                                  Command="{Binding BrowseLocalFilesCommand}"/>
                             <controls:IconButton Grid.Column="2" Theme="{StaticResource IconOnly}" 
+                                                 IconSize="20"
                                                  ToolTip.Tip="Change data path..." Icon="FolderEdit" 
                                                  Command="{Binding ChangeDataPathCommand}"/>
                             <controls:IconButton Grid.Column="3" Theme="{StaticResource IconOnly}"  
+                                                 IconSize="20"
                                                  ToolTip.Tip="Restore to default..." Icon="FolderRefresh"
                                                  Command="{Binding ResetDataPathCommand}"/>
                         </Grid>
                     </StackPanel>
                 </Border>
+                <!-- TODO look to remove this -->
                 <!-- <Border Classes="SettingsContainer"> -->
                 <!--     <StackPanel> -->
                 <!--         <TextBlock Classes="SectionTitle" Text="Performance"/> -->
@@ -246,7 +236,8 @@
                                                  Margin="0" BorderThickness="1" Padding="10 0"
                                                  VerticalAlignment="Center" VerticalContentAlignment="Center" />
                                         <controls:IconButton Icon="Plus" Grid.Column="1" Padding="0"
-                                                             VerticalAlignment="Stretch"
+                                                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                                             Width="32" HorizontalContentAlignment="Center"
                                                              Background="{StaticResource AccentColorMuted}"
                                                              IsDefault="{Binding #NewAutoImportFolderTextBox.IsFocused}"
                                                              Command="{Binding AddAutoImportDirectoryCommand}"
@@ -258,6 +249,7 @@
                                                              Padding="3,0" Icon="FolderPlus"
                                                              HorizontalAlignment="Stretch"
                                                              HorizontalContentAlignment="Center"
+                                                             VerticalAlignment="Stretch"
                                                              Background="{StaticResource AccentColorMuted}"
                                                              Command="{Binding PickAutoImportDirectoryCommand}" />
                                     </Grid>
@@ -305,7 +297,7 @@
                 <StackPanel Spacing="10">
                     <Border x:Name="FolderTagMapping" Classes="SettingsContainer">
                         <StackPanel>
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
                                 <TextBlock Text="Link Folders to Tags" Classes="SectionTitle"/>
                                 <controls:Explainer Margin="0,6"
                                                     Content="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
@@ -321,7 +313,7 @@
                             <Grid ColumnDefinitions="*,2*,2*" RowDefinitions="auto,auto,auto">
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Property"/>
                                 
-                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Margin="20,0">
+                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Margin="20,0" Spacing="5">
                                     <TextBlock Text="Source Priority" />
                                     <controls:Explainer Margin="0,6"
                                                         Content="If multiple sources provide metadata for a given property, the value from the topmost source will be used."/>

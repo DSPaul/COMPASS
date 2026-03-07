@@ -65,6 +65,7 @@
                                     </Border.Background>
                                 </Border>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
+                                            Spacing="5"
                                             IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowFileIcons}">
                                     <controls:IconButton Command="{Binding OpenCodexLocallyCommand}" ToolTip.Tip="Open Locally"
                                                          Background="Transparent" Classes="HideIfDisabled"

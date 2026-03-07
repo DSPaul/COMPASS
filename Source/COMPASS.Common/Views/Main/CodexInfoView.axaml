@@ -12,9 +12,8 @@
           BorderThickness="3" x:Name="CodexInfoContainer"
           IsVisible="{Binding ShowInfo}">
         <Grid RowDefinitions="Auto, Auto, *">
-            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                <materialIcons:MaterialIcon Height="25" Width="25" HorizontalAlignment="Center"
-                                            Margin="5"  Kind="BookInformationVariant"/>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Spacing="10">
+                <materialIcons:MaterialIcon HorizontalAlignment="Center" Kind="BookInformationVariant"/>
                 <TextBlock Text="Book Info" FontSize="20"/>
             </StackPanel>
             <Rectangle Grid.Row="1" Height="3" Fill="{StaticResource Separator}"/>
@@ -24,7 +23,7 @@
                           IsChecked="{Binding ShowCodexInfo, Mode=TwoWay}" Cursor="Hand">
                 <ToggleButton.Template>
                     <ControlTemplate>
-                        <materialIcons:MaterialIcon Height="25" Width="25" Margin="5"  Kind="ArrowCollapseRight"/>
+                        <materialIcons:MaterialIcon Margin="5"  Kind="ArrowCollapseRight"/>
                     </ControlTemplate>
                 </ToggleButton.Template>
             </ToggleButton>

@@ -30,14 +30,14 @@
                                 <Grid ColumnDefinitions="*,15,15">
                                     <TextBlock Text="{Binding $self.DataContext, Converter={x:Static converters:StringConverters.ToStringConverter}}" Margin="7,2"/>
                                     <controls:IconButton Grid.Column="1" Name="UpBtn" 
-                                                         Width="20" Height="20"
+                                                         Width="20" Height="20" IconSize="10"
                                                          Theme="{StaticResource IconOnly}" 
                                                          Foreground="{StaticResource TextColor}"
                                                          Classes="ZoomOnHover"
                                                          Icon="MenuUp" Margin="0"
                                                          Click="MoveUp"/>
                                     <controls:IconButton Grid.Column="2" Name="DownBtn"
-                                                         Width="20" Height="20"
+                                                         Width="20" Height="20" IconSize="10"
                                                          Classes="ZoomOnHover"
                                                          Theme="{StaticResource IconOnly}" 
                                                          Foreground="{StaticResource TextColor}"

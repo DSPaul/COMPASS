@@ -72,9 +72,9 @@
 
             <!-- Favorites -->
             <StackPanel Orientation="Horizontal" Margin="30,20,30,0">
-                <materialDesign:MaterialIcon Kind="Heart" Height="20" Width="20" Foreground="IndianRed" />
+                <materialDesign:MaterialIcon Kind="Heart" Foreground="IndianRed" />
                 <TextBlock Text="FAVORITES" Margin="10,0" Foreground="{StaticResource TextMutedColor}"
-                           FontWeight="Bold" FontSize="16" VerticalAlignment="Center" />
+                           FontWeight="Bold" VerticalAlignment="Center" />
             </StackPanel>
             <ListBox ItemsSource="{Binding FiltersVM.Favorites}" SelectionChanged="SelectedCodicesChanged"
                      KeyDown="HandleKeyDown"
@@ -84,9 +84,9 @@
 
             <!-- Recently Opened -->
             <StackPanel Orientation="Horizontal" Margin="30,20,30,0">
-                <materialDesign:MaterialIcon Kind="History" Height="20" Width="20" />
+                <materialDesign:MaterialIcon Kind="History" />
                 <TextBlock Text="RECENTLY OPENED" Margin="10,0" Foreground="{StaticResource TextMutedColor}"
-                           FontWeight="Bold" FontSize="16" VerticalAlignment="Center" />
+                           FontWeight="Bold" VerticalAlignment="Center" />
             </StackPanel>
             <ListBox ItemsSource="{Binding FiltersVM.RecentCodices}" SelectionChanged="SelectedCodicesChanged"
                      KeyDown="HandleKeyDown"
@@ -96,9 +96,9 @@
 
             <!-- Most Opened -->
             <StackPanel Orientation="Horizontal" Margin="30,20,30,0">
-                <materialDesign:MaterialIcon Kind="BookOpenBlankVariant" Height="20" Width="20" />
+                <materialDesign:MaterialIcon Kind="BookOpenBlankVariant" />
                 <TextBlock Text="MOST OPENED" Margin="10,0" Foreground="{StaticResource TextMutedColor}"
-                           FontWeight="Bold" FontSize="16" VerticalAlignment="Center" />
+                           FontWeight="Bold" VerticalAlignment="Center" />
             </StackPanel>
             <ListBox ItemsSource="{Binding FiltersVM.MostOpenedCodices}" SelectionChanged="SelectedCodicesChanged"
                      KeyDown="HandleKeyDown"
@@ -108,9 +108,9 @@
 
             <!-- Recently Added -->
             <StackPanel Orientation="Horizontal" Margin="30,20,30,0">
-                <materialDesign:MaterialIcon Kind="BookPlus" Height="20" Width="20" />
+                <materialDesign:MaterialIcon Kind="BookPlus" />
                 <TextBlock Text="RECENTLY ADDED" Margin="10,0" Foreground="{StaticResource TextMutedColor}"
-                           FontWeight="Bold" FontSize="16" VerticalAlignment="Center" />
+                           FontWeight="Bold" VerticalAlignment="Center" />
             </StackPanel>
             <ListBox ItemsSource="{Binding FiltersVM.RecentlyAddedCodices}" SelectionChanged="SelectedCodicesChanged"
                      KeyDown="HandleKeyDown"

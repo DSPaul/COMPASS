@@ -291,7 +291,7 @@
                              TextWrapping="Wrap" Padding="3" Margin="10" />
                     <controls:IconButton Grid.Row="0" Grid.Column="2"
                                          Command="{Binding BrowsePathCommand}"
-                                         Icon="FolderOpen"
+                                         Icon="FolderOpen" Height="32"
                                          ToolTip.Tip="Choose a new Path..." />
 
                     <!-- URL -->
@@ -302,7 +302,8 @@
                              TextWrapping="Wrap" Padding="3" Margin="10" />
                     <controls:IconButton Grid.Row="1" Grid.Column="2"
                                          Command="{Binding BrowseURLCommand}"
-                                         Icon="Compass" ToolTip.Tip="Open URL in Browser" />
+                                         Icon="Compass" Height="32" 
+                                         ToolTip.Tip="Open URL in Browser" />
 
                     <!-- ISBN -->
                     <TextBlock Grid.Row="2" Grid.Column="0"
@@ -312,7 +313,8 @@
                              TextWrapping="Wrap" Padding="3" Margin="10" />
                     <controls:IconButton Grid.Row="2" Grid.Column="2"
                                          Command="{Binding BrowseISBNCommand}"
-                                         Icon="Library" ToolTip.Tip="Show on OpenLibrary.org" />
+                                         Icon="Library" Height="32"
+                                         ToolTip.Tip="Show on OpenLibrary.org" />
                 </Grid>
             </TabItem>
 
