@@ -5,50 +5,74 @@ permissions:
   actions: read
 
 on:
-  pull_request:
-    branches: [ main ]
+  push:
+    branches: [ avalonia, dev ]
     paths:
     - '**.cs'
     - '**.csproj'
-  push:
-    branches: [ dev ]
+  pull_request:
+    branches: [ master ]
     paths:
     - '**.cs'
     - '**.csproj'
 
 env:
-  DOTNET_VERSION: '9.0.x' # The .NET SDK version to use
+  DOTNET_VERSION: '10.0.x' # The .NET SDK version to use
 
 jobs:
   build-and-test:
 
-    name: build-and-test
-    runs-on: windows-latest
+    name: build-and-test-${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+      fail-fast: false
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Setup Chrome
-      uses: browser-actions/setup-chrome@v1.5.0
-
+      uses: browser-actions/setup-chrome@v2
+      
     - name: Install dependencies
       run: dotnet restore
       
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
-    - name: Test
-      run: dotnet test --no-restore -v normal --filter Priority!=2
+    - name: Test (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        dotnet test Tests/COMPASS.UnitTests --no-restore -v normal --filter Priority!=2
+        dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal --filter Priority!=2
+        dotnet test Tests/COMPASS.IntegrationTests.Windows --no-restore -v normal --filter Priority!=2
 
-    - name: Upload Log Artifact
-      if: failure()
-      uses: actions/upload-artifact@v4
+    - name: Test (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        dotnet test Tests/COMPASS.UnitTests --no-restore -v normal --filter Priority!=2
+        dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal --filter Priority!=2
+        dotnet test Tests/COMPASS.IntegrationTests.Linux --no-restore -v normal --filter Priority!=2
+
+    - name: Upload Log Artifact (Windows)
+      if: failure() && runner.os == 'Windows'
+      uses: actions/upload-artifact@v7
       with:
-        name: log-file
-        #using $env{appdata} did't work so use this for now, fine until cross platform
+        name: log-file-windows
         path: C:\Users\runneradmin\AppData\Roaming\COMPASS\logs\test.log
+        archive: false
+
+    - name: Upload Log Artifact (Linux)
+      if: failure() && runner.os == 'Linux'
+      uses: actions/upload-artifact@v7
+      with:
+        name: log-file-linux
+        path: /home/runner/.config/COMPASS/logs/test.log
+        archive: false
