@@ -12,8 +12,6 @@ namespace COMPASS.Common.ViewModels.Layouts
             Preferences = PreferencesService.GetInstance().Preferences.HomeLayoutPreferences;
         }
 
-        //public override bool DoVirtualization => false;
-
         public HomeLayoutPreferences Preferences { get; set; }
         
         public override CodexLayout LayoutType => CodexLayout.Home;

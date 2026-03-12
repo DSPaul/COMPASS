@@ -184,9 +184,8 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             progressVM.ResetCounter();
             progressVM.TotalAmount = 1;
             
-            //TODO uncomment when implemented
-            // ProgressWindow progressWindow = new(3);
-            // progressWindow.Show(App.MainWindow);
+            ProgressWindow progressWindow = new(3);
+            progressWindow.Show(WindowManager.MainWindow);
 
             Codex importedCodex = await ImportURLAsync();
 

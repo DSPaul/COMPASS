@@ -14,8 +14,7 @@ public class CodexLayoutView : UserControl
         IList? selectedCodices = sender switch
         {
             ListBox listBox => listBox.SelectedItems,
-            //TODO check this out when datagrid is added
-            // DataGrid dataGrid => dataGrid.SelectedItems,
+            DataGrid dataGrid => dataGrid.SelectedItems,
             _ => null
         };
         

@@ -10,6 +10,7 @@ using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.Tools;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
+using SharpCompress.Readers;
 
 namespace COMPASS.Common.ViewModels.Tools;
 
@@ -96,12 +97,18 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
     {
         if (!Path.Exists(sourcePath))
         {
-            Logger.Warn($"Cannot extract sourcePath as it does not exit");
+            Logger.Warn("Cannot extract sourcePath as it does not exit");
             return;
         }
+        
+        var progressVm = ProgressViewModel.GetInstance();
+        progressVm.Clear();
 
-        //TODO add progress reporting
-        await using var archive = await ZipArchive.OpenAsyncArchive(sourcePath);
+        var options = new ReaderOptions()
+        {
+            Progress = progressVm
+        };
+        await using var archive = await ZipArchive.OpenAsyncArchive(sourcePath, options);
         await archive.WriteToDirectoryAsync(_environmentVarsService.CompassDataPath);
     }
 }

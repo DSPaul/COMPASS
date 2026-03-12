@@ -37,9 +37,6 @@ namespace COMPASS.Common.ViewModels.Layouts
             };
         }
 
-        //TODO check if this is still needed
-        //public void UpdateDoVirtualization() => OnPropertyChanged(nameof(DoVirtualization));
-
         #region Properties
 
         public abstract CodexLayout LayoutType { get; }
@@ -71,11 +68,7 @@ namespace COMPASS.Common.ViewModels.Layouts
             get;
             set => SetProperty(ref field, value);
         }
-
-        //TODO check if this is still needed, remove abstract for now so derived classes can skip it
-        //public abstract bool DoVirtualization { get; }
-        public bool DoVirtualization { get; }
-
+        
         #endregion
 
         protected virtual void OnCollectionChanged(object? sender, EventArgs? eventArgs)

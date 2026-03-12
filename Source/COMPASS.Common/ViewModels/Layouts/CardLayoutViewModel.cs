@@ -12,10 +12,6 @@ namespace COMPASS.Common.ViewModels.Layouts
             Preferences = PreferencesService.GetInstance().Preferences.CardLayoutPreferences;
         }
 
-        //TODO check if this is still needed
-        //public override bool DoVirtualization => Properties.Settings.Default.DoVirtualizationCard
-        //                                         && MainViewModel.CollectionVM.CurrentCollection.AllCodices.Count > Properties.Settings.Default.VirtualizationThresholdCard;
-
         public CardLayoutPreferences Preferences { get; }
         
         public override CodexLayout LayoutType => CodexLayout.Card;
