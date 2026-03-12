@@ -6,7 +6,7 @@ namespace COMPASS.Common.Interfaces.Repos
         void Init();
 
         #region Create 
-        Task AllocateNewCollection(CodexCollection newCollection);
+        void AllocateNewCollection(CodexCollection newCollection);
         #endregion
 
         #region Read

@@ -14,7 +14,7 @@ namespace COMPASS.Common.Repositories
         }
 
         #region Create 
-        public Task AllocateNewCollection(CodexCollection collection) => Task.CompletedTask;
+        public void AllocateNewCollection(CodexCollection collection) { }
         #endregion
 
         #region Read

@@ -108,7 +108,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
                 _ => ""
             };
             Notification error = new("Failed to Load Collection", $"Could not load {Collection.Name}. \n" + msg, Severity.Error);
-            _notificationService.ShowDialog(error);
+            _notificationService.Notify(error);
         }
         
         return null;

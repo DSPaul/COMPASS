@@ -57,13 +57,13 @@ namespace COMPASS.Common.Repositories
         }
 
         #region Create 
-        public async Task AllocateNewCollection(CodexCollection collection)
+        public void AllocateNewCollection(CodexCollection collection)
         {
             collection.LoadedCodices = true;
             collection.LoadedInfo = true;
             collection.LoadedTags = true;
 
-            await CreateDirectories(collection.Name);
+            CreateDirectories(collection.Name);
         }
         #endregion
 
@@ -242,7 +242,7 @@ namespace COMPASS.Common.Repositories
         #region Update
         #region Save Data To XML File
 
-        public async Task CreateDirectories(string collectionName)
+        public void CreateDirectories(string collectionName)
         {
             try
             {
@@ -257,7 +257,7 @@ namespace COMPASS.Common.Repositories
                 {
                     Details = ex.ToString()
                 };
-                await windowedNotificationService.ShowDialog(failedFolderCreation);
+                windowedNotificationService.Notify(failedFolderCreation);
             }
         }
 

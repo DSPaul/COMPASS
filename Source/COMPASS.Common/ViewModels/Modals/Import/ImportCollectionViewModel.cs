@@ -151,7 +151,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             {
                 targetCollectionHandle = MergeIntoCollection ? 
                     TargetCollection?.Load() : 
-                    await CollectionManager.CreateAndLoadCollection(CollectionName);
+                    CollectionManager.CreateAndLoadCollection(CollectionName);
 
                 if (targetCollectionHandle == null)
                 {

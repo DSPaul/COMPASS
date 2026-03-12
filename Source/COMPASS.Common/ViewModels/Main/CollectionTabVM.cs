@@ -20,11 +20,11 @@ namespace COMPASS.Common.ViewModels.Main;
 public class CollectionTabVM : ViewModelBase, IDisposable
 { 
     public CollectionTabVM() : 
-        this(CollectionManager.GetOrCreateInitialCollectionVM().Result)
+        this(CollectionManager.GetOrCreateInitialCollectionVM())
     { }
 
     public CollectionTabVM(CodexCollectionVM collectionVm, FiltersState? filtersState = null, CodexLayout? layout = null) : 
-        this(collectionVm.Load() ?? CollectionManager.GetOrCreateInitialCollectionVM().Result, filtersState, layout)
+        this(collectionVm.Load() ?? CollectionManager.GetOrCreateInitialCollectionVM(), filtersState, layout)
     { }
     
     public CollectionTabVM(CollectionHandle collectionHandle, FiltersState? filtersState = null, CodexLayout? layout = null)
@@ -179,7 +179,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
             }
 
             //Switch to another collection
-            var collectionHandle = await CollectionManager.GetOrCreateInitialCollectionVM();
+            var collectionHandle = CollectionManager.GetOrCreateInitialCollectionVM();
             await ChangeToCollection(collectionHandle, saveBeforeSwitch: false);
         }
         else

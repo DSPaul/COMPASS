@@ -103,7 +103,7 @@ namespace COMPASS.Common.Services.StateManagers
         /// <param name="identifier"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public static async Task<CodexCollectionVM> CreateCollection(string identifier)
+        public static CodexCollectionVM CreateCollection(string identifier)
         {
             if (!IsValidCollectionName(identifier, out string? invalidReason, _allCollectionVms))
             {
@@ -115,14 +115,14 @@ namespace COMPASS.Common.Services.StateManagers
         
             //save to xml by default
             var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
-            await storageService.AllocateNewCollection(newCollection);
+            storageService.AllocateNewCollection(newCollection);
             var newCollectionVm = new CodexCollectionVM(newCollection.Name, newCollection, storageService);
             RegisterCollection(newCollectionVm);
             
             return newCollectionVm;
         }
     
-        public static async Task<CollectionHandle> GetOrCreateInitialCollectionVM()
+        public static CollectionHandle GetOrCreateInitialCollectionVM()
         {
             var collectionOptions = _allCollectionVms;
             var collectionHandle = LoadInitialCollection(_allCollectionVms);
@@ -131,8 +131,8 @@ namespace COMPASS.Common.Services.StateManagers
         
             Debug.Assert(collectionOptions.Count == 0, "Collection should only be null if all options have been tried and failed");
             string name = "Default Collection";
-            
-            collectionHandle = await CreateAndLoadCollection(name).ConfigureAwait(false);
+
+            collectionHandle = CreateAndLoadCollection(name);
             if (collectionHandle == null)
             {
                 //If no collections are found and creation fails, we are stuck in an infinite loop which is bad so throw and crash
@@ -186,7 +186,7 @@ namespace COMPASS.Common.Services.StateManagers
             return collectionHandle;
         }
     
-        public static async Task<CollectionHandle?> CreateAndLoadCollection(string? dirName)
+        public static CollectionHandle? CreateAndLoadCollection(string? dirName)
         {
             if (dirName == null)
             {
@@ -196,7 +196,7 @@ namespace COMPASS.Common.Services.StateManagers
             CodexCollectionVM newCollectionVm;
             try
             {
-                newCollectionVm = await CreateCollection(dirName);
+                newCollectionVm = CreateCollection(dirName);
             }
             catch (InvalidOperationException ex)
             {

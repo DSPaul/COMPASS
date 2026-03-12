@@ -95,7 +95,7 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
 
         Notification changeSuccessful = new("Data path changed successfully",
             $"Data path was successfully changed to {NewDataLocation}. COMPASS will now restart.");
-        ServiceResolver.Resolve<INotificationService>().ShowDialog(changeSuccessful);
+        ServiceResolver.Resolve<INotificationService>().Notify(changeSuccessful);
 
         //Now that datapath has been changed, don't save on close because it would save to new location
         MainViewModel.SaveOnClose = false;
