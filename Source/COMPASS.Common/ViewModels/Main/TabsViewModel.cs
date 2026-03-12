@@ -51,7 +51,7 @@ public class TabsViewModel : ViewModelBase
     #region Commands
     
     private RelayCommand? _createTabCommand;
-    public RelayCommand CreateTabCommand => _createTabCommand ??= new(CreateTab);
+    public RelayCommand CreateTabCommand => _createTabCommand ??= new(() => CreateTab());
     
     private RelayCommand<CollectionTabVM>? _duplicateTabCommand;
     public RelayCommand<CollectionTabVM> DuplicateTabCommand => _duplicateTabCommand ??= new(DuplicateTab);
@@ -62,10 +62,11 @@ public class TabsViewModel : ViewModelBase
 
     #region Methods
     
-    public void CreateTab()
+    public CollectionTabVM CreateTab()
     {
         var tab = new CollectionTabVM();
         AddTab(tab);
+        return tab;
     }
     
     private void CreateTab(TabState tabState)

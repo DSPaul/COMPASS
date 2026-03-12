@@ -10,6 +10,7 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Modals;
+using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.ViewModels.SidePanels;
 using COMPASS.Common.Views.Windows;
@@ -74,61 +75,20 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     
     //TODO: commands should be in a viewmodel rather than operations
     public CodexOperations CodexCommands { get; private set; }
-    
-    //show edit Collection Stuff
-    public bool CreateCollectionVisibility
-    {
-        get;
-        set => SetProperty(ref field, value);
-    } = false;
-
-    //show edit Collection Stuff
-    public bool EditCollectionVisibility
-    {
-        get;
-        set => SetProperty(ref field, value);
-    } = false;
 
     #endregion
-    
+
     #region Commands and their methods
 
-    public async Task Refresh()
-    {
-        await ChangeToCollection(_collectionHandle.CollectionVM);
-    }
-
-    public RelayCommand ToggleCreateCollectionCommand => field ??= new(ToggleCreateCollection);
-    private void ToggleCreateCollection() => CreateCollectionVisibility = !CreateCollectionVisibility;
-
-    public RelayCommand ToggleEditCollectionCommand => field ??= new(ToggleEditCollection);
-    private void ToggleEditCollection() => EditCollectionVisibility = !EditCollectionVisibility;
+    public async Task Refresh() => await ChangeToCollection(_collectionHandle.CollectionVM);
 
     // Create CodexCollection
-    public AsyncRelayCommand<string> CreateCollectionCommand => field ??= new(
-        CreateCollection, 
-        name => CollectionManager.IsValidCollectionName(name, out _));
-    private async Task CreateCollection(string? name)
-    {
-        CollectionHandle? newCollectionHandle = await CollectionManager.CreateAndLoadCollection(name);
-        if (newCollectionHandle != null)
-        {
-            CreateCollectionVisibility = false;
-            await ChangeToCollection(newCollectionHandle);
-        }
-    }
+    public AsyncRelayCommand CreateCollectionCommand => field ??= new(CreateCollection);
+    private async Task CreateCollection() => await WindowManager.OpenModal(new CollectionEditViewModel(CollectionVM, createNew: true));
 
     // Rename Collection
-    public RelayCommand<string> EditCollectionNameCommand => field ??= new(
-        EditCollectionName,
-        name => CollectionManager.IsValidCollectionName(name, out _));
-    private void EditCollectionName(string? newName)
-    {
-        if (!CollectionManager.IsValidCollectionName(newName, out _)) return;
-
-        CollectionVM.RenameCollection(newName!);
-        EditCollectionVisibility = false;
-    }
+    public AsyncRelayCommand RenameCollectionCommand => field ??= new(RenameCollection);
+    private async Task RenameCollection() => await WindowManager.OpenModal(new CollectionEditViewModel(CollectionVM, createNew: false));
 
     // Delete Collection
     public AsyncRelayCommand DeleteCollectionCommand => field ??= new(RaiseDeleteCollectionWarning);

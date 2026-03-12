@@ -23,6 +23,10 @@
 
 
     <!-- Modals -->
+    <DataTemplate DataType="editVm:CollectionEditViewModel">
+      <editViews:CollectionEditView/>
+    </DataTemplate>
+
     <DataTemplate DataType="editVm:TagEditViewModel">
       <editViews:TagEditView/>
     </DataTemplate>

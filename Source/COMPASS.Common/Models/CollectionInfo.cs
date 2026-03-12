@@ -1,11 +1,13 @@
-﻿using COMPASS.Infra.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Interfaces;
 
 namespace COMPASS.Common.Models
 {
     /// <summary>
     /// Contains all the Info on a Collection that needs to be serialized
     /// </summary>
-    public class CollectionInfo
+    public class CollectionInfo : ObservableObject, ICloneable<CollectionInfo>
     {
         /// <summary>
         /// Checks if the collections has settings that differ from the default settings
@@ -39,6 +41,22 @@ namespace COMPASS.Common.Models
             {
                 other.FiletypePreferences[pref.Key] = pref.Value;
             }
+        }
+
+        public void CopyFrom(CollectionInfo source)
+        {
+            AutoImportFolders.Clear();
+            BanishedPaths.Clear();
+            FiletypePreferences.Clear();
+
+            MergeWith(source);
+        }
+
+        public CollectionInfo Clone()
+        {
+            var clone = new CollectionInfo();
+            clone.CopyFrom(this);
+            return clone;
         }
     }
 }

@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:edit="using:COMPASS.Common.ViewModels.Modals.Edit"
+             mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="100"
+             x:Class="COMPASS.Common.Views.Modals.Edit.CollectionEditView"
+             x:DataType="edit:CollectionEditViewModel"
+             MinWidth="350" Margin="20">
+    <Grid RowSpacing="20" RowDefinitions="*, Auto">
+        <!-- Name -->
+        <StackPanel Spacing="3">
+            <TextBlock Text="Name:" />
+            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                     MaxLength="50" />
+        </StackPanel>
+        <controls:ConfirmControls HorizontalAlignment="Right" Grid.Row="1" />
+    </Grid>
+</UserControl>

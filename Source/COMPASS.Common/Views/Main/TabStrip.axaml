@@ -13,7 +13,6 @@
     <Grid ColumnDefinitions="*, Auto">
         <ListBox ItemsSource="{Binding Tabs}"
                  SelectedIndex="{Binding TabIndex}"
-                 MinWidth="235"
                  Background="Transparent" HorizontalAlignment="Left"
                  ScrollViewer.VerticalScrollBarVisibility="Disabled"
                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"
@@ -70,83 +69,19 @@
                                           ItemsSource="{Binding AllCodexCollections, Mode=OneWay}"
                                           SelectionChanged="CollectionComboBox_SelectionChanged" />
                                 <Rectangle Fill="{StaticResource Separator}" Width="2" />
-                                <!--Create Collection-->
-                                <controls:IconButton Icon="FolderPlus"
-                                                     ToolTip.Tip="Create New Collection"
-                                                     IsVisible="{Binding !CreateCollectionVisibility}"
-                                                     Command="{Binding ToggleCreateCollectionCommand}" />
-                                <StackPanel Orientation="Horizontal" x:Name="CollectionCreation"
-                                            IsVisible="{Binding CreateCollectionVisibility}">
-                                    <TextBox x:Name="NewCollectionName" Watermark="New Collection"
-                                             VerticalAlignment="Center"
-                                             BorderBrush="{StaticResource DarkUIElementBackground}"
-                                             Margin="0" BorderThickness="0" MinWidth="150"
-                                             MaxLength="50"
-                                             Background="Transparent">
-                                        <!-- TODO: reimplement set focus on textbox when it becomes visible -->
-                                        <!--   <TextBox.Style> -->
-                                        <!--     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"> -->
-                                        <!--       <Style.Triggers> -->
-                                        <!--         <DataTrigger Binding="{Binding ElementName=CollectionCreation, Path=IsVisible}" Value="true"> -->
-                                        <!--           <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=NewCollectionName}" /> -->
-                                        <!--         </DataTrigger> -->
-                                        <!--         <DataTrigger Binding="{Binding ElementName=CollectionCreation, Path=IsVisible}" Value="false"> -->
-                                        <!--           <Setter Property="Text" Value=""/> -->
-                                        <!--         </DataTrigger> -->
-                                        <!--       </Style.Triggers> -->
-                                        <!--     </Style> -->
-                                        <!--   </TextBox.Style> -->
-                                    </TextBox>
-                                    <controls:IconButton Icon="Check"
-                                                         Foreground="{StaticResource AcceptFill}"
-                                                         IsVisible="{Binding $self.IsEffectivelyEnabled}"
-                                                         IsDefault="{Binding #NewCollectionName.IsFocused}"
-                                                         Command="{Binding CreateCollectionCommand}"
-                                                         CommandParameter="{Binding #NewCollectionName.Text}" />
-                                    <controls:IconButton Icon="Close"
-                                                         Foreground="{StaticResource CancelFill}"
-                                                         Command="{Binding ToggleCreateCollectionCommand}" />
-                                </StackPanel>
-                                <Rectangle Fill="{StaticResource Separator}" Width="2" />
-                                <!--Edit Collection-->
-                                <controls:IconButton Icon="FolderEdit"
-                                                     ToolTip.Tip="Rename Collection"
-                                                     Command="{Binding ToggleEditCollectionCommand}"
-                                                     IsVisible="{Binding !EditCollectionVisibility}" />
-                                <StackPanel Orientation="Horizontal" x:Name="CollectionEditing"
-                                            VerticalAlignment="Stretch"
-                                            IsVisible="{Binding EditCollectionVisibility}">
-                                    <TextBox x:Name="EditCollectionName"
-                                             Background="Transparent"
-                                             Text="{Binding CollectionVM.Identifier, Mode=OneWay}"
-                                             VerticalAlignment="Center" MaxLength="50"
-                                             Margin="0" BorderThickness="0" MinWidth="150">
-                                        <!-- TODO: reimplement set focus on textbox when it becomes visible -->
-                                        <!-- <TextBox.Style> -->
-                                        <!--   <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"> -->
-                                        <!--     <Style.Triggers> -->
-                                        <!--       <DataTrigger Binding="{Binding ElementName=CollectionEditing, Path=IsVisible}" Value="true"> -->
-                                        <!--         <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=EditCollectionName}" /> -->
-                                        <!--       </DataTrigger> -->
-                                        <!--     </Style.Triggers> -->
-                                        <!--   </Style> -->
-                                        <!-- </TextBox.Style> -->
-                                    </TextBox>
-                                    <controls:IconButton Icon="Check"
-                                                         Foreground="{StaticResource AcceptFill}"
-                                                         IsDefault="{Binding #EditCollectionName.IsFocused}"
-                                                         Command="{Binding EditCollectionNameCommand}"
-                                                         CommandParameter="{Binding #EditCollectionName.Text}" />
-                                    <controls:IconButton Icon="Close"
-                                                         Foreground="{StaticResource CancelFill}"
-                                                         Command="{Binding ToggleEditCollectionCommand}" />
-                                </StackPanel>
-                                <Rectangle Fill="{StaticResource Separator}" Width="2" />
                                 <!--More Options Collection-->
                                 <controls:IconButton Icon="DotsVertical" IconSize="15"
                                                      ToolTip.Tip="More Actions" Width="15">
                                     <Button.Flyout>
                                         <MenuFlyout>
+                                            <MenuItem Header="New collection ..."
+                                                      ToolTip.Tip="Create a new collection"
+                                                      Command="{Binding CreateCollectionCommand}"
+                                                      Icon="{materialIcons:MaterialIconExt Kind=FolderPlus}" />
+                                            <MenuItem Header="Edit collection..."
+                                                      ToolTip.Tip="Rename this collection"
+                                                      Command="{Binding RenameCollectionCommand}"
+                                                      Icon="{materialIcons:MaterialIconExt Kind=FolderEdit}" />
                                             <MenuItem Header="Import..."
                                                       ToolTip.Tip="Import a Collection"
                                                       Command="{Binding ImportCommand}"
