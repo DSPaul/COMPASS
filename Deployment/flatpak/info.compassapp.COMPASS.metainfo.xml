@@ -41,9 +41,9 @@
   </screenshots>
   
   <releases>
-    <release version="2.0.0" date="2026-01-01">
+    <release version="2.0.0-alpha.1" date="2026-03-14" type="development">
       <description>
-        <p>Initial Flatpak release</p>
+        <p>Initial Flatpak release (alpha)</p>
       </description>
     </release>
   </releases>

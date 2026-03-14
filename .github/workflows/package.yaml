@@ -22,14 +22,14 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with: 
         ref: ${{ inputs.branch }}
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: 10.0.x
 
     - name: Install dependencies
       run: dotnet restore
@@ -38,19 +38,19 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Publish
-      run: dotnet publish -p:PublishProfile=FolderProfile.pubxml
+      run: dotnet publish Source/COMPASS.Windows/COMPASS.Windows.csproj --configuration Release --no-restore -o .\src\bin\Publish\win-x64\
       
       #upload the main exe so it can be signed
     - name: Upload app exe
       id: upload-exe
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: COMPASS_exe
-        path: .\src\bin\Publish\win-x64\COMPASS.exe
+        path: .\src\bin\Publish\win-x64\COMPASS.Windows.exe
 
     - name: remove unsigned exe
       shell: pwsh
-      run: rm .\src\bin\Publish\win-x64\COMPASS.exe
+      run: rm .\src\bin\Publish\win-x64\COMPASS.Windows.exe
 
     - name: Sign app
       id: signing-app
@@ -69,7 +69,7 @@ jobs:
 
     - name: Upload installer
       id: upload-installer
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: COMPASS_Installer
         path: .\Deployment\Versions\${{ inputs.version }}\COMPASS_Setup_${{ inputs.version }}.exe
@@ -84,7 +84,24 @@ jobs:
         github-artifact-id: ${{steps.upload-installer.outputs.artifact-id}}
         wait-for-completion: false
 
+  flatpak:
+    name: Build Flatpak
+    runs-on: ubuntu-latest
 
-    
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        ref: ${{ inputs.branch }}
 
-    
+    - name: Build Flatpak
+      uses: flatpak/github-actions/flatpak-builder@v6
+      with:
+        bundle: COMPASS_${{ inputs.version }}.flatpak
+        manifest-path: Deployment/flatpak/info.compassapp.COMPASS.yaml
+        cache-key: flatpak-builder-${{ github.sha }}
+
+    - name: Upload Flatpak
+      uses: actions/upload-artifact@v7
+      with:
+        name: COMPASS_Flatpak
+        path: COMPASS_${{ inputs.version }}.flatpak
