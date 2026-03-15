@@ -10,4 +10,4 @@ Categories=Office;Utility;FileManager;
 MimeType=application/pdf;image/png;image/jpeg;image/webp;
 Keywords=ttrpg;rpg;tabletop;document;manager;organizer;library;rulebook;pdf;
 StartupNotify=true
-StartupWMClass=COMPASS.Linux
+StartupWMClass=COMPASS

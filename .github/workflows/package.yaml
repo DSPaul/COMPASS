@@ -1,4 +1,4 @@
-name: Create Installer
+name: Create release
 
 permissions:
   contents: write
@@ -18,7 +18,7 @@ on:
 
 jobs:
   package-windows:
-    name: Build, package and Sign
+    name: Create and sign windows installer
     runs-on: windows-latest
 
     steps:
@@ -46,11 +46,11 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: COMPASS_exe
-        path: .\publish\win-x64\COMPASS.Windows.exe
+        path: .\publish\win-x64\COMPASS.exe
 
     - name: remove unsigned exe
       shell: pwsh
-      run: rm .\publish\win-x64\COMPASS.Windows.exe
+      run: rm .\publish\win-x64\COMPASS.exe
 
     - name: Sign app
       id: signing-app
@@ -92,8 +92,11 @@ jobs:
         path: .\Deployment\Versions\${{ inputs.version }}\COMPASS_Setup_${{ inputs.version }}.exe
 
   package-flatpak:
-    name: Build Flatpak
+    name: Create Flatpak bundle
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+      options: --privileged
 
     steps:
     - uses: actions/checkout@v6
@@ -101,7 +104,7 @@ jobs:
         ref: ${{ inputs.branch }}
 
     - name: Build Flatpak
-      uses: flatpak/github-actions/flatpak-builder@v6
+      uses: flatpak/flatpak-github-actions/flatpak-builder@v6
       with:
         bundle: COMPASS_${{ inputs.version }}.flatpak
         manifest-path: Deployment/flatpak/info.compassapp.COMPASS.yaml
@@ -136,6 +139,7 @@ jobs:
       with:
         tag_name: v${{ inputs.version }}
         name: COMPASS v${{ inputs.version }}
+        target_commitish: ${{ inputs.branch }}
         draft: true
         prerelease: ${{ contains(inputs.version, '-') }}
         files: release-files/*

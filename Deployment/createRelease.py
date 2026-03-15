@@ -3,6 +3,9 @@ import os
 import sys
 import re
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "flatpak"))
+from generate_nuget_sources import generate as generate_nuget_sources
+
 def replaceInFile(path, old, new):
     with open(path, "r") as f:
         data = f.read()
@@ -106,3 +109,4 @@ OLD_VERSION = getOldVersion()
 if NEW_VERSION != OLD_VERSION:
     IncrementVersions()
     WriteChangelog()
+    generate_nuget_sources()

@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "COMPASS"
-#define MyAppVersion "1.8.10"
+#define MyAppVersion "2.0.0-alpha.1"
 #define MyAppPublisher "Paul De Smul"
 #define MyAppURL "https://www.compassapp.info"
 #define MyAppExeName "COMPASS.exe"
@@ -38,7 +38,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\publish\win-x64\Media\*"; DestDir: "{app}\Media"; Flags: ignoreversion
+Source: "..\publish\win-x64\Assets\*"; DestDir: "{app}\Assets"; Flags: ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -55,7 +55,7 @@ Root: HKCR; Subkey: ".satchel"; ValueType: string; ValueName: ""; ValueData: "CO
 ; Give it a type name "COMPASS Satchel"
 Root: HKCR; Subkey: "COMPASSSatchelFile"; ValueType: string; ValueName: ""; ValueData: "COMPASS Satchel"; Flags: uninsdeletekey
 ; Give it the COMPASS Icon
-Root: HKCR; Subkey: "COMPASSSatchelFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\COMPASS.EXE,0"
+Root: HKCR; Subkey: "COMPASSSatchelFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
 ; Make double click open the file using compass, not handled yet in COMPASS
 ; Root: HKCR; Subkey: "COMPASSSatchelFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\COMPASS.EXE"" ""%1"""
 ; -------------------------------------------------------------- ;
