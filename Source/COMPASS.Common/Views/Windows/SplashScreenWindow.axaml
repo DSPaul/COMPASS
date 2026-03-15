@@ -8,5 +8,5 @@
         WindowStartupLocation="CenterScreen" Background="Transparent"
         TransparencyBackgroundFallback="{StaticResource CompassJade}"
         Title="SplashScreenWindow">
-    <Image Source="/Assets/CompassFull.png" Width="600"/>
+    <Image Source="/Assets/COMPASS_Logo.png" Width="600"/>
 </Window>

@@ -59,7 +59,7 @@
                 <ColumnDefinition Width="{Binding WindowControlsSpacing, Mode=OneTime}" />  <!-- Window controls -->
             </Grid.ColumnDefinitions>
             
-            <Image Source="/Assets/CompassLogo.png" Height="30" Width="30" Margin="15, 0"
+            <Image Source="/Assets/COMPASS_Icon.png" Height="30" Width="30" Margin="15, 0"
                    IsHitTestVisible="False"
                    VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
 

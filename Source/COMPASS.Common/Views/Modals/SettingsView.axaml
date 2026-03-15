@@ -326,7 +326,7 @@
                 <StackPanel Orientation="Vertical" Spacing="10">
                     <Border Classes="SettingsContainer">
                         <UniformGrid Rows="1">
-                            <Svg Path="/Assets/CompassFull.svg" Width="200" HorizontalAlignment="Center"/>
+                            <Svg Path="/Assets/COMPASS_Logo.svg" Width="200" HorizontalAlignment="Center"/>
                             <TextBlock Text="{Binding Version}" HorizontalAlignment="Center"/>
                             <controls:IconButton Content="Check for Updates" Command="{Binding CheckForUpdatesCommand}"
                                                  Icon="Autorenew" HorizontalAlignment="Center"/>

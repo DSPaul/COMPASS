@@ -40,8 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\COMPASS.ico" />
-    <Content Include="Assets\CompassFull.png" />
-    <Resource Include="Assets\CompassLogo.png">
+    <Content Include="Assets\COMPASS_Logo.png" />
+    <Resource Include="Assets\COMPASS_Icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Content Include="Assets\CoverPlaceholder.png">

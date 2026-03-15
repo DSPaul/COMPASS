@@ -37,3 +37,6 @@ modules:
           -o publish/
       - mkdir -p ${FLATPAK_DEST}/bin
       - cp -r publish/* ${FLATPAK_DEST}/bin
+      - install -Dm644 Deployment/flatpak/info.compassapp.COMPASS.desktop ${FLATPAK_DEST}/share/applications/info.compassapp.COMPASS.desktop
+      - install -Dm644 Deployment/flatpak/info.compassapp.COMPASS.metainfo.xml ${FLATPAK_DEST}/share/metainfo/info.compassapp.COMPASS.metainfo.xml
+      - install -Dm644 Source/COMPASS.Common/Assets/COMPASS_Icon.png ${FLATPAK_DEST}/share/icons/hicolor/512x512/apps/info.compassapp.COMPASS.png
