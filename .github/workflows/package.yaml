@@ -1,7 +1,7 @@
 name: Create Installer
 
 permissions:
-  contents: read
+  contents: write
   actions: read
 
 on: 
@@ -17,7 +17,7 @@ on:
         type: string
 
 jobs:
-  build:
+  package-windows:
     name: Build, package and Sign
     runs-on: windows-latest
 
@@ -38,7 +38,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Publish
-      run: dotnet publish Source/COMPASS.Windows/COMPASS.Windows.csproj --configuration Release --no-restore -o .\src\bin\Publish\win-x64\
+      run: dotnet publish Source/COMPASS.Windows/COMPASS.Windows.csproj --configuration Release --no-restore -o .\publish\win-x64\
       
       #upload the main exe so it can be signed
     - name: Upload app exe
@@ -46,11 +46,11 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: COMPASS_exe
-        path: .\src\bin\Publish\win-x64\COMPASS.Windows.exe
+        path: .\publish\win-x64\COMPASS.Windows.exe
 
     - name: remove unsigned exe
       shell: pwsh
-      run: rm .\src\bin\Publish\win-x64\COMPASS.Windows.exe
+      run: rm .\publish\win-x64\COMPASS.Windows.exe
 
     - name: Sign app
       id: signing-app
@@ -62,7 +62,7 @@ jobs:
         signing-policy-slug: release-signing 
         github-artifact-id: ${{steps.upload-exe.outputs.artifact-id}}
         wait-for-completion: true
-        output-artifact-directory: .\src\bin\Publish\win-x64\
+        output-artifact-directory: .\publish\win-x64\
 
     - name: Package
       run: iscc Deployment/install.iss
@@ -82,9 +82,16 @@ jobs:
         project-slug: COMPASS
         signing-policy-slug: release-signing
         github-artifact-id: ${{steps.upload-installer.outputs.artifact-id}}
-        wait-for-completion: false
+        wait-for-completion: true
+        output-artifact-directory: .\Deployment\Versions\${{ inputs.version }}\
 
-  flatpak:
+    - name: Upload signed installer
+      uses: actions/upload-artifact@v7
+      with:
+        name: COMPASS_Installer_Signed
+        path: .\Deployment\Versions\${{ inputs.version }}\COMPASS_Setup_${{ inputs.version }}.exe
+
+  package-flatpak:
     name: Build Flatpak
     runs-on: ubuntu-latest
 
@@ -105,3 +112,30 @@ jobs:
       with:
         name: COMPASS_Flatpak
         path: COMPASS_${{ inputs.version }}.flatpak
+
+  draft-release:
+    name: Create Draft Release
+    runs-on: ubuntu-latest
+    needs: [package-windows, package-flatpak]
+
+    steps:
+    - name: Download Windows installer
+      uses: actions/download-artifact@v4
+      with:
+        name: COMPASS_Installer_Signed
+        path: release-files/
+
+    - name: Download Flatpak
+      uses: actions/download-artifact@v4
+      with:
+        name: COMPASS_Flatpak
+        path: release-files/
+
+    - name: Create draft release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ inputs.version }}
+        name: COMPASS v${{ inputs.version }}
+        draft: true
+        prerelease: ${{ contains(inputs.version, '-') }}
+        files: release-files/*

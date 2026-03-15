@@ -37,8 +37,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\src\bin\Publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\src\bin\Publish\win-x64\Media\*"; DestDir: "{app}\Media"; Flags: ignoreversion
+Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\publish\win-x64\Media\*"; DestDir: "{app}\Media"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
