@@ -28,6 +28,8 @@ namespace COMPASS.UnitTests.Models
             var codex = new Codex(collection);
             var propInfo = typeof(Codex).GetProperty(propertyName);
 
+            Assert.That(propInfo, Is.Not.Null);
+            
             propInfo.SetValue(codex, dirtyValue);
             
             var value = propInfo.GetValue(codex);

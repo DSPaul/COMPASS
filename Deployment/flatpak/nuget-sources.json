@@ -1,10 +1,10 @@
 [
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/autofac/9.0.0/autofac.9.0.0.nupkg",
-        "sha512": "96e4bb9289e0196de57d1d797b31b2033bf4da6ccc744bcd17f1cc566275c55be5d5010468bd68bf47f90e54743b1afc29368999268d0795420905a4d105c7f1",
+        "url": "https://api.nuget.org/v3-flatcontainer/autofac/9.1.0/autofac.9.1.0.nupkg",
+        "sha512": "237aa1eed53ca6b00045c08c9bb5556c29d3cf02a7ee1a4e76a32dd16224907192e78a3bc2f2dc20510390f3e48e35403c060d46a45f6ab29d6314a65edc4630",
         "dest": "nuget-sources",
-        "dest-filename": "autofac.9.0.0.nupkg"
+        "dest-filename": "autofac.9.1.0.nupkg"
     },
     {
         "type": "file",
@@ -183,10 +183,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/communitytoolkit.mvvm/8.4.0/communitytoolkit.mvvm.8.4.0.nupkg",
-        "sha512": "5e9705a1ad58b19f0b3ce956ac40226337402a7b17d067fbb5fd987e9ecee2a100c2d76f15537932b18618599599023542257fe67df32b193dc2b30542b2c30b",
+        "url": "https://api.nuget.org/v3-flatcontainer/communitytoolkit.mvvm/8.4.1/communitytoolkit.mvvm.8.4.1.nupkg",
+        "sha512": "fc228949834b3593d3a6adaedb358129f15a964733ca0e2cd2c77dadc9d4520eaa6456a33e77790a5a1e609c850e2b697c5592aac56a0258debc30b7760c2a3d",
         "dest": "nuget-sources",
-        "dest-filename": "communitytoolkit.mvvm.8.4.0.nupkg"
+        "dest-filename": "communitytoolkit.mvvm.8.4.1.nupkg"
     },
     {
         "type": "file",
@@ -316,10 +316,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/magick.net-q8-anycpu/14.10.3/magick.net-q8-anycpu.14.10.3.nupkg",
-        "sha512": "c014fc9e42519bbeb30ae1c3cb770dda58525086758f3588a680d08ee91ef5d5b03644c6b2e2a4999e258173091053c7837b0036ab45a74e22a33bc5545776a2",
+        "url": "https://api.nuget.org/v3-flatcontainer/magick.net-q8-anycpu/14.11.0/magick.net-q8-anycpu.14.11.0.nupkg",
+        "sha512": "3cebdbf3b7e0ee47d101e53ad1ab016e1bd372eb71be3c353525bc2085fc0527d04252c5464e4230a2218ec61310e45bb5e785a886c5b5c9621a197c2feca8a0",
         "dest": "nuget-sources",
-        "dest-filename": "magick.net-q8-anycpu.14.10.3.nupkg"
+        "dest-filename": "magick.net-q8-anycpu.14.11.0.nupkg"
     },
     {
         "type": "file",
@@ -330,17 +330,17 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/magick.net.core/14.10.3/magick.net.core.14.10.3.nupkg",
-        "sha512": "254d336791e3290617505c7935ca222306d58061c604b48e3b7a48d1f26012b991d077a52ae0d0d1b635cd457f990929a158129105b6feee6bcd5132076de26a",
+        "url": "https://api.nuget.org/v3-flatcontainer/magick.net.core/14.11.0/magick.net.core.14.11.0.nupkg",
+        "sha512": "2e9ab2f747deee65ce890f50d6a8addae63ca2e52847fe3561925679252aac82a0be247a2aee532501069668783463bb388b5336f2b9d8252ea1170d28dbe271",
         "dest": "nuget-sources",
-        "dest-filename": "magick.net.core.14.10.3.nupkg"
+        "dest-filename": "magick.net.core.14.11.0.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/magick.net.systemdrawing/8.0.16/magick.net.systemdrawing.8.0.16.nupkg",
-        "sha512": "20ec42c9d1bfba0411791e4a3b0247f2ffd7d6efe77f09deb946704e36620e45386620d49c56bf9534ee8fa1a852adc8ab0b2a00ea1253e2a0e1691f547a3af8",
+        "url": "https://api.nuget.org/v3-flatcontainer/magick.net.systemdrawing/8.0.18/magick.net.systemdrawing.8.0.18.nupkg",
+        "sha512": "9359a361092e9293fd209db14f69f9548320cbd2651889f077f5c32321ce0c0b79382938df8cc3a37e3145ac61c81e9ea7ba73b5d02b12893a6daf25e1e7a1a7",
         "dest": "nuget-sources",
-        "dest-filename": "magick.net.systemdrawing.8.0.16.nupkg"
+        "dest-filename": "magick.net.systemdrawing.8.0.18.nupkg"
     },
     {
         "type": "file",
@@ -393,10 +393,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.filesystemglobbing/10.0.3/microsoft.extensions.filesystemglobbing.10.0.3.nupkg",
-        "sha512": "5a86c9668a81595883ebe2de61d0fb5d3713c824ded43b93a9ddc42c89d2175c1b19d0273bd56476fb94351a8fd4565af8f3cbf9fe7d15d82409ac20cb3e82e6",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.filesystemglobbing/10.0.5/microsoft.extensions.filesystemglobbing.10.0.5.nupkg",
+        "sha512": "15c87d1964fc190a5b20a4824c37bd4b7f908593da364741617afbe15c31fb130776d8dc80be4188e23ff5888e0b7ad634b0fb4e3930c7657295f2f065135f77",
         "dest": "nuget-sources",
-        "dest-filename": "microsoft.extensions.filesystemglobbing.10.0.3.nupkg"
+        "dest-filename": "microsoft.extensions.filesystemglobbing.10.0.5.nupkg"
     },
     {
         "type": "file",
@@ -470,17 +470,17 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/sharpcompress/0.47.0/sharpcompress.0.47.0.nupkg",
-        "sha512": "77a0a1b086f30fbfb18eef28ef6b8d545d2e6c718ea896baeb8bf9fbb7ae42b983e7554d79cf0cac8ac2c90dad5cfcd3b863b7fdf2e966f689b174e6062a1123",
+        "url": "https://api.nuget.org/v3-flatcontainer/sharpcompress/0.47.2/sharpcompress.0.47.2.nupkg",
+        "sha512": "f5b4c66f620cbe90c8ebed1883c07e29bbfee181ca2d310df5e22bccb5c5b0733803ad5c1bd80407ede75af18fc2eb67e984582eb2baa6829b55ed981f512f99",
         "dest": "nuget-sources",
-        "dest-filename": "sharpcompress.0.47.0.nupkg"
+        "dest-filename": "sharpcompress.0.47.2.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/shimskiasharp/3.4.1/shimskiasharp.3.4.1.nupkg",
-        "sha512": "fbe4cf71307dabf09620167a353cbdf24c0caf5a4ae7bee287e6660f3682e25045845ffb450759222cee568cf023e780d67d9e3b1f007ea333fb695841bd9e79",
+        "url": "https://api.nuget.org/v3-flatcontainer/shimskiasharp/3.7.0/shimskiasharp.3.7.0.nupkg",
+        "sha512": "6ef87c0aa8b0913c5a5a26a59511a6a947ec18b880dee75b756982d6d3bdff63086d61302f9301ba7d079ba8d9bd88e275641b4482f9b782562aa546151940e9",
         "dest": "nuget-sources",
-        "dest-filename": "shimskiasharp.3.4.1.nupkg"
+        "dest-filename": "shimskiasharp.3.7.0.nupkg"
     },
     {
         "type": "file",
@@ -533,31 +533,31 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/svg.controls.skia.avalonia/11.3.9.2/svg.controls.skia.avalonia.11.3.9.2.nupkg",
-        "sha512": "d71044d18def0ceb3554342d01561870c2f6ff149321e2d7c5bcc3b1bfe2f2055ffa5d92bbc8b81e9d9f6cae5ac62d966c3cc3c163c81556faed6a1b2706a4a2",
+        "url": "https://api.nuget.org/v3-flatcontainer/svg.controls.skia.avalonia/11.3.9.5/svg.controls.skia.avalonia.11.3.9.5.nupkg",
+        "sha512": "ef2b30dd25d8817cb3dd0493a908a3f8f9c94518cba5b4b85f635a9b2f2a5b41f7918e9b0197c9058b25997b6f1b68f557fd88f3c56454e962a5618b0a90e230",
         "dest": "nuget-sources",
-        "dest-filename": "svg.controls.skia.avalonia.11.3.9.2.nupkg"
+        "dest-filename": "svg.controls.skia.avalonia.11.3.9.5.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/svg.custom/3.4.1/svg.custom.3.4.1.nupkg",
-        "sha512": "04ef64c5655dbe10332b9f0b1e4dafae012db216b1b63953521e38310a07c7b76ecb27cdd0683ff3c4b1d288983501d0ef0276a5d0083e55428389a6a6e7622f",
+        "url": "https://api.nuget.org/v3-flatcontainer/svg.custom/3.7.0/svg.custom.3.7.0.nupkg",
+        "sha512": "b5e44b07dd24fdc557dc1eed86ba8f686d8abfadb9e2f2e05edc0e9263dc3356dbe384d589c553296fc0eed78f62f66545b66b592438fa966d131eade7374e40",
         "dest": "nuget-sources",
-        "dest-filename": "svg.custom.3.4.1.nupkg"
+        "dest-filename": "svg.custom.3.7.0.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/svg.model/3.4.1/svg.model.3.4.1.nupkg",
-        "sha512": "068d3f5677bead87cfc71006d9ee425809d73ed16b3412b689903d263011eb1b120fbd88ae6a5824fcbc2e6858437399dff4b80ce4af8f9fa99c33e93edbfa7d",
+        "url": "https://api.nuget.org/v3-flatcontainer/svg.model/3.7.0/svg.model.3.7.0.nupkg",
+        "sha512": "e29ac3cbe32df307ae068d2b89a187eb344fe7a71ac5d9bdc77141f58402971695081b19f9dc323b147802ac9192e440cba4df64a094cb5abe164fd76d896acb",
         "dest": "nuget-sources",
-        "dest-filename": "svg.model.3.4.1.nupkg"
+        "dest-filename": "svg.model.3.7.0.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/svg.skia/3.4.1/svg.skia.3.4.1.nupkg",
-        "sha512": "a234fe3c9a773a99dd1072bf9a7606fcf58ca4db2857d470643d92e32f7fd56997d5467937334b52d6a79f27bce74de2f003c97a2a58205b519704a18b4f375a",
+        "url": "https://api.nuget.org/v3-flatcontainer/svg.skia/3.7.0/svg.skia.3.7.0.nupkg",
+        "sha512": "703b7fcdca479748cb32b23d51aeff518896a10b2adbaaef1fa81346e62bce3f55a95d3f7755de9b94958f816f125efabe9008e128ccd340f62637cee4537086",
         "dest": "nuget-sources",
-        "dest-filename": "svg.skia.3.4.1.nupkg"
+        "dest-filename": "svg.skia.3.7.0.nupkg"
     },
     {
         "type": "file",
