@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Generate nuget-sources.json for flatpak-builder from a packages.lock.json.
 
-Runs `dotnet publish` on the Linux project to ensure all packages (including
-runtime packs such as Microsoft.NETCore.App.Runtime.linux-x64) are present in
-the NuGet cache, then reads their SHA512 hashes to build the source list.
+Reads SHA512 hashes for regular packages from the local NuGet cache (populated
+by running `dotnet restore`), and fetches hashes for runtime packs directly
+from the NuGet API.
 
 Usage: python generate_nuget_sources.py
 Writes: nuget-sources.json (next to this script)
@@ -11,13 +11,13 @@ Writes: nuget-sources.json (next to this script)
 
 import base64
 import binascii
+import gzip
 import json
 import os
-import subprocess
+import urllib.request
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-LINUX_CSPROJ = REPO_ROOT / "Source/COMPASS.Linux/COMPASS.Linux.csproj"
 LOCK_FILE = REPO_ROOT / "Source/COMPASS.Linux/packages.lock.json"
 OUTPUT = Path(__file__).parent / "nuget-sources.json"
 DEST_DIR = "nuget-sources"
@@ -25,16 +25,52 @@ DEST_DIR = "nuget-sources"
 # Global NuGet packages cache location
 NUGET_CACHE = Path(os.environ.get("NUGET_PACKAGES", Path.home() / ".nuget" / "packages"))
 
-# Runtime pack name prefixes that are not tracked in packages.lock.json but are
-# required for self-contained publishes. They are downloaded by `dotnet publish`
-# and stored in the NuGet cache just like regular packages.
-RUNTIME_PACK_PREFIXES = (
-    "microsoft.netcore.app.runtime.",
-    "microsoft.netcore.app.host.",
-    "microsoft.aspnetcore.app.runtime.",
-    "microsoft.windowsdesktop.app.runtime.",
-    "microsoft.netcore.app.crossgen2.",
+# Set this to the .NET runtime version used by the flatpak SDK extension.
+# Check org.freedesktop.Sdk.Extension.dotnet10 for your runtime-version to find
+# the right value (e.g. "10.0.5" for runtime-version '25.08').
+DOTNET_RUNTIME_VERSION = "10.0.5"
+
+# Runtime packs required for a self-contained linux-x64 publish.
+# These are not tracked in packages.lock.json but are fetched directly from NuGet.
+LINUX_RUNTIME_PACKS = (
+    "microsoft.netcore.app.runtime.linux-x64",
+    "microsoft.netcore.app.host.linux-x64",
 )
+
+
+def _fetch_json(url: str) -> dict:
+    """Fetch JSON from a URL, transparently handling gzip-compressed responses."""
+    with urllib.request.urlopen(url, timeout=30) as resp:
+        raw = resp.read()
+    try:
+        return json.loads(raw)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return json.loads(gzip.decompress(raw))
+
+
+def _fetch_entry_from_nuget(name: str, version: str) -> dict | None:
+    """Fetch sha512 for a package from the NuGet API and build a source entry."""
+    # Step 1: get the catalogEntry URL from the registration leaf (response is gzip-compressed)
+    reg_url = f"https://api.nuget.org/v3/registration5-gz-semver2/{name}/{version}.json"
+    try:
+        leaf = _fetch_json(reg_url)
+        catalog_url = leaf["catalogEntry"]
+        # Step 2: fetch the catalog entry which contains the packageHash
+        catalog = _fetch_json(catalog_url)
+        b64_hash = catalog["packageHash"]
+        sha512 = binascii.hexlify(base64.b64decode(b64_hash)).decode("ascii")
+    except Exception as exc:
+        print(f"WARNING: Could not fetch hash for {name}/{version} from NuGet: {exc}")
+        return None
+    filename = f"{name}.{version}.nupkg"
+    url = f"https://api.nuget.org/v3-flatcontainer/{name}/{version}/{filename}"
+    return {
+        "type": "file",
+        "url": url,
+        "sha512": sha512,
+        "dest": DEST_DIR,
+        "dest-filename": filename,
+    }
 
 
 def _package_entry(name: str, version: str) -> dict | None:
@@ -54,25 +90,7 @@ def _package_entry(name: str, version: str) -> dict | None:
     }
 
 
-def _run_publish() -> None:
-    """Run dotnet publish to populate the NuGet cache with runtime packs."""
-    print("Running dotnet publish to populate NuGet cache with runtime packs...")
-    result = subprocess.run(
-        [
-            "dotnet", "publish", str(LINUX_CSPROJ),
-            "--configuration", "Release",
-            "--runtime", "linux-x64",
-            "--self-contained", "true",
-        ],
-        check=False,
-    )
-    if result.returncode != 0:
-        print("WARNING: dotnet publish failed — nuget-sources.json may be incomplete.")
-
-
 def generate():
-    _run_publish()
-
     with LOCK_FILE.open() as f:
         lock = json.load(f)
 
@@ -98,33 +116,16 @@ def generate():
         for m in missing:
             print(f"  {m}")
 
-    # Also include runtime packs that dotnet publish downloads but that are not
-    # tracked in packages.lock.json. These live in the same NuGet cache.
+    # Fetch runtime packs for the target flatpak SDK version directly from NuGet.
     already_included = {e["dest-filename"] for e in sources}
-    runtime_pack_missing = []
-    if NUGET_CACHE.is_dir():
-        for pkg_dir in NUGET_CACHE.iterdir():
-            name = pkg_dir.name.lower()
-            if not name.startswith(RUNTIME_PACK_PREFIXES):
-                continue
-            for version_dir in pkg_dir.iterdir():
-                version = version_dir.name
-                filename = f"{name}.{version}.nupkg"
-                if filename in already_included:
-                    continue
-                entry = _package_entry(name, version)
-                if entry is not None:
-                    sources.append(entry)
-                    already_included.add(filename)
-                else:
-                    runtime_pack_missing.append(f"{name}/{version}")
-
-    if runtime_pack_missing:
-        print(
-            f"WARNING: {len(runtime_pack_missing)} runtime pack(s) found in cache dir but missing .sha512 file:"
-        )
-        for m in runtime_pack_missing:
-            print(f"  {m}")
+    for pack_name in LINUX_RUNTIME_PACKS:
+        filename = f"{pack_name}.{DOTNET_RUNTIME_VERSION}.nupkg"
+        if filename in already_included:
+            continue
+        print(f"Fetching {pack_name}/{DOTNET_RUNTIME_VERSION} from NuGet...")
+        entry = _fetch_entry_from_nuget(pack_name, DOTNET_RUNTIME_VERSION)
+        if entry is not None:
+            sources.append(entry)
 
     sources.sort(key=lambda s: s["dest-filename"])
 
