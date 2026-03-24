@@ -35,6 +35,7 @@ DOTNET_RUNTIME_VERSION = "10.0.5"
 LINUX_RUNTIME_PACKS = (
     "microsoft.netcore.app.runtime.linux-x64",
     "microsoft.netcore.app.host.linux-x64",
+    "microsoft.aspnetcore.app.runtime.linux-x64",
 )
 
 
