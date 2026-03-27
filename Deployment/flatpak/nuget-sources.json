@@ -183,10 +183,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/communitytoolkit.mvvm/8.4.1/communitytoolkit.mvvm.8.4.1.nupkg",
-        "sha512": "fc228949834b3593d3a6adaedb358129f15a964733ca0e2cd2c77dadc9d4520eaa6456a33e77790a5a1e609c850e2b697c5592aac56a0258debc30b7760c2a3d",
+        "url": "https://api.nuget.org/v3-flatcontainer/communitytoolkit.mvvm/8.4.2/communitytoolkit.mvvm.8.4.2.nupkg",
+        "sha512": "45a30676f54742dfd748065a6952b4563bd9f8aa19877f592f9b54bd464bf34fadc982c4b3f1c7170d92fb34d59966d5bd05f6a7906abfae60a127eaa0edca53",
         "dest": "nuget-sources",
-        "dest-filename": "communitytoolkit.mvvm.8.4.1.nupkg"
+        "dest-filename": "communitytoolkit.mvvm.8.4.2.nupkg"
     },
     {
         "type": "file",
@@ -316,10 +316,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/magick.net-q8-anycpu/14.11.0/magick.net-q8-anycpu.14.11.0.nupkg",
-        "sha512": "3cebdbf3b7e0ee47d101e53ad1ab016e1bd372eb71be3c353525bc2085fc0527d04252c5464e4230a2218ec61310e45bb5e785a886c5b5c9621a197c2feca8a0",
+        "url": "https://api.nuget.org/v3-flatcontainer/magick.net-q8-anycpu/14.11.1/magick.net-q8-anycpu.14.11.1.nupkg",
+        "sha512": "7144f4768aee8449a536ea6806de8520fd2e832b83b100971d58fc73a095be3c0c30c84c60a6dff7f6ac1dcd3429ba946de5f945ffbc9cdcffb93dc1f298d1bc",
         "dest": "nuget-sources",
-        "dest-filename": "magick.net-q8-anycpu.14.11.0.nupkg"
+        "dest-filename": "magick.net-q8-anycpu.14.11.1.nupkg"
     },
     {
         "type": "file",
@@ -330,17 +330,17 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/magick.net.core/14.11.0/magick.net.core.14.11.0.nupkg",
-        "sha512": "2e9ab2f747deee65ce890f50d6a8addae63ca2e52847fe3561925679252aac82a0be247a2aee532501069668783463bb388b5336f2b9d8252ea1170d28dbe271",
+        "url": "https://api.nuget.org/v3-flatcontainer/magick.net.core/14.11.1/magick.net.core.14.11.1.nupkg",
+        "sha512": "fab8e5ae00d17bbad1865a8f29c532959113abcde0d4d55d4dd35f9dc013526b0f04504573b3b879e53bbcef30e90796f9636301b38dd5a0746eedb8e8683df2",
         "dest": "nuget-sources",
-        "dest-filename": "magick.net.core.14.11.0.nupkg"
+        "dest-filename": "magick.net.core.14.11.1.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/magick.net.systemdrawing/8.0.18/magick.net.systemdrawing.8.0.18.nupkg",
-        "sha512": "9359a361092e9293fd209db14f69f9548320cbd2651889f077f5c32321ce0c0b79382938df8cc3a37e3145ac61c81e9ea7ba73b5d02b12893a6daf25e1e7a1a7",
+        "url": "https://api.nuget.org/v3-flatcontainer/magick.net.systemdrawing/8.0.19/magick.net.systemdrawing.8.0.19.nupkg",
+        "sha512": "1083a74edf3d1488f151dc8bd2fc1056d3bac3eedcc437828ced82d868ee6e18b3eddecf613d7b368565c841d191ece55f813399e447dfda5dcae66848273823",
         "dest": "nuget-sources",
-        "dest-filename": "magick.net.systemdrawing.8.0.18.nupkg"
+        "dest-filename": "magick.net.systemdrawing.8.0.19.nupkg"
     },
     {
         "type": "file",
@@ -491,10 +491,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/sharpcompress/0.47.2/sharpcompress.0.47.2.nupkg",
-        "sha512": "f5b4c66f620cbe90c8ebed1883c07e29bbfee181ca2d310df5e22bccb5c5b0733803ad5c1bd80407ede75af18fc2eb67e984582eb2baa6829b55ed981f512f99",
+        "url": "https://api.nuget.org/v3-flatcontainer/sharpcompress/0.47.3/sharpcompress.0.47.3.nupkg",
+        "sha512": "f03a567da961c6c92ad7da5c6d9a58339ec9739bf19c63a9fd44b629053911382571ffd63106365ddcde01db12a1e76921c81871bf8c410026ca41e37a6afca2",
         "dest": "nuget-sources",
-        "dest-filename": "sharpcompress.0.47.2.nupkg"
+        "dest-filename": "sharpcompress.0.47.3.nupkg"
     },
     {
         "type": "file",

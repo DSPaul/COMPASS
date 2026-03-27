@@ -226,8 +226,8 @@
       },
       "CommunityToolkit.Mvvm": {
         "type": "Transitive",
-        "resolved": "8.4.1",
-        "contentHash": "BTRteP8SvFyd/4KAreIFJBcxD2O9trLxLDD/p8YkSDDrfFOzy2U8cHyz6r+5Eh4kDhJdzAVglei6a+Bh4jCpUA=="
+        "resolved": "8.4.2",
+        "contentHash": "WadCzGEc2U+3e20avRLng4qNtt4zoOGWrdUISqJWrHe3/FSnrYjuM5Sb4yQb09LhkBXrrI4Zt3dLKgRMbItsrg=="
       },
       "DotNetSeleniumExtras.WaitHelpers": {
         "type": "Transitive",
@@ -343,10 +343,10 @@
       },
       "Magick.NET-Q8-AnyCPU": {
         "type": "Transitive",
-        "resolved": "14.11.0",
-        "contentHash": "bjMWlNW0Fhpm8WteSotie74j3A1NdF7iQONUcR1P4QVb50RpxHcClxr0qEEULkfO+hC2naIE2vDxFpq4iN/zwQ==",
+        "resolved": "14.11.1",
+        "contentHash": "okzVwr299MM6vq2L+YR51ywoXITr3Ewiu6FXsBEj3egKQ0XJI1fn5E2WiBAnxAhlPnvnUE2pdeNvj6IBdmOjKA==",
         "dependencies": {
-          "Magick.NET.Core": "14.11.0"
+          "Magick.NET.Core": "14.11.1"
         }
       },
       "Magick.NET.AvaloniaMediaImaging": {
@@ -360,15 +360,15 @@
       },
       "Magick.NET.Core": {
         "type": "Transitive",
-        "resolved": "14.11.0",
-        "contentHash": "MdNdyZJ7CjTV0zc4G1dGz8RIis5ZizYOMRrQ4+WghHYq5Hn151VNPPFpRsZ3fw61klegTFbzYRyMQjfl/sYW3w=="
+        "resolved": "14.11.1",
+        "contentHash": "e9ejYUe6+GgbB6KBOpMp0jVDS72u0siDBz0RKSjBAEIZcigKDXDsOcoPLmLJJJqhorx3C4soRak2hCL/gaKdcg=="
       },
       "Magick.NET.SystemDrawing": {
         "type": "Transitive",
-        "resolved": "8.0.18",
-        "contentHash": "nksbPJszzZTXceEFdXbK14EuaEYKb70ptg3FGj3V2jJQCLO4BuLd80FgF5SLIyw60+DA4qPYVhqDYdPLRwQTlA==",
+        "resolved": "8.0.19",
+        "contentHash": "T6yE82g/aBqnCCVgXPe41b78OSEQxdH6wAqPF0c0ND2cM5UrBmNwEN+Hyn/1cDJEPgBXeQg/Yn6m6Q3bIpl8GQ==",
         "dependencies": {
-          "Magick.NET.Core": "14.11.0",
+          "Magick.NET.Core": "14.11.1",
           "System.Drawing.Common": "8.0.22"
         }
       },
@@ -499,8 +499,8 @@
       },
       "SharpCompress": {
         "type": "Transitive",
-        "resolved": "0.47.2",
-        "contentHash": "UVkiFhP/Mb7uWO5YXWHpXsqyHf5v9KyteVnDzcNw2Su5nSjcIiy4Z4vwbYr6EH2iLopaZfHHwkIn1u+RebxXqQ=="
+        "resolved": "0.47.3",
+        "contentHash": "KPODbBWz4zRs413KAHgy7N43bXCsAJyrCJMTajRan3Gl4epukJQKQxZeK1FVq/VvRZ4Y1MLz4Jc5UYSokwEojQ=="
       },
       "ShimSkiaSharp": {
         "type": "Transitive",
@@ -633,19 +633,19 @@
           "Avalonia.Themes.Fluent": "[11.3.12, )",
           "COMPASS.Infra": "[2.0.0-alpha.1, )",
           "CommandLineParser": "[2.9.1, )",
-          "CommunityToolkit.Mvvm": "[8.4.1, )",
+          "CommunityToolkit.Mvvm": "[8.4.2, )",
           "DotNetSeleniumExtras.WaitHelpers": "[3.11.0, )",
           "FuzzySharp": "[2.0.2, )",
           "HtmlAgilityPack": "[1.12.4, )",
-          "Magick.NET-Q8-AnyCPU": "[14.11.0, )",
+          "Magick.NET-Q8-AnyCPU": "[14.11.1, )",
           "Magick.NET.AvaloniaMediaImaging": "[1.1.9, )",
-          "Magick.NET.SystemDrawing": "[8.0.18, )",
+          "Magick.NET.SystemDrawing": "[8.0.19, )",
           "Material.Icons.Avalonia": "[3.0.0, )",
           "Newtonsoft.Json": "[13.0.4, )",
           "NuGet.Versioning": "[7.3.0, )",
           "PDFtoImage": "[5.2.0, )",
           "Selenium.WebDriver": "[4.41.0, )",
-          "SharpCompress": "[0.47.2, )",
+          "SharpCompress": "[0.47.3, )",
           "Svg.Controls.Skia.Avalonia": "[11.3.9.5, )",
           "itext": "[9.5.0, )",
           "itext.bouncy-castle-adapter": "[9.5.0, )",
@@ -716,10 +716,10 @@
       },
       "Magick.NET-Q8-AnyCPU": {
         "type": "Transitive",
-        "resolved": "14.11.0",
-        "contentHash": "bjMWlNW0Fhpm8WteSotie74j3A1NdF7iQONUcR1P4QVb50RpxHcClxr0qEEULkfO+hC2naIE2vDxFpq4iN/zwQ==",
+        "resolved": "14.11.1",
+        "contentHash": "okzVwr299MM6vq2L+YR51ywoXITr3Ewiu6FXsBEj3egKQ0XJI1fn5E2WiBAnxAhlPnvnUE2pdeNvj6IBdmOjKA==",
         "dependencies": {
-          "Magick.NET.Core": "14.11.0"
+          "Magick.NET.Core": "14.11.1"
         }
       },
       "Microsoft.Win32.SystemEvents": {
