@@ -1,7 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Reflection;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
@@ -15,6 +12,10 @@ using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
+using SharpCompress.Common;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
@@ -312,16 +313,7 @@ namespace COMPASS.Common.ViewModels.Modals
 
         private RelayCommand? _browseLocalFilesCommand;
         public RelayCommand BrowseLocalFilesCommand => _browseLocalFilesCommand ??= new(BrowseLocalFiles);
-        public void BrowseLocalFiles()
-        {
-            ProcessStartInfo startInfo = new()
-            {
-                Arguments = _applicationDataService.UserDataPath,
-                FileName = "explorer.exe" //TODO LINUX
-            };
-            Process.Start(startInfo);
-        }
-
+        public void BrowseLocalFiles() => _ioService.ShowInExplorer(_applicationDataService.UserDataPath);
         
         #endregion
 
