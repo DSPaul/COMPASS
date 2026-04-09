@@ -14,5 +14,5 @@ public interface IWebService
 
     Task<HtmlDocument?> ScrapeSite(string url);
 
-    bool CheckConnection(string url = "8.8.8.8");
+    bool CheckConnection(string? url = null);
 }

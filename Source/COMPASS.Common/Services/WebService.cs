@@ -1,4 +1,3 @@
-using System.Net.NetworkInformation;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -108,13 +107,16 @@ public class WebService : IWebService
     //check internet connection
     private bool _showedOfflineWarning = false;
 
-    public bool CheckConnection(string url = "8.8.8.8")
+    public bool CheckConnection(string? url = null)
     {
-        Ping p = new();
+        bool generalCheck = url == null;
+        url ??= @"https://google.com";
+
         try
         {
-            PingReply reply = p.Send(url, 3000);
-            if (reply.Status != IPStatus.Success) return false;
+            using HttpClient client = new() { Timeout = TimeSpan.FromSeconds(3) };
+            using HttpResponseMessage reply = client.Send(new HttpRequestMessage(HttpMethod.Head, url));
+            if (!reply.IsSuccessStatusCode) return false;
             if (_showedOfflineWarning)
             {
                 const string msg = "Internet connection restored";
@@ -129,7 +131,14 @@ public class WebService : IWebService
         {
             if (!_showedOfflineWarning)
             {
-                Logger.Warn($"Could not ping {url}", ex);
+                if (generalCheck)
+                {
+                    Logger.Warn("COMPASS is oflline, some features might not work.");
+                }
+                else
+                {
+                    Logger.Warn($"Could not reach {url}", ex);
+                }
             }
 
             _showedOfflineWarning = true;
