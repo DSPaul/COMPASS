@@ -14,7 +14,7 @@ namespace COMPASS.Common.Tools
             // regardless of where the user has moved their data.
             string localPath = IApplicationDataService.ApplicationDataPath;
             Directory.CreateDirectory(Path.Combine(localPath, "logs"));
-            log4net.GlobalContext.Properties["UserDataPath"] = localPath;
+            log4net.GlobalContext.Properties["DataPath"] = localPath;
             log4net.Config.XmlConfigurator.Configure(new FileInfo("log4net.config"));
             FileLog = log4net.LogManager.GetLogger(nameof(Logger));
             Info($"Launching Compass v{ApplicationService.Version}");
