@@ -15,6 +15,8 @@ namespace COMPASS.Common.Models
         public const string DIR_THUMBNAILS = "Thumbnails";
         public const string DIR_COVERS = "CoverArt";
 
+        public const string DEFAULT_COLLECTION_NAME = "Default Collection";
+
         public const string SatchelInfoFileName = "SatchelInfo.json";
 
         public static string InstallersPath => Path.Combine(IApplicationDataService.ApplicationDataPath, "Installers");

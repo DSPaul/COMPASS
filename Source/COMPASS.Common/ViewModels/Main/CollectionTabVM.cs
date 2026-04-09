@@ -135,7 +135,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
                 PreferencesService.GetInstance().Preferences.UIState.StartupCollection =
                     CollectionManager.CollectionVms
                         .Select(vm => vm.Identifier)
-                        .FirstOrDefault(vm => vm != collectionToDelete.Identifier) ?? "Default Collection";
+                        .FirstOrDefault(vm => vm != collectionToDelete.Identifier) ?? Constants.DEFAULT_COLLECTION_NAME;
             }
 
             //Switch to another collection

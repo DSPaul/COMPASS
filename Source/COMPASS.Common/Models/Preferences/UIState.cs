@@ -7,7 +7,7 @@ namespace COMPASS.Common.Models.Preferences
     public class UIState : ObservableObject
     {
         public CodexLayout StartupLayout { get; set; } = CodexLayout.Home;
-        public string StartupCollection { get; set; } = "DefaultCollection";
+        public string StartupCollection { get; set; } = Constants.DEFAULT_COLLECTION_NAME;
         public int StartupTab { get; set; } = 0;
 
         public bool ShowCodexInfoPanel { get; set; } = true;

@@ -130,7 +130,7 @@ namespace COMPASS.Common.Services.StateManagers
             if (collectionHandle != null) return collectionHandle;
         
             Debug.Assert(collectionOptions.Count == 0, "Collection should only be null if all options have been tried and failed");
-            string name = "Default Collection";
+            string name = Constants.DEFAULT_COLLECTION_NAME;
 
             collectionHandle = CreateAndLoadCollection(name);
             if (collectionHandle == null)
