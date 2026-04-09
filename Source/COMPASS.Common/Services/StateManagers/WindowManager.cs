@@ -10,7 +10,7 @@ public static class WindowManager
 {
     public static Window MainWindow { get; set; } = null!;
 
-    public static Window ActiveWindow => (Application.Current!.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)!.Windows.First(w => w.IsActive);
+    public static Window ActiveWindow => (Application.Current!.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)!.Windows.FirstOrDefault(w => w.IsActive) ?? MainWindow;
     
     public static async Task OpenModal(IModalViewModel modalViewModel)
     {

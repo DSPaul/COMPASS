@@ -32,7 +32,10 @@
             - Delete your data and use the data already in the new location
         </TextBlock>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="20">
+        <StackPanel 
+            Orientation="Horizontal" 
+            HorizontalAlignment="Center" 
+            Margin="20" Spacing="20">
             <controls:IconButton Content="Move" Icon="FileDocumentArrowRight"
                                  Command="{Binding MoveToNewDataLocationCommand}" />
             <controls:IconButton Content="Copy" Icon="FileDocumentMultiple"

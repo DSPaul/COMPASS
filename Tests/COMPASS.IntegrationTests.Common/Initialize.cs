@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Infra.Tools;
 using COMPASS.Tests.Common.Mocks;
 using Logger = COMPASS.Common.Tools.Logger;
@@ -19,7 +20,7 @@ namespace COMPASS.IntegrationTests.Common
             builder.RegisterModule<CommonModule>();
 
             builder.RegisterType<MockNotificationService>().As<INotificationService>();
-            builder.RegisterType<MockEnvironmentVarsService>().As<IEnvironmentVarsService>();
+            builder.RegisterType<MockApplicationDataService>().As<IApplicationDataService>();
             builder.RegisterType<MockWebDriverService>().As<IWebDriverService>();
             builder.RegisterType<MockIOService>().As<IIOService>();
 

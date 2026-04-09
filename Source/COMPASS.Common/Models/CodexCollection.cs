@@ -10,7 +10,7 @@ namespace COMPASS.Common.Models
     public class CodexCollection : ObservableObject
     {
         private IUserFilesStorageService _userFilesStorageService => field ??= ServiceResolver.Resolve<IUserFilesStorageService>();
-        private IThumbnailStorageService _thumbnailStorageService => field ??=  ServiceResolver.Resolve<IThumbnailStorageService>();
+        private ICoverStorageService _thumbnailStorageService => field ??=  ServiceResolver.Resolve<ICoverStorageService>();
         
         public CodexCollection(string identifier)
         {

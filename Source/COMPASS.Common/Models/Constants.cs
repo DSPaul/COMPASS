@@ -1,5 +1,4 @@
-﻿using COMPASS.Common.Interfaces.Services;
-using COMPASS.Infra.Tools;
+﻿using COMPASS.Common.Interfaces.Storage;
 
 namespace COMPASS.Common.Models
 {
@@ -11,10 +10,14 @@ namespace COMPASS.Common.Models
         public const string SatchelExtension = ".satchel";
 
         //File names
+        public const string DIR_ROOT = "COMPASS";
+        public const string DIR_COLLECTIONS = "Collections";
+        public const string DIR_THUMBNAILS = "Thumbnails";
+        public const string DIR_COVERS = "CoverArt";
+
         public const string SatchelInfoFileName = "SatchelInfo.json";
 
-
-        public static string InstallersPath => Path.Combine(ServiceResolver.Resolve<IEnvironmentVarsService>().CompassDataPath, "Installers");
+        public static string InstallersPath => Path.Combine(IApplicationDataService.ApplicationDataPath, "Installers");
         public const string AutoUpdateXMLPath = "https://raw.githubusercontent.com/DSPAUL/COMPASS/master/versionInfo.xml";
         
         //Command line arguments

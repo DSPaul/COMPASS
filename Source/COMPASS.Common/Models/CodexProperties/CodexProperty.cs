@@ -15,6 +15,8 @@ namespace COMPASS.Common.Models.CodexProperties
         {
             Name = propName;
             Label = label ?? propName;
+
+            SourcePriority = GetDefaultSources(propName);
         }
 
         #region Properties

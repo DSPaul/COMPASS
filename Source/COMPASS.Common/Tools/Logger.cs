@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics;
-using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.SidePanels;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Tools
 {
@@ -11,7 +10,11 @@ namespace COMPASS.Common.Tools
     {
         public static void Init()
         {
-            log4net.GlobalContext.Properties["CompassDataPath"] = ServiceResolver.Resolve<IEnvironmentVarsService>().CompassDataPath;
+            // Logs always go to the machine-local location so they remain accessible
+            // regardless of where the user has moved their data.
+            string localPath = IApplicationDataService.ApplicationDataPath;
+            Directory.CreateDirectory(Path.Combine(localPath, "logs"));
+            log4net.GlobalContext.Properties["UserDataPath"] = localPath;
             log4net.Config.XmlConfigurator.Configure(new FileInfo("log4net.config"));
             FileLog = log4net.LogManager.GetLogger(nameof(Logger));
             Info($"Launching Compass v{ApplicationService.Version}");

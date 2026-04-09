@@ -26,7 +26,6 @@ namespace COMPASS.Common.ViewModels.Modals
             //TODO use tabToOpen 
             
             _applicationDataService = ServiceResolver.Resolve<IApplicationDataService>();
-            _environmentVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
             _ioService = ServiceResolver.Resolve<IIOService>();
             _preferencesService = PreferencesService.GetInstance();
             
@@ -50,7 +49,6 @@ namespace COMPASS.Common.ViewModels.Modals
         }
 
         private readonly IApplicationDataService _applicationDataService;
-        private readonly IEnvironmentVarsService _environmentVarsService;
         private readonly IIOService _ioService;
         private readonly PreferencesService _preferencesService;
         
@@ -277,13 +275,11 @@ namespace COMPASS.Common.ViewModels.Modals
 
         #region Tab: Data
 
-        
-
         #region Manage Data
 
         #region Data Path 
 
-        public string CompassDataPath => _environmentVarsService.CompassDataPath;
+        public string UserDataPath => _applicationDataService.UserDataPath;
         
         private AsyncRelayCommand? _changeDataPathCommand;
         public AsyncRelayCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
@@ -297,11 +293,11 @@ namespace COMPASS.Common.ViewModels.Modals
             if (folders.Any())
             {
                 var folder = folders.Single();
-                string newPath = folder.Path.AbsolutePath;
+                string newPath = folder.Path.LocalPath;
                 folder.Dispose();
-                await _applicationDataService.UpdateRootDirectory(newPath);
+                await _applicationDataService.UpdateUserDataPath(newPath);
                 
-                OnPropertyChanged(nameof(CompassDataPath));
+                OnPropertyChanged(nameof(UserDataPath));
             }
         }
 
@@ -309,8 +305,8 @@ namespace COMPASS.Common.ViewModels.Modals
         public AsyncRelayCommand ResetDataPathCommand => _resetDataPathCommand ??= new(ResetDataPath);
         private async Task ResetDataPath()
         {
-            await _applicationDataService.UpdateRootDirectory(IEnvironmentVarsService.DefaultDataPath);
-            OnPropertyChanged(nameof(CompassDataPath));
+            await _applicationDataService.ResetUserDataPath();
+            OnPropertyChanged(nameof(UserDataPath));
         }
         #endregion
 
@@ -320,8 +316,8 @@ namespace COMPASS.Common.ViewModels.Modals
         {
             ProcessStartInfo startInfo = new()
             {
-                Arguments = _environmentVarsService.CompassDataPath,
-                FileName = "explorer.exe"
+                Arguments = _applicationDataService.UserDataPath,
+                FileName = "explorer.exe" //TODO LINUX
             };
             Process.Start(startInfo);
         }
@@ -340,7 +336,7 @@ namespace COMPASS.Common.ViewModels.Modals
             foreach (Codex codex in ActiveCollection.AllCodices)
             {
                 //codex.Thumbnail = codex.CoverArt.Replace("CoverArt", "Thumbnails");
-                CoverService.CreateThumbnail(codex);
+                using var thumbnail = CoverService.CreateThumbnail(codex);
                 codex.NotifyCoverChanged();
             }
         }

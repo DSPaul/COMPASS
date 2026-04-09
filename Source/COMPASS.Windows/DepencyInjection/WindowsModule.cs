@@ -8,7 +8,6 @@ namespace COMPASS.Windows.DepencyInjection
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<EnvironmentVarsService>().As<IEnvironmentVarsService>();
             builder.RegisterType<IOService>().As<IIOService>();
             builder.RegisterType<UIService>().As<IUIService>();
             builder.RegisterType<WebDriverService>().As<IWebDriverService>().InstancePerLifetimeScope();

@@ -21,11 +21,14 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<CodexCollectionXmlRepository>().Keyed<ICodexCollectionRepository>(StorageStrategy.Xml);
             builder.RegisterType<CodexCollectionMemRepository>().Keyed<ICodexCollectionRepository>(StorageStrategy.Memory);
             builder.RegisterType<ImportExportService>().As<IImportExportService>();
-            builder.RegisterType<ThumbnailStorageService>().As<IThumbnailStorageService>();
+            builder.RegisterType<CoverStorageService>().As<ICoverStorageService>();
             builder.RegisterType<UserFilesStorageService>().As<IUserFilesStorageService>();
             
+            builder.RegisterType<ApplicationDataService>()
+                .As<IApplicationDataService>()
+                .SingleInstance();
+
             builder.RegisterType<FilesService>().As<IFilesService>();
-            builder.RegisterType<ApplicationDataService>().As<IApplicationDataService>();
             builder.RegisterType<WebService>().As<IWebService>();
         }
     }

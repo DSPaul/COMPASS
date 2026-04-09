@@ -18,11 +18,10 @@ namespace COMPASS.Common.Repositories
 {
     internal class CodexCollectionXmlRepository(
         IApplicationDataService applicationDataService,
-        IEnvironmentVarsService environmentVarsService,
         INotificationService windowedNotificationService)
          : ICodexCollectionRepository
     {
-        private string _collectionsPath = Path.Combine(environmentVarsService.CompassDataPath, "Collections");
+        private string _collectionsPath = Path.Combine(applicationDataService.UserDataPath, Constants.DIR_COLLECTIONS);
         private readonly Lock _codicesLocker = new();
         private readonly Lock _tagsLocker = new();
         private readonly Lock _infoLocker = new();
@@ -48,10 +47,10 @@ namespace COMPASS.Common.Repositories
                 catch (Exception ex)
                 {
                     Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
-                    string msg = $"Failed to create a folder to store user data at {environmentVarsService.CompassDataPath}, " +
+                    string msg = $"Failed to create a folder to store user data at {applicationDataService.UserDataPath}, " +
                                  $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
-                    applicationDataService.RequireNewCompassDataLocation(msg).Wait();
-                    _collectionsPath = Path.Combine(environmentVarsService.CompassDataPath, "Collections");
+                    applicationDataService.RequireNewUserDataLocation(msg).Wait();
+                    _collectionsPath = Path.Combine(applicationDataService.UserDataPath, Constants.DIR_COLLECTIONS);
                 }
             }
         }

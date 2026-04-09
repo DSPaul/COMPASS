@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Attributes;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
@@ -29,7 +30,12 @@ namespace COMPASS.Common.Models
 
         #region COMPASS related Metadata
 
+        /// <summary>
+        /// Local Id, only unique within the collection
+        /// </summary>
         public int Id { get; set; }
+
+        public Guid GlobalId { get; set; } = Guid.NewGuid();
 
         private string _coverArtPath = "";
         public string CoverArtPath
@@ -38,12 +44,7 @@ namespace COMPASS.Common.Models
             set => SetProperty(ref _coverArtPath, value);
         }
 
-        private string _thumbnailPath = "";
-        public string ThumbnailPath
-        {
-            get => _thumbnailPath;
-            set => SetProperty(ref _thumbnailPath, value);
-        }
+        public string ThumbnailPath => Path.Combine(IApplicationDataService.ApplicationDataPath, Constants.DIR_THUMBNAILS, $"{GlobalId}.png");
 
         #endregion
 
@@ -193,7 +194,6 @@ namespace COMPASS.Common.Models
             Version = c.Version;
             Id = c.Id;
             CoverArtPath = c.CoverArtPath;
-            ThumbnailPath = c.ThumbnailPath;
             PhysicallyOwned = c.PhysicallyOwned;
             Description = c.Description;
             ReleaseDate = c.ReleaseDate;

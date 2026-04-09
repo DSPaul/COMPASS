@@ -17,11 +17,11 @@ namespace COMPASS.Common.ViewModels.Tools;
 public class BackupToolViewModel : ViewModelBase, IToolViewModel
 {
     private LoadingWindow? _lw;
-    private readonly IEnvironmentVarsService _environmentVarsService;
+    private readonly IApplicationDataService _applicationDataService;
 
     public BackupToolViewModel()
     {
-        _environmentVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
+        _applicationDataService = ServiceResolver.Resolve<IApplicationDataService>();
     }
     
     #region IToolViewModel
@@ -42,7 +42,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
 
         if (saveFile != null)
         {
-            string targetPath = saveFile.Path.AbsolutePath;
+            string targetPath = saveFile.Path.LocalPath;
             saveFile.Dispose();
             _lw = new("Compressing to Zip File");
             _lw.Show(WindowManager.ActiveWindow);
@@ -70,7 +70,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
         if (files.Any())
         {
             using var file = files.Single();
-            string targetPath = file.Path.AbsolutePath;
+            string targetPath = file.Path.LocalPath;
             _lw = new("Restoring Backup");
             _lw.Show(WindowManager.ActiveWindow);
 
@@ -109,6 +109,6 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             Progress = progressVm
         };
         await using var archive = await ZipArchive.OpenAsyncArchive(sourcePath, options);
-        await archive.WriteToDirectoryAsync(_environmentVarsService.CompassDataPath);
+        await archive.WriteToDirectoryAsync(_applicationDataService.UserDataPath);
     }
 }

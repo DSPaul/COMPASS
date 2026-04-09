@@ -38,7 +38,7 @@ namespace COMPASS.Common.ViewModels.Modals
                 
                 //find the replaced part of the path
                 string oldPath = Codex.Sources.Path;
-                string newPath = file.Path.AbsolutePath;
+                string newPath = file.Path.LocalPath;
                 var (toReplace, replaceWith) = PathUtils.GetDifferingRoot(oldPath, newPath);
 
                 //fix the path of this codex

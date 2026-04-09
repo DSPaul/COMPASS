@@ -19,14 +19,12 @@ using Notification = COMPASS.Common.Models.Notification;
 namespace COMPASS.Common.Services.Storage;
 
 public class ImportExportService(
-    IEnvironmentVarsService environmentVarsService,
+    IApplicationDataService applicationDataService,
     IFilesService filesService,
     IIOService ioService,
     INotificationService windowedNotificationService)
     : IImportExportService
 {
-    private string _collectionsPath = Path.Combine(environmentVarsService.CompassDataPath, "Collections");
-
     private const string CodicesFileName = "CodexInfo.xml";
     private const string TagsFileName = "Tags.xml";
     private const string CollectionInfoFileName = "CollectionInfo.xml";
@@ -49,7 +47,7 @@ public class ImportExportService(
 
             if (!files.Any()) return null;
             using var file = files.Single();
-            satchelPath = file.Path.AbsolutePath;
+            satchelPath = file.Path.LocalPath;
         }
 
         string satchelName = Path.GetFileName(satchelPath);
@@ -143,7 +141,7 @@ public class ImportExportService(
             xmlservice.Load(collection);
 
             //Image paths need to be updated to point to the dir where the files where extracted
-            var thumbnailService = ServiceResolver.Resolve<IThumbnailStorageService>();
+            var thumbnailService = ServiceResolver.Resolve<ICoverStorageService>();
             foreach(var codex in collection.AllCodices)
             {
                 thumbnailService.InitCodexImagePaths(codex);
@@ -168,7 +166,7 @@ public class ImportExportService(
     private async Task<string> UnZipCollection(string zipFile)
     {
         string fileName = Path.GetFileName(zipFile);
-        string tmpCollectionPath = Path.Combine(_collectionsPath, $"__{fileName}");
+        string tmpCollectionPath = Path.Combine(applicationDataService.UserDataPath, Constants.DIR_COLLECTIONS, $"__{fileName}");
 
         //make sure any previous temp data is gone
         ioService.ClearTmpData(tmpCollectionPath);
@@ -326,7 +324,7 @@ public class ImportExportService(
         try
         {
             //zip up collections, easiest with system.IO.Compression
-            System.IO.Compression.ZipFile.CreateFromDirectory(_collectionsPath, zipPath,
+            System.IO.Compression.ZipFile.CreateFromDirectory(applicationDataService.UserDataPath, zipPath,
                 System.IO.Compression.CompressionLevel.Optimal, true);
         }
         catch (Exception ex)

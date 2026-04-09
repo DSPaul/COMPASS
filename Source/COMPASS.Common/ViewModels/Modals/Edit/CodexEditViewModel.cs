@@ -106,7 +106,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             if (files.Any())
             {
                 using var file = files.Single();
-                WorkingCopy.Sources.Path = file.Path.AbsolutePath;
+                WorkingCopy.Sources.Path = file.Path.LocalPath;
             }
         }
 
@@ -219,7 +219,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             if (files.Any())
             {
                 using var file = files.Single();
-                var img = CoverService.GetCoverFromImage(file.Path.AbsolutePath);
+                var img = CoverService.GetCoverFromImage(file.Path.LocalPath);
                 if (img != null)
                 {
                     await CoverService.SaveCover(WorkingCopy.GetModel(), img);
@@ -236,7 +236,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             if (e.Data is DataObject data
                 && data.GetFiles()?.Count() == 1
-                && FileFormatUtils.IsImageFile(data.GetFiles()?.Select(f => f.Path.AbsolutePath).First() ?? ""))
+                && FileFormatUtils.IsImageFile(data.GetFiles()?.Select(f => f.Path.LocalPath).First() ?? ""))
             {
                 e.DragEffects = DragDropEffects.Copy;
             }
@@ -250,9 +250,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             if (e.Data is DataObject data
                 && data.GetFiles()?.Count() == 1
-                && FileFormatUtils.IsImageFile(data.GetFiles()?.Select(f => f.Path.AbsolutePath).First() ?? ""))
+                && FileFormatUtils.IsImageFile(data.GetFiles()?.Select(f => f.Path.LocalPath).First() ?? ""))
             {
-                string path = data.GetFiles()!.Select(f => f.Path.AbsolutePath).First();
+                string path = data.GetFiles()!.Select(f => f.Path.LocalPath).First();
                 var img = CoverService.GetCoverFromImage(path);
                 if (img != null)
                 {

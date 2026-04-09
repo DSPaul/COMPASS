@@ -43,7 +43,7 @@ namespace COMPASS.Common.Services.FileSystem
             if (folders.Count == 0) return null;
 
             var folder = folders.Single();
-            string path = folder.Path.AbsolutePath;
+            string path = folder.Path.LocalPath;
 
             //Dispose the handle for now and just keep the path, might need to hold on to this later
             folder.Dispose();
@@ -65,7 +65,7 @@ namespace COMPASS.Common.Services.FileSystem
             IList<IStorageFolder> folders = await filesService.OpenFoldersAsync(options).ConfigureAwait(false);
 
             if (folders.Count == 0) return [];
-            var paths = folders.Select(f => f.Path.AbsolutePath).ToList();
+            var paths = folders.Select(f => f.Path.LocalPath).ToList();
 
             //Dispose the handles for now and just keep the paths, might need to hold on to this later
             foreach (var folder in folders)

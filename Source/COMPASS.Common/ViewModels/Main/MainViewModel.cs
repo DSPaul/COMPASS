@@ -1,11 +1,8 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Tools;
-using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.Views.Windows;
 using System.Diagnostics;
-using System.Reflection;
 using Avalonia.Controls;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
@@ -27,7 +24,6 @@ namespace COMPASS.Common.ViewModels.Main
             _webService = ServiceResolver.Resolve<IWebService>();
             _uiService = ServiceResolver.Resolve<IUIService>();
             
-            Logger.Init();
             InitLayouts();
             CollectionManager.DiscoverCollections();
             

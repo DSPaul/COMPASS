@@ -4,6 +4,7 @@ using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
+using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
@@ -33,7 +34,6 @@ public class CodexViewModel : ModelViewModelBase<Codex>
         _derivedProperties.Add(nameof(Codex.UserDefinedSortingTitle), [nameof(SortingTitle), nameof(SortingTitleContainsNumbers)]);
         _derivedProperties.Add(nameof(Codex.Authors), [nameof(AuthorsAsString)]);
         _derivedProperties.Add(nameof(Codex.Tags), [nameof(OrderedTags)]);
-        _derivedProperties.Add(nameof(Codex.ThumbnailPath), [nameof(Thumbnail)]);
         _derivedProperties.Add(nameof(Codex.ReleaseDate), [nameof(ReleaseDateAsString)]);
         
         //Validation
@@ -49,7 +49,7 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     public int Id => _model.Id;
     
     private Bitmap? _thumbnail;
-    public Task<Bitmap?> Thumbnail => _thumbnail == null ? LoadThumbnail() : Task.FromResult<Bitmap?>(_thumbnail);
+    public Task<Bitmap?> Thumbnail => _thumbnail == null ? LoadOrCreateThumbnail() : Task.FromResult<Bitmap?>(_thumbnail);
 
     private Bitmap? _cover;
     public Bitmap? Cover
@@ -210,13 +210,35 @@ public class CodexViewModel : ModelViewModelBase<Codex>
         }
     }
 
-    private async Task<Bitmap?> LoadThumbnail()
+    private async Task<Bitmap?> LoadOrCreateThumbnail()
     {
         try
         {
+            // Invalidate stale thumbnail: if the cover art was updated after the thumbnail was generated, delete it
+            if (File.Exists(_model.ThumbnailPath) && File.Exists(_model.CoverArtPath) &&
+                File.GetLastWriteTimeUtc(_model.CoverArtPath) > File.GetLastWriteTimeUtc(_model.ThumbnailPath))
+            {
+                File.Delete(_model.ThumbnailPath);
+            }
+
             if (File.Exists(_model.ThumbnailPath))
             {
                 return await Task.Run(() => _thumbnail = new Bitmap(_model.ThumbnailPath));
+            }
+            else if(File.Exists(_model.CoverArtPath))
+            {
+                return await Task.Run(() =>
+                {
+                    using var thumbnail = CoverService.CreateThumbnail(_model);
+                    if(thumbnail == null)
+                    {
+                        return null;
+                    }
+                    using MemoryStream ms = new();
+                    thumbnail?.Write(ms);
+                    ms.Position = 0;
+                    return _thumbnail = new Bitmap(ms);
+                });
             }
             else
             {
@@ -225,7 +247,7 @@ public class CodexViewModel : ModelViewModelBase<Codex>
         }
         catch (Exception ex)
         {
-            Logger.Error("Failed to load thumbnail", ex);
+            Logger.Error("Failed to load thumbnail", ex); 
             return null;
         }
     }

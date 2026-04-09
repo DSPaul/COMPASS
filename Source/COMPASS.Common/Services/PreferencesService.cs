@@ -1,6 +1,6 @@
 ﻿using System.Xml;
 using System.Xml.Serialization;
-using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Models.XmlDtos;
@@ -18,7 +18,7 @@ namespace COMPASS.Common.Services
         public static PreferencesService GetInstance() => _prefService ??= new PreferencesService();
         #endregion
 
-        public string PreferencesFilePath => Path.Combine(ServiceResolver.Resolve<IEnvironmentVarsService>().CompassDataPath, "Preferences.xml");
+        public string PreferencesFilePath => Path.Combine(ServiceResolver.Resolve<IApplicationDataService>().UserDataPath, "Preferences.xml");
 
         public static readonly Lock _writeLocker = new();
 
@@ -75,7 +75,7 @@ namespace COMPASS.Common.Services
         {
             if (!File.Exists(PreferencesFilePath))
             {
-                Logger.Warn($"{PreferencesFilePath} does not exist.", new FileNotFoundException());
+                Logger.Debug($"{PreferencesFilePath} does not exist.");
                 return null;
             }
 

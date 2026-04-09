@@ -93,7 +93,7 @@ namespace COMPASS.Common.ViewModels.Layouts
             {
                 var paths = data
                     .GetFiles()?
-                    .Select(f => f.Path.AbsolutePath)
+                    .Select(f => f.Path.LocalPath)
                     .ToList();
 
                 if (paths is null) return;

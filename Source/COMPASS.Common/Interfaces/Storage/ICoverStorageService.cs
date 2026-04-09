@@ -2,7 +2,7 @@ using COMPASS.Common.Models;
 
 namespace COMPASS.Common.Interfaces.Storage;
 
-public interface IThumbnailStorageService
+public interface ICoverStorageService
 {
     void InitCodexImagePaths(Codex codex);
     
@@ -11,7 +11,7 @@ public interface IThumbnailStorageService
     /// </summary>
     /// <param name="codex"></param>
     /// <param name="targetCollection"></param>
-    /// <param name="copy"> perform a copy rather than a copy </param>
+    /// <param name="copy"> perform a copy rather than a move </param>
     void MoveCodexDataToCollection(Codex codex, CodexCollection targetCollection, bool copy = false);
     
     void OnCollectionRenamed(CodexCollection collection);

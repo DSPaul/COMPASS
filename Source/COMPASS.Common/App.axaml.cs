@@ -4,11 +4,13 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common;
 
@@ -31,6 +33,8 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            Logger.Init();
+
             //if crash, show crash dialog instead
             string? crashMsg = CmdLineArgumentService.Args?.CrashMessage;
             if (!string.IsNullOrEmpty(crashMsg))
@@ -59,6 +63,8 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            ServiceResolver.Resolve<IApplicationDataService>().MigrateFromV1();
+
             var mainWindow = new MainWindow();
             var mainVm =  new MainViewModel();
             mainWindow.DataContext = mainVm;

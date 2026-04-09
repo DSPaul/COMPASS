@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Text;
 using Avalonia.Media;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Infra.ExtensionMethods;
-using Microsoft.Extensions.DependencyModel.Resolution;
 
 namespace COMPASS.Common.Models.XmlDtos
 {
@@ -52,7 +49,7 @@ namespace COMPASS.Common.Models.XmlDtos
             {
                 // COMPASS related Metadata
                 Id = dto.ID,
-                ThumbnailPath = dto.ThumbnailPath,
+                GlobalId = dto.GlobalId == Guid.Empty ? Guid.NewGuid() : dto.GlobalId,
                 CoverArtPath = dto.CoverArtPath,
 
                 //Codex related Metadata
@@ -95,7 +92,7 @@ namespace COMPASS.Common.Models.XmlDtos
             {
                 // COMPASS related Metadata
                 ID = model.Id,
-                ThumbnailPath = model.ThumbnailPath.Sanitize(),
+                GlobalId = model.GlobalId,
                 CoverArtPath = model.CoverArtPath.Sanitize(),
 
                 //Codex related Metadata

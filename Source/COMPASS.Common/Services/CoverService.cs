@@ -4,7 +4,6 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Sources;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
-using COMPASS.Common.Views.Windows;
 using ImageMagick;
 using ImageMagick.Factories;
 using OpenQA.Selenium;
@@ -13,7 +12,6 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Infra.Tools;
-using iText.Signatures.Validation.Lotl;
 
 namespace COMPASS.Common.Services
 {
@@ -161,46 +159,35 @@ namespace COMPASS.Common.Services
             }
         }
 
-        public static void CreateThumbnail(Codex c, IMagickImage? image = null)
+        public static IMagickImage? CreateThumbnail(Codex c, IMagickImage? image = null)
         {
-            if (string.IsNullOrEmpty(c.ThumbnailPath))
-            {
-                Logger.Error("Trying to write thumbnail to empty path", new InvalidOperationException());
-                return;
-            }
-
             uint newWidth = ThumbnailWidth; //sets resolution of thumbnail in pixels
-            bool ownsImage = false;
 
             if (image is null)
             {
-                if (!Path.Exists(c.CoverArtPath)) return;
+                if (!File.Exists(c.CoverArtPath))
+                {
+                    return null;
+                }
+
                 image = new MagickImage(c.CoverArtPath);
-                ownsImage = true;
             }
             
             var ioService = ServiceResolver.Resolve<IIOService>();
 
-            try
+            //preserve aspect ratio
+            uint width = image.Width;
+            uint height = image.Height;
+            uint newHeight = newWidth / width * height;
+            image.Thumbnail(newWidth, newHeight);
+
+            //create thumbnail
+            if (ioService.EnsureDirectoryExists(c.ThumbnailPath))
             {
-                //preserve aspect ratio
-                uint width = image.Width;
-                uint height = image.Height;
-                uint newHeight = newWidth / width * height;
-                //create thumbnail
-                if (ioService.EnsureDirectoryExists(c.ThumbnailPath))
-                {
-                    image.Thumbnail(newWidth, newHeight);
-                    image.Write(c.ThumbnailPath);
-                }
+                image.Write(c.ThumbnailPath);
             }
-            finally
-            {
-                if (ownsImage)
-                {
-                    image.Dispose();
-                }
-            }
+
+            return image;
         }
 
         //Take screenshot of specific html element 

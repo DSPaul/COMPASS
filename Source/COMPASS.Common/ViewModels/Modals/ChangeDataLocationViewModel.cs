@@ -1,47 +1,22 @@
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
-using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.Tools;
-using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.ViewModels.Main;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals;
 
 public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
 {
-    private string _currentDataLocation;
-    private string _newDataLocation;
+    public ChangeDataLocationActions Result { get; private set; }
 
-    private readonly IEnvironmentVarsService _envVarsService;
-    private readonly IIOService _ioService;
-    private readonly INotificationService _notificationService;
-
-    public ChangeDataLocationViewModel(string newDataLocation)
+    public ChangeDataLocationViewModel(string currentLocation, string newDataLocation)
     {
-        _envVarsService = ServiceResolver.Resolve<IEnvironmentVarsService>();
-        _ioService = ServiceResolver.Resolve<IIOService>();
-        _notificationService = ServiceResolver.Resolve<INotificationService>();
-
-        _currentDataLocation = _envVarsService.CompassDataPath;
-        _newDataLocation = newDataLocation;
+        CurrentDataLocation = currentLocation;
+        NewDataLocation = newDataLocation;
     }
 
-    public string CurrentDataLocation
-    {
-        get => _currentDataLocation;
-        set => SetProperty(ref _currentDataLocation, value);
-    }
+    public string CurrentDataLocation { get; }
 
-    public string NewDataLocation
-    {
-        get => _newDataLocation;
-        set => SetProperty(ref _newDataLocation, value);
-    }
+    public string NewDataLocation { get; }
 
     #region Methods & Commands
 
@@ -49,31 +24,16 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
     public AsyncRelayCommand MoveToNewDataLocationCommand => _moveToNewDataLocationCommand ??= new(MoveToNewDataLocation);
     private async Task MoveToNewDataLocation()
     {
+        Result = ChangeDataLocationActions.Move;
         CloseAction();
-
-        bool success = await _ioService.CopyDataAsync(CurrentDataLocation, NewDataLocation);
-
-        if (success)
-        {
-            await DeleteDataLocation();
-        }
-        else
-        {
-            //TODO could show a notification that it failed
-        }
     }
 
     private AsyncRelayCommand? _copyToNewDataLocationCommand;
     public AsyncRelayCommand CopyToNewDataLocationCommand => _copyToNewDataLocationCommand ??= new(CopyToNewDataLocation);
     private async Task CopyToNewDataLocation()
     {
+        Result = ChangeDataLocationActions.Copy;
         CloseAction();
-
-        bool success = await _ioService.CopyDataAsync(CurrentDataLocation, NewDataLocation);
-        if (success)
-        {
-            ChangeToNewDataLocation();
-        }
     }
 
     private RelayCommand? _changeToNewDataLocationCommand;
@@ -84,51 +44,16 @@ public class ChangeDataLocationViewModel : ViewModelBase, IModalViewModel
     /// </summary>
     public void ChangeToNewDataLocation()
     {
+        Result = ChangeDataLocationActions.Leave;
         CloseAction();
-
-        //save stuff in old location
-        CollectionManager.SaveAllCollections();
-        PreferencesService.GetInstance().SavePreferences();
-
-        //update the location
-        _envVarsService.CompassDataPath = NewDataLocation;
-
-        Notification changeSuccessful = new("Data path changed successfully",
-            $"Data path was successfully changed to {NewDataLocation}. COMPASS will now restart.");
-        ServiceResolver.Resolve<INotificationService>().Notify(changeSuccessful);
-
-        //Now that datapath has been changed, don't save on close because it would save to new location
-        MainViewModel.SaveOnClose = false;
-
-        ApplicationService.Restart(false);
     }
 
     private AsyncRelayCommand? _deleteDataCommand;
     public AsyncRelayCommand DeleteDataCommand => _deleteDataCommand ??= new(DeleteDataLocation);
     private async Task DeleteDataLocation()
     {
+        Result = ChangeDataLocationActions.Wipe;
         CloseAction();
-
-        try
-        {
-            var notification = Notification.AreYouSureNotification;
-            notification.Body = $"Are you sure you want to delete all data from {CurrentDataLocation}?";
-
-            await _notificationService.ShowDialog(notification);
-
-            if (notification.Result == NotificationAction.Cancel)
-            {
-                return;
-            }
-
-            Directory.Delete(CurrentDataLocation, true);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error("could not delete all data", ex);
-        }
-
-        ChangeToNewDataLocation();
     }
 
     #endregion

@@ -1,5 +1,6 @@
 ﻿using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Tests.Common.Mocks;
 using Autofac;
 using COMPASS.Infra.Tools;
@@ -21,7 +22,7 @@ namespace COMPASS.IntegrationTests.Linux
             builder.RegisterModule<LinuxModule>();
 
             builder.RegisterType<MockNotificationService>().As<INotificationService>();
-            builder.RegisterType<MockEnvironmentVarsService>().As<IEnvironmentVarsService>();
+            builder.RegisterType<MockApplicationDataService>().As<IApplicationDataService>();
 
             ServiceResolver.Initialize(builder.Build());
 

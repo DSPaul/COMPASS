@@ -172,7 +172,7 @@ namespace COMPASS.Common.Operations
         {
             var codex = new Codex(collection);
             codex.Id = Utils.GetAvailableId(collection.AllCodices);
-            ServiceResolver.Resolve<IThumbnailStorageService>().InitCodexImagePaths(codex);
+            ServiceResolver.Resolve<ICoverStorageService>().InitCodexImagePaths(codex);
             return codex;
         }
 
@@ -274,7 +274,7 @@ namespace COMPASS.Common.Operations
 
             //"Are you Sure?"
             var windowedNotificationService = ServiceResolver.Resolve<INotificationService>();
-            var thumbnailStorageService = ServiceResolver.Resolve<IThumbnailStorageService>();
+            var thumbnailStorageService = ServiceResolver.Resolve<ICoverStorageService>();
             var userFilesStorageService = ServiceResolver.Resolve<IUserFilesStorageService>();
 
             string messageSingle = $"Moving  {toMoveList[0].Title} to {targetCollectionIdentifier} will remove all tags from the item, are you sure you wish to continue?";
@@ -342,7 +342,7 @@ namespace COMPASS.Common.Operations
         {
             if (!codicesToDelete.Any()) return;
             
-            var thumbnailStorageService = ServiceResolver.Resolve<IThumbnailStorageService>();
+            var thumbnailStorageService = ServiceResolver.Resolve<ICoverStorageService>();
 
             Notification deleteWarnNotification = Notification.AreYouSureNotification;
             if (askForConfirmation)

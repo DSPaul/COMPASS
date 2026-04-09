@@ -1,20 +1,16 @@
-using System;
-using System.IO;
-using System.Linq;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Services.Storage;
 
 public class UserFilesStorageService(
-    IEnvironmentVarsService environmentVarsService,
+    IApplicationDataService applicationDataService,
     IIOService ioService
     ) : IUserFilesStorageService
 {
-    private readonly string _collectionsPath = Path.Combine(environmentVarsService.CompassDataPath, "Collections");
+    private readonly string _collectionsPath = Path.Combine(applicationDataService.UserDataPath, "Collections");
     
 
     #region IUserFilesStorageService

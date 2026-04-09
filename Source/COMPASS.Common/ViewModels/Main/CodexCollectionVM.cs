@@ -190,7 +190,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         //TODO, check if CollectionManager should be notified of name changes for AllCollectionNames list
         
         _repo.OnCollectionRenamed(oldName, newCollectionName);
-        ServiceResolver.Resolve<IThumbnailStorageService>().OnCollectionRenamed(Collection);
+        ServiceResolver.Resolve<ICoverStorageService>().OnCollectionRenamed(Collection);
 
         Logger.Info($"Renamed {oldName} to {newCollectionName}");
     }
