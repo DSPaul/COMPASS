@@ -27,6 +27,7 @@
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderBrush" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="ClipToBounds" Value="False" />
                 <Style Selector="^:selected">
                     <Setter Property="BorderBrush" Value="{StaticResource AccentColorMuted}" />
                 </Style>
@@ -44,7 +45,7 @@
                       DoubleTapped="Codex_DoubleTapped"
                       Background="Transparent"
                       Classes="ZoomOnHover">
-                    <Panel Margin="25,15,25,5" Grid.Row="0"
+                    <Panel Margin="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TilePanelMargin}" Grid.Row="0"
                            Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
                            Height="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileHeight}">
                         <Border CornerRadius="5" BorderThickness="3"
