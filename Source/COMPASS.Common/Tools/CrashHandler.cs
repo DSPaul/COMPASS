@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.IO;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using COMPASS.Common.Interfaces.Storage;
@@ -8,7 +7,6 @@ using COMPASS.Common.Models.ApiDtos;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Tools;
 
@@ -30,10 +28,28 @@ public static class CrashHandler
 
     public static void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
     {
+        if (e.Exception.InnerExceptions.All(IsIgnorableException))
+        {
+            Logger.Warn("Suppressed unobserved task exception", e.Exception);
+            e.SetObserved();
+            return;
+        }
+
         Logger.Fatal("Unobserved Task exception", e.Exception);
         HandleCrash(e.Exception);
         e.SetObserved(); // Prevent the process from terminating
     }
+
+    private static bool IsIgnorableException(Exception ex) => ex switch
+    {
+        // Avalonia's DBusPlatformSettings fire-and-forgets WatchSettingChangedAsync without
+        // exception handling. On Linux systems without xdg-desktop-portal installed,
+        // org.freedesktop.portal.Desktop is not activatable and this surfaces as an unobserved
+        // task exception when the GC finalizer runs. Known Avalonia bug; suppress it.
+        { } e when e.GetType().FullName == "Tmds.DBus.Protocol.DBusException" => true,
+        AggregateException agg => agg.InnerExceptions.All(IsIgnorableException),
+        _ => false
+    };
 
     public static void HandleCrash(Exception ex)
     {
