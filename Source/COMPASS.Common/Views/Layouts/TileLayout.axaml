@@ -47,15 +47,14 @@
                     <Panel Margin="25,15,25,5" Grid.Row="0"
                            Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
                            Height="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileHeight}">
-                        <Panel.Effect>
-                            <DropShadowDirectionEffect BlurRadius="15" />
-                        </Panel.Effect>
-                        <Border CornerRadius="5" ClipToBounds="True" Margin="1">
-                            <Image Source="{Binding Thumbnail^, Mode=OneWay}" Stretch="UniformToFill" />
-                        </Border>
-                        <!--Selection border need on top of image to get inner border radius -->
                         <Border CornerRadius="5" BorderThickness="3"
-                                BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                                VerticalAlignment="Center" HorizontalAlignment="Center"
+                                BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}">
+                            <Border.Effect>
+                                <DropShadowDirectionEffect BlurRadius="15" />
+                            </Border.Effect>
+                            <controls:RoundedImage Source="{Binding Thumbnail^, Mode=OneWay}" CornerRadius="3" />
+                        </Border>
                     </Panel>
                     <Panel Grid.Row="1" Margin="0,5"
                            Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
