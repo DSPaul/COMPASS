@@ -29,7 +29,8 @@ public class TabsViewModel : ViewModelBase
         get => _tabIndex;
         set
         {
-            value = Math.Clamp(value, 0, Tabs.Count - 1);
+            int maxIndex = Math.Max(Tabs.Count - 1, 0);
+            value = Math.Clamp(value, 0, maxIndex);
             SetProperty(ref _tabIndex, value);
             OnPropertyChanged(nameof(ActiveTab));
             TabChanged?.Invoke(this, ActiveTab);
