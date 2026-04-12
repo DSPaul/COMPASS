@@ -44,18 +44,19 @@
                       DoubleTapped="Codex_DoubleTapped"
                       Background="Transparent"
                       Classes="ZoomOnHover">
-                    <Border CornerRadius="5" Margin="25,15,25,5" Grid.Row="0" x:Name="CoverBorder" BorderThickness="3"
-                            BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
-                            Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
-                            Height="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileHeight}">
-                        <Border.Background>
-                            <ImageBrush Source="{Binding Thumbnail^, Mode=OneWay}" />
-                        </Border.Background>
-
-                        <Border.Effect>
+                    <Panel Margin="25,15,25,5" Grid.Row="0"
+                           Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
+                           Height="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileHeight}">
+                        <Panel.Effect>
                             <DropShadowDirectionEffect BlurRadius="15" />
-                        </Border.Effect>
-                    </Border>
+                        </Panel.Effect>
+                        <Border CornerRadius="5" ClipToBounds="True" Margin="1">
+                            <Image Source="{Binding Thumbnail^, Mode=OneWay}" Stretch="UniformToFill" />
+                        </Border>
+                        <!--Selection border need on top of image to get inner border radius -->
+                        <Border CornerRadius="5" BorderThickness="3"
+                                BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                    </Panel>
                     <Panel Grid.Row="1" Margin="0,5"
                            Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
                            IsVisible="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.ShowExtraData}">
