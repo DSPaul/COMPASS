@@ -70,10 +70,6 @@
             <panels:FiltersSidePanel DataContext="{Binding TabsVM.ActiveTab.FiltersVM}" />
         </controls:CollapsableTabItem>
 
-        <controls:CollapsableTabItem Header="Layouts" Icon="ViewDashboardEdit">
-            <panels:LayoutsSidePanel DataContext="{Binding TabsVM.ActiveTab}" />
-        </controls:CollapsableTabItem>
-
         <controls:CollapsableTabItem Header="Add Items" Icon="BookAdd">
             <panels:AddCodexSidePanel DataContext="{Binding AddCodexPanelVM}" />
         </controls:CollapsableTabItem>

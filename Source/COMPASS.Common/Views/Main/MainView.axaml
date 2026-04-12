@@ -6,6 +6,7 @@
              xmlns:layoutVms="using:COMPASS.Common.ViewModels.Layouts"
              xmlns:vm="using:COMPASS.Common.ViewModels.Main"
              xmlns:views="using:COMPASS.Common.Views"
+             xmlns:components="using:COMPASS.Common.Views.Components"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:converters="using:COMPASS.Infra.Converters"
              xmlns:materialIcons="using:Material.Icons.Avalonia"
@@ -285,26 +286,43 @@
                     <controls:IconButton Icon="Sort" CornerRadius="3" VerticalAlignment="Stretch">
                         <controls:IconButton.Flyout>
                             <Flyout>
-                                <views:SortingChoice DataContext="{Binding FiltersVM}"/>
+                                <components:SortingChoice DataContext="{Binding FiltersVM}"/>
                             </Flyout>
                         </controls:IconButton.Flyout>
                     </controls:IconButton>
                     
-                    <ComboBox MinWidth="120" VerticalAlignment="Stretch"
-                              BorderThickness="0"
-                              Background="{StaticResource UIElementBackground}"
-                              ItemsSource="{Binding #MainGrid.((vm:MainViewModel)DataContext).AllLayouts, Mode=OneTime}"
-                              SelectedIndex="{Binding CurrentLayout.LayoutType, Mode=OneWay}"
-                              SelectionChanged="LayoutSelection_OnSelectionChanged">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="5">
-                                    <materialIcons:MaterialIcon Kind="{Binding Icon}" />
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                    <Border Background="{StaticResource UIElementBackground}"
+                            CornerRadius="3" VerticalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal" Spacing="0">
+                            <ComboBox MinWidth="100" VerticalAlignment="Stretch"
+                                      BorderThickness="0"
+                                      Background="Transparent"
+                                      CornerRadius="3 0 0 3"
+                                      ItemsSource="{Binding #MainGrid.((vm:MainViewModel)DataContext).AllLayouts, Mode=OneTime}"
+                                      SelectedIndex="{Binding CurrentLayout.LayoutType, Mode=OneWay}"
+                                      SelectionChanged="LayoutSelection_OnSelectionChanged">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <materialIcons:MaterialIcon Kind="{Binding Icon}" />
+                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Rectangle Width="2" Fill="{StaticResource Separator}" VerticalAlignment="Stretch" />
+                            <controls:IconButton Icon="TuneVariant" VerticalAlignment="Stretch"
+                                                 Background="Transparent" Width="25"
+                                                 Theme="{StaticResource IconOnly}"
+                                                 ToolTip.Tip="Customize Layout">
+                                <controls:IconButton.Flyout>
+                                    <Flyout Placement="BottomEdgeAlignedRight">
+                                        <components:LayoutCustomization DataContext="{Binding CurrentLayout}" />
+                                    </Flyout>
+                                </controls:IconButton.Flyout>
+                            </controls:IconButton>
+                        </StackPanel>
+                    </Border>
 
                     <Rectangle Width="2" Fill="Gray"
                                IsVisible="{Binding !CurrentLayout.CodexInfoVM.ShowInfo}" />

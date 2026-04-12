@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:layoutVms="using:COMPASS.Common.ViewModels.Layouts"
+             x:Class="COMPASS.Common.Views.Components.LayoutCustomization"
+             x:DataType="layoutVms:LayoutViewModel">
+  <ContentControl Content="{Binding}"
+                Margin="5" FontSize="{StaticResource FontSizeNormal}"
+                MinWidth="140">
+    <ContentControl.DataTemplates>
+        <DataTemplate DataType="{x:Type layoutVms:ListLayoutViewModel}">
+            <StackPanel DataContext="{Binding Preferences}">
+                <CheckBox Content="Show Author" IsChecked="{Binding ShowAuthor}"/>
+                <CheckBox Content="Show Publisher" IsChecked="{Binding ShowPublisher}"/>
+                <CheckBox Content="Show Rating" IsChecked="{Binding ShowRating}"/>
+                <CheckBox Content="Show Release Date" IsChecked="{Binding ShowReleaseDate}"/>
+                <CheckBox Content="Show Date Added" IsChecked="{Binding ShowDateAdded}"/>
+                <CheckBox Content="Show ISBN" IsChecked="{Binding ShowISBN}"/>
+                <CheckBox Content="Show Tags" IsChecked="{Binding ShowTags}"/>
+                <CheckBox Content="Show Version" IsChecked="{Binding ShowVersion}"/>
+                <CheckBox Content="Show File Icons" IsChecked="{Binding ShowFileIcons}"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type layoutVms:CardLayoutViewModel}">
+            <StackPanel DataContext="{Binding Preferences}">
+                <CheckBox Content="Show Authors" IsChecked="{Binding ShowAuthor}"/>
+                <CheckBox Content="Show Publisher" IsChecked="{Binding ShowPublisher}"/>
+                <CheckBox Content="Show Rating" IsChecked="{Binding ShowRating}"/>
+                <CheckBox Content="Show Release Date" IsChecked="{Binding ShowReleaseDate}"/>
+                <CheckBox Content="Show Tags" IsChecked="{Binding ShowTags}"/>
+                <CheckBox Content="Show Version" IsChecked="{Binding ShowVersion}"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type layoutVms:TileLayoutViewModel}">
+            <StackPanel DataContext="{Binding Preferences}" Spacing="5">
+                <StackPanel>
+                    <TextBlock Text="Cover Size"/>
+                    <Slider Value="{Binding TileWidth}" Minimum="50" Maximum="400" TickFrequency="5" Margin="5,0"/>
+                </StackPanel>
+                <CheckBox x:Name="ShowExtraDataCheckbox" Content="Show Extra Data" IsChecked="{Binding ShowExtraData}"/>
+                <ComboBox IsVisible="{Binding #ShowExtraDataCheckbox.IsChecked}" HorizontalAlignment="Stretch"
+                          ItemsSource="{Binding DataOptions}" SelectedItem="{Binding DisplayedData, Mode=TwoWay}"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type layoutVms:HomeLayoutViewModel}">
+            <StackPanel DataContext="{Binding Preferences}" Spacing="5">
+                <TextBlock Text="Cover Size"/>
+                <Slider Value="{Binding TileWidth}" Minimum="50" Maximum="400" TickFrequency="5" Margin="5,0"/>
+                <CheckBox Content="Show Title" IsChecked="{Binding ShowTitle}"/>
+            </StackPanel>
+        </DataTemplate>
+    </ContentControl.DataTemplates>
+</ContentControl>
+</UserControl>

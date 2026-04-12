@@ -68,7 +68,7 @@
                     <StackPanel>
                         <TextBlock Classes="SectionTitle" Text="Behaviour" />
                         <Grid ColumnDefinitions="* Auto" 
-                              RowDefinitions="Auto, Auto" RowSpacing="10">
+                              RowDefinitions="Auto, Auto, Auto" RowSpacing="10">
                             <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
                                 <TextBlock Text="On double click:" TextWrapping="Wrap" />
                             </StackPanel>
@@ -84,7 +84,7 @@
                                                  Background="{StaticResource AccentColorMuted}" />
                                 </StackPanel>
                             </Border>
-                            
+
                             <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Spacing="5">
                                 <TextBlock Text="Treat tags and folders with the same name as linked"/>
                                 <controls:Explainer Content="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
@@ -92,6 +92,11 @@
                             <CheckBox Grid.Column="1" Grid.Row="1" Classes="Toggle"
                                       HorizontalAlignment="Right"
                                       IsChecked="{Binding AutoLinkFolderTagSameName}"/>
+
+                            <TextBlock Grid.Column="0" Grid.Row="2" Text="Hide the info panel when nothing is selected"/>
+                            <CheckBox Grid.Column="1" Grid.Row="2" Classes="Toggle"
+                                      HorizontalAlignment="Right"
+                                      IsChecked="{Binding Preferences.UIState.AutoHideCodexInfoPanel}"/>
                         </Grid>
                     </StackPanel>
                 </Border>
