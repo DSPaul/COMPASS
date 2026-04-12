@@ -179,7 +179,10 @@ namespace COMPASS.Common.Repositories
                 }
             }
 
-            collection.AllCodices.ReplaceRange(dtos.Select(dto => dto.ToModel(collection)));
+            //Must be list fist because subscribers of AllCodices collection changed will each enumerate, 
+            //and can thus otherwise have different instances of the codices
+            var codices = dtos.Select(dto => dto.ToModel(collection)).ToList();
+            collection.AllCodices.ReplaceRange(codices);
 
             collection.LoadedCodices = true;
             return true;
