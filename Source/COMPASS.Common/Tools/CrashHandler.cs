@@ -30,7 +30,7 @@ public static class CrashHandler
     {
         if (e.Exception.InnerExceptions.All(IsIgnorableException))
         {
-            Logger.Warn("Suppressed unobserved task exception", e.Exception);
+            Logger.Debug("Suppressed unobserved task exception", e.Exception);
             e.SetObserved();
             return;
         }

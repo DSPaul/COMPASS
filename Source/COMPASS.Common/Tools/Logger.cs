@@ -25,7 +25,20 @@ namespace COMPASS.Common.Tools
         
         public static void Info(string message) => LogsVM.AddLog(new(Severity.Info, message));
 
-        public static void Debug(string message) => FileLog?.Debug(message);
+        public static void Debug(string message, Exception? ex = null)
+        {
+            if (ex is null)
+            {
+                var stackTrace = new StackTrace(1, true);
+                FileLog?.Debug($"{message}\n" +
+                              $"Stack trace:\n" +
+                              $"{stackTrace}");
+            }
+            else
+            {
+                FileLog?.Debug(message, ex);
+            }
+        }
 
 
         public static void Warn(string message, Exception? ex = null)
