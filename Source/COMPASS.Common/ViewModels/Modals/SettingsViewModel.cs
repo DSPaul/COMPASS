@@ -336,13 +336,11 @@ namespace COMPASS.Common.ViewModels.Modals
         #region Tab: About
         public string Version => "Version: " + ApplicationService.GetVersion();
 
-        private RelayCommand? _checkForUpdatesCommand;
-        public RelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);
-        private void CheckForUpdates()
+        private AsyncRelayCommand? _checkForUpdatesCommand;
+        public AsyncRelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);
+        private async Task CheckForUpdates()
         {
-            //TODO
-            //AutoUpdater.Mandatory = true;
-            //AutoUpdater.Start();
+            await UpdateManager.CheckForUpdates();
         }
         #endregion
 

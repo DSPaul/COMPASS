@@ -5,6 +5,8 @@ using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.ViewModels;
+using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 using NuGet.Versioning;
 using SharpCompress.Archives;
@@ -13,7 +15,7 @@ using SharpCompress.Common;
 using SharpCompress.Writers.Zip;
 using System.Text.Json;
 using Constants = COMPASS.Common.Models.Constants;
-using Notification = COMPASS.Common.Models.Notification;
+using Notification = COMPASS.Infra.Models.Notification;
 
 namespace COMPASS.Common.Services.Storage;
 

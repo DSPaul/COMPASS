@@ -11,6 +11,7 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Infra.Tools;
 using Material.Icons;
+using COMPASS.Infra.Interfaces.Services;
 
 namespace COMPASS.Common.ViewModels.Main
 {
@@ -18,6 +19,7 @@ namespace COMPASS.Common.ViewModels.Main
     {
         private readonly IWebService _webService;
         private readonly IUIService _uiService;
+        private readonly IUpdateService _updateService;
         
         public MainViewModel()
         {
@@ -25,6 +27,7 @@ namespace COMPASS.Common.ViewModels.Main
 
             _webService = ServiceResolver.Resolve<IWebService>();
             _uiService = ServiceResolver.Resolve<IUIService>();
+            _updateService = ServiceResolver.Resolve<IUpdateService>();
             
             InitLayouts();
             CollectionManager.DiscoverCollections();
@@ -34,49 +37,14 @@ namespace COMPASS.Common.ViewModels.Main
             
             LeftDockVM = new(TabsVM);
 
-            //check for update
-            InitAutoUpdates();
+            //check for updates
+            UpdateManager.Run(_updateService);
 
             //Start timer that periodically checks if there is an internet connection
             InitConnectionTimer();
         }
 
         #region Init Functions
-
-        private void InitAutoUpdates()
-        {
-            //TODO: this will all need to be replaced
-
-            //            //Set URL of xml file
-            //            AutoUpdater.AppCastURL = Constants.AutoUpdateXMLPath;
-            //            //Disable skip
-            //            AutoUpdater.ShowSkipButton = false;
-            //            //Set Icon
-            //            string? runningExePath = Process.GetCurrentProcess().MainModule?.FileName;
-            //            if (!String.IsNullOrWhiteSpace(runningExePath))
-            //            {
-            //                AutoUpdater.Icon = System.Drawing.Icon.ExtractAssociatedIcon(runningExePath)?.ToBitmap();
-            //            }
-            //#if DEBUG
-            //            //AutoUpdater.InstalledVersion = new("0.2.0"); //for testing only
-            //#endif
-            //            //set remind later time so users can go back to the app in one click
-            //            AutoUpdater.LetUserSelectRemindLater = false;
-            //            AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
-            //            AutoUpdater.RemindLaterAt = 1;
-            //            //Set download directory
-            //            AutoUpdater.DownloadPath = Constants.InstallersPath;
-            //            //check updates every 4 hours
-            //            DispatcherTimer timer = new() { Interval = TimeSpan.FromHours(4) };
-            //            timer.Tick += delegate
-            //            {
-            //                AutoUpdater.Mandatory = false;
-            //                AutoUpdater.Start();
-            //            };
-            //            timer.Start();
-            //            //check at startup
-            //            AutoUpdater.Start();
-        }
 
         private void InitConnectionTimer()
         {

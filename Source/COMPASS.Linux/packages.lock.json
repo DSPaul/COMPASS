@@ -660,7 +660,8 @@
           "Avalonia.Controls.DataGrid": "[11.3.12, )",
           "AvaloniaUI.DiagnosticsSupport": "[2.1.1, )",
           "FuzzySharp": "[2.0.2, )",
-          "Microsoft.Extensions.FileSystemGlobbing": "[10.0.5, )"
+          "Microsoft.Extensions.FileSystemGlobbing": "[10.0.5, )",
+          "NuGet.Versioning": "[7.3.0, )"
         }
       }
     },

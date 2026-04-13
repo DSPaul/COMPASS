@@ -9,7 +9,9 @@ using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
-using Notification = COMPASS.Common.Models.Notification;
+using Notification = COMPASS.Infra.Models.Notification;
+using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Interfaces.Services;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {

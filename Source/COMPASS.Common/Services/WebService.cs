@@ -1,7 +1,7 @@
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.ViewModels;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 using HtmlAgilityPack;
 using ImageMagick;
 using Newtonsoft.Json.Linq;

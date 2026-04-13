@@ -1,10 +1,10 @@
 ﻿using Avalonia.Platform.Storage;
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.Views.Windows;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 
 namespace COMPASS.Common.Services.FileSystem
 {

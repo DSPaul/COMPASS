@@ -8,6 +8,7 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.Storage;
 using COMPASS.Common.Tools.Logging;
+using COMPASS.Infra.Interfaces.Services;
 
 namespace COMPASS.Common.DependencyInjection
 {
@@ -22,9 +23,6 @@ namespace COMPASS.Common.DependencyInjection
                    .As<ILogger>()
                    .SingleInstance();
 
-            // Notification Service
-            builder.RegisterType<NotificationService>().As<INotificationService>();
-
             //Data releted services and repositories
             builder.RegisterType<CodexCollectionXmlRepository>().Keyed<ICodexCollectionRepository>(StorageStrategy.Xml);
             builder.RegisterType<CodexCollectionMemRepository>().Keyed<ICodexCollectionRepository>(StorageStrategy.Memory);
@@ -32,10 +30,11 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<CoverStorageService>().As<ICoverStorageService>();
             builder.RegisterType<UserFilesStorageService>().As<IUserFilesStorageService>();
 
-            builder.RegisterType<ApplicationDataService>()
-                .As<IApplicationDataService>()
-                .SingleInstance();
+            builder.RegisterType<ApplicationDataService>().As<IApplicationDataService>().SingleInstance();
 
+            // Misc Services
+            builder.RegisterType<NotificationService>().As<INotificationService>();
+            builder.RegisterType<PrereleaseUpdateService>().As<IUpdateService>();
             builder.RegisterType<FilesService>().As<IFilesService>();
             builder.RegisterType<WebService>().As<IWebService>();
         }

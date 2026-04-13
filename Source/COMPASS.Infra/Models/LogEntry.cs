@@ -1,7 +1,6 @@
-﻿using System;
-using COMPASS.Common.Models.Enums;
+﻿using COMPASS.Infra.Models.Enums;
 
-namespace COMPASS.Common.Models
+namespace COMPASS.Infra.Models
 {
     public struct LogEntry
     {

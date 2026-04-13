@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace COMPASS.Common.Models.Enums
+namespace COMPASS.Infra.Models.Enums
 {
     [Flags]
     public enum NotificationAction

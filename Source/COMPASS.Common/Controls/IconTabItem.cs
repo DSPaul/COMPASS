@@ -1,7 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using COMPASS.Common.Models.Enums;
+using COMPASS.Infra.Models.Enums;
 using Material.Icons;
 
 namespace COMPASS.Common.Controls;

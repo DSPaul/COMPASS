@@ -1,4 +1,4 @@
-﻿namespace COMPASS.Common.Models.Enums
+﻿namespace COMPASS.Infra.Models.Enums
 {
     public enum Severity
     {

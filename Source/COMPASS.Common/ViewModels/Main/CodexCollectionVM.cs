@@ -9,7 +9,9 @@ using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Main;

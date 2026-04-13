@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Tools;
 using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 using ImageMagick;
 using iText.Kernel.Pdf;

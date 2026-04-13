@@ -1,9 +1,7 @@
-using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using Avalonia.Threading;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 
 namespace COMPASS.Common.ViewModels.SidePanels;
 

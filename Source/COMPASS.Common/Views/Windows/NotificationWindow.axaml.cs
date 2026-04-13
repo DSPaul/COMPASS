@@ -1,7 +1,7 @@
-using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using COMPASS.Common.Models;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 
 namespace COMPASS.Common.Views.Windows;
 
@@ -25,19 +25,19 @@ public partial class NotificationWindow : Window
 
     private void CancelClick(object? sender, RoutedEventArgs routedEventArgs)
     {
-        _notification.Result = Models.Enums.NotificationAction.Cancel;
+        _notification.Result = NotificationAction.Cancel;
         Close();
     }
 
     private void DeclineClick(object sender, RoutedEventArgs routedEventArgs)
     {
-        _notification.Result = Models.Enums.NotificationAction.Decline;
+        _notification.Result = NotificationAction.Decline;
         Close();
     }
 
     private void ConfirmClick(object sender, RoutedEventArgs routedEventArgs)
     {
-        _notification.Result = Models.Enums.NotificationAction.Confirm;
+        _notification.Result = NotificationAction.Confirm;
         Close();
     }
 }

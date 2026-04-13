@@ -1,7 +1,6 @@
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.ViewModels.SidePanels;
+using COMPASS.Infra.Models.Enums;
 
 namespace COMPASS.Common.Tools.Logging;
 

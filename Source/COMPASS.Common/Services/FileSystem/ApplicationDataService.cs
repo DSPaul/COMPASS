@@ -5,6 +5,9 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals;
+using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 
 namespace COMPASS.Common.Services.FileSystem;
 

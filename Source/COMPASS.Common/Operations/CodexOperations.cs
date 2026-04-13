@@ -7,19 +7,20 @@ using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services;
-using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Edit;
-using COMPASS.Common.Views.Windows;
 using System.Collections;
 using System.Diagnostics;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Models.Enums;
 
 namespace COMPASS.Common.Operations
 {

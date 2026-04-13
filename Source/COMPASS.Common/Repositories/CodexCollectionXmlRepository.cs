@@ -2,14 +2,15 @@
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 using System.Diagnostics;
-using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 

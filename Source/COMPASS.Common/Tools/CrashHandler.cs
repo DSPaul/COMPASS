@@ -8,6 +8,8 @@ using COMPASS.Common.Models.ApiDtos;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Tools;

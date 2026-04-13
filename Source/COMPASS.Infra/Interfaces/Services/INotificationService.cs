@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 
-namespace COMPASS.Common.Interfaces.Services
+namespace COMPASS.Infra.Interfaces.Services
 {
     public interface INotificationService
     {

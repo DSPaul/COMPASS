@@ -1,12 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-      <AvaloniaXaml Remove="Interfaces\**" />
       <AvaloniaXaml Remove="Services\**" />
-      <Compile Remove="Interfaces\**" />
       <Compile Remove="Services\**" />
-      <EmbeddedResource Remove="Interfaces\**" />
       <EmbeddedResource Remove="Services\**" />
-      <None Remove="Interfaces\**" />
       <None Remove="Services\**" />
     </ItemGroup>
     <ItemGroup>
@@ -16,6 +12,7 @@
       <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.1.1" />
       <PackageReference Include="FuzzySharp" Version="2.0.2" />
       <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.5" />
+      <PackageReference Include="NuGet.Versioning" Version="7.3.0" />
     </ItemGroup>
     <ItemGroup>
       <Reference Include="Microsoft.Extensions.FileSystemGlobbing">

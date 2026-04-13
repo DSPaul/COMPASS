@@ -7,6 +7,9 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals.Import

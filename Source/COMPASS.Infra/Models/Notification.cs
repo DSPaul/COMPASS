@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Models.Enums;
+﻿using COMPASS.Infra.Models.Enums;
 
-namespace COMPASS.Common.Models
+namespace COMPASS.Infra.Models
 {
-    public class Notification : ObservableObject
+    public class Notification
     {
         public Notification(string title, string? body = null, Severity severity = Severity.Info, NotificationAction actions = NotificationAction.Confirm)
         {
@@ -32,7 +29,7 @@ namespace COMPASS.Common.Models
         public NotificationAction Actions { get; set; }
         public NotificationAction Result { get; set; }
 
-        public List<ObservableKeyValuePair<string, bool>> Options { get; set; } = [];
+        public List<KeyValuePair<string, bool>> Options { get; set; } = [];
 
         #region Templates
         public static Notification AreYouSureNotification => new("Are you Sure?", severity: Severity.Warning, actions: NotificationAction.Cancel | NotificationAction.Confirm)

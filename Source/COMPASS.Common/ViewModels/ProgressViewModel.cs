@@ -1,8 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using System.Threading;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Models;
+using COMPASS.Infra.Models;
 using SharpCompress.Common;
 
 namespace COMPASS.Common.ViewModels
