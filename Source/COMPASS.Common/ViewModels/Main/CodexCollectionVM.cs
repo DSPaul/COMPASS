@@ -187,8 +187,6 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         Collection.Name = newCollectionName;
         Identifier = Collection.Name;
         
-        //TODO, check if CollectionManager should be notified of name changes for AllCollectionNames list
-        
         _repo.OnCollectionRenamed(oldName, newCollectionName);
         ServiceResolver.Resolve<ICoverStorageService>().OnCollectionRenamed(Collection);
 
