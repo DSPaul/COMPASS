@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.Services;
@@ -19,6 +18,8 @@ using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace COMPASS.Common.ViewModels.SidePanels
 {
@@ -123,10 +124,17 @@ namespace COMPASS.Common.ViewModels.SidePanels
                 {
                     node.Item.PropertyChanged -= OnTagParentChanged;
                 }
-                
+
                 foreach (TreeNode<TagViewModel> newNode in newNodes)
                 {
                     newNode.Expanded = oldNodes.Find(n => n.Item == newNode.Item)?.Expanded ?? newNode.Expanded;
+                }
+            }
+            else
+            {
+                foreach (TreeNode<TagViewModel> newNode in newNodes)
+                {
+                    newNode.Expanded = newNode.Item.IsGroup;
                 }
             }
             

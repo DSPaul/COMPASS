@@ -12,12 +12,6 @@ namespace COMPASS.Common.Models.Hierarchy
         {
             _item = item;
             Children = new(item.Children.Select(child => new TreeNode<T>(child)));
-
-            //TODO, this logic should not be here
-            if (item is Tag tag)
-            {
-                Expanded = tag.IsGroup;
-            }
         }
         
         public RangeObservableCollection<TreeNode<T>> Children { get; }
