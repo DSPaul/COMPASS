@@ -2,6 +2,7 @@
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Tools;
 using COMPASS.Tests.Common.Mocks;
 

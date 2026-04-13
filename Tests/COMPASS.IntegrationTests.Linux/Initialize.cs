@@ -5,6 +5,7 @@ using COMPASS.Tests.Common.Mocks;
 using Autofac;
 using COMPASS.Infra.Tools;
 using COMPASS.Linux.DepencyInjection;
+using COMPASS.Infra.Interfaces.Services;
 
 namespace COMPASS.IntegrationTests.Linux
 {

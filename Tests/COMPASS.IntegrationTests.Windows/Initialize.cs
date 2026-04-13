@@ -1,10 +1,10 @@
 ﻿using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Tests.Common.Mocks;
 using Autofac;
 using COMPASS.Infra.Tools;
 using COMPASS.Windows.DepencyInjection;
+using COMPASS.Infra.Interfaces.Services;
 
 namespace COMPASS.IntegrationTests.Windows
 {

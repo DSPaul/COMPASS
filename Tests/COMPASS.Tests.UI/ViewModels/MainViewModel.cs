@@ -7,6 +7,8 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.Views.Windows;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 
 namespace COMPASS.Tests.UI.ViewModels;
 

@@ -1,6 +1,6 @@
-﻿using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
+﻿using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 
 namespace COMPASS.Tests.Common.Mocks;
 
