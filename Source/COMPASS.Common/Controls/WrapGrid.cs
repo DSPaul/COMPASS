@@ -88,16 +88,23 @@ public class WrapGrid : Panel, INavigableContainer
         double cellWidth = hasFixedWidth ? itemWidth : maxChildWidth;
         double totalHeight = 0;
 
-        for (int i = 0; i < Children.Count; i += _columnCount)
+        if (hasFixedHeight)
         {
-            double rowHeight = 0;
-            int rowEnd = Min(i + _columnCount, Children.Count);
-            for (int j = i; j < rowEnd; j++)
+            totalHeight = (int)Ceiling((double)Children.Count / _columnCount) * itemHeight;
+        }
+        else
+        {
+            for (int i = 0; i < Children.Count; i += _columnCount)
             {
-                double childHeight = hasFixedHeight ? itemHeight : Children[j].DesiredSize.Height;
-                rowHeight = Max(rowHeight, childHeight);
+                double rowHeight = 0;
+                int rowEnd = Min(i + _columnCount, Children.Count);
+                for (int j = i; j < rowEnd; j++)
+                {
+                    double childHeight = hasFixedHeight ? itemHeight : Children[j].DesiredSize.Height;
+                    rowHeight = Max(rowHeight, childHeight);
+                }
+                totalHeight += rowHeight;
             }
-            totalHeight += rowHeight;
         }
 
         return new Size(
