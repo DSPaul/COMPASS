@@ -1,7 +1,9 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.VisualTree;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
@@ -31,12 +33,11 @@ public partial class ListLayout : CodexLayoutView
 
     private void DataGrid_OnDoubleTapped(object? sender, TappedEventArgs e)
     {
-        if (sender is DataGrid dataGrid && dataGrid.SelectedItem is CodexViewModel codexVm)
+        if (e.Source is Control source && source.FindAncestorOfType<DataGridRowsPresenter>() != null &&
+           sender is DataGrid dataGrid && dataGrid.SelectedItem is CodexViewModel codexVm && 
+           codexVm.OpenCodexCommand.CanExecute(codexVm.GetModel()))
         {
-            if (codexVm.OpenCodexCommand.CanExecute(codexVm.GetModel()))
-            {
-                codexVm.OpenCodexCommand.Execute(codexVm.GetModel());
-            }
+            codexVm.OpenCodexCommand.Execute(codexVm.GetModel());
         }
     }
 
