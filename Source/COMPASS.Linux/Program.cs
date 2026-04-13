@@ -45,7 +45,7 @@ class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToFileLogger();
+            .LogToTrace();
 
     private static void BuildContainer()
     {
