@@ -4,7 +4,6 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Infra.Tools;
 using COMPASS.Tests.Common.Mocks;
-using Logger = COMPASS.Common.Tools.Logger;
 
 namespace COMPASS.IntegrationTests.Common
 {
@@ -26,10 +25,8 @@ namespace COMPASS.IntegrationTests.Common
 
             ServiceResolver.Initialize(builder.Build());
 
-            Logger.Init();
             //TODO
             //AppDomain.CurrentDomain.FirstChanceException += Logger.LogUnhandledException;
-            Logger.Debug("Logger Initialized");
         }
 
         //TODO

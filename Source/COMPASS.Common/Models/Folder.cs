@@ -1,12 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Tools;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Models
 {
     public class Folder : ObservableObject, IHasChildren<Folder>
     {
+        private ILogger? _logger;
+        private ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
+
         public Folder(string path)
         {
             _fullPath = path.Trim(Path.DirectorySeparatorChar).Trim(Path.AltDirectorySeparatorChar);

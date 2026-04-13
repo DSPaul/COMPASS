@@ -1,26 +1,25 @@
-﻿using System.IO;
+﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services;
-using COMPASS.Common.Tools;
 
 namespace COMPASS.Windows.Services
 {
-    class WebDriverService : WebDriverServiceBase
+    class WebDriverService(ILogger logger) : WebDriverServiceBase
     {
         protected override Browser DetectInstalledBrowser()
         {
             if (IsInstalled("chrome.exe"))
             {
-                Logger.Debug("Chrome install found");
+                logger.Debug("Chrome install found");
                 return Browser.Chrome;
             }
             else if (IsInstalled("firefox.exe"))
             {
-                Logger.Debug("firefox install found");
+                logger.Debug("firefox install found");
                 return Browser.Firefox;
             }
             else if (IsInstalled("msedge.exe"))
             {
-                Logger.Debug("edge install found");
+                logger.Debug("edge install found");
                 return Browser.Edge;
             }
 

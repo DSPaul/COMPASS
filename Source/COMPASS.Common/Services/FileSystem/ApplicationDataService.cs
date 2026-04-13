@@ -3,7 +3,6 @@ using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals;
 
@@ -11,7 +10,8 @@ namespace COMPASS.Common.Services.FileSystem;
 
 public class ApplicationDataService(
     IIOService ioService,
-    INotificationService notificationService)
+    INotificationService notificationService,
+    ILogger logger)
     : IApplicationDataService
 {
     private const string RedirectFileName = "data_location.redirect";
@@ -107,7 +107,7 @@ public class ApplicationDataService(
                 }
                 catch (Exception ex)
                 {
-                    Logger.Warn($"Failed to delete old thumbnail folder at {oldThumbnailPath} during migration", ex);
+                    logger.Warn($"Failed to delete old thumbnail folder at {oldThumbnailPath} during migration", ex);
                 }
             }
         }
@@ -128,7 +128,7 @@ public class ApplicationDataService(
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to create the {Constants.DIR_ROOT} folder at new data path location {newPath}", ex);
+                logger.Error($"Failed to create the {Constants.DIR_ROOT} folder at new data path location {newPath}", ex);
                 return false;
             }
         }
@@ -197,7 +197,7 @@ public class ApplicationDataService(
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to delete data at the previous data path location {UserDataPath}", ex);
+                logger.Error($"Failed to delete data at the previous data path location {UserDataPath}", ex);
                 Notification notWiped = new("Deleting old data failed", $"Failed to delete the data at the previous location {UserDataPath}",
                     Severity.Error);
                 notWiped.Details = ex.Message;
@@ -232,7 +232,7 @@ public class ApplicationDataService(
     /// and user-file <c>Sources.Path</c> values point to the new location on the
     /// next launch.
     /// </summary>
-    private static void RebasePathsInDataFiles(string oldBasePath, string newBasePath)
+    private void RebasePathsInDataFiles(string oldBasePath, string newBasePath)
     {
         string collectionsPath = Path.Combine(newBasePath, Constants.DIR_COLLECTIONS);
         if (!Directory.Exists(collectionsPath)) return;
@@ -249,7 +249,7 @@ public class ApplicationDataService(
             }
             catch (Exception ex)
             {
-                Logger.Warn($"Failed to rebase paths in {xmlFile} during data migration", ex);
+                logger.Warn($"Failed to rebase paths in {xmlFile} during data migration", ex);
             }
         }
     }

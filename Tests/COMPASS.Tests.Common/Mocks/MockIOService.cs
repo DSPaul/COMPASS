@@ -5,7 +5,7 @@ namespace COMPASS.Tests.Common.Mocks
 {
     public class MockIOService : IOServiceBase
     {
-        public MockIOService(IFilesService filesService) : base(filesService)
+        public MockIOService(IFilesService filesService, ILogger logger) : base(filesService, logger)
         {
             
         }

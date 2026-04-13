@@ -4,7 +4,6 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using COMPASS.Infra.Tools;
 using NuGet.Versioning;
@@ -22,7 +21,8 @@ public class ImportExportService(
     IApplicationDataService applicationDataService,
     IFilesService filesService,
     IIOService ioService,
-    INotificationService windowedNotificationService)
+    INotificationService windowedNotificationService,
+    ILogger logger)
     : IImportExportService
 {
     private const string CodicesFileName = "CodexInfo.xml";
@@ -61,7 +61,7 @@ public class ImportExportService(
                 //No version information means we cannot ensure compatibility, so abort
                 string message =
                     $"Cannot import {satchelName} because it does not contain version info, and might therefor not be compatible with your version v{ApplicationService.Version}.";
-                Logger.Warn(message);
+                logger.Warn(message);
                 Notification warnNotification = new($"Could not import {satchelName}", message, Severity.Warning);
                 await windowedNotificationService.ShowDialog(warnNotification);
                 return null;
@@ -83,7 +83,7 @@ public class ImportExportService(
                 //No version information means we cannot ensure compatibility, so abort
                 string message =
                     $"Cannot import {satchelName} because it does not contain version info, and might therefor not be compatible with your version v{ApplicationService.Version}.";
-                Logger.Warn(message);
+                logger.Warn(message);
                 Notification warnNotification = new($"Could not import {satchelName}", message, Severity.Warning);
                 await windowedNotificationService.ShowDialog(warnNotification);
                 return null;
@@ -121,7 +121,7 @@ public class ImportExportService(
                 string message =
                     $"Cannot import {Path.GetFileName(satchelPath)} because it was created in a newer version of COMPASS (v{satchelInfo.CreationVersion}), " +
                     $"and has indicated to be incompatible with your version v{ApplicationService.Version}. Please update and try again.";
-                Logger.Warn(message);
+                logger.Warn(message);
                 Notification warnNotification = new($"Could not import {Path.GetFileName(satchelPath)}", message,
                     Severity.Warning);
                 await windowedNotificationService.ShowDialog(warnNotification);
@@ -153,7 +153,7 @@ public class ImportExportService(
         }
         catch (Exception ex)
         {
-            Logger.Warn($"Failed to read {satchelPath}", ex);
+            logger.Warn($"Failed to read {satchelPath}", ex);
             return null;
         }
     }
@@ -257,11 +257,11 @@ public class ImportExportService(
             await using var stream = await file.OpenWriteAsync();
             await archive.SaveToAsync(stream, writerOptions);
 
-            Logger.Info($"Exported {collection.Name} to {file.TryGetLocalPath()}");
+            logger.Info($"Exported {collection.Name} to {file.TryGetLocalPath()}");
         }
         catch (Exception ex)
         {
-            Logger.Error("Export failed", ex);
+            logger.Error("Export failed", ex);
             progressVM.Clear();
         }
         finally
@@ -292,7 +292,7 @@ public class ImportExportService(
         bool savedTags = repo.SaveTags(collection, stream);
         if (!savedTags)
         {
-            Logger.Warn($"Failed to save tags for {collection.Name} during export");
+            logger.Warn($"Failed to save tags for {collection.Name} during export");
             return;
         }
         await archive.AddEntryAsync(TagsFileName, stream);
@@ -302,7 +302,7 @@ public class ImportExportService(
         await using var targetStream = await selectedFile.OpenWriteAsync();
         await archive.SaveToAsync(targetStream, options);
 
-        Logger.Info($"Exported Tags from {collection.Name} to {selectedFile.TryGetLocalPath()}");
+        logger.Info($"Exported Tags from {collection.Name} to {selectedFile.TryGetLocalPath()}");
     }
 
     public void CompressUserDataToZip(string zipPath)
@@ -316,7 +316,7 @@ public class ImportExportService(
             }
             catch (Exception ex)
             {
-                Logger.Error("A backup with the same name already exists and could not be removed", ex);
+                logger.Error("A backup with the same name already exists and could not be removed", ex);
                 return;
             }
         }
@@ -329,7 +329,7 @@ public class ImportExportService(
         }
         catch (Exception ex)
         {
-            Logger.Error("Backup failed", ex);
+            logger.Error("Backup failed", ex);
         }
     }
 

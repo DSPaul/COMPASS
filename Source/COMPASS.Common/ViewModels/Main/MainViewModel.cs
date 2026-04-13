@@ -21,6 +21,8 @@ namespace COMPASS.Common.ViewModels.Main
         
         public MainViewModel()
         {
+            Logger.Info($"Launching COMPASS v{ApplicationService.Version}");
+
             _webService = ServiceResolver.Resolve<IWebService>();
             _uiService = ServiceResolver.Resolve<IUIService>();
             

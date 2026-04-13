@@ -1,11 +1,11 @@
 ﻿using System.Xml;
 using System.Xml.Serialization;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.Tools;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Services
@@ -17,6 +17,9 @@ namespace COMPASS.Common.Services
         private static PreferencesService? _prefService;
         public static PreferencesService GetInstance() => _prefService ??= new PreferencesService();
         #endregion
+
+        private ILogger? _logger;
+        private ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
 
         public string PreferencesFilePath => Path.Combine(ServiceResolver.Resolve<IApplicationDataService>().UserDataPath, "Preferences.xml");
 

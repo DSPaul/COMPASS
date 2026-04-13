@@ -3,13 +3,12 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.Views.Windows;
 
 namespace COMPASS.Common.Services.FileSystem
 {
-    public abstract class IOServiceBase(IFilesService filesService) : IIOService
+    public abstract class IOServiceBase(IFilesService filesService, ILogger logger) : IIOService
     {
         #region Tmp data
         
@@ -121,13 +120,13 @@ namespace COMPASS.Common.Services.FileSystem
             }
             catch (OperationCanceledException ex)
             {
-                Logger.Warn($"Transfer was cancelled", ex);
+                logger.Warn($"Transfer was cancelled", ex);
                 progressVM.ConfirmCancellation();
                 return false;
             }
             catch (Exception ex)
             {
-                Logger.Error($"Could not move data to {destDir}", ex);
+                logger.Error($"Could not move data to {destDir}", ex);
                 progressVM.Clear();
                 return false;
             }
@@ -158,7 +157,7 @@ namespace COMPASS.Common.Services.FileSystem
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Failed to create required folders for path {path}", ex);
+                    logger.Error($"Failed to create required folders for path {path}", ex);
                     return false;
                 }
             }
@@ -182,7 +181,7 @@ namespace COMPASS.Common.Services.FileSystem
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Failed to get files of folder {path}", ex);
+                    logger.Error($"Failed to get files of folder {path}", ex);
                 }
             }
 

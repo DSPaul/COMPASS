@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Exceptions;
+﻿using Avalonia.Logging;
+using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -88,6 +89,8 @@ namespace COMPASS.Common.ViewModels.Import
 
         public static async Task ImportFilesAsync(IList<string> paths, string? targetCollectionId = null)
         {
+            var logger = ServiceResolver.Resolve<ILogger>();
+
             targetCollectionId ??= TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier 
                                    ?? throw new NoTabException("There is no open tab, so no collection to import the files to");
 
@@ -145,7 +148,7 @@ namespace COMPASS.Common.ViewModels.Import
             }
             catch (OperationCanceledException ex)
             {
-                Logger.Warn("Import has been cancelled", ex);
+                logger.Warn("Import has been cancelled", ex);
                 await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
                 return;
             }

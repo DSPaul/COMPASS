@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.ViewModels;
+using COMPASS.Infra.Tools;
 using ImageMagick;
 
 namespace COMPASS.Common.Sources
@@ -12,6 +14,9 @@ namespace COMPASS.Common.Sources
         {
             TargetCollection = targetCollection;
         }
+
+        private ILogger? _logger;
+        protected ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
 
         /// <summary>
         /// 

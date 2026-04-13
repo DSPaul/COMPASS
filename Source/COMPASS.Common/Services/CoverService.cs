@@ -2,7 +2,6 @@
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Sources;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using ImageMagick;
 using ImageMagick.Factories;
@@ -17,6 +16,9 @@ namespace COMPASS.Common.Services
 {
     public static class CoverService
     {
+        private static ILogger? _logger;
+        private static ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
+
         private const int ThumbnailWidth = 200;
         private const int CoverWidth = 850;
 

@@ -33,8 +33,6 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            Logger.Init();
-
             //if crash, show crash dialog instead
             string? crashMsg = CmdLineArgumentService.Args?.CrashMessage;
             if (!string.IsNullOrEmpty(crashMsg))

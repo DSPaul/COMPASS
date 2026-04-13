@@ -1,7 +1,6 @@
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using HtmlAgilityPack;
 using ImageMagick;
@@ -9,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace COMPASS.Common.Services;
 
-public class WebService : IWebService
+public class WebService(ILogger logger) : IWebService
 {
     //Download data and put it in a byte[]
     public async Task<byte[]> DownloadFileAsync(string uri)
@@ -27,7 +26,7 @@ public class WebService : IWebService
         }
         catch (Exception ex)
         {
-            Logger.Error($"Failed to fetch data at {uri}", ex);
+            logger.Error($"Failed to fetch data at {uri}", ex);
             return [];
         }
     }
@@ -51,7 +50,7 @@ public class WebService : IWebService
         }
         catch (Exception ex)
         {
-            Logger.Error($"Failed to fetch data at {uri}", ex);
+            logger.Error($"Failed to fetch data at {uri}", ex);
         }
 
         return json;
@@ -66,7 +65,7 @@ public class WebService : IWebService
         }
         catch (Exception ex)
         {
-            Logger.Error($"Failed to download cover image from {imgURL}", ex);
+            logger.Error($"Failed to download cover image from {imgURL}", ex);
             return null;
         }
     }
@@ -87,7 +86,7 @@ public class WebService : IWebService
         {
             //fails if URL could not be loaded
             progressVM.AddLogEntry(new(Severity.Error, ex.Message));
-            Logger.Error($"Could not load {url}", ex);
+            logger.Error($"Could not load {url}", ex);
             return null;
         }
 
@@ -95,7 +94,7 @@ public class WebService : IWebService
         {
             LogEntry entry = new(Severity.Error, $"Failed to reach {url}");
             progressVM.AddLogEntry(entry);
-            Logger.Error($"{url} does not have any content", new Exception());
+            logger.Error($"{url} does not have any content", new Exception());
             return null;
         }
         else
@@ -119,9 +118,7 @@ public class WebService : IWebService
             if (!reply.IsSuccessStatusCode) return false;
             if (_showedOfflineWarning)
             {
-                const string msg = "Internet connection restored";
-                Logger.Info(msg);
-                Logger.FileLog?.Info(msg);
+                logger.Info("Internet connection restored");
                 _showedOfflineWarning = false;
             }
 
@@ -133,11 +130,11 @@ public class WebService : IWebService
             {
                 if (generalCheck)
                 {
-                    Logger.Warn("COMPASS is oflline, some features might not work.");
+                    logger.Warn("COMPASS is oflline, some features might not work.");
                 }
                 else
                 {
-                    Logger.Warn($"Could not reach {url}", ex);
+                    logger.Warn($"Could not reach {url}", ex);
                 }
             }
 

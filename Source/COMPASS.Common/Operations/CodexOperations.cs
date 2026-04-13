@@ -9,7 +9,6 @@ using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Sources;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals;
@@ -26,6 +25,9 @@ namespace COMPASS.Common.Operations
 {
     public class CodexOperations
     {
+        private static ILogger? _logger;
+        private static ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
+
         #region Open Codex
 
         //Open Codex wherever

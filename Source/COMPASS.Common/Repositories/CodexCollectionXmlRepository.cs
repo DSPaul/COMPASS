@@ -6,7 +6,6 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.Tools;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
 using System.Diagnostics;
@@ -18,7 +17,8 @@ namespace COMPASS.Common.Repositories
 {
     internal class CodexCollectionXmlRepository(
         IApplicationDataService applicationDataService,
-        INotificationService windowedNotificationService)
+        INotificationService windowedNotificationService,
+        ILogger logger)
          : ICodexCollectionRepository
     {
         private string _collectionsPath = Path.Combine(applicationDataService.UserDataPath, Constants.DIR_COLLECTIONS);
@@ -46,7 +46,7 @@ namespace COMPASS.Common.Repositories
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
+                    logger.Error($"Failed to create folder to store user data, so data cannot be saved", ex);
                     string msg = $"Failed to create a folder to store user data at {applicationDataService.UserDataPath}, " +
                                  $"please pick a new location to save your data. Creation failed with the following error {ex.Message}";
                     applicationDataService.RequireNewUserDataLocation(msg).Wait();
@@ -81,7 +81,7 @@ namespace COMPASS.Common.Repositories
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to find existing collections in {_collectionsPath}", ex);
+                logger.Error($"Failed to find existing collections in {_collectionsPath}", ex);
                 return [];
             }
         }
@@ -139,7 +139,7 @@ namespace COMPASS.Common.Repositories
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error($"Could not load {TagsDataFilePath(collection.Name)}.", ex);
+                        logger.Error($"Could not load {TagsDataFilePath(collection.Name)}.", ex);
                         return false;
                     }
                 }
@@ -173,7 +173,7 @@ namespace COMPASS.Common.Repositories
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error($"Could not load {CodicesDataFilePath(collection.Name)}", ex);
+                        logger.Error($"Could not load {CodicesDataFilePath(collection.Name)}", ex);
                         return false;
                     }
                 }
@@ -202,7 +202,7 @@ namespace COMPASS.Common.Repositories
                         XmlSerializer serializer = GetSerializer(typeof(CollectionInfoDto));
                         if (serializer.Deserialize(reader) is not CollectionInfoDto loadedInfo)
                         {
-                            Logger.Warn($"Could not load info for {CollectionInfoFilePath(collection.Name)}");
+                            logger.Warn($"Could not load info for {CollectionInfoFilePath(collection.Name)}");
                             return false;
                         }
 
@@ -210,7 +210,7 @@ namespace COMPASS.Common.Repositories
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error($"Could not load info for {CollectionInfoFilePath(collection.Name)}", ex);
+                        logger.Error($"Could not load info for {CollectionInfoFilePath(collection.Name)}", ex);
                         return false;
                     }
                 }
@@ -252,7 +252,7 @@ namespace COMPASS.Common.Repositories
             }
             catch (Exception ex)
             {
-                Logger.Error("Failed to create folder to store user data for this collection.", ex);
+                logger.Error("Failed to create folder to store user data for this collection.", ex);
 
                 string msg = $"Failed to create the necessary folders to store data about this collection. The following error occured";
                 Notification failedFolderCreation = new("Failed to save collection", msg, Severity.Error)
@@ -271,7 +271,7 @@ namespace COMPASS.Common.Repositories
             }
             catch (Exception ex)
             {
-                Logger.Error("Failed to create the folder to save the data for this collection", ex);
+                logger.Error("Failed to create the folder to save the data for this collection", ex);
                 return false;
             }
 
@@ -281,7 +281,7 @@ namespace COMPASS.Common.Repositories
 
             if (savedCodices || savedTags || savedInfo)
             {
-                Logger.Info($"Saved {collection.Name}");
+                logger.Info($"Saved {collection.Name}");
                 return true;
             }
 
@@ -323,7 +323,7 @@ namespace COMPASS.Common.Repositories
            return WriteXml(stream, CollectionInfoFilePath(collection.Name), collection.Info.ToDto(), typeof(CollectionInfoDto), _infoLocker, "Collection Info");
         }
 
-        private static bool WriteXml(Stream? stream, string targetPath, object toSave, Type type, Lock @lock, string objectName)
+        private bool WriteXml(Stream? stream, string targetPath, object toSave, Type type, Lock @lock, string objectName)
         {
             try
             {
@@ -353,17 +353,17 @@ namespace COMPASS.Common.Repositories
             }
             catch (UnauthorizedAccessException ex)
             {
-                Logger.Error($"Access denied when trying to save {objectName} to {targetPath}", ex);
+                logger.Error($"Access denied when trying to save {objectName} to {targetPath}", ex);
                 return false;
             }
             catch (IOException ex)
             {
-                Logger.Error($"IO error occurred when saving {objectName} to {targetPath}", ex);
+                logger.Error($"IO error occurred when saving {objectName} to {targetPath}", ex);
                 return false;
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to save {objectName} to {targetPath}", ex);
+                logger.Error($"Failed to save {objectName} to {targetPath}", ex);
                 return false;
             }
 
@@ -386,7 +386,7 @@ namespace COMPASS.Common.Repositories
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to move data files from {oldName} to {newName}", ex);
+                logger.Error($"Failed to move data files from {oldName} to {newName}", ex);
             }
         }
 
@@ -408,12 +408,12 @@ namespace COMPASS.Common.Repositories
             {
                 //sometimes completing delete fails because a files are locked, retry could help with that
                 Utils.Retry<IOException>(3, () => Directory.Delete(CollectionDataPath(collectionId), true),
-                    onFailedAttempt: (ex) => Logger.Warn($"Failed to delete collection {collectionId}, retrying...", ex)
+                    onFailedAttempt: (ex) => logger.Warn($"Failed to delete collection {collectionId}, retrying...", ex)
                 );
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to delete collection {collectionId}", ex);
+                logger.Error($"Failed to delete collection {collectionId}", ex);
             }
         }
 

@@ -1,17 +1,22 @@
 using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.ApiDtos;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Tools;
 
 public static class CrashHandler
 {
+    private static ILogger? _logger;
+    private static ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
+
     const string RestartOption = "Restart COMPASS.";
     const string SubmitOption = "Submit an anonymous crash report.";
 

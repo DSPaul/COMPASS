@@ -4,7 +4,7 @@ using COMPASS.Common.Services.FileSystem;
 
 namespace COMPASS.Linux.Services;
 
-public class IOService(IFilesService filesService) : IOServiceBase(filesService)
+public class IOService(IFilesService filesService, ILogger logger) : IOServiceBase(filesService, logger)
 {
     public override void ShowInExplorer(string filePath)
     {

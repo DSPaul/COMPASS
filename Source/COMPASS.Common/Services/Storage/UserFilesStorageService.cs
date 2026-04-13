@@ -1,13 +1,13 @@
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
-using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Services.Storage;
 
 public class UserFilesStorageService(
     IApplicationDataService applicationDataService,
-    IIOService ioService
+    IIOService ioService,
+    ILogger logger
     ) : IUserFilesStorageService
 {
     private readonly string _collectionsPath = Path.Combine(applicationDataService.UserDataPath, "Collections");
@@ -27,7 +27,7 @@ public class UserFilesStorageService(
         catch (Exception ex)
         {
             //failed to read the files, cou
-            Logger.Warn($"Failed to check if User Files Storage folder contains any files for collection {collection.Name}", ex);
+            logger.Warn($"Failed to check if User Files Storage folder contains any files for collection {collection.Name}", ex);
             return false;
         }
     }
@@ -42,7 +42,7 @@ public class UserFilesStorageService(
         }
         catch (Exception ex)
         {
-            Logger.Error("Failed to create a folder to store the imported files", ex);
+            logger.Error("Failed to create a folder to store the imported files", ex);
             return false;
         }
     }
@@ -92,7 +92,7 @@ public class UserFilesStorageService(
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Failed to create a folder to store the imported files", ex);
+                    logger.Error("Failed to create a folder to store the imported files", ex);
                 }
             }
 
@@ -108,7 +108,7 @@ public class UserFilesStorageService(
         }
         catch (Exception ex)
         {
-            Logger.Warn($"Failed to copy file associated with {codex.Title}", ex);
+            logger.Warn($"Failed to copy file associated with {codex.Title}", ex);
         }
     }
     #endregion

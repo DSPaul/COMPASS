@@ -2,10 +2,10 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using COMPASS.Common.Interfaces.Repos;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Tools;
 
@@ -13,6 +13,9 @@ namespace COMPASS.Common.Services.StateManagers
 {
     public static class CollectionManager
     {
+        private static ILogger? _logger;
+        private static ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
+
         #region Properties
     
         private static readonly ObservableCollection<CodexCollectionVM> _allCollectionVms = [];

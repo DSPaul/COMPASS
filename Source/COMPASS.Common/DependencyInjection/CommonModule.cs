@@ -7,6 +7,7 @@ using COMPASS.Common.Repositories;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.Storage;
+using COMPASS.Common.Tools.Logging;
 
 namespace COMPASS.Common.DependencyInjection
 {
@@ -14,6 +15,13 @@ namespace COMPASS.Common.DependencyInjection
     {
         protected override void Load(ContainerBuilder builder)
         {
+            // Logging
+            builder.RegisterType<FileLogger>().AsSelf().SingleInstance();
+            builder.RegisterType<UILogger>().AsSelf().SingleInstance();
+            builder.Register(c => new CompositeLogger([c.Resolve<FileLogger>(), c.Resolve<UILogger>()]))
+                   .As<ILogger>()
+                   .SingleInstance();
+
             // Notification Service
             builder.RegisterType<NotificationService>().As<INotificationService>();
 
@@ -23,7 +31,7 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<ImportExportService>().As<IImportExportService>();
             builder.RegisterType<CoverStorageService>().As<ICoverStorageService>();
             builder.RegisterType<UserFilesStorageService>().As<IUserFilesStorageService>();
-            
+
             builder.RegisterType<ApplicationDataService>()
                 .As<IApplicationDataService>()
                 .SingleInstance();

@@ -1,13 +1,13 @@
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
-using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Services.Storage;
 
 public class CoverStorageService(
     IApplicationDataService applicationDataService,
-    IIOService ioService) 
+    IIOService ioService,
+    ILogger logger) 
     : ICoverStorageService
 {
     private readonly string _collectionsPath = Path.Combine(applicationDataService.UserDataPath, Constants.DIR_COLLECTIONS);
@@ -52,7 +52,7 @@ public class CoverStorageService(
         }
         catch (Exception ex)
         {
-            Logger.Warn($"Failed to copy cover of {codex.Title}", ex);
+            logger.Warn($"Failed to copy cover of {codex.Title}", ex);
         }
 
         codex.CoverArtPath = newCoverPath;
@@ -85,7 +85,7 @@ public class CoverStorageService(
         }
         catch(Exception ex)
         {
-            Logger.Debug($"Failed to delete cover or thumbnail: {ex.Message}");
+            logger.Debug($"Failed to delete cover or thumbnail: {ex.Message}");
             //deleting the cover and thumbnail could fail because of many reasons,
             //not a big deal as it will just get overwritten in case of the cover when a new codex gets the freed id
             //or be an orphaned thumbnail in case of the thumbnail, so we can just ignore any exceptions here

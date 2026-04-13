@@ -6,14 +6,19 @@ using System.Linq;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Exceptions;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels
 {
     public abstract class ViewModelBase : ObservableObject, INotifyDataErrorInfo
     {
+        private ILogger? _logger;
+        protected ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
+
         /// <summary>
         /// Shortcut because we need this all over the place
         /// </summary>

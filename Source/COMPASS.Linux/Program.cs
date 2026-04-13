@@ -5,6 +5,7 @@ using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
+using COMPASS.Common.Tools.Logging;
 using COMPASS.Infra.Tools;
 using COMPASS.Linux.DepencyInjection;
 using COMPASS.Linux.Services;
@@ -33,7 +34,8 @@ class Program
         }
         catch (Exception ex)
         {
-            Logger.Fatal("Unhandled exception caught" ,ex);
+            var logger = ServiceResolver.Resolve<ILogger>();
+            logger.Fatal("Unhandled exception caught" ,ex);
             CrashHandler.HandleCrash(ex);
         }
     }
@@ -43,7 +45,7 @@ class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace();
+            .LogToFileLogger();
 
     private static void BuildContainer()
     {
