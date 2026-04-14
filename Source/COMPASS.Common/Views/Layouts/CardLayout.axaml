@@ -45,7 +45,12 @@
                         Background="{StaticResource CardBackground}"
                         BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" 
                         DoubleTapped="Codex_DoubleTapped"
-                        Classes="SmallZoomOnHover">
+                        Classes="SmallZoomOnHover"
+                        DragDrop.AllowDrop="True"
+                        DragDrop.DragOver="Codex_DragOver"
+                        DragDrop.Drop="Codex_Drop"
+                        DragDrop.DragEnter="Codex_DragEnter"
+                        DragDrop.DragLeave="Codex_DragLeave">
                     <Border.Effect>
                         <DropShadowDirectionEffect BlurRadius="15" />
                     </Border.Effect>

@@ -16,6 +16,7 @@
         <ResourceInclude Source="avares://COMPASS.Common/Themes/Converters.axaml"/>
         <ResourceInclude Source="avares://COMPASS.Common/Themes/CustomControls.axaml"/>
         <ResourceInclude Source="avares://COMPASS.Common/Themes/ContextMenus.axaml"/>
+        <ResourceInclude Source="avares://COMPASS.Common/Adorners/AdornerTemplates.axaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>

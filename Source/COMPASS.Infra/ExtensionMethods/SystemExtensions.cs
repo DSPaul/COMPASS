@@ -1,10 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
-using Avalonia.Input;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
 using FuzzySharp;
@@ -190,29 +187,6 @@ namespace COMPASS.Infra.ExtensionMethods
             value = keySelector(l.First());
             TKey key = value;
             return l.Skip(1).All(item => EqualityComparer<TKey>.Default.Equals(keySelector(item), key));
-        }
-        
-        #endregion
-        
-        #region Drag & Drop
-
-        //TODO look at this
-        
-        /// <summary>
-        /// Tries to get an object of a certain type from the data
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <returns>null if not found</returns>
-        public static T? GetValue<T>(this IDataObject data) where T : class
-        {
-            string format = typeof(T).Name;
-
-            if (data.Contains(format))
-            {
-                return data.Get(typeof(T).Name) as T;
-            }
-            else return null;
         }
 
         #endregion

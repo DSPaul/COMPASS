@@ -1,26 +1,30 @@
-﻿using Avalonia.Input;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Adorners;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Edit;
-using System.Collections;
-using System.Diagnostics;
-using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Tools;
-using COMPASS.Infra.Models;
 using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Tools;
+using System.Collections;
+using System.Diagnostics;
 
 namespace COMPASS.Common.Operations
 {
@@ -633,40 +637,51 @@ namespace COMPASS.Common.Operations
 
         //Handle drag&drop of Tags on Codices to add them
 
-        public void OnDragOver(object sender, DragEventArgs e)
+        public static void OnDragOver(object? sender, DragEventArgs e)
         {
-            if (e.Data.GetValue<TreeNode<Tag>>() is { Item.IsGroup: false } ||
-                e.Data.GetValue<Tag>() is { IsGroup: false })
+            if (sender is Control control && control.DataContext is CodexViewModel vm &&
+                e.DataTransfer.TryGetTag(vm.GetModel().Collection.AllTags) is { IsGroup: false })
             {
-                //TODO Handle adorner manually
-                //dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                e.DragEffects = DragDropEffects.Copy;
+                e.DragEffects = DragDropEffects.Link;
             }
         }
 
-        private void OnDrop(object sender, DragEventArgs e)
+        public static void OnDrop(object? sender, DragEventArgs e)
         {
-            //Codex targetCodex = (Codex)dropInfo.TargetItem;
-            //TODO check if sender is actually the codex or a control or viewmodel of some sort
-            if (sender is not Codex targetCodex) return;
-
-            Tag? toAdd = null;
-
-            if (e.Data.Contains(nameof(TreeNode<Tag>)))
+            if (sender is Visual visual && visual.DataContext is CodexViewModel vm)
             {
-                TreeNode<Tag>? node = e.Data.Get(nameof(TreeNode<Tag>)) as TreeNode<Tag>;
-                toAdd = node?.Item;
-            }
-            else if (e.Data.Contains(nameof(Tag)))
-            {
-                toAdd = e.Data.Get(nameof(Tag)) as Tag;
+                AdornerLayer.SetAdorner(visual, null);
+                var targetCodex = vm.GetModel();
+                Tag? toAdd = e.DataTransfer.TryGetTag(targetCodex.Collection.AllTags);
+
+                if (toAdd is null) return;
+
+                if (!targetCodex.Tags.Contains(toAdd))
+                {
+                    targetCodex.Tags.Add(toAdd);
+                }
             }
 
-            if (toAdd is null) return;
+        }
 
-            if (!targetCodex.Tags.Contains(toAdd))
+        public static void OnDragEnter(object? sender, DragEventArgs e)
+        {
+            if (sender is Visual v)
             {
-                targetCodex.Tags.Add(toAdd);
+                var tag = e.DataTransfer.GetValue<TagDto>(DataTransferFormats.TagFormat);
+                if(tag != null)
+                {
+                    var adorner = new DropTagAdorner(tag);
+                    AdornerLayer.SetAdorner(v, adorner);
+                }
+            }
+        }
+
+        public static void OnDragLeave(object? sender, DragEventArgs e)
+        {
+            if (sender is Visual v)
+            {
+                AdornerLayer.SetAdorner(v, null);
             }
         }
         #endregion

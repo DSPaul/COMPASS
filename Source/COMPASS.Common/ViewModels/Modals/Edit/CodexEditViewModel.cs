@@ -234,9 +234,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         
         public void OnDragOver(object sender, DragEventArgs e)
         {
-            if (e.Data is DataObject data
-                && data.GetFiles()?.Count() == 1
-                && FileFormatUtils.IsImageFile(data.GetFiles()?.Select(f => f.Path.LocalPath).First() ?? ""))
+            var files = e.DataTransfer.TryGetFiles();
+            if (files?.Length == 1
+                && FileFormatUtils.IsImageFile(files[0].Path.LocalPath))
             {
                 e.DragEffects = DragDropEffects.Copy;
             }
@@ -248,11 +248,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
         public async void Drop(object sender, DragEventArgs e)
         {
-            if (e.Data is DataObject data
-                && data.GetFiles()?.Count() == 1
-                && FileFormatUtils.IsImageFile(data.GetFiles()?.Select(f => f.Path.LocalPath).First() ?? ""))
+            var files = e.DataTransfer.TryGetFiles();
+            if (files?.Length == 1
+                && FileFormatUtils.IsImageFile(files[0].Path.LocalPath))
             {
-                string path = data.GetFiles()!.Select(f => f.Path.LocalPath).First();
+                string path = files[0].Path.LocalPath;
                 var img = CoverService.GetCoverFromImage(path);
                 if (img != null)
                 {

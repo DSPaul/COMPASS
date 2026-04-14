@@ -26,8 +26,9 @@
         Sorting="DataGrid_OnSorting"
         KeyDown="DataGrid_OnKeyDown"
         DoubleTapped="DataGrid_OnDoubleTapped"
-        SelectionChanged="DataGrid_SelectionChanged">
-        <!-- TODO restore drag & drop of tags -->
+        SelectionChanged="DataGrid_SelectionChanged"
+        LoadingRow="DataGrid_OnLoadingRow"
+        UnloadingRow="DataGrid_OnUnloadingRow">
         <DataGrid.Styles>
             <Style Selector="DataGridColumnHeader">
                 <Setter Property="ContextMenu">

@@ -184,6 +184,7 @@
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <controls:Chip Text="{Binding Item.Name}" Margin="0,3"
+                                                   PointerExited="Tag_PointerExited"
                                                    Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
                                 </ControlTemplate>
                             </Button.Template>

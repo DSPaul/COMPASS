@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using COMPASS.Infra.Tools;
+using COMPASS.Common.Models.DragDrop;
 
 namespace COMPASS.Common.ViewModels.Main
 {
@@ -624,21 +625,14 @@ namespace COMPASS.Common.ViewModels.Main
         #endregion
         
         #region Drag Drop Handlers
-        //Drop on Treeview Behaviour
         void OnDragOver(object sender, DragEventArgs e)
         {
-            //Move From Treeview
-            if (e.Data.GetValue<TreeNode<Tag>>() is { Item.IsGroup: false })
+            var allTags = _allCodexVms.FirstOrDefault()?.GetModel().Collection.AllTags;
+            if (allTags.SafeAny() && e.DataTransfer.TryGetTag(allTags) is { IsGroup: false })
             {
                 e.DragEffects = DragDropEffects.Copy;
             }
-            //Move Filter to included/excluded
-            else if (e.Data.GetValue<Filter>() != null)
-            {
-                e.DragEffects = DragDropEffects.Move;
-            }
-            //Move Tag between included/excluded
-            else if (e.Data.GetValue<Tag>() != null)
+            else if (e.DataTransfer.TryGetFilter() != null)
             {
                 e.DragEffects = DragDropEffects.Move;
             }
@@ -655,13 +649,18 @@ namespace COMPASS.Common.ViewModels.Main
             //OLD CODE: bool toIncluded = ((CompositeCollection)dropInfo.TargetCollection).Count > 1;
             bool toIncluded = false;
 
-            //Move From Treeview
-            if (e.Data.GetValue<TreeNode<TagViewModel>>() is { Item.IsGroup: false } node)
+            var allTags = _allCodexVms.FirstOrDefault()?.GetModel().Collection.AllTags;
+            if (allTags.SafeAny() && e.DataTransfer.TryGetTag(allTags) is { IsGroup: false } tag)
             {
-                ActivateFilter(new TagFilter(node.Item), toIncluded);
+                var tagVm = TabsViewModel.GetInstance()?.ActiveTab?.CollectionVM.GetTagVm(tag);
+                if(tagVm == null)
+                {
+                    return;
+                }
+                ActivateFilter(new TagFilter(tagVm), toIncluded);
             }
             //Move Filter to included/excluded
-            else if (e.Data.GetValue<Filter>() is Filter draggedFilter)
+            else if (e.DataTransfer.TryGetFilter() is Filter draggedFilter)
             {
                 ActivateFilter(draggedFilter, toIncluded);
             }

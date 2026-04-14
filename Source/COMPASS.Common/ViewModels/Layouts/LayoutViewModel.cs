@@ -78,7 +78,7 @@ namespace COMPASS.Common.ViewModels.Layouts
 
         public void OnDragOver(object? sender, DragEventArgs e)
         {
-            if (e.Data is DataObject)
+            if (e.DataTransfer.TryGetFiles() != null)
             {
                 //TODO: handle UI changes on hover manually
                 //e.DropTargetAdorner = DropTargetAdorners.Highlight;
@@ -89,48 +89,45 @@ namespace COMPASS.Common.ViewModels.Layouts
 
         public async void OnDrop(object? sender, DragEventArgs e)
         {
-            if (e.Data is DataObject data)
+            var paths = e.DataTransfer
+                .TryGetFiles()?
+                .Select(f => f.Path.LocalPath)
+                .ToList();
+
+            if (paths is null) return;
+
+            var folders = paths.Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
+            var files = paths.Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
+
+            //check for folder import
+            if (folders.Count != 0)
             {
-                var paths = data
-                    .GetFiles()?
-                    .Select(f => f.Path.LocalPath)
-                    .ToList();
-
-                if (paths is null) return;
-
-                var folders = paths.Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
-                var files = paths.Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
-
-                //check for folder import
-                if (folders.Count != 0)
+                using ImportFilesViewModel folderImportVM = new(autoImport: false)
                 {
-                    using ImportFilesViewModel folderImportVM = new(autoImport: false)
-                    {
-                        RecursiveDirectories = folders,
-                        Files = files
-                    };
-                    await folderImportVM.Import();
-                }
-                else
-                    switch (files.Count)
-                    {
-                        //If no files or folders, to nothing
-                        case 0:
-                            return;
-                        //Check if it's a satchel file, do import if so
-                        case 1 when files.First().EndsWith(Constants.SatchelExtension):
-                            if (TabsViewModel.GetInstance().ActiveTab is CollectionTabVM activeTab)
-                            {
-                                await activeTab.ImportSatchelAsync(files.First());
-                            }
-
-                            break;
-                        //If none of the above, just import the files
-                        default:
-                            await ImportViewModel.ImportFilesAsync(files);
-                            break;
-                    }
+                    RecursiveDirectories = folders,
+                    Files = files
+                };
+                await folderImportVM.Import();
             }
+            else
+                switch (files.Count)
+                {
+                    //If no files or folders, to nothing
+                    case 0:
+                        return;
+                    //Check if it's a satchel file, do import if so
+                    case 1 when files.First().EndsWith(Constants.SatchelExtension):
+                        if (TabsViewModel.GetInstance().ActiveTab is CollectionTabVM activeTab)
+                        {
+                            await activeTab.ImportSatchelAsync(files.First());
+                        }
+
+                        break;
+                    //If none of the above, just import the files
+                    default:
+                        await ImportViewModel.ImportFilesAsync(files);
+                        break;
+                }
         }
 
         public void Dispose()

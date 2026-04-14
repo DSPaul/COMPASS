@@ -4,6 +4,7 @@ using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.VisualTree;
+using COMPASS.Common.Operations;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
@@ -71,5 +72,22 @@ public partial class ListLayout : CodexLayoutView
         }
 
         return result;
+    }
+
+    private void DataGrid_OnLoadingRow(object? sender, DataGridRowEventArgs e)
+    {
+        DragDrop.SetAllowDrop(e.Row, true);
+        e.Row.AddHandler(DragDrop.DragOverEvent, CodexOperations.OnDragOver);
+        e.Row.AddHandler(DragDrop.DropEvent, CodexOperations.OnDrop);
+        e.Row.AddHandler(DragDrop.DragEnterEvent, CodexOperations.OnDragEnter);
+        e.Row.AddHandler(DragDrop.DragLeaveEvent, CodexOperations.OnDragLeave);
+    }
+
+    private void DataGrid_OnUnloadingRow(object? sender, DataGridRowEventArgs e)
+    {
+        e.Row.RemoveHandler(DragDrop.DragOverEvent, CodexOperations.OnDragOver);
+        e.Row.RemoveHandler(DragDrop.DropEvent, CodexOperations.OnDrop);
+        e.Row.RemoveHandler(DragDrop.DragEnterEvent, CodexOperations.OnDragEnter);
+        e.Row.RemoveHandler(DragDrop.DragLeaveEvent, CodexOperations.OnDragLeave);
     }
 }

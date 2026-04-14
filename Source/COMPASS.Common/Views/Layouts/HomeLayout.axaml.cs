@@ -26,4 +26,13 @@ public partial class HomeLayout : CodexLayoutView
             await CodexOperations.OpenCodex(codexVm.GetModel());
         }
     }
+
+    private void Codex_DragOver(object? sender, DragEventArgs e) => CodexOperations.OnDragOver(sender, e);
+    private void Codex_Drop(object? sender, DragEventArgs e) => CodexOperations.OnDrop(sender, e);
+    private void Codex_DragEnter(object? sender, DragEventArgs e) => CodexOperations.OnDragEnter(sender, e);
+    private void Codex_DragLeave(object? sender, DragEventArgs e) => CodexOperations.OnDragLeave(sender, e);
+
+    private void Grid_DragLeave(object? sender, DragEventArgs e)
+    {
+    }
 }
