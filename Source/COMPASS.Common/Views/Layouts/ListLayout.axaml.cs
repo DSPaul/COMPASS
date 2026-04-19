@@ -8,7 +8,6 @@ using COMPASS.Common.Operations;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using OpenQA.Selenium.DevTools.V145.Runtime;
 
 namespace COMPASS.Common.Views.Layouts;
 
@@ -27,6 +26,7 @@ public partial class ListLayout : CodexLayoutView
 
     private void DataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
+        SelectedCodicesChanged(sender, e);
         if (sender is DataGrid dataGrid && e.AddedItems is { Count: > 0 })
         {
             dataGrid.ScrollIntoView(e.AddedItems[0], null);

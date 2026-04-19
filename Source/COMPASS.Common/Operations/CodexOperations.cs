@@ -23,6 +23,7 @@ using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
+using OpenQA.Selenium.DevTools.V145.Page;
 using System.Collections;
 using System.Diagnostics;
 
@@ -156,7 +157,7 @@ namespace COMPASS.Common.Operations
         {
             List<Codex>? toEditList = toEdit?
                 .OfType<CodexViewModel>().Select(vm => vm.GetModel()) //could be codexVms
-                .Concat(toEdit.OfType<Codex>())                       //could just be codices
+                .Concat(toEdit.OfType<Codex>())                       //could just be items
                 .ToList();
 
             if (!toEditList.SafeAny()) return;
@@ -200,7 +201,7 @@ namespace COMPASS.Common.Operations
         public RelayCommand<IList> FavoriteCodicesCommand => field ??= new(FavoriteCodices);
         private static void FavoriteCodices(IList? toFavorite)
         {
-            List<Codex>? toFavoriteList = toFavorite?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList();
+            List<Codex>? toFavoriteList = GatherCodices(toFavorite);
             if (!toFavoriteList.SafeAny()) return;
             if (toFavoriteList.Count == 1)
             {
@@ -244,13 +245,15 @@ namespace COMPASS.Common.Operations
 
             //par contains 2 parameters
             string targetCollectionIdentifier = (string)par[0];
-            List<Codex> toMoveList = ((IList)par[1]).Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList();
+            List<Codex>? toMoveList = GatherCodices(par[1] as IList);
+
+            if(!toMoveList.SafeAny()) return;
 
             await MoveToCollection(targetCollectionIdentifier, toMoveList);
         }
 
         /// <summary>
-        /// Moves all codices from the toMoveList to the targetCollection
+        /// Moves all items from the toMoveList to the targetCollection
         /// </summary>
         /// <param name="targetCollectionIdentifier"></param>
         /// <param name="toMoveList"></param>
@@ -268,7 +271,7 @@ namespace COMPASS.Common.Operations
             using var sourceCollectionHandle = sourceCollection.Load();
             if (sourceCollectionHandle == null)
             {
-                Logger.Warn($"Failed to move codices from {sourceCollection.Name} because they could not be loaded");
+                Logger.Warn($"Failed to move items from {sourceCollection.Name} because they could not be loaded");
                 return;
             }
 
@@ -304,7 +307,7 @@ namespace COMPASS.Common.Operations
                 
                 CodexCollection targetCollection = targetCollectionHandle.CollectionVM.Collection;
                 
-                //Copy the codices to the target collection
+                //Copy the items to the target collection
                 foreach (Codex toMove in toMoveList)
                 {
                     Codex movedCodex = new(targetCollection);
@@ -339,9 +342,12 @@ namespace COMPASS.Common.Operations
         }
 
         //Delete Codices
-        public AsyncRelayCommand<IList> DeleteCodicesCommand => field ??= new(async (codices) =>
+        public AsyncRelayCommand<IList> DeleteCodicesCommand => field ??= new(async (items) =>
         {
-            var codicesToDelete = codices?.Cast<Codex>().ToList() ?? [];
+            List<Codex>? codicesToDelete = GatherCodices(items);
+
+            if (!codicesToDelete.SafeAny()) return;
+
             await DeleteCodices(codicesToDelete, true);
         });
         
@@ -374,7 +380,7 @@ namespace COMPASS.Common.Operations
 
                 if (collectionHandle == null)
                 {
-                    //TODO deal with having to delete codices from a collection that cannot be loaded
+                    //TODO deal with having to delete items from a collection that cannot be loaded
                     //Shouldn't happen
                     return;
                 }
@@ -403,7 +409,7 @@ namespace COMPASS.Common.Operations
         public AsyncRelayCommand<IList> BanishCodicesCommand => field ??= new(BanishCodices);
         private static async Task BanishCodices(IList? toBanish)
         {
-            var codicesToBanish = toBanish?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList() ?? [];
+            var codicesToBanish = GatherCodices(toBanish);
             if (!codicesToBanish.SafeAny()) return;
 
             var codicesByCollections = codicesToBanish.GroupBy(codex => codex.Collection);
@@ -561,11 +567,13 @@ namespace COMPASS.Common.Operations
 
         public AsyncRelayCommand<IList> GetMetaDataBulkCommand => field ??= new(GetMetaDataBulk);
 
-        private async Task GetMetaDataBulk(IList? codices)
+        private async Task GetMetaDataBulk(IList? items)
         {
             try
             {
-                await StartGetMetaDataProcess(codices?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList() ?? []);
+                var codices = GatherCodices(items);
+                if(!codices.SafeAny()) return;
+                await StartGetMetaDataProcess(codices);
             }
             catch (OperationCanceledException ex)
             {
@@ -582,56 +590,57 @@ namespace COMPASS.Common.Operations
         }
 
         public AsyncRelayCommand<IList> GetCoverBulkCommand => field ??= new(GetCoverBulk);
-        private static async Task GetCoverBulk(IList? codices) =>
-            await CoverService.GetAndApplyCover(codices?.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList() ?? []);
+        private static async Task GetCoverBulk(IList? items) =>
+            await CoverService.GetAndApplyCover(GatherCodices(items) ?? []);
         
         public async void HandleKeyDownOnCodex(IList? selectedItems, KeyEventArgs e)
         {
-            if (selectedItems is null) return;
+            List<Codex>? codices = GatherCodices(selectedItems);
 
-            List<Codex> codices = selectedItems.Cast<CodexViewModel>().Select(vm => vm.GetModel()).ToList();
-            int count = selectedItems.Count;
+            if (!codices.SafeAny()) return;
 
-            if (count > 0)
+            switch (e.Key)
             {
-                switch (e.Key)
-                {
-                    case Key.Delete:
-                        if (e.KeyModifiers == KeyModifiers.Alt)
-                        {
-                            //Alt + Delete
-                            await BanishCodices(codices);
-                        }
-                        else
-                        {
-                            //Delete
-                            await DeleteCodices(codices, true);
-                        }
+                case Key.Delete:
+                    if (e.KeyModifiers == KeyModifiers.Alt)
+                    {
+                        //Alt + Delete
+                        await BanishCodices(codices);
+                    }
+                    else
+                    {
+                        //Delete
+                        await DeleteCodices(codices, true);
+                    }
+                    e.Handled = true;
+                    break;
+                case Key.Enter:
+                    await OpenSelectedCodices(codices);
+                    e.Handled = true;
+                    break;
+                case Key.E:
+                    if (e.KeyModifiers == KeyModifiers.Control)
+                    {
+                        //CTRL + E
+                        await EditCodices(codices);
                         e.Handled = true;
-                        break;
-                    case Key.Enter:
-                        await OpenSelectedCodices(codices);
+                    }
+                    break;
+                case Key.F:
+                    if (e.KeyModifiers == KeyModifiers.Control)
+                    {
+                        //CTRL + F
+                        FavoriteCodices(codices);
                         e.Handled = true;
-                        break;
-                    case Key.E:
-                        if (e.KeyModifiers == KeyModifiers.Control)
-                        {
-                            //CTRL + E
-                            await EditCodices(codices);
-                            e.Handled = true;
-                        }
-                        break;
-                    case Key.F:
-                        if (e.KeyModifiers == KeyModifiers.Control)
-                        {
-                            //CTRL + F
-                            FavoriteCodices(codices);
-                            e.Handled = true;
-                        }
-                        break;
-                }
+                    }
+                    break;
             }
         }
+
+        private static List<Codex>? GatherCodices(IList? items) => items?
+                .OfType<CodexViewModel>().Select(vm => vm.GetModel()) //could be codexVms
+                .Concat(items.OfType<Codex>())                       //could just be items
+                .ToList();
 
         #region Drag & Drop
 
