@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.SplashScreenWindow"
-        SystemDecorations="None" SizeToContent="WidthAndHeight"
+        WindowDecorations="None" SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterScreen" Background="Transparent"
         TransparencyBackgroundFallback="{StaticResource CompassJade}"
         Title="SplashScreenWindow">

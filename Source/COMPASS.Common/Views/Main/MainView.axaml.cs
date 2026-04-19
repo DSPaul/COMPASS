@@ -1,8 +1,6 @@
-﻿using System.Linq;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using COMPASS.Common.Models;
-using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.Views.Main;

@@ -27,6 +27,7 @@ namespace COMPASS.Windows.Services
         }
 
         //helper function to check if certain browsers are installed
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "This only runs on windows")]
         private static bool IsInstalled(string name)
         {
             const string currentUserRegistryPathPattern = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\";

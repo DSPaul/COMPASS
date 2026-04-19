@@ -1,10 +1,10 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.VisualTree;
 using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.ExtensionMethods;
-using OpenQA.Selenium.DevTools.V143.CSS;
+using COMPASS.Common.ViewModels.SidePanels;
 
 namespace COMPASS.Common.Views.SidePanels;
 
@@ -14,6 +14,9 @@ public partial class TagsSidePanel : SidePanel
     {
         InitializeComponent();
     }
+
+    private PointerPressedEventArgs? _lastPressedArgs;
+
 
     private void Toggle_ContextMenu(object sender, TappedEventArgs e)
     {
@@ -33,9 +36,15 @@ public partial class TagsSidePanel : SidePanel
         }
     }
 
-    private async void Tag_PointerExited(object? sender, PointerEventArgs e)
+    private async void Tag_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (e.Properties.IsLeftButtonPressed)
+        _lastPressedArgs = e;
+        e.Handled = true;
+    }
+
+    private async void Tag_PointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (_lastPressedArgs != null && e.Properties.IsLeftButtonPressed)
         {
             var dragData = new DataTransfer();
 
@@ -44,7 +53,23 @@ public partial class TagsSidePanel : SidePanel
                 dragData.AddTag(vm.Item.GetModel());
             }
 
-            var result = await DragDrop.DoDragDropAsync(e, dragData, DragDropEffects.Move | DragDropEffects.Link);
+            var result = DragDrop.DoDragDropAsync(_lastPressedArgs, dragData, DragDropEffects.Move | DragDropEffects.Link);
         }
+        _lastPressedArgs = null;
+        e.Handled = true;
+    }
+
+    private void Tag_PointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (sender is Control control && 
+            control.DataContext is TreeNode<TagViewModel> nodeVm &&
+            control.FindAncestorOfType<TreeView>() is TreeView tv &&
+            tv.DataContext is TagsPanelVM panelVm &&
+            panelVm.AddTagFilterCommand.CanExecute(nodeVm.Item))
+        {
+            panelVm.AddTagFilterCommand.Execute(nodeVm.Item);
+        }
+        _lastPressedArgs = null;
+        e.Handled = true;
     }
 }

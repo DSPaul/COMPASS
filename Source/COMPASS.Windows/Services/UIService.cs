@@ -5,5 +5,5 @@ namespace COMPASS.Windows.Services;
 
 public class UIService : IUIService
 {
-    public GridLength WindowControlsSpacing => new GridLength(135);
+    public GridLength WindowControlsSpacing => new GridLength(140);
 }

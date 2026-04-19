@@ -22,4 +22,7 @@
     
     <!-- Scrollbar -->
     <x:Double x:Key="ScrollBarSize">10</x:Double>
+
+    <!--Tab strip-->
+    <Thickness x:Key="TabControlTopPlacementItemMargin">0 0 0 0</Thickness>
 </ResourceDictionary>

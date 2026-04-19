@@ -43,7 +43,7 @@
                                     <Grid ColumnDefinitions="*,Auto">
                                         <SelectableTextBlock Grid.Column="0" Text="{Binding}" VerticalAlignment="Center"
                                                              Padding="10,2" />
-                                        <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}"
+                                        <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}" Margin="3" 
                                                              Icon="Delete"
                                                              Command="{Binding $parent[controls:StringListControl].DeleteItemCommand}"
                                                              CommandParameter="{Binding}" />
@@ -60,7 +60,7 @@
                                 UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                          VerticalAlignment="Center" VerticalContentAlignment="Center" Padding="10,2" />
                 <controls:IconButton Grid.Column="2" Theme="{StaticResource IconOnly}" Icon="Add"
-                                     Width="32" Height="32" Padding="5" Margin="0"
+                                     Width="32" Height="32" IconSize="20" Margin="0"
                                      Command="{Binding $parent[controls:StringListControl].AddItemCommand}">
                     <controls:IconButton.Styles>
                         <Style Selector="controls|IconButton">

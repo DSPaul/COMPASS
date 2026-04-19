@@ -153,7 +153,7 @@ public class ImprovedComboBox : ListBox
         }
     }
     
-    private void InputTextBoxOnGotFocus(object? sender, GotFocusEventArgs e)
+    private void InputTextBoxOnGotFocus(object? sender, FocusChangedEventArgs e)
     {
         if (_suggestionPopup is {IsOpen: false} && SuggestedItems.Count > 0)
         {
@@ -209,12 +209,12 @@ public class ImprovedComboBox : ListBox
         }
     } = "";
 
-    public static readonly StyledProperty<string?> WatermarkProperty = TextBox.WatermarkProperty.AddOwner<ImprovedComboBox>();
+    public static readonly StyledProperty<string?> PlaceholderTextProperty = TextBox.PlaceholderTextProperty.AddOwner<ImprovedComboBox>();
 
-    public string? Watermark
+    public string? PlaceholderText
     {
-        get => GetValue(WatermarkProperty);
-        set => SetValue(WatermarkProperty, value);
+        get => GetValue(PlaceholderTextProperty);
+        set => SetValue(PlaceholderTextProperty, value);
     }
 
     public static readonly StyledProperty<bool> CanCreateProperty = AvaloniaProperty.Register<ImprovedComboBox, bool>(

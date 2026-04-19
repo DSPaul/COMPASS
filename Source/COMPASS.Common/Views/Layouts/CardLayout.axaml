@@ -61,9 +61,10 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Panel Grid.Column="0">
-                                <Image Source="{Binding Thumbnail^, Mode=OneWay}"
-                                       Stretch="UniformToFill" HorizontalAlignment="Center"
-                                       MaxHeight="{Binding Bounds.Height, ElementName=PropGrid}" />
+                                <controls:RoundedImage Source="{Binding Thumbnail^, Mode=OneWay}"
+                                        Stretch="UniformToFill" HorizontalAlignment="Center"
+                                        MaxHeight="{Binding Bounds.Height, ElementName=PropGrid}"
+                                        CornerRadius="5,0,0,0"/>
                                 <Border VerticalAlignment="Bottom" Height="25"
                                         IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowFileIcons}">
                                     <Border.Background>
@@ -71,7 +72,7 @@
                                     </Border.Background>
                                 </Border>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
-                                            Spacing="5"
+                                            Spacing="5" Margin="2, 0"
                                             IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowFileIcons}">
                                     <controls:IconButton Command="{Binding OpenCodexLocallyCommand}" ToolTip.Tip="Open Locally"
                                                          Background="Transparent" Classes="HideIfDisabled"

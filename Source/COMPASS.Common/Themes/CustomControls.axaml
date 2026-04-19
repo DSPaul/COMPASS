@@ -37,7 +37,7 @@
 
     <!--Icon Button With text-->
     <ControlTheme TargetType="controls:IconButton" x:Key="{x:Type controls:IconButton}">
-        <Setter Property="Padding" Value="5,5" />
+        <Setter Property="Padding" Value="5" />
         <Setter Property="CornerRadius" Value="7" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -50,6 +50,7 @@
             <ControlTemplate>
                 <Panel>
                     <Border x:Name="OuterBorder"
+                            Width="{TemplateBinding Width}"
                             Background="{TemplateBinding Background}"
                             BorderThickness="2"
                             CornerRadius="{TemplateBinding CornerRadius}"
@@ -58,6 +59,7 @@
                         <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalAlignment}"
                               Background="Transparent">
+                            <!-- We DONT use column spacing here but margins on the items in the columns so that only an icon or only text isn't of center-->
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" SharedSizeGroup="ButtonIcon" />
                                 <ColumnDefinition Width="*" SharedSizeGroup="ButtonText" />
@@ -111,22 +113,21 @@
     </ControlTheme>
 
     <!--Custom TabItems-->
-    <ControlTheme TargetType="controls:IconTabItem"
-                  x:Key="{x:Type controls:IconTabItem}">
+    <ControlTheme TargetType="controls:CollapsableTabItem"
+                  x:Key="{x:Type controls:CollapsableTabItem}">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">
-            <ControlTemplate TargetType="controls:IconTabItem">
-                <Border CornerRadius="5,0,0,5" Margin="2,2,0,2"
+            <ControlTemplate TargetType="controls:CollapsableTabItem">
+                <Border x:Name="PART_Border" CornerRadius="5,0,0,5" Margin="2,2,0,2"
                         Background="{TemplateBinding Background}"
                         ToolTip.Tip="{TemplateBinding Header, Mode=OneWay}">
                     <Panel>
                         <StackPanel Orientation="Horizontal" Margin="10" Spacing="10">
-                            <materialIcons:MaterialIcon IconSize="25"
-                                                        HorizontalAlignment="Center"
-                                                        Kind="{TemplateBinding Icon}" />
+                            <ContentControl Content="{TemplateBinding Icon}"
+                                            HorizontalAlignment="Center"/>
                             <TextBlock Text="{TemplateBinding Header, Mode=OneWay}" 
                                        IsVisible="{TemplateBinding HideHeader, Converter={x:Static BoolConverters.Not}}"/>
                         </StackPanel>
@@ -145,10 +146,21 @@
         <Style Selector="^:selected">
             <Setter Property="Background" Value="{StaticResource TabFocus}" />
         </Style>
+        <!-- Adjust corner radius and margin based on TabStripPlacement -->
+        <!-- :left is the default set in the template (5,0,0,5) -->
+        <Style Selector="^:right /template/ Border#PART_Border">
+            <Setter Property="CornerRadius" Value="0,5,5,0" />
+            <Setter Property="Margin" Value="0,2,2,2" />
+        </Style>
+        <Style Selector="^:top /template/ Border#PART_Border">
+            <Setter Property="CornerRadius" Value="5,5,0,0" />
+            <Setter Property="Margin" Value="2,2,2,0" />
+        </Style>
+        <Style Selector="^:bottom /template/ Border#PART_Border">
+            <Setter Property="CornerRadius" Value="0,0,5,5" />
+            <Setter Property="Margin" Value="2,0,2,2" />
+        </Style>
     </ControlTheme>
-    <ControlTheme TargetType="controls:CollapsableTabItem"
-                  x:Key="{x:Type controls:CollapsableTabItem}"
-                  BasedOn="{StaticResource {x:Type controls:IconTabItem}}"/>
     
     <!--Include/Exclude selector-->
     <ControlTheme TargetType="controls:FilterModeSelector"
@@ -342,7 +354,7 @@
                             <TextBox Name="PART_Input" 
                                      MinWidth="100"
                                      Background="Transparent"
-                                     Watermark="{TemplateBinding Watermark}"
+                                     PlaceholderText="{TemplateBinding PlaceholderText}"
                                      Text="{TemplateBinding Text, Mode=TwoWay}" 
                                      HorizontalAlignment="Stretch"
                                      BorderThickness="0">
@@ -410,7 +422,7 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Spacing="10">
-                <controls:ImprovedComboBox Watermark="Create item"/>
+                <controls:ImprovedComboBox PlaceholderText="Create item"/>
                 <ComboBox IsEditable="True" HorizontalAlignment="Stretch"></ComboBox>
                 
                 <controls:FilterModeSelector />
@@ -429,31 +441,25 @@
                             <Setter Property="HideHeader" Value="True"/>
                         </Style>
                     </TabControl.Styles>
-                    <controls:CollapsableTabItem Header="Tags" Icon="Tags">
+                    <controls:CollapsableTabItem Header="Tags" 
+                                                 Icon="{materialIcons:MaterialIconExt Kind=Tags, IconSize=25}">
                         tags context
                     </controls:CollapsableTabItem>
-                    <controls:CollapsableTabItem Header="Filters" Icon="Filter">
+                    <controls:CollapsableTabItem Header="Filters" 
+                                                 Icon="{materialIcons:MaterialIconExt Kind=Filter, IconSize=25}">
                         filter content
                     </controls:CollapsableTabItem>
                 </TabControl>
 
                 <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Top">
-                    <controls:CollapsableTabItem Header="Tags" Icon="Tags">
+                    <controls:CollapsableTabItem Header="Tags" Icon="{materialIcons:MaterialIconExt Kind=Tags, IconSize=25}">
                         tags context
                     </controls:CollapsableTabItem>
-                    <controls:CollapsableTabItem Header="Filters" Icon="Filter">
+                    <controls:CollapsableTabItem Header="Filters" Icon="{materialIcons:MaterialIconExt Kind=Filter, IconSize=25}">
                         filter content
                     </controls:CollapsableTabItem>
                 </TabControl>
-                
-                <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Top">
-                    <controls:CollapsableTabItem Header="Tags" Icon="Tags">
-                        tags context
-                    </controls:CollapsableTabItem>
-                    <controls:CollapsableTabItem Header="Filters" Icon="Filter">
-                        filter content
-                    </controls:CollapsableTabItem>
-                </TabControl>
+               
 
                 <controls:RatingControl Value="0" NumberOfStars="5" />
                 <controls:RatingControl Value="2" NumberOfStars="5" />

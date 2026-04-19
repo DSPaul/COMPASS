@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
@@ -19,8 +20,9 @@ namespace COMPASS.Common.DataTemplates
         [Content]
         public Dictionary<string, ITreeDataTemplate> AvailableTemplates { get; } = [];
 
+        public IDisposable BindChildren(AvaloniaObject target, AvaloniaProperty targetProperty, object item) 
+            => GetTemplate(item).BindChildren(target, targetProperty, item);
         public Control? Build(object? param) => GetTemplate(param).Build(param);
-        public InstancedBinding? ItemsSelector(object item) => GetTemplate(item).ItemsSelector(item);
 
         // Check if we can accept the provided data
         public bool Match(object? data) => 

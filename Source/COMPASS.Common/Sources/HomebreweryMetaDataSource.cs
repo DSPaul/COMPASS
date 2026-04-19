@@ -95,6 +95,7 @@ namespace COMPASS.Common.Sources
 
                 await Task.Run(() =>
                 {
+                    //TODO add cancelationtoken when redoing backgroup processs system
                     wait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(frameSelector));
                     wait.Until(ExpectedConditions.ElementExists(pageSelector));
                 }).ConfigureAwait(false);

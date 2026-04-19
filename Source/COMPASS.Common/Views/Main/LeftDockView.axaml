@@ -21,10 +21,10 @@
                             <StackPanel Grid.Row="0" 
                                         Spacing="5"
                                         Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                <materialIcons:MaterialIcon HorizontalAlignment="Center"
-                                                            Margin="5"
-                                                            Kind="{Binding $parent[controls:CollapsableTabItem].Icon}"
-                                                            VerticalAlignment="Center" />
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                Margin="5"
+                                                Content="{Binding $parent[controls:CollapsableTabItem].Icon}"
+                                                VerticalAlignment="Center" />
                                 <TextBlock Text="{Binding $parent[controls:CollapsableTabItem].Header}"
                                            VerticalAlignment="Center" FontSize="20" />
                             </StackPanel>
@@ -62,19 +62,19 @@
 
         <TabItem IsVisible="False" /> <!--This tab is selected when collapsing-->
 
-        <controls:CollapsableTabItem Header="Tags" Icon="TagMultiple">
+        <controls:CollapsableTabItem Header="Tags" Icon="{materialIcons:MaterialIconExt Kind=TagMultiple, IconSize=25}">
             <panels:TagsSidePanel DataContext="{Binding TabsVM.ActiveTab.TagsVM}" />
         </controls:CollapsableTabItem>
 
-        <controls:CollapsableTabItem Header="Filters" Icon="Filter">
+        <controls:CollapsableTabItem Header="Filters" Icon="{materialIcons:MaterialIconExt Kind=Filter, IconSize=25}">
             <panels:FiltersSidePanel DataContext="{Binding TabsVM.ActiveTab.FiltersVM}" />
         </controls:CollapsableTabItem>
 
-        <controls:CollapsableTabItem Header="Add Items" Icon="BookAdd">
+        <controls:CollapsableTabItem Header="Add Items" Icon="{materialIcons:MaterialIconExt Kind=BookAdd, IconSize=25}">
             <panels:AddCodexSidePanel DataContext="{Binding AddCodexPanelVM}" />
         </controls:CollapsableTabItem>
 
-        <controls:CollapsableTabItem Header="Logs" Icon="TextLong"
+        <controls:CollapsableTabItem Header="Logs" Icon="{materialIcons:MaterialIconExt Kind=TextLong, IconSize=25}"
                                      AttentionSeverity="{Binding LogsVM.HighestUnseenSeverity, Mode=TwoWay}"
                                      ShowAttention="{Binding LogsVM.ShowAttention, Mode=TwoWay}">
             <panels:LogsSidePanel DataContext="{Binding LogsVM}" />

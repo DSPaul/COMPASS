@@ -43,12 +43,11 @@
 
         <!--  Title bar -->
         <Grid DockPanel.Dock="Top"
+              WindowDecorationProperties.ElementRole="TitleBar"
               behaviours:ShinkPriority.Enable="True"
               x:Name="TitleBar"
-              Height="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}">
-            <!-- Should be this but bugged rn https://github.com/AvaloniaUI/Avalonia/issues/16066
-              IsHitTestVisible="False"
-              Background="{StaticResource TitlebarBackground}">-->
+              Height="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}"
+              Background="{StaticResource TitlebarBackground}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" /> <!-- Logo -->
                 <ColumnDefinition Width="auto" behaviours:ShinkPriority.ColumnShrinkPriority="2"/> <!-- Tabs -->
@@ -64,18 +63,21 @@
                    IsHitTestVisible="False"
                    VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
 
+            <!-- TODO remove all WindowDecorationProperties.ElementRole="User" when https://github.com/AvaloniaUI/Avalonia/pull/21177 is merged -->
+
             <!--Collection Selection-->
-            <main:TabStrip Grid.Column="1" IsHitTestVisible="True"
+            <main:TabStrip Grid.Column="1" 
+                           WindowDecorationProperties.ElementRole="User"
                            DataContext="{Binding TabsVM}"/>
 
             <!--Search Bar-->
-            <Border Grid.Column="3" IsHitTestVisible="True"
+            <Border Grid.Column="3" WindowDecorationProperties.ElementRole="User"
                     Height="35" CornerRadius="4"
                     Background="{StaticResource UIElementBackground}"
                     OpacityMask="#FF222222" Margin="10,5"
                     DataContext="{Binding TabsVM.ActiveTab.FiltersVM}">
                 <Grid ColumnDefinitions="*,auto">
-                    <TextBox Grid.Column="0" x:Name="Searchbar" Watermark="Search (Ctrl+S)" Margin="0"
+                    <TextBox Grid.Column="0" x:Name="Searchbar" PlaceholderText="Search (Ctrl+S)" Margin="0"
                              Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
                              Background="Transparent" BorderBrush="{x:Null}" />
                     <controls:IconButton Grid.Column="1" Classes="ZoomOnHover"
@@ -90,7 +92,7 @@
             </Border>
 
             <!--Settings button-->
-            <controls:IconButton Grid.Column="5" IsHitTestVisible="True"
+            <controls:IconButton Grid.Column="5" WindowDecorationProperties.ElementRole="User"
                                  Theme="{StaticResource IconOnly}"
                                  Icon="DotsVertical" Margin="10,0"
                                  Height="25" Background="Transparent"
@@ -182,7 +184,6 @@
             <Button Grid.Column="5"
                     Command="{Binding OpenSettingsCommand}" CommandParameter="About" 
                     FontSize="16" FontWeight="Regular"
-                    Content="{Binding VersionName, FallbackValue=v0.0.0}"
                     ToolTip.Tip="Go to 'About'"
                     VerticalAlignment="Stretch"
                     Padding="10,0" Margin="0">
@@ -199,7 +200,7 @@
                         <!--Might expand this with an indicator if there is a new version available-->
                         <Border Background="{TemplateBinding Background}">
                             <TextBlock Margin="{TemplateBinding Padding}"
-                                       Text="{TemplateBinding Content}" />
+                                       Text="{Binding VersionName, FallbackValue=v0.0.0}" />
                         </Border>
                     </ControlTemplate>
                 </Button.Template>

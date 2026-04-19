@@ -11,21 +11,22 @@
         ExtendClientAreaTitleBarHeightHint="45"
         Closing="Window_Closing"
         Title="COMPASS" Background="{StaticResource WindowBackground}">
+    <Window.Resources>
+		<x:Double x:Key="CaptionButtonHeight">45</x:Double>
+    </Window.Resources>
     <Window.Styles>
-        <Style Selector="CaptionButtons">
-            <Setter Property="MaxHeight" Value="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}" />
-        </Style>
-        <Style Selector="CaptionButtons Button">
-            <Setter Property="Height" Value="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}" />
-        </Style>
+        <!-- TODO these will be redundant when https://github.com/AvaloniaUI/Avalonia/issues/21178 is implemented -->
+        <!--Hide window title-->
+        <Style Selector="WindowDrawnDecorations /template/ Panel#PART_TitleTextPanel > TextBlock">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+        <!--Hide Fullscreen-->
+        <Style Selector="WindowDrawnDecorations /template/ Button#PART_FullScreenButton">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
     </Window.Styles>
 
     <Panel Margin="{Binding $parent[Window].OffScreenMargin}">
-        <!-- Title bar background -->
-        <Border Background="{StaticResource TitlebarBackground}"
-                VerticalAlignment="Top"
-                Height="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}"
-                IsHitTestVisible="False" />
         <main:MainView />
     </Panel>
 

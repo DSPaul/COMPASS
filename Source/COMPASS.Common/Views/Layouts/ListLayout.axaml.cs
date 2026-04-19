@@ -8,6 +8,7 @@ using COMPASS.Common.Operations;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
+using OpenQA.Selenium.DevTools.V145.Runtime;
 
 namespace COMPASS.Common.Views.Layouts;
 
@@ -64,7 +65,8 @@ public partial class ListLayout : CodexLayoutView
                 {
                     result = binding.Path;
                 }
-                else if (boundColumn.Binding is CompiledBindingExtension compiledBinding)
+                else if (boundColumn.Binding is CompiledBindingExtension compiledBinding &&
+                    compiledBinding.Path != null)
                 {
                     result = compiledBinding.Path.ToString();
                 }

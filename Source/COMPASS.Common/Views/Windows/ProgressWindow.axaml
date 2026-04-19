@@ -7,7 +7,7 @@
         xmlns:controls="clr-namespace:COMPASS.Common.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.ProgressWindow"
-        x:DataType="vm:ProgressViewModel" SystemDecorations="None"
+        x:DataType="vm:ProgressViewModel" WindowDecorations="None"
         Background="Transparent"
         Title="Progress Window" Height="250" Width="450" WindowStartupLocation="CenterOwner">
     <Window.Resources>

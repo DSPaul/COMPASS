@@ -135,7 +135,7 @@
                                     <Setter Property="BorderThickness" Value="10"/>
                                 </Style>
                             </StackPanel.Styles>
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
                                 <TextBlock Text="Automatic Import" Classes="SectionTitle" />
                                 <controls:Explainer VerticalAlignment="Center"
                                                     Content="These folders will periodically be checked for files that have not yet been imported, and import them automatically." />
@@ -196,7 +196,7 @@
                                         </ItemsControl>
                                     </ScrollViewer>
                                     <Grid Margin="10" ColumnDefinitions="*,auto,auto,*" ColumnSpacing="10">
-                                        <TextBox x:Name="NewAutoImportFolderTextBox" Watermark="Path/to/folder/to/add"
+                                        <TextBox x:Name="NewAutoImportFolderTextBox" PlaceholderText="Path/to/folder/to/add"
                                                  Margin="0" BorderThickness="1" Padding="10 0"
                                                  VerticalAlignment="Center" VerticalContentAlignment="Center" />
                                         <controls:IconButton Icon="Plus" Grid.Column="1" Padding="0"
@@ -241,7 +241,7 @@
                             <!--Banished Files-->
                             <Expander IsVisible="{Binding !!BanishedPaths.Count}">
                                 <Expander.Header>
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
                                         <TextBlock Text="Banished files"/>
                                         <controls:Explainer>
                                             These files will be excluded from future imports, supports glob syntax.
@@ -266,37 +266,40 @@
                                 <controls:Explainer Margin="0,6"
                                                     Content="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
                             </StackPanel>
-                            <CheckBox Content="Treat tags and folders with the same name as linked"
-                                      Margin="10,5" IsChecked="{Binding AutoLinkFolderTagSameName}"/>
+                            <Grid ColumnDefinitions="Auto, *, Auto" Margin="10,5">
+								<TextBlock Text="Treat tags and folders with the same name as linked"/>
+
+                                <CheckBox Grid.Column="2"
+                                          Classes="Toggle" HorizontalAlignment="Right"
+                                          IsChecked="{Binding AutoLinkFolderTagSameName}"/>
+                            </Grid>
                         </StackPanel>
                     </Border>
             
                     <Border x:Name="MetaDataSettings" Classes="SettingsContainer">
-                        <StackPanel>
-                            <TextBlock Text="Source Priority Preferences" Classes="SectionTitle"/>
-                            <Grid ColumnDefinitions="*,2*,2*" RowDefinitions="auto,auto,auto">
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Source Priority Preferences" Classes="SectionTitle" />
+                            <Grid ColumnDefinitions="*, 2*, 2*" RowDefinitions="Auto,Auto,Auto">
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Property"/>
                                 
-                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Margin="20,0" Spacing="5">
+                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Spacing="5">
                                     <TextBlock Text="Source Priority" />
-                                    <controls:Explainer Margin="0,6"
-                                                        Content="If multiple sources provide metadata for a given property, the value from the topmost source will be used."/>
+                                    <controls:Explainer Content="If multiple sources provide metadata for a given property, the value from the topmost source will be used."/>
                                 </StackPanel>
                                 
-                                <TextBlock Text="Overwrite existing metadata" Grid.Row="0" Grid.Column="2"/>
+                                <TextBlock Text="Overwrite existing metadata" Margin="10,0,0,0" Grid.Row="0" Grid.Column="2"/>
             
-                                <Rectangle Classes="SeparatorStyle" Grid.ColumnSpan="3" Grid.Column="0"
-                                           Grid.Row="1"/>
+                                <Rectangle Classes="SeparatorStyle" Grid.ColumnSpan="3" Grid.Column="0" Grid.Row="1"/>
             
                                 <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
                                               ItemsSource="{Binding MetaDataPreferences}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid RowDefinitions="auto,auto" ColumnDefinitions="*,2*,2*">
+                                            <Grid RowDefinitions="auto,auto" ColumnDefinitions="*,2*,2*" ColumnSpacing="5">
                                                 <TextBlock Text="{Binding Label}" VerticalAlignment="Top"/>
                                                 <controls:PriorityControl Grid.Row="0" Grid.Column="1"
                                                                           ItemsSource="{Binding SourcePriority, Mode=OneWay}"/>
-                                                <StackPanel Grid.Row="0" Grid.Column="2"  Margin="10,0,20,0">
+                                                <StackPanel Grid.Row="0" Grid.Column="2" Margin="10,0,20,0">
                                                     <RadioButton Content="Never"
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource EnumForRadioBtnConverter},
                                                                  ConverterParameter={x:Static enums:MetaDataOverwriteMode.Never}}" />

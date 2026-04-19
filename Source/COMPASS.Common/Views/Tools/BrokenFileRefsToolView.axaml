@@ -36,9 +36,9 @@
         </StackPanel>
                     
         <Grid ColumnDefinitions="*,auto,*,auto" ColumnSpacing="5">
-            <TextBox x:Name="OldPathTextBox" Watermark="old\folder\path\" Grid.Column="0" />
+            <TextBox x:Name="OldPathTextBox" PlaceholderText="old\folder\path\" Grid.Column="0" />
             <TextBlock Text="To" Grid.Column="1" />
-            <TextBox x:Name="NewPathTextBox" Watermark="new\folder\path\" Grid.Column="2" />
+            <TextBox x:Name="NewPathTextBox" PlaceholderText="new\folder\path\" Grid.Column="2" />
             <controls:IconButton Content="Update" Grid.Column="3"
                                  Command="{Binding RenameFolderRefCommand}"
                                  IsDefault="{Binding #NewPathTextBox.IsFocused}">

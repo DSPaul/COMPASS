@@ -9,7 +9,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.NotificationWindow"
         WindowStartupLocation="CenterOwner"
-        SizeToContent="Height" SystemDecorations="None"
+        SizeToContent="Height" WindowDecorations="None"
         Background="Transparent"
         Title="Notification" MinHeight="200" Width="450"
         x:DataType="models:Notification">

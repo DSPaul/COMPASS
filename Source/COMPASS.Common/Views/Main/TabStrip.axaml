@@ -48,8 +48,6 @@
                                     <Style Selector="controls|IconButton">
                                         <Setter Property="Padding" Value="0" />
                                         <Setter Property="Margin" Value="3" />
-                                        <Setter Property="Width" Value="25" />
-                                        <Setter Property="IconSize" Value="20" />
                                         <Setter Property="Foreground" Value="{StaticResource CollectionIconFill}" />
                                         <Setter Property="Template">
                                             <ControlTemplate>
@@ -70,8 +68,7 @@
                                           SelectionChanged="CollectionComboBox_SelectionChanged" />
                                 <Rectangle Fill="{StaticResource Separator}" Width="2" />
                                 <!--More Options Collection-->
-                                <controls:IconButton Icon="DotsVertical" IconSize="15"
-                                                     ToolTip.Tip="More Actions" Width="15">
+                                <controls:IconButton Icon="DotsVertical" ToolTip.Tip="More Actions">
                                     <Button.Flyout>
                                         <MenuFlyout>
                                             <MenuItem Header="New collection ..."
@@ -129,7 +126,7 @@
                             <ContentControl x:Name="TabHeader" Content="{Binding}" VerticalAlignment="Center"/>
                             <controls:IconButton Theme="{StaticResource IconOnly}"
                                                  ToolTip.Tip="Close tab"
-                                                 Icon="Close" IconSize="10" Width="20"
+                                                 Icon="Close"
                                                  Margin="5, 0" Padding="2" CornerRadius="100"
                                                  Command="{Binding $parent[ListBox].((vm:TabsViewModel)DataContext).CloseTabCommand}"
                                                  CommandParameter="{Binding}">
@@ -173,9 +170,8 @@
 
         <controls:IconButton Grid.Column="1"
                              Icon="Plus" ToolTip.Tip="Open a new tab"
-                             Command="{Binding CreateTabCommand}" 
-                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                             Command="{Binding CreateTabCommand}" VerticalAlignment="Stretch"
                              Background="{StaticResource UIElementBackground}"
-                             CornerRadius="4" Margin="5" Width="35" IconSize="12" Padding="2" />
+                             CornerRadius="4" Margin="5" Width="35" Padding="0" />
     </Grid>
 </UserControl>

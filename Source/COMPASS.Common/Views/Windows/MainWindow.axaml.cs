@@ -11,7 +11,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        ExtendClientAreaToDecorationsHint = true; //allows me to put stuff in title bar
+        ExtendClientAreaToDecorationsHint = true;
     }
 
     private void Window_Closing(object? sender, Avalonia.Controls.WindowClosingEventArgs e)

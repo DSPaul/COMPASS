@@ -4,8 +4,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.LoadingWindow"
-        xmlns:gif="using:Avalonia.Labs.Gif" 
-        Height="200" Width="300" SystemDecorations="None"
+        xmlns:gif="using:Avalonia.Labs.Gif"
+        xmlns:converters="using:COMPASS.Common.Converters"
+        Height="200" Width="300" WindowDecorations="None"
         WindowStartupLocation="CenterOwner"
         Title="LoadingWindow">
     <Border Background="{StaticResource WindowBackground}" CornerRadius="5" 
@@ -17,7 +18,7 @@
             <TextBlock x:Name="LoadingTextBlock" Text="Working" TextAlignment="Center"
                        HorizontalAlignment="Center" Margin="20" TextWrapping="Wrap"/>
             <gif:GifImage Grid.Row="1" Width="100" Height="100" VerticalAlignment="Center"
-                          Source="avares://COMPASS.Common/Assets/LoadingAnimation.gif"/>
+                          Source="{converters:GifSource 'avares://COMPASS.Common/Assets/LoadingAnimation.gif'}"/>
         </Grid>
     </Border>
 </Window>

@@ -9,6 +9,7 @@
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
              xmlns:converters="using:COMPASS.Infra.Converters"
              xmlns:gif="using:Avalonia.Labs.Gif"
+             xmlns:commonConverters="using:COMPASS.Common.Converters"
              xmlns:hierarchy="clr-namespace:COMPASS.Common.Models.Hierarchy"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="500"
              x:Class="COMPASS.Common.Views.Modals.Edit.CodexEditView"
@@ -39,7 +40,7 @@
                    IsVisible="{Binding !ShowLoading}" Source="{Binding WorkingCopy.Cover, Mode=OneWay}" />
             <gif:GifImage Width="150" Height="150"
                           IsVisible="{Binding ShowLoading}"
-                          Source="avares://COMPASS.Common/Assets/LoadingAnimation.gif"/>
+                          Source="{commonConverters:GifSource 'avares://COMPASS.Common/Assets/LoadingAnimation.gif'}"/>
         </Panel>
 
         <UniformGrid Grid.Column="0" Grid.Row="2"
@@ -127,7 +128,7 @@
                                     Padding="5,0" HorizontalAlignment="Stretch" />
                                 <controls:Explainer Content="{Binding WorkingCopy.ZeroPaddingExplainer}"
                                                     IsVisible="{Binding WorkingCopy.SortingTitleContainsNumbers}"
-                                                    Grid.Column="1" Margin="6" />
+                                                    Grid.Column="1" Margin="6, 0" />
                             </Grid>
 
                             <!-- Authors -->
@@ -136,7 +137,7 @@
                             <controls:ImprovedComboBox ItemsSource="{Binding AuthorList}"
                                                        SelectionMode="Multiple"
                                                        SelectedItems="{Binding WorkingCopy.Authors, Mode=TwoWay}"
-                                                       Watermark="Add author" CanCreate="True"/>
+                                                       PlaceholderText="Add author" CanCreate="True"/>
 
                             <!-- Publisher -->
                             <TextBlock Margin="3,10,3,3"
