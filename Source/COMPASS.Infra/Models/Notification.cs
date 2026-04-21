@@ -29,7 +29,7 @@ namespace COMPASS.Infra.Models
         public NotificationAction Actions { get; set; }
         public NotificationAction Result { get; set; }
 
-        public List<KeyValuePair<string, bool>> Options { get; set; } = [];
+        public List<NotificationOption> Options { get; set; } = [];
 
         #region Templates
         public static Notification AreYouSureNotification => new("Are you Sure?", severity: Severity.Warning, actions: NotificationAction.Cancel | NotificationAction.Confirm)
@@ -39,6 +39,6 @@ namespace COMPASS.Infra.Models
         };
         #endregion
 
-        public bool IsOptionSelected(string option) => Options.Single(kv => kv.Key == option).Value;
+        public bool IsOptionSelected(string option) => Options.Single(kv => kv.Identifier == option).IsChecked;
     }
 }

@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "COMPASS.Windows": {
+      "commandName": "Project"
+    },
+    "Crash handler": {
+      "commandName": "Project",
+      "commandLineArgs": "--notify_crashed The application crashed"
+    }
+  }
+}

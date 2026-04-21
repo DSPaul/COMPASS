@@ -1,11 +1,11 @@
 using System.Diagnostics;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Threading;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.ApiDtos;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Infra.Models;
@@ -19,8 +19,11 @@ public static class CrashHandler
     private static ILogger? _logger;
     private static ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
 
-    const string RestartOption = "Restart COMPASS.";
-    const string SubmitOption = "Submit an anonymous crash report.";
+    const string RestartLabel = "Restart COMPASS.";
+    const string SubmitLabel = "Submit an anonymous crash report.";
+
+    const string RestartOptionId = "RESTART";
+    const string SubmitOptionId = "SUBMIT";
 
     private static bool _crashHandled = false;
     
@@ -86,8 +89,8 @@ public static class CrashHandler
         Notification crashNotification = new($"COMPASS ran into a critical error.", message, Severity.Error);
         crashNotification.Details = exceptionMessage;
         
-        crashNotification.Options.Add(new(RestartOption, true));
-        crashNotification.Options.Add(new(SubmitOption, true));
+        crashNotification.Options.Add(new(RestartOptionId, RestartLabel, true));
+        crashNotification.Options.Add(new(SubmitOptionId, SubmitLabel, true));
 
         return crashNotification;
     }
@@ -107,15 +110,26 @@ public static class CrashHandler
     
     private static async Task HandleCrashNotification(Notification crashNotification, string exceptionMessage)
     {
-        if (crashNotification.IsOptionSelected(SubmitOption))
+        if (crashNotification.IsOptionSelected(SubmitOptionId))
         {
-            var report = new CrashReport(exceptionMessage);
-            using HttpResponseMessage result = await new ApiClientService().PostAsync(report, "submit/crash");
-            Logger.Debug(result.ToString());
+            await Dispatcher.UIThread.InvokeAsync(() =>
+                WindowManager.MainWindow.Cursor = new Cursor(StandardCursorType.Wait));
+            try
+            {
+                var report = new CrashReport(exceptionMessage);
+                using HttpResponseMessage result = await new ApiClientService().PostAsync(report, "submit/crash");
+                string body = await result.Content.ReadAsStringAsync();
+                Logger.Debug($"{result} | Body: {body}");
+            }
+            finally
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                    WindowManager.MainWindow.Cursor = Cursor.Default);
+            }
         }
 
         //Restart
-        if (crashNotification.IsOptionSelected(RestartOption))
+        if (crashNotification.IsOptionSelected(RestartOptionId))
         {
             var currentExecutablePath = Environment.ProcessPath;
             if (currentExecutablePath != null) Process.Start(currentExecutablePath);

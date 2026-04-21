@@ -73,7 +73,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <CheckBox Content="{Binding Key}" IsChecked="{Binding Value}" />
+                        <CheckBox Content="{Binding Label}" IsChecked="{Binding IsChecked}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

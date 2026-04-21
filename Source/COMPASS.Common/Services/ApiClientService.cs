@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
 namespace COMPASS.Common.Services
 {
@@ -15,16 +13,23 @@ namespace COMPASS.Common.Services
         private const string ApiDomain = "https://compass-api-pds.azurewebsites.net";
 
 
-        public ApiClientService()
+        private HttpClient Client => _httpClient ??= CreateHttpClient();
+
+        private static HttpClient CreateHttpClient()
         {
-            Client.DefaultRequestHeaders.Add("Api-Key", ApiKey);
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Api-Key", ApiKey);
+            return client;
         }
 
-        private HttpClient Client => _httpClient ??= new HttpClient();
+        private static readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
 
         public async Task<HttpResponseMessage> PostAsync(object o, string endpoint)
         {
-            string json = JsonSerializer.Serialize(o);
+            string json = JsonSerializer.Serialize(o, _jsonOptions);
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             var response = await Client.PostAsync($"{ApiDomain}/{endpoint}", content).ConfigureAwait(false);
             return response;
