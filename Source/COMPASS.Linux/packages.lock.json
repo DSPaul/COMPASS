@@ -322,8 +322,8 @@
       },
       "log4net": {
         "type": "Transitive",
-        "resolved": "3.3.0",
-        "contentHash": "wtZ7K4XGWDxeQqHbUybwIug/3AAzhKcmroLf4ENfE5GsaDIMqT3GLX24f18XPFY8Qg9vaxfMSAODwWAXqkjI/Q==",
+        "resolved": "3.3.1",
+        "contentHash": "fgQ8XkqF0r4/CRfAq8xZqlPrG0/9n4rJAa1HlFGQMXtCAxbbLzXyuXCbu65NUbcKzQ9KDYr4239NNqipVRCv6A==",
         "dependencies": {
           "System.Configuration.ConfigurationManager": "4.5.0"
         }
@@ -403,8 +403,8 @@
       },
       "Microsoft.Extensions.FileSystemGlobbing": {
         "type": "Transitive",
-        "resolved": "10.0.6",
-        "contentHash": "EG9GuYJlj1o1G8maSpKceZdj88OehKFRWaWp8BWUQWlvIJDWD8N0sIYDoRMGL/yX85H8KbVYPR9+dH/UjPEiKw=="
+        "resolved": "10.0.7",
+        "contentHash": "NTUspqB+vH9g4wAD6KPOBx01xqYuKXR/cHXm449zpbq1GqfjdAxBmg7eJXrNsPw7SKwIdT2cJ05GxYVvc+lvsA=="
       },
       "Microsoft.Extensions.Logging": {
         "type": "Transitive",
@@ -485,8 +485,8 @@
       },
       "ShimSkiaSharp": {
         "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "/W5aaCkKybyvB54797elnNjO9zPv4SKhTuIVUQhugICQ91Rp0wyYT4so6eAlhq5VRINjrAnALn6Xp2m76hxMPQ=="
+        "resolved": "4.4.0",
+        "contentHash": "Xf7NfVrU9tfoslDtAoDS9q+04ZiDO1YRvHdRbHCK7+SeGtVI9nspM5eqJ39g4VXJW86gGHpNcCMoSebLeQBlNw=="
       },
       "SkiaSharp": {
         "type": "Transitive",
@@ -524,65 +524,65 @@
       },
       "Svg.Animation": {
         "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "iRg77v4ydVj56ons8LVUYx2GbshD55DxEgkx0JmqgPyvLqwXgUpgMrs43zYVR/yfVfFVOWiV9N5JuAhPaWdr+g==",
+        "resolved": "4.4.0",
+        "contentHash": "C768TIvporW2RHkVGDMOliEYSrPQD3qZRaQQeS5GO1UcCl/w2BneB4B92Mj5LOk9V1n5arWCDgMiMg/GQ4cgLA==",
         "dependencies": {
-          "ShimSkiaSharp": "4.3.0",
+          "ShimSkiaSharp": "4.4.0",
           "SkiaSharp": "2.88.9",
-          "Svg.Custom": "4.3.0",
-          "Svg.Model": "4.3.0"
+          "Svg.Custom": "4.4.0",
+          "Svg.Model": "4.4.0"
         }
       },
       "Svg.Controls.Skia.Avalonia": {
         "type": "Transitive",
-        "resolved": "12.0.0.3",
-        "contentHash": "TtoRNswWI6CBzcLliWvLaEFiDf0wo9Zi/GTX1H0Q4QVcX2aXItkzPK4MELKv3B3bE+cRmVbXAt1PvwiuD2n6TA==",
+        "resolved": "12.0.0.4",
+        "contentHash": "kgE30Z/gABZ6gW8ULvLUVFzfNa3Ojnh/Q6XLYpz7Itnahit5eOf1jazkBAhQkRaMXejXErvFX9kwfgBT/4lz0g==",
         "dependencies": {
           "Avalonia.Skia": "12.0.0",
-          "Svg.Skia": "4.3.0"
+          "Svg.Skia": "4.4.0"
         }
       },
       "Svg.Custom": {
         "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "QsNWssZT83KTMpwlTsil7URQ9OIP51st7s/5qVF+fIONMBXyD9z1XES4rxT2goLY38Bz3yR0qInJPfvunx80Ng==",
+        "resolved": "4.4.0",
+        "contentHash": "voqcVIvHxS8PZ2cwBif28qhTt7I/Fd59VfVT43HUOuiBBf3NMCkmF+yK5Ch4B0tQztrY1MNIPJnsSJUcSojIBA==",
         "dependencies": {
           "ExCSS": "4.3.1"
         }
       },
       "Svg.Model": {
         "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "c6/o5enlj9gFZzZ5AEXwOf1PcjJ/ylQCxYmnuO1mj1nc+5XsGzEfQdUIrYTppXF5nkxRulCxlg4SHAfFiI5kfA==",
+        "resolved": "4.4.0",
+        "contentHash": "lBNmyWxC9VWPm8OaymQKrJ53YwPJgvB4SNGaihVoswkkRASV+9zChj9JwDhKgHjHjpls6O/NlldlMx6+SWyT1Q==",
         "dependencies": {
-          "ShimSkiaSharp": "4.3.0",
-          "Svg.Custom": "4.3.0"
+          "ShimSkiaSharp": "4.4.0",
+          "Svg.Custom": "4.4.0"
         }
       },
       "Svg.SceneGraph": {
         "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "ZOe1i+TdMdRTOKauZAX/D+VB6GVe64Fkctew21CxZYbtVfwXoIMatIXJVhD8nes16o3WJYMreJB1AJXLRNI8aw==",
+        "resolved": "4.4.0",
+        "contentHash": "D2JBS2UL4GuK1ALH2QNxiwg46xpLAvjgrbUTQLUGJ12iZ/SUVPN+ssl5VwL3LzsDgIg+VadlazmHw3MHXAfmNA==",
         "dependencies": {
-          "ShimSkiaSharp": "4.3.0",
-          "Svg.Custom": "4.3.0",
-          "Svg.Model": "4.3.0"
+          "ShimSkiaSharp": "4.4.0",
+          "Svg.Custom": "4.4.0",
+          "Svg.Model": "4.4.0"
         }
       },
       "Svg.Skia": {
         "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "aGDfbLMHVBV+BI5E5WRpnaDk+lnJNJzFihjIxhklcbC36h9+y2Uv+4bqX88pP/VKzgP2m8ekFvTJxiydcdLRjA==",
+        "resolved": "4.4.0",
+        "contentHash": "Zwk7071pod3Ew1vBopTzLJW6W9iB2uUL1SgzcZsI/NmHEHYg9DB6diaXGD5V74ODSlrv2/X78qvmmbDKNeEetQ==",
         "dependencies": {
           "HarfBuzzSharp": "7.3.0.3",
           "HarfBuzzSharp.NativeAssets.Linux": "7.3.0.3",
           "HarfBuzzSharp.NativeAssets.Win32": "7.3.0.3",
           "HarfBuzzSharp.NativeAssets.macOS": "7.3.0.3",
           "SkiaSharp": "2.88.9",
-          "Svg.Animation": "4.3.0",
-          "Svg.Custom": "4.3.0",
-          "Svg.Model": "4.3.0",
-          "Svg.SceneGraph": "4.3.0"
+          "Svg.Animation": "4.4.0",
+          "Svg.Custom": "4.4.0",
+          "Svg.Model": "4.4.0",
+          "Svg.SceneGraph": "4.4.0"
         }
       },
       "System.Configuration.ConfigurationManager": {
@@ -652,10 +652,10 @@
           "PDFtoImage": "[5.2.1, )",
           "Selenium.WebDriver": "[4.43.0, )",
           "SharpCompress": "[0.47.4, )",
-          "Svg.Controls.Skia.Avalonia": "[12.0.0.3, )",
+          "Svg.Controls.Skia.Avalonia": "[12.0.0.4, )",
           "itext": "[9.6.0, )",
           "itext.bouncy-castle-adapter": "[9.6.0, )",
-          "log4net": "[3.3.0, )"
+          "log4net": "[3.3.1, )"
         }
       },
       "compass.infra": {
@@ -665,8 +665,9 @@
           "Avalonia": "[12.0.1, )",
           "Avalonia.Controls.DataGrid": "[12.0.0, )",
           "AvaloniaUI.DiagnosticsSupport": "[2.2.1, )",
+          "CommunityToolkit.Mvvm": "[8.4.2, )",
           "FuzzySharp": "[2.0.2, )",
-          "Microsoft.Extensions.FileSystemGlobbing": "[10.0.6, )",
+          "Microsoft.Extensions.FileSystemGlobbing": "[10.0.7, )",
           "NuGet.Versioning": "[7.3.1, )"
         }
       }
