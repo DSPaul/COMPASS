@@ -12,7 +12,7 @@
              xmlns:materialIcons="using:Material.Icons.Avalonia"
              xmlns:modelVms="clr-namespace:COMPASS.Common.ViewModels.ModelVMs"
              xmlns:main="clr-namespace:COMPASS.Common.Views.Main"
-             xmlns:behaviours="using:COMPASS.Infra.Behaviours"
+             xmlns:behaviors="using:COMPASS.Infra.Behaviors"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="COMPASS.Common.Views.Main.MainView" FontSize="16"
              x:DataType="vm:MainViewModel"
@@ -44,16 +44,16 @@
         <!--  Title bar -->
         <Grid DockPanel.Dock="Top"
               WindowDecorationProperties.ElementRole="TitleBar"
-              behaviours:ShinkPriority.Enable="True"
+              behaviors:ShinkPriority.Enable="True"
               x:Name="TitleBar"
               Height="{Binding $parent[Window].ExtendClientAreaTitleBarHeightHint}"
               Background="{StaticResource TitlebarBackground}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" /> <!-- Logo -->
-                <ColumnDefinition Width="auto" behaviours:ShinkPriority.ColumnShrinkPriority="2"/> <!-- Tabs -->
+                <ColumnDefinition Width="auto" behaviors:ShinkPriority.ColumnShrinkPriority="2"/> <!-- Tabs -->
                 <ColumnDefinition Width="*" />    <!-- Spacing -->
                 <ColumnDefinition Width="600" MinWidth="250"
-                                  behaviours:ShinkPriority.ColumnShrinkPriority="1"/> <!-- Searchbar -->
+                                  behaviors:ShinkPriority.ColumnShrinkPriority="1"/> <!-- Searchbar -->
                 <ColumnDefinition Width="*" />    <!-- Spacing -->
                 <ColumnDefinition Width="auto"/> <!-- Settings Button -->
                 <ColumnDefinition Width="{Binding WindowControlsSpacing, Mode=OneTime}" />  <!-- Window controls -->

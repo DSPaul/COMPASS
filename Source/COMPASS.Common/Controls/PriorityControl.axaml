@@ -4,13 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:COMPASS.Common.Controls"
              xmlns:converters="clr-namespace:COMPASS.Common.Converters"
+             xmlns:behaviors="using:COMPASS.Infra.Behaviors"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Controls.PriorityControl">
     <ItemsControl.Template>
         <ControlTemplate TargetType="ItemsControl">
             <Border CornerRadius="5" Background="{StaticResource DarkUIElementBackground}">
-                <ItemsControl x:Name="InnerItemsControl" BorderBrush="{x:Null}" Background="{x:Null}"
-                              Padding="5" ItemsSource="{TemplateBinding ItemsSource}">
+                <ItemsControl x:Name="InnerItemsControl" BorderBrush="{x:Null}" Background="Transparent"
+                              Padding="5" ItemsSource="{TemplateBinding ItemsSource}"
+                              behaviors:ReorderDragBehavior.IsDropTarget="True">
                     <ItemsControl.Styles>
                         <Style Selector="#InnerItemsControl ContentPresenter:nth-child(1) controls|IconButton#UpBtn">
                             <Setter Property="IsVisible" Value="False"/>
@@ -26,7 +28,9 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border CornerRadius="5" Background="{StaticResource AccentColorMuted}">
+                            <Border CornerRadius="5" Background="{StaticResource AccentColorMuted}"
+                                    behaviors:ReorderDragBehavior.IsDragSource="True"
+                                    Cursor="SizeNorthSouth">
                                 <Grid ColumnDefinitions="*,15,15">
                                     <TextBlock Text="{Binding $self.DataContext, Converter={x:Static converters:StringConverters.ToStringConverter}}" Margin="7,2"/>
                                     <controls:IconButton Grid.Column="1" Name="UpBtn"

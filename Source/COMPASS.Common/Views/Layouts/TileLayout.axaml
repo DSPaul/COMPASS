@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels.Layouts"
              xmlns:modelVm="using:COMPASS.Common.ViewModels.ModelVMs"
-             xmlns:behav="using:COMPASS.Infra.Behaviours"
+             xmlns:behav="using:COMPASS.Infra.Behaviors"
              xmlns:conv="using:COMPASS.Infra.Converters"
              xmlns:preferences="using:COMPASS.Common.Models.Preferences"
              xmlns:controls="using:COMPASS.Common.Controls"
