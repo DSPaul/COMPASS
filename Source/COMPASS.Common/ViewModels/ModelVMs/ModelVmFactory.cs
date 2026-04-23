@@ -1,4 +1,3 @@
-using System;
 using COMPASS.Common.Models.Filters;
 using Avalonia.Media;
 using COMPASS.Common.Models.CodexProperties;

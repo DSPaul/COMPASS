@@ -299,6 +299,7 @@
     <!-- Removable Chip -->
     <ControlTheme x:Key="Removable" TargetType="controls:Chip">
         <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Cursor" Value="Hand"/>
         <Style Selector="^ /template/ Border:pointerover > StackPanel">
             <Style Selector="^ > TextBlock">
                 <Setter Property="TextDecorations" Value="Strikethrough" />

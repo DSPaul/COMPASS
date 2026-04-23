@@ -3,22 +3,45 @@
 					xmlns:adorners="using:COMPASS.Common.Adorners"
                     xmlns:controls="using:COMPASS.Common.Controls"
                     xmlns:converters="using:COMPASS.Infra.Converters"
-                    xmlns:dragdrop="using:COMPASS.Common.Models.DragDrop">
+                    xmlns:models="using:COMPASS.Common.Models"
+					xmlns:vms="using:COMPASS.Common.ViewModels.ModelVMs">
 	
 	<ControlTheme TargetType="adorners:DropTagAdorner" x:Key="{x:Type adorners:DropTagAdorner}">
 		<Setter Property="Template">
 			<ControlTemplate TargetType="adorners:DropTagAdorner">
 				<Border IsHitTestVisible="False" CornerRadius="5"
 						BorderThickness="3" BorderBrush="DeepSkyBlue"
-						x:DataType="dragdrop:TagDto">
+						x:DataType="models:Tag">
+					<Border.Background>
+						<SolidColorBrush Color="Black" Opacity="0.8"/>
+					</Border.Background>
+					<WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"
+							ItemSpacing="5">
+						<TextBlock Text="{TemplateBinding Prefix}" IsVisible="{TemplateBinding Prefix, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+						<controls:Chip Text="{Binding Name}"
+									   Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
+						<TextBlock Text="{TemplateBinding Suffix}" IsVisible="{TemplateBinding Suffix, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+					</WrapPanel>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+	</ControlTheme>
+
+	<ControlTheme TargetType="adorners:DropFilterAdorner" x:Key="{x:Type adorners:DropFilterAdorner}">
+		<Setter Property="Template">
+			<ControlTemplate TargetType="adorners:DropFilterAdorner">
+				<Border IsHitTestVisible="False" CornerRadius="5"
+						BorderThickness="3" BorderBrush="DeepSkyBlue"
+						x:DataType="vms:FilterViewModel">
 					<Border.Background>
 						<SolidColorBrush Color="Black" Opacity="0.8"/>
 					</Border.Background>
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"
-								Spacing="5">	
-						<TextBlock Text="Assign" />
+								Spacing="5">
+						<TextBlock Text="{TemplateBinding Prefix}" IsVisible="{TemplateBinding Prefix, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 						<controls:Chip Text="{Binding Content}"
-                                       Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
+									   Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"/>
+						<TextBlock Text="{TemplateBinding Suffix}" IsVisible="{TemplateBinding Suffix, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 					</StackPanel>
 				</Border>
 			</ControlTemplate>

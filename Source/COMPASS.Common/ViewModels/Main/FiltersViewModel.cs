@@ -1,20 +1,21 @@
-﻿using Avalonia.Input;
+﻿using Avalonia;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Adorners;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
+using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.Models.Filters;
-using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models;
+using COMPASS.Infra.Tools;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using COMPASS.Infra.Tools;
-using COMPASS.Common.Models.DragDrop;
 
 namespace COMPASS.Common.ViewModels.Main
 {
@@ -408,7 +409,7 @@ namespace COMPASS.Common.ViewModels.Main
         //------------- Adding, Removing, ect ------------//
 
         // Remove Filter
-        public RelayCommand<FilterViewModel> RemoveFromItemsControlCommand => field ??= new(RemoveFilter);
+        public RelayCommand<FilterViewModel> RemoveFilterCommand => field ??= new(RemoveFilter);
         public void RemoveFilter(FilterViewModel? filter)
         {
             if (filter is null) return;
@@ -625,16 +626,17 @@ namespace COMPASS.Common.ViewModels.Main
         #endregion
         
         #region Drag Drop Handlers
-        void OnDragOver(object sender, DragEventArgs e)
+        public void OnDragOver(DragEventArgs e, bool include)
         {
-            var allTags = _allCodexVms.FirstOrDefault()?.GetModel().Collection.AllTags;
-            if (allTags.SafeAny() && e.DataTransfer.TryGetTag(allTags) is { IsGroup: false })
-            {
-                e.DragEffects = DragDropEffects.Copy;
-            }
-            else if (e.DataTransfer.TryGetFilter() != null)
+            var target = include ? IncludedFilters : ExcludedFilters;
+            if (e.DataTransfer.TryGetFilter() is Filter filter &&
+                !target.Any(filterVm => filterVm.GetModel() == filter))
             {
                 e.DragEffects = DragDropEffects.Move;
+            }
+            else if (e.DataTransfer.TryGetTag() is { IsGroup: false })
+            {
+                e.DragEffects = DragDropEffects.Link;
             }
             else
             {
@@ -642,27 +644,69 @@ namespace COMPASS.Common.ViewModels.Main
             }
         }
 
-        void OnDrop(object sender, DragEventArgs e)
+        public void OnDrop(object? sender, DragEventArgs e, bool include)
         {
-            //Included filter Listbox has extra empty collection to tell them apart
-            //TODO: get TargetCollection from sender somehow
-            //OLD CODE: bool toIncluded = ((CompositeCollection)dropInfo.TargetCollection).Count > 1;
-            bool toIncluded = false;
+            if(sender is not Visual v)
+            {
+                return;
+            }
 
-            var allTags = _allCodexVms.FirstOrDefault()?.GetModel().Collection.AllTags;
-            if (allTags.SafeAny() && e.DataTransfer.TryGetTag(allTags) is { IsGroup: false } tag)
+            AdornerLayer.SetAdorner(v, null);
+            var target = include ? IncludedFilters : ExcludedFilters;
+
+            //Move Filter to included/excluded
+            if (e.DataTransfer.TryGetFilter() is Filter draggedFilter &&
+                !target.Any(filterVm => filterVm.GetModel() == draggedFilter))
+            {
+                ActivateFilter(draggedFilter, include);
+            }
+            //Create filter from tag
+            else if (e.DataTransfer.TryGetTag() is { IsGroup: false } tag)
             {
                 var tagVm = TabsViewModel.GetInstance()?.ActiveTab?.CollectionVM.GetTagVm(tag);
                 if(tagVm == null)
                 {
                     return;
                 }
-                ActivateFilter(new TagFilter(tagVm), toIncluded);
+                ActivateFilter(new TagFilter(tagVm), include);
             }
-            //Move Filter to included/excluded
-            else if (e.DataTransfer.TryGetFilter() is Filter draggedFilter)
+            
+        }
+
+        public void OnDragEnter(object? sender, DragEventArgs e, bool include)
+        {
+            if (sender is not Visual v)
             {
-                ActivateFilter(draggedFilter, toIncluded);
+                return;
+            }
+
+            var target = include ? IncludedFilters : ExcludedFilters;
+
+            if (e.DataTransfer.TryGetTag() is Tag tag)
+            {
+                var adorner = new DropTagAdorner(tag)
+                {
+                    Format = "Filter on  {0}",
+                };
+                AdornerLayer.SetAdorner(v, adorner);
+            }
+
+            if (e.DataTransfer.TryGetFilter() is Filter filter && 
+                !target.Any(filterVm => filterVm.GetModel() == filter))
+            {
+                var adorner = new DropFilterAdorner(filter)
+                {
+                    Format = "Move {0} here",
+                };
+                AdornerLayer.SetAdorner(v, adorner);
+            }
+        }
+
+        public void OnDragLeave(object? sender, DragEventArgs e)
+        {
+            if (sender is Visual v)
+            {
+                AdornerLayer.SetAdorner(v, null);
             }
         }
         #endregion

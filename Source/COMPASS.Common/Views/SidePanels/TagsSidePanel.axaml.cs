@@ -5,6 +5,7 @@ using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.ViewModels.SidePanels;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.Views.SidePanels;
 
@@ -61,7 +62,8 @@ public partial class TagsSidePanel : SidePanel
 
     private void Tag_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (sender is Control control && 
+        if (e.Source == _lastPressedArgs?.Source && //Pointer should be on same element as it was pressed on
+            sender is Control control && 
             control.DataContext is TreeNode<TagViewModel> nodeVm &&
             control.FindAncestorOfType<TreeView>() is TreeView tv &&
             tv.DataContext is TagsPanelVM panelVm &&

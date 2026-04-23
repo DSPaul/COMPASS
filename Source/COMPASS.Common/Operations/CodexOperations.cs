@@ -648,8 +648,8 @@ namespace COMPASS.Common.Operations
 
         public static void OnDragOver(object? sender, DragEventArgs e)
         {
-            if (sender is Control control && control.DataContext is CodexViewModel vm &&
-                e.DataTransfer.TryGetTag(vm.GetModel().Collection.AllTags) is { IsGroup: false })
+            if (sender is Visual visual && visual.DataContext is CodexViewModel &&
+                e.DataTransfer.TryGetTag() is { IsGroup: false })
             {
                 e.DragEffects = DragDropEffects.Link;
             }
@@ -661,7 +661,7 @@ namespace COMPASS.Common.Operations
             {
                 AdornerLayer.SetAdorner(visual, null);
                 var targetCodex = vm.GetModel();
-                Tag? toAdd = e.DataTransfer.TryGetTag(targetCodex.Collection.AllTags);
+                Tag? toAdd = e.DataTransfer.TryGetTag();
 
                 if (toAdd is null) return;
 
@@ -677,10 +677,13 @@ namespace COMPASS.Common.Operations
         {
             if (sender is Visual v)
             {
-                var tag = e.DataTransfer.GetValue<TagDto>(DataTransferFormats.TagFormat);
-                if(tag != null)
+                var tag = e.DataTransfer.TryGetTag();
+                if (tag != null)
                 {
-                    var adorner = new DropTagAdorner(tag);
+                    var adorner = new DropTagAdorner(tag)
+                    {
+                        Format = "Assign tag {0}",
+                    };
                     AdornerLayer.SetAdorner(v, adorner);
                 }
             }

@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Reflection;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using COMPASS.Common.Tools;
 
 namespace COMPASS.Common.Services;
 

@@ -35,7 +35,14 @@ namespace COMPASS.Infra.ExtensionMethods
             Converters = { new ColorJsonConverter() }
         };
 
-        public static void AddData<T>(this DataTransfer transfer, DataFormat<string> format, T data)
+        public static void AddData<T>(this DataTransfer transfer, DataFormat<T> format, T data) where T : class
+        {
+            var transferItem = new DataTransferItem();
+            transferItem.Set(format, data);
+            transfer.Add(transferItem);
+        }
+
+        public static void AddJsonData<T>(this DataTransfer transfer, DataFormat<string> format, T data)
         {
             string json = JsonSerializer.Serialize(data, _jsonOptions);
             var transferItem = new DataTransferItem();

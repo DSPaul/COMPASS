@@ -31,8 +31,4 @@ public partial class HomeLayout : CodexLayoutView
     private void Codex_Drop(object? sender, DragEventArgs e) => CodexOperations.OnDrop(sender, e);
     private void Codex_DragEnter(object? sender, DragEventArgs e) => CodexOperations.OnDragEnter(sender, e);
     private void Codex_DragLeave(object? sender, DragEventArgs e) => CodexOperations.OnDragLeave(sender, e);
-
-    private void Grid_DragLeave(object? sender, DragEventArgs e)
-    {
-    }
 }

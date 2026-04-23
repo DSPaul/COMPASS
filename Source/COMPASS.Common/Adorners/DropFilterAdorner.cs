@@ -1,13 +1,14 @@
 ﻿using Avalonia;
 using Avalonia.Controls.Primitives;
-using COMPASS.Common.Models;
+using COMPASS.Common.Models.Filters;
+using COMPASS.Common.ViewModels.ModelVMs;
 
 namespace COMPASS.Common.Adorners
 {
-    public class DropTagAdorner : TemplatedControl
+    public class DropFilterAdorner : TemplatedControl
     {
         public static readonly StyledProperty<string> FormatProperty =
-            AvaloniaProperty.Register<DropTagAdorner, string>(nameof(Format), defaultValue: "Drop {0} here");
+            AvaloniaProperty.Register<DropFilterAdorner, string>(nameof(Format), defaultValue: "Drop {0} here");
 
         public string Format
         {
@@ -22,7 +23,7 @@ namespace COMPASS.Common.Adorners
         }
 
         public static readonly StyledProperty<string> PrefixProperty =
-            AvaloniaProperty.Register<DropTagAdorner, string>(nameof(Prefix));
+            AvaloniaProperty.Register<DropFilterAdorner, string>(nameof(Prefix));
 
         public string Prefix
         {
@@ -31,7 +32,7 @@ namespace COMPASS.Common.Adorners
         }
 
         public static readonly StyledProperty<string> SuffixProperty =
-            AvaloniaProperty.Register<DropTagAdorner, string>(nameof(Suffix), defaultValue: string.Empty);
+            AvaloniaProperty.Register<DropFilterAdorner, string>(nameof(Suffix));
 
         public string Suffix
         {
@@ -39,9 +40,9 @@ namespace COMPASS.Common.Adorners
             set => SetValue(SuffixProperty, value);
         }
 
-        public DropTagAdorner(Tag draggedTag)
+        public DropFilterAdorner(Filter draggedFilter)
         {
-            DataContext = draggedTag;
+            DataContext = ModelVmFactory.GetFilterViewModel(draggedFilter);
         }
     }
 }

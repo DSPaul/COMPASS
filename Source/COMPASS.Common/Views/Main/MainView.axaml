@@ -220,17 +220,12 @@
                   ColumnDefinitions="*, *, Auto, Auto, Auto, Auto">
                 <Grid.DataTemplates>
                     <DataTemplate DataType="{x:Type modelVms:FilterViewModel}">
-                        <Button Classes="BlankButton"
-                                Command="{Binding $parent[ItemsControl].((vm:FiltersViewModel)DataContext).RemoveFromItemsControlCommand}"
-                                CommandParameter="{Binding}" Cursor="Hand">
-                            <Button.Template>
-                                <ControlTemplate>
-                                    <controls:Chip Theme="{StaticResource Removable}"
-                                                   Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
-                                                   Name="{Binding Content}"/>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
+                        <controls:Chip Theme="{StaticResource Removable}"
+                                       PointerPressed="Filter_PointerPressed"
+                                       PointerMoved="Filter_PointerMoved"
+                                       PointerReleased="Filter_PointerReleased"
+                                       Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
+                                       Name="{Binding Content}"/>
                     </DataTemplate>
                 </Grid.DataTemplates>
 
@@ -238,13 +233,18 @@
                 <Border CornerRadius="5" Grid.Column="0" BorderBrush="ForestGreen" BorderThickness="3"
                         VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}"
-                        DataContext="{Binding FiltersVM}">
+                        DataContext="{Binding FiltersVM}"
+                        DragDrop.AllowDrop="True"
+                        DragDrop.DragEnter="IncludedFilters_DragEnter"
+                        DragDrop.DragOver="IncludedFilters_DragOver"
+                        DragDrop.Drop="IncludedFilters_Drop"
+                        DragDrop.DragLeave="Filters_DragLeave">
                     <Panel>
                         <TextBlock Text="INCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Margin="5, 2" Foreground="Gray" FontSize="20"
                                    IsVisible="{Binding !IncludedFilters.Count}" />
                         <ItemsControl MinHeight="30" Margin="5,2" VerticalAlignment="Center" Background="Transparent"
-                                      DragDrop.AllowDrop="True" ItemsSource="{Binding IncludedFilters}">
+                                      ItemsSource="{Binding IncludedFilters}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="Horizontal" />
@@ -257,13 +257,18 @@
                 <Border CornerRadius="5" Grid.Column="1" BorderBrush="OrangeRed" BorderThickness="3"
                         VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0,5,0" Background="{StaticResource FiltersBackground}"
-                        DataContext="{Binding FiltersVM}">
+                        DataContext="{Binding FiltersVM}"
+                        DragDrop.AllowDrop="True"
+                        DragDrop.DragEnter="ExcludedFilters_DragEnter"
+                        DragDrop.DragOver="ExcludedFilters_DragOver"
+                        DragDrop.Drop="ExcludedFilters_Drop"
+                        DragDrop.DragLeave="Filters_DragLeave">
                     <Panel>
                         <TextBlock Text="EXCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Margin="5 2" Foreground="Gray" FontSize="20"
                                    IsVisible="{Binding !ExcludedFilters.Count}" />
                         <ItemsControl MinHeight="30" Margin="5,2" VerticalAlignment="Center" Background="Transparent"
-                                      DragDrop.AllowDrop="True" ItemsSource="{Binding ExcludedFilters}">
+                                      ItemsSource="{Binding ExcludedFilters}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="Horizontal" />
