@@ -1,29 +1,36 @@
 using System.Collections;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 using COMPASS.Infra.ExtensionMethods;
+using static COMPASS.Infra.Tools.VisualTreeHelpers;
 
 namespace COMPASS.Infra.Behaviors;
 
+
 /// <summary>
-/// Reusable drag-and-drop reordering for any <see cref="ItemsControl"/> backed by an <see cref="IList"/>.
+/// Reusable drag-and-drop reordering for any <see cref="ItemsControl"/> (including <see cref="TreeView"/>) backed by an <see cref="IList"/>.
 /// <para>
 /// <b>Usage:</b><br/>
-/// 1. On the <see cref="ItemsControl"/> (or its inner items panel wrapper), set
+/// 1. On the <see cref="ItemsControl"/> or <see cref="TreeView"/>, set
 ///    <c>behaviors:ReorderDragBehavior.IsDropTarget="True"</c>.<br/>
 /// 2. On the root element of each item template, set
 ///    <c>behaviors:ReorderDragBehavior.IsDragSource="True"</c>.
 /// </para>
-/// Drop detection works on the container level so gaps between items are valid drop zones.
-/// A horizontal indicator line is rendered via the adorner layer to avoid layout shifts.
+/// <para>
+/// For <see cref="TreeView"/>, items can be reordered across nesting levels. Hovering over the
+/// top/bottom 25% of a header inserts as a sibling; hovering over the middle 50% inserts as the
+/// first child. A drop indicator line (with indentation) or a highlight rectangle (for
+/// collapsed / childless nodes) is rendered via the adorner layer.
+/// </para>
 /// </summary>
 public sealed class ReorderDragBehavior : AvaloniaObject
 {
-    // ── Attached properties ──────────────────────────────────────────
+    #region Attached Properties
 
     public static readonly AttachedProperty<bool> IsDragSourceProperty =
         AvaloniaProperty.RegisterAttached<ReorderDragBehavior, Control, bool>("IsDragSource");
@@ -37,14 +44,42 @@ public sealed class ReorderDragBehavior : AvaloniaObject
     public static bool GetIsDropTarget(Control c) => c.GetValue(IsDropTargetProperty);
     public static void SetIsDropTarget(Control c, bool v) => c.SetValue(IsDropTargetProperty, v);
 
-    // ── Drag-transfer format ─────────────────────────────────────────
+    /// <summary>
+    /// Optional callback that enriches the <see cref="DataTransfer"/> with additional data.
+    /// The callback receives the <see cref="DataTransfer"/> and the source draggedVisual's <see cref="Control.DataContext"/>.
+    /// Set on an ancestor (e.g. the <see cref="TreeView"/>) — it is inherited by all drag sources.
+    /// </summary>
+    public static readonly AttachedProperty<Action<DataTransfer, object?>?> DragDataProviderProperty =
+        AvaloniaProperty.RegisterAttached<ReorderDragBehavior, Control, Action<DataTransfer, object?>?>("DragDataProvider");
+
+    public static Action<DataTransfer, object?>? GetDragDataProvider(Control c) => c.GetValue(DragDataProviderProperty);
+    public static void SetDragDataProvider(Control c, Action<DataTransfer, object?>? v) => c.SetValue(DragDataProviderProperty, v);
+
+    /// <summary>
+    /// Optional callback invoked after a successful drop. Receives the dragged item, the
+    /// new parent's <see cref="Control.DataContext"/> (null when dropped at root level),
+    /// and the insertion index within the new parent's children.
+    /// Use this to update parent–child relationships in the view-model layer.
+    /// Set on the <see cref="TreeView"/> or <see cref="ItemsControl"/>.
+    /// </summary>
+    public static readonly AttachedProperty<Action<object, object?, int>?> AfterDropProperty =
+        AvaloniaProperty.RegisterAttached<ReorderDragBehavior, Control, Action<object, object?, int>?>("AfterDrop");
+
+    public static Action<object, object?, int>? GetAfterDrop(Control c) => c.GetValue(AfterDropProperty);
+    public static void SetAfterDrop(Control c, Action<object, object?, int>? v) => c.SetValue(AfterDropProperty, v);
+
+    #endregion
+
+    #region Drag Payload
 
     private static readonly DataFormat<DragPayload> DragFormat =
         DataFormat.CreateInProcessFormat<DragPayload>(nameof(ReorderDragBehavior));
 
-    private sealed record DragPayload(IList SourceList, object Item);
+    private sealed record DragPayload(IList SourceList, object DraggedItem, ItemsControl SourceRoot);
 
-    // ── Wiring ───────────────────────────────────────────────────────
+    #endregion
+
+    #region Event Wiring
 
     static ReorderDragBehavior()
     {
@@ -84,7 +119,9 @@ public sealed class ReorderDragBehavior : AvaloniaObject
         }
     }
 
-    // ── Drag start (item-level) ──────────────────────────────────────
+    #endregion
+
+    #region Drag Start
 
     private static PointerPressedEventArgs? _lastPressedArgs;
     private static Control? _lastPressedControl;
@@ -92,14 +129,15 @@ public sealed class ReorderDragBehavior : AvaloniaObject
     private static void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (sender is not Control control) return;
-        if (!e.GetCurrentPoint(control).Properties.IsLeftButtonPressed) return;
+        //Middle and left mouse click and such also trigger pointer pressed
+        if (!e.Properties.IsLeftButtonPressed) return;
 
-        // Only start a drag if the press did not originate from an interactive
-        // child control (e.g. a Button). Walk from the source up to this control
-        // and bail out if we encounter a Button along the way.
-        for (var v = e.Source as Visual; v is not null && v != control; v = v.GetVisualParent())
+        // Skip if the press originated from an interactive child (e.g. a Button).
+        var ancestor = e.Source as Visual;
+        while (ancestor is not null && ancestor != control)
         {
-            if (v is Button) return;
+            if (ancestor is Button) return;
+            ancestor = ancestor.GetVisualParent();
         }
 
         _lastPressedArgs = e;
@@ -109,40 +147,49 @@ public sealed class ReorderDragBehavior : AvaloniaObject
     private static async void OnPointerMoved(object? sender, PointerEventArgs e)
     {
         if (_lastPressedArgs is null || _lastPressedControl is null) return;
-        if (sender is not Control control || control != _lastPressedControl) return;
-        if (!e.GetCurrentPoint(control).Properties.IsLeftButtonPressed)
-        {
-            _lastPressedArgs = null;
-            _lastPressedControl = null;
-            return;
-        }
-
+        if (sender is not Visual draggedVisual || draggedVisual != _lastPressedControl) return;
+            
         var pressedArgs = _lastPressedArgs;
         _lastPressedArgs = null;
         _lastPressedControl = null;
+        
+        if (!e.Properties.IsLeftButtonPressed) return;
 
-        var itemsControl = FindParentItemsControl(control);
-        if (itemsControl?.ItemsSource is not IList list) return;
+        var containingItemsControl = FindContainingItemsControl(draggedVisual);
+        if (containingItemsControl?.ItemsSource is not IList itemsList) return;
 
-        var item = control.DataContext;
+        var item = draggedVisual.DataContext;
         if (item is null) return;
 
-        var data = new DataTransfer();
-        data.AddData(DragFormat, new DragPayload(list, item));
+        ItemsControl sourceRoot = draggedVisual.FindAncestorOfType<TreeView>(includeSelf: true) ?? containingItemsControl;
 
-        await DragDrop.DoDragDropAsync(pressedArgs, data, DragDropEffects.Move);
+        var dragData = new DataTransfer();
+        dragData.AddData(DragFormat, new DragPayload(itemsList, item, sourceRoot));
+
+        // Allow consumers to add additional drag data (e.g. a Tag payload for cross-component drops)
+        var dataProvider = FindInheritedValue(draggedVisual, DragDataProviderProperty);
+        dataProvider?.Invoke(dragData, draggedVisual.DataContext);
+
+        await DragDrop.DoDragDropAsync(pressedArgs, dragData, DragDropEffects.Move | DragDropEffects.Link);
     }
 
-    // ── Drag over (container-level) ──────────────────────────────────
+    #endregion
+
+    #region Drag Over / Drop
 
     private static void OnDragOver(object? sender, DragEventArgs e)
     {
-        if (sender is not Control container) return;
+        if (sender is not Visual container) return;
 
-        var payload = e.DataTransfer.TryGetValue(DragFormat);
-        var itemsControl = FindItemsControl(container);
-        if (payload is null || itemsControl?.ItemsSource is not IList list ||
-            !ReferenceEquals(list, payload.SourceList))
+        var dragPayload = e.DataTransfer.TryGetValue(DragFormat);
+        if (dragPayload is null)
+        {
+            e.DragEffects = DragDropEffects.None;
+            return;
+        }
+
+        var dropTarget = ResolveDropTarget(container, e, dragPayload);
+        if (dropTarget is null)
         {
             e.DragEffects = DragDropEffects.None;
             return;
@@ -150,57 +197,154 @@ public sealed class ReorderDragBehavior : AvaloniaObject
 
         e.DragEffects = DragDropEffects.Move;
 
-        var panel = FindItemsPanel(itemsControl);
-        if (panel is null) return;
-
-        int insertionIndex = GetInsertionIndex(panel, e);
-        CancelPendingHide();
-        ShowIndicator(panel, insertionIndex);
+        CancelPendingDropHintHide();
+        ShowDropHint(container, dropTarget.Value);
     }
 
-    private static void OnDragLeave(object? sender, DragEventArgs e)
-    {
-        HideIndicatorDeferred();
-    }
-
-    // ── Drop (container-level) ───────────────────────────────────────
+    private static void OnDragLeave(object? sender, DragEventArgs e) => HideIndicatorDeferred();
 
     private static void OnDrop(object? sender, DragEventArgs e)
     {
-        CancelPendingHide();
-        HideIndicator();
+        CancelPendingDropHintHide();
+        HideDropHint();
 
-        if (sender is not Control container) return;
+        if (sender is not Visual visual) return;
 
-        var payload = e.DataTransfer.TryGetValue(DragFormat);
-        var itemsControl = FindItemsControl(container);
-        if (payload is null || itemsControl?.ItemsSource is not IList list ||
-            !ReferenceEquals(list, payload.SourceList))
-            return;
+        var dragPayload = e.DataTransfer.TryGetValue(DragFormat);
+        if (dragPayload is null) return;
 
-        var panel = FindItemsPanel(itemsControl);
-        if (panel is null) return;
+        var dropTarget = ResolveDropTarget(visual, e, dragPayload);
+        if (dropTarget is null) return;
 
-        int insertionIndex = GetInsertionIndex(panel, e);
+        var sourceList = dragPayload.SourceList;
+        var targetList = dropTarget.Value.TargetList;
+        int insertionIndex = dropTarget.Value.InsertionIndex;
 
-        int oldIndex = list.IndexOf(payload.Item);
+        int oldIndex = sourceList.IndexOf(dragPayload.DraggedItem);
         if (oldIndex < 0) return;
 
-        // Adjust for removal shift
-        if (oldIndex < insertionIndex) insertionIndex--;
-        if (oldIndex == insertionIndex) return;
+        if (ReferenceEquals(sourceList, targetList))
+        {
+            if (oldIndex < insertionIndex) insertionIndex--;
+            if (oldIndex == insertionIndex) return;
+            sourceList.RemoveAt(oldIndex);
+            sourceList.Insert(insertionIndex, dragPayload.DraggedItem);
+        }
+        else
+        {
+            sourceList.RemoveAt(oldIndex);
+            targetList.Insert(insertionIndex, dragPayload.DraggedItem);
+        }
 
-        list.RemoveAt(oldIndex);
-        list.Insert(insertionIndex, payload.Item);
+        //If the item was dropped inside of a tree view item, expand it
+        if (dropTarget.Value.InsideOf is not null)
+            dropTarget.Value.InsideOf.IsExpanded = true;
 
-        // Force refresh on the root ItemsControl that owns this list,
-        // so that TemplateBindings to inner ItemsControls are preserved.
-        RefreshItemsSource(itemsControl);
+        // Notify consumers so they can update parent–child relationships in the view-model layer
+        var afterDrop = FindInheritedValue(visual, AfterDropProperty);
+        afterDrop?.Invoke(dragPayload.DraggedItem, dropTarget.Value.NewParentDataContext, insertionIndex);
+
+        // Force the UI to rebuild containers after the in-place list mutation
+        RefreshItemsSource(dragPayload.SourceRoot);
     }
 
-    // ── Insertion index calculation ──────────────────────────────────
+    #endregion
+
+    #region Drop Target Resolution
+
+    private readonly record struct DropResult(Panel Panel, IList TargetList, int InsertionIndex, TreeViewItem? InsideOf, object? NewParentDataContext);
+
+    private enum DropZone { Before, Inside, After }
+    private readonly record struct TreeDropInfo(int InsertionIndex, TreeViewItem? HoveredItem, DropZone Zone);
+
+    private static DropResult? ResolveDropTarget(Visual visual, DragEventArgs e, DragPayload payload)
+    {
+        var treeView = visual.FindAncestorOfType<TreeView>(includeSelf: true);
+        if (treeView is not null)
+            return ResolveTreeViewDrop(treeView, e, payload);
+
+        return ResolveFlatDrop(visual, e, payload);
+    }
+
+    private static DropResult? ResolveTreeViewDrop(TreeView treeView, DragEventArgs e, DragPayload payload)
+    {
+        if (!ReferenceEquals(treeView, payload.SourceRoot))
+            return null;
+
+        var hoveredItem = FindTreeViewItemAtPoint(treeView, e.GetPosition(treeView));
+
+        // Prevent dropping onto self or into own descendants (would create a cycle)
+        if (hoveredItem is not null && HasAncestorWithDataContext(hoveredItem, payload.DraggedItem))
+            return null;
+
+        var parent = hoveredItem?.FindAncestorOfType<ItemsControl>(includeSelf: false) ?? treeView;
+
+        if (parent.ItemsSource is not IList siblings)
+            return null;
+
+        var siblingPanel = FindItemsPanel(parent);
+        if (siblingPanel is null) return null;
+
+        var dropZoneInfo = GetTreeDropInfo(siblingPanel, e);
+
+        // Middle zone → insert as first child of the hovered node
+        if (dropZoneInfo.Zone == DropZone.Inside && dropZoneInfo.HoveredItem is TreeViewItem insideTvi
+            && insideTvi.ItemsSource is IList children)
+        {
+            var childPanel = FindItemsPanel(insideTvi);
+            return new DropResult(childPanel ?? siblingPanel, children, 0, insideTvi, insideTvi.DataContext);
+        }
+
+        // Bottom zone on an expanded node with children → insert as first child
+        // (avoids visually skipping all descendants)
+        if (dropZoneInfo.Zone == DropZone.After
+            && dropZoneInfo.InsertionIndex > 0 && dropZoneInfo.InsertionIndex <= siblingPanel.Children.Count
+            && siblingPanel.Children[dropZoneInfo.InsertionIndex - 1] is TreeViewItem { IsExpanded: true } expandedTvi
+            && expandedTvi.ItemsSource is IList expandedChildren && expandedChildren.Count > 0)
+        {
+            var childPanel = FindItemsPanel(expandedTvi);
+            if (childPanel is not null)
+                return new DropResult(childPanel, expandedChildren, 0, null, expandedTvi.DataContext);
+        }
+
+        object? newParentDataContext = parent is TreeViewItem tvi ? tvi.DataContext : null;
+        return new DropResult(siblingPanel, siblings, dropZoneInfo.InsertionIndex, null, newParentDataContext);
+    }
+
+    private static DropResult? ResolveFlatDrop(Visual container, DragEventArgs e, DragPayload payload)
+    {
+        // The IsDropTarget control should be the ItemsControl itself for flat lists
+        if (container is not ItemsControl itemsControl) return null;
+        if (itemsControl.ItemsSource is not IList items || !ReferenceEquals(items, payload.SourceList))
+            return null;
+
+        var panel = FindItemsPanel(itemsControl);
+        if (panel is null) return null;
+
+        return new DropResult(panel, items, GetInsertionIndex(panel, e), null, null);
+    }
+
+    #endregion
+
+    #region Insertion Index Calculation
 
     private static int GetInsertionIndex(Panel panel, DragEventArgs e)
+    {
+        var pos = e.GetPosition(panel);
+        for (int i = 0; i < panel.Children.Count; i++)
+        {
+            double childMid = (panel.Children[i].Bounds.Top + panel.Children[i].Bounds.Bottom) / 2;
+            if (pos.Y < childMid)
+                return i;
+        }
+        return panel.Children.Count;
+    }
+
+    /// <summary>
+    /// Determines the insertion index and drop zone for a TreeView items panel.
+    /// The header is divided into three zones: top 25% (before), middle 50% (inside), bottom 25% (after).
+    /// </summary>
+    private static TreeDropInfo GetTreeDropInfo(Panel panel, DragEventArgs e)
     {
         var pos = e.GetPosition(panel);
         double y = pos.Y;
@@ -208,70 +352,155 @@ public sealed class ReorderDragBehavior : AvaloniaObject
         for (int i = 0; i < panel.Children.Count; i++)
         {
             var child = panel.Children[i];
-            double childMid = (child.Bounds.Top + child.Bounds.Bottom) / 2;
+            double headerH = GetHeaderHeight(child);
+            double headerTop = child.Bounds.Top;
+            double headerBottom = headerTop + headerH;
 
-            if (y < childMid)
-                return i;
+            if (y < headerTop || y >= child.Bounds.Bottom)
+                continue;
+
+            // Past the header → expanded children area (handled by recursion elsewhere)
+            if (y >= headerBottom)
+                return new TreeDropInfo(i + 1, child as TreeViewItem, DropZone.After);
+
+            double quarter = headerH * 0.25;
+
+            if (y < headerTop + quarter)
+                return new TreeDropInfo(i, child as TreeViewItem, DropZone.Before);
+
+            if (y > headerBottom - quarter)
+                return new TreeDropInfo(i + 1, child as TreeViewItem, DropZone.After);
+
+            return new TreeDropInfo(i, child as TreeViewItem, DropZone.Inside);
         }
 
-        return panel.Children.Count; // after the last item
+        return new TreeDropInfo(panel.Children.Count, null, DropZone.After);
     }
 
-    // ── Adorner-based indicator (no layout impact) ───────────────────
+    #endregion
+
+    #region Drop Indicator
 
     private static readonly SolidColorBrush IndicatorBrush = new(Color.FromRgb(0x4F, 0xC1, 0xFF));
 
     private static DropIndicatorAdorner? _adorner;
-    private static Panel? _adornerOwner;
+    private static Visual? _adornerOwner;
+    private static CancellationTokenSource? _hideCts;
 
-    private static void ShowIndicator(Panel panel, int insertionIndex)
+    private static void ShowDropHint(Visual container, DropResult result)
     {
-        // Compute the Y position in panel coordinates where the line should appear
-        double indicatorY;
+        if (result.InsideOf is not null)
+        {
+            ShowInsideIndicator(container, result.Panel, result.InsideOf);
+            return;
+        }
 
-        if (panel.Children.Count == 0)
+        ShowLineIndicator(container, result.Panel, result.InsertionIndex);
+    }
+
+    private static void ShowInsideIndicator(Visual container, Panel panel, TreeViewItem insideOf)
+    {
+        bool hasVisibleChildren = insideOf is { IsExpanded: true }
+                                  && insideOf.ItemsSource is IList { Count: > 0 };
+
+        if (hasVisibleChildren)
         {
-            indicatorY = 0;
-        }
-        else if (insertionIndex >= panel.Children.Count)
-        {
-            // After the last child
-            var last = panel.Children[^1];
-            indicatorY = last.Bounds.Bottom;
-        }
-        else if (insertionIndex == 0)
-        {
-            // Before the first child
-            indicatorY = panel.Children[0].Bounds.Top;
+            // Show an indented line below the header
+            double headerH = GetHeaderHeight(insideOf);
+            double panelY = insideOf.Bounds.Top + headerH;
+            var parentPanel = insideOf.GetVisualParent() as Panel;
+            double yInContainer = (parentPanel ?? panel).TranslatePoint(new Point(0, panelY), container)?.Y ?? panelY;
+            double indentX = GetIndentXForChildOf(insideOf, container);
+            SetAdornerLine(container, indentX, yInContainer);
         }
         else
         {
-            // Between two children: center the line in the gap
+            // Show a highlight rectangle around the header
+            var headerPresenter = insideOf.FindDescendantOfType<ContentPresenter>();
+            if (headerPresenter is not null)
+            {
+                var topLeft = headerPresenter.TranslatePoint(new Point(0, 0), container);
+                if (topLeft.HasValue)
+                {
+                    SetAdornerRect(container, topLeft.Value.X, topLeft.Value.Y,
+                        headerPresenter.Bounds.Width, headerPresenter.Bounds.Height);
+                    return;
+                }
+            }
+
+            // Fallback: indented line below the header
+            double headerH = GetHeaderHeight(insideOf);
+            double panelY = insideOf.Bounds.Top + headerH;
+            var parentPanel = insideOf.GetVisualParent() as Panel;
+            double yInContainer = (parentPanel ?? panel).TranslatePoint(new Point(0, panelY), container)?.Y ?? panelY;
+            double indentX = GetIndentXForChildOf(insideOf, container);
+            SetAdornerLine(container, indentX, yInContainer);
+        }
+    }
+
+    private static void ShowLineIndicator(Visual container, Panel panel, int insertionIndex)
+    {
+        double panelY;
+        if (panel.Children.Count == 0)
+        {
+            panelY = 0;
+        }
+        else if (insertionIndex >= panel.Children.Count)
+        {
+            panelY = panel.Children[^1].Bounds.Bottom;
+        }
+        else if (insertionIndex == 0)
+        {
+            panelY = panel.Children[0].Bounds.Top;
+        }
+        else
+        {
             var above = panel.Children[insertionIndex - 1];
             var below = panel.Children[insertionIndex];
-            indicatorY = (above.Bounds.Bottom + below.Bounds.Top) / 2;
+            panelY = (above.Bounds.Bottom + below.Bounds.Top) / 2;
         }
 
-        if (_adornerOwner != panel || _adorner is null)
+        double yInContainer = panel.TranslatePoint(new Point(0, panelY), container)?.Y ?? panelY;
+        double indentX = GetIndentXFromPanel(panel, insertionIndex, container);
+
+        SetAdornerLine(container, indentX, yInContainer);
+    }
+
+    private static void EnsureAdorner(Visual container)
+    {
+        if (_adornerOwner != container || _adorner is null)
         {
-            // Remove old adorner
             if (_adornerOwner is not null && _adorner is not null)
                 AdornerLayer.SetAdorner(_adornerOwner, null);
 
             _adorner = new DropIndicatorAdorner();
-            _adornerOwner = panel;
-            AdornerLayer.SetAdorner(panel, _adorner);
+            _adornerOwner = container;
+            AdornerLayer.SetAdorner(_adornerOwner, _adorner);
         }
+    }
 
-        _adorner.IndicatorY = indicatorY;
+    private static void SetAdornerLine(Visual container, double x, double y)
+    {
+        EnsureAdorner(container);
+        _adorner!.Mode = DropIndicatorAdorner.DisplayMode.Line;
+        _adorner.LineX = x;
+        _adorner.LineY = y;
         _adorner.IsVisible = true;
         _adorner.IsHitTestVisible = false;
         _adorner.InvalidateVisual();
     }
 
-    private static CancellationTokenSource? _hideCts;
+    private static void SetAdornerRect(Visual container, double x, double y, double width, double height)
+    {
+        EnsureAdorner(container);
+        _adorner!.Mode = DropIndicatorAdorner.DisplayMode.Rect;
+        _adorner.HighlightRect = new Rect(x, y, width, height);
+        _adorner.IsVisible = true;
+        _adorner.IsHitTestVisible = false;
+        _adorner.InvalidateVisual();
+    }
 
-    private static void CancelPendingHide()
+    private static void CancelPendingDropHintHide()
     {
         _hideCts?.Cancel();
         _hideCts?.Dispose();
@@ -280,26 +509,22 @@ public sealed class ReorderDragBehavior : AvaloniaObject
 
     private static async void HideIndicatorDeferred()
     {
-        CancelPendingHide();
+        CancelPendingDropHintHide();
         _hideCts = new CancellationTokenSource();
         var token = _hideCts.Token;
 
         try
         {
-            // Short delay — if a DragOver arrives in the meantime it will cancel this
             await Task.Delay(50, token);
             if (!token.IsCancellationRequested)
-                HideIndicator();
+                HideDropHint();
         }
-        catch (TaskCanceledException)
-        {
-            // Expected when CancelPendingHide is called
-        }
+        catch (TaskCanceledException) { }
     }
 
-    private static void HideIndicator()
+    private static void HideDropHint()
     {
-        CancelPendingHide();
+        CancelPendingDropHintHide();
 
         if (_adorner is not null)
             _adorner.IsVisible = false;
@@ -312,92 +537,128 @@ public sealed class ReorderDragBehavior : AvaloniaObject
         }
     }
 
-    // ── Tree helpers ─────────────────────────────────────────────────
+    // —— Indent calculation ——
 
     /// <summary>
-    /// Walks up the visual tree from the given <see cref="ItemsControl"/> and finds the
-    /// outermost <see cref="ItemsControl"/> that shares the same <see cref="ItemsControl.ItemsSource"/>.
-    /// This ensures that refreshing the source doesn't break any TemplateBindings on inner controls.
+    /// Returns the X offset matching the content indent level of existing items in <paramref name="panel"/>.
     /// </summary>
-    private static void RefreshItemsSource(ItemsControl itemsControl)
+    private static double GetIndentXFromPanel(Panel panel, int insertionIndex, Visual container)
     {
-        var root = itemsControl;
-        var src = itemsControl.ItemsSource;
+        if (panel.Children.Count == 0)
+            return 0;
 
-        var current = (itemsControl as Visual).GetVisualParent();
-        while (current is not null)
+        int neighborIndex = Math.Min(insertionIndex, panel.Children.Count - 1);
+        if (panel.Children[neighborIndex] is not TreeViewItem neighborItem)
+            return 0;
+
+        return GetContentLeftEdge(neighborItem, container);
+    }
+
+    /// <summary>
+    /// Returns the X offset one indent level deeper than <paramref name="parent"/>'s content.
+    /// Measures from the first visible child if available, otherwise estimates from the indent step.
+    /// </summary>
+    private const double FallbackIndentStep = 24;
+
+    private static double GetIndentXForChildOf(TreeViewItem parent, Visual container)
+    {
+        // Try measuring from an existing child
+        var childPanel = FindItemsPanel(parent);
+        if (childPanel is { Children.Count: > 0 } && childPanel.Children[0] is TreeViewItem firstChild)
         {
-            if (current is ItemsControl parent && ReferenceEquals(parent.ItemsSource, src))
-                root = parent;
-            current = current.GetVisualParent();
+            double x = GetContentLeftEdge(firstChild, container);
+            if (x > 0) return x;
         }
 
-        root.ItemsSource = null;
-        root.ItemsSource = src;
-    }
-
-    private static ItemsControl? FindParentItemsControl(Control control)
-    {
-        var current = control.GetVisualParent();
-        while (current is not null)
+        // Estimate: own X + indent step (measured from own itemsParent)
+        double ownX = GetContentLeftEdge(parent, container);
+        var grandparent = parent.FindAncestorOfType<TreeViewItem>(includeSelf: false);
+        if (grandparent is not null)
         {
-            if (current is ItemsControl ic)
-                return ic;
-            current = current.GetVisualParent();
+            double parentX = GetContentLeftEdge(grandparent, container);
+            return ownX + Math.Max(ownX - parentX, FallbackIndentStep);
         }
-        return null;
+        return ownX + FallbackIndentStep;
     }
 
-    private static ItemsControl? FindItemsControl(Control container)
+    /// <summary>
+    /// Returns the left edge X of a <see cref="TreeViewItem"/>'s header content in visual coordinates.
+    /// </summary>
+    private static double GetContentLeftEdge(TreeViewItem tvi, Visual container)
     {
-        if (container is ItemsControl ic) return ic;
-        return container.FindDescendantOfType<ItemsControl>() ?? FindParentItemsControl(container);
+        var presenter = tvi.FindDescendantOfType<ContentPresenter>();
+        if (presenter is null) return 0;
+        return presenter.TranslatePoint(new Point(0, 0), container)?.X ?? 0;
     }
 
-    private static Panel? FindItemsPanel(ItemsControl itemsControl)
-    {
-        return itemsControl.FindDescendantOfType<Panel>();
-    }
+    #endregion
 
-    // ── Adorner that renders a horizontal line at a given Y ──────────
+    #region DropIndicatorAdorner
 
     private sealed class DropIndicatorAdorner : Control
     {
-        public double IndicatorY { get; set; }
+        public enum DisplayMode { Line, Rect }
+
+        public DisplayMode Mode { get; set; } = DisplayMode.Line;
+
+        // Line mode
+        public double LineX { get; set; }
+        public double LineY { get; set; }
+
+        // Rect mode
+        public Rect HighlightRect { get; set; }
 
         public override void Render(DrawingContext context)
+        {
+            if (Mode == DisplayMode.Rect)
+                RenderRect(context);
+            else
+                RenderLine(context);
+        }
+
+        private void RenderLine(DrawingContext context)
         {
             const double thickness = 2;
             const double arrowSize = 5;
             double width = Bounds.Width;
-            double y = IndicatorY;
+            double y = LineY;
+            double left = LineX;
 
             var pen = new Pen(IndicatorBrush, thickness);
 
-            // Horizontal line
-            context.DrawLine(pen, new Point(0, y), new Point(width, y));
+            context.DrawLine(pen, new Point(left, y), new Point(width, y));
 
-            // Left triangle pointing right ▶
-            var leftTriangle = new StreamGeometry();
-            using (var ctx = leftTriangle.Open())
+            // Left arrow ▶
+            var leftArrow = new StreamGeometry();
+            using (var ctx = leftArrow.Open())
             {
-                ctx.BeginFigure(new Point(0, y - arrowSize), true);
-                ctx.LineTo(new Point(arrowSize, y));
-                ctx.LineTo(new Point(0, y + arrowSize));
+                ctx.BeginFigure(new Point(left, y - arrowSize), true);
+                ctx.LineTo(new Point(left + arrowSize, y));
+                ctx.LineTo(new Point(left, y + arrowSize));
                 ctx.EndFigure(true);
             }
-            context.DrawGeometry(IndicatorBrush, null, leftTriangle);
+            context.DrawGeometry(IndicatorBrush, null, leftArrow);
 
-            // Right triangle pointing left ◀
-            var rightTriangle = new StreamGeometry();
-            using (var ctx = rightTriangle.Open())
+            // Right arrow ◀
+            var rightArrow = new StreamGeometry();
+            using (var ctx = rightArrow.Open())
             {
                 ctx.BeginFigure(new Point(width, y - arrowSize), true);
                 ctx.LineTo(new Point(width - arrowSize, y));
                 ctx.LineTo(new Point(width, y + arrowSize));
                 ctx.EndFigure(true);
             }
-            context.DrawGeometry(IndicatorBrush, null, rightTriangle);
+            context.DrawGeometry(IndicatorBrush, null, rightArrow);
+        }
+
+        private void RenderRect(DrawingContext context)
+        {
+            const double thickness = 2;
+            const double cornerRadius = 4;
+            var pen = new Pen(IndicatorBrush, thickness);
+            context.DrawRectangle(null, pen, HighlightRect, cornerRadius, cornerRadius);
         }
     }
+
+    #endregion
 }

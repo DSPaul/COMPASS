@@ -3,8 +3,11 @@ using Avalonia.Input;
 using Avalonia.VisualTree;
 using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.Models.Hierarchy;
+using COMPASS.Common.Models;
+using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.ViewModels.SidePanels;
+using COMPASS.Infra.Behaviors;
 using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.Views.SidePanels;
@@ -14,6 +17,56 @@ public partial class TagsSidePanel : SidePanel
     public TagsSidePanel()
     {
         InitializeComponent();
+
+        // When the ReorderDragBehavior starts a drag from a tag Chip, inject the
+        // Tag payload into the DataTransfer so the item can also be dropped on
+        // non-reorder targets (e.g. applying tags to codex items).
+        ReorderDragBehavior.SetDragDataProvider(TagTree, AddTagToTransfer);
+        ReorderDragBehavior.SetAfterDrop(TagTree, UpdateTagParent);
+    }
+
+    private static void AddTagToTransfer(DataTransfer transfer, object? dataContext)
+    {
+        if (dataContext is TreeNode<TagViewModel> node && !node.Item.GetModel().IsGroup)
+        {
+            transfer.AddTag(node.Item.GetModel());
+        }
+    }
+
+    private static void UpdateTagParent(object draggedItem, object? newParentDataContext, int insertionIndex)
+    {
+        if (draggedItem is not TreeNode<TagViewModel> draggedNode) return;
+
+        Tag draggedTag = draggedNode.Item.GetModel();
+        Tag? oldParentTag = draggedTag.Parent;
+        Tag? newParentTag = (newParentDataContext as TreeNode<TagViewModel>)?.Item.GetModel();
+
+        if (ReferenceEquals(oldParentTag, newParentTag)) return;
+
+        var rootTags = TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Collection.RootTags;
+        if (rootTags is null) return;
+
+        // Remove from old parent's children or root list
+        if (oldParentTag is not null)
+            oldParentTag.Children.Remove(draggedTag);
+        else
+            rootTags.Remove(draggedTag);
+
+        // Insert into new parent's children or root list at the correct position
+        if (newParentTag is not null)
+        {
+            var targetChildren = newParentTag.Children;
+            int clampedIndex = Math.Clamp(insertionIndex, 0, targetChildren.Count);
+            targetChildren.Insert(clampedIndex, draggedTag);
+        }
+        else
+        {
+            int clampedIndex = Math.Clamp(insertionIndex, 0, rootTags.Count);
+            rootTags.Insert(clampedIndex, draggedTag);
+        }
+
+        // Update the parent reference (triggers tree rebuild via OnTagParentChanged)
+        draggedTag.Parent = newParentTag;
     }
 
     private PointerPressedEventArgs? _lastPressedArgs;
@@ -37,27 +90,9 @@ public partial class TagsSidePanel : SidePanel
         }
     }
 
-    private async void Tag_PointerPressed(object? sender, PointerPressedEventArgs e)
+    private void Tag_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         _lastPressedArgs = e;
-        e.Handled = true;
-    }
-
-    private async void Tag_PointerMoved(object? sender, PointerEventArgs e)
-    {
-        if (_lastPressedArgs != null && e.Properties.IsLeftButtonPressed)
-        {
-            var dragData = new DataTransfer();
-
-            if (sender is Control control && control.DataContext is TreeNode<TagViewModel> vm)
-            {
-                dragData.AddTag(vm.Item.GetModel());
-            }
-
-            var result = DragDrop.DoDragDropAsync(_lastPressedArgs, dragData, DragDropEffects.Move | DragDropEffects.Link);
-        }
-        _lastPressedArgs = null;
-        e.Handled = true;
     }
 
     private void Tag_PointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -72,6 +107,5 @@ public partial class TagsSidePanel : SidePanel
             panelVm.AddTagFilterCommand.Execute(nodeVm.Item);
         }
         _lastPressedArgs = null;
-        e.Handled = true;
     }
 }

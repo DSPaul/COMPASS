@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using Avalonia.Media;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services;
@@ -47,11 +45,10 @@ public class TagViewModel : ModelViewModelBase<Tag>, IHasChildren<TagViewModel>
     public Color BackgroundColor => _model.BackgroundColor;
 
     //Internally stored color, can be null to indicate it should follow the color of the parent tag
-    private Color? _internalBackgroundColor;
     public Color? InternalBackgroundColor
     {
-        get => _internalBackgroundColor;
-        set => SetProperty(ref _internalBackgroundColor, value);
+        get => _model.InternalBackgroundColor;
+        set => _model.InternalBackgroundColor = value;
     }
     
     public int Id => _model.Id;
