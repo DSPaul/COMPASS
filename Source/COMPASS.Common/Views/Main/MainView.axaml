@@ -221,9 +221,8 @@
                 <Grid.DataTemplates>
                     <DataTemplate DataType="{x:Type modelVms:FilterViewModel}">
                         <controls:Chip Theme="{StaticResource Removable}"
-                                       PointerPressed="Filter_PointerPressed"
-                                       PointerMoved="Filter_PointerMoved"
-                                       PointerReleased="Filter_PointerReleased"
+                                       behaviors:DragBehavior.IsDragSource="True"
+                                       behaviors:DragBehavior.DragHandler="{Binding $parent[main:MainView].FilterDragHandler}"
                                        Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
                                        Name="{Binding Content}"/>
                     </DataTemplate>
