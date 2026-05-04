@@ -12,6 +12,7 @@ using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.DragDrop;
 using COMPASS.Infra.Tools;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -50,6 +51,9 @@ namespace COMPASS.Common.ViewModels.Main
             PopulateMetaDataCollections();
 
             ReFilter();
+
+            IncludedDropHandler = CreateFilterDropHandler(include: true);
+            ExcludedDropHandler = CreateFilterDropHandler(include: false);
         }
 
         public event EventHandler? CodicesUpdated;
@@ -625,90 +629,30 @@ namespace COMPASS.Common.ViewModels.Main
         
         #endregion
         
-        #region Drag Drop Handlers
-        public void OnDragOver(DragEventArgs e, bool include)
-        {
-            var target = include ? IncludedFilters : ExcludedFilters;
-            if (e.DataTransfer.TryGetFilter() is Filter filter &&
-                !target.Any(filterVm => filterVm.GetModel() == filter))
-            {
-                e.DragEffects = DragDropEffects.Move;
-            }
-            else if (e.DataTransfer.TryGetTag() is { IsGroup: false })
-            {
-                e.DragEffects = DragDropEffects.Link;
-            }
-            else
-            {
-                e.DragEffects = DragDropEffects.None;
-            }
-        }
+        #region Drop Handlers
 
-        public void OnDrop(object? sender, DragEventArgs e, bool include)
-        {
-            if(sender is not Visual v)
-            {
-                return;
-            }
+        public DropHandler IncludedDropHandler { get; }
+        public DropHandler ExcludedDropHandler { get; }
 
-            AdornerLayer.SetAdorner(v, null);
-            var target = include ? IncludedFilters : ExcludedFilters;
-
-            //Move Filter to included/excluded
-            if (e.DataTransfer.TryGetFilter() is Filter draggedFilter &&
-                !target.Any(filterVm => filterVm.GetModel() == draggedFilter))
+        private DropHandler CreateFilterDropHandler(bool include) => new DropHandler()
+            .AddConfig(new DropConfig<Filter>(DataTransferFormats.FilterFormat, DragDropEffects.Move, filter => ActivateFilter(filter, include))
             {
-                ActivateFilter(draggedFilter, include);
-            }
-            //Create filter from tag
-            else if (e.DataTransfer.TryGetTag() is { IsGroup: false } tag)
+                CanDrop = filter => include
+                    ? !IncludedFilters.Any(vm => vm.GetModel() == filter)
+                    : !ExcludedFilters.Any(vm => vm.GetModel() == filter),
+                AdornerFactory = filter => new DropFilterAdorner(filter) { Format = "Move {0} here" },
+            })
+            .AddConfig(new DropConfig<Tag>(DataTransferFormats.TagFormat, DragDropEffects.Link, tag =>
             {
                 var tagVm = TabsViewModel.GetInstance()?.ActiveTab?.CollectionVM.GetTagVm(tag);
-                if(tagVm == null)
-                {
-                    return;
-                }
-                ActivateFilter(new TagFilter(tagVm), include);
-            }
-            
-        }
-
-        public void OnDragEnter(object? sender, DragEventArgs e, bool include)
-        {
-            if (sender is not Visual v)
+                if (tagVm is not null)
+                    ActivateFilter(new TagFilter(tagVm), include);
+            })
             {
-                return;
-            }
+                CanDrop = tag => !tag.IsGroup,
+                AdornerFactory = tag => new DropTagAdorner(tag) { Format = "Filter on {0}" },
+            });
 
-            var target = include ? IncludedFilters : ExcludedFilters;
-
-            if (e.DataTransfer.TryGetTag() is Tag tag)
-            {
-                var adorner = new DropTagAdorner(tag)
-                {
-                    Format = "Filter on  {0}",
-                };
-                AdornerLayer.SetAdorner(v, adorner);
-            }
-
-            if (e.DataTransfer.TryGetFilter() is Filter filter && 
-                !target.Any(filterVm => filterVm.GetModel() == filter))
-            {
-                var adorner = new DropFilterAdorner(filter)
-                {
-                    Format = "Move {0} here",
-                };
-                AdornerLayer.SetAdorner(v, adorner);
-            }
-        }
-
-        public void OnDragLeave(object? sender, DragEventArgs e)
-        {
-            if (sender is Visual v)
-            {
-                AdornerLayer.SetAdorner(v, null);
-            }
-        }
         #endregion
     }
 }

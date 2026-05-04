@@ -108,14 +108,4 @@ public partial class MainView : UserControl
             filtersVm.RemoveFilterCommand.Execute(filterVm);
         }
     }
-
-    private void IncludedFilters_DragEnter(object? sender, DragEventArgs e) => ActiveTabVM?.FiltersVM.OnDragEnter(sender, e, true);
-    private void IncludedFilters_DragOver(object? sender, DragEventArgs e) => ActiveTabVM?.FiltersVM.OnDragOver(e, true);
-    private void IncludedFilters_Drop(object? sender, DragEventArgs e) => ActiveTabVM?.FiltersVM.OnDrop(sender, e, true);
-
-    private void ExcludedFilters_DragEnter(object? sender, DragEventArgs e) => ActiveTabVM?.FiltersVM.OnDragEnter(sender, e, false);
-    private void ExcludedFilters_DragOver(object? sender, DragEventArgs e) => ActiveTabVM?.FiltersVM.OnDragOver(e, false);
-    private void ExcludedFilters_Drop(object? sender, DragEventArgs e) => ActiveTabVM?.FiltersVM.OnDrop(sender, e, false);
-
-    private void Filters_DragLeave(object? sender, DragEventArgs e) => ActiveTabVM?.FiltersVM.OnDragLeave(sender, e);
 }

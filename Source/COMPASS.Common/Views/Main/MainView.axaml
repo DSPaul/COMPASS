@@ -233,11 +233,8 @@
                         VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}"
                         DataContext="{Binding FiltersVM}"
-                        DragDrop.AllowDrop="True"
-                        DragDrop.DragEnter="IncludedFilters_DragEnter"
-                        DragDrop.DragOver="IncludedFilters_DragOver"
-                        DragDrop.Drop="IncludedFilters_Drop"
-                        DragDrop.DragLeave="Filters_DragLeave">
+                        behaviors:DropBehavior.IsDropTarget="True"
+                        behaviors:DropBehavior.DropHandler="{Binding IncludedDropHandler}">
                     <Panel>
                         <TextBlock Text="INCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Margin="5, 2" Foreground="Gray" FontSize="20"
@@ -257,11 +254,8 @@
                         VerticalAlignment="Center"
                         MinHeight="40" Margin="10,0,5,0" Background="{StaticResource FiltersBackground}"
                         DataContext="{Binding FiltersVM}"
-                        DragDrop.AllowDrop="True"
-                        DragDrop.DragEnter="ExcludedFilters_DragEnter"
-                        DragDrop.DragOver="ExcludedFilters_DragOver"
-                        DragDrop.Drop="ExcludedFilters_Drop"
-                        DragDrop.DragLeave="Filters_DragLeave">
+                        behaviors:DropBehavior.IsDropTarget="True"
+                        behaviors:DropBehavior.DropHandler="{Binding ExcludedDropHandler}">
                     <Panel>
                         <TextBlock Text="EXCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Margin="5 2" Foreground="Gray" FontSize="20"

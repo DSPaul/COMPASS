@@ -8,7 +8,6 @@ using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.ViewModels.SidePanels;
 using COMPASS.Infra.Behaviors;
-using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.Views.SidePanels;
 
