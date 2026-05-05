@@ -23,9 +23,8 @@ public class ReorderDropHandler : DropHandler<ReorderPayload>
     /// </summary>
     public Action<object, object?, int>? AfterDrop { get; init; }
 
-    public ReorderDropHandler() : base(ReorderPayload.Format, DragDropEffects.Move, null) //no action because overwritten
+    public ReorderDropHandler() : base(ReorderPayload.Format, DragDropEffects.Move)
     {
-
     }
 
     public override Control? GetAdorner(IDataTransfer transfer, DropContext context)

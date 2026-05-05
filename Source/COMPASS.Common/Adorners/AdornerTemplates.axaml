@@ -1,11 +1,32 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 					xmlns:adorners="using:COMPASS.Common.Adorners"
+					xmlns:materialIcons="using:Material.Icons.Avalonia"
                     xmlns:controls="using:COMPASS.Common.Controls"
                     xmlns:converters="using:COMPASS.Infra.Converters"
                     xmlns:models="using:COMPASS.Common.Models"
 					xmlns:vms="using:COMPASS.Common.ViewModels.ModelVMs">
 	
+	<ControlTheme TargetType="adorners:FileDropAdorner" x:Key="{x:Type adorners:FileDropAdorner}">
+		<Setter Property="Template">
+			<ControlTemplate TargetType="adorners:FileDropAdorner">
+				<Border IsHitTestVisible="False" CornerRadius="5"
+						BorderThickness="3" BorderBrush="DeepSkyBlue"
+						HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+					<Border.Background>
+						<SolidColorBrush Color="Black" Opacity="0.7"/>
+					</Border.Background>
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"
+								Spacing="8">
+						<materialIcons:MaterialIcon Kind="FileImport" Width="28" Height="28" Foreground="DeepSkyBlue"/>
+						<TextBlock Text="{TemplateBinding Message}" FontSize="18" FontWeight="SemiBold"
+								   Foreground="White" VerticalAlignment="Center"/>
+					</StackPanel>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+	</ControlTheme>
+
 	<ControlTheme TargetType="adorners:DropTagAdorner" x:Key="{x:Type adorners:DropTagAdorner}">
 		<Setter Property="Template">
 			<ControlTemplate TargetType="adorners:DropTagAdorner">

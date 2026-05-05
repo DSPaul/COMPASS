@@ -635,22 +635,24 @@ namespace COMPASS.Common.ViewModels.Main
         public DropManager ExcludedDropManager { get; }
 
         private DropManager CreateFilterDropManager(bool include) => new DropManager()
-            .AddHandler(new DropHandler<Filter>(DataTransferFormats.FilterFormat, DragDropEffects.Move, filter => ActivateFilter(filter, include))
+            .AddHandler(new DropHandler<Filter>(DataTransferFormats.FilterFormat, DragDropEffects.Move)
             {
+                OnDroppedSingle = filter => ActivateFilter(filter, include),
                 CanDrop = filter => include
                     ? !IncludedFilters.Any(vm => vm.GetModel() == filter)
                     : !ExcludedFilters.Any(vm => vm.GetModel() == filter),
-                AdornerFactory = filter => new DropFilterAdorner(filter) { Format = "Move {0} here" },
+                AdornerFactory = filters => new DropFilterAdorner(filters[0]) { Format = "Move {0} here" },
             })
-            .AddHandler(new DropHandler<Tag>(DataTransferFormats.TagFormat, DragDropEffects.Link, tag =>
+            .AddHandler(new DropHandler<Tag>(DataTransferFormats.TagFormat, DragDropEffects.Link)
             {
-                var tagVm = TabsViewModel.GetInstance()?.ActiveTab?.CollectionVM.GetTagVm(tag);
-                if (tagVm is not null)
-                    ActivateFilter(new TagFilter(tagVm), include);
-            })
-            {
+                OnDroppedSingle = tag =>
+                {
+                    var tagVm = TabsViewModel.GetInstance()?.ActiveTab?.CollectionVM.GetTagVm(tag);
+                    if (tagVm is not null)
+                        ActivateFilter(new TagFilter(tagVm), include);
+                },
                 CanDrop = tag => !tag.IsGroup,
-                AdornerFactory = tag => new DropTagAdorner(tag) { Format = "Filter on {0}" },
+                AdornerFactory = tags => new DropTagAdorner(tags[0]) { Format = "Filter on {0}" },
             });
 
         #endregion

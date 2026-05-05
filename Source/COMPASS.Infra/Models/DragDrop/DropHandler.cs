@@ -35,49 +35,82 @@ namespace COMPASS.Infra.Models.DragDrop
 
     public class DropHandler<T> : DropHandler where T : class
     {
-        public DropHandler(DataFormat<T> dataFormat, DragDropEffects dropEffects, Action<T>? onDropped)
+        public DropHandler(DataFormat<T> dataFormat, DragDropEffects dropEffects)
         {
             DataFormat = dataFormat;
             DropEffects = dropEffects;
-            OnDropped = onDropped;
         }
 
         public DataFormat<T> DataFormat { get; }
-        public Action<T>? OnDropped { get; }
 
         /// <summary>
-        /// Factory that creates the adorner to preview the drop. Receives the dragged item.
+        /// Callback invoked once per dropped item.
         /// </summary>
-        public Func<T, TemplatedControl>? AdornerFactory { get; init; }
+        public Action<T>? OnDroppedSingle { get; init; }
 
         /// <summary>
-        /// Check certain conditions on the item to see if it can be dropped here.
+        /// Callback invoked with all dropped items at once.
+        /// </summary>
+        public Action<T[]>? OnDroppedMultiple { get; init; }
+
+        /// <summary>
+        /// Async callback invoked with all dropped items at once. Takes precedence over <see cref="OnDroppedSingle"/> and <see cref="OnDroppedMultiple"/> when set.
+        /// </summary>
+        public Func<T[], Task>? OnDroppedMultipleAsync { get; init; }
+
+        /// <summary>
+        /// Factory that creates the adorner to preview the drop. Receives all dropped items.
+        /// </summary>
+        public Func<T[], TemplatedControl>? AdornerFactory { get; init; }
+
+        /// <summary>
+        /// Check certain conditions on an item to see if it can be dropped here.
         /// </summary>
         public Func<T, bool>? CanDrop { get; init; }
 
-        private T? TryExtract(IDataTransfer transfer)
+        private T[]? TryExtract(IDataTransfer transfer)
         {
-            var data = transfer.TryGetValue(DataFormat);
-            if (data is null) return null;
-            if (CanDrop?.Invoke(data) == false) return null;
-            return data;
+            var items = transfer.TryGetValues(DataFormat);
+            if (items is null || items.Length == 0) return null;
+            if (CanDrop is not null)
+                items = items.Where(item => CanDrop(item)).ToArray();
+            return items.Length > 0 ? items : null;
         }
 
         public override TemplatedControl? TryGetAdorner(IDataTransfer transfer)
         {
-            var data = TryExtract(transfer);
-            if (data is null) return null;
-            return AdornerFactory?.Invoke(data);
+            var items = TryExtract(transfer);
+            if (items is null) return null;
+            return AdornerFactory?.Invoke(items);
         }
 
         public override bool CanHandleDrop(IDataTransfer transfer) => TryExtract(transfer) is not null;
 
         public override bool TryHandleDrop(IDataTransfer transfer, DropContext context)
         {
-            var data = TryExtract(transfer);
-            if (data is null || OnDropped == null) return false;
-            OnDropped(data);
-            return true;
+            var items = TryExtract(transfer);
+            if (items is null) return false;
+
+            if (OnDroppedMultipleAsync is not null)
+            {
+                OnDroppedMultipleAsync(items); // fire-and-forget
+                return true;
+            }
+
+            if (OnDroppedMultiple is not null)
+            {
+                OnDroppedMultiple(items);
+                return true;
+            }
+
+            if (OnDroppedSingle is not null)
+            {
+                foreach (var item in items)
+                    OnDroppedSingle(item);
+                return true;
+            }
+
+            return false;
         }
     }
 }

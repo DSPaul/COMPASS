@@ -1,4 +1,6 @@
 ﻿using Avalonia.Input;
+using Avalonia.Platform.Storage;
+using COMPASS.Common.Adorners;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
@@ -6,6 +8,7 @@ using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
+using COMPASS.Infra.Models.DragDrop;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
@@ -76,59 +79,41 @@ namespace COMPASS.Common.ViewModels.Layouts
             FiltersVM = _tabViewModel.FiltersVM;
         }
 
-        public void OnDragOver(object? sender, DragEventArgs e)
-        {
-            if (e.DataTransfer.TryGetFiles() != null)
+        public DropManager FileDropManager { get; } = new DropManager()
+            .AddHandler(new DropHandler<IStorageItem>(DataFormat.File, DragDropEffects.Copy)
             {
-                //TODO: handle UI changes on hover manually
-                //e.DropTargetAdorner = DropTargetAdorners.Highlight;
-                e.DragEffects = DragDropEffects.Copy;
-                e.Handled = true;
-            }
-        }
-
-        public async void OnDrop(object? sender, DragEventArgs e)
-        {
-            var paths = e.DataTransfer
-                .TryGetFiles()?
-                .Select(f => f.Path.LocalPath)
-                .ToList();
-
-            if (paths is null) return;
-
-            var folders = paths.Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
-            var files = paths.Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
-
-            //check for folder import
-            if (folders.Count != 0)
-            {
-                using ImportFilesViewModel folderImportVM = new(autoImport: false)
+                AdornerFactory = storageItems => new FileDropAdorner(storageItems),
+                OnDroppedMultipleAsync = async storageItems =>
                 {
-                    RecursiveDirectories = folders,
-                    Files = files
-                };
-                await folderImportVM.Import();
-            }
-            else
-                switch (files.Count)
-                {
-                    //If no files or folders, to nothing
-                    case 0:
-                        return;
-                    //Check if it's a satchel file, do import if so
-                    case 1 when files.First().EndsWith(Constants.SatchelExtension):
-                        if (TabsViewModel.GetInstance().ActiveTab is CollectionTabVM activeTab)
+                    var paths = storageItems.Select(f => f.Path.LocalPath).ToList();
+
+                    var folders = paths.Where(path => File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
+                    var files = paths.Where(path => !File.GetAttributes(path).HasFlag(FileAttributes.Directory)).ToList();
+
+                    if (folders.Count != 0)
+                    {
+                        using ImportFilesViewModel folderImportVM = new(autoImport: false)
                         {
-                            await activeTab.ImportSatchelAsync(files.First());
+                            RecursiveDirectories = folders,
+                            Files = files
+                        };
+                        await folderImportVM.Import();
+                    }
+                    else
+                        switch (files.Count)
+                        {
+                            case 0:
+                                return;
+                            case 1 when files.First().EndsWith(Constants.SatchelExtension):
+                                if (TabsViewModel.GetInstance().ActiveTab is CollectionTabVM activeTab)
+                                    await activeTab.ImportSatchelAsync(files.First());
+                                break;
+                            default:
+                                await ImportViewModel.ImportFilesAsync(files);
+                                break;
                         }
-
-                        break;
-                    //If none of the above, just import the files
-                    default:
-                        await ImportViewModel.ImportFilesAsync(files);
-                        break;
                 }
-        }
+            });
 
         public void Dispose()
         {

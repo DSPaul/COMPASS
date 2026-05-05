@@ -346,7 +346,8 @@
 
             </Grid>
             
-            <Panel DragDrop.AllowDrop="True">
+            <Panel behaviors:DropBehavior.IsDropTarget="True"
+                   behaviors:DropBehavior.DropManager="{Binding CurrentLayout.FileDropManager}">
                 <!--Layout-->
                 <ContentControl Content="{Binding CurrentLayout}"
                                 IsVisible="{Binding !!CollectionVM.Collection.AllCodices.Count}"/>
