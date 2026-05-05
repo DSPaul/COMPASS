@@ -12,7 +12,7 @@
             <Border CornerRadius="5" Background="{StaticResource DarkUIElementBackground}">
                 <ItemsControl x:Name="InnerItemsControl" BorderBrush="{x:Null}" Background="Transparent"
                               Padding="5" ItemsSource="{TemplateBinding ItemsSource}"
-                              behaviors:ReorderDragBehavior.IsDropTarget="True">
+                              behaviors:DropBehavior.IsDropTarget="True">
                     <ItemsControl.Styles>
                         <Style Selector="#InnerItemsControl ContentPresenter:nth-child(1) controls|IconButton#UpBtn">
                             <Setter Property="IsVisible" Value="False"/>
@@ -29,7 +29,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border CornerRadius="5" Background="{StaticResource AccentColorMuted}"
-                                    behaviors:ReorderDragBehavior.IsDragSource="True"
+                                    behaviors:DragBehavior.IsDragSource="True"
                                     Cursor="SizeNorthSouth">
                                 <Grid ColumnDefinitions="*,15,15">
                                     <TextBlock Text="{Binding $self.DataContext, Converter={x:Static converters:StringConverters.ToStringConverter}}" Margin="7,2"/>

@@ -11,6 +11,13 @@ namespace COMPASS.Infra.Models.DragDrop
         public Action<object?, PointerPressedEventArgs>? ClickHandler { get; private set; }
 
         public IEnumerable<DragHandler> GetHandlers() => DragHandlers;
+
+        public DragManager AddHandler(DragHandler handler)
+        {
+            DragHandlers.Add(handler);
+            return this;
+        }
+
         public DragManager AddHandler<T>(DragHandler<T> handler) where T : class
         {
             DragHandlers.Add(handler);

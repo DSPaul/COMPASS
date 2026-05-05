@@ -1,6 +1,8 @@
 using System.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using COMPASS.Infra.Behaviors;
+using COMPASS.Infra.Models.DragDrop;
 
 namespace COMPASS.Common.Controls;
 
@@ -9,6 +11,22 @@ public partial class PriorityControl : ItemsControl
     public PriorityControl()
     {
         InitializeComponent();
+
+        TemplateApplied += OnTemplateApplied;
+    }
+
+    private void OnTemplateApplied(object? sender, Avalonia.Controls.Primitives.TemplateAppliedEventArgs e)
+    {
+        var innerItemsControl = e.NameScope.Find<ItemsControl>("InnerItemsControl");
+        if (innerItemsControl is null) return;
+
+        var dragManager = new DragManager()
+            .AddHandler(new ReorderDragHandler());
+        DragBehavior.SetDragManager(innerItemsControl, dragManager);
+
+        var dropManager = new DropManager()
+            .AddHandler(new ReorderDropHandler());
+        DropBehavior.SetDropManager(innerItemsControl, dropManager);
     }
 
     private void MoveUp(object? sender, RoutedEventArgs e)

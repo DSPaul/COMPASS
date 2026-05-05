@@ -1,4 +1,5 @@
-﻿using Avalonia.Input;
+﻿using Avalonia.Controls;
+using Avalonia.Input;
 
 namespace COMPASS.Infra.Models.DragDrop
 {
@@ -10,6 +11,12 @@ namespace COMPASS.Infra.Models.DragDrop
         private List<DropHandler> DropHandlers { get; } = [];
 
         public IEnumerable<DropHandler> GetHandlers() => DropHandlers;
+
+        public DropManager AddHandler(DropHandler handler)
+        {
+            DropHandlers.Add(handler);
+            return this;
+        }
 
         public DropManager AddHandler<T>(DropHandler<T> handler) where T : class
         {
@@ -25,17 +32,29 @@ namespace COMPASS.Infra.Models.DragDrop
 
         public bool CanHandleDrop(IDataTransfer transfer) =>
             DropHandlers.Any(dropHandler => dropHandler.CanHandleDrop(transfer));
+
         /// <summary>
-        /// Executes the first handler that can handle the transfer. Returns true if one was found.
+        /// Executes the first handler that can handle the transfer with positional context.
         /// </summary>
-        public bool HandleDrop(IDataTransfer transfer)
+        public bool HandleDrop(IDataTransfer transfer, DropContext context)
         {
-            foreach (var dropHandler in DropHandlers)
-            {
-                if (dropHandler.TryHandleDrop(transfer)) return true;
+            var handler = GetFirstApplicableHandler(transfer);
+            if (handler != null) 
+            { 
+                return handler.TryHandleDrop(transfer, context);
             }
             return false;
         }
+
+        /// <summary>
+        /// Gets the adorner from the first applicable handler with positional context.
+        /// </summary>
+        public Control? GetAdorner(IDataTransfer transfer, DropContext context)
+        {
+            var handler = GetFirstApplicableHandler(transfer);
+            return handler?.GetAdorner(transfer, context);
+        }
     }
 }
+
 

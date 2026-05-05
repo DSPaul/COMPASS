@@ -8,6 +8,7 @@ using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.ViewModels.SidePanels;
 using COMPASS.Infra.Behaviors;
+using COMPASS.Infra.Models.DragDrop;
 
 namespace COMPASS.Common.Views.SidePanels;
 
@@ -17,19 +18,27 @@ public partial class TagsSidePanel : SidePanel
     {
         InitializeComponent();
 
-        // When the ReorderDragBehavior starts a drag from a tag Chip, inject the
-        // Tag payload into the DataTransfer so the item can also be dropped on
-        // non-reorder targets (e.g. applying tags to codex items).
-        ReorderDragBehavior.SetDragDataProvider(TagTree, AddTagToTransfer);
-        ReorderDragBehavior.SetAfterDrop(TagTree, UpdateTagParent);
-    }
+        // Set up the DragManager on the TreeView so drag sources can create reorder payloads
+        // and also enrich the transfer with the Tag for cross-component drops.
+        var dragManager = new DragManager()
+            .AddHandler(new ReorderDragHandler())
+            .AddHandler(new DragHandler<Tag>
+            {
+                DataFormat = DataTransferFormats.TagFormat,
+                GetData = visual => (visual?.DataContext as TreeNode<TagViewModel>)?.Item.GetModel(),
+                IsDraggable = tag => !tag.IsGroup,
+            });
 
-    private static void AddTagToTransfer(DataTransfer transfer, object? dataContext)
-    {
-        if (dataContext is TreeNode<TagViewModel> node && !node.Item.GetModel().IsGroup)
-        {
-            transfer.AddTag(node.Item.GetModel());
-        }
+        DragBehavior.SetDragManager(TagTree, dragManager);
+
+        // Set up the DropManager on the TreeView with the reorder handler
+        var dropManager = new DropManager()
+            .AddHandler(new ReorderDropHandler
+            {
+                AfterDrop = UpdateTagParent
+            });
+
+        DropBehavior.SetDropManager(TagTree, dropManager);
     }
 
     private static void UpdateTagParent(object draggedItem, object? newParentDataContext, int insertionIndex)

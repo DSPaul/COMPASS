@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls.Primitives;
+﻿using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 
 namespace COMPASS.Infra.Models.DragDrop
@@ -6,39 +7,43 @@ namespace COMPASS.Infra.Models.DragDrop
     public abstract class DropHandler
     {
         /// <summary>
-        /// Returns the adorner to show during DragEnter/DragOver, or null if this config cannot handle the transfer.
+        /// Gets the effects to show during DragOver.
         /// </summary>
-        public abstract TemplatedControl? TryGetAdorner(IDataTransfer transfer);
+        public DragDropEffects DropEffects { get; set; }
 
         /// <summary>
-        /// Returns true if the transfer can be handled by this config.
+        /// Returns true if the transfer can be handled by this handler.
         /// </summary>
         public abstract bool CanHandleDrop(IDataTransfer transfer);
 
         /// <summary>
-        /// Executes the drop. Returns true if the transfer was handled.
+        /// Returns the adorner to show during DragOver, or null for no adorner.
+        /// Override the context-aware overload for position-dependent adorners.
         /// </summary>
-        public abstract bool TryHandleDrop(IDataTransfer transfer);
+        public virtual Control? GetAdorner(IDataTransfer transfer, DropContext context) => TryGetAdorner(transfer);
 
         /// <summary>
-        /// Gets the effects to show during DragOver.
+        /// Simple adorner factory without positional context. Override <see cref="GetAdorner"/> for position-aware adorners.
         /// </summary>
-        /// <param name="transfer"></param>
-        /// <returns></returns>
-        public DragDropEffects DropEffects { get; set; }
+        public virtual TemplatedControl? TryGetAdorner(IDataTransfer transfer) => null;
+
+        /// <summary>
+        /// Simple drop handler without positional context. Override <see cref="HandleDrop"/> for position-aware drops.
+        /// </summary>
+        public virtual bool TryHandleDrop(IDataTransfer transfer, DropContext context) => false;
     }
 
     public class DropHandler<T> : DropHandler where T : class
     {
-        public DropHandler(DataFormat<T> dataFormat, DragDropEffects dropEffects, Action<T> onDropped)
+        public DropHandler(DataFormat<T> dataFormat, DragDropEffects dropEffects, Action<T>? onDropped)
         {
             DataFormat = dataFormat;
             DropEffects = dropEffects;
             OnDropped = onDropped;
         }
 
-        public DataFormat<T> DataFormat { get;  }
-        public Action<T> OnDropped { get; }
+        public DataFormat<T> DataFormat { get; }
+        public Action<T>? OnDropped { get; }
 
         /// <summary>
         /// Factory that creates the adorner to preview the drop. Receives the dragged item.
@@ -67,10 +72,10 @@ namespace COMPASS.Infra.Models.DragDrop
 
         public override bool CanHandleDrop(IDataTransfer transfer) => TryExtract(transfer) is not null;
 
-        public override bool TryHandleDrop(IDataTransfer transfer)
+        public override bool TryHandleDrop(IDataTransfer transfer, DropContext context)
         {
             var data = TryExtract(transfer);
-            if (data is null) return false;
+            if (data is null || OnDropped == null) return false;
             OnDropped(data);
             return true;
         }

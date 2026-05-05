@@ -56,18 +56,26 @@ public sealed class DropBehavior : AvaloniaObject
 
     #region Drop Handling
 
+    private static Control? _currentAdorner;
+    private static Visual? _currentAdornerOwner;
+
     private static void OnDragEnter(object? sender, DragEventArgs e)
     {
         if (sender is not Visual dropTarget) return;
 
         DropManager? manager = FindInheritedValue(dropTarget, DropManagerProperty);
-        var handler = manager?.GetFirstApplicableHandler(e.DataTransfer);
-        if (handler is not null)
+        if (manager is null || !manager.CanHandleDrop(e.DataTransfer))
         {
-            var adorner = handler.TryGetAdorner(e.DataTransfer);
-            AdornerLayer.SetAdorner(dropTarget, adorner);
+            e.DragEffects = DragDropEffects.None;
+            e.Handled = true;
+            return;
         }
 
+        var context = new DropContext { DropTarget = dropTarget, DragEventArgs = e };
+        UpdateAdorner(dropTarget, manager, e.DataTransfer, context);
+
+        var handler = manager.GetFirstApplicableHandler(e.DataTransfer);
+        e.DragEffects = handler?.DropEffects ?? DragDropEffects.None;
         e.Handled = true;
     }
 
@@ -78,32 +86,74 @@ public sealed class DropBehavior : AvaloniaObject
         DropManager? manager = FindInheritedValue(dropTarget, DropManagerProperty);
         var handler = manager?.GetFirstApplicableHandler(e.DataTransfer);
 
-        e.DragEffects = handler?.DropEffects ?? DragDropEffects.None;
+        if (handler is null)
+        {
+            e.DragEffects = DragDropEffects.None;
+            e.Handled = true;
+            return;
+        }
+
+        var context = new DropContext { DropTarget = dropTarget, DragEventArgs = e };
+        UpdateAdorner(dropTarget, manager!, e.DataTransfer, context);
+
+        e.DragEffects = handler.DropEffects;
         e.Handled = true;
     }
 
     private static void OnDragLeave(object? sender, DragEventArgs e)
     {
-        if (sender is Visual dropTarget)
-        {
-            AdornerLayer.SetAdorner(dropTarget, null);
-        }
-
+        ClearAdorner();
         e.Handled = true;
     }
 
     private static void OnDrop(object? sender, DragEventArgs e)
     {
-        if (sender is not Visual dropTarget) return;
+        ClearAdorner();
 
-        AdornerLayer.SetAdorner(dropTarget, null);
+        if (sender is not Visual dropTarget) return;
 
         DropManager? dropManager = FindInheritedValue(dropTarget, DropManagerProperty);
         if (dropManager is null) return;
 
-        dropManager.HandleDrop(e.DataTransfer);
+        var context = new DropContext { DropTarget = dropTarget, DragEventArgs = e };
+        dropManager.HandleDrop(e.DataTransfer, context);
         e.Handled = true;
     }
 
     #endregion
+
+    #region Adorner Management
+
+    private static void UpdateAdorner(Visual dropTarget, DropManager manager, IDataTransfer transfer, DropContext context)
+    {
+        var adorner = manager.GetAdorner(transfer, context);
+
+        if (adorner is null)
+        {
+            ClearAdorner();
+            return;
+        }
+
+        // If the handler returns the same adorner instance, just leave it (it manages its own state)
+        if (ReferenceEquals(adorner, _currentAdorner) && ReferenceEquals(dropTarget, _currentAdornerOwner))
+            return;
+
+        ClearAdorner();
+        _currentAdorner = adorner;
+        _currentAdornerOwner = dropTarget;
+        AdornerLayer.SetAdorner(dropTarget, adorner);
+    }
+
+    private static void ClearAdorner()
+    {
+        if (_currentAdornerOwner is not null && _currentAdorner is not null)
+        {
+            AdornerLayer.SetAdorner(_currentAdornerOwner, null);
+        }
+        _currentAdorner = null;
+        _currentAdornerOwner = null;
+    }
+
+    #endregion
 }
+

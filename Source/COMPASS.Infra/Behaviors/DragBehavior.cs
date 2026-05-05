@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.VisualTree;
 using COMPASS.Infra.Models.DragDrop;
 using static COMPASS.Infra.Tools.VisualTreeHelpers;
 
@@ -59,6 +60,14 @@ public sealed class DragBehavior : AvaloniaObject
         if (sender is not Control control) return;
         //Middle and left mouse click and such also trigger pointer pressed
         if (!e.Properties.IsLeftButtonPressed) return;
+
+        // Skip if the press originated from an interactive child (e.g. a Button).
+        Visual? ancestor = e.Source as Visual;
+        while (ancestor is not null && ancestor != control)
+        {
+            if (ancestor is Button) return;
+            ancestor = ancestor.GetVisualParent();
+        }
 
         _lastPressedArgs = e;
         _lastPressedControl = control;

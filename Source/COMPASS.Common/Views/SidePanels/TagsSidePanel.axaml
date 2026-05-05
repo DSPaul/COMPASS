@@ -173,7 +173,7 @@
         <TreeView x:Name="TagTree" BorderBrush="{x:Null}" Background="Transparent"
                   Grid.Row="3" Margin="5 0" Classes="NoSelection"
                   ItemsSource="{Binding Path=TagsAsTreeNodes, Mode=TwoWay}"
-                  behaviors:ReorderDragBehavior.IsDropTarget="True"
+                  behaviors:DropBehavior.IsDropTarget="True"
                   ContextMenu="{StaticResource AllTagsContextMenu}">
             <TreeView.ItemTemplate>
                 <dataTemplates:TagTreeDataTemplateSelector>
@@ -183,7 +183,7 @@
                                        Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
                                        ContextMenu="{StaticResource TagContextMenu}"
                                        Cursor="Hand"
-                                       behaviors:ReorderDragBehavior.IsDragSource="True"
+                                       behaviors:DragBehavior.IsDragSource="True"
                                        PointerPressed="Tag_PointerPressed"
                                        PointerReleased="Tag_PointerReleased"/>
                     </TreeDataTemplate>
@@ -193,7 +193,7 @@
                                        Text="{Binding Item.Name}" HorizontalAlignment="Stretch"
                                        Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
                                        ContextMenu="{StaticResource TagContextMenu}"
-                                       behaviors:ReorderDragBehavior.IsDragSource="True"/>
+                                       behaviors:DragBehavior.IsDragSource="True"/>
                     </TreeDataTemplate>
                 </dataTemplates:TagTreeDataTemplateSelector>
             </TreeView.ItemTemplate>
