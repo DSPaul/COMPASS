@@ -17,11 +17,11 @@ public sealed class DragBehavior : AvaloniaObject
     public static void SetIsDragSource(Control c, bool v) => c.SetValue(IsDragSourceProperty, v);
 
 
-    public static readonly AttachedProperty<DragHandler?> DragHandlerProperty =
-        AvaloniaProperty.RegisterAttached<DragBehavior, Control, DragHandler?>("DragHandler");
+    public static readonly AttachedProperty<DragManager?> DragManagerProperty =
+        AvaloniaProperty.RegisterAttached<DragBehavior, Control, DragManager?>("DragManager");
 
-    public static DragHandler? GetDragHandler(Control c) => c.GetValue(DragHandlerProperty);
-    public static void SetDragHandler(Control c, DragHandler? v) => c.SetValue(DragHandlerProperty, v);
+    public static DragManager? GetDragManager(Control c) => c.GetValue(DragManagerProperty);
+    public static void SetDragManager(Control c, DragManager? v) => c.SetValue(DragManagerProperty, v);
     #endregion
 
     #region Event Wiring
@@ -77,12 +77,12 @@ public sealed class DragBehavior : AvaloniaObject
 
         var dragDataTranfer = new DataTransfer();
 
-        DragHandler? handler = FindInheritedValue(draggedVisual, DragHandlerProperty);
-        if (handler is null) return;
+        DragManager? dragManager = FindInheritedValue(draggedVisual, DragManagerProperty);
+        if (dragManager is null) return;
 
-        foreach (var dragConfig in handler.GetConfigs())
+        foreach (var dragHandler in dragManager.GetHandlers())
         {
-            dragConfig.TryAddToTransfer(dragDataTranfer, draggedVisual);
+            dragHandler.TryAddToTransfer(dragDataTranfer, draggedVisual);
         }
 
         var allowedEffects = DragDropEffects.Move | DragDropEffects.Copy | DragDropEffects.Link;
@@ -94,8 +94,8 @@ public sealed class DragBehavior : AvaloniaObject
         //if last press is not null, means no movement happened, so we consider it a click
         if (_lastPressedArgs != null && _lastPressedControl != null)
         {
-            DragHandler? handler = FindInheritedValue(_lastPressedControl, DragHandlerProperty);
-            handler?.ClickHandler?.Invoke(_lastPressedControl, _lastPressedArgs);
+            DragManager? dragManager = FindInheritedValue(_lastPressedControl, DragManagerProperty);
+            dragManager?.ClickHandler?.Invoke(_lastPressedControl, _lastPressedArgs);
             _lastPressedArgs = null;
             _lastPressedControl = null;
         }

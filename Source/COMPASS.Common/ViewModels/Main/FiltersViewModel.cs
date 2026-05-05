@@ -52,8 +52,8 @@ namespace COMPASS.Common.ViewModels.Main
 
             ReFilter();
 
-            IncludedDropHandler = CreateFilterDropHandler(include: true);
-            ExcludedDropHandler = CreateFilterDropHandler(include: false);
+            IncludedDropManager = CreateFilterDropManager(include: true);
+            ExcludedDropManager = CreateFilterDropManager(include: false);
         }
 
         public event EventHandler? CodicesUpdated;
@@ -631,18 +631,18 @@ namespace COMPASS.Common.ViewModels.Main
         
         #region Drop Handlers
 
-        public DropHandler IncludedDropHandler { get; }
-        public DropHandler ExcludedDropHandler { get; }
+        public DropManager IncludedDropManager { get; }
+        public DropManager ExcludedDropManager { get; }
 
-        private DropHandler CreateFilterDropHandler(bool include) => new DropHandler()
-            .AddConfig(new DropConfig<Filter>(DataTransferFormats.FilterFormat, DragDropEffects.Move, filter => ActivateFilter(filter, include))
+        private DropManager CreateFilterDropManager(bool include) => new DropManager()
+            .AddHandler(new DropHandler<Filter>(DataTransferFormats.FilterFormat, DragDropEffects.Move, filter => ActivateFilter(filter, include))
             {
                 CanDrop = filter => include
                     ? !IncludedFilters.Any(vm => vm.GetModel() == filter)
                     : !ExcludedFilters.Any(vm => vm.GetModel() == filter),
                 AdornerFactory = filter => new DropFilterAdorner(filter) { Format = "Move {0} here" },
             })
-            .AddConfig(new DropConfig<Tag>(DataTransferFormats.TagFormat, DragDropEffects.Link, tag =>
+            .AddHandler(new DropHandler<Tag>(DataTransferFormats.TagFormat, DragDropEffects.Link, tag =>
             {
                 var tagVm = TabsViewModel.GetInstance()?.ActiveTab?.CollectionVM.GetTagVm(tag);
                 if (tagVm is not null)

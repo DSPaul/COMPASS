@@ -17,11 +17,11 @@ public sealed class DropBehavior : AvaloniaObject
     public static bool GetIsDropTarget(Control c) => c.GetValue(IsDropTargetProperty);
     public static void SetIsDropTarget(Control c, bool v) => c.SetValue(IsDropTargetProperty, v);
 
-    public static readonly AttachedProperty<DropHandler?> DropHandlerProperty =
-        AvaloniaProperty.RegisterAttached<DropBehavior, Control, DropHandler?>("DropHandler");
+    public static readonly AttachedProperty<DropManager?> DropManagerProperty =
+        AvaloniaProperty.RegisterAttached<DropBehavior, Control, DropManager?>("DropManager");
 
-    public static DropHandler? GetDropHandler(Control c) => c.GetValue(DropHandlerProperty);
-    public static void SetDropHandler(Control c, DropHandler? v) => c.SetValue(DropHandlerProperty, v);
+    public static DropManager? GetDropManager(Control c) => c.GetValue(DropManagerProperty);
+    public static void SetDropManager(Control c, DropManager? v) => c.SetValue(DropManagerProperty, v);
 
     #endregion
 
@@ -60,11 +60,11 @@ public sealed class DropBehavior : AvaloniaObject
     {
         if (sender is not Visual dropTarget) return;
 
-        DropHandler? handler = FindInheritedValue(dropTarget, DropHandlerProperty);
-        var config = handler?.GetFirstApplicableConfig(e.DataTransfer);
-        if (config is not null)
+        DropManager? manager = FindInheritedValue(dropTarget, DropManagerProperty);
+        var handler = manager?.GetFirstApplicableHandler(e.DataTransfer);
+        if (handler is not null)
         {
-            var adorner = config.TryGetAdorner(e.DataTransfer);
+            var adorner = handler.TryGetAdorner(e.DataTransfer);
             AdornerLayer.SetAdorner(dropTarget, adorner);
         }
 
@@ -75,10 +75,10 @@ public sealed class DropBehavior : AvaloniaObject
     {
         if (sender is not Visual dropTarget) return;
 
-        DropHandler? handler = FindInheritedValue(dropTarget, DropHandlerProperty);
-        var config = handler?.GetFirstApplicableConfig(e.DataTransfer);
+        DropManager? manager = FindInheritedValue(dropTarget, DropManagerProperty);
+        var handler = manager?.GetFirstApplicableHandler(e.DataTransfer);
 
-        e.DragEffects = config?.DropEffects ?? DragDropEffects.None;
+        e.DragEffects = handler?.DropEffects ?? DragDropEffects.None;
         e.Handled = true;
     }
 
@@ -98,10 +98,10 @@ public sealed class DropBehavior : AvaloniaObject
 
         AdornerLayer.SetAdorner(dropTarget, null);
 
-        DropHandler? handler = FindInheritedValue(dropTarget, DropHandlerProperty);
-        if (handler is null) return;
+        DropManager? dropManager = FindInheritedValue(dropTarget, DropManagerProperty);
+        if (dropManager is null) return;
 
-        handler.HandleDrop(e.DataTransfer);
+        dropManager.HandleDrop(e.DataTransfer);
         e.Handled = true;
     }
 

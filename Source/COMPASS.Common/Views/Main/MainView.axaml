@@ -222,7 +222,7 @@
                     <DataTemplate DataType="{x:Type modelVms:FilterViewModel}">
                         <controls:Chip Theme="{StaticResource Removable}"
                                        behaviors:DragBehavior.IsDragSource="True"
-                                       behaviors:DragBehavior.DragHandler="{Binding $parent[main:MainView].FilterDragHandler}"
+                                       behaviors:DragBehavior.DragManager="{Binding $parent[main:MainView].FilterDragManager}"
                                        Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}"
                                        Name="{Binding Content}"/>
                     </DataTemplate>
@@ -234,7 +234,7 @@
                         MinHeight="40" Margin="10,0" Background="{StaticResource FiltersBackground}"
                         DataContext="{Binding FiltersVM}"
                         behaviors:DropBehavior.IsDropTarget="True"
-                        behaviors:DropBehavior.DropHandler="{Binding IncludedDropHandler}">
+                        behaviors:DropBehavior.DropManager="{Binding IncludedDropManager}">
                     <Panel>
                         <TextBlock Text="INCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Margin="5, 2" Foreground="Gray" FontSize="20"
@@ -255,7 +255,7 @@
                         MinHeight="40" Margin="10,0,5,0" Background="{StaticResource FiltersBackground}"
                         DataContext="{Binding FiltersVM}"
                         behaviors:DropBehavior.IsDropTarget="True"
-                        behaviors:DropBehavior.DropHandler="{Binding ExcludedDropHandler}">
+                        behaviors:DropBehavior.DropManager="{Binding ExcludedDropManager}">
                     <Panel>
                         <TextBlock Text="EXCLUDED FILTERS" VerticalAlignment="Center" HorizontalAlignment="Center"
                                    Margin="5 2" Foreground="Gray" FontSize="20"

@@ -16,13 +16,13 @@ public partial class MainView : UserControl
     {
         InitializeComponent();
 
-        FilterDragHandler = new DragHandler()
-        .AddConfig(new DragConfig<Filter>
+        FilterDragManager = new DragManager()
+        .AddHandler(new DragHandler<Filter>
             {
                 DataFormat = DataTransferFormats.FilterFormat,
                 GetData = visual => (visual.DataContext as FilterViewModel)?.GetModel(),
             })
-        .AddConfig(new DragConfig<Tag>
+        .AddHandler(new DragHandler<Tag>
             {
                 DataFormat = DataTransferFormats.TagFormat,
                 GetData = visual => ((visual.DataContext as FilterViewModel)?.GetModel() as TagFilter)?.FilterValue is TagViewModel tagVm
@@ -40,7 +40,7 @@ public partial class MainView : UserControl
         _ => null
     };
 
-    public DragHandler FilterDragHandler { get; }
+    public DragManager FilterDragManager { get; }
 
     private async void UserControl_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
     {

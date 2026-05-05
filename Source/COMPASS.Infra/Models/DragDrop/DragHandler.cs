@@ -1,23 +1,34 @@
-﻿using Avalonia.Input;
+﻿using Avalonia;
+using Avalonia.Input;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Infra.Models.DragDrop
 {
-    public class DragHandler
+    public abstract class DragHandler
     {
-        private List<DragConfig> DragConfigs { get; } = [];
-        public Action<object?, PointerPressedEventArgs>? ClickHandler { get; private set; }
+        public abstract void TryAddToTransfer(DataTransfer transfer, Visual source);
+    }
 
-        public IEnumerable<DragConfig> GetConfigs() => DragConfigs;
-        public DragHandler AddConfig<T>(DragConfig<T> config) where T : class
-        {
-            DragConfigs.Add(config);
-            return this; //builder pattern
-        }
+    public class DragHandler<T> : DragHandler where T : class
+    {
+        public required DataFormat<T> DataFormat { get; set; }
 
-        public DragHandler OnClick(Action<object?, PointerPressedEventArgs> handler)
+        public required Func<Visual, T?> GetData { get; set; }
+
+        /// <summary>
+        /// Check certain conditions on the item to see if it is draggable
+        /// </summary>
+        public Func<T, bool>? IsDraggable { get; set; }
+
+        public Func<T>? OnDropped { get; set; }
+
+        public override void TryAddToTransfer(DataTransfer transfer, Visual source)
         {
-            ClickHandler = handler;
-            return this;
+            var data = GetData(source);
+            if (data != null && (IsDraggable?.Invoke(data) ?? true))
+            {
+                transfer.AddData(DataFormat, data);
+            }
         }
     }
 }
