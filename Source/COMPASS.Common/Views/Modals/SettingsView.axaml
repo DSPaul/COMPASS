@@ -46,8 +46,9 @@
         </Style>
     </UserControl.Styles>
     <TabControl TabStripPlacement="Left"
-                BorderThickness="0"
-                Padding="0"
+            BorderThickness="0"
+            Padding="0"
+            SelectedIndex="{Binding SelectedTabIndex}"
                 Background="{StaticResource Layer2}"
                 BorderBrush="{StaticResource Layer2}">
         <TabControl.Styles>

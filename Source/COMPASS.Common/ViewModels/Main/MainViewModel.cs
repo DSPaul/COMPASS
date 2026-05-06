@@ -105,8 +105,8 @@ namespace COMPASS.Common.ViewModels.Main
             settingsWindow.Show(WindowManager.ActiveWindow);
         }
 
-        //TODO reimplement this, should probably be moved out of settings viewmodel
-        public RelayCommand CheckForUpdatesCommand => new(() => { }); //SettingsViewModel.CheckForUpdatesCommand;
+        private AsyncRelayCommand? _checkForUpdatesCommand;
+        public AsyncRelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(UpdateManager.CheckForUpdates);
 
         public RelayCommand<string> NavigateToCommand => field ??= new(url =>
         {

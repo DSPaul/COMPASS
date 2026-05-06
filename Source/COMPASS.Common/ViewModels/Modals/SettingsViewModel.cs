@@ -7,25 +7,22 @@ using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
-using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
-using SharpCompress.Common;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Reflection;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
     public class SettingsViewModel : ViewModelBase, IModalViewModel, IDisposable
     {
-        //TODO dispose handle on close
+        private static readonly List<string> TabOrder = ["General", "Import", "Metadata", "Tools", "About"];
+
         public SettingsViewModel(string tabToOpen = "")
         {
-            //TODO use tabToOpen 
-            
+            int tabIndex = TabOrder.FindIndex(t => t.Equals(tabToOpen, StringComparison.OrdinalIgnoreCase));
+            SelectedTabIndex = tabIndex >= 0 ? tabIndex : 0;
+
             _applicationDataService = ServiceResolver.Resolve<IApplicationDataService>();
             _ioService = ServiceResolver.Resolve<IIOService>();
             _preferencesService = PreferencesService.GetInstance();
@@ -52,6 +49,13 @@ namespace COMPASS.Common.ViewModels.Modals
         private readonly IApplicationDataService _applicationDataService;
         private readonly IIOService _ioService;
         private readonly PreferencesService _preferencesService;
+
+        private int _selectedTabIndex;
+        public int SelectedTabIndex
+        {
+            get => _selectedTabIndex;
+            set => SetProperty(ref _selectedTabIndex, value);
+        }
         
         
         private CollectionHandle? _selectedCollectionHandle;
@@ -337,11 +341,7 @@ namespace COMPASS.Common.ViewModels.Modals
         public string Version => "Version: " + ApplicationService.GetVersion();
 
         private AsyncRelayCommand? _checkForUpdatesCommand;
-        public AsyncRelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);
-        private async Task CheckForUpdates()
-        {
-            await UpdateManager.CheckForUpdates();
-        }
+        public AsyncRelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(UpdateManager.CheckForUpdates);
         #endregion
 
         public void Dispose()
