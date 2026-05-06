@@ -375,172 +375,65 @@
                     </Border>
                     <Border Classes="SettingsContainer">
                         <StackPanel Orientation="Vertical">
+                            <StackPanel.Styles>
+                                <Style Selector="HyperlinkButton">
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="MinHeight" Value="0"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="ToolTip.Tip" Value="{Binding $self.NavigateUri}"/>
+                                </Style>
+                                <Style Selector="HyperlinkButton:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                </Style>
+                                <Style Selector="HyperlinkButton:pressed /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                </Style>
+                            </StackPanel.Styles>
                             <TextBlock Text="Dependencies" Classes="SectionTitle"/>
                             <TextBlock Text="COMPASS could not exist without the following open source projects:" />
-                            <!-- TODO when all dependencies have been decided -->
-                            <!-- <UniformGrid Columns="4" > -->
-                            <!--     <TextBlock Text="Inversion of Control:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://autofac.org/" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             Autofac -->
-                            <!--         </Hyperlink>                 -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Automatic Updates:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/ravibpatel/AutoUpdater.NET" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             AutoUpdater.NET -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Multiselect Combobox:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/nilayjoshi89/BlackPearl" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             BlackPearl -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Embed GitHub files:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/yusanshi/emgithub" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             emgithub -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Fuzzy Search:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/JakeBayer/FuzzySharp" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             FuzzySharp -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Drag &amp; Drop:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/punker76/gong-wpf-dragdrop" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             Gong WPF DragDrop -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Extract PDf cover as img:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://www.ghostscript.com/" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             Ghostscript -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="HTML Parsing:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/zzzprojects/html-agility-pack" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             HTML Agility Pack -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Getting PDF metadata:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/itext/itext7-dotnet" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             iText -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Logging:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/apache/logging-log4net" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             log4net -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Image Manipulation:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/dlemstra/Magick.NET" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             Magick.NET -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Display Markdown:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/xoofx/markdig" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             Markdig -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock>-->
-                            <!--     <TextBlock Text="Icons and Controls:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             Material Design Toolkit -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Reactivity"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/CommunityToolkit/dotnet" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             CommunityToolkit -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Json Parsing: "/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/JamesNK/Newtonsoft.Json" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             Newsoft Json -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Folder Dialog:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/ookii-dialogs/ookii-dialogs-wpf" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             Ookii Dialogs -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Detecting Barcodes:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/shimat/opencvsharp" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             OpenCVSharp -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Web Scraping:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/rflechner/ScrapySharp" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             ScrapySharp -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock>-->
-                            <!--     <TextBlock Text="Zipping and unzipping:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/adamhathcock/sharpcompress" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--              SharpCompress -->
-                            <!--          </Hyperlink>           -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Website Screenshotting:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/SeleniumHQ/selenium" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             Selenium -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Virtualize WrapPanels:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/sbaeumlisberger/VirtualizingWrapPanel" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             VirtualizingWrapPanel -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!--     <TextBlock Text="Download Webdrivers:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/rosolko/WebDriverManager.Net" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             WebDriverManager.Net -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock>-->
-                            <!--     <TextBlock Text="Decode Barcodes:"/> -->
-                            <!--     <TextBlock> -->
-                            <!--         <Hyperlink NavigateUri="https://github.com/micjahn/ZXing.Net" -->
-                            <!--                    RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None"> -->
-                            <!--             ZXing.Net -->
-                            <!--         </Hyperlink> -->
-                            <!--     </TextBlock> -->
-                            <!-- </UniformGrid> -->
+                            <Grid ColumnDefinitions="Auto, Auto, Auto, Auto"
+                                  RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                                  RowSpacing="5" Margin="0,5,0,0">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="UI Framework:" Margin="0,0,5,0"/>
+                                <HyperlinkButton Grid.Row="0" Grid.Column="1" NavigateUri="https://avaloniaui.net/" Content="Avalonia"/>
+                                <TextBlock Grid.Row="0" Grid.Column="2" Text="Icons and Controls:" Margin="30,0,5,0"/>
+                                <HyperlinkButton Grid.Row="0" Grid.Column="3" NavigateUri="https://github.com/AvaloniaUtils/Material.Icons.Avalonia" Content="Material.Icons.Avalonia"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Reactivity:" Margin="0,0,5,0"/>
+                                <HyperlinkButton Grid.Row="1" Grid.Column="1" NavigateUri="https://github.com/CommunityToolkit/dotnet" Content="CommunityToolkit.Mvvm"/>
+                                <TextBlock Grid.Row="1" Grid.Column="2" Text="Inversion of Control:" Margin="30,0,5,0"/>
+                                <HyperlinkButton Grid.Row="1" Grid.Column="3" NavigateUri="https://autofac.org/" Content="Autofac"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Fuzzy Search:" Margin="0,0,5,0"/>
+                                <HyperlinkButton Grid.Row="2" Grid.Column="1" NavigateUri="https://github.com/JakeBayer/FuzzySharp" Content="FuzzySharp"/>
+                                <TextBlock Grid.Row="2" Grid.Column="2" Text="HTML Parsing:" Margin="30,0,5,0"/>
+                                <HyperlinkButton Grid.Row="2" Grid.Column="3" NavigateUri="https://github.com/zzzprojects/html-agility-pack" Content="HTML Agility Pack"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Getting PDF Metadata:" Margin="0,0,5,0"/>
+                                <HyperlinkButton Grid.Row="3" Grid.Column="1" NavigateUri="https://github.com/itext/itext7-dotnet" Content="iText"/>
+                                <TextBlock Grid.Row="3" Grid.Column="2" Text="PDF to Image:" Margin="30,0,5,0"/>
+                                <HyperlinkButton Grid.Row="3" Grid.Column="3" NavigateUri="https://github.com/sungaila/PDFtoImage" Content="PDFtoImage"/>
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Logging:" Margin="0,0,5,0"/>
+                                <HyperlinkButton Grid.Row="4" Grid.Column="1" NavigateUri="https://github.com/apache/logging-log4net" Content="log4net"/>
+                                <TextBlock Grid.Row="4" Grid.Column="2" Text="Image Manipulation:" Margin="30,0,5,0"/>
+                                <HyperlinkButton Grid.Row="4" Grid.Column="3" NavigateUri="https://github.com/dlemstra/Magick.NET" Content="Magick.NET"/>
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="JSON Parsing:" Margin="0,0,5,0"/>
+                                <HyperlinkButton Grid.Row="5" Grid.Column="1" NavigateUri="https://github.com/JamesNK/Newtonsoft.Json" Content="Newtonsoft.Json"/>
+                                <TextBlock Grid.Row="5" Grid.Column="2" Text="Website Screenshotting:" Margin="30,0,5,0"/>
+                                <HyperlinkButton Grid.Row="5" Grid.Column="3" NavigateUri="https://github.com/SeleniumHQ/selenium" Content="Selenium"/>
+
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="Zipping and Unzipping:" Margin="0,0,5,0"/>
+                                <HyperlinkButton Grid.Row="6" Grid.Column="1" NavigateUri="https://github.com/adamhathcock/sharpcompress" Content="SharpCompress"/>
+                                <TextBlock Grid.Row="6" Grid.Column="2" Text="SVG Rendering:" Margin="30,0,5,0"/>
+                                <HyperlinkButton Grid.Row="6" Grid.Column="3" NavigateUri="https://github.com/wieslawsoltes/Svg.Skia" Content="Svg.Skia"/>
+
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="Glob File Matching:" Margin="0,0,5,0"/>
+                                <HyperlinkButton Grid.Row="7" Grid.Column="1" NavigateUri="https://github.com/dotnet/runtime/tree/main/src/libraries/Microsoft.Extensions.FileSystemGlobbing" Content="Microsoft.Extensions.FileSystemGlobbing"/>
+                                <TextBlock Grid.Row="7" Grid.Column="2" Text="Hot Reload:" Margin="30,0,5,0"/>
+                                <HyperlinkButton Grid.Row="7" Grid.Column="3" NavigateUri="https://github.com/Kir-Antipov/HotAvalonia" Content="HotAvalonia"/>
+                            </Grid>
                         </StackPanel>
                     </Border>
                 </StackPanel>
