@@ -63,8 +63,6 @@
                    IsHitTestVisible="False"
                    VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
 
-            <!-- TODO remove all WindowDecorationProperties.ElementRole="User" when https://github.com/AvaloniaUI/Avalonia/pull/21177 is merged -->
-
             <!--Collection Selection-->
             <main:TabStrip Grid.Column="1" 
                            WindowDecorationProperties.ElementRole="User"
