@@ -3,10 +3,13 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
+using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Tools;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
@@ -16,7 +19,6 @@ namespace COMPASS.Common.ViewModels.Tools;
 
 public class BackupToolViewModel : ViewModelBase, IToolViewModel
 {
-    private LoadingWindow? _lw;
     private readonly IApplicationDataService _applicationDataService;
 
     public BackupToolViewModel()
@@ -44,8 +46,8 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
         {
             string targetPath = saveFile.Path.LocalPath;
             saveFile.Dispose();
-            _lw = new("Compressing to Zip File");
-            _lw.Show(WindowManager.ActiveWindow);
+            LoadingWindow loadingWindow = new("Compressing to Zip File");
+            loadingWindow.Show(WindowManager.ActiveWindow);
 
             //save first
             CollectionManager.SaveAllCollections();
@@ -53,7 +55,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             var collectionStorageService = ServiceResolver.Resolve<IImportExportService>();
             await Task.Run(() => collectionStorageService.CompressUserDataToZip(targetPath));
 
-            _lw.Close();
+            loadingWindow.Close();
         }
     }
 
@@ -71,25 +73,17 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
         {
             using var file = files.Single();
             string targetPath = file.Path.LocalPath;
-            _lw = new("Restoring Backup");
-            _lw.Show(WindowManager.ActiveWindow);
+            LoadingWindow loadingWindow = new("Restoring Backup");
+            loadingWindow.Show(WindowManager.ActiveWindow);
 
             await ExtractZip(targetPath);
+            loadingWindow?.Close();
 
-            //TODO should probably just restart after restore
-            
-            //restore collection that was open
-            using var defaultCollectionVM = CollectionManager.GetOrCreateInitialCollectionVM();
-            var tabsVm = TabsViewModel.GetInstance();
-            if (tabsVm.ActiveTab == null)
-            {
-                tabsVm.CreateTab();
-            }
-            else
-            {
-                await tabsVm.ActiveTab.ChangeToCollection(defaultCollectionVM);
-            }
-            _lw?.Close();
+            //Restart the app with the new data
+            var notificationService = ServiceResolver.Resolve<INotificationService>();
+            var notfication = new Notification("Backup restored", "The backup has been restored. COMPASS will now restart.");
+            await notificationService.ShowDialog(notfication);
+            ApplicationService.Restart(false);
         }
     }
 

@@ -7,15 +7,14 @@
         xmlns:gif="using:Avalonia.Labs.Gif"
         xmlns:converters="using:COMPASS.Common.Converters"
         Height="200" Width="300" WindowDecorations="None"
-        WindowStartupLocation="CenterOwner"
-        Title="LoadingWindow">
+        WindowStartupLocation="CenterOwner">
     <Border Background="{StaticResource WindowBackground}" CornerRadius="5" 
             BorderThickness="2" BorderBrush="{StaticResource PopupOutline}">
         <Border.Effect>
             <DropShadowEffect BlurRadius="15"/>
         </Border.Effect>
         <Grid RowDefinitions="Auto, *">
-            <TextBlock x:Name="LoadingTextBlock" Text="Working" TextAlignment="Center"
+            <TextBlock x:Name="LoadingTextBlock" Text="{Binding $parent[Window].Title}" TextAlignment="Center"
                        HorizontalAlignment="Center" Margin="20" TextWrapping="Wrap"/>
             <gif:GifImage Grid.Row="1" Width="100" Height="100" VerticalAlignment="Center"
                           Source="{converters:GifSource 'avares://COMPASS.Common/Assets/LoadingAnimation.gif'}"/>

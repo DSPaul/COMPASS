@@ -7,7 +7,7 @@ public interface ICoverStorageService
     void InitCodexImagePaths(Codex codex);
     
     /// <summary>
-    /// Copies the thumbnail and full res cover to the new collection
+    /// Copies the full res cover to the new collection
     /// </summary>
     /// <param name="codex"></param>
     /// <param name="targetCollection"></param>

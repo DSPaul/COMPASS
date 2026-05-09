@@ -356,6 +356,7 @@ namespace COMPASS.Common.Operations
             if (!codicesToDelete.Any()) return;
             
             var thumbnailStorageService = ServiceResolver.Resolve<ICoverStorageService>();
+            var notificationService = ServiceResolver.Resolve<INotificationService>();
 
             Notification deleteWarnNotification = Notification.AreYouSureNotification;
             if (askForConfirmation)
@@ -363,8 +364,7 @@ namespace COMPASS.Common.Operations
                 deleteWarnNotification.Body = $"You are about to remove {codicesToDelete.Count} item{(codicesToDelete.Count > 1 ? @"s" : @"")}. " +
                                               $"This cannot be undone. " +
                                               $"Are you sure you want to continue?";
-                var windowedNotificationService = ServiceResolver.Resolve<INotificationService>();
-                await windowedNotificationService.ShowDialog(deleteWarnNotification);
+                await notificationService.ShowDialog(deleteWarnNotification);
             }
 
             if (askForConfirmation && deleteWarnNotification.Result != NotificationAction.Confirm)
@@ -380,8 +380,9 @@ namespace COMPASS.Common.Operations
 
                 if (collectionHandle == null)
                 {
-                    //TODO deal with having to delete items from a collection that cannot be loaded
-                    //Shouldn't happen
+                    Logger.Warn($"Failed to delete items from {collection.Name} because the collection could not be loaded");
+                    var failedNotification = new Notification("Failed to delete items", $"Failed to delete items from {collection.Name} because the collection could not be loaded", Severity.Error);
+                    await notificationService.ShowDialog(failedNotification);
                     return;
                 }
                 

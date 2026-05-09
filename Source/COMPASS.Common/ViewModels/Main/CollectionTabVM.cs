@@ -263,8 +263,6 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         //update Startup collection, TODO make this a setting, choose between a set collection or last used (current behaviour)
         PreferencesService.GetInstance().Preferences.UIState.StartupCollection = _collectionHandle.CollectionVM.Identifier;
         
-        //TODO: check if this is still needed
-        //CurrentLayout?.UpdateDoVirtualization();
         
         FiltersVM = new(newHandle.CollectionVM.AllCodexVms);
         TagsVM = new(newHandle.CollectionVM, FiltersVM);

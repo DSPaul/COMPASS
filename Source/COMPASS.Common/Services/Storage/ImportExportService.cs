@@ -327,7 +327,7 @@ public class ImportExportService(
         {
             //zip up collections, easiest with system.IO.Compression
             System.IO.Compression.ZipFile.CreateFromDirectory(applicationDataService.UserDataPath, zipPath,
-                System.IO.Compression.CompressionLevel.Optimal, true);
+                System.IO.Compression.CompressionLevel.Optimal, false);
         }
         catch (Exception ex)
         {

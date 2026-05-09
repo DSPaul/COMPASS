@@ -28,7 +28,7 @@ public class CoverStorageService(
 
         if (!dirsExist)
         {
-            //TODO, throw error of some kind 
+            logger.Warn($"Failed to create cover directory for collection {targetCollection.Name}, covers will not be moved");
             return;
         }
 

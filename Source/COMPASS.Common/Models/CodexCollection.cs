@@ -1,9 +1,10 @@
-﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Tools;
+using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.Models
 {
@@ -109,7 +110,7 @@ namespace COMPASS.Common.Models
                 canImportFiles = _userFilesStorageService.EnsureDirectoryExists(this);
                 if (!canImportFiles)
                 {
-                    //TODO add a notification or similar that files will not be imported
+                    ServiceResolver.Resolve<ILogger>().Warn("The files referenced by the import items could not be copied.");
                 }
             }
             
