@@ -336,11 +336,25 @@ namespace COMPASS.Common.ViewModels.Main
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 using var updateScope = DelayUpdateEvents();
-                if (influencesFilter)
+                if(e.PropertyName == nameof(CodexViewModel.Favorite))
                 {
                     OnPropertyChanged(nameof(Favorites));
+                }
+                else if(e.PropertyName == nameof(CodexViewModel.LastOpened))
+                {
                     OnPropertyChanged(nameof(RecentCodices));
+                }
+                else if(e.PropertyName == nameof(CodexViewModel.OpenedCount))
+                {
                     OnPropertyChanged(nameof(MostOpenedCodices));
+                }
+                else if(e.PropertyName == nameof(CodexViewModel.DateAdded))
+                {
+                    OnPropertyChanged(nameof(RecentlyAddedCodices));
+                }
+
+                if (influencesFilter)
+                {
                     ReFilter();
                 }
                 else if (influencesSort)
