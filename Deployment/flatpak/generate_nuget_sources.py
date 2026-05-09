@@ -25,11 +25,6 @@ DEST_DIR = "nuget-sources"
 # Global NuGet packages cache location
 NUGET_CACHE = Path(os.environ.get("NUGET_PACKAGES", Path.home() / ".nuget" / "packages"))
 
-# Set this to the .NET runtime version used by the flatpak SDK extension.
-# Check org.freedesktop.Sdk.Extension.dotnet10 for your runtime-version to find
-# the right value (e.g. "10.0.5" for runtime-version '25.08').
-DOTNET_RUNTIME_VERSION = "10.0.5"
-
 # Runtime packs required for a self-contained linux-x64 publish.
 # These are not tracked in packages.lock.json but are fetched directly from NuGet.
 LINUX_RUNTIME_PACKS = (
@@ -47,6 +42,19 @@ def _fetch_json(url: str) -> dict:
         return json.loads(raw)
     except (json.JSONDecodeError, UnicodeDecodeError):
         return json.loads(gzip.decompress(raw))
+
+
+def _resolve_dotnet_runtime_version() -> str:
+    """Query NuGet for the latest stable 10.x version of the .NET runtime pack."""
+    index_url = "https://api.nuget.org/v3-flatcontainer/microsoft.netcore.app.runtime.linux-x64/index.json"
+    index = _fetch_json(index_url)
+    stable_10x_versions = [
+        v for v in index["versions"]
+        if v.startswith("10.") and "-" not in v
+    ]
+    if not stable_10x_versions:
+        raise RuntimeError("No stable 10.x .NET runtime versions found on NuGet")
+    return stable_10x_versions[-1]
 
 
 def _fetch_entry_from_nuget(name: str, version: str) -> dict | None:
@@ -95,6 +103,9 @@ def generate():
     with LOCK_FILE.open() as f:
         lock = json.load(f)
 
+    dotnet_runtime_version = _resolve_dotnet_runtime_version()
+    print(f"Resolved .NET runtime version: {dotnet_runtime_version}")
+
     # Collect all resolved packages from the lock file
     packages = {}
     for framework, deps in lock.get("dependencies", {}).items():
@@ -120,11 +131,11 @@ def generate():
     # Fetch runtime packs for the target flatpak SDK version directly from NuGet.
     already_included = {e["dest-filename"] for e in sources}
     for pack_name in LINUX_RUNTIME_PACKS:
-        filename = f"{pack_name}.{DOTNET_RUNTIME_VERSION}.nupkg"
+        filename = f"{pack_name}.{dotnet_runtime_version}.nupkg"
         if filename in already_included:
             continue
-        print(f"Fetching {pack_name}/{DOTNET_RUNTIME_VERSION} from NuGet...")
-        entry = _fetch_entry_from_nuget(pack_name, DOTNET_RUNTIME_VERSION)
+        print(f"Fetching {pack_name}/{dotnet_runtime_version} from NuGet...")
+        entry = _fetch_entry_from_nuget(pack_name, dotnet_runtime_version)
         if entry is not None:
             sources.append(entry)
 
