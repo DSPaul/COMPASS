@@ -10,7 +10,7 @@ using COMPASS.Common.ViewModels.Selection;
 
 namespace COMPASS.Common.ViewModels.Modals.Import
 {
-    public class ImportTagsViewModel : ViewModelBase, IDisposable, IModalViewModel
+    public class ImportTagsViewModel : ViewModelBase, IDisposable, IModalViewModel, IConfirmable
     {
         public ImportTagsViewModel(string importCollectionId, string targetCollectionId) : this([importCollectionId], targetCollectionId) { }
         public ImportTagsViewModel(CollectionHandle importCollectionHandle, string targetCollectionId) : this([importCollectionHandle], targetCollectionId) { }
@@ -44,8 +44,11 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         
         public TagsSelectorViewModel TagsSelectorVM { get; set; }
 
-        private RelayCommand? _importTagsCommand;
-        public RelayCommand ImportTagsCommand => _importTagsCommand ??= new(ImportTags);
+        private RelayCommand? _confirmCommand;
+        public IRelayCommand ConfirmCommand => _confirmCommand ??= new(ImportTags);
+
+        private RelayCommand? _cancelCommand;
+        public IRelayCommand CancelCommand => _cancelCommand ??= new(CloseAction);
 
         private void ImportTags()
         {
