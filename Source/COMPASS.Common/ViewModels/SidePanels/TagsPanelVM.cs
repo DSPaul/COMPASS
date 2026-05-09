@@ -242,43 +242,6 @@ namespace COMPASS.Common.ViewModels.SidePanels
         }
 
         #endregion
-        
-        #region Drag & Drop Tags Treeview
-        //Drop on Treeview Behaviour
-        //TODO: used to have to call the default implementation of drag and drop here, not sure 
-        void OnDrop(object sender, DragEventArgs e)
-        {
-            // Drag & Drop will modify the Collection of Treeview nodes that the treeview is bound to
-            // We need to convert that back to the collection of Tags so that the changes are saved
-            var newRootTags = TagsAsTreeNodes.Select(ToTag).ToList();
-
-            foreach (Tag? t in newRootTags)
-            {
-                t!.Parent = null;
-            }
-
-            // Cannot do TreeRoot = ExtractTagsFromTreeViewSource(TreeViewSource); because that changes ref of TreeRoot
-            _codexCollectionVm.Collection.RootTags.Clear();
-            _codexCollectionVm.Collection.RootTags.AddRange(newRootTags);
-        }
-        
-        //TODO move this somewhere else
-        private Tag ToTag(TreeNode<TagViewModel> node)
-        {
-            Tag tag = node.Item.GetModel();
-            
-            //add children according to treeview
-            tag.Children.ReplaceRange(node.Children.Select(ToTag));
-
-            //set parentID for all the children
-            foreach (Tag childTag in tag.Children)
-            {
-                childTag.Parent = tag;
-            }
-
-            return tag;
-        }
-        #endregion
 
         #region Tag Context Menu
 
