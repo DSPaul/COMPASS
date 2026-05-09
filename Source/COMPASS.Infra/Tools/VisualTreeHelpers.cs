@@ -132,6 +132,22 @@ public static class VisualTreeHelpers
     }
 
     /// <summary>
+    /// Returns <c>true</c> if <paramref name="visual"/> is, or is a visual-tree descendant of,
+    /// <paramref name="ancestor"/>. Works within a single visual root (does not cross
+    /// <see cref="Avalonia.Controls.Primitives.PopupRoot"/> boundaries).
+    /// </summary>
+    public static bool IsDescendantOf(Visual? visual, Visual ancestor)
+    {
+        Visual? current = visual;
+        while (current is not null)
+        {
+            if (ReferenceEquals(current, ancestor)) return true;
+            current = current.GetVisualParent();
+        }
+        return false;
+    }
+
+    /// <summary>
     /// Returns the header height of a visual. For <see cref="TreeViewItem"/>, measures
     /// the <see cref="ContentPresenter"/>; otherwise returns the full bounds height.
     /// </summary>

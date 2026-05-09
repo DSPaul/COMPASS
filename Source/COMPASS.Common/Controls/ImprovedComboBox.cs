@@ -10,6 +10,7 @@ using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Controls;
 
@@ -79,9 +80,31 @@ public class ImprovedComboBox : ListBox
         }
     }
 
-    private void OnLostFocus(object? sender, RoutedEventArgs e)
+    private void OnLostFocus(object? sender, FocusChangedEventArgs e)
     {
-        if (_inputTextBox?.IsFocused != true && !CanCreate)
+        var focusedElement = e.NewFocusedElement as Visual;
+        var popupChild = _suggestionPopup?.Child;
+
+        bool focusStillInside = VisualTreeHelpers.IsDescendantOf(focusedElement, this)
+            || (popupChild is not null && VisualTreeHelpers.IsDescendantOf(focusedElement, popupChild));
+
+        if (!focusStillInside)
+        {
+            HandleFocusLost();
+        }
+    }
+
+    private void HandleFocusLost()
+    {
+        if (CanCreate && SelectionMode == SelectionMode.Single)
+        {
+            //if exactmatch use that, otherwise create new item
+            var selectItem = 
+                SuggestedItems?.FirstOrDefault(item => item.ToString() == Text) ??
+                SuggestedItems?.OfType<NewItem>().FirstOrDefault();
+            AcceptSuggestion(selectItem);
+        }
+        else if (!CanCreate)
         {
             Text = string.Empty;
         }
@@ -225,7 +248,16 @@ public class ImprovedComboBox : ListBox
         get => GetValue(CanCreateProperty);
         set => SetValue(CanCreateProperty, value);
     }
-    
+
+    public static readonly StyledProperty<Func<string, object>> CreateItemProperty =
+        AvaloniaProperty.Register<ImprovedComboBox, Func<string, object>>(nameof(CreateItem), defaultValue: s => s);
+
+    public Func<string, object> CreateItem
+    {
+        get => GetValue(CreateItemProperty);
+        set => SetValue(CreateItemProperty, value);
+    }
+
     public static readonly DirectProperty<ImprovedComboBox, ObservableCollection<object>> SuggestedItemsProperty =
         AvaloniaProperty.RegisterDirect<ImprovedComboBox, ObservableCollection<object>>(
             nameof(SuggestedItems), o => o.SuggestedItems);
@@ -285,33 +317,51 @@ public class ImprovedComboBox : ListBox
 
     private void AcceptSuggestion()
     {
-        if (_suggestionsControl?.SelectedItem != null &&
-            SelectedItems != null &&
-            _suggestionPopup?.IsOpen == true)
+        if (_suggestionsControl?.SelectedItem == null || _suggestionPopup?.IsOpen != true) return;
+        
+        AcceptSuggestion(_suggestionsControl.SelectedItem);
+    }
+
+    private void AcceptSuggestion(object? item)
+    {
+        if (item == null) return;
+
+        if (item is NewItem newItem)
         {
-            if (_suggestionsControl.SelectedItem is NewItem newItem)
+            var createdItem = CreateItem(newItem.Text);
+            (ItemsSource as System.Collections.IList)?.Add(createdItem);
+            if (SelectionMode == SelectionMode.Single)
             {
-                //TODO make this support items that aren't text
-                SelectedItems.Add(newItem.Text);
+                SelectedItem = createdItem;
+                Text = createdItem.ToString() ?? "";
+                _inputTextBox?.CaretIndex = Text.Length;
             }
             else
             {
-                if (SelectionMode == SelectionMode.Single)
-                {
-                    SelectedItem = _suggestionsControl.SelectedItem;
-                    Text = SelectedItem?.ToString() ?? "";
-                    _inputTextBox?.CaretIndex = Text.Length;
-                }
-                else
-                {
-                    SelectedItems.Add(_suggestionsControl.SelectedItem);
-                }
+                SelectedItems?.Add(createdItem);
             }
         }
+        else
+        {
+            if (SelectionMode == SelectionMode.Single)
+            {
+                SelectedItem = item;
+                Text = SelectedItem?.ToString() ?? "";
+                _inputTextBox?.CaretIndex = Text.Length;
+            }
+            else
+            {
+                SelectedItems?.Add(item);
+            }
+        }
+
         _suggestionPopup?.Close();
 
-        //clear textbox if multiple entry is allowed
-        if (SelectionMode != SelectionMode.Single)
+        if (SelectionMode == SelectionMode.Single)
+        {
+            TopLevel.GetTopLevel(this)?.Focus();
+        }
+        else
         {
             Text = string.Empty;
         }

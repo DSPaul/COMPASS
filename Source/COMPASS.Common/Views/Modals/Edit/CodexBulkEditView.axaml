@@ -38,13 +38,10 @@
                                              PlaceholderText="Add author" CanCreate="True"/>
 
         <TextBlock Text="Publisher:" Grid.Row="2" Grid.Column="0" Margin="0,10" />
-        <!-- TODO allow creating new elements, keep an eye on avalonia #18094 -->
-        <ComboBox Grid.Row="3" Grid.Column="0"
-                  HorizontalAlignment="Stretch"
-                  BorderBrush="LightGray"
-                  Background="{DynamicResource TextControlBackground}"
-                  SelectedItem="{Binding Publisher}"
-                  ItemsSource="{Binding PublisherOptions}" />
+        <controls:ImprovedComboBox Grid.Row="3" Grid.Column="0"
+                                   ItemsSource="{Binding PublisherOptions}"
+                                   SelectedItem="{Binding Publisher, Mode=TwoWay}"
+                                   PlaceholderText="Add publisher" CanCreate="True"/>
 
         <!-- Smaller properties -->
         <Grid Grid.Row="4" Grid.Column="0" Margin="0,10"
