@@ -36,6 +36,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COMPASS.Tests.UI", "Tests\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COMPASS.Infra.Avalonia", "Source\COMPASS.Infra.Avalonia\COMPASS.Infra.Avalonia.csproj", "{9B2F778A-C805-4DF1-A635-326001FAD47B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{8EB2518F-D016-4AE1-B5B4-8E54DEACD650}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\Architecture.md = Docs\Architecture.md
+		Docs\CollectionLifeCycle.md = Docs\CollectionLifeCycle.md
+		Docs\Satchels.md = Docs\Satchels.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
