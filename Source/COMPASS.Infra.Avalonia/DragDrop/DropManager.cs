@@ -1,7 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
 
-namespace COMPASS.Infra.Models.DragDrop
+namespace COMPASS.Infra.Avalonia.DragDrop
 {
     /// <summary>
     /// Manages the drop interaction for different data types.

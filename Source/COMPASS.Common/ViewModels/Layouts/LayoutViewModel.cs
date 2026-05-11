@@ -8,7 +8,7 @@ using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.Models.DragDrop;
+using COMPASS.Infra.Avalonia.DragDrop;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {

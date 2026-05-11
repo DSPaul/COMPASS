@@ -2,7 +2,7 @@
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 
-namespace COMPASS.Infra.Models.DragDrop
+namespace COMPASS.Infra.Avalonia.DragDrop
 {
     public abstract class DropHandler
     {

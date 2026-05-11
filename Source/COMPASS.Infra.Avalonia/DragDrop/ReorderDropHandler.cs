@@ -6,9 +6,9 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.VisualTree;
-using static COMPASS.Infra.Tools.VisualTreeHelpers;
+using COMPASS.Infra.Avalonia.ExtensionMethods;
 
-namespace COMPASS.Infra.Models.DragDrop;
+namespace COMPASS.Infra.Avalonia.DragDrop;
 
 /// <summary>
 /// Drop handler that performs position-dependent reordering within an <see cref="IList"/>-backed
@@ -84,7 +84,7 @@ public class ReorderDropHandler : DropHandler<ReorderPayload>
         AfterDrop?.Invoke(payload.DraggedItem, dropResult.Value.NewParentDataContext, insertionIndex);
 
         // Force the UI to rebuild containers after the in-place list mutation
-        RefreshItemsSource(payload.SourceRoot);
+        payload.SourceRoot.RefreshItemsSource();
 
         return true;
     }
@@ -110,10 +110,10 @@ public class ReorderDropHandler : DropHandler<ReorderPayload>
         if (!ReferenceEquals(treeView, payload.SourceRoot))
             return null;
 
-        var hoveredItem = FindTreeViewItemAtPoint(treeView, e.GetPosition(treeView));
+        var hoveredItem = treeView.FindTreeViewItemAtPoint(e.GetPosition(treeView));
 
         // Prevent dropping onto self or into own descendants (would create a cycle)
-        if (hoveredItem is not null && HasAncestorWithDataContext(hoveredItem, payload.DraggedItem))
+        if (hoveredItem is not null && hoveredItem.HasAncestorWithDataContext(payload.DraggedItem))
             return null;
 
         var parent = hoveredItem?.FindAncestorOfType<ItemsControl>(includeSelf: false) ?? treeView;
@@ -121,7 +121,7 @@ public class ReorderDropHandler : DropHandler<ReorderPayload>
         if (parent.ItemsSource is not IList siblings)
             return null;
 
-        var siblingPanel = FindItemsPanel(parent);
+        var siblingPanel = parent.FindItemsPanel();
         if (siblingPanel is null) return null;
 
         var dropZoneInfo = GetTreeDropInfo(siblingPanel, e);
@@ -130,7 +130,7 @@ public class ReorderDropHandler : DropHandler<ReorderPayload>
         if (dropZoneInfo.Zone == DropZone.Inside && dropZoneInfo.HoveredItem is TreeViewItem insideTvi
             && insideTvi.ItemsSource is IList children)
         {
-            var childPanel = FindItemsPanel(insideTvi);
+            var childPanel = insideTvi.FindItemsPanel();
             return new DropResult(childPanel ?? siblingPanel, children, 0, insideTvi, insideTvi.DataContext);
         }
 
@@ -140,7 +140,7 @@ public class ReorderDropHandler : DropHandler<ReorderPayload>
             && siblingPanel.Children[dropZoneInfo.InsertionIndex - 1] is TreeViewItem { IsExpanded: true } expandedTvi
             && expandedTvi.ItemsSource is IList expandedChildren && expandedChildren.Count > 0)
         {
-            var childPanel = FindItemsPanel(expandedTvi);
+            var childPanel = expandedTvi.FindItemsPanel();
             if (childPanel is not null)
                 return new DropResult(childPanel, expandedChildren, 0, null, expandedTvi.DataContext);
         }
@@ -155,7 +155,7 @@ public class ReorderDropHandler : DropHandler<ReorderPayload>
         if (itemsControl.ItemsSource is not IList items || !ReferenceEquals(items, payload.SourceList))
             return null;
 
-        var panel = FindItemsPanel(itemsControl);
+        var panel = itemsControl.FindItemsPanel();
         if (panel is null) return null;
 
         return new DropResult(panel, items, GetInsertionIndex(panel, e), null, null);
@@ -185,7 +185,7 @@ public class ReorderDropHandler : DropHandler<ReorderPayload>
         for (int i = 0; i < panel.Children.Count; i++)
         {
             var child = panel.Children[i];
-            double headerH = GetHeaderHeight(child);
+            double headerH = child.GetHeaderHeight();
             double headerTop = child.Bounds.Top;
             double headerBottom = headerTop + headerH;
 
@@ -237,7 +237,7 @@ public class ReorderDropHandler : DropHandler<ReorderPayload>
 
         if (hasVisibleChildren)
         {
-            double headerH = GetHeaderHeight(insideOf);
+            double headerH = insideOf.GetHeaderHeight();
             double panelY = insideOf.Bounds.Top + headerH;
             var parentPanel = insideOf.GetVisualParent() as Panel;
             double yInContainer = (parentPanel ?? panel).TranslatePoint(new Point(0, panelY), container)?.Y ?? panelY;
@@ -258,7 +258,7 @@ public class ReorderDropHandler : DropHandler<ReorderPayload>
                 }
             }
 
-            double headerH = GetHeaderHeight(insideOf);
+            double headerH = insideOf.GetHeaderHeight();
             double panelY = insideOf.Bounds.Top + headerH;
             var parentPanel = insideOf.GetVisualParent() as Panel;
             double yInContainer = (parentPanel ?? panel).TranslatePoint(new Point(0, panelY), container)?.Y ?? panelY;
@@ -369,7 +369,7 @@ public class ReorderDropHandler : DropHandler<ReorderPayload>
 
     private static double GetIndentXForChildOf(TreeViewItem parent, Visual container)
     {
-        var childPanel = FindItemsPanel(parent);
+        var childPanel = parent.FindItemsPanel();
         if (childPanel is { Children.Count: > 0 } && childPanel.Children[0] is TreeViewItem firstChild)
         {
             double x = GetContentLeftEdge(firstChild, container);

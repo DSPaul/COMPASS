@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:models="using:COMPASS.Infra.Models"
         xmlns:enums="using:COMPASS.Infra.Models.Enums"
-        xmlns:converters="using:COMPASS.Infra.Converters"
+        xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
         xmlns:specialConverters="using:COMPASS.Common.Converters"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.NotificationWindow"

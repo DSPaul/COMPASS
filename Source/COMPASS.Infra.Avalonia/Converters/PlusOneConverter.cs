@@ -2,7 +2,7 @@
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 
-namespace COMPASS.Infra.Converters
+namespace COMPASS.Infra.Avalonia.Converters
 {
     /// <summary>
     /// Converter that displays one more than the actual value, perfect for converting indices/counter that start at 0 to

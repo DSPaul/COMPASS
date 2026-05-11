@@ -3,6 +3,7 @@
 ```mermaid
 graph TD;
     Infra-->Common;
+    Infra.Avalonia-->Common;
     Common-->Windows; 
     Common-->Linux;
     Common-->Tests.Common;
@@ -21,7 +22,11 @@ graph TD;
 
 ### Infra
 
-For code that could be found in any .NET Avalonia project.
+For code that could be found in any .NET project.
+
+### Infra.Avalonia
+
+For code that could be found in any Avalonia project.
 
 ### Common
 

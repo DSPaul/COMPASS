@@ -1,6 +1,6 @@
 ﻿using Avalonia.Input;
 using COMPASS.Common.Models.Filters;
-using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Avalonia.ExtensionMethods;
 
 namespace COMPASS.Common.Models.DragDrop
 {

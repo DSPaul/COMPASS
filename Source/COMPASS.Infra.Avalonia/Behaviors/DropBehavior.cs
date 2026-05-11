@@ -2,10 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
-using COMPASS.Infra.Models.DragDrop;
-using static COMPASS.Infra.Tools.VisualTreeHelpers;
+using AvaloniaInput = Avalonia.Input;
+using COMPASS.Infra.Avalonia.DragDrop;
+using COMPASS.Infra.Avalonia.ExtensionMethods;
 
-namespace COMPASS.Infra.Behaviors;
+namespace COMPASS.Infra.Avalonia.Behaviors;
 
 public sealed class DropBehavior : AvaloniaObject
 {
@@ -36,19 +37,19 @@ public sealed class DropBehavior : AvaloniaObject
     {
         if (e.NewValue is true)
         {
-            DragDrop.SetAllowDrop(control, true);
-            control.AddHandler(DragDrop.DragEnterEvent, OnDragEnter, handledEventsToo: false);
-            control.AddHandler(DragDrop.DragOverEvent, OnDragOver, handledEventsToo: false);
-            control.AddHandler(DragDrop.DragLeaveEvent, OnDragLeave, handledEventsToo: false);
-            control.AddHandler(DragDrop.DropEvent, OnDrop, handledEventsToo: false);
+            AvaloniaInput.DragDrop.SetAllowDrop(control, true);
+            control.AddHandler(AvaloniaInput.DragDrop.DragEnterEvent, OnDragEnter, handledEventsToo: false);
+            control.AddHandler(AvaloniaInput.DragDrop.DragOverEvent, OnDragOver, handledEventsToo: false);
+            control.AddHandler(AvaloniaInput.DragDrop.DragLeaveEvent, OnDragLeave, handledEventsToo: false);
+            control.AddHandler(AvaloniaInput.DragDrop.DropEvent, OnDrop, handledEventsToo: false);
         }
         else
         {
-            DragDrop.SetAllowDrop(control, false);
-            control.RemoveHandler(DragDrop.DragEnterEvent, OnDragEnter);
-            control.RemoveHandler(DragDrop.DragOverEvent, OnDragOver);
-            control.RemoveHandler(DragDrop.DragLeaveEvent, OnDragLeave);
-            control.RemoveHandler(DragDrop.DropEvent, OnDrop);
+            AvaloniaInput.DragDrop.SetAllowDrop(control, false);
+            control.RemoveHandler(AvaloniaInput.DragDrop.DragEnterEvent, OnDragEnter);
+            control.RemoveHandler(AvaloniaInput.DragDrop.DragOverEvent, OnDragOver);
+            control.RemoveHandler(AvaloniaInput.DragDrop.DragLeaveEvent, OnDragLeave);
+            control.RemoveHandler(AvaloniaInput.DragDrop.DropEvent, OnDrop);
         }
     }
 
@@ -63,7 +64,7 @@ public sealed class DropBehavior : AvaloniaObject
     {
         if (sender is not Visual dropTarget) return;
 
-        DropManager? manager = FindInheritedValue(dropTarget, DropManagerProperty);
+        DropManager? manager = dropTarget.FindInheritedValue(DropManagerProperty);
         if (manager is null || !manager.CanHandleDrop(e.DataTransfer))
         {
             e.DragEffects = DragDropEffects.None;
@@ -83,7 +84,7 @@ public sealed class DropBehavior : AvaloniaObject
     {
         if (sender is not Visual dropTarget) return;
 
-        DropManager? manager = FindInheritedValue(dropTarget, DropManagerProperty);
+        DropManager? manager = dropTarget.FindInheritedValue(DropManagerProperty);
         var handler = manager?.GetFirstApplicableHandler(e.DataTransfer);
 
         if (handler is null)
@@ -112,7 +113,7 @@ public sealed class DropBehavior : AvaloniaObject
 
         if (sender is not Visual dropTarget) return;
 
-        DropManager? dropManager = FindInheritedValue(dropTarget, DropManagerProperty);
+        DropManager? dropManager = dropTarget.FindInheritedValue(DropManagerProperty);
         if (dropManager is null) return;
 
         var context = new DropContext { DropTarget = dropTarget, DragEventArgs = e };

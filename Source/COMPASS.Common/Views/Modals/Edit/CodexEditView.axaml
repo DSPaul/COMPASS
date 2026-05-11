@@ -7,7 +7,7 @@
              xmlns:interface="using:COMPASS.Infra.Models.Interfaces"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:dataTemplates="using:COMPASS.Common.DataTemplates"
-             xmlns:converters="using:COMPASS.Infra.Converters"
+             xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
              xmlns:gif="using:Avalonia.Labs.Gif"
              xmlns:commonConverters="using:COMPASS.Common.Converters"
              xmlns:hierarchy="clr-namespace:COMPASS.Common.Models.Hierarchy"

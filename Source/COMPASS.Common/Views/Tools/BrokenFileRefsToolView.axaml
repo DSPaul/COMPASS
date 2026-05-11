@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.Tools"
              xmlns:controls="clr-namespace:COMPASS.Common.Controls"
-             xmlns:converters="using:COMPASS.Infra.Converters"
+             xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Tools.BrokenFileRefsToolView"
              x:DataType="vm:BrokenFileRefsToolViewModel">

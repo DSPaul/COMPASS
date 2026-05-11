@@ -7,9 +7,6 @@
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Autofac" Version="9.1.0" />
-      <PackageReference Include="Avalonia" Version="12.0.2" />
-      <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.0.0" />
-      <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1" />
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
       <PackageReference Include="FuzzySharp" Version="2.0.2" />
       <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="10.0.7" />

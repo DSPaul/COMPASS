@@ -2,7 +2,7 @@
 using System.Globalization;
 using Avalonia.Data.Converters;
 
-namespace COMPASS.Infra.Converters
+namespace COMPASS.Infra.Avalonia.Converters
 {
     public class CollectionUnionConverter : IMultiValueConverter
     {

@@ -2,7 +2,7 @@
 using Avalonia.Data.Converters;
 using Avalonia.Media;
 
-namespace COMPASS.Infra.Converters
+namespace COMPASS.Infra.Avalonia.Converters
 {
     public static class ColorConverters
     {

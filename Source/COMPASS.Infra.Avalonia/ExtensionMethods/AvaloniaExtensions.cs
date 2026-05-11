@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace COMPASS.Infra.ExtensionMethods
+namespace COMPASS.Infra.Avalonia.ExtensionMethods
 {
     public static class AvaloniaExtensions
     {
@@ -28,7 +28,7 @@ namespace COMPASS.Infra.ExtensionMethods
             return default;
         }
 
-        #region Drag & Drop
+        #region Json Serialization for DataTransfer
 
         private static readonly JsonSerializerOptions _jsonOptions = new()
         {

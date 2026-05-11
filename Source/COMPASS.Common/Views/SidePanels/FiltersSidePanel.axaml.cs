@@ -3,8 +3,8 @@ using Avalonia.Input;
 using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.Behaviors;
-using COMPASS.Infra.Models.DragDrop;
+using COMPASS.Infra.Avalonia.Behaviors;
+using COMPASS.Infra.Avalonia.DragDrop;
 
 namespace COMPASS.Common.Views.SidePanels;
 
@@ -15,7 +15,7 @@ public partial class FiltersSidePanel : SidePanel
         InitializeComponent();
 
         var dragManager = new DragManager()
-            .AddHandler(new DragHandler<COMPASS.Common.Models.Filters.Filter>
+            .AddHandler(new DragHandler<Models.Filters.Filter>
             {
                 DataFormat = DataTransferFormats.FilterFormat,
                 GetData = visual => (visual?.DataContext as FilterViewModel)?.GetModel(),

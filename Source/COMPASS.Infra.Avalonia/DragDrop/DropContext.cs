@@ -1,7 +1,7 @@
 using Avalonia;
 using Avalonia.Input;
 
-namespace COMPASS.Infra.Models.DragDrop;
+namespace COMPASS.Infra.Avalonia.DragDrop;
 
 /// <summary>
 /// Positional and visual context available during a drop interaction.

@@ -12,7 +12,7 @@ using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.DragDrop;
+using COMPASS.Infra.Avalonia.DragDrop;
 using COMPASS.Infra.Tools;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;

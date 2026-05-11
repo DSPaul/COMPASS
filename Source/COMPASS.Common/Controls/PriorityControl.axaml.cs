@@ -1,8 +1,8 @@
 using System.Collections;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using COMPASS.Infra.Behaviors;
-using COMPASS.Infra.Models.DragDrop;
+using COMPASS.Infra.Avalonia.Behaviors;
+using COMPASS.Infra.Avalonia.DragDrop;
 
 namespace COMPASS.Common.Controls;
 

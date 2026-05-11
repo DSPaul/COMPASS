@@ -5,8 +5,8 @@
              xmlns:controls="clr-namespace:COMPASS.Common.Controls"
              xmlns:vm="using:COMPASS.Common.ViewModels.Main"
              xmlns:modelVm="using:COMPASS.Common.ViewModels.ModelVMs"
-             xmlns:conv="using:COMPASS.Infra.Converters"
-             xmlns:behaviors="clr-namespace:COMPASS.Infra.Behaviors;assembly=COMPASS.Infra"
+             xmlns:conv="using:COMPASS.Infra.Avalonia.Converters"
+             xmlns:behaviors="using:COMPASS.Infra.Avalonia.Behaviors"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.SidePanels.FiltersSidePanel"
              x:DataType="vm:FiltersViewModel">

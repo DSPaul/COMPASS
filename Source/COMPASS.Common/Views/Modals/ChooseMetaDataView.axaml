@@ -5,7 +5,7 @@
              xmlns:vm="using:COMPASS.Common.ViewModels.Modals"
              xmlns:model="using:COMPASS.Common.Models"
              xmlns:controls="using:COMPASS.Common.Controls"
-             xmlns:conv="using:COMPASS.Infra.Converters"
+             xmlns:conv="using:COMPASS.Infra.Avalonia.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="COMPASS.Common.Views.Modals.ChooseMetaDataView"
              x:DataType="vm:ChooseMetaDataViewModel"

@@ -3,10 +3,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.VisualTree;
-using COMPASS.Infra.ExtensionMethods;
-using static COMPASS.Infra.Tools.VisualTreeHelpers;
+using COMPASS.Infra.Avalonia.ExtensionMethods;
 
-namespace COMPASS.Infra.Models.DragDrop;
+namespace COMPASS.Infra.Avalonia.DragDrop;
 
 /// <summary>
 /// Drag handler that creates a <see cref="ReorderPayload"/> from the dragged visual's
@@ -16,7 +15,7 @@ public class ReorderDragHandler : DragHandler
 {
     public override void TryAddToTransfer(DataTransfer transfer, Visual source)
     {
-        var containingItemsControl = FindContainingItemsControl(source);
+        var containingItemsControl = source.FindContainingItemsControl();
         if (containingItemsControl?.ItemsSource is not IList itemsList) return;
 
         var item = (source as Control)?.DataContext;

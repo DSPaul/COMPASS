@@ -2,7 +2,7 @@ using System.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
 
-namespace COMPASS.Infra.Models.DragDrop;
+namespace COMPASS.Infra.Avalonia.DragDrop;
 
 /// <summary>
 /// Payload carried during a reorder drag operation.

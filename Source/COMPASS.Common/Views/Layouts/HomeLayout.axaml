@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:COMPASS.Common.ViewModels.Layouts"
              xmlns:modelVm="using:COMPASS.Common.ViewModels.ModelVMs"
-             xmlns:behav="using:COMPASS.Infra.Behaviors"
+             xmlns:behav="using:COMPASS.Infra.Avalonia.Behaviors"
              xmlns:controls="using:COMPASS.Common.Controls"
              xmlns:materialDesign="using:Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"

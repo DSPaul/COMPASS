@@ -1,6 +1,6 @@
 using Avalonia.Data.Converters;
 
-namespace COMPASS.Infra.Converters;
+namespace COMPASS.Infra.Avalonia.Converters;
 
 public static partial class EnumConverters
 {

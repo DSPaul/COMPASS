@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -8,9 +7,9 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Infra.Avalonia.ExtensionMethods;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Controls;
 
@@ -85,8 +84,8 @@ public class ImprovedComboBox : ListBox
         var focusedElement = e.NewFocusedElement as Visual;
         var popupChild = _suggestionPopup?.Child;
 
-        bool focusStillInside = VisualTreeHelpers.IsDescendantOf(focusedElement, this)
-            || (popupChild is not null && VisualTreeHelpers.IsDescendantOf(focusedElement, popupChild));
+        bool focusStillInside = focusedElement.IsDescendantOf(this)
+            || (popupChild is not null && focusedElement.IsDescendantOf(popupChild));
 
         if (!focusStillInside)
         {

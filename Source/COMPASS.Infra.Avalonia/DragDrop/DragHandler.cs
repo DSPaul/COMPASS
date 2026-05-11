@@ -1,8 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Input;
-using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Avalonia.ExtensionMethods;
 
-namespace COMPASS.Infra.Models.DragDrop
+namespace COMPASS.Infra.Avalonia.DragDrop
 {
     public abstract class DragHandler
     {

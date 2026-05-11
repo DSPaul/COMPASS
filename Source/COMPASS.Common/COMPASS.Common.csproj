@@ -27,17 +27,10 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <!-- 
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.8.5" />
-    <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" -->
-    <!-- <PackageReference Include="OpenCvSharp4.Extensions" Version="4.9.0.20240103" /> -->
-    <!-- <PackageReference Include="OpenCvSharp4.Windows" Version="4.9.0.20240103" /> -->
-    <!-- <PackageReference Include="ZXing.Net" Version="0.16.9" /> -->
-    <!-- <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.12" /> -->
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Avalonia.Labs.Gif" Version="12.0.2" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.2" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.0.2" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.3" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.0.3" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
@@ -64,6 +57,7 @@
     <Folder Include="Assets\Fonts\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\COMPASS.Infra.Avalonia\COMPASS.Infra.Avalonia.csproj" />
     <ProjectReference Include="..\COMPASS.Infra\COMPASS.Infra.csproj" />
   </ItemGroup>
 </Project>

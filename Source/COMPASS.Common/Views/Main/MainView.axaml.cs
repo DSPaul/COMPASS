@@ -6,7 +6,7 @@ using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Infra.Models.DragDrop;
+using COMPASS.Infra.Avalonia.DragDrop;
 
 namespace COMPASS.Common.Views.Main;
 

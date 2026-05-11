@@ -1,11 +1,12 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using AvaloniaInput = Avalonia.Input;
 using Avalonia.VisualTree;
-using COMPASS.Infra.Models.DragDrop;
-using static COMPASS.Infra.Tools.VisualTreeHelpers;
+using COMPASS.Infra.Avalonia.DragDrop;
+using COMPASS.Infra.Avalonia.ExtensionMethods;
 
-namespace COMPASS.Infra.Behaviors;
+namespace COMPASS.Infra.Avalonia.Behaviors;
 
 public sealed class DragBehavior : AvaloniaObject
 {
@@ -86,7 +87,7 @@ public sealed class DragBehavior : AvaloniaObject
 
         var dragDataTranfer = new DataTransfer();
 
-        DragManager? dragManager = FindInheritedValue(draggedVisual, DragManagerProperty);
+        DragManager? dragManager = draggedVisual.FindInheritedValue(DragManagerProperty);
         if (dragManager is null) return;
 
         foreach (var dragHandler in dragManager.GetHandlers())
@@ -95,7 +96,7 @@ public sealed class DragBehavior : AvaloniaObject
         }
 
         var allowedEffects = DragDropEffects.Move | DragDropEffects.Copy | DragDropEffects.Link;
-        await DragDrop.DoDragDropAsync(pressedArgs, dragDataTranfer, allowedEffects);
+        await AvaloniaInput.DragDrop.DoDragDropAsync(pressedArgs, dragDataTranfer, allowedEffects);
     }
 
     private static async void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -103,7 +104,7 @@ public sealed class DragBehavior : AvaloniaObject
         //if last press is not null, means no movement happened, so we consider it a click
         if (_lastPressedArgs != null && _lastPressedControl != null)
         {
-            DragManager? dragManager = FindInheritedValue(_lastPressedControl, DragManagerProperty);
+            DragManager? dragManager = _lastPressedControl.FindInheritedValue(DragManagerProperty);
             dragManager?.ClickHandler?.Invoke(_lastPressedControl, _lastPressedArgs);
             _lastPressedArgs = null;
             _lastPressedControl = null;

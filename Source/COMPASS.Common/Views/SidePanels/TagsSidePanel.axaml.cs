@@ -7,8 +7,8 @@ using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.ViewModels.SidePanels;
-using COMPASS.Infra.Behaviors;
-using COMPASS.Infra.Models.DragDrop;
+using COMPASS.Infra.Avalonia.Behaviors;
+using COMPASS.Infra.Avalonia.DragDrop;
 
 namespace COMPASS.Common.Views.SidePanels;
 

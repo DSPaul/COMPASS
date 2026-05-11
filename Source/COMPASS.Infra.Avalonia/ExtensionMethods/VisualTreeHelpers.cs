@@ -4,7 +4,7 @@ using Avalonia.Controls.Presenters;
 using Avalonia.VisualTree;
 
 
-namespace COMPASS.Infra.Tools;
+namespace COMPASS.Infra.Avalonia.ExtensionMethods;
 
 /// <summary>
 /// Reusable helpers for walking and querying the Avalonia visual tree,
@@ -17,7 +17,7 @@ public static class VisualTreeHelpers
     /// For a <see cref="TreeView"/>, skips the node's own <see cref="TreeViewItem"/> visual
     /// (whose ItemsSource is the node's <b>children</b>) and returns its parent.
     /// </summary>
-    public static ItemsControl? FindContainingItemsControl(Visual control)
+    public static ItemsControl? FindContainingItemsControl(this Visual control)
     {
         var directParent = control.FindAncestorOfType<ItemsControl>(includeSelf: false);
         if (directParent is TreeViewItem)
@@ -28,7 +28,7 @@ public static class VisualTreeHelpers
     /// <summary>
     /// Finds the items host <see cref="Panel"/> via the <see cref="ItemsPresenter"/>.
     /// </summary>
-    public static Panel? FindItemsPanel(ItemsControl itemsControl)
+    public static Panel? FindItemsPanel(this ItemsControl itemsControl)
     {
         var presenter = itemsControl.FindDescendantOfType<ItemsPresenter>();
         if (presenter is not null)
@@ -42,7 +42,7 @@ public static class VisualTreeHelpers
     /// <summary>
     /// Walks up from <paramref name="visual"/> to find the nearest value of an attached property.
     /// </summary>
-    public static T? FindInheritedValue<T>(Visual visual, AttachedProperty<T?> property) where T : class
+    public static T? FindInheritedValue<T>(this Visual visual, AttachedProperty<T?> property) where T : class
     {
         Visual? current = visual;
         while (current is not null)
@@ -61,12 +61,12 @@ public static class VisualTreeHelpers
     /// Finds the deepest <see cref="TreeViewItem"/> whose header area contains <paramref name="pointInTreeView"/>.
     /// The point should be in the coordinate space of <paramref name="treeView"/>.
     /// </summary>
-    public static TreeViewItem? FindTreeViewItemAtPoint(TreeView treeView, Point pointInTreeView)
+    public static TreeViewItem? FindTreeViewItemAtPoint(this TreeView treeView, Point pointInTreeView)
         => FindTreeViewItemAtPointRecursive(treeView, pointInTreeView);
 
     private static TreeViewItem? FindTreeViewItemAtPointRecursive(ItemsControl parent, Point pointInTreeView)
     {
-        var panel = FindItemsPanel(parent);
+        var panel = parent.FindItemsPanel();
         if (panel is null) return null;
 
         var translated = parent.TranslatePoint(pointInTreeView, panel);
@@ -107,7 +107,7 @@ public static class VisualTreeHelpers
     /// is a <see cref="Control"/> whose <see cref="Control.DataContext"/> is reference-equal
     /// to <paramref name="dataContext"/>.
     /// </summary>
-    public static bool HasAncestorWithDataContext(Visual visual, object dataContext)
+    public static bool HasAncestorWithDataContext(this Visual visual, object dataContext)
     {
         Visual? current = visual;
         while (current is not null)
@@ -124,7 +124,7 @@ public static class VisualTreeHelpers
     /// <see cref="ItemsControl.ItemsSource"/>. Needed because in-place list mutations
     /// (RemoveAt/Insert) don't always trigger a full container rebuild in TreeView.
     /// </summary>
-    public static void RefreshItemsSource(ItemsControl itemsControl)
+    public static void RefreshItemsSource(this ItemsControl itemsControl)
     {
         var itemsSource = itemsControl.ItemsSource;
         itemsControl.ItemsSource = null;
@@ -136,7 +136,7 @@ public static class VisualTreeHelpers
     /// <paramref name="ancestor"/>. Works within a single visual root (does not cross
     /// <see cref="Avalonia.Controls.Primitives.PopupRoot"/> boundaries).
     /// </summary>
-    public static bool IsDescendantOf(Visual? visual, Visual ancestor)
+    public static bool IsDescendantOf(this Visual? visual, Visual ancestor)
     {
         Visual? current = visual;
         while (current is not null)
@@ -151,7 +151,7 @@ public static class VisualTreeHelpers
     /// Returns the header height of a visual. For <see cref="TreeViewItem"/>, measures
     /// the <see cref="ContentPresenter"/>; otherwise returns the full bounds height.
     /// </summary>
-    public static double GetHeaderHeight(Visual child)
+    public static double GetHeaderHeight(this Visual child)
     {
         if (child is TreeViewItem tvi)
         {
