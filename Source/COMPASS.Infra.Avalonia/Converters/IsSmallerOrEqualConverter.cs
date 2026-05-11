@@ -17,6 +17,16 @@ public class IsSmallerOrEqualConverter : IMultiValueConverter
         var firstNumber = values[0] as int?;
         var secondNumber = values[1] as int?;
 
+        if (firstNumber == null)
+        {
+            throw new ArgumentException("The first value was not an integer");
+        }
+
+        if (secondNumber == null)
+        {
+            throw new ArgumentException("The second value was not an integer");
+        }
+
         return firstNumber <= secondNumber;
     }
 }

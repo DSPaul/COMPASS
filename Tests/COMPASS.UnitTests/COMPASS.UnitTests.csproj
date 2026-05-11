@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\COMPASS.Tests.Common\COMPASS.Tests.Common.csproj" />
+    <ProjectReference Include="..\..\Source\COMPASS.Infra.Avalonia\COMPASS.Infra.Avalonia.csproj" />
   </ItemGroup>
 
   <ItemGroup>
