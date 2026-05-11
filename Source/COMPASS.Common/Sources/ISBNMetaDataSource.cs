@@ -77,7 +77,7 @@ namespace COMPASS.Common.Sources
             //PageCount
             int pageCount = 0;
             if (details.SelectToken("pagination") is JToken pagination &&
-                int.TryParse(RegexConstants.NumbersOnly().Match(pagination.ToString()).Value, out pageCount))
+                int.TryParse(RegexConstants.Numbers().Match(pagination.ToString()).Value, out pageCount))
             {
                 metaData.PageCount = pageCount;
             }

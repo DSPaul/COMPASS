@@ -76,7 +76,7 @@ public class CodexViewModel : ModelViewModelBase<Codex>
         get => (string.IsNullOrEmpty(_model.UserDefinedSortingTitle) ? _model.Title : _model.UserDefinedSortingTitle).PadNumbers();
         set => _model.SortingTitle = value;
     }
-    public bool SortingTitleContainsNumbers => RegexConstants.NumbersOnly().IsMatch(SortingTitle);
+    public bool SortingTitleContainsNumbers => RegexConstants.Numbers().IsMatch(SortingTitle);
     public string ZeroPaddingExplainer =>
         "What's with all the 0's? \n \n" +
         "Zero-padding numbers ensures numerical sorting instead of alphabetical sorting. \n" +

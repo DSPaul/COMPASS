@@ -12,6 +12,6 @@ namespace COMPASS.Infra.Models
 
 
         [GeneratedRegex(@"\d+")]
-        public static partial Regex NumbersOnly();
+        public static partial Regex Numbers();
     }
 }

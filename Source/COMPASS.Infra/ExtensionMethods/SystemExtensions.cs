@@ -37,7 +37,7 @@ namespace COMPASS.Infra.ExtensionMethods
         public static string PadNumbers(this string input, int totalWidth = 8)
         {
             if (String.IsNullOrEmpty(input)) return input;
-            return RegexConstants.NumbersOnly().Replace(input, match => match.Value.PadLeft(totalWidth, '0'));
+            return RegexConstants.Numbers().Replace(input, match => match.Value.PadLeft(totalWidth, '0'));
         }
 
         public static string RemoveDiacritics(this string text) =>
