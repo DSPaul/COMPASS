@@ -6,6 +6,7 @@
              xmlns:views="using:COMPASS.Common.Views"
              xmlns:controls="using:COMPASS.Common.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             MinWidth="400" MinHeight="300"
              x:Class="COMPASS.Common.Views.Modals.Import.ImportTagsView"
              x:DataType="vm:ImportTagsViewModel">
     <Grid RowDefinitions="*,auto,auto">
