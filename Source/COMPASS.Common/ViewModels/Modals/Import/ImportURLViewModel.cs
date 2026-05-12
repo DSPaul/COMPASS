@@ -43,11 +43,12 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                     ExampleURL = "https://";
                     break;
                 case ImportSource.ISBN:
-                    SourceName = "ISBN";
-                    ExampleURL = "";
-                    ShowScannerButton = true;
-                    break;
-            }
+                        SourceName = "ISBN";
+                        ExampleURL = "";
+                        ShowScannerButton = true;
+                        AddValidation(nameof(InputURL), ValidateInputURL);
+                        break;
+                }
         }
 
         private readonly ImportSource _importSource;
@@ -66,7 +67,23 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         public string InputURL
         {
             get => _inputURL;
-            set => SetProperty(ref _inputURL, value);
+            set
+            {
+                SetProperty(ref _inputURL, value);
+                Validate(nameof(InputURL));
+            }
+        }
+
+        private void ValidateInputURL()
+        {
+            if (string.IsNullOrWhiteSpace(InputURL))
+            {
+                AddError(nameof(InputURL), "ISBN is required.");
+                return;
+            }
+            string digits = InputURL.Replace("-", "").Replace(" ", "");
+            if (!ValidationService.IsValidISBN(digits))
+                AddError(nameof(InputURL), "Invalid ISBN.");
         }
 
         private string _importError = "";
@@ -163,10 +180,10 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         public IRelayCommand CancelCommand => _cancelCommand ??= new(CloseAction);
         
         private AsyncRelayCommand? _submitUrlCommand;
-        public IRelayCommand ConfirmCommand => _submitUrlCommand ??= new (SubmitURL);
+        public IRelayCommand ConfirmCommand => _submitUrlCommand ??= new(SubmitURL, () => !HasErrors);
         private async Task SubmitURL()
         {
-            if (!InputURL.Contains(ExampleURL) && ValidateURL)
+            if (!InputURL.Contains(ExampleURL) && ValidateURL && _importSource != ImportSource.ISBN)
             {
                 ImportError = $"'{InputURL}' is not a valid URL for {SourceName}";
                 return;
