@@ -6,7 +6,7 @@ using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 using ImageMagick;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace COMPASS.Common.Sources
 {
@@ -32,9 +32,9 @@ namespace COMPASS.Common.Sources
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading Metadata from openlibrary.org"));
             string uri = $"https://openlibrary.org/api/books?bibkeys=ISBN:{sources.ISBN.Trim('-', ' ')}&format=json&jscmd=details";
 
-            JObject? openLibraryData = await _webService.GetJsonAsync(uri);
+            JsonNode? openLibraryData = await _webService.GetJsonAsync(uri);
 
-            if (openLibraryData is null || !openLibraryData.HasValues)
+            if (openLibraryData is not JsonObject openLibraryObject || openLibraryObject.Count == 0)
             {
                 string message = $"ISBN {sources.ISBN} was not found on openlibrary.org \n" +
                     $"You can contribute by submitting this book at \n" +
@@ -45,7 +45,8 @@ namespace COMPASS.Common.Sources
             }
 
             // Start parsing json
-            JToken? details = openLibraryData.First?.First?.SelectToken("details");
+            // The response is a dictionary keyed by "ISBN:xxxx", navigate to first entry's "details"
+            JsonNode? details = openLibraryObject.First().Value?["details"];
             if (details is null)
             {
                 Logger.Warn("Unable to parse metadata from openlibrary");
@@ -53,10 +54,9 @@ namespace COMPASS.Common.Sources
             }
 
             // Title
-            string fullTitle = details.SelectToken("full_title")?.ToString() ?? "";
-            string title = details.SelectToken("title")?.ToString() ?? "";
-            string subTitle = details.SelectToken("subtitle")?.ToString() ?? "";
-            
+            string fullTitle = details["full_title"]?.GetValue<string>() ?? "";
+            string title = details["title"]?.GetValue<string>() ?? "";
+            string subTitle = details["subtitle"]?.GetValue<string>() ?? "";
 
             if (!string.IsNullOrWhiteSpace(fullTitle))
             {
@@ -64,37 +64,38 @@ namespace COMPASS.Common.Sources
             }
             else if (title.Length + subTitle.Length > 0)
             {
-                metaData.Title = $"{title} {subTitle}";
+                metaData.Title = $"{title} {subTitle}".Trim();
             }
 
             //Authors
-            if (details.SelectToken("authors") is JToken authors)
+            if (details["authors"] is JsonArray authors)
             {
-                metaData.Authors = authors.Select(item => item.SelectToken("name")?.ToString() ?? string.Empty)
+                metaData.Authors = authors.Select(item => item?["name"]?.GetValue<string>() ?? string.Empty)
                                           .Where(author => author != string.Empty)
                                           .ToList();
             }
+
             //PageCount
             int pageCount = 0;
-            if (details.SelectToken("pagination") is JToken pagination &&
-                int.TryParse(RegexConstants.Numbers().Match(pagination.ToString()).Value, out pageCount))
+            if (details["pagination"] is JsonNode pagination &&
+                int.TryParse(RegexConstants.Numbers().Match(pagination.GetValue<string>()).Value, out pageCount))
             {
                 metaData.PageCount = pageCount;
             }
-            else if (details.SelectToken("number_of_pages") is JToken nrOfPages &&
-                     int.TryParse(nrOfPages.ToString(), out pageCount))
+            else if (details["number_of_pages"] is JsonNode nrOfPages &&
+                     int.TryParse(nrOfPages.GetValue<string>(), out pageCount))
             {
                 metaData.PageCount = pageCount;
             }
 
             //Publisher
-            metaData.Publisher = details.SelectToken("publishers[0]")?.ToString() ?? string.Empty;
+            metaData.Publisher = details["publishers"]?[0]?.GetValue<string>() ?? string.Empty;
 
             //  Description
-            metaData.Description = details.SelectToken("description.value")?.ToString() ?? string.Empty;
+            metaData.Description = details["description"]?["value"]?.GetValue<string>() ?? string.Empty;
 
             //Release Date
-            if (DateTime.TryParse(details.SelectToken("publish_date")?.ToString(), out DateTime tempDate))
+            if (DateTime.TryParse(details["publish_date"]?.GetValue<string>(), out DateTime tempDate))
             {
                 metaData.ReleaseDate = tempDate;
             }
@@ -109,9 +110,9 @@ namespace COMPASS.Common.Sources
             try
             {
                 string uri = $"https://openlibrary.org/isbn/{sources.ISBN}.json";
-                JObject? metadata = await _webService.GetJsonAsync(uri);
+                JsonNode? metadata = await _webService.GetJsonAsync(uri);
 
-                if (metadata is not { HasValues: true })
+                if (metadata is not JsonObject metadataObject || metadataObject.Count == 0)
                 {
                     string message = $"ISBN {sources.ISBN} was not found on openlibrary.org \n" +
                         $"You can contribute by submitting this book at \n" +
@@ -121,7 +122,7 @@ namespace COMPASS.Common.Sources
                     return null;
                 }
 
-                string? imgId = metadata.SelectToken("covers[0]")?.ToString();
+                string? imgId = metadata["covers"]?[0]?.GetValue<int>().ToString();
                 if (imgId is null) return null;
                 string imgURL = $"https://covers.openlibrary.org/b/id/{imgId}.jpg";
                 return await _webService.DownloadImageAsync(imgURL);

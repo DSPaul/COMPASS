@@ -3,7 +3,7 @@ using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using NuGet.Versioning;
 using System.Diagnostics;
 
@@ -22,7 +22,7 @@ namespace COMPASS.Common.Services
         {
             var apiUrl = Constants.RepoURL.Replace("https://github.com/", "https://api.github.com/repos/") + "/releases";
             var json = await _httpClient.GetStringAsync(apiUrl).ConfigureAwait(false);
-            var releases = JArray.Parse(json);
+            var releases = JsonNode.Parse(json)?.AsArray() ?? [];
 
             SemanticVersion currentVersion = SemanticVersion.Parse(ApplicationService.Version);
 
@@ -30,13 +30,13 @@ namespace COMPASS.Common.Services
 
             foreach (var release in releases)
             {
-                var tagName = release["tag_name"]?.Value<string>()?.TrimStart('v');
+                var tagName = release?["tag_name"]?.GetValue<string>()?.TrimStart('v');
                 if (tagName is not null &&
                     SemanticVersion.TryParse(tagName, out var version) &&
                     version > currentVersion)
                 {
-                    string? url = release["html_url"]?.Value<string>();
-                    string? releaseNotes = release["body"]?.Value<string>();
+                    string? url = release?["html_url"]?.GetValue<string>();
+                    string? releaseNotes = release?["body"]?.GetValue<string>();
                     updates.Add(new Update(version, url, releaseNotes));
                 }
             }

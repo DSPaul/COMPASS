@@ -8,7 +8,7 @@ using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 using ImageMagick;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
@@ -41,9 +41,9 @@ namespace COMPASS.Common.Sources
             };
 
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from Homebrewery"));
-            JObject? metadata = await _webService.GetJsonAsync(uri);
+            JsonNode? metadata = await _webService.GetJsonAsync(uri);
 
-            if (metadata is null || !metadata.HasValues)
+            if (metadata is null || metadata.AsObject().Count == 0)
             {
                 string message = $"homebrew {sources.SourceURL} was not found on homebrewery \n" +
                     $"Please check the url and check if the homebrewery.naturalcrit.com website is up.";
@@ -52,15 +52,15 @@ namespace COMPASS.Common.Sources
                 return new();
             }
 
-            metaData.Title = metadata.SelectToken("title")?.ToString() ?? string.Empty;
-            var authors = metadata.SelectToken("authors")?.Values<string>() ?? [];
+            metaData.Title = metadata["title"]?.GetValue<string>() ?? string.Empty;
+            var authors = metadata["authors"]?.AsArray().Select(a => a?.GetValue<string>()) ?? [];
             metaData.Authors = authors
                 .Where(author => !string.IsNullOrWhiteSpace(author))
                 .Cast<string>()
                 .ToList();
-            metaData.PageCount = int.Parse(metadata.SelectToken("pageCount")?.ToString() ?? "0");
-            metaData.Description = metadata.SelectToken("description")?.ToString() ?? string.Empty;
-            metaData.ReleaseDate = metadata.SelectToken("createdAt")?.Value<DateTime>();
+            metaData.PageCount = int.Parse(metadata["pageCount"]?.GetValue<int>().ToString() ?? "0");
+            metaData.Description = metadata["description"]?.GetValue<string>() ?? string.Empty;
+            metaData.ReleaseDate = metadata["createdAt"]?.GetValue<DateTime>();
 
             return metaData;
         }

@@ -1,6 +1,6 @@
 using HtmlAgilityPack;
 using ImageMagick;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace COMPASS.Common.Interfaces.Services;
 
@@ -8,7 +8,7 @@ public interface IWebService
 {
     Task<byte[]> DownloadFileAsync(string uri);
 
-    Task<JObject?> GetJsonAsync(string uri);
+    Task<JsonNode?> GetJsonAsync(string uri);
 
     Task<MagickImage?> DownloadImageAsync(string imgURL);
 

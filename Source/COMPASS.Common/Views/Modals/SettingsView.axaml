@@ -281,9 +281,9 @@
                         <StackPanel Spacing="5">
                             <TextBlock Text="Source Priority Preferences" Classes="SectionTitle" />
                             <Grid ColumnDefinitions="*, 2*, 2*" RowDefinitions="Auto,Auto,Auto">
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Property"/>
+                                <TextBlock Text="Property"/>
                                 
-                                <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Spacing="5">
+                                <StackPanel Orientation="Horizontal" Spacing="5">
                                     <TextBlock Text="Source Priority" />
                                     <controls:Explainer Content="If multiple sources provide metadata for a given property, the value from the topmost source will be used."/>
                                 </StackPanel>
@@ -300,7 +300,7 @@
                                                 <TextBlock Text="{Binding Label}" VerticalAlignment="Top"/>
                                                 <controls:PriorityControl Grid.Row="0" Grid.Column="1"
                                                                           ItemsSource="{Binding SourcePriority, Mode=OneWay}"/>
-                                                <StackPanel Grid.Row="0" Grid.Column="2" Margin="10,0,20,0">
+                                                <StackPanel Margin="10,0,20,0">
                                                     <RadioButton Content="Never"
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource EnumForRadioBtnConverter},
                                                                  ConverterParameter={x:Static enums:MetaDataOverwriteMode.Never}}" />
@@ -377,49 +377,50 @@
                         <StackPanel Orientation="Vertical">
                             <TextBlock Text="Dependencies" Classes="SectionTitle"/>
                             <TextBlock Text="COMPASS could not exist without the following open source projects:" />
-                            <Grid ColumnDefinitions="Auto, Auto, Auto, Auto"
-                                  RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
-                                  RowSpacing="5" Margin="0,5,0,0">
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="UI Framework:" Margin="0,0,5,0"/>
-                                <HyperlinkButton Grid.Row="0" Grid.Column="1" NavigateUri="https://avaloniaui.net/" Content="Avalonia"/>
-                                <TextBlock Grid.Row="0" Grid.Column="2" Text="Icons and Controls:" Margin="30,0,5,0"/>
-                                <HyperlinkButton Grid.Row="0" Grid.Column="3" NavigateUri="https://github.com/AvaloniaUtils/Material.Icons.Avalonia" Content="Material.Icons.Avalonia"/>
+                            <UniformGrid Columns="4"
+                                  RowSpacing="5" Margin="0,5,0,0" ColumnSpacing="30">
+                                <TextBlock Text="UI Framework:" />
+                                <HyperlinkButton NavigateUri="https://avaloniaui.net/" Content="Avalonia"/>
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Reactivity:" Margin="0,0,5,0"/>
-                                <HyperlinkButton Grid.Row="1" Grid.Column="1" NavigateUri="https://github.com/CommunityToolkit/dotnet" Content="CommunityToolkit.Mvvm"/>
-                                <TextBlock Grid.Row="1" Grid.Column="2" Text="Inversion of Control:" Margin="30,0,5,0"/>
-                                <HyperlinkButton Grid.Row="1" Grid.Column="3" NavigateUri="https://autofac.org/" Content="Autofac"/>
+                                <TextBlock Text="Icons and Controls:" />
+                                <HyperlinkButton NavigateUri="https://github.com/AvaloniaUtils/Material.Icons.Avalonia" Content="Material.Icons.Avalonia"/>
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Fuzzy Search:" Margin="0,0,5,0"/>
-                                <HyperlinkButton Grid.Row="2" Grid.Column="1" NavigateUri="https://github.com/JakeBayer/FuzzySharp" Content="FuzzySharp"/>
-                                <TextBlock Grid.Row="2" Grid.Column="2" Text="HTML Parsing:" Margin="30,0,5,0"/>
-                                <HyperlinkButton Grid.Row="2" Grid.Column="3" NavigateUri="https://github.com/zzzprojects/html-agility-pack" Content="HTML Agility Pack"/>
+                                <TextBlock Text="Reactivity:" />
+                                <HyperlinkButton NavigateUri="https://github.com/CommunityToolkit/dotnet" Content="CommunityToolkit.Mvvm"/>
 
-                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Getting PDF Metadata:" Margin="0,0,5,0"/>
-                                <HyperlinkButton Grid.Row="3" Grid.Column="1" NavigateUri="https://github.com/itext/itext7-dotnet" Content="iText"/>
-                                <TextBlock Grid.Row="3" Grid.Column="2" Text="PDF to Image:" Margin="30,0,5,0"/>
-                                <HyperlinkButton Grid.Row="3" Grid.Column="3" NavigateUri="https://github.com/sungaila/PDFtoImage" Content="PDFtoImage"/>
+                                <TextBlock Text="Inversion of Control:" />
+                                <HyperlinkButton NavigateUri="https://autofac.org/" Content="Autofac"/>
 
-                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Logging:" Margin="0,0,5,0"/>
-                                <HyperlinkButton Grid.Row="4" Grid.Column="1" NavigateUri="https://github.com/apache/logging-log4net" Content="log4net"/>
-                                <TextBlock Grid.Row="4" Grid.Column="2" Text="Image Manipulation:" Margin="30,0,5,0"/>
-                                <HyperlinkButton Grid.Row="4" Grid.Column="3" NavigateUri="https://github.com/dlemstra/Magick.NET" Content="Magick.NET"/>
+                                <TextBlock Text="Fuzzy Search:" />
+                                <HyperlinkButton NavigateUri="https://github.com/JakeBayer/FuzzySharp" Content="FuzzySharp"/>
 
-                                <TextBlock Grid.Row="5" Grid.Column="0" Text="JSON Parsing:" Margin="0,0,5,0"/>
-                                <HyperlinkButton Grid.Row="5" Grid.Column="1" NavigateUri="https://github.com/JamesNK/Newtonsoft.Json" Content="Newtonsoft.Json"/>
-                                <TextBlock Grid.Row="5" Grid.Column="2" Text="Website Screenshotting:" Margin="30,0,5,0"/>
-                                <HyperlinkButton Grid.Row="5" Grid.Column="3" NavigateUri="https://github.com/SeleniumHQ/selenium" Content="Selenium"/>
+                                <TextBlock Text="HTML Parsing:" />
+                                <HyperlinkButton NavigateUri="https://github.com/zzzprojects/html-agility-pack" Content="HTML Agility Pack"/>
 
-                                <TextBlock Grid.Row="6" Grid.Column="0" Text="Zipping and Unzipping:" Margin="0,0,5,0"/>
-                                <HyperlinkButton Grid.Row="6" Grid.Column="1" NavigateUri="https://github.com/adamhathcock/sharpcompress" Content="SharpCompress"/>
-                                <TextBlock Grid.Row="6" Grid.Column="2" Text="SVG Rendering:" Margin="30,0,5,0"/>
-                                <HyperlinkButton Grid.Row="6" Grid.Column="3" NavigateUri="https://github.com/wieslawsoltes/Svg.Skia" Content="Svg.Skia"/>
+                                <TextBlock Text="Getting PDF Metadata:" />
+                                <HyperlinkButton NavigateUri="https://github.com/itext/itext7-dotnet" Content="iText"/>
 
-                                <TextBlock Grid.Row="7" Grid.Column="0" Text="Glob File Matching:" Margin="0,0,5,0"/>
-                                <HyperlinkButton Grid.Row="7" Grid.Column="1" NavigateUri="https://github.com/dotnet/runtime/tree/main/src/libraries/Microsoft.Extensions.FileSystemGlobbing" Content="Microsoft.Extensions.FileSystemGlobbing"/>
-                                <TextBlock Grid.Row="7" Grid.Column="2" Text="Hot Reload:" Margin="30,0,5,0"/>
-                                <HyperlinkButton Grid.Row="7" Grid.Column="3" NavigateUri="https://github.com/Kir-Antipov/HotAvalonia" Content="HotAvalonia"/>
-                            </Grid>
+                                <TextBlock Text="PDF to Image:" />
+                                <HyperlinkButton NavigateUri="https://github.com/sungaila/PDFtoImage" Content="PDFtoImage"/>
+
+                                <TextBlock Text="Logging:" />
+                                <HyperlinkButton NavigateUri="https://github.com/apache/logging-log4net" Content="log4net"/>
+
+                                <TextBlock Text="Image Manipulation:" />
+                                <HyperlinkButton NavigateUri="https://github.com/dlemstra/Magick.NET" Content="Magick.NET"/>
+
+                                <TextBlock Text="Website Screenshotting:" />
+                                <HyperlinkButton NavigateUri="https://github.com/SeleniumHQ/selenium" Content="Selenium"/>
+
+                                <TextBlock Text="Zipping and Unzipping:" />
+                                <HyperlinkButton NavigateUri="https://github.com/adamhathcock/sharpcompress" Content="SharpCompress"/>
+
+                                <TextBlock Text="SVG Rendering:" />
+                                <HyperlinkButton NavigateUri="https://github.com/wieslawsoltes/Svg.Skia" Content="Svg.Skia"/>
+
+                                <TextBlock Text="Hot Reload:" />
+                                <HyperlinkButton NavigateUri="https://github.com/Kir-Antipov/HotAvalonia" Content="HotAvalonia"/>
+                            </UniformGrid>
                         </StackPanel>
                     </Border>
                 </StackPanel>

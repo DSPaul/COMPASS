@@ -4,7 +4,7 @@ using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using HtmlAgilityPack;
 using ImageMagick;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace COMPASS.Common.Services;
 
@@ -31,11 +31,11 @@ public class WebService(ILogger logger) : IWebService
         }
     }
 
-    public async Task<JObject?> GetJsonAsync(string uri)
+    public async Task<JsonNode?> GetJsonAsync(string uri)
     {
         using HttpClient client = new();
 
-        JObject? json = null;
+        JsonNode? json = null;
 
         if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? _))
             throw new InvalidOperationException("URI is invalid.");
@@ -44,8 +44,8 @@ public class WebService(ILogger logger) : IWebService
             HttpResponseMessage response = await client.GetAsync(uri).ConfigureAwait(false);
             if (response.IsSuccessStatusCode)
             {
-                var data = response.Content.ReadAsStringAsync();
-                json = JObject.Parse(data.Result);
+                string data = await response.Content.ReadAsStringAsync();
+                json = JsonNode.Parse(data);
             }
         }
         catch (Exception ex)
