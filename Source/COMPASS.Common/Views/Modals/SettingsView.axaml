@@ -375,20 +375,6 @@
                     </Border>
                     <Border Classes="SettingsContainer">
                         <StackPanel Orientation="Vertical">
-                            <StackPanel.Styles>
-                                <Style Selector="HyperlinkButton">
-                                    <Setter Property="Padding" Value="0"/>
-                                    <Setter Property="MinHeight" Value="0"/>
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="ToolTip.Tip" Value="{Binding $self.NavigateUri}"/>
-                                </Style>
-                                <Style Selector="HyperlinkButton:pointerover /template/ ContentPresenter">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                </Style>
-                                <Style Selector="HyperlinkButton:pressed /template/ ContentPresenter">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                </Style>
-                            </StackPanel.Styles>
                             <TextBlock Text="Dependencies" Classes="SectionTitle"/>
                             <TextBlock Text="COMPASS could not exist without the following open source projects:" />
                             <Grid ColumnDefinitions="Auto, Auto, Auto, Auto"

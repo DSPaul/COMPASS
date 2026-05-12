@@ -136,10 +136,16 @@
 
     <!--HyperLink-->
     <Style Selector="HyperlinkButton">
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="MinHeight" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="ToolTip.Tip" Value="{Binding $self.NavigateUri}"/>
         <Setter Property="Foreground" Value="{StaticResource AccentColor}" />
-        <Setter Property="Background" Value="Transparent" />
-        <Style Selector="^:pointerover">
-            <Setter Property="Background" Value="Transparent" />
+        <Style Selector="^:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
         </Style>
     </Style>
 
