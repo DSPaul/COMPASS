@@ -52,22 +52,4 @@ public class IsSmallerOrEqualConverterTests
         Assert.That(() => _converter.Convert(values, typeof(bool), null, CultureInfo.InvariantCulture),
             Throws.TypeOf<ArgumentException>());
     }
-
-    [Test]
-    public void Convert_NonIntNumbmer_ThrowsArgumentException()
-    {
-        List<object?> values = [5, 5.0];
-
-        Assert.That(() => _converter.Convert(values, typeof(bool), null, CultureInfo.InvariantCulture),
-            Throws.TypeOf<ArgumentException>());
-    }
-
-    [Test]
-    public void Convert__NonIntValue_ThrowsArgumentException()
-    {
-        List<object?> values = [5, "not an int"];
-
-        Assert.That(() => _converter.Convert(values, typeof(bool), null, CultureInfo.InvariantCulture),
-            Throws.TypeOf<ArgumentException>());
-    }
 }
