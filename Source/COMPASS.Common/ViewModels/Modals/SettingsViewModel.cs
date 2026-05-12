@@ -165,7 +165,7 @@ namespace COMPASS.Common.ViewModels.Modals
         private AsyncRelayCommand? _pickAutoImportDirectoryCommand;
         public AsyncRelayCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(PickAutoImportDirectory);
 
-        private async Task PickAutoImportDirectory() => await AddAutoImportDirectory(await _ioService.PickFolder().ConfigureAwait(false));
+        private async Task PickAutoImportDirectory() => await AddAutoImportDirectory(await _ioService.PickFolder());
         private async Task AddAutoImportDirectory(string? dir)
         {
             if (!String.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))

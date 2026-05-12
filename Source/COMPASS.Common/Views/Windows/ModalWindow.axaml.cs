@@ -1,7 +1,6 @@
-using System;
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using COMPASS.Common.Interfaces.ViewModels;
 
@@ -22,7 +21,7 @@ public partial class ModalWindow : Window
         InitializeComponent();
         DataContext = vm;
         _disposeOnClose = disposeOnClose;
-        vm.CloseAction = Close;
+        vm.CloseAction = () => Dispatcher.UIThread.Post(Close);
         
         // Wait until the layout is ready
         ContentPresenter.Loaded += (_, _) => UpdateSizeBounds();
