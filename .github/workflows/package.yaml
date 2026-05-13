@@ -130,13 +130,13 @@ jobs:
 
     steps:
     - name: Download Windows installer
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: COMPASS_Installer_Signed
         path: release-files/
 
     - name: Download Flatpak
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: COMPASS_Flatpak
         path: release-files/
