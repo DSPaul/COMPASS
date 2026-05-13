@@ -397,8 +397,8 @@
                                 <TextBlock Text="HTML Parsing:" />
                                 <HyperlinkButton NavigateUri="https://github.com/zzzprojects/html-agility-pack" Content="HTML Agility Pack"/>
 
-                                <TextBlock Text="Getting PDF Metadata:" />
-                                <HyperlinkButton NavigateUri="https://github.com/itext/itext7-dotnet" Content="iText"/>
+                                <TextBlock Text="PDF Data extraction:" />
+                                <HyperlinkButton NavigateUri="https://github.com/UglyToad/PdfPig" Content="PdfPig"/>
 
                                 <TextBlock Text="PDF to Image:" />
                                 <HyperlinkButton NavigateUri="https://github.com/sungaila/PDFtoImage" Content="PDFtoImage"/>

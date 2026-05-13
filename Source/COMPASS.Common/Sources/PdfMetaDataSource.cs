@@ -5,9 +5,9 @@ using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 using ImageMagick;
-using iText.Kernel.Pdf;
-using iText.Kernel.Pdf.Canvas.Parser;
-using iText.Kernel.Pdf.Canvas.Parser.Listener;
+using UglyToad.PdfPig;
+using UglyToad.PdfPig.Content;
+using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 
 namespace COMPASS.Common.Sources
 {
@@ -22,56 +22,52 @@ namespace COMPASS.Common.Sources
         public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
         {
             Debug.Assert(IsValidSource(sources), "Codex without pdf found in pdf source");
-            PdfDocument? pdfDoc = null;
-            
+
             SourceMetaData metaData = new();
             try
             {
-                PdfDocumentInfo? info = await Task.Run(() =>
+                await Task.Run(() =>
                 {
-                    PdfReader pdfReader = new(sources.Path);
-                    pdfDoc = new PdfDocument(pdfReader);
-                    return pdfDoc.GetDocumentInfo();
-                });
+                    //using filestream is way more perfomant than calling PdfDocument.Open() directly with the path which would read the entire pdf immediatly
+                    using var fileStream = new FileStream(sources.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    using PdfDocument pdfDoc = PdfDocument.Open(fileStream);
 
-                metaData.Title = info.GetTitle() ?? string.Empty;
-                if (info.GetAuthor() is not null)
-                {
-                    metaData.Authors = [info.GetAuthor()];
-                }
-                metaData.PageCount = pdfDoc!.GetNumberOfPages();
-
-                // If it already has an ISBN, no need to check again
-                if (!string.IsNullOrEmpty(sources.ISBN)) return metaData;
-
-                //Search for an ISBN in first 5 pages
-                for (int page = 1; page <= Math.Min(5, pdfDoc.GetNumberOfPages()); page++)
-                {
-                    ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
-                    string pageContent = PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(page), strategy);
-                    //strip text of spaces
-                    pageContent = RegexConstants.Whitespace().Replace(pageContent, "");
-                    //search ISBN
-                    string isbn = RegexConstants.ISBN().Match(pageContent).Value;
-                    if (!string.IsNullOrEmpty(isbn))
+                    metaData.Title = pdfDoc.Information.Title ?? string.Empty;
+                    if (pdfDoc.Information.Author is not null)
                     {
-                        sources.ISBN = isbn;
-                        break;
+                        metaData.Authors = [pdfDoc.Information.Author];
                     }
-                }
+                    metaData.PageCount = pdfDoc.NumberOfPages;
+
+                    // If it already has an ISBN, no need to check again
+                    if (!string.IsNullOrEmpty(sources.ISBN)) return;
+
+                    //Search for an ISBN in first 5 pages
+                    for (int pageNum = 1; pageNum <= Math.Min(5, pdfDoc.NumberOfPages); pageNum++)
+                    {
+                        Page page = pdfDoc.GetPage(pageNum);
+                        //strip text of spaces
+                        string pageContent = RegexConstants.Whitespace().Replace(ContentOrderTextExtractor.GetText(page), "");
+                        //search ISBN
+                        string isbn = RegexConstants.ISBN().Match(pageContent).Value;
+                        if (!string.IsNullOrEmpty(isbn))
+                        {
+                            sources.ISBN = isbn;
+                            break;
+                        }
+                    }
+                });
             }
 
             catch (Exception ex)
             {
-                //in case pdf is corrupt: PdfReader will throw error
+                //in case pdf is corrupt: PdfDocument.Open will throw error
                 //in those cases: import the pdf without opening it
                 Logger.Error($"Failed to read metadata from {Path.GetFileName(sources.Path)}", ex);
                 LogEntry logEntry = new(Severity.Warning, $"Failed to read metadata from {metaData.Title}");
                 ProgressVM.AddLogEntry(logEntry);
             }
 
-            finally { pdfDoc?.Close(); }
-            
             return metaData;
         }
 
