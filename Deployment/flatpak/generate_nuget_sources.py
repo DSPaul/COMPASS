@@ -15,6 +15,7 @@ import gzip
 import json
 import os
 import urllib.request
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent.parent
@@ -45,16 +46,18 @@ def _fetch_json(url: str) -> dict:
 
 
 def _resolve_dotnet_runtime_version() -> str:
-    """Query NuGet for the latest stable 10.x version of the .NET runtime pack."""
-    index_url = "https://api.nuget.org/v3-flatcontainer/microsoft.netcore.app.runtime.linux-x64/index.json"
-    index = _fetch_json(index_url)
-    stable_10x_versions = [
-        v for v in index["versions"]
-        if v.startswith("10.") and "-" not in v
-    ]
-    if not stable_10x_versions:
-        raise RuntimeError("No stable 10.x .NET runtime versions found on NuGet")
-    return stable_10x_versions[-1]
+    """Read the .NET version shipped by the Flatpak SDK extension from its appdata.xml."""
+    appdata_url = (
+        "https://raw.githubusercontent.com/flathub/org.freedesktop.Sdk.Extension.dotnet10"
+        "/refs/heads/branch/25.08/org.freedesktop.Sdk.Extension.dotnet10.appdata.xml"
+    )
+    with urllib.request.urlopen(appdata_url, timeout=30) as resp:
+        raw = resp.read()
+    root = ET.fromstring(raw)
+    first_release = root.find("./releases/release")
+    if first_release is None:
+        raise RuntimeError("No release entries found in Flatpak SDK extension appdata.xml")
+    return first_release.attrib["version"]
 
 
 def _fetch_entry_from_nuget(name: str, version: str) -> dict | None:
