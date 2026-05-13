@@ -7,6 +7,7 @@ using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 using ImageMagick;
 using System.Text.Json.Nodes;
+using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.Sources
 {
@@ -76,16 +77,14 @@ namespace COMPASS.Common.Sources
             }
 
             //PageCount
-            int pageCount = 0;
             if (details["pagination"] is JsonNode pagination &&
-                int.TryParse(RegexConstants.Numbers().Match(pagination.GetValue<string>()).Value, out pageCount))
+                int.TryParse(RegexConstants.Numbers().Match(pagination.GetValue<string>()).Value, out int pageCount))
             {
                 metaData.PageCount = pageCount;
             }
-            else if (details["number_of_pages"] is JsonNode nrOfPages &&
-                     int.TryParse(nrOfPages.GetValue<string>(), out pageCount))
+            else if (details["number_of_pages"] is JsonNode nrOfPages && nrOfPages.GetIntValue() != null)
             {
-                metaData.PageCount = pageCount;
+                metaData.PageCount = nrOfPages.GetIntValue()!.Value;
             }
 
             //Publisher
@@ -122,7 +121,7 @@ namespace COMPASS.Common.Sources
                     return null;
                 }
 
-                string? imgId = metadata["covers"]?[0]?.GetValue<int>().ToString();
+                string? imgId = metadata["covers"]?[0]?.GetIntValue()?.ToString();
                 if (imgId is null) return null;
                 string imgURL = $"https://covers.openlibrary.org/b/id/{imgId}.jpg";
                 return await _webService.DownloadImageAsync(imgURL);

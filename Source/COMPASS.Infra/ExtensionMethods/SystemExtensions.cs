@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Nodes;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
 using FuzzySharp;
@@ -187,6 +188,30 @@ namespace COMPASS.Infra.ExtensionMethods
             value = keySelector(l.First());
             TKey key = value;
             return l.Skip(1).All(item => EqualityComparer<TKey>.Default.Equals(keySelector(item), key));
+        }
+
+        #endregion
+
+        #region Json Extensions
+
+        public static int? GetIntValue(this JsonNode? node)
+        {
+            if (node == null) return null;
+
+            try
+            {
+                return node.GetValue<int>();
+            }
+            catch(FormatException)
+            {
+                string? str = node.GetValue<string>();
+                if(int.TryParse(str, out int value))
+                {
+                    return value;
+                }
+            }
+
+            return null;
         }
 
         #endregion
