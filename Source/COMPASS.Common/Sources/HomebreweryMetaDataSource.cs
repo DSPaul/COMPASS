@@ -11,7 +11,6 @@ using ImageMagick;
 using System.Text.Json.Nodes;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using SeleniumExtras.WaitHelpers;
 
 namespace COMPASS.Common.Sources
 {
@@ -74,33 +73,23 @@ namespace COMPASS.Common.Sources
             if (driver == null) { return null; }
 
             WebDriverWait wait = new(driver, TimeSpan.FromSeconds(5));
+            wait.IgnoreExceptionTypes([typeof(NoSuchElementException)]);
+
             try
             {
                 string url = sources.SourceURL;
                 var frameSelector = By.Id("BrewRenderer");
                 var pageSelector = By.Id("p1");
 
-                await Task.Run(() =>
-                {
-                    driver.Navigate().GoToUrl(url);
-                    wait.Until(ExpectedConditions.ElementExists(frameSelector));
-                }).ConfigureAwait(false);
-
-                wait.Until(ExpectedConditions.ElementExists(frameSelector));
-
-                Thread.Sleep(500);
+                await driver.Navigate().GoToUrlAsync(url).ConfigureAwait(false);
+                wait.Until(d => d.FindElement(frameSelector));
 
                 IWebElement frame = driver.FindElement(frameSelector);
                 System.Drawing.Point location = frame.Location;
 
-                await Task.Run(() =>
-                {
-                    //TODO add cancelationtoken when redoing backgroup processs system
-                    wait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(frameSelector));
-                    wait.Until(ExpectedConditions.ElementExists(pageSelector));
-                }).ConfigureAwait(false);
-
-                Thread.Sleep(500);
+                //TODO add cancelationtoken when redoing background processs system
+                wait.Until(d => d.SwitchTo().Frame(frame));
+                wait.Until(d => d.FindElement(pageSelector)?.Displayed == true);
 
                 IWebElement coverPage = driver.FindElement(pageSelector);
                 location.X += coverPage.Location.X;
