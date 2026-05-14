@@ -23,21 +23,24 @@ public partial class NotificationWindow : Window
         DataContext = notification;
     }
 
+    private void SafeClose() => Dispatcher.Post(Close);
+
     private void CancelClick(object? sender, RoutedEventArgs routedEventArgs)
     {
         _notification.Result = NotificationAction.Cancel;
-        Close();
+
+        SafeClose();
     }
 
     private void DeclineClick(object sender, RoutedEventArgs routedEventArgs)
     {
         _notification.Result = NotificationAction.Decline;
-        Close();
+        SafeClose();
     }
 
     private void ConfirmClick(object sender, RoutedEventArgs routedEventArgs)
     {
         _notification.Result = NotificationAction.Confirm;
-        Close();
+        SafeClose();
     }
 }
