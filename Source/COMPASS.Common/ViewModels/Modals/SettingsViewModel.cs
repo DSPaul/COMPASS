@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using Avalonia.Threading;
+using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
@@ -127,8 +128,7 @@ namespace COMPASS.Common.ViewModels.Modals
         #region Tab: Import
 
         //Open folder in explorer
-        private RelayCommand<string>? _showInExplorerCommand;
-        public RelayCommand<string> ShowInExplorerCommand => _showInExplorerCommand ??= new(path =>
+        public RelayCommand<string> ShowInExplorerCommand => field ??= new(path =>
         {
             if (string.IsNullOrEmpty(path) || !Path.Exists(path)) return;
             _ioService.ShowInExplorer(path);
@@ -140,8 +140,7 @@ namespace COMPASS.Common.ViewModels.Modals
             [];
 
         //Edit a folder from auto import
-        private AsyncRelayCommand<Folder>? _editAutoImportDirectoryCommand;
-        public AsyncRelayCommand<Folder> EditAutoImportDirectoryCommand => _editAutoImportDirectoryCommand ??= new(EditAutoImportFolder);
+        public AsyncRelayCommand<Folder> EditAutoImportDirectoryCommand => field ??= new(EditAutoImportFolder);
         private async Task EditAutoImportFolder(Folder? folder)
         {
             if (folder is null) return;
@@ -152,20 +151,17 @@ namespace COMPASS.Common.ViewModels.Modals
             OnPropertyChanged(nameof(AutoImportFolders));
         }
         
-        //Remove a folder from auto import
-        private RelayCommand<Folder>? _removeAutoImportDirectoryCommand;
-        public RelayCommand<Folder> RemoveAutoImportDirectoryCommand => _removeAutoImportDirectoryCommand ??= new(folder =>
-            SelectedCollection!.Info.AutoImportFolders.Remove(folder!));
-        
-        //Add a directory from auto import
-        private AsyncRelayCommand<string>? _addAutoImportDirectoryCommand;
-        public AsyncRelayCommand<string> AddAutoImportDirectoryCommand => _addAutoImportDirectoryCommand ??= new(AddAutoImportDirectory);
+        //Remove a folder from auto import;
+        public RelayCommand<Folder> RemoveAutoImportDirectoryCommand => field ??= new(RemoveAutoImportDirectory);
+        private void RemoveAutoImportDirectory(Folder? folder)
+        {
+            if (folder == null) return;
+            SelectedCollection!.Info.AutoImportFolders.Remove(folder);
+            OnPropertyChanged(nameof(AutoImportFolders));
+        }
 
         //Add a directory from auto import
-        private AsyncRelayCommand? _pickAutoImportDirectoryCommand;
-        public AsyncRelayCommand PickAutoImportDirectoryCommand => _pickAutoImportDirectoryCommand ??= new(PickAutoImportDirectory);
-
-        private async Task PickAutoImportDirectory() => await AddAutoImportDirectory(await _ioService.PickFolder());
+        public AsyncRelayCommand<string> AddAutoImportDirectoryCommand => field ??= new(AddAutoImportDirectory);
         private async Task AddAutoImportDirectory(string? dir)
         {
             if (!String.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))
@@ -174,7 +170,13 @@ namespace COMPASS.Common.ViewModels.Modals
                 importFolderVM.RecursiveDirectories = [dir];
                 await importFolderVM.Import();
             }
+            Dispatcher.UIThread.Invoke(() =>
+                OnPropertyChanged(nameof(AutoImportFolders)));
         }
+        
+        public AsyncRelayCommand PickAutoImportDirectoryCommand => field ??= new(PickAutoImportDirectory);
+
+        private async Task PickAutoImportDirectory() => await AddAutoImportDirectory(await _ioService.PickFolder());
 
         //File types to import
         private List<ObservableKeyValuePair<string, bool>>? _filetypePreferences;
