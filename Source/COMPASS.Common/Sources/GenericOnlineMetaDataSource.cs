@@ -45,7 +45,10 @@ namespace COMPASS.Common.Sources
 
             // Title 
             string? title = src.SelectSingleNode("//meta[@property='og:title']")?.GetAttributeValue("content", string.Empty);
-            if(!string.IsNullOrEmpty(title))
+            title = string.IsNullOrEmpty(title)
+                ? src.SelectSingleNode("//head/title")?.InnerText
+                : title;
+            if (!string.IsNullOrEmpty(title))
             {
                 metaData.Title = WebUtility.HtmlDecode(title);
             }
