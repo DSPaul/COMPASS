@@ -5,8 +5,6 @@ namespace COMPASS.ApiClients.Compass
 {
     internal class CompassApiClient(IHttpClientFactory httpClientFactory) : ICompassApiClient
     {
-        internal const string HttpClientName = "compass-api";
-
         //Api Key is shared by all instances of COMPASS, the api is open
         //it's only purpose is to filter out blind spam from bots, so it's fine to 'leak' it
         internal const string ApiKey = "uwr2BswLryEsaXvjXEuumN6rwtKIGSBGv002APVgwDN4UCcb6LGKpFyuxAM9FuV9Ai030vQVc9NXL7ekKiQ0TJ9si53jvGxyiix5EVVqvqJeZkZ7wcG4hYtqdkuJNaFE";
@@ -20,7 +18,7 @@ namespace COMPASS.ApiClients.Compass
 
         public async Task SubmitCrashReportAsync(CrashReport crashReport)
         {
-            var client = httpClientFactory.CreateClient(HttpClientName);
+            var client = httpClientFactory.CreateClient(ICompassApiClient.HttpClientName);
             string json = JsonSerializer.Serialize(crashReport, _jsonOptions);
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 

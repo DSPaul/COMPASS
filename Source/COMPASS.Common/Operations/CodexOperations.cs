@@ -85,6 +85,7 @@ namespace COMPASS.Common.Operations
             if (!CanOpenCodexOnline(toOpen)) return false;
             try
             {
+                //TODO detect if source is even reachable before opening the brower
                 Process.Start(new ProcessStartInfo(toOpen!.Sources.SourceURL) { UseShellExecute = true });
                 toOpen.LastOpened = DateTime.Now;
                 toOpen.OpenedCount++;
@@ -94,12 +95,8 @@ namespace COMPASS.Common.Operations
             catch (Exception ex)
             {
                 Logger.Error($"Failed to open {toOpen!.Sources.SourceURL}", ex);
-                var webService = ServiceResolver.Resolve<IWebService>();
-                //fails if no internet, pinging 8.8.8.8 DNS instead of server because some sites like gm binder block ping
-                if (!webService.CheckConnection()) Logger.Warn($"Cannot open this item online when not connected to the internet", ex);
                 return false;
             }
-
         }
         public static bool CanOpenCodexOnline(Codex? toOpen)
         {

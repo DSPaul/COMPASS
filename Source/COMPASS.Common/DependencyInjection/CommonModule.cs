@@ -1,6 +1,8 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using COMPASS.ApiClients;
+using COMPASS.ApiClients.Compass;
+using COMPASS.ApiClients.GitHub;
 using COMPASS.Common.Interfaces.Repos;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
@@ -24,6 +26,7 @@ namespace COMPASS.Common.DependencyInjection
 
             // HttpClients for common services
             var services = new ServiceCollection();
+            services.AddTransient<ConnectivityHandler>();
             services.AddHttpClient(WebService.BrowserHttpClient, client =>
             {
                 //Add user agents to mimic browser, some servers block requests without user agents or with non-browser user agents
@@ -34,7 +37,14 @@ namespace COMPASS.Common.DependencyInjection
             {
                 client.Timeout = TimeSpan.FromSeconds(3);
             });
+            
+            // Attach the connectivity handler to API clients so they also update IsOnline
+            services.AddHttpClient(ICompassApiClient.HttpClientName)
+                    .AddHttpMessageHandler<ConnectivityHandler>();
+            services.AddHttpClient(IGitHubApiClient.HttpClientName)
+                    .AddHttpMessageHandler<ConnectivityHandler>();
             builder.Populate(services);
+            
             // Logging
             builder.RegisterType<FileLogger>().AsSelf().SingleInstance();
             builder.RegisterType<UILogger>().AsSelf().SingleInstance();

@@ -1,5 +1,7 @@
 using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels;
+using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using HtmlAgilityPack;
@@ -22,7 +24,16 @@ public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : 
             throw new InvalidOperationException("URI is invalid.");
         try
         {
-            return await client.GetByteArrayAsync(uri).ConfigureAwait(false);
+            var data = await client.GetByteArrayAsync(uri).ConfigureAwait(false);
+            ConnectivityManager.IsOnline = true;
+            return data;
+        }
+        catch (HttpRequestException ex)
+        {
+            //might mean we are offline, but not necessarily so check to inform user
+            await ConnectivityManager.CheckConnection();
+            logger.Error($"Failed to fetch data at {uri}", ex);
+            return [];
         }
         catch (Exception ex)
         {
@@ -44,12 +55,15 @@ public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : 
             HttpResponseMessage response = await client.GetAsync(uri).ConfigureAwait(false);
             if (response.IsSuccessStatusCode)
             {
+                ConnectivityManager.IsOnline = true;
                 string data = await response.Content.ReadAsStringAsync();
                 json = JsonNode.Parse(data);
             }
         }
         catch (Exception ex)
         {
+            //might mean we are offline, but not necessarily so check to inform user
+            await ConnectivityManager.CheckConnection();
             logger.Error($"Failed to fetch data at {uri}", ex);
         }
 
@@ -61,10 +75,13 @@ public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : 
         try
         {
             var imgBytes = await DownloadFileAsync(imgURL).ConfigureAwait(false);
+            ConnectivityManager.IsOnline = true;
             return new(imgBytes);
         }
         catch (Exception ex)
         {
+            //might mean we are offline, but not necessarily so check to inform user
+            await ConnectivityManager.CheckConnection();
             logger.Error($"Failed to download cover image from {imgURL}", ex);
             return null;
         }
@@ -79,12 +96,13 @@ public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : 
 
         try
         {
-            doc = await Task.Run(() => web.Load(url)).ConfigureAwait(false);
+            doc = await  web.LoadFromWebAsync(url).ConfigureAwait(false);
         }
-
         catch (Exception ex)
         {
             //fails if URL could not be loaded
+            //might mean we are offline, but not necessarily so check to inform user
+            await ConnectivityManager.CheckConnection();
             progressVM.AddLogEntry(new(Severity.Error, ex.Message));
             logger.Error($"Could not load {url}", ex);
             return null;
@@ -99,48 +117,9 @@ public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : 
         }
         else
         {
+            ConnectivityManager.IsOnline = true;
             return doc;
         }
     }
 
-    //check internet connection
-    private bool _showedOfflineWarning = false;
-
-    public bool CheckConnection(string? url = null)
-    {
-        bool generalCheck = url == null;
-        url ??= @"https://google.com";
-
-        try
-        {
-            var client = httpClientFactory.CreateClient(ConnectionCheckHttpClient);
-            using HttpResponseMessage reply = client.Send(new HttpRequestMessage(HttpMethod.Head, url));
-            if (!reply.IsSuccessStatusCode) return false;
-            if (_showedOfflineWarning)
-            {
-                logger.Info("Internet connection restored");
-                _showedOfflineWarning = false;
-            }
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            if (!_showedOfflineWarning)
-            {
-                if (generalCheck)
-                {
-                    logger.Warn("COMPASS is oflline, some features might not work.");
-                }
-                else
-                {
-                    logger.Warn($"Could not reach {url}", ex);
-                }
-            }
-
-            _showedOfflineWarning = true;
-        }
-
-        return false;
     }
-}

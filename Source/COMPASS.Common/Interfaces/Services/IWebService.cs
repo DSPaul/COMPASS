@@ -13,6 +13,4 @@ public interface IWebService
     Task<MagickImage?> DownloadImageAsync(string imgURL);
 
     Task<HtmlDocument?> ScrapeSite(string url);
-
-    bool CheckConnection(string? url = null);
 }

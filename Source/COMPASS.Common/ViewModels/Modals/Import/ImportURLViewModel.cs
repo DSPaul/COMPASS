@@ -188,7 +188,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 ImportError = $"'{InputURL}' is not a valid URL for {SourceName}";
                 return;
             }
-            if (!_webService.CheckConnection())
+            if (!await ConnectivityManager.CheckConnection())
             {
                 ImportError = "You need to be connected to the internet to import an online source.";
                 return;

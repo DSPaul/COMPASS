@@ -1,9 +1,9 @@
-﻿using Avalonia.Threading;
+﻿using Avalonia.Controls;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.Views.Windows;
 using System.Diagnostics;
-using Avalonia.Controls;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -48,14 +48,10 @@ namespace COMPASS.Common.ViewModels.Main
 
         private void InitConnectionTimer()
         {
-            //Start internet checkup timer
-            DispatcherTimer checkConnectionTimer = new();
-            checkConnectionTimer.Tick += (_, _) => Task.Run(() => IsOnline = _webService.CheckConnection());
-            checkConnectionTimer.Interval = new TimeSpan(0, 0, 10);
-            checkConnectionTimer.Start();
-            //to check right away on startup
-            Task.Run(() => IsOnline = _webService.CheckConnection());
+            ConnectivityManager.IsOnlineChanged += online => IsOnline = online;
+            ConnectivityManager.Start();
         }
+
 
         private void InitLayouts() => AllLayouts = 
             [
@@ -77,7 +73,7 @@ namespace COMPASS.Common.ViewModels.Main
         {
             get;
             private set => SetProperty(ref field, value);
-        }
+        } = true;
 
         public string VersionName => $"v{ApplicationService.Version}";
         public ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
