@@ -2,10 +2,11 @@ using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
+using COMPASS.ApiClients.Compass;
+using COMPASS.ApiClients.Compass.Models;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
-using COMPASS.Common.Models.ApiDtos;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Infra.Models;
@@ -116,10 +117,23 @@ public static class CrashHandler
                 WindowManager.MainWindow.Cursor = new Cursor(StandardCursorType.Wait));
             try
             {
-                var report = new CrashReport(exceptionMessage);
-                using HttpResponseMessage result = await new ApiClientService().PostAsync(report, "submit/crash");
-                string body = await result.Content.ReadAsStringAsync();
-                Logger.Debug($"{result} | Body: {body}");
+                var request = new CrashReport
+                {
+                    Version = ApplicationService.Version,
+                    OperatingSystem = System.Runtime.InteropServices.RuntimeInformation.OSDescription,
+                    Error = exceptionMessage
+                };
+                var compassApiClient = ServiceResolver.Resolve<ICompassApiClient>();
+                await compassApiClient.SubmitCrashReportAsync(request);
+                Logger.Debug("Crash report submitted successfully");
+            }
+            catch(HttpRequestException httpEx)
+            {
+                Logger.Error("Failed to submit crash report due to HTTP error", httpEx);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to submit crash report", ex);
             }
             finally
             {

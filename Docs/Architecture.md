@@ -20,7 +20,8 @@ This document is a high-level map of every major feature and system in COMPASS.
 12. [Preferences & Settings](#12-preferences--settings)
 13. [Tools](#13-tools)
 14. [Update System](#14-update-system)
-15. [UI Infrastructure](#15-ui-infrastructure)
+15. [API Clients](#15-api-clients)
+16. [UI Infrastructure](#16-ui-infrastructure)
 
 ---
 
@@ -30,6 +31,7 @@ This document is a high-level map of every major feature and system in COMPASS.
 |---|---|
 | `COMPASS.Infra` | Shared primitives: base interfaces (`IHasId`, `IHasChildren`, `ICloneable`), utilities (`ServiceResolver`, `Utils`), infrastructure models (`Notification`, `LogEntry`, `RangeObservableCollection`). No UI or domain logic. |
 | `COMPASS.Infra.Avalonia` | Avalonia-specific infrastructure: drag-drop helpers, extension methods. |
+| `COMPASS.ApiClients` | Typed HTTP API clients for all external services (GitHub, COMPASS backend). Each API lives in its own sub-folder with owned request/response models and an interface for mocking. HTTP client lifetimes and DI registrations are managed by `ApiClientsModule`. |
 | `COMPASS.Common` | All application logic: models, view-models, services, sources, repositories. Platform-agnostic. |
 | `COMPASS.Windows` | Windows entry point & platform service implementations (update service, IO, shell open). |
 | `COMPASS.Linux` | Linux entry point & platform service implementations. |
@@ -41,6 +43,7 @@ Dependency injection is handled through `ServiceResolver` (a thin static wrapper
 graph TD;
     Infra-->Common;
     Infra.Avalonia-->Common;
+    ApiClients-->Common;
     Common-->Windows; 
     Common-->Linux;
     Common-->Tests.Common;
@@ -279,7 +282,26 @@ Tools are surfaced from the main menu. Each tool implements `IToolViewModel` and
 
 ---
 
-## 15. UI Infrastructure
+## 15. API Clients
+
+**Key files:** `Source/COMPASS.ApiClients/`
+
+All external HTTP integrations live in the `COMPASS.ApiClients` project. Each API gets its own sub-folder containing:
+
+- A **typed client** class (e.g. `CompassApiClient`, `GitHubApiClient`) with one method per endpoint.
+- A **`Models/`** folder with request/response DTOs owned by that integration.
+- A public **interface** (e.g. `ICompassApiClient`, `IGitHubApiClient`) so consumers can depend on the abstraction and tests can inject mocks.
+
+HTTP client lifetimes are managed via `IHttpClientFactory`. Named clients and their default headers are configured once in `ApiClientsModule` (located in `COMPASS.ApiClients/DependencyInjection/`), which is loaded by `CommonModule`.
+
+| Client | Interface | Endpoints |
+|---|---|---|
+| `CompassApiClient` | `ICompassApiClient` | `POST /submit/crash` — submits an anonymous crash report |
+| `GitHubApiClient` | `IGitHubApiClient` | `GET /repos/{owner}/{repo}/releases` — fetches release list |
+
+---
+
+## 16. UI Infrastructure
 
 **Key files:** `Source/COMPASS.Common/Services/StateManagers/WindowManager.cs`, `Services/NotificationService.cs`, `Tools/Logging/`, `Tools/CrashHandler.cs`
 
@@ -288,5 +310,5 @@ Tools are surfaced from the main menu. Each tool implements `IToolViewModel` and
 | `WindowManager` | Tracks the currently active top-level `Window` so services can show dialogs without a direct reference. |
 | `NotificationService` | Shows toast notifications and modal dialogs using `NotificationWindow` and `ModalWindow`. |
 | `CompositeLogger` | Combines `FileLogger` (writes to a rolling log file) and `UILogger` (feeds the in-app Logs side panel) behind the `ILogger` interface. |
-| `CrashHandler` | Hooks `AppDomain.UnhandledException` and `TaskScheduler.UnobservedTaskException`, logs the crash, and sends an opt-in crash report via `ApiClientService`. |
+| `CrashHandler` | Hooks `AppDomain.UnhandledException` and `TaskScheduler.UnobservedTaskException`, logs the crash, and sends an opt-in crash report via `ICompassApiClient`. |
 | `WebDriverService` | Manages a shared Selenium `WebDriver` instance used by online metadata sources that require JavaScript rendering. |

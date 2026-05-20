@@ -1,4 +1,6 @@
 ﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using COMPASS.ApiClients;
 using COMPASS.Common.Interfaces.Repos;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
@@ -9,6 +11,7 @@ using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.Storage;
 using COMPASS.Common.Tools.Logging;
 using COMPASS.Infra.Interfaces.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace COMPASS.Common.DependencyInjection
 {
@@ -16,6 +19,22 @@ namespace COMPASS.Common.DependencyInjection
     {
         protected override void Load(ContainerBuilder builder)
         {
+            // API Clients
+            builder.RegisterModule<ApiClientsModule>();
+
+            // HttpClients for common services
+            var services = new ServiceCollection();
+            services.AddHttpClient(WebService.BrowserHttpClient, client =>
+            {
+                //Add user agents to mimic browser, some servers block requests without user agents or with non-browser user agents
+                client.DefaultRequestHeaders.UserAgent.ParseAdd(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
+            });
+            services.AddHttpClient(WebService.ConnectionCheckHttpClient, client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(3);
+            });
+            builder.Populate(services);
             // Logging
             builder.RegisterType<FileLogger>().AsSelf().SingleInstance();
             builder.RegisterType<UILogger>().AsSelf().SingleInstance();

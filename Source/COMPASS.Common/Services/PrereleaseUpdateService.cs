@@ -1,28 +1,19 @@
-﻿using COMPASS.Common.Models;
+﻿using COMPASS.ApiClients.GitHub;
+using COMPASS.Common.Models;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
-using System.Text.Json.Nodes;
 using NuGet.Versioning;
 using System.Diagnostics;
 
 namespace COMPASS.Common.Services
 {
-    public class PrereleaseUpdateService : IUpdateService
+    public class PrereleaseUpdateService(IGitHubApiClient gitHubApiClient) : IUpdateService
     {
-        private static readonly HttpClient _httpClient = new();
-
-        static PrereleaseUpdateService()
-        {
-            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("COMPASS");
-        }
-
         public async Task<List<Update>> CheckForUpdates()
         {
-            var apiUrl = Constants.RepoURL.Replace("https://github.com/", "https://api.github.com/repos/") + "/releases";
-            var json = await _httpClient.GetStringAsync(apiUrl).ConfigureAwait(false);
-            var releases = JsonNode.Parse(json)?.AsArray() ?? [];
+            var releases = await gitHubApiClient.GetReleasesAsync(Constants.RepoName).ConfigureAwait(false);
 
             SemanticVersion currentVersion = SemanticVersion.Parse(ApplicationService.Version);
 
@@ -30,14 +21,10 @@ namespace COMPASS.Common.Services
 
             foreach (var release in releases)
             {
-                var tagName = release?["tag_name"]?.GetValue<string>()?.TrimStart('v');
-                if (tagName is not null &&
-                    SemanticVersion.TryParse(tagName, out var version) &&
-                    version > currentVersion)
+                var tagName = release.TagName.TrimStart('v');
+                if (SemanticVersion.TryParse(tagName, out var version) && version > currentVersion)
                 {
-                    string? url = release?["html_url"]?.GetValue<string>();
-                    string? releaseNotes = release?["body"]?.GetValue<string>();
-                    updates.Add(new Update(version, url, releaseNotes));
+                    updates.Add(new Update(version, release.HtmlUrl, release.Body));
                 }
             }
 

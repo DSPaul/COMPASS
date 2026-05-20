@@ -4,7 +4,7 @@ namespace COMPASS.Common.Models
 {
     public static partial class Constants
     {
-        public const string RepoURL = "https://github.com/DSPAUL/COMPASS";
+        public const string RepoName = "DSPAUL/COMPASS";
         public const string LinkTreeURL = "https://linktr.ee/compassapp";
 
         public const string SatchelExtension = ".satchel";

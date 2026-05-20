@@ -8,15 +8,15 @@ using System.Text.Json.Nodes;
 
 namespace COMPASS.Common.Services;
 
-public class WebService(ILogger logger) : IWebService
+public class WebService(ILogger logger, IHttpClientFactory httpClientFactory) : IWebService
 {
+    public const string BrowserHttpClient = "browser";
+    public const string ConnectionCheckHttpClient = "connection-check";
+
     //Download data and put it in a byte[]
     public async Task<byte[]> DownloadFileAsync(string uri)
     {
-        using HttpClient client = new();
-        // Set headers to mimic a browser, gets around some auth issues
-        client.DefaultRequestHeaders.UserAgent.ParseAdd(
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
+        var client = httpClientFactory.CreateClient(BrowserHttpClient);
 
         if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? _))
             throw new InvalidOperationException("URI is invalid.");
@@ -33,7 +33,7 @@ public class WebService(ILogger logger) : IWebService
 
     public async Task<JsonNode?> GetJsonAsync(string uri)
     {
-        using HttpClient client = new();
+        var client = httpClientFactory.CreateClient();
 
         JsonNode? json = null;
 
@@ -113,7 +113,7 @@ public class WebService(ILogger logger) : IWebService
 
         try
         {
-            using HttpClient client = new() { Timeout = TimeSpan.FromSeconds(3) };
+            var client = httpClientFactory.CreateClient(ConnectionCheckHttpClient);
             using HttpResponseMessage reply = client.Send(new HttpRequestMessage(HttpMethod.Head, url));
             if (!reply.IsSuccessStatusCode) return false;
             if (_showedOfflineWarning)
