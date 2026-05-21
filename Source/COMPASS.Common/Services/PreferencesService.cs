@@ -1,4 +1,4 @@
-﻿using System.Xml;
+using System.Xml;
 using System.Xml.Serialization;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
@@ -6,22 +6,12 @@ using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Models.XmlDtos;
 using COMPASS.Common.Services.FileSystem;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Services
 {
-    public class PreferencesService
+    public class PreferencesService(ILogger logger, IApplicationDataService applicationDataService) : IPreferencesService
     {
-        #region singleton pattern
-        private PreferencesService() { }
-        private static PreferencesService? _prefService;
-        public static PreferencesService GetInstance() => _prefService ??= new PreferencesService();
-        #endregion
-
-        private ILogger? _logger;
-        private ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
-
-        public string PreferencesFilePath => Path.Combine(ServiceResolver.Resolve<IApplicationDataService>().UserDataPath, "Preferences.xml");
+        public string PreferencesFilePath => Path.Combine(applicationDataService.UserDataPath, "Preferences.xml");
 
         public static readonly Lock _writeLocker = new();
 
@@ -52,7 +42,7 @@ namespace COMPASS.Common.Services
                     // Verify the temp file was written successfully and has content
                     if (!File.Exists(tempFileName) || new FileInfo(tempFileName).Length <= 0)
                     {
-                        Logger.Error($"Failed to write preferences to {tempFileName}", new Exception());
+                        logger.Error($"Failed to write preferences to {tempFileName}", new Exception());
                         return;
                     }
 
@@ -62,15 +52,15 @@ namespace COMPASS.Common.Services
             }
             catch (UnauthorizedAccessException ex)
             {
-                Logger.Error($"Access denied when trying to save Preferences to {PreferencesFilePath}", ex);
+                logger.Error($"Access denied when trying to save Preferences to {PreferencesFilePath}", ex);
             }
             catch (IOException ex)
             {
-                Logger.Error($"IO error occurred when saving Preferences to {PreferencesFilePath}", ex);
+                logger.Error($"IO error occurred when saving Preferences to {PreferencesFilePath}", ex);
             }
             catch (Exception ex)
             {
-                Logger.Error($"Failed to save Preferences to {PreferencesFilePath}", ex);
+                logger.Error($"Failed to save Preferences to {PreferencesFilePath}", ex);
             }
         }
 
@@ -78,7 +68,7 @@ namespace COMPASS.Common.Services
         {
             if (!File.Exists(PreferencesFilePath))
             {
-                Logger.Debug($"{PreferencesFilePath} does not exist.");
+                logger.Debug($"{PreferencesFilePath} does not exist.");
                 return null;
             }
 
@@ -96,19 +86,19 @@ namespace COMPASS.Common.Services
                     return prefsDto.ToModel();
                 }
                 
-                Logger.Error($"{PreferencesFilePath} could not be read.", new Exception());
+                logger.Error($"{PreferencesFilePath} could not be read.", new Exception());
             }
             catch (XmlException ex)
             {
-                Logger.Error($"XML parsing error in {PreferencesFilePath}. File may be corrupted or empty.", ex);
+                logger.Error($"XML parsing error in {PreferencesFilePath}. File may be corrupted or empty.", ex);
             }
             catch (InvalidOperationException ex) when (ex.InnerException is XmlException)
             {
-                Logger.Error($"XML deserialization error in {PreferencesFilePath}. File may be corrupted or empty.", ex);
+                logger.Error($"XML deserialization error in {PreferencesFilePath}. File may be corrupted or empty.", ex);
             }
             catch (Exception ex)
             {
-                Logger.Error($"Unexpected error loading preferences from {PreferencesFilePath}", ex);
+                logger.Error($"Unexpected error loading preferences from {PreferencesFilePath}", ex);
             }
 
             return null;

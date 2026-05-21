@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.Services;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals;
 
@@ -16,7 +17,7 @@ public class MetaDataProposalViewModel : ViewModelBase, IDisposable
         ExistingMetaData = new(new(codex));
         ProposedMetaData = new(proposedMetaData);
 
-        ShouldUseNewValue = PreferencesService.GetInstance().Preferences.ImportableCodexProperties
+        ShouldUseNewValue = ServiceResolver.Resolve<IPreferencesService>().Preferences.ImportableCodexProperties
                                               .ToDictionary(prop => prop.Name, _ => false);
     }
     
@@ -29,7 +30,7 @@ public class MetaDataProposalViewModel : ViewModelBase, IDisposable
     
     public void ApplyChoice()
     {
-        var propsToApply = PreferencesService.GetInstance().Preferences.ImportableCodexProperties
+        var propsToApply = ServiceResolver.Resolve<IPreferencesService>().Preferences.ImportableCodexProperties
                                              .Where(prop => ShouldUseNewValue[prop.Name]);
         foreach (CodexProperty? prop in propsToApply)
         {

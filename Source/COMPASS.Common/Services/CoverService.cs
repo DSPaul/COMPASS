@@ -33,7 +33,7 @@ namespace COMPASS.Common.Services
             IMagickImage<byte>? coverFromSource = null;
             try
             {
-                CodexProperty coverProp = PreferencesService.GetInstance().Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetaData.Cover));
+                CodexProperty coverProp = ServiceResolver.Resolve<IPreferencesService>().Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetaData.Cover));
 
                 switch (coverProp.OverwriteMode)
                 {

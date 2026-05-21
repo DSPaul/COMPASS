@@ -60,6 +60,7 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<UserFilesStorageService>().As<IUserFilesStorageService>();
 
             builder.RegisterType<ApplicationDataService>().As<IApplicationDataService>().SingleInstance();
+            builder.RegisterType<PreferencesService>().As<IPreferencesService>().SingleInstance();
 
             // Misc Services
             builder.RegisterType<NotificationService>().As<INotificationService>();

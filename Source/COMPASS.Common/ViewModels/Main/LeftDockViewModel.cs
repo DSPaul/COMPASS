@@ -1,6 +1,7 @@
-﻿using COMPASS.Common.Models;
-using COMPASS.Common.Services;
+﻿using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.SidePanels;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Main
 {
@@ -9,14 +10,14 @@ namespace COMPASS.Common.ViewModels.Main
         public LeftDockViewModel(TabsViewModel tabsViewModel)
         {
             _tabsVM = tabsViewModel;
-            _preferencesService = PreferencesService.GetInstance();
+            _preferencesService = ServiceResolver.Resolve<IPreferencesService>();
 
             AddCodexPanelVM = new();
             LogsVM = new();
         }
 
         private TabsViewModel _tabsVM;
-        private PreferencesService _preferencesService;
+        private IPreferencesService _preferencesService;
 
         public AddCodexPanelVM AddCodexPanelVM { get; }
         public LogsVM LogsVM { get; }

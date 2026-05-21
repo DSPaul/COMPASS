@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.Filters;
-using COMPASS.Common.Services;
+using COMPASS.Infra.Tools;
 using COMPASS.Common.ViewModels.ModelVMs;
 
 namespace COMPASS.Common.ViewModels.Main
@@ -10,12 +11,12 @@ namespace COMPASS.Common.ViewModels.Main
 
         public CodexInfoViewModel()
         {
-            _preferencesService = PreferencesService.GetInstance();
+            _preferencesService = ServiceResolver.Resolve<IPreferencesService>();
         }
-        
+
         private FiltersViewModel? _FilterVm => TabsViewModel.GetInstance().ActiveTab?.FiltersVM;
 
-        private readonly PreferencesService _preferencesService;
+        private readonly IPreferencesService _preferencesService;
 
         //whether the codex info panel is active
         public bool ShowCodexInfo

@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Services;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
 using COMPASS.Infra.Tools;
@@ -84,7 +84,7 @@ namespace COMPASS.Common.Models
             set => SetProperty(ref _linkedGlobs, value);
         }
         
-        public List<string> CalculatedLinkedGlobs => PreferencesService.GetInstance().Preferences.AutoLinkFolderTagSameName ? [$"**/{Name}/**"] : [];
+        public List<string> CalculatedLinkedGlobs => ServiceResolver.Resolve<IPreferencesService>().Preferences.AutoLinkFolderTagSameName ? [$"**/{Name}/**"] : [];
 
         /// <summary>
         /// Does an upwards search until it find either a group tag or a root tag

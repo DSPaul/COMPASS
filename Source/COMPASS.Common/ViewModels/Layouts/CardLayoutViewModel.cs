@@ -1,6 +1,5 @@
 ﻿using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Preferences;
-using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Main;
 
 namespace COMPASS.Common.ViewModels.Layouts
@@ -9,7 +8,7 @@ namespace COMPASS.Common.ViewModels.Layouts
     {
         public CardLayoutViewModel(CollectionTabVM tabVM) : base(tabVM)
         {
-            Preferences = PreferencesService.GetInstance().Preferences.CardLayoutPreferences;
+            Preferences = PreferencesService.Preferences.CardLayoutPreferences;
         }
 
         public CardLayoutPreferences Preferences { get; }

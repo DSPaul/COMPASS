@@ -4,11 +4,11 @@ using Avalonia.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Adorners;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.Models.Filters;
-using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models;
@@ -61,7 +61,7 @@ namespace COMPASS.Common.ViewModels.Main
 
         #region Fields
 
-        private readonly PreferencesService _preferencesService = PreferencesService.GetInstance();
+        private readonly IPreferencesService _preferencesService = ServiceResolver.Resolve<IPreferencesService>();
         
         private readonly RangeObservableCollection<CodexViewModel> _allCodexVms;
 

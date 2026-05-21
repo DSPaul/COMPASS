@@ -1,14 +1,15 @@
 ﻿using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using COMPASS.Common.Adorners;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
-using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.Avalonia.DragDrop;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Layouts
 {
@@ -17,6 +18,7 @@ namespace COMPASS.Common.ViewModels.Layouts
         public LayoutViewModel(CollectionTabVM tabVM)
         {
             _tabViewModel = tabVM;
+            PreferencesService = ServiceResolver.Resolve<IPreferencesService>();
             CodexInfoVM = new();
             FiltersVM = _tabViewModel.FiltersVM;
             tabVM.CollectionChanged += OnCollectionChanged;
@@ -24,12 +26,15 @@ namespace COMPASS.Common.ViewModels.Layouts
 
         private CollectionTabVM _tabViewModel;
 
+        protected IPreferencesService PreferencesService { get; }
+
         // Should put this function separate Factory class for proper factory pattern,
         // but I don't see the point, seems a lot of boilerplate without real advantages
         public static LayoutViewModel GetLayout(CollectionTabVM tabVM, CodexLayout? layout = null)
         {
-            layout ??= PreferencesService.GetInstance().Preferences.UIState.StartupLayout;
-            PreferencesService.GetInstance().Preferences.UIState.StartupLayout = (CodexLayout)layout;
+            var preferencesService = ServiceResolver.Resolve<IPreferencesService>();
+            layout ??= preferencesService.Preferences.UIState.StartupLayout;
+            preferencesService.Preferences.UIState.StartupLayout = (CodexLayout)layout;
             return layout switch
             {
                 CodexLayout.Home => new HomeLayoutViewModel(tabVM),

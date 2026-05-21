@@ -149,7 +149,7 @@ namespace COMPASS.Common.Services.StateManagers
         {
             CollectionHandle? collectionHandle = null;
         
-            string startupCollectionId = PreferencesService.GetInstance().Preferences.UIState.StartupCollection;
+            string startupCollectionId = ServiceResolver.Resolve<IPreferencesService>().Preferences.UIState.StartupCollection;
         
             while (collectionHandle  == null)
             {

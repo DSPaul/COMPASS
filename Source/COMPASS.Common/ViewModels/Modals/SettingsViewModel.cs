@@ -26,7 +26,7 @@ namespace COMPASS.Common.ViewModels.Modals
 
             _applicationDataService = ServiceResolver.Resolve<IApplicationDataService>();
             _ioService = ServiceResolver.Resolve<IIOService>();
-            _preferencesService = PreferencesService.GetInstance();
+            _preferencesService = ServiceResolver.Resolve<IPreferencesService>();
             
 
             SelectedCollectionVm = CollectionManager.CollectionVms.SingleOrDefault(vm => vm.Identifier == ActiveCollection.Name);
@@ -49,7 +49,7 @@ namespace COMPASS.Common.ViewModels.Modals
 
         private readonly IApplicationDataService _applicationDataService;
         private readonly IIOService _ioService;
-        private readonly PreferencesService _preferencesService;
+        private readonly IPreferencesService _preferencesService;
 
         private int _selectedTabIndex;
         public int SelectedTabIndex

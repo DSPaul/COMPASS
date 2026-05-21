@@ -37,7 +37,7 @@ namespace COMPASS.Common.Operations
         //Open Codex wherever
         public static async Task<bool> OpenCodex(Codex codex)
         {
-            var openPriority = PreferencesService.GetInstance().Preferences.OpenCodexPriority;
+            var openPriority = ServiceResolver.Resolve<IPreferencesService>().Preferences.OpenCodexPriority;
             bool success = await PreferableFunction<Codex>.TryFunctionsAsync(openPriority, codex);
             if (!success)
             {
@@ -507,7 +507,7 @@ namespace COMPASS.Common.Operations
             bool shouldAsk = false;
 
             //Iterate over all the properties and set them
-            foreach (var prop in PreferencesService.GetInstance().Preferences.ImportableCodexProperties)
+            foreach (var prop in ServiceResolver.Resolve<IPreferencesService>().Preferences.ImportableCodexProperties)
             {
                 if (prop.OverwriteMode == MetaDataOverwriteMode.Never) continue;
                 if (prop is CoverProperty) continue; //Covers are done separately

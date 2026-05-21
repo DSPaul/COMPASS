@@ -3,8 +3,8 @@ using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Filters;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Operations;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Layouts;
 using COMPASS.Common.ViewModels.Modals;
@@ -131,9 +131,10 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         if (deleted)
         {
             //If it was the default, change the default
-            if (PreferencesService.GetInstance().Preferences.UIState.StartupCollection == collectionToDelete.Identifier)
+            var preferencesService = ServiceResolver.Resolve<IPreferencesService>();
+            if (preferencesService.Preferences.UIState.StartupCollection == collectionToDelete.Identifier)
             {
-                PreferencesService.GetInstance().Preferences.UIState.StartupCollection =
+                preferencesService.Preferences.UIState.StartupCollection =
                     CollectionManager.CollectionVms
                         .Select(vm => vm.Identifier)
                         .FirstOrDefault(vm => vm != collectionToDelete.Identifier) ?? Constants.DEFAULT_COLLECTION_NAME;
@@ -261,7 +262,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         _collectionHandle = newHandle;
         
         //update Startup collection, TODO make this a setting, choose between a set collection or last used (current behaviour)
-        PreferencesService.GetInstance().Preferences.UIState.StartupCollection = _collectionHandle.CollectionVM.Identifier;
+        ServiceResolver.Resolve<IPreferencesService>().Preferences.UIState.StartupCollection = _collectionHandle.CollectionVM.Identifier;
         
         
         FiltersVM = new(newHandle.CollectionVM.AllCodexVms);

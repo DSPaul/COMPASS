@@ -1,8 +1,9 @@
 ﻿using Avalonia.Controls;
-using COMPASS.Common.Services;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Views.Windows;
 
@@ -20,7 +21,7 @@ public partial class MainWindow : Window
         if (MainViewModel.SaveOnClose)
         {
             CollectionManager.SaveAllCollections();
-            PreferencesService.GetInstance().SavePreferences();
+            ServiceResolver.Resolve<IPreferencesService>().SavePreferences();
         }
     }
 }
