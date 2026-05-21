@@ -1,4 +1,5 @@
-﻿﻿using Avalonia.Controls;
+﻿using Autofac;
+using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Platform.Storage;
 using COMPASS.Common.Interfaces.Repos;
@@ -6,6 +7,7 @@ using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
+using COMPASS.Common.Services.Storage;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Infra.Tools;
@@ -22,6 +24,9 @@ namespace COMPASS.IntegrationTests.Common.Services
     [TestFixture]
     public class ImportExportServiceTests
     {
+        private IContainer BuildContainer() => Helpers.SetupContainer(builder =>
+            builder.RegisterType<ImportExportService>().As<IImportExportService>());
+
         [Test]
         public async Task OpenSatchel()
         {
@@ -33,8 +38,9 @@ namespace COMPASS.IntegrationTests.Common.Services
             };
 
             string path = Path.GetTempPath() + Guid.NewGuid() + Constants.SatchelExtension;
-            var storageService = ServiceResolver.Resolve<IImportExportService>();
-            var repo = ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
+            var container = BuildContainer();
+            var storageService = container.Resolve<IImportExportService>();
+            var repo = container.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
 
             await using (var zip = await ZipArchive.CreateAsyncArchive())
             {
@@ -75,9 +81,10 @@ namespace COMPASS.IntegrationTests.Common.Services
             window.Show();
 
             //Setup
+            var container = BuildContainer();
             string testCollectionId = "__SatchelExport";
             var testCollection = CollectionGenerator.GetCompleteCollection(testCollectionId);
-            var importExportService = ServiceResolver.Resolve<IImportExportService>();
+            var importExportService = container.Resolve<IImportExportService>();
 
             //Export
             var filePath = Path.GetTempPath() + Guid.NewGuid().ToString() + Constants.SatchelExtension;

@@ -19,10 +19,12 @@ namespace COMPASS.IntegrationTests.Common
 
             builder.RegisterModule<CommonModule>();
 
-            builder.RegisterType<MockNotificationService>().As<INotificationService>();
             builder.RegisterType<MockApplicationDataService>().As<IApplicationDataService>();
-            builder.RegisterType<MockWebDriverService>().As<IWebDriverService>();
+            builder.RegisterType<MockFilesService>().As<IFilesService>();
             builder.RegisterType<MockIOService>().As<IIOService>();
+            builder.RegisterType<MockLogger>().As<ILogger>();
+            builder.RegisterType<MockNotificationService>().As<INotificationService>();
+            builder.RegisterType<MockWebDriverService>().As<IWebDriverService>();
 
             ServiceResolver.Initialize(builder.Build());
 
