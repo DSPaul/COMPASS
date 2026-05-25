@@ -1,16 +1,17 @@
-﻿using System.Diagnostics;
-using COMPASS.Common.Interfaces.Services;
+﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals.Import;
+using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 using ImageMagick;
-using System.Text.Json.Nodes;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System.Diagnostics;
+using System.Text.Json.Nodes;
 
 namespace COMPASS.Common.Sources
 {
@@ -57,7 +58,7 @@ namespace COMPASS.Common.Sources
                 .Where(author => !string.IsNullOrWhiteSpace(author))
                 .Cast<string>()
                 .ToList();
-            metaData.PageCount = int.Parse(metadata["pageCount"]?.GetValue<int>().ToString() ?? "0");
+            metaData.PageCount = int.Parse(metadata["pageCount"]?.GetIntValue().ToString() ?? "0");
             metaData.Description = metadata["description"]?.GetValue<string>() ?? string.Empty;
             metaData.ReleaseDate = metadata["createdAt"]?.GetValue<DateTime>();
 

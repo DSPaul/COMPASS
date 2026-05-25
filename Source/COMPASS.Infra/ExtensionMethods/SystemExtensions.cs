@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
@@ -198,14 +199,15 @@ namespace COMPASS.Infra.ExtensionMethods
         {
             if (node == null) return null;
 
-            try
-            {
+            var valueKind = node.GetValueKind();
+            if (valueKind == JsonValueKind.Number) 
+            {            
                 return node.GetValue<int>();
             }
-            catch(FormatException)
+            else if(valueKind == JsonValueKind.String)
             {
-                string? str = node.GetValue<string>();
-                if(int.TryParse(str, out int value))
+                string str = node.GetValue<string>() ?? string.Empty;
+                if (int.TryParse(str, out int value))
                 {
                     return value;
                 }
