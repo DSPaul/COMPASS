@@ -131,14 +131,14 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 .ToList();
 
             var splitFolders = relevantCodices.Select(codex => codex.Sources.Path)
-                                              .SelectMany(path => path.Split("\\"))
+                                              .SelectMany(path => path.Split(Path.DirectorySeparatorChar))
                                               .ToHashSet();
 
             foreach (string folder in splitFolders)
             {
                 var codicesInFolder = _codexCollectionVm.Collection.AllCodices
                     .Where(codex => codex.Sources.HasOfflineSource())
-                    .Where(codex => codex.Sources.Path.Contains(@"\" + folder + @"\"))
+                    .Where(codex => codex.Sources.Path.Contains(Path.DirectorySeparatorChar + folder + Path.DirectorySeparatorChar))
                     .ToList();
 
                 if (codicesInFolder.Count < 3) continue;  //Require at least 3 codices in same folder before we can speak of a pattern

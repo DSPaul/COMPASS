@@ -10,11 +10,12 @@ public class PathUtilsTests
     [Test]
     public void GetCommonFolder_SinglePath_ReturnsFullPath()
     {
-        List<string> paths = [@"C:\Users\docs\file.txt"];
+        string path = Path.Combine("Users", "docs", "file.txt");
+        List<string> paths = [path];
 
         string result = PathUtils.GetCommonFolder(paths);
 
-        Assert.That(result, Is.EqualTo(@"C:\Users\docs\file.txt"));
+        Assert.That(result, Is.EqualTo(path));
     }
 
     [Test]
@@ -22,14 +23,14 @@ public class PathUtilsTests
     {
         List<string> paths =
         [
-            @"C:\Users\docs\a.txt",
-            @"C:\Users\docs\b.txt",
-            @"C:\Users\docs\sub\c.txt"
+            Path.Combine("Users", "docs", "a.txt"),
+            Path.Combine("Users", "docs", "b.txt"),
+            Path.Combine("Users", "docs", "sub", "c.txt")
         ];
 
         string result = PathUtils.GetCommonFolder(paths);
 
-        Assert.That(result, Is.EqualTo(@"C:\Users\docs"));
+        Assert.That(result, Is.EqualTo(Path.Combine("Users", "docs")));
     }
 
     [Test]
@@ -37,8 +38,8 @@ public class PathUtilsTests
     {
         List<string> paths =
         [
-            @"C:\a\file.txt",
-            @"D:\b\file.txt"
+            Path.Combine("rootA", "file.txt"),
+            Path.Combine("rootB", "file.txt")
         ];
 
         string result = PathUtils.GetCommonFolder(paths);
@@ -65,22 +66,22 @@ public class PathUtilsTests
     [Test]
     public void GetDifferingRoot_Normal()
     {
-        string path1 = @"a\path\to\a\file.txt";
-        string path2 = @"another\root\that goes\to\a\file.txt";
+        string path1 = Path.Combine("a", "path", "to", "a", "file.txt");
+        string path2 = Path.Combine("another", "root", "that goes", "to", "a", "file.txt");
 
         (string result1, string result2) = PathUtils.GetDifferingRoot(path1, path2);
 
         Assert.Multiple(() =>
         {
-            Assert.That(result1, Is.EqualTo(@"a\path"));
-            Assert.That(result2, Is.EqualTo(@"another\root\that goes"));
+            Assert.That(result1, Is.EqualTo(Path.Combine("a", "path")));
+            Assert.That(result2, Is.EqualTo(Path.Combine("another", "root", "that goes")));
         });
     }
 
     [Test]
     public void GetDifferingRoot_Same()
     {
-        string path1 = @"a\path\to\a\file.txt";
+        string path1 = Path.Combine("a", "path", "to", "a", "file.txt");
 
         (string result1, string result2) = PathUtils.GetDifferingRoot(path1, path1);
 
@@ -94,14 +95,14 @@ public class PathUtilsTests
     [Test]
     public void GetDifferingRoot_Subpath()
     {
-        string path1 = @"a\path\to\a\file.txt";
-        string path2 = @"a\file.txt";
+        string path1 = Path.Combine("a", "path", "to", "a", "file.txt");
+        string path2 = Path.Combine("a", "file.txt");
 
         (string result1, string result2) = PathUtils.GetDifferingRoot(path1, path2);
 
         Assert.Multiple(() =>
         {
-            Assert.That(result1, Is.EqualTo(@"a\path\to"));
+            Assert.That(result1, Is.EqualTo(Path.Combine("a", "path", "to")));
             Assert.That(result2, Is.EqualTo(""));
         });
     }
@@ -109,20 +110,20 @@ public class PathUtilsTests
     [Test]
     public void GetDifferingRoot_NullPath1_Throws()
     {
-        Assert.Throws<ArgumentNullException>(() => PathUtils.GetDifferingRoot(null!, @"a\path\file.txt"));
+        Assert.Throws<ArgumentNullException>(() => PathUtils.GetDifferingRoot(null!, Path.Combine("a", "path", "file.txt")));
     }
 
     [Test]
     public void GetDifferingRoot_NullPath2_Throws()
     {
-        Assert.Throws<ArgumentNullException>(() => PathUtils.GetDifferingRoot(@"a\path\file.txt", null!));
+        Assert.Throws<ArgumentNullException>(() => PathUtils.GetDifferingRoot(Path.Combine("a", "path", "file.txt"), null!));
     }
 
     [Test]
     public void GetDifferingRoot_NoCommonEnd_ReturnsBothPathsUnchanged()
     {
-        string path1 = @"root1\file.txt";
-        string path2 = @"root2\other.txt";
+        string path1 = Path.Combine("root1", "file.txt");
+        string path2 = Path.Combine("root2", "other.txt");
 
         (string result1, string result2) = PathUtils.GetDifferingRoot(path1, path2);
 
@@ -146,37 +147,37 @@ public class PathUtilsTests
     [Test]
     public void MatchesAnyGlob_GlobPattern_Matches()
     {
-        Assert.That(PathUtils.MatchesAnyGlob(@"docs\readme.md", ["**/*.md"]), Is.True);
+        Assert.That(PathUtils.MatchesAnyGlob(Path.Combine("docs", "readme.md"), ["**/*.md"]), Is.True);
     }
 
     [Test]
     public void MatchesAnyGlob_NoMatch_ReturnsFalse()
     {
-        Assert.That(PathUtils.MatchesAnyGlob(@"docs\file.txt", ["*.cs"]), Is.False);
+        Assert.That(PathUtils.MatchesAnyGlob(Path.Combine("docs", "file.txt"), ["*.cs"]), Is.False);
     }
 
     [Test]
     public void MatchesAnyGlob_EmptyGlobList_ReturnsFalse()
     {
-        Assert.That(PathUtils.MatchesAnyGlob(@"docs\file.txt", []), Is.False);
+        Assert.That(PathUtils.MatchesAnyGlob(Path.Combine("docs", "file.txt"), []), Is.False);
     }
 
     [Test]
     public void MatchesAnyGlob_MultipleGlobs_MatchesSecond()
     {
-        Assert.That(PathUtils.MatchesAnyGlob(@"docs\file.txt", ["*.cs", "**/*.txt"]), Is.True);
+        Assert.That(PathUtils.MatchesAnyGlob(Path.Combine("docs", "file.txt"), ["*.cs", "**/*.txt"]), Is.True);
     }
 
     [Test]
     public void MatchesAnyGlob_MultipleGlobs_NoneMatch_ReturnsFalse()
     {
-        Assert.That(PathUtils.MatchesAnyGlob(@"docs\file.txt", ["*.cs", "*.md"]), Is.False);
+        Assert.That(PathUtils.MatchesAnyGlob(Path.Combine("docs", "file.txt"), ["*.cs", "*.md"]), Is.False);
     }
 
     [Test]
     public void MatchesAnyGlob_MultipleGlobs_ExactMatchAmongPatterns()
     {
-        Assert.That(PathUtils.MatchesAnyGlob(@"docs\file.txt", ["*.cs", @"docs\file.txt"]), Is.True);
+        Assert.That(PathUtils.MatchesAnyGlob(Path.Combine("docs", "file.txt"), ["*.cs", Path.Combine("docs", "file.txt")]), Is.True);
     }
 
     [TestCase(null)]
