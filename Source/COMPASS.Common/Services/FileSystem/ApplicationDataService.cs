@@ -8,7 +8,6 @@ using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Services.FileSystem;
 
@@ -16,7 +15,7 @@ public class ApplicationDataService(
     IIOService ioService,
     INotificationService notificationService,
     ILogger logger,
-    IPreferencesService preferencesService)
+    Lazy<IPreferencesService> preferencesService)
     : IApplicationDataService
 {
     private const string RedirectFileName = "data_location.redirect";
@@ -160,7 +159,7 @@ public class ApplicationDataService(
 
         //Save data before moving files around, just in case
         CollectionManager.SaveAllCollections();
-        preferencesService.SavePreferences();
+        preferencesService.Value.SavePreferences();
 
         //Move data to new location if chosen
         if (action == ChangeDataLocationActions.Move || 
