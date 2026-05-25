@@ -60,7 +60,7 @@ namespace COMPASS.Common.Sources
         {
             if (string.IsNullOrEmpty(sources.SourceURL)) { return null; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from {sources.SourceURL}"));
-            WebDriver? driver = await ServiceResolver.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
+            using WebDriver? driver = await ServiceResolver.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
 
             if (driver is null) { return null; }
 
@@ -76,10 +76,6 @@ namespace COMPASS.Common.Sources
                 string msg = $"Failed to get cover from {sources.SourceURL}";
                 Logger.Error(msg, ex);
                 ProgressVM.AddLogEntry(new(Severity.Error, msg));
-            }
-            finally
-            {
-                driver.Quit();
             }
             return null;
         }

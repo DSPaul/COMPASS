@@ -15,7 +15,6 @@ namespace COMPASS.Tests.Common
             builder.RegisterType<MockIOService>().As<IIOService>();
             builder.RegisterType<MockLogger>().As<ILogger>();
             builder.RegisterType<MockNotificationService>().As<INotificationService>();
-            builder.RegisterType<MockWebDriverService>().As<IWebDriverService>();
         }
     }
 }

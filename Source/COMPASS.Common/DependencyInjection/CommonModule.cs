@@ -59,8 +59,10 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<CoverStorageService>().As<ICoverStorageService>();
             builder.RegisterType<UserFilesStorageService>().As<IUserFilesStorageService>();
 
+            ///Singletons
             builder.RegisterType<ApplicationDataService>().As<IApplicationDataService>().SingleInstance();
             builder.RegisterType<PreferencesService>().As<IPreferencesService>().SingleInstance();
+            builder.RegisterType<WebDriverService>().As<IWebDriverService>().SingleInstance();
 
             // Misc Services
             builder.RegisterType<NotificationService>().As<INotificationService>();

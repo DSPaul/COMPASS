@@ -1,14 +1,14 @@
 ﻿using COMPASS.Common.Interfaces.Services;
-using COMPASS.Infra.Tools;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Manager;
 using OpenQA.Selenium.Safari;
 
 namespace COMPASS.Common.Services
 {
-    public abstract class WebDriverServiceBase : IWebDriverService
+    public class WebDriverService(ILogger logger) : IWebDriverService
     {
         protected Browser _browser;
         protected enum Browser
@@ -22,21 +22,16 @@ namespace COMPASS.Common.Services
             /// </summary>
             None,
             Chrome,
-            Chromium,
             Firefox,
             Edge,
             Safari
         }
 
-        protected abstract Browser DetectInstalledBrowser();
-
-        //Get an initialised webdriver with right browser
-        protected WebDriver? _webDriver;
         public async Task<WebDriver?> GetWebDriver()
         {
             if (_browser == Browser.Unknown)
             {
-                _browser = DetectInstalledBrowser();
+                _browser = await GetPreferredBrowser();
             }
 
             DriverService? driverService = _browser switch
@@ -61,9 +56,10 @@ namespace COMPASS.Common.Services
                 "--height=3000"
             ];
 
-            switch (_browser)
+            WebDriver? webDriver = null;
+            switch (driverService)
             {
-                case Browser.Chrome:
+                case ChromeDriverService chromeDriverService:
                     ChromeOptions co = new();
                     co.AddArguments(driverArguments);
                     List<string> chromeArgs = new()
@@ -74,28 +70,52 @@ namespace COMPASS.Common.Services
 
                     co.AddArguments(chromeArgs);
 
-                    _webDriver = await Task.Run(() => new ChromeDriver((ChromeDriverService)driverService, co));
+                    webDriver = await Task.Run(() => new ChromeDriver(chromeDriverService, co));
                     break;
 
-                case Browser.Firefox:
+                case FirefoxDriverService firefoxDriverService:
                     FirefoxOptions fo = new();
                     fo.AddArguments(driverArguments);
-                    _webDriver = await Task.Run(() => new FirefoxDriver((FirefoxDriverService)driverService, fo));
+                    webDriver = await Task.Run(() => new FirefoxDriver(firefoxDriverService, fo));
                     break;
 
-                case Browser.Edge:
+                case EdgeDriverService edgeDriverService:
                     EdgeOptions eo = new();
                     eo.AddArguments(driverArguments);
-                    _webDriver = await Task.Run(() => new EdgeDriver((EdgeDriverService)driverService, eo));
+                    webDriver = await Task.Run(() => new EdgeDriver(edgeDriverService, eo));
                     break;
 
-                case Browser.Safari:
+                case SafariDriverService safariDriverService:
                     SafariOptions so = new();
                     //so.AddArguments(driverArguments); //method doesn't exist for safari
-                    _webDriver = await Task.Run(() => new SafariDriver((SafariDriverService)driverService, so));
+                    webDriver = await Task.Run(() => new SafariDriver(safariDriverService, so));
                     break;
             }
-            return _webDriver;
+
+            return webDriver;
+        }
+
+        private async Task<Browser> GetPreferredBrowser()
+        {
+            var browsersInPreferenceOrder = new List<Browser>
+            {
+                Browser.Chrome,
+                Browser.Edge,
+                Browser.Firefox,
+                Browser.Safari,
+            };
+
+            foreach (var browser in browsersInPreferenceOrder)
+            {
+                var result = await SeleniumManager.DiscoverBrowserAsync(browser.ToString().ToLower());
+                if (!string.IsNullOrEmpty(result.BrowserPath))
+                {
+                    logger.Debug($"Preferred browser found: {browser}");
+                    return browser;
+                }
+            }
+            logger.Debug($"No installed browsers found");
+            return Browser.None;
         }
     }
 }

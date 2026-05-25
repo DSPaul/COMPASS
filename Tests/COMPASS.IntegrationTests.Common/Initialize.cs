@@ -1,10 +1,7 @@
 ﻿using Autofac;
 using COMPASS.Common.DependencyInjection;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
-using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Tools;
-using COMPASS.Tests.Common.Mocks;
+using COMPASS.Tests.Common;
 
 namespace COMPASS.IntegrationTests.Common
 {
@@ -18,13 +15,7 @@ namespace COMPASS.IntegrationTests.Common
             var builder = new ContainerBuilder();
 
             builder.RegisterModule<CommonModule>();
-
-            builder.RegisterType<MockApplicationDataService>().As<IApplicationDataService>();
-            builder.RegisterType<MockFilesService>().As<IFilesService>();
-            builder.RegisterType<MockIOService>().As<IIOService>();
-            builder.RegisterType<MockLogger>().As<ILogger>();
-            builder.RegisterType<MockNotificationService>().As<INotificationService>();
-            builder.RegisterType<MockWebDriverService>().As<IWebDriverService>();
+            builder.RegisterModule<MockModule>();
 
             ServiceResolver.Initialize(builder.Build());
 

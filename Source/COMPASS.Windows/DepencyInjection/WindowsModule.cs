@@ -10,7 +10,6 @@ namespace COMPASS.Windows.DepencyInjection
         {
             builder.RegisterType<IOService>().As<IIOService>();
             builder.RegisterType<UIService>().As<IUIService>();
-            builder.RegisterType<WebDriverService>().As<IWebDriverService>().InstancePerLifetimeScope();
         }
     }
 }

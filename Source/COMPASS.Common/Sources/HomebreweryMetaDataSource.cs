@@ -68,7 +68,7 @@ namespace COMPASS.Common.Sources
         {
             if (string.IsNullOrEmpty(sources.SourceURL)) { return null; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Homebrewery"));
-            WebDriver? driver = await ServiceResolver.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
+            using WebDriver? driver = await ServiceResolver.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
 
             if (driver == null) { return null; }
 
@@ -91,6 +91,8 @@ namespace COMPASS.Common.Sources
                 wait.Until(d => d.SwitchTo().Frame(frame));
                 wait.Until(d => d.FindElement(pageSelector)?.Displayed == true);
 
+                Thread.Sleep(1000); //Homebrewery can take some time to render everything
+
                 IWebElement coverPage = driver.FindElement(pageSelector);
                 location.X += coverPage.Location.X;
                 location.Y += coverPage.Location.Y;
@@ -103,10 +105,6 @@ namespace COMPASS.Common.Sources
                 string msg = $"Failed to get cover from {sources.SourceURL}";
                 Logger.Error(msg, ex);
                 ProgressVM.AddLogEntry(new(Severity.Error, msg));
-            }
-            finally
-            {
-                driver.Quit();
             }
 
             return null;

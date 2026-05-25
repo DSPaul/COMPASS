@@ -311,4 +311,4 @@ HTTP client lifetimes are managed via `IHttpClientFactory`. Named clients and th
 | `NotificationService` | Shows toast notifications and modal dialogs using `NotificationWindow` and `ModalWindow`. |
 | `CompositeLogger` | Combines `FileLogger` (writes to a rolling log file) and `UILogger` (feeds the in-app Logs side panel) behind the `ILogger` interface. |
 | `CrashHandler` | Hooks `AppDomain.UnhandledException` and `TaskScheduler.UnobservedTaskException`, logs the crash, and sends an opt-in crash report via `ICompassApiClient`. |
-| `WebDriverService` | Manages a shared Selenium `WebDriver` instance used by online metadata sources that require JavaScript rendering. |
+| `WebDriverService` | Creates Selenium `WebDrivers` used by online metadata sources that require JavaScript rendering. |
