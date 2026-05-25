@@ -65,7 +65,9 @@ namespace COMPASS.Common.Services
                     List<string> chromeArgs = new()
                     {
                         "--disable-search-engine-choice-screen",
-                        "--disable-features=OptimizationGuideModelDownloading,OptimizationHintsFetching,OptimizationTargetPrediction,OptimizationHints"
+                        "--disable-features=OptimizationGuideModelDownloading,OptimizationHintsFetching,OptimizationTargetPrediction,OptimizationHints",
+                        "--no-sandbox",
+                        "--disable-dev-shm-usage"
                     };
 
                     co.AddArguments(chromeArgs);
