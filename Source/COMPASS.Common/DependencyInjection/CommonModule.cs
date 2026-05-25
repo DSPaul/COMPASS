@@ -23,28 +23,8 @@ namespace COMPASS.Common.DependencyInjection
         {
             // API Clients
             builder.RegisterModule<ApiClientsModule>();
+            RegisterHttpClients(builder);
 
-            // HttpClients for common services
-            var services = new ServiceCollection();
-            services.AddTransient<ConnectivityHandler>();
-            services.AddHttpClient(WebService.BrowserHttpClient, client =>
-            {
-                //Add user agents to mimic browser, some servers block requests without user agents or with non-browser user agents
-                client.DefaultRequestHeaders.UserAgent.ParseAdd(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
-            });
-            services.AddHttpClient(WebService.ConnectionCheckHttpClient, client =>
-            {
-                client.Timeout = TimeSpan.FromSeconds(3);
-            });
-            
-            // Attach the connectivity handler to API clients so they also update IsOnline
-            services.AddHttpClient(ICompassApiClient.HttpClientName)
-                    .AddHttpMessageHandler<ConnectivityHandler>();
-            services.AddHttpClient(IGitHubApiClient.HttpClientName)
-                    .AddHttpMessageHandler<ConnectivityHandler>();
-            builder.Populate(services);
-            
             // Logging
             builder.RegisterType<FileLogger>().AsSelf().SingleInstance();
             builder.RegisterType<UILogger>().AsSelf().SingleInstance();
@@ -69,6 +49,29 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<PrereleaseUpdateService>().As<IUpdateService>();
             builder.RegisterType<FilesService>().As<IFilesService>();
             builder.RegisterType<WebService>().As<IWebService>();
+        }
+
+        private static void RegisterHttpClients(ContainerBuilder builder)
+        {
+            var services = new ServiceCollection();
+            services.AddTransient<ConnectivityHandler>();
+            services.AddHttpClient(WebService.BrowserHttpClient, client =>
+            {
+                //Add user agents to mimic browser, some servers block requests without user agents or with non-browser user agents
+                client.DefaultRequestHeaders.UserAgent.ParseAdd(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36");
+            });
+            services.AddHttpClient(WebService.ConnectionCheckHttpClient, client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(3);
+            });
+
+            // Attach the connectivity handler to API clients so they also update IsOnline
+            services.AddHttpClient(ICompassApiClient.HttpClientName)
+                    .AddHttpMessageHandler<ConnectivityHandler>();
+            services.AddHttpClient(IGitHubApiClient.HttpClientName)
+                    .AddHttpMessageHandler<ConnectivityHandler>();
+            builder.Populate(services);
         }
     }
 }
