@@ -202,7 +202,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 coverProp.OverwriteMode = curSetting;
                 ShowLoading = false;
             }
-            WorkingCopy.LoadCover();
+            _source.NotifyCoverChanged();
         }
 
         private AsyncRelayCommand? _chooseCoverCommand;
