@@ -22,6 +22,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="..\.editorconfig" Link=".editorconfig" />
+    <EmbeddedResource Include="..\..\PRIVACY_POLICY.md" Link="PRIVACY_POLICY.md" />
+    <EmbeddedResource Include="..\..\LICENSE" Link="LICENSE" />
     <Resource Include="Assets\LoadingAnimation.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

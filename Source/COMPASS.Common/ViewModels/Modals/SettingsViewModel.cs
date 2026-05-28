@@ -17,7 +17,7 @@ namespace COMPASS.Common.ViewModels.Modals
 {
     public class SettingsViewModel : ViewModelBase, IModalViewModel, IDisposable
     {
-        private static readonly List<string> TabOrder = ["General", "Import", "Metadata", "Tools", "About"];
+        private static readonly List<string> TabOrder = ["General", "Import", "Metadata", "Tools", "About", "Legal"];
 
         public SettingsViewModel(string tabToOpen = "")
         {
@@ -299,6 +299,20 @@ namespace COMPASS.Common.ViewModels.Modals
 
         private AsyncRelayCommand? _checkForUpdatesCommand;
         public AsyncRelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(UpdateManager.CheckForUpdates);
+        #endregion
+
+        #region Tab: Legal
+        public static string PrivacyPolicyText { get; } = ReadEmbeddedText("COMPASS.Common.PRIVACY_POLICY.md", "Privacy policy could not be loaded.");
+        public static string LicenseText { get; } = ReadEmbeddedText("COMPASS.Common.LICENSE", "License could not be loaded.");
+
+        private static string ReadEmbeddedText(string resourceName, string fallback)
+        {
+            var assembly = typeof(SettingsViewModel).Assembly;
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream is null) return fallback;
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
         #endregion
 
         public void Dispose()

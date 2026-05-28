@@ -246,7 +246,7 @@
                                         <TextBlock Text="Banished files"/>
                                         <controls:Explainer>
                                             These files will be excluded from future imports, supports glob syntax.
-                                            <!-- TODO explain blob syntax -->
+                                            <!-- TODO explain glob syntax -->
                                         </controls:Explainer>
                                     </StackPanel>
                                 </Expander.Header>
@@ -408,6 +408,26 @@
                             </ItemsControl>
                         </StackPanel>
                     </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Legal">
+            <ScrollViewer>
+                <StackPanel Orientation="Vertical" Spacing="10">
+                    <Expander HorizontalAlignment="Stretch">
+                        <Expander.Header>
+                            <TextBlock Text="Privacy Policy"/>
+                        </Expander.Header>
+                        <SelectableTextBlock Text="{x:Static vm:SettingsViewModel.PrivacyPolicyText}"
+                                                TextWrapping="Wrap" Margin="0,5,0,0"/>
+                    </Expander>
+                    <Expander HorizontalAlignment="Stretch">
+                        <Expander.Header>
+                            <TextBlock Text="License (AGPL-3.0)"/>
+                        </Expander.Header>
+                        <SelectableTextBlock Text="{x:Static vm:SettingsViewModel.LicenseText}"
+                                                TextWrapping="Wrap" Margin="0,5,0,0"/>
+                    </Expander>
                 </StackPanel>
             </ScrollViewer>
         </TabItem>
