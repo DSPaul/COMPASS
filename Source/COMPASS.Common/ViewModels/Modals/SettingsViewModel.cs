@@ -57,6 +57,25 @@ namespace COMPASS.Common.ViewModels.Modals
             get => _selectedTabIndex;
             set => SetProperty(ref _selectedTabIndex, value);
         }
+
+        public static IReadOnlyList<Dependency> Dependencies { get; } =
+        [
+            new("Avalonia",                  "https://avaloniaui.net/",                                          "UI Framework",              "MIT"),
+            new("Material.Icons.Avalonia",   "https://github.com/AvaloniaUtils/Material.Icons.Avalonia",         "Icons and Controls",        "MIT"),
+            new("CommunityToolkit.Mvvm",     "https://github.com/CommunityToolkit/dotnet",                       "Reactivity",                "MIT"),
+            new("Autofac",                   "https://autofac.org/",                                             "Inversion of Control",      "MIT"),
+            new("FuzzySharp",                "https://github.com/JakeBayer/FuzzySharp",                          "Fuzzy Search",              "MIT"),
+            new("HTML Agility Pack",         "https://github.com/zzzprojects/html-agility-pack",                 "HTML Parsing",              "MIT"),
+            new("PdfPig",                    "https://github.com/UglyToad/PdfPig",                               "PDF Data Extraction",       "Apache 2.0"),
+            new("PDFtoImage",                "https://github.com/sungaila/PDFtoImage",                           "PDF to Image",              "MIT"),
+            new("log4net",                   "https://github.com/apache/logging-log4net",                        "Logging",                   "Apache 2.0"),
+            new("Magick.NET",                "https://github.com/dlemstra/Magick.NET",                           "Image Manipulation",        "Apache 2.0"),
+            new("Selenium",                  "https://github.com/SeleniumHQ/selenium",                           "Website Screenshotting",    "Apache 2.0"),
+            new("SharpCompress",             "https://github.com/adamhathcock/sharpcompress",                    "Zipping and Unzipping",     "MIT"),
+            new("Svg.Skia",                  "https://github.com/wieslawsoltes/Svg.Skia",                        "SVG Rendering",             "MIT"),
+            new("HotAvalonia",               "https://github.com/Kir-Antipov/HotAvalonia",                       "Hot Reload",                "MIT"),
+            new("Host Grotesk",              "https://fonts.google.com/specimen/Host+Grotesk",                   "Font",                      "SIL OFL 1.1"),
+        ];
         
         
         private CollectionHandle? _selectedCollectionHandle;

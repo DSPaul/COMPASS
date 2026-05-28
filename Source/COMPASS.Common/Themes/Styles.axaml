@@ -141,6 +141,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="ToolTip.Tip" Value="{Binding $self.NavigateUri}"/>
         <Setter Property="Foreground" Value="{StaticResource AccentColor}" />
+        <Setter Property="TextBlock.TextTrimming" Value="CharacterEllipsis" />
         <Style Selector="^:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="Transparent"/>
         </Style>

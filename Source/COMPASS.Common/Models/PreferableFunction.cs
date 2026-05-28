@@ -36,7 +36,7 @@ namespace COMPASS.Common.Models
         // Implement IHasID
         public int Id { get; set; }
 
-        // Function properties
+        // Description properties
         public Func<T, bool>? SyncFunction { get; }
         public Func<T, Task<bool>>? AsyncFunction { get; }
         public bool IsAsync { get; }

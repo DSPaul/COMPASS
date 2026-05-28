@@ -374,53 +374,38 @@
                         </StackPanel>
                     </Border>
                     <Border Classes="SettingsContainer">
-                        <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Vertical" Spacing="5">
                             <TextBlock Text="Dependencies" Classes="SectionTitle"/>
                             <TextBlock Text="COMPASS could not exist without the following open source projects:" />
-                            <UniformGrid Columns="4"
-                                  RowSpacing="5" Margin="0,5,0,0" ColumnSpacing="30">
-                                <TextBlock Text="UI Framework:" />
-                                <HyperlinkButton NavigateUri="https://avaloniaui.net/" Content="Avalonia"/>
-
-                                <TextBlock Text="Icons and Controls:" />
-                                <HyperlinkButton NavigateUri="https://github.com/AvaloniaUtils/Material.Icons.Avalonia" Content="Material.Icons.Avalonia"/>
-
-                                <TextBlock Text="Reactivity:" />
-                                <HyperlinkButton NavigateUri="https://github.com/CommunityToolkit/dotnet" Content="CommunityToolkit.Mvvm"/>
-
-                                <TextBlock Text="Inversion of Control:" />
-                                <HyperlinkButton NavigateUri="https://autofac.org/" Content="Autofac"/>
-
-                                <TextBlock Text="Fuzzy Search:" />
-                                <HyperlinkButton NavigateUri="https://github.com/JakeBayer/FuzzySharp" Content="FuzzySharp"/>
-
-                                <TextBlock Text="HTML Parsing:" />
-                                <HyperlinkButton NavigateUri="https://github.com/zzzprojects/html-agility-pack" Content="HTML Agility Pack"/>
-
-                                <TextBlock Text="PDF Data extraction:" />
-                                <HyperlinkButton NavigateUri="https://github.com/UglyToad/PdfPig" Content="PdfPig"/>
-
-                                <TextBlock Text="PDF to Image:" />
-                                <HyperlinkButton NavigateUri="https://github.com/sungaila/PDFtoImage" Content="PDFtoImage"/>
-
-                                <TextBlock Text="Logging:" />
-                                <HyperlinkButton NavigateUri="https://github.com/apache/logging-log4net" Content="log4net"/>
-
-                                <TextBlock Text="Image Manipulation:" />
-                                <HyperlinkButton NavigateUri="https://github.com/dlemstra/Magick.NET" Content="Magick.NET"/>
-
-                                <TextBlock Text="Website Screenshotting:" />
-                                <HyperlinkButton NavigateUri="https://github.com/SeleniumHQ/selenium" Content="Selenium"/>
-
-                                <TextBlock Text="Zipping and Unzipping:" />
-                                <HyperlinkButton NavigateUri="https://github.com/adamhathcock/sharpcompress" Content="SharpCompress"/>
-
-                                <TextBlock Text="SVG Rendering:" />
-                                <HyperlinkButton NavigateUri="https://github.com/wieslawsoltes/Svg.Skia" Content="Svg.Skia"/>
-
-                                <TextBlock Text="Hot Reload:" />
-                                <HyperlinkButton NavigateUri="https://github.com/Kir-Antipov/HotAvalonia" Content="HotAvalonia"/>
-                            </UniformGrid>
+                            <ItemsControl ItemsSource="{x:Static vm:SettingsViewModel.Dependencies}"
+                                          Margin="0,5,0,0">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="4" ColumnSpacing="12" RowSpacing="12" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Dependency">
+                                        <Border Background="{StaticResource Layer2}"
+                                                CornerRadius="6"
+                                                Padding="12,8">
+                                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" 
+                                                  ColumnSpacing="5" RowSpacing="5">
+                                                <HyperlinkButton Grid.Row="0" Grid.Column="0"
+                                                                 NavigateUri="{Binding Link}"
+                                                                 Content="{Binding Name}"
+                                                                 FontWeight="SemiBold"/>
+                                                <TextBlock Grid.Row="0" Grid.Column="1"
+                                                           Text="{Binding License}"
+                                                           FontSize="12" 
+                                                           Foreground="{StaticResource TextMutedColor}"/>
+                                                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                           Text="{Binding Description}"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </StackPanel>
                     </Border>
                 </StackPanel>
