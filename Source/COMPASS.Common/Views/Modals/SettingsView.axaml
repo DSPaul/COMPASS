@@ -300,7 +300,7 @@
                                                 <TextBlock Text="{Binding Label}" VerticalAlignment="Top"/>
                                                 <controls:PriorityControl Grid.Row="0" Grid.Column="1"
                                                                           ItemsSource="{Binding SourcePriority, Mode=OneWay}"/>
-                                                <StackPanel Margin="10,0,20,0">
+                                                <StackPanel Margin="10,0,20,0" Grid.Row="0" Grid.Column="2">
                                                     <RadioButton Content="Never"
                                                                  IsChecked="{Binding OverwriteMode, Converter={StaticResource EnumForRadioBtnConverter},
                                                                  ConverterParameter={x:Static enums:MetaDataOverwriteMode.Never}}" />
