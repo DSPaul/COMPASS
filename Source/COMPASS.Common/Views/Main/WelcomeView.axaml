@@ -1,46 +1,124 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:COMPASS.Common.ViewModels"
-             xmlns:models="using:COMPASS.Common.Models"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:DataType="models:CodexCollection"
-             x:Class="COMPASS.Common.Views.Main.WelcomeView">
-    <Border BorderBrush="Gray" BorderThickness="2" CornerRadius="3" Margin="20" Background="Transparent">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <StackPanel.Styles>
-                <Style Selector="TextBlock">
-                    <Setter Property="TextAlignment" Value="Center" />
-                    <Setter Property="Margin" Value="5" />
-                    <Setter Property="TextWrapping" Value="Wrap" />
-                </Style>
-            </StackPanel.Styles>
-            <TextBlock>
-                Thank you for downloading COMPASS! <LineBreak />
-                <LineBreak />
-                The
-                <Run Foreground="{StaticResource AccentColor}" Text="C" />odex
-                <Run Foreground="{StaticResource AccentColor}" Text="O" />rganizer to
-                <Run Foreground="{StaticResource AccentColor}" Text="M" />ake
-                <Run Foreground="{StaticResource AccentColor}" Text="P" />en&amp;paper
-                <Run Foreground="{StaticResource AccentColor}" Text="A" />dventuring
-                <Run Foreground="{StaticResource AccentColor}" Text="S" />uper
-                <Run Foreground="{StaticResource AccentColor}" Text="S" />imple.
-                <LineBreak /><LineBreak />
-                You can start building your digital library by selecting the 'Add Books' tab on the left.
-                <LineBreak />
-                You can also drag and drop your files and folders right here!
-            </TextBlock>
-            <TextBlock TextAlignment="Center" Width="700">
-                COMPASS is a work in progress application that is made and maintained by a solo developer (Me).
-                <LineBreak />
-                This means that you might still occasionally run into problems or find some of its features lacking.
-                <LineBreak />
-                If this happens or if you have suggestions how to improve COMPASS, you can follow the links
-                in "About" section of the settings to share your feedback and support the project.
+             xmlns:avalonia="using:Material.Icons.Avalonia"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:COMPASS.Common.ViewModels"
+			 xmlns:models="using:COMPASS.Common.Models"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+			 x:DataType="models:CodexCollection"
+			 x:Class="COMPASS.Common.Views.Main.WelcomeView">
+	<ScrollViewer>
+		<StackPanel Orientation="Vertical" Spacing="16" Margin="40,32,40,32"
+					MaxWidth="820" HorizontalAlignment="Center">
 
-            </TextBlock>
-        </StackPanel>
-    </Border>
+			<!-- Header -->
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="6">
+				<Svg Path="/Assets/COMPASS_Logo.svg" Width="200" HorizontalAlignment="Center"/>
+				<TextBlock HorizontalAlignment="Center"
+						   Foreground="{StaticResource TextMutedColor}"
+						   TextAlignment="Center">
+					<Run Foreground="{StaticResource AccentColor}" FontWeight="SemiBold" Text="C"/>odex
+					<Run Foreground="{StaticResource AccentColor}" FontWeight="SemiBold" Text="O"/>rganizer to
+					<Run Foreground="{StaticResource AccentColor}" FontWeight="SemiBold" Text="M"/>ake
+					<Run Foreground="{StaticResource AccentColor}" FontWeight="SemiBold" Text="P"/>en&amp;paper
+					<Run Foreground="{StaticResource AccentColor}" FontWeight="SemiBold" Text="A"/>dventuring
+					<Run Foreground="{StaticResource AccentColor}" FontWeight="SemiBold" Text="S"/>uper
+					<Run Foreground="{StaticResource AccentColor}" FontWeight="SemiBold" Text="S"/>imple
+				</TextBlock>
+			</StackPanel>
+
+			<!-- Getting Started -->
+			<Border Background="{StaticResource Layer2}" CornerRadius="8" Padding="20">
+				<StackPanel Orientation="Vertical" Spacing="10">
+					<StackPanel Orientation="Horizontal" Spacing="8">
+						<avalonia:MaterialIcon Kind="RocketLaunchOutline" IconSize="22"/>
+						<TextBlock Text="Getting Started" FontSize="18" FontWeight="SemiBold"
+								   VerticalAlignment="Center"/>
+					</StackPanel>
+					<Rectangle Fill="{StaticResource DarkUIElementBackground}" Height="1"/>
+					<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="8">
+						<avalonia:MaterialIcon Grid.Row="0" Grid.Column="0" Kind="BookPlusOutline" IconSize="18"/>
+						<TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap"
+								   Text="Open the Add Items tab on the left to import your PDFs, images, and other files into your library."/>
+						<avalonia:MaterialIcon Grid.Row="1" Grid.Column="0" Kind="FolderArrowDownOutline" IconSize="18" />
+						<TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap"
+								   Text="On Windows you can also drag and drop files and folders directly into the app."/>
+						<avalonia:MaterialIcon Grid.Row="2" Grid.Column="0" Kind="TagOutline" IconSize="18"/>
+						<TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap"
+								   Text="Use tags, filters, and metadata to organise your collection exactly the way you want."/>
+					</Grid>
+				</StackPanel>
+			</Border>
+
+			<!-- Community Links -->
+			<Border Background="{StaticResource Layer2}" CornerRadius="8" Padding="20">
+				<StackPanel Orientation="Vertical" Spacing="10">
+					<StackPanel Orientation="Horizontal" Spacing="8">
+						<avalonia:MaterialIcon Kind="LinkVariant" IconSize="22"/>
+						<TextBlock Text="Community &amp; Resources" FontSize="18" FontWeight="SemiBold"
+								   VerticalAlignment="Center"/>
+					</StackPanel>
+					<Rectangle Fill="{StaticResource DarkUIElementBackground}" Height="1"/>
+					<UniformGrid Columns="4" ColumnSpacing="8">
+						<HyperlinkButton NavigateUri="https://github.com/DSPaul/COMPASS" Padding="8,6" HorizontalAlignment="Stretch">
+							<StackPanel Orientation="Horizontal" Spacing="6">
+								<avalonia:MaterialIcon Kind="Github" IconSize="16"/>
+								<TextBlock Text="GitHub" VerticalAlignment="Center"/>
+							</StackPanel>
+						</HyperlinkButton>
+						<HyperlinkButton NavigateUri="https://www.compassapp.info" Padding="8,6" HorizontalAlignment="Stretch" >
+							<StackPanel Orientation="Horizontal" Spacing="6">
+								<avalonia:MaterialIcon Kind="Web" IconSize="16"/>
+								<TextBlock Text="Website" VerticalAlignment="Center"/>
+							</StackPanel>
+						</HyperlinkButton>
+						<HyperlinkButton NavigateUri="https://discord.gg/HawGMJgS9Y" Padding="8,6" HorizontalAlignment="Stretch">
+							<StackPanel Orientation="Horizontal" Spacing="6">
+								<avalonia:MaterialIcon Kind="ForumOutline" IconSize="16"/>
+								<TextBlock Text="Discord" VerticalAlignment="Center"/>
+							</StackPanel>
+						</HyperlinkButton>
+						<HyperlinkButton NavigateUri="https://www.reddit.com/r/compassapp/" Padding="8,6" HorizontalAlignment="Stretch">
+							<StackPanel Orientation="Horizontal" Spacing="6">
+								<avalonia:MaterialIcon Kind="Reddit" IconSize="16"/>
+								<TextBlock Text="Reddit" VerticalAlignment="Center"/>
+							</StackPanel>
+						</HyperlinkButton>
+					</UniformGrid>
+				</StackPanel>
+			</Border>
+
+			<!-- Donate -->
+			<Border CornerRadius="8" Padding="20"
+					Background="{StaticResource Layer2}"
+					BorderBrush="{StaticResource AccentColor}" BorderThickness="1">
+				<Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto" ColumnSpacing="12" RowSpacing="8">
+					<StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+						<avalonia:MaterialIcon Kind="HeartOutline" IconSize="22" Padding="0"/>
+						<TextBlock Text="Support COMPASS" FontSize="18" FontWeight="SemiBold"
+									VerticalAlignment="Center"/>
+					</StackPanel>
+					<Rectangle Grid.Row="1" Grid.ColumnSpan="2" 
+							   Fill="{StaticResource DarkUIElementBackground}" Height="1"/>
+					<TextBlock TextWrapping="Wrap" Foreground="{StaticResource TextMutedColor}" 
+							   Grid.Row="2" Grid.Column="0"
+							   Text="COMPASS is built and maintained by a single developer in their spare time. If you enjoy using it, consider buying me a drink — it goes a long way!"/>
+					<HyperlinkButton Grid.Column="1" Grid.Row="2"
+									 NavigateUri="https://ko-fi.com/pauldesmul"
+									 
+									 VerticalAlignment="Center" Margin="16,0,0,0"
+									 Background="{StaticResource AccentColor}"
+									 Foreground="Black" Padding="16,10" CornerRadius="6">
+						<StackPanel Orientation="Horizontal" Spacing="6">
+							<avalonia:MaterialIcon Kind="CupOutline" IconSize="18" Padding="0"/>
+							<TextBlock Text="Buy Me a Drink" FontWeight="SemiBold"
+									   VerticalAlignment="Center"/>
+						</StackPanel>
+					</HyperlinkButton>
+				</Grid>
+			</Border>
+
+		</StackPanel>
+	</ScrollViewer>
 </UserControl>
