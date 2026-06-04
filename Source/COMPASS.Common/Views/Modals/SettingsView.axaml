@@ -281,16 +281,20 @@
                         <StackPanel Spacing="5">
                             <TextBlock Text="Source Priority Preferences" Classes="SectionTitle" />
                             <Grid ColumnDefinitions="*, 2*, 2*" RowDefinitions="Auto,Auto,Auto">
-                                <TextBlock Text="Property"/>
+
+                                <TextBlock Text="Property" Grid.Row="0" Grid.Column="0"/>
                                 
-                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                <StackPanel Orientation="Horizontal" Spacing="5" 
+                                            Grid.Row="0" Grid.Column="1">
                                     <TextBlock Text="Source Priority" />
                                     <controls:Explainer Content="If multiple sources provide metadata for a given property, the value from the topmost source will be used."/>
                                 </StackPanel>
                                 
-                                <TextBlock Text="Overwrite existing metadata" Margin="10,0,0,0" Grid.Row="0" Grid.Column="2"/>
+                                <TextBlock Text="Overwrite existing metadata" Margin="10,0,0,0" 
+                                           Grid.Row="0" Grid.Column="2"/>
             
-                                <Rectangle Classes="SeparatorStyle" Grid.ColumnSpan="3" Grid.Column="0" Grid.Row="1"/>
+                                <Rectangle Classes="SeparatorStyle" Grid.ColumnSpan="3" 
+                                           Grid.Row="1" Grid.Column="0"/>
             
                                 <ItemsControl Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
                                               ItemsSource="{Binding MetaDataPreferences}">
