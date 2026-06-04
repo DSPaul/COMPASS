@@ -134,10 +134,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/avaloniaui.diagnosticssupport/2.2.1/avaloniaui.diagnosticssupport.2.2.1.nupkg",
-        "sha512": "564accf6dbdc3a6d322d90c9e912d0908821212294c7c3d97dfa68d5deba8cca860f693e778b0ecc5f24bbb8ad86bad994d80d5d554175a23143365227f1a776",
+        "url": "https://api.nuget.org/v3-flatcontainer/avaloniaui.diagnosticssupport/2.2.2/avaloniaui.diagnosticssupport.2.2.2.nupkg",
+        "sha512": "dbe6e32f773112de3f69f03bd053a47fa8b0cc7e65469b4ffdc4e5456bce1dc1292fac4c3852eb96934dc9f900578151a4b46d22926707cdb60df1a51b7b13c3",
         "dest": "nuget-sources",
-        "dest-filename": "avaloniaui.diagnosticssupport.2.2.1.nupkg"
+        "dest-filename": "avaloniaui.diagnosticssupport.2.2.2.nupkg"
     },
     {
         "type": "file",
@@ -232,31 +232,31 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia/3.1.0/hotavalonia.3.1.0.nupkg",
-        "sha512": "19458d1c241a5aec234f7fe29e148b13cbd4095a7dba86945fc57c16ab3c0ed7b176db4a65eb77040a5d74973e813ea27145fc3d46b97042b14516b225aec44d",
+        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia/3.1.1/hotavalonia.3.1.1.nupkg",
+        "sha512": "0fd398109d661ef87814c35f973fdeb34a1ba579a8a19e482098b0a914835517306526dd98cf03f4dce09e06660046a23f4016b994f034ee406dce393cfc84b2",
         "dest": "nuget-sources",
-        "dest-filename": "hotavalonia.3.1.0.nupkg"
+        "dest-filename": "hotavalonia.3.1.1.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia.core/3.1.0/hotavalonia.core.3.1.0.nupkg",
-        "sha512": "37cd508150d516a3937f9c73ef319d56b4c20b8887c8e07216a890ac5c78416c0b313d7c0b0a897dc91a4de6dba05f8c05610701da4520dbd91d7ac8bc584a07",
+        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia.core/3.1.1/hotavalonia.core.3.1.1.nupkg",
+        "sha512": "b0f860272295357fb0ea99ef59309c3a48de420c625e4aa8aa3436295cefd9716a40c1eec90f7d4dbd39cb9d3b0f6b66c5b0526259907ce0324f516b24576887",
         "dest": "nuget-sources",
-        "dest-filename": "hotavalonia.core.3.1.0.nupkg"
+        "dest-filename": "hotavalonia.core.3.1.1.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia.extensions/3.1.0/hotavalonia.extensions.3.1.0.nupkg",
-        "sha512": "26ef712a59694a286861b0fdf1fccd8636851022c52feb3b2c1693f68149ab2d539a6ccf36b59abf60a7cc8a79e28fd8503587f40d9f23cf5788379ec1656ae9",
+        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia.extensions/3.1.1/hotavalonia.extensions.3.1.1.nupkg",
+        "sha512": "8f069a48ab0aaf8906edd0f11133cb9573889e13bbfe1d33b1b3586abc8e92b3e73c7b0ec54954bd4b6b4deea1d5312efe141bc21692a0c0a7c8461ce5d1d537",
         "dest": "nuget-sources",
-        "dest-filename": "hotavalonia.extensions.3.1.0.nupkg"
+        "dest-filename": "hotavalonia.extensions.3.1.1.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia.fody/3.1.0/hotavalonia.fody.3.1.0.nupkg",
-        "sha512": "b2c8a0a9299b4cfd5bf64718d8f928c6d4c2ddfa4ebb0c645e09140746ef481bfe46b10b73c2b58357b907ee8fc84fea16e62fbe7f46e286421e0af5aa1afd67",
+        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia.fody/3.1.1/hotavalonia.fody.3.1.1.nupkg",
+        "sha512": "b5fa6abbd8fde2773e7b48516966c880348e4b870eb54e9d9dfe063d63ba0c01a11313ce9def79f7a94738d3dbfcc62d647932af45395a74c1c66ca3746c96b8",
         "dest": "nuget-sources",
-        "dest-filename": "hotavalonia.fody.3.1.0.nupkg"
+        "dest-filename": "hotavalonia.fody.3.1.1.nupkg"
     },
     {
         "type": "file",
@@ -491,10 +491,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/sharpcompress/0.49.0/sharpcompress.0.49.0.nupkg",
-        "sha512": "01cc7ed62ce08cb999c9a40fb08824607988d9a84f7a26d24797ca8f27b3836508b45333bf1538403467a0e5393b6bf5930ccb5802e285d81b1310d02a43b282",
+        "url": "https://api.nuget.org/v3-flatcontainer/sharpcompress/0.49.1/sharpcompress.0.49.1.nupkg",
+        "sha512": "0e851e24d1920c90dd1c4d44d4324b3dda60c355e7bc17f1c7c6d02cc9e936d123a6d69f0f1d4366d19748425b4be19a697dd0ae67a23fe84392cd87792d127a",
         "dest": "nuget-sources",
-        "dest-filename": "sharpcompress.0.49.0.nupkg"
+        "dest-filename": "sharpcompress.0.49.1.nupkg"
     },
     {
         "type": "file",
