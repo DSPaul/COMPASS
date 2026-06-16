@@ -35,14 +35,13 @@
         </ListBox.ItemContainerTheme>
         <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
-                <controls:WrapGrid HorizontalContentAlignment="Center" />
+                <controls:WrapGrid HorizontalContentAlignment="Center" ItemWidth="400"/>
             </ItemsPanelTemplate>
         </ListBox.ItemsPanel>
         <ListBox.ItemTemplate>
             <DataTemplate DataType="modelVm:CodexViewModel">
-                <Border CornerRadius="5" Margin="20" Width="400"
+                <Border CornerRadius="5" Margin="20"
                         BorderThickness="3"
-                        Background="{StaticResource CardBackground}"
                         BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" 
                         DoubleTapped="Codex_DoubleTapped"
                         Classes="SmallZoomOnHover"
@@ -54,114 +53,119 @@
                     <Border.Effect>
                         <DropShadowDirectionEffect BlurRadius="15" />
                     </Border.Effect>
-                    <StackPanel Orientation="Vertical">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" MaxWidth="200" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Panel Grid.Column="0">
-                                <controls:RoundedImage Source="{Binding Thumbnail^, Mode=OneWay}"
-                                        Stretch="UniformToFill" HorizontalAlignment="Center"
-                                        MaxHeight="{Binding Bounds.Height, ElementName=PropGrid}"
-                                        CornerRadius="5,0,0,0"/>
-                                <Border VerticalAlignment="Bottom" Height="25"
-                                        IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowFileIcons}">
-                                    <Border.Background>
-                                        <SolidColorBrush Color="Black" Opacity="0.3" />
-                                    </Border.Background>
-                                </Border>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
-                                            Spacing="5" Margin="2, 0"
+                    <Border CornerRadius="5" 
+                            Background="{StaticResource CardBackground}">
+                        <StackPanel Orientation="Vertical">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" MaxWidth="200" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Panel Grid.Column="0">
+                                    <controls:RoundedImage Source="{Binding Thumbnail^, Mode=OneWay}"
+                                            Stretch="UniformToFill" HorizontalAlignment="Center"
+                                            MaxHeight="{Binding Bounds.Height, ElementName=PropGrid}"
+                                            CornerRadius="5,0,0,0"/>
+                                    <Border VerticalAlignment="Bottom" Height="25"
                                             IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowFileIcons}">
-                                    <controls:IconButton Command="{Binding OpenCodexLocallyCommand}" ToolTip.Tip="Open Locally"
-                                                         Background="Transparent" Classes="HideIfDisabled"
-                                                         Theme="{StaticResource IconOnly}" Icon="FileOutline" />
-                                    <controls:IconButton Command="{Binding OpenCodexOnlineCommand}" ToolTip.Tip="Open Online"
-                                                         Background="Transparent" Classes="HideIfDisabled"
-                                                         Theme="{StaticResource IconOnly}" Icon="Web" />
-                                    <materialDesign:MaterialIcon Kind="Bookshelf" Margin="3"
-                                                                 IsVisible="{Binding PhysicallyOwned}"
-                                                                 ToolTip.Tip="Physically Owned" />
-                                </StackPanel>
-                            </Panel>
-                            <Border Grid.Column="1" x:Name="PropGrid" VerticalAlignment="Top" MinHeight="160">
-                                <Grid Margin="5,10">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.Styles>
-                                        <Style Selector="TextBlock.Type">
-                                            <Setter Property="FontSize" Value="14" />
-                                            <Setter Property="Foreground" Value="{StaticResource TextMutedColor}" />
-                                            <Setter Property="Margin" Value="3,2" />
-                                            <Setter Property="TextWrapping" Value="Wrap" />
-                                            <Setter Property="HorizontalAlignment" Value="Right" />
-                                            <Setter Property="VerticalAlignment" Value="Top" />
-                                        </Style>
-                                        <Style Selector="TextBlock.Data">
-                                            <Setter Property="FontSize" Value="14" />
-                                            <Setter Property="Foreground" Value="{StaticResource TextColor}" />
-                                            <Setter Property="Margin" Value="3,2" />
-                                            <Setter Property="TextWrapping" Value="Wrap" />
-                                        </Style>
-                                    </Grid.Styles>
+                                        <Border.Background>
+                                            <SolidColorBrush Color="Black" Opacity="0.3" />
+                                        </Border.Background>
+                                    </Border>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="25"
+                                                Spacing="5" Margin="2, 0"
+                                                IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowFileIcons}">
+                                        <controls:IconButton Command="{Binding OpenCodexLocallyCommand}" ToolTip.Tip="Open Locally"
+                                                             Background="Transparent" Classes="HideIfDisabled"
+                                                             Theme="{StaticResource IconOnly}" Icon="FileOutline" />
+                                        <controls:IconButton Command="{Binding OpenCodexOnlineCommand}" ToolTip.Tip="Open Online"
+                                                             Background="Transparent" Classes="HideIfDisabled"
+                                                             Theme="{StaticResource IconOnly}" Icon="Web" />
+                                        <materialDesign:MaterialIcon Kind="Bookshelf" Margin="3"
+                                                                     IsVisible="{Binding PhysicallyOwned}"
+                                                                     ToolTip.Tip="Physically Owned" />
+                                    </StackPanel>
+                                </Panel>
+                                <Border Grid.Column="1" x:Name="PropGrid" VerticalAlignment="Top" MinHeight="160">
+                                    <Grid Margin="5,10">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="80" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.Styles>
+                                            <Style Selector="TextBlock.Type">
+                                                <Setter Property="FontSize" Value="14" />
+                                                <Setter Property="Foreground" Value="{StaticResource TextMutedColor}" />
+                                                <Setter Property="Margin" Value="3,2" />
+                                                <Setter Property="HorizontalAlignment" Value="Right" />
+                                                <Setter Property="VerticalAlignment" Value="Top" />
+                                            </Style>
+                                            <Style Selector="TextBlock.Data">
+                                                <Setter Property="FontSize" Value="14" />
+                                                <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+                                                <Setter Property="Margin" Value="3,2" />
+                                                <Setter Property="TextWrapping" Value="Wrap" />
+                                                <Setter Property="MaxLines" Value="2" />
+                                                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                            </Style>
+                                        </Grid.Styles>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Classes="Type" Text="Title:" />
-                                    <TextBlock Grid.Row="1" Grid.Column="0" Classes="Type" Text="Authors:"
-                                               IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowAuthor}" />
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Classes="Type" Text="Publisher:"
-                                               IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowPublisher}" />
-                                    <TextBlock Grid.Row="3" Grid.Column="0" Classes="Type" Text="Version:"
-                                               IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowVersion}" />
-                                    <TextBlock Grid.Row="4" Grid.Column="0" Classes="Type" Text="Released:"
-                                               IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowReleaseDate}" />
-                                    <TextBlock Grid.Row="5" Grid.Column="0" Classes="Type" Text="Rating:"
-                                               IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowRating}" />
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Classes="Type" Text="Title:" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Classes="Type" Text="Authors:"
+                                                   IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowAuthor}" />
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Classes="Type" Text="Publisher:"
+                                                   IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowPublisher}" />
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Classes="Type" Text="Version:"
+                                                   IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowVersion}" />
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Classes="Type" Text="Released:"
+                                                   IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowReleaseDate}" />
+                                        <TextBlock Grid.Row="5" Grid.Column="0" Classes="Type" Text="Rating:"
+                                                   IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowRating}" />
 
-                                    <TextBlock Grid.Row="0" Grid.Column="1" Classes="Data" Text="{Binding Title}" />
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Classes="Data" Text="{Binding AuthorsAsString}"
-                                               IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowAuthor}" />
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Classes="Data" Text="{Binding Publisher}"
-                                               IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowPublisher}" />
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Classes="Data" Text="{Binding Version}"
-                                               IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowVersion}" />
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Classes="Data" Text="{Binding ReleaseDateAsString}"
-                                               IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowReleaseDate}" />
-                                    <controls:RatingControl Grid.Row="5" Grid.Column="1" Value="{Binding Rating}" HorizontalAlignment="Left"
-                                                            IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowRating}" />
-                                </Grid>
-                            </Border>
-                        </Grid>
-                        <Rectangle Fill="{StaticResource AccentColor}" Height="3" />
-                        <ItemsControl Foreground="Black" Margin="10,3" MinHeight="20"
-                                      ItemsSource="{Binding OrderedTags, Mode=OneWay}"
-                                      Background="Transparent" BorderBrush="{x:Null}"
-                                      IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowTags}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="modelVm:TagViewModel">
-                                    <controls:Chip
-                                        Background="{Binding BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"
-                                        Text="{Binding Name}" Margin="2"
-                                        ToolTip.Tip="{Binding LongName}" />
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Classes="Data" Text="{Binding Title}" />
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Classes="Data" Text="{Binding AuthorsAsString}"
+                                                   IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowAuthor}" />
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Classes="Data" Text="{Binding Publisher}"
+                                                   IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowPublisher}" />
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Classes="Data" Text="{Binding Version}"
+                                                   IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowVersion}" />
+                                        <TextBlock Grid.Row="4" Grid.Column="1" Classes="Data" Text="{Binding ReleaseDateAsString}"
+                                                   IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowReleaseDate}" />
+                                        <controls:RatingControl Grid.Row="5" Grid.Column="1" Value="{Binding Rating}" HorizontalAlignment="Left"
+                                                                IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowRating}" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                            <Rectangle Fill="{StaticResource AccentColor}" Height="3" />
+                            <ItemsControl Foreground="Black" Margin="10,3" MinHeight="20"
+                                          ItemsSource="{Binding OrderedTags, Mode=OneWay}"
+                                          Background="Transparent" BorderBrush="{x:Null}"
+                                          IsVisible="{Binding $parent[ListBox].((vm:CardLayoutViewModel)DataContext).Preferences.ShowTags}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="modelVm:TagViewModel">
+                                        <controls:Chip
+                                            Background="{Binding BackgroundColor, Converter={x:Static conv:ColorConverters.ColorToBrush}}"
+                                            Text="{Binding Name}" Margin="2"
+                                            ToolTip.Tip="{Binding LongName}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
                 </Border>
             </DataTemplate>
         </ListBox.ItemTemplate>
