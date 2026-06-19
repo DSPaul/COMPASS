@@ -78,7 +78,11 @@ public sealed class DragBehavior : AvaloniaObject
     {
         if (_lastPressedArgs is null || _lastPressedControl is null) return;
         if (sender is not Visual draggedVisual || draggedVisual != _lastPressedControl) return;
-            
+
+        //Require at least 5 pixels of movement to start a drag operation
+        var moveVector = e.GetPosition(draggedVisual) - _lastPressedArgs.GetPosition(draggedVisual);
+        if (Math.Sqrt(moveVector.X * moveVector.X + moveVector.Y * moveVector.Y) < 5) return;
+
         var pressedArgs = _lastPressedArgs;
         _lastPressedArgs = null;
         _lastPressedControl = null;
