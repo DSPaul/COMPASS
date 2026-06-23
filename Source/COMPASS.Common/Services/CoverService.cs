@@ -11,6 +11,8 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Infra.Tools;
+using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Operations;
 
 namespace COMPASS.Common.Services
 {
@@ -172,7 +174,15 @@ namespace COMPASS.Common.Services
                     return null;
                 }
 
-                image = new MagickImage(c.CoverArtPath);
+                try
+                {
+                    image = new MagickImage(c.CoverArtPath);
+                }
+                catch(MagickCorruptImageErrorException corruptException)
+                {
+                    HandleCorruptCover(c, corruptException);
+                    return null;
+                }
             }
             
             var ioService = ServiceResolver.Resolve<IIOService>();
@@ -190,6 +200,33 @@ namespace COMPASS.Common.Services
             }
 
             return image;
+        }
+
+        private static void HandleCorruptCover(Codex codex, MagickCorruptImageErrorException corruptException)
+        {
+            Logger.Warn("Corrupt cover detected", corruptException);
+            if (!codex.CoverArtPath.Contains(Constants.DIR_COVERS))
+            {
+                //not our image, don't delete it
+                return;
+            }
+
+            try
+            {
+                File.Delete(codex.CoverArtPath);
+                Logger.Info("Corrupt cover removed, attempting to fetch a new cover...");
+                CodexOperations.GetCover(codex).ContinueWith(t =>
+                {
+                    if (t.IsCompletedSuccessfully)
+                    {
+                        CreateThumbnail(codex);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to delete corrupt image file {codex.CoverArtPath}", ex);
+            }
         }
 
         //Take screenshot of specific html element 
