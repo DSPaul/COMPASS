@@ -29,24 +29,24 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="11.0.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="11.0.1" />
     <PackageReference Include="Avalonia.Labs.Gif" Version="12.0.2" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.4" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.0.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.5" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.0.5" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.8" />
-    <PackageReference Include="Selenium.Support" Version="4.44.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.9" />
+    <PackageReference Include="Selenium.Support" Version="4.45.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
     <PackageReference Include="PdfPig" Version="0.1.14" />
     <PackageReference Include="log4net" Version="3.3.1" />
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.13.1" />
-    <PackageReference Include="Magick.NET.AvaloniaMediaImaging" Version="1.1.11" />
-    <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.22" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.14.0" />
+    <PackageReference Include="Magick.NET.AvaloniaMediaImaging" Version="1.1.12" />
+    <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.23" />
     <PackageReference Include="Material.Icons.Avalonia" Version="3.0.2" />
     <PackageReference Include="PDFtoImage" Version="5.2.1" />
-    <PackageReference Include="Selenium.WebDriver" Version="4.44.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.45.0" />
     <PackageReference Include="SharpCompress" Version="0.49.1" />
-    <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.11" />
+    <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.13" />
     <PackageReference Include="HotAvalonia" Version="3.1.1" PrivateAssets="All" Publish="True" />
   </ItemGroup>
   <ItemGroup>
