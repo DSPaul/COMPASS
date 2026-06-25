@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 using COMPASS.Common.Models.Preferences;
 
 namespace COMPASS.Common.Models.XmlDtos
@@ -24,6 +23,7 @@ namespace COMPASS.Common.Models.XmlDtos
         public HomeLayoutPreferences HomeLayoutPreferences { get; set; } = new();
 
         public UIState UIState { get; set; } = new();
+        public WindowRestoreState WindowState { get; set; } = new();
 
         public bool AutoLinkFolderTagSameName { get; set; } = true;
     }

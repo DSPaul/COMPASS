@@ -55,6 +55,12 @@ public static class RandomGenerator
         return startDate.AddTicks(ticks);
     }
 
+    public static T GetRandomEnum<T>() where T : Enum
+    {
+        Array values = Enum.GetValues(typeof(T));
+        return (T)values.GetValue(Random.Next(values.Length))!;
+    }
+
     #endregion
 
     #region My Classes
@@ -145,11 +151,19 @@ public static class RandomGenerator
         {
             AutoHideCodexInfoPanel = GetRandomBool(),
             ShowCodexInfoPanel = GetRandomBool(),
-            SortDirection = System.ComponentModel.ListSortDirection.Descending,
+            SortDirection = GetRandomEnum<System.ComponentModel.ListSortDirection>(),
             SortProperty = "Title",
             StartupCollection = GetRandomString(),
-            StartupLayout = COMPASS.Common.Models.Enums.CodexLayout.Card,
+            StartupLayout = GetRandomEnum<COMPASS.Common.Models.Enums.CodexLayout>(),
             StartupTab = 3
+        },
+        WindowState = new WindowRestoreState()
+        {
+            WindowState = GetRandomEnum<Avalonia.Controls.WindowState>(),
+            Height = Random.NextDouble() * 800 + 200, // Random height between 200 and 1000
+            Width = Random.NextDouble() * 1200 + 400, // Random width between 400 and 1600
+            X = (int)(Random.NextDouble() * 1920),
+            Y = (int)(Random.NextDouble() * 1080),
         }
     };
 

@@ -4,7 +4,8 @@ using COMPASS.Common.Models.Enums;
 
 namespace COMPASS.Common.Models.Preferences
 {
-    public class UIState : ObservableObject
+    [Serializable]
+    public class UIState
     {
         public CodexLayout StartupLayout { get; set; } = CodexLayout.Home;
         public string StartupCollection { get; set; } = Constants.DEFAULT_COLLECTION_NAME;

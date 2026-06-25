@@ -141,6 +141,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 HomeLayoutPreferences = dto.HomeLayoutPreferences,
                 AutoLinkFolderTagSameName = dto.AutoLinkFolderTagSameName,
                 UIState = dto.UIState,
+                WindowState = dto.WindowState,
             };
             return model;
         }
@@ -156,6 +157,7 @@ namespace COMPASS.Common.Models.XmlDtos
                 TileLayoutPreferences = prefs.TileLayoutPreferences,
                 HomeLayoutPreferences = prefs.HomeLayoutPreferences,
                 UIState = prefs.UIState,
+                WindowState = prefs.WindowState,
                 AutoLinkFolderTagSameName = prefs.AutoLinkFolderTagSameName,
             };
 
