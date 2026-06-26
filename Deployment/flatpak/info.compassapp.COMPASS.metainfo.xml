@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2026 Paul De Smul -->
 <component type="desktop-application">
   <id>info.compassapp.COMPASS</id>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>GPL-3.0</project_license>
+  <project_license>AGPL-3.0-only</project_license>
   
   <name>COMPASS</name>
-  <summary>A TTRPG resource manager, bringing all your books, maps, etc. in one place.</summary>
+  <summary>Digital library for TTRPGs</summary>
   
   <description>
     <p>
@@ -15,7 +16,7 @@
     </p>
     <p>Key Features:</p>
     <ul>
-      <li>Automatic metadata extraction from PDFs and webpages (title, author, release date)</li>
+      <li>Automatic metadata extraction from PDFs and webpages (title, author, release date, etc.)</li>
       <li>Advanced hierarchical tagging system to replace folder chaos</li>
       <li>Multiple collections, each with their own set of tags</li>
       <li>Four different layouts to view your collection</li>
@@ -28,20 +29,45 @@
   
   <url type="homepage">https://compassapp.info</url>
   <url type="bugtracker">https://github.com/DSPaul/COMPASS/issues</url>
+  <url type="donation">https://ko-fi.com/pauldesmul</url>
+  <url type="vcs-browser">https://github.com/DSPaul/COMPASS</url>
   
-  <developer_name>DSPaul</developer_name>
+  <developer id="com.pauldesmul">
+    <name>Paul De Smul</name>
+  </developer>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#86f9bf</color>
+    <color type="primary" scheme_preference="dark">#10a369</color>
+  </branding>
   
   <launchable type="desktop-id">info.compassapp.COMPASS.desktop</launchable>
   
   <screenshots>
     <screenshot type="default">
       <caption>Home Layout</caption>
-      <image>https://raw.githubusercontent.com/DSPaul/COMPASS/master/Docs/Screenshots/Home_Layout.png</image>
+      <image>https://raw.githubusercontent.com/DSPaul/COMPASS/24990f5aa3e718ae4cc881e97e0f978e6f3a98ec/Docs/Screenshots/Home_Layout.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Tile layout</caption>
+      <image>https://raw.githubusercontent.com/DSPaul/COMPASS/24990f5aa3e718ae4cc881e97e0f978e6f3a98ec/Docs/Screenshots/Tile_Layout.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Card layout</caption>
+      <image>https://raw.githubusercontent.com/DSPaul/COMPASS/24990f5aa3e718ae4cc881e97e0f978e6f3a98ec/Docs/Screenshots/Card_Layout.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>List layout</caption>
+      <image>https://raw.githubusercontent.com/DSPaul/COMPASS/24990f5aa3e718ae4cc881e97e0f978e6f3a98ec/Docs/Screenshots/List_Layout.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Item properties</caption>
+      <image>https://raw.githubusercontent.com/DSPaul/COMPASS/24990f5aa3e718ae4cc881e97e0f978e6f3a98ec/Docs/Screenshots/Codex_Properties.png</image>
     </screenshot>
   </screenshots>
   
   <releases>
-    <release version="2.0.0-alpha.1" date="2026-03-14" type="development">
+    <release version="2.0.0-alpha.1" date="2026-06-26" type="development">
       <description>
         <p>Initial Flatpak release (alpha)</p>
       </description>
