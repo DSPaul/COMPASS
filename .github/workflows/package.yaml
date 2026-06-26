@@ -145,7 +145,7 @@ jobs:
       uses: softprops/action-gh-release@v3
       with:
         tag_name: v${{ needs.get-version.outputs.version }}
-        name: COMPASS v${{ needs.get-version.outputs.version }}
+        name: v${{ needs.get-version.outputs.version }}
         target_commitish: ${{ inputs.branch }}
         draft: true
         prerelease: ${{ contains(needs.get-version.outputs.version, '-') }}
