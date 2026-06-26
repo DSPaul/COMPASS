@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Models;
 
 namespace COMPASS.Common.Tools.Logging;
 
@@ -10,10 +11,12 @@ public class FileLogger : ILogger
 
     public FileLogger()
     {
-        string localPath = IApplicationDataService.ApplicationDataPath;
-        Directory.CreateDirectory(Path.Combine(localPath, "logs"));
-        log4net.GlobalContext.Properties["DataPath"] = localPath;
-        log4net.Config.XmlConfigurator.Configure(new FileInfo("log4net.config"));
+        string logsDirectory = Path.Combine(IApplicationDataService.ApplicationDataPath, Constants.DIR_LOGS);
+        string configPath = Path.Combine(AppContext.BaseDirectory, "log4net.config");
+
+        Directory.CreateDirectory(logsDirectory);
+        log4net.GlobalContext.Properties["logsDir"] = logsDirectory;
+        log4net.Config.XmlConfigurator.Configure(new FileInfo(configPath));
         _log = log4net.LogManager.GetLogger(nameof(FileLogger));
     }
 

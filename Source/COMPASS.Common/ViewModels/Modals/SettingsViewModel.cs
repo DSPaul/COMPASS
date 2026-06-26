@@ -147,7 +147,7 @@ namespace COMPASS.Common.ViewModels.Modals
         #region Data Path 
 
         public string UserDataPath => _applicationDataService.UserDataPath;
-        public string LogsPath => Path.Combine(IApplicationDataService.ApplicationDataPath, "logs");
+        public string LogsPath => Path.Combine(IApplicationDataService.ApplicationDataPath, Constants.DIR_LOGS);
 
         public AsyncRelayCommand ChangeDataPathCommand => field ??= new(ChooseNewDataPath);
         private async Task ChooseNewDataPath()
