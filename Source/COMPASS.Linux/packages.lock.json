@@ -18,14 +18,14 @@
       },
       "HotAvalonia": {
         "type": "Direct",
-        "requested": "[3.1.1, )",
-        "resolved": "3.1.1",
-        "contentHash": "kG341ZGxw/EwSiwtRmYhdCjduINQ3oW5afp+g3bzFhZsLlFO6X9Pcboc5MwSaxvWzabBUqH+uGUoBb4VIcCpSw==",
+        "requested": "[3.1.2, )",
+        "resolved": "3.1.2",
+        "contentHash": "WRTBe7qKYE4b/eMZSt8E06Uov9JO4dhawNxpIbcNnm5VZoC9fdtjxcRhSwakmF+21PARz/lKr0hNgbjb1E/efA==",
         "dependencies": {
           "Avalonia.Markup.Xaml.Loader": "11.0.0",
-          "HotAvalonia.Core": "3.1.1",
-          "HotAvalonia.Extensions": "3.1.1",
-          "HotAvalonia.Fody": "3.1.1"
+          "HotAvalonia.Core": "3.1.2",
+          "HotAvalonia.Extensions": "3.1.2",
+          "HotAvalonia.Fody": "3.1.2"
         }
       },
       "Autofac": {
@@ -257,18 +257,18 @@
       },
       "HotAvalonia.Core": {
         "type": "Transitive",
-        "resolved": "3.1.1",
-        "contentHash": "aRXnEi7W2gED0PmoR36T6Wa4GlbkSNlt4AAs4Z8ywC4XA7MNgWyF29nQd3gpuCZ4yZzbaRL1sCXc/bZFEnqxng=="
+        "resolved": "3.1.2",
+        "contentHash": "j+HlDrFgYh+BlAfHv6aUjz/LbCdRtpK4BeS1r9TLl2q57IQxDFZ24cpNZgKpP3Wn5VopWoI9CLO47DZzfRBu9w=="
       },
       "HotAvalonia.Extensions": {
         "type": "Transitive",
-        "resolved": "3.1.1",
-        "contentHash": "4E8A2JnAp4dD8586WJiTVYpjf597jQWRxtKt0BYfgowzGB9jOdmKFrf5Vgk89MIEcsUNjWhmx3ry8BaeKmnBwg=="
+        "resolved": "3.1.2",
+        "contentHash": "FxLBeqapKdeqmrO8SXEFYvFd7RQ+nRSRDWPbHvoN2DF5Ae1IcWZQQVASHIE2J7oT2zYaf0fotLE5iaema2DC9A=="
       },
       "HotAvalonia.Fody": {
         "type": "Transitive",
-        "resolved": "3.1.1",
-        "contentHash": "S6NNTvQlv4/vkM0US11DK2G4zxUDEz4JJbFnOXsb31/IJ91Pg1vQ3IUSATvS4rpk798BbUAvn0uKaDB5ziyntQ==",
+        "resolved": "3.1.2",
+        "contentHash": "BawHhpO3esgwRfRasksiRF03d0neL1OcQ/fGi/BNQRTYLoI6MmS+OAv0aldSih9NX4XZa0HyLJSa4NVvwLMgaA==",
         "dependencies": {
           "Fody": "6.9.2"
         }
@@ -280,8 +280,8 @@
       },
       "log4net": {
         "type": "Transitive",
-        "resolved": "3.3.1",
-        "contentHash": "fgQ8XkqF0r4/CRfAq8xZqlPrG0/9n4rJAa1HlFGQMXtCAxbbLzXyuXCbu65NUbcKzQ9KDYr4239NNqipVRCv6A==",
+        "resolved": "3.3.2",
+        "contentHash": "fwRZAWPkK1zAlxAvn8lhfuHzQV+++F6ReJbimt9QIPwI4s2FSRjCZLgq5e12PTD5ynkPf/zGki6QbJ9LWQTeNg==",
         "dependencies": {
           "System.Configuration.ConfigurationManager": "4.5.0"
         }
@@ -473,8 +473,8 @@
       },
       "PdfPig": {
         "type": "Transitive",
-        "resolved": "0.1.14",
-        "contentHash": "V2Anq0Yvyn3bGGG8WCQxqEAshG0KHIehB0QOotCz14vTkEk1PR3ErPOSmbnEsyOewhdF3G5XpQHywK2L50Xu+A=="
+        "resolved": "0.1.15",
+        "contentHash": "Bf0NO4o2ZSVnemMyj21KDU1sfSgmamFC0pD4aAv19CDNXQsoO1Z6O99gNqpiK/XWWZ5d5i7JkQoT7PUBxEPz5g=="
       },
       "PDFtoImage": {
         "type": "Transitive",
@@ -668,12 +668,12 @@
           "Material.Icons.Avalonia": "[3.0.2, )",
           "Microsoft.Extensions.Http": "[10.0.9, )",
           "PDFtoImage": "[5.2.1, )",
-          "PdfPig": "[0.1.14, )",
+          "PdfPig": "[0.1.15, )",
           "Selenium.Support": "[4.45.0, )",
           "Selenium.WebDriver": "[4.45.0, )",
           "SharpCompress": "[0.49.1, )",
           "Svg.Controls.Skia.Avalonia": "[12.0.0.13, )",
-          "log4net": "[3.3.1, )"
+          "log4net": "[3.3.2, )"
         }
       },
       "compass.infra": {

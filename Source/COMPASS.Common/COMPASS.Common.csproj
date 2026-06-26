@@ -37,8 +37,8 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.9" />
     <PackageReference Include="Selenium.Support" Version="4.45.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-    <PackageReference Include="PdfPig" Version="0.1.14" />
-    <PackageReference Include="log4net" Version="3.3.1" />
+    <PackageReference Include="PdfPig" Version="0.1.15" />
+    <PackageReference Include="log4net" Version="3.3.2" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.14.0" />
     <PackageReference Include="Magick.NET.AvaloniaMediaImaging" Version="1.1.12" />
     <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.23" />
@@ -47,7 +47,7 @@
     <PackageReference Include="Selenium.WebDriver" Version="4.45.0" />
     <PackageReference Include="SharpCompress" Version="0.49.1" />
     <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.13" />
-    <PackageReference Include="HotAvalonia" Version="3.1.1" PrivateAssets="All" Publish="True" />
+    <PackageReference Include="HotAvalonia" Version="3.1.2" PrivateAssets="All" Publish="True" />
   </ItemGroup>
   <ItemGroup>
     <None Update="log4net.config">

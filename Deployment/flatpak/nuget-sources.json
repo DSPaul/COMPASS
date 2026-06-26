@@ -232,31 +232,31 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia/3.1.1/hotavalonia.3.1.1.nupkg",
-        "sha512": "0fd398109d661ef87814c35f973fdeb34a1ba579a8a19e482098b0a914835517306526dd98cf03f4dce09e06660046a23f4016b994f034ee406dce393cfc84b2",
+        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia/3.1.2/hotavalonia.3.1.2.nupkg",
+        "sha512": "c44aca5a4f4c4009c43947c8af01d2c88b44f1fa78086bd283f70a451a06255213e4d6af5784fa8fff9b238b401601a6eb2786f2c3070d915e8244e63b19a27d",
         "dest": "nuget-sources",
-        "dest-filename": "hotavalonia.3.1.1.nupkg"
+        "dest-filename": "hotavalonia.3.1.2.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia.core/3.1.1/hotavalonia.core.3.1.1.nupkg",
-        "sha512": "b0f860272295357fb0ea99ef59309c3a48de420c625e4aa8aa3436295cefd9716a40c1eec90f7d4dbd39cb9d3b0f6b66c5b0526259907ce0324f516b24576887",
+        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia.core/3.1.2/hotavalonia.core.3.1.2.nupkg",
+        "sha512": "6eb403817af5a29a91debddb91e53b6b02263d643d37959c38feee6da526066ea0bf274d2cd9aedbad3714b14a9318d7606f0ffee129d7e19457121ad3641134",
         "dest": "nuget-sources",
-        "dest-filename": "hotavalonia.core.3.1.1.nupkg"
+        "dest-filename": "hotavalonia.core.3.1.2.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia.extensions/3.1.1/hotavalonia.extensions.3.1.1.nupkg",
-        "sha512": "8f069a48ab0aaf8906edd0f11133cb9573889e13bbfe1d33b1b3586abc8e92b3e73c7b0ec54954bd4b6b4deea1d5312efe141bc21692a0c0a7c8461ce5d1d537",
+        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia.extensions/3.1.2/hotavalonia.extensions.3.1.2.nupkg",
+        "sha512": "700663e3af55045919976a50056a76f1db3127d0fb66c415d3b4e4f55c6d13959dc23623aff93d56dfbcb6110e759c1b7e7051cf22625ed95a310058313f1060",
         "dest": "nuget-sources",
-        "dest-filename": "hotavalonia.extensions.3.1.1.nupkg"
+        "dest-filename": "hotavalonia.extensions.3.1.2.nupkg"
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia.fody/3.1.1/hotavalonia.fody.3.1.1.nupkg",
-        "sha512": "b5fa6abbd8fde2773e7b48516966c880348e4b870eb54e9d9dfe063d63ba0c01a11313ce9def79f7a94738d3dbfcc62d647932af45395a74c1c66ca3746c96b8",
+        "url": "https://api.nuget.org/v3-flatcontainer/hotavalonia.fody/3.1.2/hotavalonia.fody.3.1.2.nupkg",
+        "sha512": "33a7c33540f9e428b01c6563ff8d0880019d5285633bef5421cd4a5e7b542aec7ceb960aa6f8652658e2cb885fa4afa54622b220b7fbd6325710f84b3b3b52ab",
         "dest": "nuget-sources",
-        "dest-filename": "hotavalonia.fody.3.1.1.nupkg"
+        "dest-filename": "hotavalonia.fody.3.1.2.nupkg"
     },
     {
         "type": "file",
@@ -267,10 +267,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/log4net/3.3.1/log4net.3.3.1.nupkg",
-        "sha512": "1ec7e13e030d89ecea6a43e725eb141a829c8f8d17acf6790339fe190c35a5419d6c71534b06642df3fa0ab3f061417df1499b6ffbab8df4fae56de95f130aa7",
+        "url": "https://api.nuget.org/v3-flatcontainer/log4net/3.3.2/log4net.3.3.2.nupkg",
+        "sha512": "b87c4b27aab1638c6aede5bbba0d2ea1aaf18719268d1422fecc7e4d7fb06db6e03c051440632ce286bb4cacbaa9527a7e649a9733d65840146ccbf96d0e3b14",
         "dest": "nuget-sources",
-        "dest-filename": "log4net.3.3.1.nupkg"
+        "dest-filename": "log4net.3.3.2.nupkg"
     },
     {
         "type": "file",
@@ -463,10 +463,10 @@
     },
     {
         "type": "file",
-        "url": "https://api.nuget.org/v3-flatcontainer/pdfpig/0.1.14/pdfpig.0.1.14.nupkg",
-        "sha512": "3ebe4e16bf4797e87fffce5a89ee91ba539bc9cd0bdb84f07fe3cd15013e77252adf22137c65f5ad1bf407fb76b6432473b784ac8a4e9adadcffb0b2a618a459",
+        "url": "https://api.nuget.org/v3-flatcontainer/pdfpig/0.1.15/pdfpig.0.1.15.nupkg",
+        "sha512": "3393c7c901ee8c5b8a30eb8b421ca9f4b350cf7e84eabfeaac297ce81fd80b033b802c635b8205413c733a76dda22d4156ebc0d8b142255f77f938e37c4b4aa6",
         "dest": "nuget-sources",
-        "dest-filename": "pdfpig.0.1.14.nupkg"
+        "dest-filename": "pdfpig.0.1.15.nupkg"
     },
     {
         "type": "file",
