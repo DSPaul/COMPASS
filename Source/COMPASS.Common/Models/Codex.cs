@@ -193,6 +193,7 @@ namespace COMPASS.Common.Models
             Publisher = c.Publisher;
             Version = c.Version;
             Id = c.Id;
+            GlobalId = c.GlobalId;
             CoverArtPath = c.CoverArtPath;
             PhysicallyOwned = c.PhysicallyOwned;
             Description = c.Description;

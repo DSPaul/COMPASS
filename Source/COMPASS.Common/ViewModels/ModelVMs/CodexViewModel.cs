@@ -47,6 +47,7 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     #region COMPASS related Metadata
 
     public int Id => _model.Id;
+    public Guid GlobalId => _model.GlobalId;
     
     private Bitmap? _thumbnail;
     public Task<Bitmap?> Thumbnail => _thumbnail == null ? LoadOrCreateThumbnail() : Task.FromResult<Bitmap?>(_thumbnail);

@@ -339,7 +339,7 @@
 
                     <!-- ID -->
                     <TextBlock Grid.Row="1" Grid.Column="0"
-                               Text="ID:" />
+                               Text="Local Id:" />
                     <TextBlock Grid.Row="1" Grid.Column="1"
                                MinWidth="30" Margin="5"
                                Text="{Binding WorkingCopy.Id}" />
@@ -350,6 +350,13 @@
                     <TextBlock Grid.Row="1" Grid.Column="4"
                                Text="{Binding WorkingCopy.OpenedCount}"
                                MinWidth="30" Margin="5" />
+
+                    <!-- ID -->
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Text="Global Id:" />
+                    <TextBlock Grid.Row="2" Grid.Column="1"
+                               MinWidth="30" Margin="5"
+                               Text="{Binding WorkingCopy.GlobalId}" />
                 </Grid>
             </TabItem>
         </TabControl>
