@@ -142,6 +142,48 @@ namespace COMPASS.Common.ViewModels.Modals
             }
         }
 
+        #region Manage Data
+
+        #region Data Path 
+
+        public string UserDataPath => _applicationDataService.UserDataPath;
+        public string LogsPath => Path.Combine(IApplicationDataService.ApplicationDataPath, "logs");
+
+        public AsyncRelayCommand ChangeDataPathCommand => field ??= new(ChooseNewDataPath);
+        private async Task ChooseNewDataPath()
+        {
+            var folders = await ServiceResolver.Resolve<IFilesService>().OpenFoldersAsync(new()
+            {
+                Title = "Choose a new data location",
+            });
+
+            if (folders.Any())
+            {
+                var folder = folders.Single();
+                string newPath = folder.Path.LocalPath;
+                folder.Dispose();
+                await _applicationDataService.UpdateUserDataPath(newPath);
+
+                OnPropertyChanged(nameof(UserDataPath));
+            }
+        }
+
+        #endregion
+        public AsyncRelayCommand ResetDataPathCommand => field ??= new(ResetDataPath);
+        private async Task ResetDataPath()
+        {
+            await _applicationDataService.ResetUserDataPath();
+            OnPropertyChanged(nameof(UserDataPath));
+        }
+
+        public RelayCommand BrowseLocalFilesCommand => field ??= new(BrowseUserFiles);
+        public void BrowseUserFiles() => _ioService.ShowInExplorer(_applicationDataService.UserDataPath);
+
+        public RelayCommand OpenLogsFolderCommand => field ??= new(BrowseLogFiles);
+        public void BrowseLogFiles() => _ioService.ShowInExplorer(LogsPath);
+
+        #endregion
+
         #endregion
 
         #region Tab: Import
@@ -235,64 +277,9 @@ namespace COMPASS.Common.ViewModels.Modals
         public List<CodexProperty> MetaDataPreferences => Preferences.ImportableCodexProperties.OrderBy(x => x.Name).ToList();
         #endregion
 
-        #region Tab: Data
-
-        #region Manage Data
-
-        #region Data Path 
-
-        public string UserDataPath => _applicationDataService.UserDataPath;
-        
-        private AsyncRelayCommand? _changeDataPathCommand;
-        public AsyncRelayCommand ChangeDataPathCommand => _changeDataPathCommand ??= new(ChooseNewDataPath);
-        private async Task ChooseNewDataPath()
-        {
-            var folders = await ServiceResolver.Resolve<IFilesService>().OpenFoldersAsync(new()
-            {
-                Title = "Choose a new data location",
-            });
-
-            if (folders.Any())
-            {
-                var folder = folders.Single();
-                string newPath = folder.Path.LocalPath;
-                folder.Dispose();
-                await _applicationDataService.UpdateUserDataPath(newPath);
-                
-                OnPropertyChanged(nameof(UserDataPath));
-            }
-        }
-
-        private AsyncRelayCommand? _resetDataPathCommand;
-        public AsyncRelayCommand ResetDataPathCommand => _resetDataPathCommand ??= new(ResetDataPath);
-        private async Task ResetDataPath()
-        {
-            await _applicationDataService.ResetUserDataPath();
-            OnPropertyChanged(nameof(UserDataPath));
-        }
-        #endregion
-
-        private RelayCommand? _browseLocalFilesCommand;
-        public RelayCommand BrowseLocalFilesCommand => _browseLocalFilesCommand ??= new(BrowseLocalFiles);
-        public void BrowseLocalFiles() => _ioService.ShowInExplorer(_applicationDataService.UserDataPath);
-        
-        #endregion
-
-        #endregion
-
         #region Tab: Tools
         public ToolsViewModel ToolsVM { get; } = new();
         #endregion
-        //for debugging only
-        public void RegenAllThumbnails()
-        {
-            foreach (Codex codex in ActiveCollection.AllCodices)
-            {
-                //codex.Thumbnail = codex.CoverArt.Replace("CoverArt", "Thumbnails");
-                using var thumbnail = CoverService.CreateThumbnail(codex);
-                codex.NotifyCoverChanged();
-            }
-        }
         
         #region Tab: About
         public string Version => "Version: " + ApplicationService.GetVersion();

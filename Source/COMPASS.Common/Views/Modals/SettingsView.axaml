@@ -121,6 +121,15 @@
                                                  ToolTip.Tip="Restore to default..." Icon="FolderRefresh"
                                                  Command="{Binding ResetDataPathCommand}"/>
                         </Grid>
+                        <TextBlock Text="Logs location:" Margin="0,10,0,5"/>
+                        <Grid ColumnDefinitions="*,auto" ColumnSpacing="10">
+                            <TextBox IsReadOnly="True" Grid.Column="0" TextWrapping="Wrap"
+                                     Text="{Binding LogsPath, Mode=OneWay}"/>
+                            <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}"
+                                                 IconSize="20"
+                                                 ToolTip.Tip="Show in explorer..." Icon="FolderOpen"
+                                                 Command="{Binding OpenLogsFolderCommand}"/>
+                        </Grid>
                     </StackPanel>
                 </Border>
             </StackPanel>
