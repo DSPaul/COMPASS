@@ -5,6 +5,7 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationIcon>..\COMPASS.Common\Assets\COMPASS.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Label="Avalonia">
     <AvaloniaUseCompiledBindingsByDefault>True</AvaloniaUseCompiledBindingsByDefault>
