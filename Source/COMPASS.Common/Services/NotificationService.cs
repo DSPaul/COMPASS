@@ -15,7 +15,7 @@ namespace COMPASS.Common.Services
             return Dispatcher.UIThread.InvokeAsync(async () =>
             {
                 var window = new NotificationWindow(notification);
-                await WindowManager.ShowDialog(window);
+                await window.ShowDialog(WindowManager.ActiveWindow);
             });
         }
     }
