@@ -216,6 +216,16 @@ namespace COMPASS.Infra.ExtensionMethods
             return null;
         }
 
+
+        public static string? GetStringValue(this JsonNode? node)
+        {
+            return node switch
+            {
+                JsonObject obj => obj["value"]?.GetValue<string>(),
+                JsonValue val => val.GetValue<string>(),
+                _ => null
+            };
+        }
         #endregion
     }
 }

@@ -55,9 +55,9 @@ namespace COMPASS.Common.Sources
             }
 
             // Title
-            string fullTitle = details["full_title"]?.GetValue<string>() ?? "";
-            string title = details["title"]?.GetValue<string>() ?? "";
-            string subTitle = details["subtitle"]?.GetValue<string>() ?? "";
+            string fullTitle = details["full_title"]?.GetStringValue() ?? "";
+            string title = details["title"]?.GetStringValue() ?? "";
+            string subTitle = details["subtitle"]?.GetStringValue() ?? "";
 
             if (!string.IsNullOrWhiteSpace(fullTitle))
             {
@@ -71,14 +71,14 @@ namespace COMPASS.Common.Sources
             //Authors
             if (details["authors"] is JsonArray authors)
             {
-                metaData.Authors = authors.Select(item => item?["name"]?.GetValue<string>() ?? string.Empty)
+                metaData.Authors = authors.Select(item => item?["name"]?.GetStringValue() ?? string.Empty)
                                           .Where(author => author != string.Empty)
                                           .ToList();
             }
 
             //PageCount
             if (details["pagination"] is JsonNode pagination &&
-                int.TryParse(RegexConstants.Numbers().Match(pagination.GetValue<string>()).Value, out int pageCount))
+                int.TryParse(RegexConstants.Numbers().Match(pagination.GetStringValue() ?? string.Empty).Value, out int pageCount))
             {
                 metaData.PageCount = pageCount;
             }
@@ -88,13 +88,13 @@ namespace COMPASS.Common.Sources
             }
 
             //Publisher
-            metaData.Publisher = details["publishers"]?[0]?.GetValue<string>() ?? string.Empty;
+            metaData.Publisher = details["publishers"]?[0]?.GetStringValue() ?? string.Empty;
 
             //  Description
-            metaData.Description = details["description"]?["value"]?.GetValue<string>() ?? string.Empty;
+            metaData.Description = details["description"]?.GetStringValue() ?? string.Empty;
 
             //Release Date
-            if (DateTime.TryParse(details["publish_date"]?.GetValue<string>(), out DateTime tempDate))
+            if (DateTime.TryParse(details["publish_date"]?.GetStringValue(), out DateTime tempDate))
             {
                 metaData.ReleaseDate = tempDate;
             }
