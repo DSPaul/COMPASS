@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Infra.Models;
@@ -8,14 +9,16 @@ using ImageMagick;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
+using UglyToad.PdfPig.Logging;
 
 namespace COMPASS.Common.Sources
 {
     public class PdfMetaDataSource : MetaDataSource
     {
-        public PdfMetaDataSource(CodexCollection targetCollection) :  
-            base(targetCollection) { }
-        
+        public PdfMetaDataSource(CodexCollection targetCollection) :
+            base(targetCollection)
+        { }
+
         public override MetaDataSourceType Type => MetaDataSourceType.PDF;
         public override bool IsValidSource(SourceSet sources) => FileFormatUtils.IsPDFFile(sources.Path);
 
@@ -30,7 +33,10 @@ namespace COMPASS.Common.Sources
                 {
                     //using filestream is way more perfomant than calling PdfDocument.Open() directly with the path which would read the entire pdf immediatly
                     using var fileStream = new FileStream(sources.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    using PdfDocument pdfDoc = PdfDocument.Open(fileStream);
+                  using PdfDocument pdfDoc = PdfDocument.Open(fileStream, new ParsingOptions()
+                    {
+                        Logger = new PdfLogger()
+                    });
 
                     metaData.Title = pdfDoc.Information.Title ?? string.Empty;
                     if (pdfDoc.Information.Author is not null)
@@ -79,7 +85,7 @@ namespace COMPASS.Common.Sources
             {
                 return Task.FromResult<IMagickImage<byte>?>(null);
             }
-            
+
             try //reading an image can throw exception if file can not be opened/read
             {
                 using var pdfStream = new FileStream(sources.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -99,12 +105,23 @@ namespace COMPASS.Common.Sources
                 return Task.FromResult<IMagickImage<byte>?>(null);
             }
         }
-        
+
         private static PDFtoImage.RenderOptions? _readOptions;
-        private static PDFtoImage.RenderOptions ReadOptions => _readOptions ??= 
+        private static PDFtoImage.RenderOptions ReadOptions => _readOptions ??=
             new PDFtoImage.RenderOptions(
                 BackgroundColor: SkiaSharp.SKColor.Parse("#FFFFFF"), //some pdf's are transparent, expecting a white page underneath
-                Width: 850, 
+                Width: 850,
                 WithAspectRatio: true);
+
+        private class PdfLogger : ILog
+        {
+            ILogger logger = ServiceResolver.Resolve<ILogger>();
+
+            public void Debug(string message) { } //Too much stuff I don't care about, don't log it
+            public void Debug(string message, Exception ex) => logger.Debug(message, ex);
+            public void Warn(string message) => logger.Warn(message);
+            public void Error(string message) => logger.Error(message, new Exception());
+            public void Error(string message, Exception ex) => logger.Error(message, ex);
+        }
     }
 }
