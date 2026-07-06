@@ -297,13 +297,13 @@ namespace COMPASS.Common.ViewModels.SidePanels
             await WindowManager.OpenModal(vm);
         }
 
-        public RelayCommand<TagViewModel?> DeleteTagCommand => field ??= new(DeleteTag);
+        public AsyncRelayCommand<TagViewModel?> DeleteTagCommand => field ??= new(DeleteTag);
 
-        private void DeleteTag(TagViewModel? toDelete)
+        private async Task DeleteTag(TagViewModel? toDelete)
         {
             if (toDelete is null) return;
             
-            _codexCollectionVm.Collection.DeleteTag(toDelete.GetModel());
+            await _codexCollectionVm.Collection.DeleteTag(toDelete.GetModel());
             _filtersVM.RemoveFilter(ModelVmFactory.GetFilterViewModel(new TagFilter(toDelete)));
 
             _codexCollectionVm.Collection.Save();

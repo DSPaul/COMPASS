@@ -2,7 +2,9 @@
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
+using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 using System.Collections.ObjectModel;
 
@@ -143,8 +145,24 @@ namespace COMPASS.Common.Models
             Info.BanishedPaths.AddRange(toBanishStrings);
         }
 
-        public void DeleteTag(Tag toDelete)
+        public async Task DeleteTag(Tag toDelete)
         {
+            var inUseBy = AllCodices.Where(c => c.Tags.Contains(toDelete)).ToList();
+            if (inUseBy.Any())
+            {
+                var codexNames = string.Join("\n - ", inUseBy.Select(c => c.Title));
+                var notificationService = ServiceResolver.Resolve<INotificationService>();
+                Notification confirm = Notification.AreYouSureNotification;
+                confirm.Body = $"The tag '{toDelete.Name}' is currently in use by {inUseBy.Count} items.\n Are you sure you want to delete it?";
+                confirm.Details = $"{toDelete.LongName} is currently assigned to:\n\n - {codexNames}";
+                await notificationService.ShowDialog(confirm);
+                
+                if(confirm.Result != NotificationAction.Confirm)
+                {
+                    return;
+                }
+            }
+
             //Remove from all codices
             foreach (var codex in AllCodices)
             {
@@ -154,8 +172,8 @@ namespace COMPASS.Common.Models
             //Recursive loop to delete all children
             if (toDelete.Children.Count > 0)
             {
-                DeleteTag(toDelete.Children[0]);
-                DeleteTag(toDelete);
+                await DeleteTag(toDelete.Children[0]);
+                await DeleteTag(toDelete);
             }
 
             //Remove the tag from all Tags
