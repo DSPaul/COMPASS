@@ -15,10 +15,13 @@
             <views:TagEditBasicView HorizontalAlignment="Stretch"/>
 
             <!-- Group -->
-            <StackPanel Orientation="Horizontal">
-                <CheckBox Content="Is a group" IsChecked="{Binding WorkingCopy.IsGroup}" />
-                <!-- TODO add Info icon to explain groups-->
-                <controls:Explainer />
+            <StackPanel Orientation="Horizontal" Spacing="5">
+                <CheckBox Content="Is a group" IsChecked="{Binding IsGroup}" />
+                <controls:Explainer Content="{Binding GroupExplainer}" />
+                <controls:Explainer IsVisible="{Binding ShowGroupIsAssignedWarning}" 
+                                    Content="Groups cannot be assigned to items. If you convert this tag to a group, it will be removed from all items."
+                                    Icon="Warning"
+                                    Foreground="{StaticResource WarningFill}"/>
             </StackPanel>
         </StackPanel>
 

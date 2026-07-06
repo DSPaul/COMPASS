@@ -1,17 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Hierarchy;
-using System.Collections.ObjectModel;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Tools;
-using Notification = COMPASS.Infra.Models.Notification;
-using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Models.Enums;
+using COMPASS.Infra.Tools;
+using System.Collections.ObjectModel;
+using Notification = COMPASS.Infra.Models.Notification;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
@@ -48,6 +46,23 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             set => WorkingCopy.Parent = value?.Item;
         }
 
+        public bool IsGroup
+        {
+            get => WorkingCopy.IsGroup;
+            set
+            {
+                WorkingCopy.IsGroup = value;
+                OnPropertyChanged(nameof(ShowGroupIsAssignedWarning));
+            }
+        }
+
+        public string GroupExplainer =>
+            "Group tags cannot be assigned to items, but help you organize your other tags.\n" +
+            "When filtering on multiple tags, tags within the same group with have an OR relation.\n" +
+            "Tags in different groups will have an AND relation.";
+
+        public bool ShowGroupIsAssignedWarning => IsGroup && _codexCollectionVm.Collection.AllCodices.Any(c => c.Tags.Contains(_source));
+
         #endregion
 
         #region Methods and Commands
@@ -72,18 +87,27 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         protected override void BeforeApply(Tag source, Tag proposal)
         {
             //if parent didn't change, no changes needed
-            if (_source.Parent == WorkingCopy.Parent?.GetModel()) return;
+            if (source.Parent == WorkingCopy.Parent?.GetModel()) return;
             
             //if the parent has changed, break the link with old parent
-            IList<Tag> siblings = _source.Parent == null ? _codexCollectionVm.Collection.RootTags : _source.Parent.Children;
-            siblings.Remove(_source);
+            IList<Tag> siblings = source.Parent == null ? _codexCollectionVm.Collection.RootTags : source.Parent.Children;
+            siblings.Remove(source);
         }
 
         protected override void OnApplied(Tag source)
         {
             //ensure parent-child link is bidirectional
-            IList<Tag> siblings = _source.Parent == null ? _codexCollectionVm.Collection.RootTags : _source.Parent.Children;
-            siblings.AddIfMissing(_source);
+            IList<Tag> siblings = source.Parent == null ? _codexCollectionVm.Collection.RootTags : source.Parent.Children;
+            siblings.AddIfMissing(source);
+
+            //Remove group tags from codices
+            if (source.IsGroup)
+            {
+                foreach (var codex in _codexCollectionVm.Collection.AllCodices)
+                {
+                    codex.Tags.Remove(source);
+                }
+            }
         }
 
         protected override void Clear()
@@ -204,8 +228,8 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         
         protected override void Confirm()
         {
-            base.Confirm();
-            
+            base.Confirm();      
+
             _codexCollectionVm.Collection.Save();
             TabsViewModel.GetInstance().ActiveTab?.TagsVM.UpdateTagsAsTreeNodes();
         }
