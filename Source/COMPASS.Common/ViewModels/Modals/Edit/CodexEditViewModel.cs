@@ -17,6 +17,7 @@ using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
+using ShimSkiaSharp;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
@@ -144,9 +145,17 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 
             TagEditViewModel tagEditVm = new(new Tag(), TabVM.CollectionVM, createNew: true);
             await WindowManager.OpenModal(tagEditVm);
-            
+
             if (TabVM.CollectionVM.Collection.AllTags.Count > tagCount) //new tag was created
             {
+                Tag? addedTag = null;
+                List<Tag> newTags = TabVM.CollectionVM.Collection.AllTags.Except(AllTreeNodes?.Select(node => node.Item.GetModel()) ?? []).ToList();
+                if(newTags.Count == 1)
+                {
+                    addedTag = newTags.Single();
+                }
+
+
                 //recalculate treeview source
                 _allTagsAsTreeNodes = null;
                 OnPropertyChanged(nameof(AllTagsAsTreeNodes));
@@ -155,12 +164,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 foreach (CheckableTreeNode<TagViewModel> t in AllTreeNodes)
                 {
                     t.Expanded = false;
-                    t.IsChecked = WorkingCopy.Tags.Contains(t.Item);
+                    t.IsChecked = 
+                        WorkingCopy.Tags.Contains(t.Item) || //Check tags already assigned
+                        t.Item.GetModel() == addedTag; //assign the newly created tag, assuming that's why they created it here
                     if (t.Children.Any(node => WorkingCopy.Tags.Contains(node.Item))) t.Expanded = true;
                 }
-
-                //check the newly created tag
-                AllTagsAsTreeNodes.Last().IsChecked = true;
 
                 UpdateTagList();
             }
