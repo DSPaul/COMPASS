@@ -231,7 +231,7 @@ namespace COMPASS.Common.ViewModels.Modals
                 importFolderVM.RecursiveDirectories = [dir];
                 await importFolderVM.Import();
             }
-            Dispatcher.UIThread.Invoke(() =>
+            await Dispatcher.UIThread.InvokeAsync(() =>
                 OnPropertyChanged(nameof(AutoImportFolders)));
         }
         

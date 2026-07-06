@@ -1,6 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Controls.Primitives;
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Adorners;
@@ -333,7 +331,7 @@ namespace COMPASS.Common.ViewModels.Main
                                                    .SelectMany(filerVM => filerVM.GetModel().RelatedProperties)
                                                    .Contains(e.PropertyName);
             
-            Dispatcher.UIThread.InvokeAsync(() =>
+            Dispatcher.UIThread.Invoke(() =>
             {
                 using var updateScope = DelayUpdateEvents();
                 if(e.PropertyName == nameof(CodexViewModel.Favorite))

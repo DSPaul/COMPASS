@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Adorners;
 using COMPASS.Common.Interfaces.Services;
@@ -381,16 +382,19 @@ namespace COMPASS.Common.Operations
                     return;
                 }
                 
-                foreach (Codex codexToDelete in group)
+                //Delete codex from all lists
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    //Delete codex from all lists
-                    collection.AllCodices.Remove(codexToDelete);
-                    thumbnailStorageService.OnCodexDeleted(codexToDelete);
+                    using var scope = TabsViewModel.GetInstance().ActiveTab?.FiltersVM?.DelayUpdateEvents();
+                    foreach (Codex codexToDelete in group)
+                    {
+                        collection.AllCodices.Remove(codexToDelete);
+                        thumbnailStorageService.OnCodexDeleted(codexToDelete);
+                        Logger.Info($"Removed {codexToDelete.Title} from {collection.Name}");
+                    }
 
-                    Logger.Info($"Removed {codexToDelete.Title} from {collection.Name}");
-                }
-                
-                collectionHandle.SaveCodices();
+                    collectionHandle.SaveCodices();
+                });
             }
         }
 
