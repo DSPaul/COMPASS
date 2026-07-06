@@ -26,9 +26,7 @@
         Sorting="DataGrid_OnSorting"
         KeyDown="DataGrid_OnKeyDown"
         DoubleTapped="DataGrid_OnDoubleTapped"
-        SelectionChanged="DataGrid_SelectionChanged"
-        LoadingRow="DataGrid_OnLoadingRow"
-        UnloadingRow="DataGrid_OnUnloadingRow">
+        SelectionChanged="DataGrid_SelectionChanged">
         <DataGrid.Styles>
             <Style Selector="DataGridColumnHeader">
                 <Setter Property="ContextMenu">
@@ -47,6 +45,10 @@
                     </Setter.Value>
                 </Setter>
                 <Setter Property="Background" Value="Transparent"/>
+            </Style>
+            <Style Selector="DataGridRow" x:DataType="modelVm:CodexViewModel">
+                <Setter Property="behav:DropBehavior.IsDropTarget" Value="True" />
+                <Setter Property="behav:DropBehavior.DropManager" Value="{Binding DropManager}" />
             </Style>
             <Style Selector="TextBlock">
                 <Setter Property="TextWrapping" Value="Wrap" />

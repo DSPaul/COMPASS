@@ -68,7 +68,6 @@ public sealed class DropBehavior : AvaloniaObject
         if (manager is null || !manager.CanHandleDrop(e.DataTransfer))
         {
             e.DragEffects = DragDropEffects.None;
-            e.Handled = true;
             return;
         }
 
@@ -90,7 +89,6 @@ public sealed class DropBehavior : AvaloniaObject
         if (handler is null)
         {
             e.DragEffects = DragDropEffects.None;
-            e.Handled = true;
             return;
         }
 
@@ -117,8 +115,7 @@ public sealed class DropBehavior : AvaloniaObject
         if (dropManager is null) return;
 
         var context = new DropContext { DropTarget = dropTarget, DragEventArgs = e };
-        dropManager.HandleDrop(e.DataTransfer, context);
-        e.Handled = true;
+        e.Handled = dropManager.HandleDrop(e.DataTransfer, context);
     }
 
     #endregion

@@ -1,15 +1,18 @@
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
+using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Adorners;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Avalonia.DragDrop;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace COMPASS.Common.ViewModels.ModelVMs;
 
@@ -38,6 +41,8 @@ public class CodexViewModel : ModelViewModelBase<Codex>
         
         //Validation
         AddValidation(nameof(PageCount), ValidatePageCount);
+
+        DropManager = CreateDropManager();
     }
 
     #endregion
@@ -45,6 +50,8 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     #region Properties
 
     #region COMPASS related Metadata
+
+    public DropManager DropManager { get; }
 
     public int Id => _model.Id;
     public Guid GlobalId => _model.GlobalId;
@@ -255,6 +262,14 @@ public class CodexViewModel : ModelViewModelBase<Codex>
 
     private IList<TagViewModel> GetTagVms() => _model.Tags.Select(_codexCollectionVM.GetTagVm).ToList();
     
+    private DropManager CreateDropManager() => new DropManager()
+        .AddHandler(new DropHandler<Tag>(DataTransferFormats.TagFormat, DragDropEffects.Link)
+        {
+            OnDroppedSingle = tag => _model.Tags.AddIfMissing(tag),
+            CanDrop = tag => !tag.IsGroup,
+            AdornerFactory = tags => new DropTagAdorner(tags[0]) { Format = "Assign tag {0}" },
+        });
+
     private void OnCollectionChanged(object? o, NotifyCollectionChangedEventArgs args)
     {
         if (o == _model.Tags)

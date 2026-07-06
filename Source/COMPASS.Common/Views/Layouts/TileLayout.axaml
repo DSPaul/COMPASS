@@ -45,11 +45,8 @@
                       DoubleTapped="Codex_DoubleTapped"
                       Background="Transparent"
                       Classes="ZoomOnHover"
-                      DragDrop.AllowDrop="True"
-                      DragDrop.DragOver="Codex_DragOver"
-                      DragDrop.Drop="Codex_Drop"
-                      DragDrop.DragEnter="Codex_DragEnter"
-                      DragDrop.DragLeave="Codex_DragLeave">
+                      behav:DropBehavior.IsDropTarget="True"
+                      behav:DropBehavior.DropManager="{Binding DropManager}">
                     <Panel Margin="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TilePanelMargin}" Grid.Row="0"
                            Width="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileWidth}"
                            Height="{Binding $parent[ListBox].((vm:TileLayoutViewModel)DataContext).Preferences.TileHeight}">

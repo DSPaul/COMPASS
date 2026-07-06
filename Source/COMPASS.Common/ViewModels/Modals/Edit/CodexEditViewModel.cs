@@ -149,7 +149,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             if (TabVM.CollectionVM.Collection.AllTags.Count > tagCount) //new tag was created
             {
                 Tag? addedTag = null;
-                List<Tag> newTags = TabVM.CollectionVM.Collection.AllTags.Except(AllTreeNodes?.Select(node => node.Item.GetModel()) ?? []).ToList();
+                List<Tag> newTags = TabVM.CollectionVM.Collection.AllTags.Except(AllTreeNodes.Select(node => node.Item.GetModel()) ?? []).ToList();
                 if(newTags.Count == 1)
                 {
                     addedTag = newTags.Single();
