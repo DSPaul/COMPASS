@@ -51,6 +51,10 @@
       <importViews:ImportTagsView/>
     </DataTemplate>
 
+    <DataTemplate DataType="importVm:ISBNScannerViewModel">
+      <importViews:ISBNScannerView/>
+    </DataTemplate>
+
     <DataTemplate DataType="vm:FileNotFoundViewModel">
       <views:FileNotFoundView/>
     </DataTemplate>

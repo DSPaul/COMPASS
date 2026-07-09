@@ -28,6 +28,12 @@
           "HotAvalonia.Fody": "3.1.2"
         }
       },
+      "OpenCvSharp5.official.runtime.linux-x64.slim": {
+        "type": "Direct",
+        "requested": "[5.0.0.20260703, )",
+        "resolved": "5.0.0.20260703",
+        "contentHash": "iM/s+d57KYoxgIHzcHpZEFzWjrRX51ouIm7/FMONQTp+Wnn8LArd5pNOJfaqvAEDg4W4b+hTQ70vlVvPa/tfCg=="
+      },
       "Autofac": {
         "type": "Transitive",
         "resolved": "9.3.0",
@@ -215,6 +221,19 @@
         "type": "Transitive",
         "resolved": "4.3.1",
         "contentHash": "A8UtcghHQlWxPJhJF5bsfEYO7068JHGTuJ7tzyyMjd5fE/N/xY1cVOUhzuLLFwMOCJVnM4mqSQc93W9fGfZ1kA=="
+      },
+      "FlashCap": {
+        "type": "Transitive",
+        "resolved": "1.11.0",
+        "contentHash": "XwH9DHLKGUTciHat2D7GgsUegAOErJAyZHX+3H5gHX70Ipds7Zv2/q3T9/f0KkIh2A5P6WCg+lFwVxMgLERCKA==",
+        "dependencies": {
+          "FlashCap.Core": "1.11.0"
+        }
+      },
+      "FlashCap.Core": {
+        "type": "Transitive",
+        "resolved": "1.11.0",
+        "contentHash": "vEEUwQmpITV2iBgRU+YYl+Dr+Tm/1T/nXfnSLyLQSbBIWMlF/NO22OqU4ysfSNEb9TN6w+QK0bqGFMmnN13+Ag=="
       },
       "Fody": {
         "type": "Transitive",
@@ -471,6 +490,11 @@
         "resolved": "7.6.0",
         "contentHash": "TpZxfOoQBQk/0r/2uc1A1qNYIKHkJGgOrWP+ax3nsNAUN/1BOQMDrgmGADogSA4hOXH1ZJiyeYg4Ca+vUW0sEg=="
       },
+      "OpenCvSharp5": {
+        "type": "Transitive",
+        "resolved": "5.0.0.20260703",
+        "contentHash": "FoURCVTgrHftVPuKkuxP6kdOKgeTvxAW0CYk1ogST4K/kEe2z/nSc4t4mvBFOyWwnwuQ3MTeY2kmmTOIN65s7A=="
+      },
       "PdfPig": {
         "type": "Transitive",
         "resolved": "0.1.15",
@@ -512,6 +536,15 @@
         "type": "Transitive",
         "resolved": "5.1.1",
         "contentHash": "yYLSkTgGliFONplDPaSOpmTbV0VhbjHySYAqA3NMJilqPA/OBevX3/4sJ0k4FRhbuI8akyw6O2RMO/xUKwFBxQ=="
+      },
+      "SkiaImageView.Avalonia11": {
+        "type": "Transitive",
+        "resolved": "1.5.0",
+        "contentHash": "RtphriyUHZG+AQiIJDud5lowe/kifcP0T/tRhpS5jzloZoDP8nO5DmphzY/WZri19OupF5sMilzWTjQgLSnDhA==",
+        "dependencies": {
+          "Avalonia": "11.0.0",
+          "SkiaSharp": "2.88.3"
+        }
       },
       "SkiaSharp": {
         "type": "Transitive",
@@ -642,6 +675,11 @@
         "resolved": "0.92.0",
         "contentHash": "h7IMakm0PF2jxiagoysoAjrzzLQ0UBdnSXQL5kb17YW0Fvyo12Tg96A99QkzwktWRrd7H+Uw9EzjasNLUfGYlA=="
       },
+      "ZXingCpp": {
+        "type": "Transitive",
+        "resolved": "0.5.2",
+        "contentHash": "8PAaLTwEQ0HS9lRhXT46dsUGFJCzPAJhhwb164+ekP9S//95A09uTwFf+DlO62Ikm3hOmo3u9wGXH9iO1S1QFA=="
+      },
       "compass.apiclients": {
         "type": "Project",
         "dependencies": {
@@ -661,18 +699,22 @@
           "COMPASS.Infra": "[2.0.0-alpha.1, )",
           "COMPASS.Infra.Avalonia": "[2.0.0-alpha.1, )",
           "CommandLineParser": "[2.9.1, )",
+          "FlashCap": "[1.11.0, )",
           "HtmlAgilityPack": "[1.12.4, )",
           "Magick.NET-Q8-AnyCPU": "[14.14.0, )",
           "Magick.NET.AvaloniaMediaImaging": "[1.1.12, )",
           "Magick.NET.SystemDrawing": "[8.0.23, )",
           "Material.Icons.Avalonia": "[3.0.2, )",
           "Microsoft.Extensions.Http": "[10.0.9, )",
+          "OpenCvSharp5": "[5.0.0.20260703, )",
           "PDFtoImage": "[5.2.1, )",
           "PdfPig": "[0.1.15, )",
           "Selenium.Support": "[4.45.0, )",
           "Selenium.WebDriver": "[4.45.0, )",
           "SharpCompress": "[0.49.1, )",
+          "SkiaImageView.Avalonia11": "[1.5.0, )",
           "Svg.Controls.Skia.Avalonia": "[12.0.0.13, )",
+          "ZXingCpp": "[0.5.2, )",
           "log4net": "[3.3.2, )"
         }
       },
@@ -696,6 +738,12 @@
       }
     },
     "net10.0/linux-x64": {
+      "OpenCvSharp5.official.runtime.linux-x64.slim": {
+        "type": "Direct",
+        "requested": "[5.0.0.20260703, )",
+        "resolved": "5.0.0.20260703",
+        "contentHash": "iM/s+d57KYoxgIHzcHpZEFzWjrRX51ouIm7/FMONQTp+Wnn8LArd5pNOJfaqvAEDg4W4b+hTQ70vlVvPa/tfCg=="
+      },
       "Avalonia.Angle.Windows.Natives": {
         "type": "Transitive",
         "resolved": "2.1.27548.20260419",
@@ -781,6 +829,11 @@
         "type": "Transitive",
         "resolved": "4.5.0",
         "contentHash": "wLBKzFnDCxP12VL9ANydSYhk59fC4cvOr9ypYQLPnAj48NQIhqnjdD2yhP8yEKyBJEjERWS9DisKL7rX5eU25Q=="
+      },
+      "ZXingCpp": {
+        "type": "Transitive",
+        "resolved": "0.5.2",
+        "contentHash": "8PAaLTwEQ0HS9lRhXT46dsUGFJCzPAJhhwb164+ekP9S//95A09uTwFf+DlO62Ikm3hOmo3u9wGXH9iO1S1QFA=="
       }
     }
   }

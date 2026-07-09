@@ -1,28 +1,16 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
-using COMPASS.Common.Operations;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals.Edit;
-using COMPASS.Common.Views.Windows;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals.Import
 {
     public class ImportURLViewModel : ViewModelBase, IModalViewModel, IConfirmable
-    {
-        private readonly IWebService _webService;
-        
+    {       
         public ImportURLViewModel(ImportSource importSource)
         {
-            _webService = ServiceResolver.Resolve<IWebService>();
-            
-            _importSource = importSource;
             switch (importSource)
             {
                 case ImportSource.GmBinder:
@@ -42,136 +30,33 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                     SourceName = "Any URL";
                     ExampleURL = "https://";
                     break;
-                case ImportSource.ISBN:
-                        SourceName = "ISBN";
-                        ExampleURL = "";
-                        ShowScannerButton = true;
-                        AddValidation(nameof(InputURL), ValidateInputURL);
-                        break;
                 }
         }
-
-        private readonly ImportSource _importSource;
 
         //configuration props
         public string SourceName { get; } = "";
         public string ExampleURL { get; init; } = "";
         public bool ShowValidateDisableCheckbox { get; init; } = false;
-        public bool ShowScannerButton { get; init; } = false;
 
         //State props
         public bool ValidateURL { get; set; } = true;
         public bool ShowEditWhenDone { get; set; } = false;
 
-        private string _inputURL = "";
         public string InputURL
         {
-            get => _inputURL;
+            get;
             set
             {
-                SetProperty(ref _inputURL, value);
+                SetProperty(ref field, value);
                 Validate(nameof(InputURL));
             }
-        }
-
-        private void ValidateInputURL()
-        {
-            if (string.IsNullOrWhiteSpace(InputURL))
-            {
-                AddError(nameof(InputURL), "ISBN is required.");
-                return;
-            }
-            string digits = InputURL.Replace("-", "").Replace(" ", "");
-            if (!ValidationService.IsValidISBN(digits))
-                AddError(nameof(InputURL), "Invalid ISBN.");
-        }
+        } = "";
 
         private string _importError = "";
         public string ImportError
         {
             get => _importError;
             set => SetProperty(ref _importError, value);
-        }
-        
-        private AsyncRelayCommand? _openBarcodeScannerCommand;
-        public AsyncRelayCommand OpenBarcodeScannerCommand => _openBarcodeScannerCommand ??= new(OpenBarcodeScanner);
-        private async Task OpenBarcodeScanner()
-        {
-            BarcodeScanWindow bcScanWindow = new();
-            await bcScanWindow.ShowDialog(WindowManager.ActiveWindow);
-            if (!string.IsNullOrEmpty(bcScanWindow.DecodedString))
-            {
-                InputURL = bcScanWindow.DecodedString;
-            }
-        }
-
-        public async Task<Codex> ImportURLAsync()
-        {
-            var progressVM = ProgressViewModel.GetInstance();
-            progressVM.ResetCounter();
-
-            //Step 1: add codex
-            progressVM.Text = "Adding new item to Collection";
-            Codex newCodex = CodexOperations.CreateNewCodex(ActiveCollection);
-            if (_importSource == ImportSource.ISBN)
-            {
-                newCodex.Sources.ISBN = InputURL;
-            }
-            else
-            {
-                newCodex.Sources.SourceURL = InputURL;
-            }
-            newCodex.Collection.AllCodices.Add(newCodex);
-            progressVM.IncrementCounter();
-            progressVM.ResetCounter();
-
-            // Steps 2: Scrape metadata
-            progressVM.Text = "Downloading Metadata";
-
-            try
-            {
-                using var collectionHandle = newCodex.Collection.Load();
-
-                if (collectionHandle == null)
-                {
-                    Logger.Warn($"Failed get metadata for item because the collection that contains it ({newCodex.Collection.Name}) failed to load to load.");
-                    return newCodex;
-                }
-                
-                await CodexOperations.StartGetMetaDataProcess(newCodex)
-                .ContinueWith(_ =>
-                {
-                    progressVM.AddLogEntry(new(Severity.Info, "Metadata loaded."));
-                    progressVM.ResetCounter();
-                });
-            }
-            catch (OperationCanceledException ex)
-            {
-                Logger.Warn("Getting Metadata has been cancelled", ex);
-                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
-                return newCodex;
-            }
-
-            // Step 3: Get Cover Art
-            progressVM.Text = "Downloading Cover";
-            try
-            {
-                await CoverService.GetAndApplyCover(newCodex)
-                 .ContinueWith(_ => progressVM.AddLogEntry(new(Severity.Info, "Cover loaded.")));
-            }
-            catch (OperationCanceledException ex)
-            {
-                Logger.Warn("Getting covers/thumbnails has been cancelled", ex);
-                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
-                return newCodex;
-            }
-
-            //Complete import
-            string logMsg = $"Imported {newCodex.Title}";
-            Logger.Info(logMsg);
-            progressVM.AddLogEntry(new LogEntry(Severity.Info, logMsg));
-
-            return newCodex;
         }
 
         #region IConfirmable
@@ -183,7 +68,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         public IRelayCommand ConfirmCommand => _submitUrlCommand ??= new(SubmitURL, () => !HasErrors);
         private async Task SubmitURL()
         {
-            if (!InputURL.Contains(ExampleURL) && ValidateURL && _importSource != ImportSource.ISBN)
+            if (!InputURL.Contains(ExampleURL) && ValidateURL)
             {
                 ImportError = $"'{InputURL}' is not a valid URL for {SourceName}";
                 return;
@@ -196,20 +81,23 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
             CloseAction();
 
-            var progressVM = ProgressViewModel.GetInstance();
-            progressVM.Log.Clear();
-            progressVM.ResetCounter();
-            progressVM.TotalAmount = 1;
-            
-            ProgressWindow progressWindow = new(3);
-            progressWindow.Show(WindowManager.MainWindow);
-
-            Codex importedCodex = await ImportURLAsync();
+            List<SourceSet> sourceSets = [new() { SourceURL = InputURL }];
+            await ImportViewModel.CreateCodicesAsync(sourceSets);
 
             if (ShowEditWhenDone)
             {
-                CodexEditViewModel vm = new(importedCodex);
-                await WindowManager.OpenModal(vm);
+                Codex? addedCodex = ActiveCollection.AllCodices
+                    .OrderByDescending(c => c.DateAdded)
+                    .FirstOrDefault(c => c.Sources.SourceURL == InputURL);
+                if(addedCodex != null)
+                {
+                    CodexEditViewModel vm = new(addedCodex);
+                    await WindowManager.OpenModal(vm);
+                }
+                else
+                {
+                    Logger.Warn($"Could not find codex with source URL '{InputURL}' after import. Cannot open edit modal.");
+                }
             }
         }
 

@@ -70,5 +70,32 @@ namespace COMPASS.Common.Models
         public bool HasOfflineSource() => !String.IsNullOrWhiteSpace(Path);
 
         public bool HasOnlineSource() => !String.IsNullOrWhiteSpace(SourceURL);
+
+        public override string ToString()
+        {
+            List<string> sources = new();
+
+            if (HasOfflineSource())
+            {
+                sources.Add($"File: '{FileName}'");
+            }
+            else if (HasOnlineSource())
+            {
+                sources.Add($"site: '{SourceURL}'");
+            }
+            else if (!String.IsNullOrEmpty(ISBN))
+            {
+                sources.Add($"ISBN: '{ISBN}'");
+            }
+
+            if (sources.Any())
+            {
+                return string.Join(", ", sources);
+            }
+            else
+            {
+                return "Empty source set";
+            }
+        }
     }
 }

@@ -9,14 +9,9 @@
              x:DataType="vm:ImportURLViewModel" MinWidth="600" Margin="10">
     <StackPanel Margin="15" Spacing="10">
         <TextBlock Text="{Binding SourceName, FallbackValue= URL:}"/>
-        <Grid ColumnDefinitions="*, Auto, Auto">
-            <TextBox PlaceholderText="{Binding ExampleURL}"
-                     Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <!-- <controls:IconButton Grid.Column="1" Icon="BarcodeScan" Margin="5"   -->
-            <!--                      IsVisible="{Binding ShowScannerButton}" -->
-            <!--                      Command="{Binding OpenBarcodeScannerCommand}"  -->
-            <!--                      ToolTip.Tip="Scan Barcode With Webcam"/> -->
-        </Grid>
+
+        <TextBox PlaceholderText="{Binding ExampleURL}"
+                    Text="{Binding InputURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         
         <CheckBox IsChecked="{Binding !ValidateURL}" 
                   Content="Disable URL validation (for self-hosted instances)"

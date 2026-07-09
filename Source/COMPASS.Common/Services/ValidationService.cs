@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace COMPASS.Common.Services
 {
     public static class ValidationService
     {
-        public static bool IsValidISBN(string isbn)
+        
+        public static bool IsValidISBN([NotNullWhen(true)] string? isbn)
         {
+            if (string.IsNullOrWhiteSpace(isbn)) return false;
+
             // length must be 10
             int n = isbn.Length;
             int sum = 0;

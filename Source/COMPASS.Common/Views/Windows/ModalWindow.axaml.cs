@@ -2,7 +2,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Views.Windows;
 
@@ -48,11 +50,23 @@ public partial class ModalWindow : Window
         SizeToContent = SizeToContent.Manual; //don't resize modal after it's loaded
     }
 
-    private void TopLevel_OnClosed(object? sender, EventArgs e)
+    private async void TopLevel_OnClosed(object? sender, EventArgs e)
     {
-        if (_disposeOnClose && DataContext is IDisposable disposable)
+        try
         {
-            disposable.Dispose();
+            if (_disposeOnClose && DataContext is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+            else if (_disposeOnClose && DataContext is IAsyncDisposable asyncDisposable)
+            {
+                await asyncDisposable.DisposeAsync();
+            }
+        }
+        catch (Exception ex) 
+        { 
+            ILogger logger = ServiceResolver.Resolve<ILogger>();
+            logger.Error("Failed to dispose modal viewmodel", ex);
         }
     }
 }

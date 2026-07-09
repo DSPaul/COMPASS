@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Components"
+			 xmlns:siv="clr-namespace:SkiaImageView;assembly=SkiaImageView"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
+             x:Class="COMPASS.Common.Views.Components.VideoCaptureView"
+             x:DataType="vm:VideoCaptureViewModel">
+	<StackPanel>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Top" 
+                Height="32" Margin="5"
+                ColumnDefinitions="*">
+            <Border Grid.Column="0" Background="{StaticResource UIElementBackground}"
+                    CornerRadius="3" Margin="5 0">
+                <Grid ColumnDefinitions="* auto auto">
+                    <ComboBox ItemsSource="{Binding DeviceDescriptors}" 
+                              SelectedItem="{Binding SelectedDescriptor}"
+                              PlaceholderText="Capture device"
+                              VerticalAlignment="Stretch"
+                              HorizontalAlignment="Stretch"
+                              BorderThickness="0"
+                              Background="Transparent"
+                              CornerRadius="3 0 0 3"/>
+                    <Rectangle Grid.Column="1" Width="2" Fill="{StaticResource Separator}" VerticalAlignment="Stretch" />
+                    <controls:IconButton Grid.Column="2"
+										 Command="{Binding RefreshCamerasCommand}"
+                                         Icon="Refresh" VerticalAlignment="Stretch"
+                                         Background="Transparent" Width="25"
+                                         Theme="{StaticResource IconOnly}"
+                                         ToolTip.Tip="Refresh capture devices"/>
+                </Grid>
+            </Border>
+            <!--Dropdown for the characteristics, a bit to technical I think so hide for now-->
+            <!--<ComboBox Grid.Column="1" Margin="5 0"
+                      HorizontalAlignment="Stretch"
+                      PlaceholderText="Configuration"
+                      ItemsSource="{Binding Characteristics}" 
+                      SelectedItem="{Binding SelectedCharacteristic}"
+                      Background="{StaticResource UIElementBackground}"/>-->
+        </Grid>
+        <Panel Margin="10">
+            <TextBlock Text="No capture devices found. Try connecting a webcam, and refreshing the capture device list."
+                       TextWrapping="Wrap" TextAlignment="Center"
+				       IsVisible="{Binding !DeviceDescriptors.Count}"/>
+			<siv:SKImageView
+                Source="{Binding CurrentFrame}"
+                Stretch="Uniform" >
+				<siv:SKImageView.RenderTransform>
+					<ScaleTransform ScaleX="-1" ScaleY="1" />
+				</siv:SKImageView.RenderTransform>
+			</siv:SKImageView>
+        </Panel>
+	</StackPanel>
+</UserControl>

@@ -45,6 +45,8 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<WebDriverService>().As<IWebDriverService>().SingleInstance();
 
             // Misc Services
+            builder.RegisterType<BarcodeDecoderService>().As<IBarcodeDecoderService>();
+            builder.RegisterType<CameraService>().As<ICameraService>();
             builder.RegisterType<NotificationService>().As<INotificationService>();
             builder.RegisterType<PrereleaseUpdateService>().As<IUpdateService>();
             builder.RegisterType<FilesService>().As<IFilesService>();

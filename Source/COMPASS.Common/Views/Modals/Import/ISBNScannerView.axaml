@@ -1,0 +1,78 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:componentmodel="using:System.ComponentModel"
+             xmlns:controls="using:COMPASS.Common.Controls"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:COMPASS.Common.ViewModels.Modals.Import"
+             xmlns:local="using:COMPASS.Common.Views.Modals.Import"
+             xmlns:component="using:COMPASS.Common.Views.Components"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             MinWidth="900" MinHeight="500"
+             x:Class="COMPASS.Common.Views.Modals.Import.ISBNScannerView"
+             x:DataType="vm:ISBNScannerViewModel">
+    <Grid ColumnDefinitions="* auto *" ColumnSpacing="10">
+        <StackPanel Spacing="10" Margin="20">
+			<Grid RowDefinitions="auto *" ColumnDefinitions="* auto" 
+                  ColumnSpacing="10" RowSpacing="5">
+                <TextBlock Text="Enter ISBN Code"/>
+                <TextBox Grid.Row="1" Text="{Binding Input, UpdateSourceTrigger=PropertyChanged}" />
+                <controls:IconButton Grid.Row="1" Grid.Column="1"
+                                     Icon="Plus" ToolTip.Tip="Add this ISBN"
+                                     Background="{StaticResource UIElementBackground}"
+                                     Command="{Binding AddISBNCommand}" CommandParameter="{Binding Input}"
+                                     CornerRadius="4" Margin="0" VerticalAlignment="Stretch"/>
+            </Grid>
+
+            <TextBlock Text="OR" HorizontalAlignment="Center"/>
+
+            <Panel>
+                <controls:IconButton Grid.Column="1" Icon="BarcodeScan"
+                                     HorizontalAlignment="Stretch"
+                                     HorizontalContentAlignment="Center"
+                                     IsVisible="{Binding !ShowWebcam}" 
+                                     Command="{Binding StartScanningCommand}"  
+                                     Content="Scan Barcode with webcam"/> 
+                <Panel IsVisible="{Binding ShowWebcam}" >
+                    <component:VideoCaptureView DataContext="{Binding VideoCaptureViewModel}"
+                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch" /> 
+                </Panel>
+            </Panel>
+        </StackPanel>
+
+        <Rectangle Grid.Column="1" Fill="{StaticResource Separator}" Width="3" VerticalAlignment="Stretch"/>
+
+        <Grid Grid.Column="2" RowDefinitions="* auto" RowSpacing="10" Margin="20">
+            <Panel>
+                <TextBlock  Text="Your scanned and entered ISBN's will appear here"
+					       IsVisible="{Binding !ScannedCodes.Count}"
+                           HorizontalAlignment="Center"/>
+			    <ItemsControl ItemsSource="{Binding ScannedCodes}" IsVisible="{Binding !!ScannedCodes.Count}">
+				    <ItemsControl.ItemsPanel>
+					    <ItemsPanelTemplate>
+						    <StackPanel Spacing="5"/>
+					    </ItemsPanelTemplate>
+				    </ItemsControl.ItemsPanel>
+				    <ItemsControl.ItemTemplate>
+					    <DataTemplate DataType="vm:ISBNScannerViewModel+ScannedISBN">
+                            <Border Background="{StaticResource DarkUIElementBackground}"
+                                    CornerRadius="5" Padding="10">
+                                <Grid ColumnDefinitions="* auto" RowDefinitions="auto auto">
+                                    <SelectableTextBlock Text="{Binding Title}" TextWrapping="Wrap"/>
+						            <SelectableTextBlock Grid.Row="1" Text="{Binding ISBN}" Foreground="{StaticResource TextMutedColor}"/>
+                                    <controls:IconButton  Grid.Column="1" Grid.RowSpan="2" 
+                                                          Theme="{StaticResource IconOnly}"
+                                                          Icon="Delete" 
+                                                          Command="{Binding $parent[local:ISBNScannerView].((vm:ISBNScannerViewModel)DataContext).RemoveCommand}"
+                                                          CommandParameter="{Binding}"/>
+                                </Grid>
+                            </Border>
+					    </DataTemplate>
+				    </ItemsControl.ItemTemplate>
+			    </ItemsControl>
+            </Panel>
+
+            <controls:ConfirmControls Grid.Row="4" HorizontalAlignment="Right"/>
+        </Grid>
+    </Grid>
+</UserControl>

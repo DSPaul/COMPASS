@@ -1,0 +1,35 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Desktop/">
+    <Project Path="Source/COMPASS.Linux/COMPASS.Linux.csproj" />
+    <Project Path="Source/COMPASS.Windows/COMPASS.Windows.csproj" />
+  </Folder>
+  <Folder Name="/Docs/">
+    <File Path="Docs/Architecture.md" />
+    <File Path="Docs/CollectionLifeCycle.md" />
+    <File Path="Docs/EditPattern.md" />
+    <File Path="Docs/MVVM.md" />
+    <File Path="Docs/Satchels.md" />
+  </Folder>
+  <Folder Name="/Lib/">
+    <Project Path="Source/COMPASS.ApiClients/COMPASS.ApiClients.csproj" />
+    <Project Path="Source/COMPASS.Common/COMPASS.Common.csproj" />
+    <Project Path="Source/COMPASS.Infra.Avalonia/COMPASS.Infra.Avalonia.csproj" />
+    <Project Path="Source/COMPASS.Infra/COMPASS.Infra.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/COMPASS.IntegrationTests.Common/COMPASS.IntegrationTests.Common.csproj" />
+    <Project Path="Tests/COMPASS.IntegrationTests.Linux/COMPASS.IntegrationTests.Linux.csproj" />
+    <Project Path="Tests/COMPASS.IntegrationTests.Windows/COMPASS.IntegrationTests.Windows.csproj" />
+    <Project Path="Tests/COMPASS.Tests.Common/COMPASS.Tests.Common.csproj" />
+    <Project Path="Tests/COMPASS.Tests.UI/COMPASS.Tests.UI.csproj" />
+    <Project Path="Tests/COMPASS.UnitTests/COMPASS.UnitTests.csproj" />
+  </Folder>
+</Solution>

@@ -45,8 +45,10 @@ namespace COMPASS.Common.ViewModels.Import
                 case ImportSource.Homebrewery:
                 case ImportSource.GoogleDrive:
                 case ImportSource.GenericURL:
-                case ImportSource.ISBN:
                     await ImportURL(source);
+                    break;
+                case ImportSource.ISBN:
+                    await ImportISBN();
                     break;
             }
         }
@@ -85,6 +87,12 @@ namespace COMPASS.Common.ViewModels.Import
             await WindowManager.OpenModal(importVM);
         }
 
+        private static async Task ImportISBN()
+        {
+            ISBNScannerViewModel importVM = new();
+            await WindowManager.OpenModal(importVM);
+        }
+
         public static async Task ImportFilesAsync(IList<string> paths, string? targetCollectionId = null)
         {
             var logger = ServiceResolver.Resolve<ILogger>();
@@ -98,23 +106,41 @@ namespace COMPASS.Common.ViewModels.Import
             
             //filter out codices already in collection & banned paths
             IEnumerable<string> existingPaths = targetCollection.AllCodices.Select(codex => codex.Sources.Path);
-            paths = paths
+            var sourceSets = paths
                 .Except(existingPaths)
                 .Except(targetCollection.Info.BanishedPaths)
+                .Select(path => new SourceSet()
+                {
+                    Path = path,
+                })
                 .ToList();
+
+            await CreateCodicesAsync(sourceSets, targetCollectionId);
+        }
+
+        public static async Task CreateCodicesAsync(IList<SourceSet> sourceSets, string? targetCollectionId = null)
+        {
+            var logger = ServiceResolver.Resolve<ILogger>();
+
+            targetCollectionId ??= TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier
+                                   ?? throw new NoTabException("There is no open tab, so no collection to import the items to");
+
+            using CollectionHandle targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId)
+                                                            ?? throw new LoadException(targetCollectionId);
+            var targetCollection = targetCollectionHandle.CollectionVM.Collection;
 
             var progressVM = ProgressViewModel.GetInstance();
 
-            progressVM.TotalAmount = paths.Count;
+            progressVM.TotalAmount = sourceSets.Count;
             progressVM.ResetCounter();
-            progressVM.Text = "Importing files";
+            progressVM.Text = "Importing new items...";
 
-            if (paths.Count == 0) return;
+            if (sourceSets.Count == 0) return;
 
             List<Codex> newCodices = [];
 
             //make new codices synchronously so they all have a valid ID
-            foreach (string path in paths)
+            foreach (var sourceSet in sourceSets)
             {
                 try
                 {
@@ -127,17 +153,17 @@ namespace COMPASS.Common.ViewModels.Import
                 }
 
                 Codex newCodex = CodexOperations.CreateNewCodex(targetCollection);
-                newCodex.Sources.Path = path;
+                newCodex.Sources = sourceSet;
                 newCodices.Add(newCodex);
                 targetCollection.AllCodices.Add(newCodex);
 
-                LogEntry logEntry = new(Severity.Info, $"Importing {path}");
+                LogEntry logEntry = new(Severity.Info, $"Importing {sourceSet}");
                 progressVM.IncrementCounter();
                 progressVM.AddLogEntry(logEntry);
             }
-            
+
             targetCollection.Save();
-            
+
             //now get metadata and cover async
             try
             {
