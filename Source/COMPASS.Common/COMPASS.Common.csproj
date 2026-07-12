@@ -37,7 +37,7 @@
     <PackageReference Include="FlashCap" Version="1.11.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.9" />
     <PackageReference Include="OpenCvSharp5" Version="5.0.0.20260703" />
-    <PackageReference Include="Selenium.Support" Version="4.45.0" />
+    <PackageReference Include="Selenium.Support" Version="4.46.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
     <PackageReference Include="PdfPig" Version="0.1.15" />
     <PackageReference Include="log4net" Version="3.3.2" />
@@ -46,7 +46,7 @@
     <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.23" />
     <PackageReference Include="Material.Icons.Avalonia" Version="3.0.2" />
     <PackageReference Include="PDFtoImage" Version="5.2.1" />
-    <PackageReference Include="Selenium.WebDriver" Version="4.45.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.46.0" />
     <PackageReference Include="SharpCompress" Version="0.49.1" />
     <PackageReference Include="SkiaImageView.Avalonia11" Version="1.5.0" />
     <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.13" />

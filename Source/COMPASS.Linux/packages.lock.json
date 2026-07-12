@@ -516,16 +516,16 @@
       },
       "Selenium.Support": {
         "type": "Transitive",
-        "resolved": "4.45.0",
-        "contentHash": "RCrKFTgI2wV451bcE23cjI4YUzaAGtIsUXbtSXd3gSjDtM/43gz6YEGctyLZM9LLSoM0XlnWXgRDHIbXzDL3SQ==",
+        "resolved": "4.46.0",
+        "contentHash": "jnYu0iMTD0S8pZU4e2L/0y6AImO+vW9ckXbNm5rXKSoOAEIy1NsQ4rC9xy5HAf0HMGF2RxZ43J/FCVXeLikvEw==",
         "dependencies": {
-          "Selenium.WebDriver": "4.45.0"
+          "Selenium.WebDriver": "4.46.0"
         }
       },
       "Selenium.WebDriver": {
         "type": "Transitive",
-        "resolved": "4.45.0",
-        "contentHash": "DhPMLb8nI7J7AWIPG43yN5PvkUtTCZymXUuBKFBhPYP+aycRs7rFxkeu0tlZ9HO2D1Im5Vp46r/yOxz9iXFeHA=="
+        "resolved": "4.46.0",
+        "contentHash": "7bXGxmHD9mZEYflnUDVdE5IV/O9tat0DgFBnPYSrDv+W+0HrpFR8qMON4tTFNMe1fJHPS5HUIQLQdTKX8744bw=="
       },
       "SharpCompress": {
         "type": "Transitive",
@@ -690,9 +690,9 @@
           "Avalonia.Fonts.Inter": "[12.1.0, )",
           "Avalonia.Labs.Gif": "[12.0.2, )",
           "Avalonia.Themes.Fluent": "[12.1.0, )",
-          "COMPASS.ApiClients": "[2.0.0-alpha.1, )",
-          "COMPASS.Infra": "[2.0.0-alpha.1, )",
-          "COMPASS.Infra.Avalonia": "[2.0.0-alpha.1, )",
+          "COMPASS.ApiClients": "[2.0.0-alpha.2, )",
+          "COMPASS.Infra": "[2.0.0-alpha.2, )",
+          "COMPASS.Infra.Avalonia": "[2.0.0-alpha.2, )",
           "CommandLineParser": "[2.9.1, )",
           "FlashCap": "[1.11.0, )",
           "HtmlAgilityPack": "[1.12.4, )",
@@ -704,8 +704,8 @@
           "OpenCvSharp5": "[5.0.0.20260703, )",
           "PDFtoImage": "[5.2.1, )",
           "PdfPig": "[0.1.15, )",
-          "Selenium.Support": "[4.45.0, )",
-          "Selenium.WebDriver": "[4.45.0, )",
+          "Selenium.Support": "[4.46.0, )",
+          "Selenium.WebDriver": "[4.46.0, )",
           "SharpCompress": "[0.49.1, )",
           "SkiaImageView.Avalonia11": "[1.5.0, )",
           "Svg.Controls.Skia.Avalonia": "[12.0.0.13, )",
@@ -796,8 +796,8 @@
       },
       "Selenium.WebDriver": {
         "type": "Transitive",
-        "resolved": "4.45.0",
-        "contentHash": "DhPMLb8nI7J7AWIPG43yN5PvkUtTCZymXUuBKFBhPYP+aycRs7rFxkeu0tlZ9HO2D1Im5Vp46r/yOxz9iXFeHA=="
+        "resolved": "4.46.0",
+        "contentHash": "7bXGxmHD9mZEYflnUDVdE5IV/O9tat0DgFBnPYSrDv+W+0HrpFR8qMON4tTFNMe1fJHPS5HUIQLQdTKX8744bw=="
       },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Transitive",
