@@ -37,19 +37,37 @@ namespace COMPASS.Common.ViewModels
         //list of errors per property
         private readonly Dictionary<string, List<string>> _errors = [];
         private readonly Dictionary<string, Action> _validationMethods = [];
-    
-        public bool HasErrors => _errors.Any();
+        private readonly HashSet<string> _touchedProperties = [];
+
+        // HasErrors considers ALL validation errors (including untouched properties) so CanConfirm is always accurate.
+        public bool HasErrors => _errors.Any(kv => kv.Value.Count > 0);
     
         public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
     
         public IEnumerable GetErrors(string? propertyName)
         {
+            // Only return errors for properties the user has already touched,
+            // so validation warnings don't appear before the user interacts with a field.
             if (string.IsNullOrEmpty(propertyName))
             {
-                return _errors.Values.SelectMany(e => e);
+                return _errors
+                    .Where(kv => _touchedProperties.Contains(kv.Key))
+                    .SelectMany(kv => kv.Value);
             }
-        
-            return _errors.TryGetValue(propertyName, out var errors) ? errors : [];
+
+            return !_touchedProperties.Contains(propertyName)
+                ? Enumerable.Empty<string>()
+                : (IEnumerable)(_errors.TryGetValue(propertyName, out var errors) ? errors : []);
+        }
+
+        protected void MarkAsTouched(string propertyName)
+        {
+            if (_touchedProperties.Add(propertyName))
+            {
+                // Fire ErrorsChanged so the UI immediately shows any existing error for this property.
+                OnErrorsChanged(propertyName);
+                OnPropertyChanged(nameof(HasErrors));
+            }
         }
     
         public void AddError(string propertyName, string error)

@@ -671,6 +671,7 @@
                                       Content="{TemplateBinding Content}"
                                       Padding="{TemplateBinding Padding}"/>
                     <TextBlock  Grid.Row="1" Grid.Column="0" 
+                                FontSize="14"
                                 Foreground="Red" Text="Invalid Value"
                                 DataContext="{TemplateBinding Owner}"
                                 IsVisible="{Binding (DataValidationErrors.HasErrors)}"/>

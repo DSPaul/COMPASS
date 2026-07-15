@@ -41,7 +41,10 @@ public abstract class ModelViewModelBase<TModel> : ViewModelBase, IDisposable
                 Dispatcher.UIThread.Invoke(() => OnPropertyChanged(derivedProperty));
             }
         }
-        
+
+        //Mark as touched so validation errors become visible for this property
+        MarkAsTouched(propertyName);
+
         //Validate prop
         Validate(propertyName);
     }

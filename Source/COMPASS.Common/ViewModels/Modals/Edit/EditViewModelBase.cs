@@ -26,6 +26,9 @@ public abstract class EditViewModelBase<TViewModel, TModel> : ViewModelBase, ICo
 
         _workingCopy = createViewModel(source.Clone());
         _workingCopy.PropertyChanged += HandleWorkingCopyPropertyChanged;
+
+        //Validate model immediatly because can be invalid from the start
+        WorkingCopy.Validate();
     }
     
     protected readonly TModel _source;
