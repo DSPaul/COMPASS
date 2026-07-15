@@ -11,6 +11,7 @@ namespace COMPASS.Common.Services
     public class WebDriverService(ILogger logger) : IWebDriverService
     {
         protected Browser _browser;
+        protected string _browserPath = "";
         protected enum Browser
         {
             /// <summary>
@@ -31,7 +32,7 @@ namespace COMPASS.Common.Services
         {
             if (_browser == Browser.Unknown)
             {
-                _browser = await GetPreferredBrowser();
+                await GetPreferredBrowser();
             }
 
             DriverService? driverService = _browser switch
@@ -57,47 +58,71 @@ namespace COMPASS.Common.Services
             ];
 
             WebDriver? webDriver = null;
-            switch (driverService)
+            try
             {
-                case ChromeDriverService chromeDriverService:
-                    ChromeOptions co = new();
-                    co.AddArguments(driverArguments);
-                    List<string> chromeArgs = new()
-                    {
-                        "--disable-search-engine-choice-screen",
-                        "--disable-features=OptimizationGuideModelDownloading,OptimizationHintsFetching,OptimizationTargetPrediction,OptimizationHints",
-                        "--no-sandbox",
-                        "--disable-dev-shm-usage"
-                    };
+                switch (driverService)
+                {
+                    case ChromeDriverService chromeDriverService:
+                        ChromeOptions co = new();
+                        co.AddArguments(driverArguments);
+                        if (!string.IsNullOrEmpty(_browserPath))
+                        {
+                            co.BinaryLocation = _browserPath;
+                        }
+                        List<string> chromeArgs =
+                        [
+                            "--disable-search-engine-choice-screen",
+                            "--disable-features=OptimizationGuideModelDownloading,OptimizationHintsFetching,OptimizationTargetPrediction,OptimizationHints",
+                            "--no-sandbox",
+                            "--disable-dev-shm-usage"
+                        ];
 
-                    co.AddArguments(chromeArgs);
+                        co.AddArguments(chromeArgs);
 
-                    webDriver = await Task.Run(() => new ChromeDriver(chromeDriverService, co));
-                    break;
+                        webDriver = await Task.Run(() => new ChromeDriver(chromeDriverService, co));
+                        break;
 
-                case FirefoxDriverService firefoxDriverService:
-                    FirefoxOptions fo = new();
-                    fo.AddArguments(driverArguments);
-                    webDriver = await Task.Run(() => new FirefoxDriver(firefoxDriverService, fo));
-                    break;
+                    case FirefoxDriverService firefoxDriverService:
+                        FirefoxOptions fo = new();
+                        fo.AddArguments(driverArguments);
+                        if (!string.IsNullOrEmpty(_browserPath))
+                        {
+                            fo.BinaryLocation = _browserPath;
+                        }
+                        webDriver = await Task.Run(() => new FirefoxDriver(firefoxDriverService, fo));
+                        break;
 
-                case EdgeDriverService edgeDriverService:
-                    EdgeOptions eo = new();
-                    eo.AddArguments(driverArguments);
-                    webDriver = await Task.Run(() => new EdgeDriver(edgeDriverService, eo));
-                    break;
+                    case EdgeDriverService edgeDriverService:
+                        EdgeOptions eo = new();
+                        eo.AddArguments(driverArguments);
+                        if (!string.IsNullOrEmpty(_browserPath))
+                        {
+                            eo.BinaryLocation = _browserPath;
+                        }
+                        webDriver = await Task.Run(() => new EdgeDriver(edgeDriverService, eo));
+                        break;
 
-                case SafariDriverService safariDriverService:
-                    SafariOptions so = new();
-                    //so.AddArguments(driverArguments); //method doesn't exist for safari
-                    webDriver = await Task.Run(() => new SafariDriver(safariDriverService, so));
-                    break;
+                    case SafariDriverService safariDriverService:
+                        SafariOptions so = new();
+                        //so.AddArguments(driverArguments); //method doesn't exist for safari
+                        if (!string.IsNullOrEmpty(_browserPath))
+                        {
+                            so.BinaryLocation = _browserPath;
+                        }
+                        webDriver = await Task.Run(() => new SafariDriver(safariDriverService, so));
+                        break;
+                }
+            }
+            catch (Exception ex) 
+            { 
+                logger.Error($"Error creating WebDriver for {_browser}", ex);
+                return null;
             }
 
             return webDriver;
         }
 
-        private async Task<Browser> GetPreferredBrowser()
+        private async Task GetPreferredBrowser()
         {
             var browsersInPreferenceOrder = new List<Browser>
             {
@@ -107,17 +132,28 @@ namespace COMPASS.Common.Services
                 Browser.Safari,
             };
 
-            foreach (var browser in browsersInPreferenceOrder)
+            try
             {
-                var result = await SeleniumManager.DiscoverBrowserAsync(browser.ToString().ToLower());
-                if (!string.IsNullOrEmpty(result.BrowserPath))
+                foreach (var browser in browsersInPreferenceOrder)
                 {
-                    logger.Debug($"Preferred browser found: {browser}");
-                    return browser;
+                    var result = await SeleniumManager.DiscoverBrowserAsync(browser.ToString().ToLower());
+                    if (!string.IsNullOrEmpty(result.BrowserPath))
+                    {
+                        logger.Debug($"Preferred browser found: {browser}");
+                        _browserPath = result.BrowserPath;
+                        _browser = browser;
+                        return;
+                    }
                 }
+                logger.Debug($"No installed browsers found");
+                _browser = Browser.None;
             }
-            logger.Debug($"No installed browsers found");
-            return Browser.None;
+            catch (Exception ex)
+            {
+                logger.Error("Error discovering preferred browser", ex);
+                //Set to unknown to it will try again, might have been a temporary issue
+                _browser = Browser.Unknown;
+            }
         }
     }
 }
