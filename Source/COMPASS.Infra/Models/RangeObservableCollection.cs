@@ -10,11 +10,6 @@ namespace COMPASS.Infra.Models
 
     public class RangeObservableCollection<T> : ObservableCollection<T>
     {
-        #region Private Fields    
-        [NonSerialized]
-        private DeferredEventsCollection? _deferredEvents;
-        #endregion Private Fields
-
         #region Constructors
         /// <summary>
         /// Initializes a new instance of ObservableCollection that is empty and has default initial capacity.
@@ -234,7 +229,6 @@ namespace COMPASS.Infra.Models
             var removedCount = 0;
 
             using (BlockReentrancy())
-            using (DeferEvents())
             {
                 for (var i = 0; i < count; i++, index++)
                 {
@@ -372,7 +366,6 @@ namespace COMPASS.Infra.Models
                 list = new List<T>(collection);
 
             using (BlockReentrancy())
-            using (DeferEvents())
             {
                 var rangeCount = index + count;
                 var addedCount = list.Count;
@@ -482,27 +475,6 @@ namespace COMPASS.Infra.Models
             OnCollectionChanged(NotifyCollectionChangedAction.Replace, oldItem!, item!, index);
         }
 
-        /// <summary>
-        /// Raise CollectionChanged event to any listeners.
-        /// Properties/methods modifying this ObservableCollection will raise
-        /// a collection changed event through this virtual method.
-        /// </summary>
-        /// <remarks>
-        /// When overriding this method, either call its base implementation
-        /// or call <see cref="BlockReentrancy"/> to guard against reentrant collection changes.
-        /// </remarks>
-        protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-        {
-            if (_deferredEvents != null)
-            {
-                _deferredEvents.Add(e);
-                return;
-            }
-            base.OnCollectionChanged(e);
-        }
-
-        protected virtual IDisposable DeferEvents() => new DeferredEventsCollection(this);
-
         #endregion Protected Methods
 
         #region Private Methods
@@ -560,28 +532,6 @@ namespace COMPASS.Infra.Models
         }
 
         #endregion Private Methods
-
-        #region Private Types
-        sealed class DeferredEventsCollection : List<NotifyCollectionChangedEventArgs>, IDisposable
-        {
-            readonly RangeObservableCollection<T> _collection;
-            public DeferredEventsCollection(RangeObservableCollection<T> collection)
-            {
-                Debug.Assert(collection != null);
-                Debug.Assert(collection._deferredEvents == null);
-                _collection = collection;
-                _collection._deferredEvents = this;
-            }
-
-            public void Dispose()
-            {
-                _collection._deferredEvents = null;
-                foreach (var args in this)
-                    _collection.OnCollectionChanged(args);
-            }
-        }
-
-        #endregion Private Types
 
     }
 
