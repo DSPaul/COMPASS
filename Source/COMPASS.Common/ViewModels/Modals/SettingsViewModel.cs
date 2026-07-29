@@ -186,6 +186,32 @@ namespace COMPASS.Common.ViewModels.Modals
 
         #endregion
 
+        #region Update settings
+
+        public bool CheckForUpdatesOnStartup
+        {
+            get => _preferencesService.Preferences.UpdatePreferences.CheckForUpdates;
+            set
+            {
+                if (value == CheckForUpdatesOnStartup) return;
+                _preferencesService.Preferences.UpdatePreferences.CheckForUpdates = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IncludePrereleaseUpdates
+        {
+            get => _preferencesService.Preferences.UpdatePreferences.IncludePrerelease;
+            set
+            {
+                if (value == IncludePrereleaseUpdates) return;
+                _preferencesService.Preferences.UpdatePreferences.IncludePrerelease = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Tab: Import
@@ -286,8 +312,12 @@ namespace COMPASS.Common.ViewModels.Modals
         #region Tab: About
         public string Version => "Version: " + ApplicationService.GetVersion();
 
-        private AsyncRelayCommand? _checkForUpdatesCommand;
-        public AsyncRelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(UpdateManager.CheckForUpdates);
+        public AsyncRelayCommand CheckForUpdatesCommand => field ??= new(CheckForUpdates);
+        private async Task CheckForUpdates()
+        {
+            var updateManager = ServiceResolver.Resolve<UpdateManager>();
+            await updateManager.ExplicitCheckUpdates();
+        }
         #endregion
 
         #region Tab: Legal

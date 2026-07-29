@@ -24,6 +24,7 @@ namespace COMPASS.Common.Models.XmlDtos
 
         public UIState UIState { get; set; } = new();
         public WindowRestoreState WindowState { get; set; } = new();
+        public UpdatePreferences UpdatePreferences { get; set; } = new();
 
         public bool AutoLinkFolderTagSameName { get; set; } = true;
     }

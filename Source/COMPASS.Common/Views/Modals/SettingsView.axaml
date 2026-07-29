@@ -44,6 +44,14 @@
             <Setter Property="Height" Value="3" />
             <Setter Property="Margin" Value="0,10" />
         </Style>
+        <Style Selector="Border.SettingsRow">
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Border.SettingsRow:pointerover">
+            <Setter Property="Background" Value="{StaticResource ListHover}" />
+        </Style>
     </UserControl.Styles>
     <TabControl TabStripPlacement="Left"
             BorderThickness="0"
@@ -63,76 +71,116 @@
             <x:Double x:Key="TabItemMinHeight"> 48 </x:Double>
         </TabControl.Resources>
         <TabItem Header="General">
-            <StackPanel Orientation="Vertical" Spacing="20">
-                <Border x:Name="Behaviour" Classes="SettingsContainer">
-                    <StackPanel>
-                        <TextBlock Classes="SectionTitle" Text="Behaviour" />
-                        <Grid ColumnDefinitions="* Auto" 
-                              RowDefinitions="Auto, Auto, Auto" RowSpacing="10">
-                            <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
-                                <TextBlock Text="On double click:" TextWrapping="Wrap" />
-                            </StackPanel>
-                            <Border Grid.Column="1" Grid.Row="0" Classes="RadioBtnStrip">
-                                <StackPanel Orientation="Horizontal" Spacing="5">
-                                    <RadioButton GroupName="OpenPref"
-                                                 Content="Prefer URL"
-                                                 IsChecked="{Binding PreferOnlineSource}"
-                                                 Background="{StaticResource AccentColorMuted}" />
-                                    <RadioButton GroupName="OpenPref"
-                                                 Content="Prefer local file"
-                                                 IsChecked="{Binding !PreferOnlineSource, Mode=OneWay}"
-                                                 Background="{StaticResource AccentColorMuted}" />
-                                </StackPanel>
-                            </Border>
+            <ScrollViewer>
+				
+                <StackPanel Orientation="Vertical" Spacing="20">
+                    <Border x:Name="Behaviour" Classes="SettingsContainer">
+                        <StackPanel>
+                            <TextBlock Classes="SectionTitle" Text="Behaviour" />
+                            <StackPanel Spacing="5">
+                                <Border Classes="SettingsRow">
+                                    <Grid ColumnDefinitions="* Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                            <TextBlock Text="On double click:" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <Border Grid.Column="1" Classes="RadioBtnStrip">
+                                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                                <RadioButton GroupName="OpenPref"
+                                                             Content="Prefer URL"
+                                                             IsChecked="{Binding PreferOnlineSource}"
+                                                             Background="{StaticResource AccentColorMuted}" />
+                                                <RadioButton GroupName="OpenPref"
+                                                             Content="Prefer local file"
+                                                             IsChecked="{Binding !PreferOnlineSource, Mode=OneWay}"
+                                                             Background="{StaticResource AccentColorMuted}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </Border>
 
-                            <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Spacing="5">
-                                <TextBlock Text="Treat tags and folders with the same name as linked"/>
-                                <controls:Explainer Content="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
-                            </StackPanel>
-                            <CheckBox Grid.Column="1" Grid.Row="1" Classes="Toggle"
-                                      HorizontalAlignment="Right"
-                                      IsChecked="{Binding AutoLinkFolderTagSameName}"/>
+                                <Border Classes="SettingsRow">
+                                    <Grid ColumnDefinitions="* Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="5">
+                                            <TextBlock Text="Treat tags and folders with the same name as linked"/>
+                                            <controls:Explainer Content="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
+                                        </StackPanel>
+                                        <CheckBox Grid.Column="1" Classes="Toggle"
+                                                  HorizontalAlignment="Right"
+                                                  IsChecked="{Binding AutoLinkFolderTagSameName}"/>
+                                    </Grid>
+                                </Border>
 
-                            <TextBlock Grid.Column="0" Grid.Row="2" Text="Hide the info panel when nothing is selected"/>
-                            <CheckBox Grid.Column="1" Grid.Row="2" Classes="Toggle"
-                                      HorizontalAlignment="Right"
-                                      IsChecked="{Binding Preferences.UIState.AutoHideCodexInfoPanel}"/>
-                        </Grid>
-                    </StackPanel>
-                </Border>
+                                <Border Classes="SettingsRow">
+                                    <Grid ColumnDefinitions="* Auto">
+                                        <TextBlock Grid.Column="0" Text="Hide the info panel when nothing is selected"/>
+                                        <CheckBox Grid.Column="1" Classes="Toggle"
+                                                  HorizontalAlignment="Right"
+                                                  IsChecked="{Binding Preferences.UIState.AutoHideCodexInfoPanel}"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
                 
-                <Border x:Name="ManageLocalData" Classes="SettingsContainer">
-                    <StackPanel>
-                        <TextBlock Text="Manage Local Data" Classes="SectionTitle" />
-                        <TextBlock Text="User data location:" Margin="0,10,0,5"/>
-                        <Grid  ColumnDefinitions="*,auto,auto, auto" ColumnSpacing="10">
-                            <TextBox IsReadOnly="True" Grid.Column="0" TextWrapping="Wrap"
-                                     Text="{Binding UserDataPath, Mode=OneWay}"/>
-                            <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}"
-                                                 IconSize="20"
-                                                 ToolTip.Tip="Show in explorer..." Icon="FolderOpen"
-                                                 Command="{Binding BrowseLocalFilesCommand}"/>
-                            <controls:IconButton Grid.Column="2" Theme="{StaticResource IconOnly}" 
-                                                 IconSize="20"
-                                                 ToolTip.Tip="Change data path..." Icon="FolderEdit" 
-                                                 Command="{Binding ChangeDataPathCommand}"/>
-                            <controls:IconButton Grid.Column="3" Theme="{StaticResource IconOnly}"  
-                                                 IconSize="20"
-                                                 ToolTip.Tip="Restore to default..." Icon="FolderRefresh"
-                                                 Command="{Binding ResetDataPathCommand}"/>
-                        </Grid>
-                        <TextBlock Text="Logs location:" Margin="0,10,0,5"/>
-                        <Grid ColumnDefinitions="*,auto" ColumnSpacing="10">
-                            <TextBox IsReadOnly="True" Grid.Column="0" TextWrapping="Wrap"
-                                     Text="{Binding LogsPath, Mode=OneWay}"/>
-                            <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}"
-                                                 IconSize="20"
-                                                 ToolTip.Tip="Show in explorer..." Icon="FolderOpen"
-                                                 Command="{Binding OpenLogsFolderCommand}"/>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
+                    <Border x:Name="Updates" Classes="SettingsContainer">
+                        <StackPanel>
+					        <TextBlock  Classes="SectionTitle" Text="Updates"/>
+                            <StackPanel Spacing="5" Margin="0 10 0 0">
+                                <Border Classes="SettingsRow">
+                                    <Grid ColumnDefinitions="* Auto">
+                                        <TextBlock Grid.Column="0" Text="Check for updates on startup"/>
+                                        <CheckBox Grid.Column="1" Classes="Toggle"
+                                                  HorizontalAlignment="Right"
+                                                  IsChecked="{Binding CheckForUpdatesOnStartup}"/>
+                                    </Grid>
+                                </Border>
+                                <Border Classes="SettingsRow">
+                                    <Grid ColumnDefinitions="* Auto">
+                                        <TextBlock Grid.Column="0" Text="Include prerelease updates"/>
+                                        <CheckBox Grid.Column="1" Classes="Toggle"
+                                                  HorizontalAlignment="Right"
+                                                  IsChecked="{Binding IncludePrereleaseUpdates}"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+						
+                        </StackPanel>
+                    
+                    </Border>
+
+                    <Border x:Name="ManageLocalData" Classes="SettingsContainer">
+                        <StackPanel>
+                            <TextBlock Text="Manage Local Data" Classes="SectionTitle" />
+                            <TextBlock Text="User data location:" Margin="0,10,0,5"/>
+                            <Grid  ColumnDefinitions="*,auto,auto, auto" ColumnSpacing="10">
+                                <TextBox IsReadOnly="True" Grid.Column="0" TextWrapping="Wrap"
+                                         Text="{Binding UserDataPath, Mode=OneWay}"/>
+                                <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}"
+                                                     IconSize="20"
+                                                     ToolTip.Tip="Show in explorer..." Icon="FolderOpen"
+                                                     Command="{Binding BrowseLocalFilesCommand}"/>
+                                <controls:IconButton Grid.Column="2" Theme="{StaticResource IconOnly}" 
+                                                     IconSize="20"
+                                                     ToolTip.Tip="Change data path..." Icon="FolderEdit" 
+                                                     Command="{Binding ChangeDataPathCommand}"/>
+                                <controls:IconButton Grid.Column="3" Theme="{StaticResource IconOnly}"  
+                                                     IconSize="20"
+                                                     ToolTip.Tip="Restore to default..." Icon="FolderRefresh"
+                                                     Command="{Binding ResetDataPathCommand}"/>
+                            </Grid>
+                            <TextBlock Text="Logs location:" Margin="0,10,0,5"/>
+                            <Grid ColumnDefinitions="*,auto" ColumnSpacing="10">
+                                <TextBox IsReadOnly="True" Grid.Column="0" TextWrapping="Wrap"
+                                         Text="{Binding LogsPath, Mode=OneWay}"/>
+                                <controls:IconButton Grid.Column="1" Theme="{StaticResource IconOnly}"
+                                                     IconSize="20"
+                                                     ToolTip.Tip="Show in explorer..." Icon="FolderOpen"
+                                                     Command="{Binding OpenLogsFolderCommand}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
         </TabItem>
         <TabItem Header="Import">
             <ScrollViewer>
@@ -276,13 +324,14 @@
                                 <controls:Explainer Margin="0,6"
                                                     Content="When a folder is linked to a tag, all future files that are imported from that folder will automatically be assigned that tag."/>
                             </StackPanel>
-                            <Grid ColumnDefinitions="Auto, *, Auto" Margin="10,5">
-								<TextBlock Text="Treat tags and folders with the same name as linked"/>
-
-                                <CheckBox Grid.Column="2"
-                                          Classes="Toggle" HorizontalAlignment="Right"
-                                          IsChecked="{Binding AutoLinkFolderTagSameName}"/>
-                            </Grid>
+                            <Border Classes="SettingsRow" Margin="10,5">
+                                <Grid ColumnDefinitions="* Auto">
+                                    <TextBlock Grid.Column="0" Text="Treat tags and folders with the same name as linked"/>
+                                    <CheckBox Grid.Column="1"
+                                              Classes="Toggle" HorizontalAlignment="Right"
+                                              IsChecked="{Binding AutoLinkFolderTagSameName}"/>
+                                </Grid>
+                            </Border>
                         </StackPanel>
                     </Border>
             

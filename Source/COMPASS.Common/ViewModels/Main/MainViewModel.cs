@@ -37,8 +37,8 @@ namespace COMPASS.Common.ViewModels.Main
             
             LeftDockVM = new(TabsVM);
 
-            //check for updates
-            UpdateManager.Run(_updateService);
+            //Start check for updates loop
+            ServiceResolver.Resolve<UpdateManager>().StartUpdateCheckLoop();
 
             //Start timer that periodically checks if there is an internet connection
             InitConnectionTimer();
@@ -102,7 +102,12 @@ namespace COMPASS.Common.ViewModels.Main
         }
 
         private AsyncRelayCommand? _checkForUpdatesCommand;
-        public AsyncRelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(UpdateManager.CheckForUpdates);
+        public AsyncRelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);
+        private async Task CheckForUpdates()
+        {
+            var updateManager = ServiceResolver.Resolve<UpdateManager>();
+            await updateManager.ExplicitCheckUpdates();
+        }
 
         public RelayCommand<string> NavigateToCommand => field ??= new(url =>
         {

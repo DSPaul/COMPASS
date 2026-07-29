@@ -1,22 +1,38 @@
 ﻿using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Models;
 using COMPASS.Infra.Interfaces.Services;
-using COMPASS.Infra.Tools;
+using COMPASS.Infra.Models.Updates;
+using System.Security.Cryptography;
 
 namespace COMPASS.Common.Services.StateManagers
 {
-    public static class UpdateManager
+    public class UpdateManager(
+        ILogger logger,
+        IUpdateService updateService,
+        IPreferencesService preferencesService)
     {
-        private static ILogger _logger = ServiceResolver.Resolve<ILogger>();
-        private static IUpdateService? _updateService;
-        private static readonly CancellationTokenSource _cts = new();
+        private readonly CancellationTokenSource _cts = new();
 
-        public static void Run(IUpdateService service)
+        private static readonly List<Update> _updates = [];
+
+        public void StartUpdateCheckLoop()
         {
-            _updateService = service;
-            _ = RunAsync(_cts.Token);
+            if (preferencesService.Preferences.UpdatePreferences.CheckForUpdates) 
+            { 
+                _ = RunUpdateCheckLoop(_cts.Token);
+            }
         }
 
-        private static async Task RunAsync(CancellationToken cancellationToken)
+        public async Task ExplicitCheckUpdates()
+        {
+            //Explicit trigger, clear skipped updates to give user another chance
+            preferencesService.Preferences.UpdatePreferences.SkippedUpdates.Clear();
+
+            await CheckForUpdates();
+        }
+
+        private async Task RunUpdateCheckLoop(CancellationToken cancellationToken)
         {
             await CheckForUpdates().ConfigureAwait(false);
 
@@ -27,22 +43,41 @@ namespace COMPASS.Common.Services.StateManagers
             }
         }
 
-        public static async Task CheckForUpdates()
+        private async Task CheckForUpdates()
         {
-            if (_updateService is null)
-            {
-                throw new InvalidOperationException("UpdateManager not initialized with an IUpdateService.");
-            }
-
             try
             {
-                var updates = await _updateService.CheckForUpdates().ConfigureAwait(false);
-                await _updateService.HandleUpdates(updates);
+                var updatePrefs = preferencesService.Preferences.UpdatePreferences;
+                _updates.Clear();
+                var updates = await updateService.CheckForUpdates(updatePrefs.IncludePrerelease).ConfigureAwait(false);
+                _updates.AddRange(updates.Where(u => !updatePrefs.SkippedUpdates.Contains(u.Version.ToString())));
+
+                if (!_updates.Any())
+                {
+                    return;
+                }
+
+                var latestUpdate = _updates.OrderByDescending(u => u.Version).First();
+                await updateService.OnUpdatesFound(_updates);
             }
             catch (Exception ex)
             {
-                _logger.Error($"Checking for updates failed", ex);
+                logger.Error($"Checking for updates failed", ex);
             }
+        }
+
+        public static string GetAssetPath(ReleaseAsset asset) 
+            => Path.Combine(IApplicationDataService.ApplicationDataPath, Constants.DIR_UPDATES, asset.AssetName);
+
+        public static bool IsChecksumCorrect(byte[] data, string checksum) 
+        {
+            //Check checksum
+            using SHA256 sha256 = SHA256.Create();
+            // Compute the hash
+            byte[] hashBytes = sha256.ComputeHash(data);
+            var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+            
+            return hashString == checksum;
         }
     }
 }

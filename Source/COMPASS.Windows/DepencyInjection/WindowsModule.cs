@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using COMPASS.Common.Interfaces.Services;
+using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Windows.Services;
 
 namespace COMPASS.Windows.DepencyInjection
@@ -10,6 +11,7 @@ namespace COMPASS.Windows.DepencyInjection
         {
             builder.RegisterType<IOService>().As<IIOService>();
             builder.RegisterType<UIService>().As<IUIService>();
+            builder.RegisterType<UpdateService>().As<IUpdateService>();
         }
     }
 }

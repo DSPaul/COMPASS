@@ -1,11 +1,11 @@
-﻿using COMPASS.Infra.Models;
+﻿using COMPASS.Infra.Models.Updates;
 
 namespace COMPASS.Infra.Interfaces.Services
 {
     public interface IUpdateService
     {
-        Task<List<Update>> CheckForUpdates();
-
-        Task HandleUpdates(IList<Update> updates);
+        Task<List<Update>> CheckForUpdates(bool includePrerelease);
+        Task OnUpdatesFound(IList<Update> updates);
+        Task HandleUpdate(Update update);
     }
 }

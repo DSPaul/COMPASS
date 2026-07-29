@@ -5,6 +5,7 @@ using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Views.Windows;

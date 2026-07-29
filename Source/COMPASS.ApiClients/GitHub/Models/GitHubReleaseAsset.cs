@@ -18,5 +18,8 @@ namespace COMPASS.ApiClients.GitHub.Models
 
         [JsonPropertyName("content_type")]
         public string ContentType { get; init; } = string.Empty;
+
+        [JsonPropertyName("digest")]
+        public string Checksum { get; init; } = string.Empty;
     }
 }

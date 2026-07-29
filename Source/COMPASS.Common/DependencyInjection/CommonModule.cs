@@ -10,6 +10,7 @@ using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Repositories;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.FileSystem;
+using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Services.Storage;
 using COMPASS.Common.Tools.Logging;
 using COMPASS.Infra.Interfaces.Services;
@@ -39,16 +40,18 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<CoverStorageService>().As<ICoverStorageService>();
             builder.RegisterType<UserFilesStorageService>().As<IUserFilesStorageService>();
 
-            ///Singletons
+            //Singletons
             builder.RegisterType<ApplicationDataService>().As<IApplicationDataService>().SingleInstance();
             builder.RegisterType<PreferencesService>().As<IPreferencesService>().SingleInstance();
             builder.RegisterType<WebDriverService>().As<IWebDriverService>().SingleInstance();
+
+            //Managers
+            builder.RegisterType<UpdateManager>().AsSelf().SingleInstance();
 
             // Misc Services
             builder.RegisterType<BarcodeDecoderService>().As<IBarcodeDecoderService>();
             builder.RegisterType<CameraService>().As<ICameraService>();
             builder.RegisterType<NotificationService>().As<INotificationService>();
-            builder.RegisterType<PrereleaseUpdateService>().As<IUpdateService>();
             builder.RegisterType<FilesService>().As<IFilesService>();
             builder.RegisterType<WebService>().As<IWebService>();
         }

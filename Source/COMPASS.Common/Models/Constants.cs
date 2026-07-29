@@ -15,6 +15,7 @@ namespace COMPASS.Common.Models
         public const string DIR_THUMBNAILS = "Thumbnails";
         public const string DIR_COVERS = "CoverArt";
         public const string DIR_LOGS = "logs";
+        public const string DIR_UPDATES = "updates";
 
         public const string DEFAULT_COLLECTION_NAME = "Default Collection";
 

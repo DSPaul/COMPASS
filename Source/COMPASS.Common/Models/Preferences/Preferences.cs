@@ -18,6 +18,7 @@ namespace COMPASS.Common.Models.Preferences
             HomeLayoutPreferences = new();
             UIState = new UIState();
             WindowState = new WindowRestoreState();
+            UpdatePreferences = new UpdatePreferences();
             AutoLinkFolderTagSameName = true;
         }
 
@@ -59,8 +60,9 @@ namespace COMPASS.Common.Models.Preferences
         public HomeLayoutPreferences HomeLayoutPreferences { get; set; }
 
         public UIState UIState { get; set; }
-
         public WindowRestoreState WindowState { get; set; }
+
+        public UpdatePreferences UpdatePreferences { get; set; }
 
         private bool _autoLinkFolderTagSameName;
         public bool AutoLinkFolderTagSameName
