@@ -53,6 +53,7 @@ namespace COMPASS.Common.DependencyInjection
             builder.RegisterType<CameraService>().As<ICameraService>();
             builder.RegisterType<NotificationService>().As<INotificationService>();
             builder.RegisterType<FilesService>().As<IFilesService>();
+            builder.RegisterType<FilterService>().As<IFilterService>();
             builder.RegisterType<WebService>().As<IWebService>();
         }
 

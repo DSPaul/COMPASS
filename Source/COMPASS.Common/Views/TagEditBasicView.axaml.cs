@@ -14,7 +14,7 @@ public partial class TagEditBasicView : UserControl
 
     private void TagNameTextBox_OnLoaded(object? sender, RoutedEventArgs e)
     {
-        if (sender is TextBox textBox)
+        if (sender is TextBox textBox && textBox.IsEffectivelyVisible)
         {
             textBox.Focus();
             textBox.CaretIndex = textBox.Text?.Length ?? 0;

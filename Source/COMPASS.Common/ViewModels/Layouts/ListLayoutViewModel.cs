@@ -1,5 +1,4 @@
-﻿using System.Collections.Specialized;
-using Avalonia.Collections;
+﻿using Avalonia.Collections;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.ViewModels.Main;
@@ -16,9 +15,14 @@ namespace COMPASS.Common.ViewModels.Layouts
         
         public DataGridCollectionView? CodexCollectionView { get; set => SetProperty(ref field, value); }
 
-        protected override void OnCollectionChanged(object? sender, EventArgs? e)
+        protected override void OnCollectionChanging(object? sender, EventArgs? e)
         {
             FiltersVM.CodicesUpdated -= OnFilteredCodicesChanged;
+            base.OnCollectionChanging(sender, e);
+        }
+
+        protected override void OnCollectionChanged(object? sender, EventArgs? e)
+        {
             base.OnCollectionChanged(sender, e);
             SubscribeToCollectionChangedEvent();
         }

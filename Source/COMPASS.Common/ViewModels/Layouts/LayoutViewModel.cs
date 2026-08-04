@@ -1,5 +1,6 @@
 ﻿using Avalonia.Input;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using COMPASS.Common.Adorners;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
@@ -9,6 +10,8 @@ using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.Avalonia.DragDrop;
+using COMPASS.Infra.Avalonia.ExtensionMethods;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Layouts
@@ -20,11 +23,13 @@ namespace COMPASS.Common.ViewModels.Layouts
             _tabViewModel = tabVM;
             PreferencesService = ServiceResolver.Resolve<IPreferencesService>();
             CodexInfoVM = new();
-            FiltersVM = _tabViewModel.FiltersVM;
+            tabVM.CollectionChanging += OnCollectionChanging;
             tabVM.CollectionChanged += OnCollectionChanged;
         }
 
-        private CollectionTabVM _tabViewModel;
+        protected CollectionTabVM _tabViewModel;
+
+        public RangeObservableCollection<CodexViewModel> FilteredCodexVms => _tabViewModel.FiltersVM.FilteredCodices;
 
         protected IPreferencesService PreferencesService { get; }
 
@@ -51,11 +56,7 @@ namespace COMPASS.Common.ViewModels.Layouts
         
         public CodexInfoViewModel CodexInfoVM { get; }
 
-        public FiltersViewModel FiltersVM
-        {
-            get;
-            set => SetProperty(ref field, value);
-        }
+        public FiltersViewModel FiltersVM => _tabViewModel.FiltersVM;
 
         public CodexOperations? CodexCommands => TabsViewModel.GetInstance().ActiveTab?.CodexCommands;
 
@@ -76,12 +77,18 @@ namespace COMPASS.Common.ViewModels.Layouts
             get;
             set => SetProperty(ref field, value);
         }
-        
+
         #endregion
+
+
+        protected virtual void OnCollectionChanging(object? sender, EventArgs? eventArgs)
+        {
+            
+        }
 
         protected virtual void OnCollectionChanged(object? sender, EventArgs? eventArgs)
         {
-            FiltersVM = _tabViewModel.FiltersVM;
+            Dispatcher.UIThread.PostIfNeeded(() => OnPropertyChanged(nameof(FilteredCodexVms)));
         }
 
         public DropManager FileDropManager { get; } = new DropManager()
@@ -122,6 +129,7 @@ namespace COMPASS.Common.ViewModels.Layouts
 
         public void Dispose()
         {
+            _tabViewModel.CollectionChanging -= OnCollectionChanging;
             _tabViewModel.CollectionChanged -= OnCollectionChanged;
         }
     }

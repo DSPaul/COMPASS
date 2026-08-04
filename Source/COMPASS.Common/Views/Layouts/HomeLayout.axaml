@@ -80,7 +80,7 @@
                 <TextBlock Text="FAVORITES" Margin="10,0" Foreground="{StaticResource TextMutedColor}"
                            FontWeight="Bold" VerticalAlignment="Center" />
             </StackPanel>
-            <ListBox ItemsSource="{Binding FiltersVM.Favorites}" SelectionChanged="SelectedCodicesChanged"
+            <ListBox ItemsSource="{Binding Favorites}" SelectionChanged="SelectedCodicesChanged"
                      KeyDown="HandleKeyDown"
                      SelectionMode="Multiple"
                      behav:ContextMenuSelector.SingleSelectContextMenu="{StaticResource CodexContextMenu}"
@@ -92,7 +92,7 @@
                 <TextBlock Text="RECENTLY OPENED" Margin="10,0" Foreground="{StaticResource TextMutedColor}"
                            FontWeight="Bold" VerticalAlignment="Center" />
             </StackPanel>
-            <ListBox ItemsSource="{Binding FiltersVM.RecentCodices}" SelectionChanged="SelectedCodicesChanged"
+            <ListBox ItemsSource="{Binding RecentCodices}" SelectionChanged="SelectedCodicesChanged"
                      KeyDown="HandleKeyDown"
                      SelectionMode="Multiple"
                      behav:ContextMenuSelector.SingleSelectContextMenu="{StaticResource CodexContextMenu}"
@@ -104,7 +104,7 @@
                 <TextBlock Text="MOST OPENED" Margin="10,0" Foreground="{StaticResource TextMutedColor}"
                            FontWeight="Bold" VerticalAlignment="Center" />
             </StackPanel>
-            <ListBox ItemsSource="{Binding FiltersVM.MostOpenedCodices}" SelectionChanged="SelectedCodicesChanged"
+            <ListBox ItemsSource="{Binding MostOpenedCodices}" SelectionChanged="SelectedCodicesChanged"
                      KeyDown="HandleKeyDown"
                      SelectionMode="Multiple"
                      behav:ContextMenuSelector.SingleSelectContextMenu="{StaticResource CodexContextMenu}"
@@ -116,7 +116,7 @@
                 <TextBlock Text="RECENTLY ADDED" Margin="10,0" Foreground="{StaticResource TextMutedColor}"
                            FontWeight="Bold" VerticalAlignment="Center" />
             </StackPanel>
-            <ListBox ItemsSource="{Binding FiltersVM.RecentlyAddedCodices}" SelectionChanged="SelectedCodicesChanged"
+            <ListBox ItemsSource="{Binding RecentlyAddedCodices}" SelectionChanged="SelectedCodicesChanged"
                      KeyDown="HandleKeyDown"
                      SelectionMode="Multiple"
                      behav:ContextMenuSelector.SingleSelectContextMenu="{StaticResource CodexContextMenu}"

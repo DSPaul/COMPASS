@@ -1,10 +1,9 @@
-﻿using Avalonia;
+﻿using Avalonia.Collections;
 using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Avalonia.Threading;
+using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -26,6 +25,43 @@ namespace COMPASS.Infra.Avalonia.ExtensionMethods
             }
 
             return default;
+        }
+
+        /// <summary>
+        /// Sort an AvaloniaList in place
+        /// </summary>
+        /// <param name="keySelector"></param>
+        /// <param name="sortDirection"></param>
+        /// <typeparam name="TKey"></typeparam>
+        public static void Sort<T, TKey>(this AvaloniaList<T> list, Func<T, TKey> keySelector, ListSortDirection sortDirection = ListSortDirection.Ascending)
+        {
+            List<T> sorted = sortDirection switch
+            {
+                ListSortDirection.Ascending => list.OrderBy(keySelector).ToList(),
+                ListSortDirection.Descending => list.OrderByDescending(keySelector).ToList(),
+                _ => throw new ArgumentOutOfRangeException(nameof(sortDirection), sortDirection, null)
+            };
+
+            for (int i = 0; i < sorted.Count(); i++)
+            {
+                var prevIdx = list.IndexOf(sorted[i]);
+                if (prevIdx != i)
+                {
+                    list.Move(prevIdx, i);
+                }
+            }
+        }
+
+        public static void PostIfNeeded(this Dispatcher dispatcher, Action action)
+        {
+            if (dispatcher.CheckAccess())
+            {
+                action();
+            }
+            else
+            {
+                dispatcher.Post(action);
+            }
         }
 
         #region Json Serialization for DataTransfer

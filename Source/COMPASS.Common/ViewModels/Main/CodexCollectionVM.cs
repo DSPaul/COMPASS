@@ -1,11 +1,10 @@
 using System.Collections.Specialized;
+using System.ComponentModel;
 using COMPASS.Common.Interfaces.Repos;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
@@ -42,6 +41,8 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     {
     }
 
+    public EventHandler<PropertyChangedEventArgs>? CodexPropertyChanged;
+
     private void OnAllCodicesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         var oldCodices = e.OldItems?.Cast<Codex>() ?? [];
@@ -49,11 +50,27 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         foreach (var codexVm in oldCodexVms)
         {
             AllCodexVms.Remove(codexVm);
+            codexVm.PropertyChanged -= OnCodexPropertyChanged;
             codexVm.Dispose();
         }
-                
-        var newCodices = e.NewItems?.Cast<Codex>() ?? [];
-        AllCodexVms.AddRange(newCodices.Select(codex => new CodexViewModel(codex, this)));
+
+        var newCodices = (e.NewItems?.Cast<Codex>() ?? [])
+            .Select(codex => new CodexViewModel(codex, this))
+            .ToList();
+        foreach (var codexVm in newCodices)
+        {
+            codexVm.PropertyChanged += OnCodexPropertyChanged;
+        }
+
+        AllCodexVms.AddRange(newCodices);
+    }
+
+    // Route all codex property changed events through the collection vm
+    // to make it easier to listen for changes on the codices from the outside
+    private void OnCodexPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is not CodexViewModel codexVm) return;
+        CodexPropertyChanged?.Invoke(codexVm, e);
     }
 
     public readonly ICodexCollectionRepository _repo;

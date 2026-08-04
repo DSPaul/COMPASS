@@ -11,18 +11,19 @@ using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Avalonia.DragDrop;
+using COMPASS.Infra.Avalonia.ExtensionMethods;
 using COMPASS.Infra.Tools;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 
 namespace COMPASS.Common.ViewModels.Main
 {
     public class FiltersViewModel : ViewModelBase
     {
-        public FiltersViewModel(RangeObservableCollection<CodexViewModel> allCodexVms, FiltersState? filtersState = null)
+        public FiltersViewModel(CodexCollectionVM collectionVM, FiltersState? filtersState = null)
         {
-            _allCodexVms = allCodexVms;
+            _allCodexVms = collectionVM.AllCodexVms;
+            _filterService = ServiceResolver.Resolve<IFilterService>();
 
             //We want a single event at the end of the constructor 
             _codicesUpdatedNotifier = new (e => CodicesUpdated?.Invoke(this, e));
@@ -31,24 +32,27 @@ namespace COMPASS.Common.ViewModels.Main
             // Load sorting from settings
             InitSortingProperties();
 
-            _includedCodices = [.. _allCodexVms];
-            _excludedCodices = [];
-
             if (filtersState != null)
             {
                 IncludedFilters = new(filtersState.IncludedFilters.Select(ModelVmFactory.GetFilterViewModel));
                 ExcludedFilters = new(filtersState.ExcludedFilters.Select(ModelVmFactory.GetFilterViewModel));
             }
 
-            IncludedFilters.CollectionChanged += (_, _) => UpdateIncludedCodices();
-            ExcludedFilters.CollectionChanged += (_, _) => UpdateExcludedCodices();
-
-            _allCodexVms.CollectionChanged += OnCodexCollectionChanged;
-            SubscribeToCodexProperties(_allCodexVms);
+            IncludedFilters.CollectionChanged += HandleRefilter;
+            ExcludedFilters.CollectionChanged += HandleRefilter;
+            collectionVM.AllCodexVms.CollectionChanged += (_, _) =>
+            {
+                Dispatcher.UIThread.PostIfNeeded(() =>
+                {
+                    PopulateMetaDataCollections();
+                });
+                TriggerFilter();
+            };
+            collectionVM.CodexPropertyChanged += OnCodexPropertyChanged;
 
             PopulateMetaDataCollections();
 
-            ReFilter();
+            TriggerFilter();
 
             IncludedDropManager = CreateFilterDropManager(include: true);
             ExcludedDropManager = CreateFilterDropManager(include: false);
@@ -56,6 +60,7 @@ namespace COMPASS.Common.ViewModels.Main
 
         public event EventHandler? CodicesUpdated;
         private readonly EventDeferralScope _codicesUpdatedNotifier;
+        private IFilterService _filterService;
 
         #region Fields
 
@@ -63,13 +68,6 @@ namespace COMPASS.Common.ViewModels.Main
         
         private readonly RangeObservableCollection<CodexViewModel> _allCodexVms;
 
-        public int ItemsShown
-        {
-            get => Math.Min(field, FilteredCodices?.Count ?? 0);
-        } = 15;
-
-        private HashSet<CodexViewModel> _includedCodices;
-        private HashSet<CodexViewModel> _excludedCodices;
         
         #endregion
 
@@ -86,11 +84,6 @@ namespace COMPASS.Common.ViewModels.Main
         public bool HasActiveFilters => IncludedFilters.Any() || ExcludedFilters.Any();
 
         public RangeObservableCollection<CodexViewModel> FilteredCodices { get; } = [];
-
-        public ObservableCollection<CodexViewModel> Favorites => new(FilteredCodices.Where(c => c.Favorite));
-        public List<CodexViewModel> RecentCodices => FilteredCodices.OrderByDescending(c => c.LastOpened).ToList().GetRange(0, ItemsShown);
-        public List<CodexViewModel> MostOpenedCodices => FilteredCodices.OrderByDescending(c => c.OpenedCount).ToList().GetRange(0, ItemsShown);
-        public List<CodexViewModel> RecentlyAddedCodices => FilteredCodices.OrderByDescending(c => c.DateAdded).ToList().GetRange(0, ItemsShown);
 
         public string SearchTerm
         {
@@ -256,7 +249,7 @@ namespace COMPASS.Common.ViewModels.Main
                 if (value != _preferencesService.Preferences.UIState.SortDirection)
                 {
                     _preferencesService.Preferences.UIState.SortDirection = value;
-                    ApplySorting();
+                    SortAndNotify();
                     OnPropertyChanged();
                 }
             }
@@ -270,7 +263,7 @@ namespace COMPASS.Common.ViewModels.Main
                 if (!string.IsNullOrEmpty(value) && _preferencesService.Preferences.UIState.SortProperty != value)
                 {
                     _preferencesService.Preferences.UIState.SortProperty = value;
-                    ApplySorting();
+                    SortAndNotify();
                     OnPropertyChanged();
                 }
             }
@@ -292,40 +285,12 @@ namespace COMPASS.Common.ViewModels.Main
 
         #endregion
 
-        #region Methods and Commands
+        #region Event handlers
 
-        private void OnCodexCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        private void OnCodexPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            var oldCodexVms = e.OldItems?.Cast<CodexViewModel>() ?? [];
-            UnSubscribeFromCodexProperties(oldCodexVms);
-                
-            var newCodexVms = e.NewItems?.Cast<CodexViewModel>() ?? [];
-            SubscribeToCodexProperties(newCodexVms);
-            
-            ReFilter();
-        }
-        
-        private void SubscribeToCodexProperties(IEnumerable<CodexViewModel> codexVms)
-        {
-            //cause derived lists to update when codex gets updated
-            foreach (CodexViewModel c in codexVms)
-            {
-                c.PropertyChanged += OnCodexPropsChanged;
-            }
-        }
-        
-        private void UnSubscribeFromCodexProperties(IEnumerable<CodexViewModel> codexVms)
-        {
-            foreach (CodexViewModel c in codexVms)
-            {
-                c.PropertyChanged -= OnCodexPropsChanged;
-            }
-        }
-
-        private void OnCodexPropsChanged(object? _,  PropertyChangedEventArgs e)
-        {
-            if(e.PropertyName == nameof(CodexViewModel.Authors) || 
-                e.PropertyName == nameof(CodexViewModel.Publisher) || 
+            if (e.PropertyName == nameof(CodexViewModel.Authors) ||
+                e.PropertyName == nameof(CodexViewModel.Publisher) ||
                 e.PropertyName == nameof(CodexViewModel.Sources))
             {
                 PopulateMetaDataCollections();
@@ -338,33 +303,22 @@ namespace COMPASS.Common.ViewModels.Main
 
             if (influencesFilter)
             {
-                ReFilter();
+                TriggerFilter();
             }
             else if (influencesSort)
             {
-                ApplySorting();
+                SortAndNotify();
             }
-
-            Dispatcher.UIThread.Post(() =>
-            {
-                if (e.PropertyName == nameof(CodexViewModel.Favorite))
-                {
-                    OnPropertyChanged(nameof(Favorites));
-                }
-                else if (e.PropertyName == nameof(CodexViewModel.LastOpened))
-                {
-                    OnPropertyChanged(nameof(RecentCodices));
-                }
-                else if (e.PropertyName == nameof(CodexViewModel.OpenedCount))
-                {
-                    OnPropertyChanged(nameof(MostOpenedCodices));
-                }
-                else if (e.PropertyName == nameof(CodexViewModel.DateAdded))
-                {
-                    OnPropertyChanged(nameof(RecentlyAddedCodices));
-                }
-            });
         }
+
+        private void HandleRefilter(object? sender, EventArgs e)
+        {
+            TriggerFilter();
+        }
+
+        #endregion
+
+        #region Methods and Commands
         
         private void InitSortingProperties()
         {
@@ -389,7 +343,7 @@ namespace COMPASS.Common.ViewModels.Main
             }
         }
 
-        public void PopulateMetaDataCollections() => Dispatcher.UIThread.Invoke(() =>
+        public void PopulateMetaDataCollections() => Dispatcher.UIThread.Post(() =>
         {
             foreach (CodexViewModel vm in _allCodexVms)
             {
@@ -499,141 +453,27 @@ namespace COMPASS.Common.ViewModels.Main
             ExcludedFilters.Clear();
         }
 
-
-        //------------- Filter Logic ------------//
-        private void UpdateIncludedCodices(bool apply = true)
+        private void SortAndNotify()
         {
-            _includedCodices = [.. _allCodexVms];
-            foreach (FilterType filterType in Enum.GetValues(typeof(FilterType)))
-            {
-                // Included codices must match filters of all types so IntersectWith()
-                _includedCodices.IntersectWith(GetFilteredCodicesByType(IncludedFilters, filterType, true));
-            }
-            if (apply) ApplyFilters();
-        }
-        private void UpdateExcludedCodices(bool apply = true)
-        {
-            _excludedCodices = [];
-            foreach (FilterType filterType in Enum.GetValues(typeof(FilterType)))
-            {
-                // Codex is excluded as soon as it matches any excluded filter so UnionWith()
-                _excludedCodices.UnionWith(GetFilteredCodicesByType(ExcludedFilters, filterType, false));
-            }
-            if (apply) ApplyFilters();
+            _filterService.SortCodices(FilteredCodices, SortProperty, SortDirection);
+            _codicesUpdatedNotifier.Notify();
         }
 
-        /// <summary>
-        /// Get list of Codices that match filters of one filter type
-        /// </summary>
-        /// <param name="filters"></param>
-        /// <param name="filterType"></param>
-        /// <param name="include"> Determines whether returned codices should be included or excluded </param>
-        /// <returns></returns>
-        private IEnumerable<CodexViewModel> GetFilteredCodicesByType(IEnumerable<FilterViewModel> filters, FilterType filterType, bool include)
-        {
-            IEnumerable<FilterViewModel> relevantFilterVms = filters.Where(filter => filter.Type == filterType);
-            List<Filter> relevantFilters = relevantFilterVms.Select(filterVm => filterVm.GetModel()).ToList();
-            
-            if (relevantFilters.Count == 0) return include ? _allCodexVms : Enumerable.Empty<CodexViewModel>();
-
-            return filterType switch
-            {
-                FilterType.Tag => GetFilteredCodicesByTags(relevantFilters, include),
-                _ => _allCodexVms.Where(vm => relevantFilters.Any(filter => filter.Apply(vm.GetModel())))
-            };
-        }
-
-        private HashSet<CodexViewModel> GetFilteredCodicesByTags(IEnumerable<Filter> filters, bool include)
-            => include ? GetIncludedCodicesByTags(filters) : GetExcludedCodicesByTags(filters);
-        private HashSet<CodexViewModel> GetIncludedCodicesByTags(IEnumerable<Filter> filters)
-        {
-            HashSet<CodexViewModel> includedCodices = [.. _allCodexVms];
-
-            List<Tag> includedTags = filters
-                .Select(filter => ((TagViewModel)filter.FilterValue!).GetModel())
-                .ToList();
-
-            if (includedTags.Count > 0)
-            {
-                HashSet<Tag> includedGroups = includedTags.Select(tag => tag.GetGroup()).ToHashSet();
-
-                // Go over every group, tags within same group have OR relation, groups have AND relation
-                foreach (Tag group in includedGroups)
-                {
-                    // Make list with all included tags in that group, including children
-                    List<Tag> singleGroupTags = includedTags.Where(tag => tag.GetGroup() == group).Flatten().ToList();
-                    // Add parents of those tags, must come AFTER children, otherwise children of parents are included which is wrong
-                    for (int i = 0; i < singleGroupTags.Count; i++)
-                    {
-                        Tag? parentTag = singleGroupTags[i].Parent;
-                        if (parentTag is not null && !parentTag.IsGroup) singleGroupTags.AddIfMissing(parentTag);
-                    }
-
-                    //List of codices that match filters in one group
-                    HashSet<CodexViewModel> singleGroupFilteredCodices =
-                        [.. _allCodexVms.Where(codexVm => singleGroupTags.Intersect(codexVm.GetModel().Tags).Any())];
-
-                    includedCodices = includedCodices.Intersect(singleGroupFilteredCodices).ToHashSet();
-                }
-            }
-            return includedCodices;
-        }
-        private HashSet<CodexViewModel> GetExcludedCodicesByTags(IEnumerable<Filter> filters)
-        {
-            HashSet<CodexViewModel> excludedCodices = [];
-
-            var excludedTags = filters.Select(filter => ((TagViewModel)filter.FilterValue!).GetModel()).ToList();
-
-            if (excludedTags.Count > 0)
-            {
-                // If parent is excluded, so should all the children
-                excludedTags = excludedTags.Flatten().ToList();
-                excludedCodices = [.. _allCodexVms.Where(codexVm => excludedTags.Intersect(codexVm.GetModel().Tags).Any())];
-            }
-
-            return excludedCodices;
-        }
-        //------------------------------------//
-
-        private void ApplySorting()
-        {
-            Dispatcher.UIThread.Invoke(() =>
-            {
-                FilteredCodices?.Sort(c => c.GetPropertyValue(SortProperty), SortDirection);
-                _codicesUpdatedNotifier.Notify();
-            });
-        }
-
-        private void ApplyFilters(bool force = false)
-        {
-            IList<CodexViewModel> filteredCodexVms = _allCodexVms
-                .Intersect(_includedCodices)
-                .Except(_excludedCodices)
-                .ToList();
-
-            if (force || !FilteredCodices.SequenceEqual(filteredCodexVms))
-            {
-                Dispatcher.UIThread.Invoke(() =>
-                {
-                    FilteredCodices.ReplaceRange(filteredCodexVms);
-                    //Also apply filtering to these lists
-                    OnPropertyChanged(nameof(Favorites));
-                    OnPropertyChanged(nameof(RecentCodices));
-                    OnPropertyChanged(nameof(MostOpenedCodices));
-                    OnPropertyChanged(nameof(RecentlyAddedCodices));
-                });
-            }
-
-            ApplySorting();
-        }
-
-        public void ReFilter(bool force = false)
+        public void TriggerFilter(bool force = false)
         {
             try
             {
-                UpdateIncludedCodices(false);
-                UpdateExcludedCodices(false);
-                ApplyFilters(force);
+                IList<CodexViewModel> filteredCodexVms = _filterService.FilterCodices(_allCodexVms, GetFiltersState());
+
+                if (force || !FilteredCodices.SequenceEqual(filteredCodexVms))
+                {
+                    Dispatcher.UIThread.PostIfNeeded(() =>
+                    {
+                        FilteredCodices.ReplaceRange(filteredCodexVms);
+                        SortAndNotify();  
+                    });
+                }
+
             }
             catch (Exception ex)
             {
@@ -670,7 +510,6 @@ namespace COMPASS.Common.ViewModels.Main
                 CanDrop = tag => !tag.IsGroup,
                 AdornerFactory = tags => new DropTagAdorner(tags[0]) { Format = "Filter on {0}" },
             });
-
         #endregion
     }
 }

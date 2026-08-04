@@ -33,7 +33,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     {
         _collectionHandle = collectionHandle;
         
-        _filtersVM = new(_collectionHandle.CollectionVM.AllCodexVms, filtersState);
+        _filtersVM = new(_collectionHandle.CollectionVM, filtersState);
         _tagsVM = new(_collectionHandle.CollectionVM, _filtersVM);
         _currentLayout = LayoutViewModel.GetLayout(this, layout);
         CodexCommands = new();
@@ -41,6 +41,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
 
     #region events
 
+    public event EventHandler? CollectionChanging;
     public event EventHandler? CollectionChanged;
     
     #endregion
@@ -265,7 +266,8 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         ServiceResolver.Resolve<IPreferencesService>().Preferences.UIState.StartupCollection = _collectionHandle.CollectionVM.Identifier;
         
         
-        FiltersVM = new(newHandle.CollectionVM.AllCodexVms);
+        CollectionChanging?.Invoke(this, EventArgs.Empty);
+        FiltersVM = new(newHandle.CollectionVM);
         TagsVM = new(newHandle.CollectionVM, FiltersVM);
         CodexCommands = new();
 
