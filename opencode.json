@@ -1,0 +1,14 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "lsp": true,
+  "instructions": [
+    ".github/copilot-instructions.md",
+    "docs/architecture.md"
+  ],
+  "mcp": {
+    "avalonia-build": {
+      "type": "remote",
+      "url": "https://docs-mcp.avaloniaui.net/mcp"
+    }
+  }
+}
