@@ -324,40 +324,44 @@ namespace COMPASS.Common.ViewModels.Main
 
         private void OnCodexPropsChanged(object? _,  PropertyChangedEventArgs e)
         {
-            PopulateMetaDataCollections();
+            if(e.PropertyName == nameof(CodexViewModel.Authors) || 
+                e.PropertyName == nameof(CodexViewModel.Publisher) || 
+                e.PropertyName == nameof(CodexViewModel.Sources))
+            {
+                PopulateMetaDataCollections();
+            }
 
             bool influencesSort = e.PropertyName == SortProperty;
             bool influencesFilter = IncludedFilters.Concat(ExcludedFilters)
                                                    .SelectMany(filerVM => filerVM.GetModel().RelatedProperties)
                                                    .Contains(e.PropertyName);
-            
-            Dispatcher.UIThread.Invoke(() =>
+
+            if (influencesFilter)
             {
-                using var updateScope = DelayUpdateEvents();
-                if(e.PropertyName == nameof(CodexViewModel.Favorite))
+                ReFilter();
+            }
+            else if (influencesSort)
+            {
+                ApplySorting();
+            }
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (e.PropertyName == nameof(CodexViewModel.Favorite))
                 {
                     OnPropertyChanged(nameof(Favorites));
                 }
-                else if(e.PropertyName == nameof(CodexViewModel.LastOpened))
+                else if (e.PropertyName == nameof(CodexViewModel.LastOpened))
                 {
                     OnPropertyChanged(nameof(RecentCodices));
                 }
-                else if(e.PropertyName == nameof(CodexViewModel.OpenedCount))
+                else if (e.PropertyName == nameof(CodexViewModel.OpenedCount))
                 {
                     OnPropertyChanged(nameof(MostOpenedCodices));
                 }
-                else if(e.PropertyName == nameof(CodexViewModel.DateAdded))
+                else if (e.PropertyName == nameof(CodexViewModel.DateAdded))
                 {
                     OnPropertyChanged(nameof(RecentlyAddedCodices));
-                }
-
-                if (influencesFilter)
-                {
-                    ReFilter();
-                }
-                else if (influencesSort)
-                {
-                    ApplySorting();
                 }
             });
         }

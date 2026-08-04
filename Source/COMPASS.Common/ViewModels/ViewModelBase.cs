@@ -129,7 +129,7 @@ namespace COMPASS.Common.ViewModels
             
             if (this is IConfirmable confirmable)
             {
-                Dispatcher.UIThread.Invoke(confirmable.ConfirmCommand.NotifyCanExecuteChanged);
+                Dispatcher.UIThread.Post(confirmable.ConfirmCommand.NotifyCanExecuteChanged);
             }
 
             OnValidated(propertyName);

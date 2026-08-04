@@ -18,7 +18,7 @@ namespace COMPASS.Common.ViewModels.Layouts
 
         protected override void OnCollectionChanged(object? sender, EventArgs? e)
         {
-            FiltersVM.FilteredCodices.CollectionChanged -= OnFilteredCodicesChanged;
+            FiltersVM.CodicesUpdated -= OnFilteredCodicesChanged;
             base.OnCollectionChanged(sender, e);
             SubscribeToCollectionChangedEvent();
         }

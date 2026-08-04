@@ -50,14 +50,14 @@ public abstract class ModelViewModelBase<TModel> : ViewModelBase, IDisposable wh
     protected void HandlePropertyChanged(string propertyName)
     {
         // 1. Forward the model's PropertyChanged to the UI
-        Dispatcher.UIThread.Invoke(() => OnPropertyChanged(propertyName));
+        Dispatcher.UIThread.Post(() => OnPropertyChanged(propertyName));
 
         // 2. Notify any derived/computed properties
         if (_derivedProperties.TryGetValue(propertyName, out var derivedPropertiesList))
         {
             foreach (var derivedProperty in derivedPropertiesList)
             {
-                Dispatcher.UIThread.Invoke(() => OnPropertyChanged(derivedProperty));
+                Dispatcher.UIThread.Post(() => OnPropertyChanged(derivedProperty));
             }
         }
 

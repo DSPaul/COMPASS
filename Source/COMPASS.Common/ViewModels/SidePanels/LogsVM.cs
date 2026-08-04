@@ -9,7 +9,7 @@ public class LogsVM : ViewModelBase
 {
     public static void AddLog(LogEntry log)
     {
-        Dispatcher.UIThread.Invoke(() => ActivityLog.Add(log));
+        Dispatcher.UIThread.Post(() => ActivityLog.Add(log));
     }
 
     public LogsVM()

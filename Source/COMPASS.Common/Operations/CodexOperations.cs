@@ -1,14 +1,10 @@
-﻿using Avalonia;
-using Avalonia.Controls.Primitives;
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
-using COMPASS.Common.Adorners;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;

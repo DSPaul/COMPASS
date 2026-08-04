@@ -31,14 +31,14 @@ public abstract class ModelViewModelBase<TModel> : ViewModelBase, IDisposable
     protected void HandlePropertyChanged(string propertyName)
     {
         //Notify property changed on prop itself
-        Dispatcher.UIThread.Invoke(() => OnPropertyChanged(propertyName));
+        Dispatcher.UIThread.Post(() => OnPropertyChanged(propertyName));
         
         //Notify all derived Properties
         if (_derivedProperties.TryGetValue(propertyName, out var derivedPropertiesList))
         {
             foreach (var derivedProperty in derivedPropertiesList)
             {
-                Dispatcher.UIThread.Invoke(() => OnPropertyChanged(derivedProperty));
+                Dispatcher.UIThread.Post(() => OnPropertyChanged(derivedProperty));
             }
         }
 

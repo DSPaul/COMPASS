@@ -74,7 +74,11 @@ namespace COMPASS.Infra.Models
 
             for (int i = 0; i < sorted.Count(); i++)
             {
-                Move(Items.IndexOf(sorted[i]), i);
+                var prevIdx = Items.IndexOf(sorted[i]);
+                if(prevIdx != i)
+                {
+                    Move(prevIdx, i);
+                }
             }
         }
 
