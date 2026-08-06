@@ -17,6 +17,7 @@ namespace COMPASS.Common.Services.StateManagers
         private readonly CancellationTokenSource _cts = new();
 
         private readonly List<Update> _updates = [];
+        private bool _checkingUpdate;
 
         public EventHandler<EventArgs>? OnUpdateFound;
 
@@ -70,6 +71,14 @@ namespace COMPASS.Common.Services.StateManagers
 
         private async Task CheckForUpdates()
         {
+            //Guard to prevent manual and automatic updates from running at the same time
+            //More likely then you think because downloads can happen in this method which takes time
+            if (_checkingUpdate)
+            {
+                return;
+            }
+            _checkingUpdate = true;
+
             try
             {
                 var updatePrefs = preferencesService.Preferences.UpdatePreferences;
@@ -84,13 +93,17 @@ namespace COMPASS.Common.Services.StateManagers
                     return;
                 }
 
-                OnUpdateFound?.Invoke(this, EventArgs.Empty);
                 var latestUpdate = _updates.OrderByDescending(u => u.Version).First();
                 await updateService.OnUpdatesFound(_updates);
+                OnUpdateFound?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception ex)
             {
                 logger.Error($"Checking for updates failed", ex);
+            }
+            finally
+            {
+                _checkingUpdate = false;
             }
         }
 
