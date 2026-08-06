@@ -8,6 +8,10 @@ namespace COMPASS.Common.Models.Preferences
     {
         public bool CheckForUpdates { get; set; } = true;
         public bool IncludePrerelease { get; set; } = false;
-        public HashSet<string> SkippedUpdates { get; set; } = [];
+
+        /// <summary>
+        /// Updates that the user has been notified about
+        /// </summary>
+        public HashSet<string> NotifiedUpdates { get; set; } = new HashSet<string>();
     }
 }

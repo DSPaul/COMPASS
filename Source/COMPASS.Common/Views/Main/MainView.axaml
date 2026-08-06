@@ -55,6 +55,7 @@
                 <ColumnDefinition Width="600" MinWidth="250"
                                   behaviors:ShinkPriority.ColumnShrinkPriority="1"/> <!-- Searchbar -->
                 <ColumnDefinition Width="*" />    <!-- Spacing -->
+                <ColumnDefinition Width="auto"/> <!-- Update Button -->
                 <ColumnDefinition Width="auto"/> <!-- Settings Button -->
                 <ColumnDefinition Width="{Binding WindowControlsSpacing, Mode=OneTime}" />  <!-- Window controls -->
             </Grid.ColumnDefinitions>
@@ -89,8 +90,14 @@
                 </Grid>
             </Border>
 
+            <!--Update-->
+            <controls:IconButton Grid.Column="5"  WindowDecorationProperties.ElementRole="User"
+                                 IsVisible="{Binding UpdateAvailable}"
+                                 Icon="Download" Content="Update"
+                                 Margin="5 0" Command="{Binding CheckForUpdatesCommand}"/>
+
             <!--Settings button-->
-            <controls:IconButton Grid.Column="5" WindowDecorationProperties.ElementRole="User"
+            <controls:IconButton Grid.Column="6" WindowDecorationProperties.ElementRole="User"
                                  Theme="{StaticResource IconOnly}"
                                  Icon="DotsVertical" Margin="10,0"
                                  Height="25" Background="Transparent"
@@ -127,7 +134,7 @@
         <!-- Bottom bar-->
         <Grid DockPanel.Dock="Bottom" Height="25"
               Background="{StaticResource TitlebarBackground}"
-              ColumnDefinitions="auto,auto, *, auto,auto,auto">
+              ColumnDefinitions="auto, auto, *, auto, auto, auto">
             <Grid.Styles>
                 <Style Selector="StackPanel">
                     <Setter Property="VerticalAlignment" Value="Stretch" />

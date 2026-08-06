@@ -7,11 +7,12 @@ using COMPASS.Infra.Models.Updates;
 namespace COMPASS.Windows.Services
 {
     internal class UpdateService(
+        IIOService ioService,
         ILogger logger,
         IGitHubApiClient gitHubApiClient,
         INotificationService notificationService,
         IPreferencesService preferencesService,
-        IWebService webService) : UpdateServiceBase(logger, gitHubApiClient, notificationService, preferencesService, webService)
+        IWebService webService) : UpdateServiceBase(ioService, logger, gitHubApiClient, notificationService, preferencesService, webService)
     {
         protected override async Task<bool> AssureUpdateDownloaded(Update update)
         {

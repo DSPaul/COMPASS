@@ -1,5 +1,4 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.Views.Windows;
@@ -11,47 +10,52 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Infra.Tools;
 using Material.Icons;
-using COMPASS.Infra.Interfaces.Services;
 
 namespace COMPASS.Common.ViewModels.Main
 {
     public class MainViewModel : ViewModelBase
     {
-        private readonly IWebService _webService;
         private readonly IUIService _uiService;
-        private readonly IUpdateService _updateService;
         
         public MainViewModel()
         {
             Logger.Info($"Launching COMPASS v{ApplicationService.Version}");
 
-            _webService = ServiceResolver.Resolve<IWebService>();
             _uiService = ServiceResolver.Resolve<IUIService>();
-            _updateService = ServiceResolver.Resolve<IUpdateService>();
-            
+
             InitLayouts();
             CollectionManager.DiscoverCollections();
-            
+
             TabsVM = TabsViewModel.GetInstance();
             TabsVM.CreateTab();
-            
+
             LeftDockVM = new(TabsVM);
 
-            //Start check for updates loop
-            ServiceResolver.Resolve<UpdateManager>().StartUpdateCheckLoop();
+            InitCheckForUpdates();
 
-            //Start timer that periodically checks if there is an internet connection
             InitConnectionTimer();
         }
 
-        #region Init Functions
 
+        #region Init Functions
+        /// <summary>
+        /// Start timer that periodically checks if there is an internet connection
+        /// </summary>
         private void InitConnectionTimer()
         {
             ConnectivityManager.IsOnlineChanged += online => IsOnline = online;
             ConnectivityManager.Start();
         }
 
+        /// <summary>
+        /// Start the periodic update checking loop
+        /// </summary>
+        private void InitCheckForUpdates()
+        {
+            var updateManager = ServiceResolver.Resolve<UpdateManager>();
+            updateManager.OnUpdateFound += (_, _) => UpdateAvailable = updateManager.UpdatesAvailable;
+            updateManager.StartUpdateCheckLoop();
+        }
 
         private void InitLayouts() => AllLayouts = 
             [
@@ -76,6 +80,7 @@ namespace COMPASS.Common.ViewModels.Main
         } = true;
 
         public string VersionName => $"v{ApplicationService.Version}";
+        public bool UpdateAvailable { get; set => SetProperty(ref field, value); }
         public ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
 
         #endregion

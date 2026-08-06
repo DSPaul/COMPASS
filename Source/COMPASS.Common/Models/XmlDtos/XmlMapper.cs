@@ -3,6 +3,7 @@ using System.Text;
 using Avalonia.Media;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Infra.ExtensionMethods;
+using NuGet.Versioning;
 
 namespace COMPASS.Common.Models.XmlDtos
 {
@@ -133,6 +134,7 @@ namespace COMPASS.Common.Models.XmlDtos
         {
             var model = new Preferences.Preferences()
             {
+                LastRanVersion = dto.LastRanVersion != null && SemanticVersion.TryParse(dto.LastRanVersion, out var version) ? version : null,
                 OpenCodexPriority = MapCodexPriorities(dto.OpenFilePriorityIDs),
                 ImportableCodexProperties = dto.CodexProperties.ToModels(),
                 ListLayoutPreferences = dto.ListLayoutPreferences,
@@ -151,6 +153,7 @@ namespace COMPASS.Common.Models.XmlDtos
         {
             PreferencesDto dto = new()
             {
+                LastRanVersion = prefs.LastRanVersion?.ToString(),
                 OpenFilePriorityIDs = prefs.OpenCodexPriority.Select(pf => pf.Id).ToList(),
                 CodexProperties = prefs.ImportableCodexProperties.Select(prop => prop.ToDto()).ToList(),
                 ListLayoutPreferences = prefs.ListLayoutPreferences,

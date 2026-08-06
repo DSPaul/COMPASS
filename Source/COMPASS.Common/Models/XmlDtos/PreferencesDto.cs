@@ -10,6 +10,8 @@ namespace COMPASS.Common.Models.XmlDtos
     [XmlRoot("SerializablePreferences")]
     public class PreferencesDto
     {
+
+        public string? LastRanVersion { get; set; } = string.Empty;
         public List<int>? OpenFilePriorityIDs { get; set; }
 
         [XmlArray(ElementName = "CodexProperties")]

@@ -8,11 +8,12 @@ using System.Diagnostics;
 namespace COMPASS.Linux.Services
 {
     public class UpdateService(
+        IIOService ioService,
         ILogger logger,
         IGitHubApiClient gitHubApiClient,
         INotificationService notificationService,
         IPreferencesService preferencesService,
-        IWebService webService) : UpdateServiceBase(logger, gitHubApiClient, notificationService, preferencesService, webService)
+        IWebService webService) : UpdateServiceBase(ioService, logger, gitHubApiClient, notificationService, preferencesService, webService)
     {
         protected override Task<bool> AssureUpdateDownloaded(Update update) => Task.FromResult(true); //nothing to download
 

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Operations;
 using COMPASS.Infra.ExtensionMethods;
+using NuGet.Versioning;
 
 namespace COMPASS.Common.Models.Preferences
 {
@@ -38,6 +39,11 @@ namespace COMPASS.Common.Models.Preferences
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// The last version of COMPASS that the user has run
+        /// </summary>
+        public SemanticVersion? LastRanVersion { get; set; }
 
         private ObservableCollection<PreferableFunction<Codex>> _openCodexPriority;
         /// <summary>

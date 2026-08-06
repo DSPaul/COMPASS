@@ -2,6 +2,7 @@
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Infra.Interfaces.Services;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Updates;
 using System.Security.Cryptography;
 
@@ -10,11 +11,16 @@ namespace COMPASS.Common.Services.StateManagers
     public class UpdateManager(
         ILogger logger,
         IUpdateService updateService,
-        IPreferencesService preferencesService)
+        IPreferencesService preferencesService,
+        INotificationService notificationService)
     {
         private readonly CancellationTokenSource _cts = new();
 
-        private static readonly List<Update> _updates = [];
+        private readonly List<Update> _updates = [];
+
+        public EventHandler<EventArgs>? OnUpdateFound;
+
+        public bool UpdatesAvailable => _updates.Count > 0;
 
         public void StartUpdateCheckLoop()
         {
@@ -24,12 +30,31 @@ namespace COMPASS.Common.Services.StateManagers
             }
         }
 
+        private void ClearUpdateAssets()
+        {
+            var updateFolder = Path.Combine(IApplicationDataService.ApplicationDataPath, Constants.DIR_UPDATES);
+            if (!Directory.Exists(updateFolder)) return;
+            try
+            {
+                Directory.Delete(updateFolder, true);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Failed to delete old update assets", ex);
+            }
+        }
+
         public async Task ExplicitCheckUpdates()
         {
-            //Explicit trigger, clear skipped updates to give user another chance
-            preferencesService.Preferences.UpdatePreferences.SkippedUpdates.Clear();
+            //Explicit trigger, clear notified updates to show popup again if found
+            preferencesService.Preferences.UpdatePreferences.NotifiedUpdates.Clear();
 
             await CheckForUpdates();
+            if (!_updates.Any())
+            {
+                Notification not = new("No updates", "No updates were found. You are on the latest version of COMPASS.");
+                notificationService.Notify(not);
+            }
         }
 
         private async Task RunUpdateCheckLoop(CancellationToken cancellationToken)
@@ -50,13 +75,16 @@ namespace COMPASS.Common.Services.StateManagers
                 var updatePrefs = preferencesService.Preferences.UpdatePreferences;
                 _updates.Clear();
                 var updates = await updateService.CheckForUpdates(updatePrefs.IncludePrerelease).ConfigureAwait(false);
-                _updates.AddRange(updates.Where(u => !updatePrefs.SkippedUpdates.Contains(u.Version.ToString())));
+                _updates.AddRange(updates);
 
                 if (!_updates.Any())
                 {
+                    //No updates so can delete all old update assets
+                    ClearUpdateAssets();
                     return;
                 }
 
+                OnUpdateFound?.Invoke(this, EventArgs.Empty);
                 var latestUpdate = _updates.OrderByDescending(u => u.Version).First();
                 await updateService.OnUpdatesFound(_updates);
             }

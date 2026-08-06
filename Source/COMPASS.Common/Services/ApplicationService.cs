@@ -13,6 +13,8 @@ public static class ApplicationService
 {
     public static string Version { get; } = GetVersion();
 
+    public static bool FirstRunSinceUpdate { get; set; } = false;
+
     public static string GetVersion()
     {
         return Assembly.GetExecutingAssembly()

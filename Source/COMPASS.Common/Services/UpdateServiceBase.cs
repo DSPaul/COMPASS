@@ -1,8 +1,8 @@
 ﻿using COMPASS.ApiClients.GitHub;
 using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.ViewModels;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
@@ -14,6 +14,7 @@ using System.Diagnostics;
 namespace COMPASS.Common.Services
 {
     public abstract class UpdateServiceBase(
+        IIOService ioService,
         ILogger logger,
         IGitHubApiClient gitHubApiClient,
         INotificationService notificationService,
@@ -55,12 +56,20 @@ namespace COMPASS.Common.Services
         public async Task OnUpdatesFound(IList<Update> updates)
         {
             if (updates.Count == 0)
+            {
                 return;
+            }
 
             var latest = updates.OrderByDescending(u => u.Version).First();
+            var notifiedUpdates = preferencesService.Preferences.UpdatePreferences.NotifiedUpdates;
 
             //download required assets in the background first for a smoother user experience
             await AssureUpdateDownloaded(latest);
+
+            if(notifiedUpdates.Contains(latest.Version.ToString()))
+            {
+                return;
+            }
 
             string changelog = string.Join("\n",
                 updates.OrderByDescending(u => u.Version)
@@ -70,30 +79,22 @@ namespace COMPASS.Common.Services
                 "Update Available",
                 $"Version v{latest.Version} is available.",
                 Severity.Info,
-                NotificationAction.Cancel | NotificationAction.Decline | NotificationAction.Confirm)
+                NotificationAction.Cancel | NotificationAction.Confirm)
             {
                 ConfirmText = "Update",
-                DeclineText = "Ignore",
-                CancelText = "Later",
+                CancelText = "Not now",
                 Details = changelog
             };
 
             await notificationService.ShowDialog(notification).ConfigureAwait(false);
-
-            switch (notification.Result)
+            foreach(var update in updates)
             {
-                case NotificationAction.Confirm:
-                    await HandleUpdate(latest);
-                    break;
-                case NotificationAction.Decline:
-                    foreach(var update in updates)
-                    {
-                        preferencesService.Preferences.UpdatePreferences.SkippedUpdates.Add(update.Version.ToString());
-                    }
-                    break;
-                case NotificationAction.Cancel:
-                    // User chose to be reminded later
-                    break;
+                notifiedUpdates.Add(update.Version.ToString());
+            }
+
+            if(notification.Result == NotificationAction.Confirm)
+            {
+                await HandleUpdate(latest);
             }
         }
 
@@ -121,6 +122,7 @@ namespace COMPASS.Common.Services
             //cut off sha256:... prefix
             string checkSum = asset.Checksum.Split(":").Last();
 
+            ioService.EnsureDirectoryExists(targetPath);
             try
             {
                 await Utils.RetryAsync(3, async () =>

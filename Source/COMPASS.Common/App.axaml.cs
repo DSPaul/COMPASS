@@ -1,9 +1,8 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
@@ -11,6 +10,7 @@ using COMPASS.Common.Tools;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.Tools;
+using NuGet.Versioning;
 
 namespace COMPASS.Common;
 
@@ -57,17 +57,17 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            ServiceResolver.Resolve<IApplicationDataService>().MigrateFromV1();
+            HandleVersionChanges();
 
             var mainWindow = new MainWindow();
-            var mainVm =  new MainViewModel();
+            var mainVm = new MainViewModel();
             mainWindow.DataContext = mainVm;
 
             desktop.MainWindow = mainWindow;
 
             // Show main window to avoid framework shutdown when closing splash screen
             mainWindow.Show();
-            
+
             //must be done after window is shown, as notification service will use it as parent
             //and showing a notification on a non visible window causes a crash
             WindowManager.MainWindow = mainWindow;
@@ -76,5 +76,36 @@ public partial class App : Application
             // Finally, close the splash screen
             _splashScreenWindow?.Close();
         }
+    }
+
+    /// <summary>
+    /// Handle launching a different version of the application
+    /// </summary>
+    private static void HandleVersionChanges()
+    {
+        var preferencesService = ServiceResolver.Resolve<IPreferencesService>();
+        var logger = ServiceResolver.Resolve<ILogger>();
+
+        SemanticVersion? lastRanVersion = preferencesService.Preferences.LastRanVersion;
+        SemanticVersion? currentVersion = SemanticVersion.Parse(ApplicationService.Version);
+
+        //Check if magration from v1 is needed
+        if (lastRanVersion == null || lastRanVersion.Major == 1)
+        {
+            ServiceResolver.Resolve<IApplicationDataService>().MigrateFromV1();
+        }
+
+        //Check if current verion is newer or older than last ran version
+        if (lastRanVersion == null || lastRanVersion < currentVersion)
+        {
+            ApplicationService.FirstRunSinceUpdate = true;
+        }
+        else if(lastRanVersion > currentVersion)
+        {
+            logger.Debug($"Downgrade detected, {lastRanVersion} -> {currentVersion}");
+        }
+
+        preferencesService.Preferences.LastRanVersion = currentVersion;
+        preferencesService.SavePreferences();
     }
 }
