@@ -9,7 +9,6 @@
     <Project Path="Source/COMPASS.Windows/COMPASS.Windows.csproj" />
   </Folder>
   <Folder Name="/Docs/">
-    <File Path="Docs/*.md" />
     <File Path="Docs/CollectionLifeCycle.md" />
     <File Path="Docs/EditPattern.md" />
     <File Path="Docs/MVVM.md" />

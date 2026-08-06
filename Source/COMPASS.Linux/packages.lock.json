@@ -336,6 +336,20 @@
           "System.Drawing.Common": "8.0.29"
         }
       },
+      "Markdig": {
+        "type": "Transitive",
+        "resolved": "1.1.3",
+        "contentHash": "wboYc6YToID7koq+onej7rjd/kv4urZaZ4QMiJoF/jXt/ZlXe2Af9gWG4nOe5tk654UaOPYvKL64iFum7qWEYA=="
+      },
+      "MarkView.Avalonia": {
+        "type": "Transitive",
+        "resolved": "12.0.3",
+        "contentHash": "JSMmDw0jakZ/RE2XNMg/UF5uCurAyRS1JjPfKrTxHYHJGPb/5ZAskqPSS6SaGNgGUr64M8m46nEfU3FuImB2uw==",
+        "dependencies": {
+          "Avalonia": "12.0.2",
+          "Markdig": "1.1.3"
+        }
+      },
       "Material.Icons": {
         "type": "Transitive",
         "resolved": "3.0.2",
@@ -690,15 +704,16 @@
           "Avalonia.Fonts.Inter": "[12.1.0, )",
           "Avalonia.Labs.Gif": "[12.0.2, )",
           "Avalonia.Themes.Fluent": "[12.1.0, )",
-          "COMPASS.ApiClients": "[2.0.0-alpha.1, )",
-          "COMPASS.Infra": "[2.0.0-alpha.1, )",
-          "COMPASS.Infra.Avalonia": "[2.0.0-alpha.1, )",
+          "COMPASS.ApiClients": "[2.0.0-alpha.2, )",
+          "COMPASS.Infra": "[2.0.0-alpha.2, )",
+          "COMPASS.Infra.Avalonia": "[2.0.0-alpha.2, )",
           "CommandLineParser": "[2.9.1, )",
           "FlashCap": "[1.11.0, )",
           "HtmlAgilityPack": "[1.12.4, )",
           "Magick.NET-Q8-AnyCPU": "[14.16.0, )",
           "Magick.NET.AvaloniaMediaImaging": "[1.1.14, )",
           "Magick.NET.SystemDrawing": "[8.0.25, )",
+          "MarkView.Avalonia": "[12.0.3, )",
           "Material.Icons.Avalonia": "[3.0.2, )",
           "Microsoft.Extensions.Http": "[10.0.10, )",
           "OpenCvSharp5": "[5.0.0.20260730, )",

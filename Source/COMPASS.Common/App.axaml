@@ -7,6 +7,7 @@
     <materialIcons:MaterialIconStyles />
     <StyleInclude Source="avares://COMPASS.Common/Themes/Styles.axaml" />
     <StyleInclude Source="avares://COMPASS.Common/Themes/Controls/DataGrid.axaml"/>
+    <StyleInclude Source="avares://MarkView.Avalonia/Themes/MarkdownTheme.axaml" />
   </Application.Styles>
   <Application.Resources>
     <ResourceDictionary>

@@ -2,6 +2,7 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using COMPASS.Common.EventHandlers;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Services;
@@ -19,6 +20,7 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        MarkdownViewerLinkHandler.EnsureRegistered();
         
 #if DEBUG
         this.AttachDeveloperTools();

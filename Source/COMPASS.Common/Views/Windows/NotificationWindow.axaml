@@ -6,6 +6,7 @@
         xmlns:enums="using:COMPASS.Infra.Models.Enums"
         xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
         xmlns:specialConverters="using:COMPASS.Common.Converters"
+        xmlns:md="using:MarkView.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="COMPASS.Common.Views.Windows.NotificationWindow"
         WindowStartupLocation="CenterOwner"
@@ -58,8 +59,7 @@
                 <Expander Header="Details" HorizontalAlignment="Stretch"
                           IsVisible="{Binding Details, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                     <ScrollViewer MaxHeight="200">
-                        <SelectableTextBlock Text="{Binding Details}" TextWrapping="Wrap"
-                                             HorizontalAlignment="Stretch" TextAlignment="Left" />
+                        <md:MarkdownViewer Markdown="{Binding Details}" />
                     </ScrollViewer>
                 </Expander>
             </StackPanel>

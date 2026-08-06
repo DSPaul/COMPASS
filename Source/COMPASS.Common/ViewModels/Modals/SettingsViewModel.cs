@@ -70,6 +70,7 @@ namespace COMPASS.Common.ViewModels.Modals
             new("HTML Agility Pack",       "https://github.com/zzzprojects/html-agility-pack",         "HTML Parsing",           "MIT"),
             new("log4net",                 "https://github.com/apache/logging-log4net",                "Logging",                "Apache 2.0"),
             new("Magick.NET",              "https://github.com/dlemstra/Magick.NET",                   "Image Manipulation",     "Apache 2.0"),
+            new("MarkView.Avalonia",       "https://github.com/Kryptos-FR/MarkView.Avalonia",          "Markdown Rendering",     "MIT"),
             new("Material.Icons.Avalonia", "https://github.com/AvaloniaUtils/Material.Icons.Avalonia", "Icons and Controls",     "MIT"),
             new("OpenCvSharp",             "https://github.com/shimat/opencvsharp",                    "Barcode decoding",       "Apache 2.0"),
             new("PdfPig",                  "https://github.com/UglyToad/PdfPig",                       "PDF Data Extraction",    "Apache 2.0"),

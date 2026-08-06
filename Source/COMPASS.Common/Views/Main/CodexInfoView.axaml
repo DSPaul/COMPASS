@@ -5,6 +5,7 @@
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.Main"
              xmlns:controls="clr-namespace:COMPASS.Common.Controls"
+             xmlns:md="using:MarkView.Avalonia"
              mc:Ignorable="d" d:DesignWidth="270" d:DesignHeight="850"
              x:Class="COMPASS.Common.Views.Main.CodexInfoView"
              x:DataType="vm:CodexInfoViewModel">
@@ -139,8 +140,9 @@
                     <TextBlock Text="Description:" Grid.Row="11" Grid.Column="0" />
                     <Border CornerRadius="3" Grid.Row="12" Grid.ColumnSpan="2" Grid.Column="0"
                             BorderBrush="{StaticResource LogBorder}" BorderThickness="2">
-                        <TextBlock Text="{Binding Description}" MinHeight="50"
-                                   TextWrapping="Wrap" Background="Transparent"/>
+                        <md:MarkdownViewer Markdown="{Binding Description}" MinHeight="50"
+                                           FontSize="14"
+                                           Background="Transparent"/>
                     </Border>
                 </Grid>
             </ScrollViewer>
