@@ -8,6 +8,7 @@ using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.ExtensionMethods;
 using System.Collections;
+using COMPASS.Infra.Models;
 
 namespace COMPASS.Common.ViewModels.Selection
 {

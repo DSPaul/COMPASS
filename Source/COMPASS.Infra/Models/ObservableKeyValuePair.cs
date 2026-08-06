@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace COMPASS.Common.Models
+namespace COMPASS.Infra.Models
 {
     public class ObservableKeyValuePair<K, V> : ObservableObject
     {

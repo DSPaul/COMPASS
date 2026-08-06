@@ -10,6 +10,7 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Tools;
 using System.Collections.ObjectModel;
 
