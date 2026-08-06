@@ -1,16 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.Models.Enums;
+using COMPASS.Infra.Models;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals;
 
 public class MetaDataProposalViewModel : ViewModelBase, IDisposable
 {
+    private readonly Guid _proposalIdentifier = Guid.NewGuid();
+
     public MetaDataProposalViewModel(Codex codex, SourceMetaData proposedMetaData)
     {
         Codex = codex;
@@ -18,7 +17,10 @@ public class MetaDataProposalViewModel : ViewModelBase, IDisposable
         ProposedMetaData = new(proposedMetaData);
 
         ShouldUseNewValue = ServiceResolver.Resolve<IPreferencesService>().Preferences.ImportableCodexProperties
-                                              .ToDictionary(prop => prop.Name, _ => false);
+                                              .ToDictionary(prop => prop.Name, prop => new ObservableKeyValuePair<CodexProperty, bool>(prop, false));
+        MetaDataChoiceGroupNames = ShouldUseNewValue.Keys.ToDictionary(
+            propertyName => propertyName,
+            propertyName => $"{_proposalIdentifier:N}-{propertyName}");
     }
     
     public Codex Codex { get; set; }
@@ -26,13 +28,13 @@ public class MetaDataProposalViewModel : ViewModelBase, IDisposable
     public SourceMetaDataViewModel ExistingMetaData { get; set; }
     public SourceMetaDataViewModel ProposedMetaData { get; set; }
     
-    public Dictionary<string, bool> ShouldUseNewValue { get; }
+    public Dictionary<string, ObservableKeyValuePair<CodexProperty, bool>> ShouldUseNewValue { get; }
+    public Dictionary<string, string> MetaDataChoiceGroupNames { get; }
     
     public void ApplyChoice()
     {
-        var propsToApply = ServiceResolver.Resolve<IPreferencesService>().Preferences.ImportableCodexProperties
-                                             .Where(prop => ShouldUseNewValue[prop.Name]);
-        foreach (CodexProperty? prop in propsToApply)
+        var propsToApply = ShouldUseNewValue.Values.Where(kvp => kvp.Value).Select(val => val.Key);
+        foreach (CodexProperty prop in propsToApply)
         {
             prop.Apply(ProposedMetaData.GetSource(), Codex);
         }

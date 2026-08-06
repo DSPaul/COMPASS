@@ -1,11 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using COMPASS.Common.Models;
+﻿using COMPASS.Common.Models;
 using COMPASS.Infra.ExtensionMethods;
-using COMPASS.Infra.Models;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
@@ -19,13 +13,13 @@ namespace COMPASS.Common.ViewModels.Modals
         public void AddMetaDataProposal(Codex codex, SourceMetaData proposedMetaData)
         {
             _codicesListMutex.WaitOne();
-            MetaDataProposals.AddIfMissing(new(codex, proposedMetaData));
+            if (MetaDataProposals.AddIfMissing(new(codex, proposedMetaData)))
+            {
+                Steps.Add(new WizardStepViewModel(codex.Title));
+            }
             _codicesListMutex.ReleaseMutex();
         }
 
-        //TODO do not create a new collection on every get
-        public override RangeObservableCollection<WizardStepViewModel> Steps => 
-            new(MetaDataProposals.Select(choice => new WizardStepViewModel(choice.Codex.Title)));
         public MetaDataProposalViewModel CurrentProposal => MetaDataProposals[StepCounter];
 
         protected override void NextStep()
