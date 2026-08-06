@@ -66,4 +66,7 @@
     <ProjectReference Include="..\COMPASS.Infra.Avalonia\COMPASS.Infra.Avalonia.csproj" />
     <ProjectReference Include="..\COMPASS.Infra\COMPASS.Infra.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="COMPASS.UnitTests" />
+  </ItemGroup>
 </Project>
