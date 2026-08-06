@@ -29,51 +29,10 @@ All view-models inherit from this. It provides:
 
 A specialised base for view-models that wrap exactly one model instance. This is where the core data-flow pattern lives:
 
-``` cs 
-public abstract class ModelViewModelBase<TModel> : ViewModelBase, IDisposable where TModel : ObservableObject 
-{ 
-    protected readonly TModel _model; 
-    protected readonly Dictionary<string, IList<string>> _derivedProperties = [];
-
-    public ModelViewModelBase(TModel model)
-    {
-        _model = model;
-        model.PropertyChanged += OnModelPropertyChanged;
-    }
-
-    private void OnModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == null) return;
-        HandlePropertyChanged(e.PropertyName);
-    }
-
-    protected void HandlePropertyChanged(string propertyName)
-    {
-        // 1. Forward the model's PropertyChanged to the UI
-        Dispatcher.UIThread.Post(() => OnPropertyChanged(propertyName));
-
-        // 2. Notify any derived/computed properties
-        if (_derivedProperties.TryGetValue(propertyName, out var derivedPropertiesList))
-        {
-            foreach (var derivedProperty in derivedPropertiesList)
-            {
-                Dispatcher.UIThread.Post(() => OnPropertyChanged(derivedProperty));
-            }
-        }
-
-        // 3. Run validation for this property
-        Validate(propertyName);
-    }
-
-    public TModel GetModel() => _model;
-
-    public virtual void Dispose()
-    {
-        _model.PropertyChanged -= OnModelPropertyChanged;
-    }
-}
-
-```
+- Subscribes to the wrapped model's `PropertyChanged`.
+- `OnModelPropertyChanged` forwards every change to the UI: it re-raises `PropertyChanged` on the UI thread for the changed property, then for every registered *derived* property, and finally runs `Validate` for that property.
+- `GetModel()` exposes the wrapped model.
+- `Dispose()` unsubscribes from the model.
 
 ## The data-flow in practice
 
@@ -93,34 +52,20 @@ sequenceDiagram
     VM->>View: OnPropertyChanged("SortingTitleContainsNumbers") [derived]
     VM->>VM: Validate("Title")
 
-    Note over VM,Model: Command alsowrite directly to the Model.<br/>The same notification path applies.
+    Note over VM,Model: Commands also write directly to the Model.<br/>The same notification path applies.
 ```
 
 **The critical insight:** The ViewModel setter does _not_ call `SetProperty` or raise `PropertyChanged` itself — it only writes to the model. The notification comes _back_ from the model through `OnModelPropertyChanged`, ensuring there is exactly one notification path regardless of whether the model was changed by the UI, by a command, by an import operation, or by any other code.
 
 ## Derived properties
 
-ViewModels often expose computed values that depend on one or more model properties. These are registered in the constructor:
-
-```cs
-//CodexViewModel constructor 
-_derivedProperties.Add(nameof(Codex.Title), [nameof(SortingTitle), nameof(SortingTitleContainsNumbers)]); _derivedProperties.Add(nameof(Codex.Authors), [nameof(AuthorsAsString)]); 
-_derivedProperties.Add(nameof(Codex.ReleaseDate), [nameof(ReleaseDateAsString)]);
-```
+ViewModels often expose computed values that depend on one or more model properties. These are registered in the wrapping view-model's constructor via `_derivedProperties`; `CodexViewModel`, for example, maps `Codex.Title` → `SortingTitle` and `SortingTitleContainsNumbers`, `Codex.Authors` → `AuthorsAsString`, and `Codex.ReleaseDate` → `ReleaseDateAsString`.
 
 When `Codex.Title` changes, `ModelViewModelBase` automatically raises `PropertyChanged` for `SortingTitle` and `SortingTitleContainsNumbers` as well, keeping the UI in sync without manual wiring in every setter.
 
 ## Validation
 
-Validation is **property-triggered** and **declarative**:
-
-``` cs
-
-// CodexViewModel constructor 
-AddValidation(nameof(PageCount), ValidatePageCount);
-// TagViewModel constructor 
-AddValidation(nameof(Name), ValidateName);
-```
+Validation is **property-triggered** and **declarative**: validators are registered in the constructor of the wrapping view-model via `AddValidation(propertyName, validator)` (e.g. `CodexViewModel` validates `PageCount`, `TagViewModel` validates `Name`).
 
 When a property changes, `HandlePropertyChanged` calls `Validate(propertyName)`, which:
 1. Clears existing errors for that property.
@@ -131,13 +76,7 @@ The View picks up errors automatically through `INotifyDataErrorInfo` — Avalon
 
 ## Commands
 
-Commands live on ViewModels but operate on models:
-```cs
-// Example: CodexOperations (static command methods that take a Codex model) 
-public static async Task<bool> OpenCodex(Codex codex) { ... } 
-public static async Task<bool> OpenCodexLocally(Codex? toOpen) { ... }
-
-```
+Commands live on ViewModels but operate on models. `CodexOperations`, for example, exposes static command methods that take a `Codex` model (`OpenCodex`, `OpenCodexLocally`).
 
 This ensures the model is always authoritative and the ViewModel never needs to manually synchronise state.
 

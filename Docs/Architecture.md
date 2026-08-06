@@ -91,9 +91,14 @@ The `FolderTagLink` feature (stored in `CollectionInfo`) automatically applies a
 
 ## 4. Filtering & Sorting
 
-**Key files:** `Source/COMPASS.Common/Models/Filters/`, `ViewModels/Main/FiltersViewModel.cs`, `Views/SidePanels/FiltersSidePanel.axaml`
+**Key files:** `Source/COMPASS.Common/Models/Filters/`, `Services/FilterService.cs`, `Interfaces/Services/IFilterService.cs`, `ViewModels/Main/FiltersViewModel.cs`, `Views/SidePanels/FiltersSidePanel.axaml`
 
-`FiltersViewModel` maintains two independent filter lists: **Included** (must match) and **Excluded** (must not match). Each list is a collection of `Filter` objects. `FiltersViewModel` re-evaluates all codices whenever the filter lists or the underlying codex data change, producing an `IncludedCodices` and `ExcludedCodices` view.
+The actual filtering and sorting logic lives in `FilterService` (behind `IFilterService`, registered in `CommonModule`), keeping it reusable and testable without a view-model. It exposes two operations:
+
+- `FilterCodices(codexVms, filtersState)` — applies a `FiltersState` to a codex list and returns the matches.
+- `SortCodices(codexVms, sortProperty, sortDirection)` — sorts a codex list in place.
+
+`FiltersViewModel` is the thin UI layer on top. It maintains two independent filter lists, **Included** (must match) and **Excluded** (must not match), each a collection of `Filter` objects. It serialises them to a `FiltersState` (`GetFiltersState()`) and hands it to `FilterService.FilterCodices`; the result is exposed as the single `FilteredCodices` view (included minus excluded). Filtering re-runs whenever the filter lists or the underlying codex data change, and sorting is re-applied on the same service whenever `SortProperty` or `SortDirection` changes.
 
 Each `Filter` subclass targets a specific property:
 
@@ -115,7 +120,9 @@ Each `Filter` subclass targets a specific property:
 
 Filters can be dragged from the filters side panel or from the tag/metadata panels into the include or exclude drop zones. A `FiltersState` (two plain `List<Filter>`) can be serialised to persist a tab's filter state.
 
-Sorting is configured in `FiltersViewModel.InitSortingProperties` and applied in `LayoutViewModel`.
+### Tag filter semantics
+
+Tag filters are special-cased in `FilterService`. For **included** tag filters, tags within the same tag *group* are combined with **OR** while different groups are combined with **AND**, and a tag also matches any parent or child tags. For **excluded** tag filters, any codex carrying the tag *or any of its descendants* is removed.
 
 ---
 
@@ -276,9 +283,11 @@ Tools are surfaced from the main menu. Each tool implements `IToolViewModel` and
 
 ## 14. Update System
 
-**Key files:** `Source/COMPASS.Common/Services/StateManagers/UpdateManager.cs`, `Services/PrereleaseUpdateService.cs`, `Infra/Interfaces/Services/IUpdateService.cs`
+**Key files:** `Source/COMPASS.Common/Services/StateManagers/UpdateManager.cs`, `Services/UpdateServiceBase.cs`, `Infra/Interfaces/Services/IUpdateService.cs`, `Docs/Updates.md`
 
-`UpdateManager` runs on startup and then on a 6-hour timer. It calls `IUpdateService.CheckForUpdates()` and hands the results back to `IUpdateService.HandleUpdates()`. The concrete implementation is platform-specific (registered per platform). `PrereleaseUpdateService` is an alternative implementation that targets pre-release channels.
+COMPASS checks the `DSPAUL/COMPASS` GitHub releases for versions newer than the running one. `UpdateManager` runs the check on startup and then on a 6-hour timer. It calls `IUpdateService.CheckForUpdates(includePrerelease)` and hands the results to `IUpdateService.OnUpdatesFound()`, which downloads the installer in the background (verifying its SHA256), shows a modal "Update Available" dialog with the changelog, and on confirmation calls `IUpdateService.HandleUpdate()`.
+
+The shared logic lives in `UpdateServiceBase`; the concrete install behaviour is platform-specific and registered per platform: Windows launches the Inno Setup installer (`COMPASS_Setup_{version}.exe`) with `/SILENT` and shuts down the app, while Linux just opens the release page in the browser. Checking is governed by `UpdatePreferences` (`CheckForUpdates`, `IncludePrerelease`, `NotifiedUpdates`), and a title-bar Update button appears while an update is available. See [`Updates.md`](Updates.md) for the full description.
 
 ---
 

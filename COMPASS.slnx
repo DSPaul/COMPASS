@@ -9,11 +9,12 @@
     <Project Path="Source/COMPASS.Windows/COMPASS.Windows.csproj" />
   </Folder>
   <Folder Name="/Docs/">
-    <File Path="Docs/Architecture.md" />
+    <File Path="Docs/*.md" />
     <File Path="Docs/CollectionLifeCycle.md" />
     <File Path="Docs/EditPattern.md" />
     <File Path="Docs/MVVM.md" />
     <File Path="Docs/Satchels.md" />
+    <File Path="Docs/Updates.md" />
   </Folder>
   <Folder Name="/Lib/">
     <Project Path="Source/COMPASS.ApiClients/COMPASS.ApiClients.csproj" />

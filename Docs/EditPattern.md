@@ -12,20 +12,12 @@ This guarantees that partially edited or invalid data never leaks into the live 
 
 **File:** `Infra/Models/Interfaces/IClonable.cs`
 
-Every editable model implements this interface:
-
-```csharp
-public interface ICloneable<T> where T : ICloneable<T>
-{
-    void CopyFrom(T source);
-    T Clone();
-}
-```
+Every editable model implements `ICloneable<T>`, which declares just two methods:
 
 | Method | Purpose |
 |---|---|
 | `Clone()` | Creates a deep copy of the model. Used at the start of editing to create the working copy. |
-| `CopyFrom(source)` | Overwrites all properties of `this` with values from `source`. Used on confirm to apply the working copy back to the original. Because `CopyFrom` writes to the original model via its setters, `PropertyChanged` fires naturally — the MVVM data-flow (see [MVVMPattern.md](MVVMPattern.md)) takes care of updating the UI everywhere else. |
+| `CopyFrom(source)` | Overwrites all properties of `this` with values from `source`. Used on confirm to apply the working copy back to the original. Because `CopyFrom` writes to the original model via its setters, `PropertyChanged` fires naturally — the MVVM data-flow (see [MVVM.md](MVVM.md)) takes care of updating the UI everywhere else. |
 
 ## `EditViewModelBase<TViewModel, TModel>`
 
@@ -34,18 +26,6 @@ public interface ICloneable<T> where T : ICloneable<T>
 This is the generic base class for all edit dialogs. It orchestrates the full clone → edit → apply/cancel lifecycle.
 
 ### Construction
-
-```csharp
-public EditViewModelBase(TModel source, bool createNew, Func<TModel, TViewModel> createViewModel)
-{
-    _source = source;
-    _createNew = createNew;
-    _createViewModel = createViewModel;
-
-    _workingCopy = createViewModel(source.Clone());
-    _workingCopy.PropertyChanged += HandleWorkingCopyPropertyChanged;
-}
-```
 
 1. Stores a reference to the **original** model (`_source`).
 2. Calls `source.Clone()` to create a **working copy**.
@@ -83,48 +63,15 @@ Subclasses implement three methods to customise behavior for their specific mode
 
 ### Confirm and Cancel
 
-```csharp
-// Confirm: apply changes and close
-protected virtual void Confirm()
-{
-    TModel model = WorkingCopy.GetModel();
+On **Confirm**, the working copy's model is read and either `HandleCreateNew` (when creating) or `BeforeApply` → `CopyFrom` → `OnApplied` (when editing) is invoked — `CopyFrom` is where the real model gets updated. The working copy is then cleared and the dialog closes.
 
-    if (_createNew)
-    {
-        TModel newObj = model.Clone();
-        HandleCreateNew(newObj);
-    }
-    else
-    {
-        BeforeApply(_source, model);
-        _source.CopyFrom(model);    // ← this is where the real model gets updated
-        OnApplied(_source);
-    }
-
-    Clear();
-    CloseAction();
-}
-
-// Cancel: discard working copy and close
-private void Cancel()
-{
-    Clear();       // re-clones from source, discarding all changes
-    CloseAction();
-}
-```
+On **Cancel**, the working copy is simply cleared (re-cloned from the source, discarding all changes) and the dialog closes.
 
 `CanConfirm` checks the working copy's `INotifyDataErrorInfo.HasErrors` — the confirm button is disabled while validation errors exist.
 
 ### Clear / Reset
 
-`Clear()` re-creates the working copy from the original source, effectively resetting all changes:
-
-```csharp
-protected virtual void Clear()
-{
-    WorkingCopy = _createViewModel(_source.Clone());
-}
-```
+`Clear()` re-creates the working copy from the original source, effectively resetting all changes. It runs on both confirm and cancel.
 
 ## Concrete edit view-models
 
