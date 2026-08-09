@@ -29,7 +29,7 @@
         
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-                <StackPanel Spacing="10"/>
+                <StackPanel Spacing="20"/>
             </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         
