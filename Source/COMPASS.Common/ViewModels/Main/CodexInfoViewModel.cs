@@ -33,6 +33,8 @@ namespace COMPASS.Common.ViewModels.Main
         //what the visibility is actually bound to
         public bool ShowInfo => AutoHide ? ShowCodexInfo && DisplayedCodex is not null : ShowCodexInfo;
 
+        public bool HasDisplayedCodex => DisplayedCodex is not null;
+
         public CodexViewModel? DisplayedCodex
         {
             get;
@@ -44,6 +46,7 @@ namespace COMPASS.Common.ViewModels.Main
                     prevCodex?.DisposeCover();
                     field?.LoadCover();
                     OnPropertyChanged(nameof(ShowInfo));
+                    OnPropertyChanged(nameof(HasDisplayedCodex));
                 }
             }
         }
