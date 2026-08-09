@@ -67,6 +67,11 @@
   </screenshots>
   
   <releases>
+    <release version="2.0.0-beta.1" date="2026-08-09" type="development">
+      <description>
+        <p>See release notes on GitHub.</p>
+      </description>
+    </release>
     <release version="2.0.0-alpha.2" date="2026-07-10" type="development">
       <description>
         <p>See release notes on GitHub.</p>
