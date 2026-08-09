@@ -440,30 +440,24 @@
                 <controls:IconButton Icon="About" Content="About" Background="DimGray" />
                 <controls:IconButton Icon="Achievement" Content="Outlined button" Classes="Outline" />
                 <controls:IconButton Content="Icon btn without icon" />
-                <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Left">
-                    <TabControl.Styles>
+                <ListBox Background="{StaticResource ButtonBackground}">
+                    <ListBox.Styles>
                         <Style Selector="controls|CollapsableTabItem">
                             <Setter Property="HideHeader" Value="True"/>
                         </Style>
-                    </TabControl.Styles>
-                    <controls:CollapsableTabItem Header="Tags" 
-                                                 Icon="{materialIcons:MaterialIconExt Kind=Tags, IconSize=25}">
-                        tags context
-                    </controls:CollapsableTabItem>
-                    <controls:CollapsableTabItem Header="Filters" 
-                                                 Icon="{materialIcons:MaterialIconExt Kind=Filter, IconSize=25}">
-                        filter content
-                    </controls:CollapsableTabItem>
-                </TabControl>
+                    </ListBox.Styles>
+                    <controls:CollapsableTabItem Header="Tags"
+                                                 Icon="{materialIcons:MaterialIconExt Kind=Tags, IconSize=25}" />
+                    <controls:CollapsableTabItem Header="Filters"
+                                                 Icon="{materialIcons:MaterialIconExt Kind=Filter, IconSize=25}" />
+                </ListBox>
 
-                <TabControl Background="{StaticResource ButtonBackground}" TabStripPlacement="Top">
-                    <controls:CollapsableTabItem Header="Tags" Icon="{materialIcons:MaterialIconExt Kind=Tags, IconSize=25}">
-                        tags context
-                    </controls:CollapsableTabItem>
-                    <controls:CollapsableTabItem Header="Filters" Icon="{materialIcons:MaterialIconExt Kind=Filter, IconSize=25}">
-                        filter content
-                    </controls:CollapsableTabItem>
-                </TabControl>
+                <ListBox Background="{StaticResource ButtonBackground}">
+                    <controls:CollapsableTabItem Header="Tags" CornerRadius="5,5,0,0"
+                                                 Icon="{materialIcons:MaterialIconExt Kind=Tags, IconSize=25}" />
+                    <controls:CollapsableTabItem Header="Filters" CornerRadius="0,5,0,0"
+                                                 Icon="{materialIcons:MaterialIconExt Kind=Filter, IconSize=25}" />
+                </ListBox>
                
 
                 <controls:RatingControl Value="0" NumberOfStars="5" />

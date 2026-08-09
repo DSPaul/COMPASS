@@ -53,98 +53,91 @@
         <!-- Grid instead of StackPanel so height is capped and scrolling works -->
 
         <!-- Tag creation -->
-        <TabControl Grid.Row="0" Margin="20 0" Background="{StaticResource Layer6}" CornerRadius="5"
-                    BorderThickness="0" Padding="0" HorizontalAlignment="Stretch"
-                    TabStripPlacement="Top"
-                    SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
-            <TabControl.Resources>
-                <ControlTheme TargetType="controls:CollapsableTabItem" x:Key="{x:Type controls:CollapsableTabItem}">
-                    <Setter Property="BorderThickness" Value="0" />
-                    <Setter Property="Margin" Value="0" />
-                    <Setter Property="Cursor" Value="Hand" />
-                    <Setter Property="Background" Value="{StaticResource Layer5}" />
-                    <Style Selector="^:selected">
-                        <Setter Property="Background" Value="{StaticResource Layer6}" />
-                    </Style>
-                    <Setter Property="Template">
-                        <ControlTemplate TargetType="controls:CollapsableTabItem">
-                            <Border CornerRadius="{TemplateBinding CornerRadius}"
-                                    Background="{TemplateBinding Background}"
-                                    ToolTip.Tip="{TemplateBinding Header}">
-                                <Border Classes="ZoomOnHover" Background="Transparent">
-                                    <materialIcons:MaterialIcon Margin="10,10,10,5"
-                                                                HorizontalAlignment="Center"
-                                                                Kind="{TemplateBinding Icon}" />
-                                </Border>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter>
-                </ControlTheme>
-            </TabControl.Resources>
-            <TabControl.Styles>
-                <Style Selector="controls|CollapsableTabItem > ContentControl">
-                    <Setter Property="Template">
-                        <ControlTemplate TargetType="ContentControl">
-                            <Border CornerRadius="0,0,5,5" MinHeight="5"
-                                    Background="{Binding $parent[controls:CollapsableTabItem].Background}">
-                                <StackPanel IsVisible="{Binding $parent[controls:CollapsableTabItem].Header, 
-                                                Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Spacing="10">
-                                        <materialIcons:MaterialIcon HorizontalAlignment="Center"
-                                                                    Kind="{Binding $parent[controls:CollapsableTabItem].Icon}" />
-                                        <TextBlock Text="{Binding $parent[controls:CollapsableTabItem].Header}"/>
-                                    </StackPanel>
-                                    <Rectangle Height="3" Fill="{StaticResource Separator}" />
-                                    <ContentPresenter Content="{TemplateBinding Content}" Padding="5,0" />
-                                </StackPanel>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter>
-                </Style>
-            </TabControl.Styles>
-            <TabControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Rows="1"/>
-                </ItemsPanelTemplate>
-            </TabControl.ItemsPanel>
-            <controls:CollapsableTabItem Background="{StaticResource Layer5}" Header="" IsVisible="False"> <!-- Hidden tab for collapsed -->
-                <ContentControl />
-            </controls:CollapsableTabItem>
-
-            <controls:CollapsableTabItem Header="New Tag" Icon="TagPlusOutline" CornerRadius="5,0,0,0">
-                <ContentControl>
-                    <StackPanel DataContext="{Binding AddTagViewModel}" Margin="10" Spacing="10">
-                        <views:TagEditBasicView/>
-                        <controls:ConfirmControls Compact="True" CancelIcon="Close"/>
+        <Border Grid.Row="0" Margin="20 0" Background="{StaticResource Layer6}" CornerRadius="5"
+                HorizontalAlignment="Stretch">
+            <StackPanel>
+                <!-- ListBox instead of TabControl so that no selection (= collapsed) is possible -->
+                <ListBox x:Name="TagStrip" Background="Transparent" BorderThickness="0" Padding="0"
+                         HorizontalAlignment="Stretch"
+                         SelectedIndex="{Binding SelectedTab, Mode=TwoWay}">
+                    <ListBox.Resources>
+                        <ControlTheme TargetType="controls:CollapsableTabItem" x:Key="{x:Type controls:CollapsableTabItem}">
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Cursor" Value="Hand" />
+                            <Setter Property="Background" Value="{StaticResource Layer5}" />
+                            <Style Selector="^:selected">
+                                <Setter Property="Background" Value="{StaticResource Layer6}" />
+                            </Style>
+                            <Setter Property="Template">
+                                <ControlTemplate TargetType="controls:CollapsableTabItem">
+                                    <Border CornerRadius="{TemplateBinding CornerRadius}"
+                                            Background="{TemplateBinding Background}"
+                                            ToolTip.Tip="{TemplateBinding Header}">
+                                        <Border Classes="ZoomOnHover" Background="Transparent">
+                                            <materialIcons:MaterialIcon Margin="10,10,10,5"
+                                                                        HorizontalAlignment="Center"
+                                                                        Kind="{TemplateBinding Icon}" />
+                                        </Border>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter>
+                        </ControlTheme>
+                    </ListBox.Resources>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <controls:CollapsableTabItem Header="New Tag" Icon="TagPlusOutline" CornerRadius="5,0,0,0">
+                        <controls:CollapsableTabItem.Content>
+                            <StackPanel DataContext="{Binding AddTagViewModel}" Margin="10" Spacing="10">
+                                <views:TagEditBasicView/>
+                                <controls:ConfirmControls Compact="True" CancelIcon="Close"/>
+                            </StackPanel>
+                        </controls:CollapsableTabItem.Content>
+                    </controls:CollapsableTabItem>
+                    <controls:CollapsableTabItem Header="New Group" Icon="FolderPlusOutline">
+                        <controls:CollapsableTabItem.Content>
+                            <StackPanel DataContext="{Binding AddGroupViewModel}" Margin="10" Spacing="10">
+                                <views:TagEditBasicView/>
+                                <controls:ConfirmControls Compact="True" CancelIcon="Close"/>
+                            </StackPanel>
+                        </controls:CollapsableTabItem.Content>
+                    </controls:CollapsableTabItem>
+                    <controls:CollapsableTabItem Header="Import Tags" Icon="TagArrowDownOutline" CornerRadius="0,5,0,0">
+                        <controls:CollapsableTabItem.Content>
+                            <StackPanel>
+                                <Button Background="{StaticResource Layer4}" Margin="5"
+                                        Command="{Binding ImportTagsFromOtherCollectionsCommand}"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left">
+                                    <TextBlock Text="From another collection..." TextWrapping="Wrap" />
+                                </Button>
+                                <Button Background="{StaticResource Layer4}" Margin="5,0,5,5"
+                                        HorizontalAlignment="Stretch"
+                                        Command="{Binding ImportTagsFromSatchelCommand}" HorizontalContentAlignment="Left">
+                                    <TextBlock Text="From a .satchel file..." TextWrapping="Wrap" />
+                                </Button>
+                            </StackPanel>
+                        </controls:CollapsableTabItem.Content>
+                    </controls:CollapsableTabItem>
+                </ListBox>
+                <Border Height="5" Background="{StaticResource Separator}" CornerRadius="0,0,5,5"
+                        IsVisible="{Binding #TagStrip.SelectedItem, Converter={x:Static ObjectConverters.IsNull}}"/>
+                <Border Height="3" Background="{StaticResource Separator}"
+                        IsVisible="{Binding #TagStrip.SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                <StackPanel IsVisible="{Binding #TagStrip.SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Spacing="10">
+                        <materialIcons:MaterialIcon HorizontalAlignment="Center"
+                                                    Kind="{Binding #TagStrip.((controls:CollapsableTabItem)SelectedItem).Icon}" />
+                        <TextBlock Text="{Binding #TagStrip.((controls:CollapsableTabItem)SelectedItem).Header}"/>
                     </StackPanel>
-                </ContentControl>
-            </controls:CollapsableTabItem>
-            <controls:CollapsableTabItem Header="New Group" Icon="FolderPlusOutline">
-                <ContentControl>
-                    <StackPanel DataContext="{Binding AddGroupViewModel}" Margin="10" Spacing="10">
-                        <views:TagEditBasicView/>
-                        <controls:ConfirmControls Compact="True" CancelIcon="Close"/>
-                    </StackPanel>
-                </ContentControl>
-            </controls:CollapsableTabItem>
-            <controls:CollapsableTabItem Header="Import Tags" Icon="TagArrowDownOutline" CornerRadius="0,5,0,0">
-                <ContentControl>
-                    <StackPanel>
-                        <Button Background="{StaticResource Layer4}" Margin="5"
-                                Command="{Binding ImportTagsFromOtherCollectionsCommand}"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Left">
-                            <TextBlock Text="From another collection..." TextWrapping="Wrap" />
-                        </Button>
-                        <Button Background="{StaticResource Layer4}" Margin="5,0,5,5"
-                                HorizontalAlignment="Stretch"
-                                Command="{Binding ImportTagsFromSatchelCommand}" HorizontalContentAlignment="Left">
-                            <TextBlock Text="From a .satchel file..." TextWrapping="Wrap" />
-                        </Button>
-                    </StackPanel>
-                </ContentControl>
-            </controls:CollapsableTabItem>
-        </TabControl>
+                    <Rectangle Height="3" Fill="{StaticResource Separator}" />
+                    <ContentPresenter Content="{Binding #TagStrip.((controls:CollapsableTabItem)SelectedItem).Content}" Padding="5,0" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
         
         <Rectangle Fill="{StaticResource Separator}" Height="3" Grid.Row="1" />
 

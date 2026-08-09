@@ -21,7 +21,7 @@ using System.ComponentModel;
 
 namespace COMPASS.Common.ViewModels.SidePanels
 {
-    public class TagsPanelVM : ViewModelBase, IDealsWithTabControl
+    public class TagsPanelVM : ViewModelBase
     {
         public TagsPanelVM(CodexCollectionVM codexCollectionVm, FiltersViewModel filtersVM)
         {
@@ -44,33 +44,19 @@ namespace COMPASS.Common.ViewModels.SidePanels
             get;
             set
             {
-                if (value > 0) Collapsed = false;
                 switch (value)
                 {
-                    case 1:
+                    case 0:
                         AddTag();
                         break;
-                    case 2:
+                    case 1:
                         AddGroup();
                         break;
                 }
 
-                PrevSelectedTab = field;
                 SetProperty(ref field, value);
             }
-        } = 0;
-
-        public int PrevSelectedTab { get ; set ; }
-
-        public bool Collapsed
-        {
-            get;
-            set
-            {
-                SetProperty(ref field, value);
-                if (value) SelectedTab = 0;
-            }
-        } = false;
+        } = -1;
 
         public bool ModeIsInclude
         {

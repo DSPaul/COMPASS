@@ -31,12 +31,12 @@
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="11.0.2" />
     <PackageReference Include="Avalonia.Labs.Gif" Version="12.0.2" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.0" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="FlashCap" Version="1.11.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
-    <PackageReference Include="OpenCvSharp5" Version="5.0.0.20260730" />
+    <PackageReference Include="OpenCvSharp5" Version="5.0.0.20260806" />
     <PackageReference Include="Selenium.Support" Version="4.46.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
     <PackageReference Include="MarkView.Avalonia" Version="12.0.3" />
@@ -48,9 +48,9 @@
     <PackageReference Include="Material.Icons.Avalonia" Version="3.0.2" />
     <PackageReference Include="PDFtoImage" Version="5.3.0" />
     <PackageReference Include="Selenium.WebDriver" Version="4.46.0" />
-    <PackageReference Include="SharpCompress" Version="0.50.3" />
+    <PackageReference Include="SharpCompress" Version="0.50.4" />
     <PackageReference Include="SkiaImageView.Avalonia11" Version="1.5.0" />
-    <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.13" />
+    <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.14" />
     <PackageReference Include="HotAvalonia" Version="3.1.4" PrivateAssets="All" Publish="True" />
   </ItemGroup>
   <ItemGroup>

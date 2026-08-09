@@ -1,11 +1,10 @@
 ﻿using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.SidePanels;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Main
 {
-    public class LeftDockViewModel : ViewModelBase, IDealsWithTabControl
+    public class LeftDockViewModel : ViewModelBase
     {
         public LeftDockViewModel(TabsViewModel tabsViewModel)
         {
@@ -33,14 +32,11 @@ namespace COMPASS.Common.ViewModels.Main
             get => _preferencesService.Preferences.UIState.StartupTab;
             set
             {
-                PrevSelectedTab = _preferencesService.Preferences.UIState.StartupTab;
                 _preferencesService.Preferences.UIState.StartupTab = value;
                 OnPropertyChanged();
-                if (value > 0) Collapsed = false;
+                if (value >= 0) Collapsed = false;
             }
         }
-
-        public int PrevSelectedTab { get; set; }
 
         private bool _collapsed = false;
         public bool Collapsed
@@ -49,7 +45,7 @@ namespace COMPASS.Common.ViewModels.Main
             set
             {
                 SetProperty(ref _collapsed, value);
-                if (value) SelectedTab = 0;
+                if (value) SelectedTab = -1;
             }
         }
     }
