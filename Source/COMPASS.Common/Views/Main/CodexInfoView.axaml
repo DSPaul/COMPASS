@@ -5,6 +5,7 @@
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:COMPASS.Common.ViewModels.Main"
              xmlns:controls="clr-namespace:COMPASS.Common.Controls"
+             xmlns:converters="using:COMPASS.Infra.Avalonia.Converters"
              xmlns:md="using:MarkView.Avalonia"
              mc:Ignorable="d" d:DesignWidth="270" d:DesignHeight="850"
              x:Class="COMPASS.Common.Views.Main.CodexInfoView"
@@ -126,20 +127,21 @@
                                 <!-- TODO: keep functionality of dd:DragDrop.IsDragSource="True" -->
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="Horizontal" Width="170"/>
+                                        <WrapPanel Orientation="Horizontal" Width="170"
+                                                   ItemSpacing="5" LineSpacing="5"/>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Button Classes="BlankButton" 
+                                        <Button Classes="BlankButton"
                                                 Command="{Binding #CodexInfoContainer.((vm:CodexInfoViewModel)DataContext).AddTagFilterCommand}" 
                                                 CommandParameter="{Binding}">
-                                            <Border CornerRadius="5" Margin="2,3">
-                                                <Border.Background>
-                                                    <SolidColorBrush Color="{Binding BackgroundColor}" Opacity=".8"/>
-                                                </Border.Background>
-                                                <TextBlock Text="{Binding Name}" Margin="7,2" Foreground="White" FontSize="14"/>
-                                            </Border>
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+											        <controls:Chip Background="{Binding BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}" 
+                                                                   Text="{Binding Name}"/>
+                                                </ControlTemplate>
+                                            </Button.Template>
                                         </Button>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

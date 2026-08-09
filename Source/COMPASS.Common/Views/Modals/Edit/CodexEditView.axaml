@@ -232,7 +232,7 @@
                                         <TreeDataTemplate x:Key="RegularTag" DataType="hierarchy:CheckableTagTreeNode"
                                                           ItemsSource="{Binding Children}">
                                             <Border CornerRadius="5" Margin="0,3" HorizontalAlignment="Left"
-                                                    Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}">
+                                                    Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToTransparentBrush}, ConverterParameter=0.7}">
                                                 <CheckBox Margin="5,0,0,0"
                                                           Command="{Binding $parent[TreeView].((vm:CodexEditViewModel)DataContext).TagCheckCommand}"
                                                           CommandParameter="{Binding $self.IsChecked}"
@@ -244,7 +244,7 @@
                                                           ItemsSource="{Binding Children}">
                                             <controls:Chip Theme="{StaticResource GroupChip}" Text="{Binding Item.Name}"
                                                            HorizontalAlignment="Stretch" Margin="0,3,20,3"
-                                                           Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToBrush}}" />
+                                                           Background="{Binding Item.BackgroundColor, Converter={x:Static converters:ColorConverters.ColorToTransparentBrush}, ConverterParameter=0.7}" />
                                         </TreeDataTemplate>
                                     </dataTemplates:TagTreeDataTemplateSelector>
                                 </TreeView.ItemTemplate>
