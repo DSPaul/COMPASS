@@ -12,7 +12,6 @@
     <views:Wizard>
         <views:Wizard.Resources>
             <conv:WizardStepTemplateSelector x:Key="WizardStepTemplateSelector">
-
                 <DataTemplate x:Key="SubFolders" x:DataType="vm:ImportFolderWizardVm">
                     <StackPanel Orientation="Vertical" Margin="20,0" Spacing="5">
                         <TextBlock
@@ -41,58 +40,60 @@
                 </DataTemplate>
 
                 <DataTemplate x:Key="Extensions" x:DataType="vm:ImportFolderWizardVm">
-                    <StackPanel Margin="20,0">
-                        <TextBlock Margin="5">
-                            New extensions were found among the files ready for import.
-                            <LineBreak />
-                            Select which file types should be imported.
-                        </TextBlock>
+                    <ScrollViewer>
+                        <StackPanel Margin="20,0">
+                            <TextBlock Margin="5">
+                                New extensions were found among the files ready for import.
+                                <LineBreak />
+                                Select which file types should be imported.
+                            </TextBlock>
 
-                        <Separator />
+                            <Separator />
 
-                        <Expander Header="Newly Found Extensions" IsExpanded="True" Margin="10"
-                                  HorizontalAlignment="Stretch" MaxHeight="400">
-                            <ScrollViewer>
-                                <ItemsControl ItemsSource="{Binding UnknownFileTypes}" Margin="10"
-                                              Background="{x:Null}" BorderBrush="{x:Null}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <UniformGrid Columns="3" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <CheckBox Content="{Binding DisplayText}"
-                                                      IsChecked="{Binding ShouldImport, Mode=TwoWay}"
-                                                      Margin="10" />
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </ScrollViewer>
-                        </Expander>
+                            <Expander Header="Newly Found Extensions" IsExpanded="True" Margin="10"
+                                      HorizontalAlignment="Stretch" MaxHeight="400">
+                                <ScrollViewer>
+                                    <ItemsControl ItemsSource="{Binding UnknownFileTypes}" Margin="10"
+                                                  Background="{x:Null}" BorderBrush="{x:Null}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Columns="3" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Content="{Binding DisplayText}"
+                                                          IsChecked="{Binding ShouldImport, Mode=TwoWay}"
+                                                          Margin="10" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Expander>
 
-                        <Expander Header="Known Extensions" IsExpanded="False" Margin="10"
-                                  MaxHeight="400" HorizontalAlignment="Stretch"
-                                  IsVisible="{Binding !!KnownFileTypes.Count}">
-                            <ScrollViewer>
-                                <ItemsControl ItemsSource="{Binding KnownFileTypes}"
-                                              Background="{x:Null}" BorderBrush="{x:Null}" Margin="10">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <UniformGrid Columns="3" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <CheckBox Content="{Binding DisplayText}"
-                                                      IsChecked="{Binding ShouldImport, Mode=TwoWay}"
-                                                      Margin="10" />
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </ScrollViewer>
-                        </Expander>
-                    </StackPanel>
+                            <Expander Header="Known Extensions" IsExpanded="False" Margin="10"
+                                      MaxHeight="400" HorizontalAlignment="Stretch"
+                                      IsVisible="{Binding !!KnownFileTypes.Count}">
+                                <ScrollViewer>
+                                    <ItemsControl ItemsSource="{Binding KnownFileTypes}"
+                                                  Background="{x:Null}" BorderBrush="{x:Null}" Margin="10">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Columns="3" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Content="{Binding DisplayText}"
+                                                          IsChecked="{Binding ShouldImport, Mode=TwoWay}"
+                                                          Margin="10" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Expander>
+                        </StackPanel>
+                    </ScrollViewer>
                 </DataTemplate>
 
             </conv:WizardStepTemplateSelector>
