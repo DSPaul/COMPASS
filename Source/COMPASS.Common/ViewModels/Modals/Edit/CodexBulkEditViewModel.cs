@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.ViewModels;
@@ -28,10 +25,14 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             PublisherOptions = ["", ..publisherList];
             
             _editedCodices = toEdit;
+            AllTagsAsTreeNodes = BuildTagTree();
 
-            //set common metadata
-            _commonAuthors = _editedCodices.Select(f => f.Authors.ToList()).Aggregate((xs, ys) => xs.Intersect(ys).ToList());
-            _authors = new(_commonAuthors);
+            AuthorsToRemoveOptions = _editedCodices
+                .SelectMany(codex => codex.Authors)
+                .Where(author => !string.IsNullOrWhiteSpace(author))
+                .Distinct()
+                .OrderBy(author => author)
+                .ToList();
 
             if (_editedCodices.HasCommonValue(f => f.Publisher, out string? commonPublisher))
             {
@@ -60,17 +61,25 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         }
 
         private readonly List<Codex> _editedCodices;
-        private readonly List<string> _commonAuthors;
-        
+
         #region Properties
-        
-        private ObservableCollection<string> _authors;
-        public ObservableCollection<string> Authors
+
+        private ObservableCollection<string> _authorsToAdd = [];
+        public ObservableCollection<string> AuthorsToAdd
         {
-            get => _authors;
-            set => SetProperty(ref _authors, value);
+            get => _authorsToAdd;
+            set => SetProperty(ref _authorsToAdd, value);
         }
-        
+
+        private ObservableCollection<string> _authorsToRemove = [];
+        public ObservableCollection<string> AuthorsToRemove
+        {
+            get => _authorsToRemove;
+            set => SetProperty(ref _authorsToRemove, value);
+        }
+
+        public List<string> AuthorsToRemoveOptions { get; }
+
         private string _publisher = "";
         public string Publisher
         {
@@ -122,13 +131,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         
         public CollectionTabVM TabVM { get; }
     
-        protected ObservableCollection<CheckableTreeNode<TagViewModel>>? _allTagsAsTreeNodes;
-        public ObservableCollection<CheckableTreeNode<TagViewModel>> AllTagsAsTreeNodes => _allTagsAsTreeNodes ??= 
-            new(TabVM.CollectionVM.Collection.RootTags
-                .Select(TabVM.CollectionVM.GetTagVm)
-                .Select(tagVm => new CheckableTreeNode<TagViewModel>(tagVm)));
-
-        protected HashSet<CheckableTreeNode<TagViewModel>> AllTreeNodes => AllTagsAsTreeNodes.Flatten().ToHashSet();
+        public ObservableCollection<TreeNode<TagViewModel>> AllTagsAsTreeNodes { get; }
     
         public List<string> PublisherOptions { get; }
         
@@ -166,22 +169,35 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             TagsToAdd.Remove(t);
             TagsToRemove.Remove(t);
         }
-        
+
+        private ObservableCollection<TreeNode<TagViewModel>> BuildTagTree()
+        {
+            ObservableCollection<TreeNode<TagViewModel>> roots = new(TabVM.CollectionVM.Collection.RootTags
+                .Select(TabVM.CollectionVM.GetTagVm)
+                .Select(tagVm => new TreeNode<TagViewModel>(tagVm)));
+
+            foreach (var node in roots.Flatten())
+            {
+                node.Expanded = node.Item.IsGroup;
+            }
+
+            return roots;
+        }
+
         #endregion
-        
+
         #region IConfirmable
-    
+
         private RelayCommand? _confirmCommand;
         public IRelayCommand ConfirmCommand => _confirmCommand ??= new(Confirm);
         private void Confirm()
         {
-            //find added and removed authors
-            var deletedAuthors = _commonAuthors.Except(Authors).ToList();
-            var addedAuthors = Authors.Except(_commonAuthors).ToList();
-
-            foreach (Codex f in _editedCodices)
+            if (AuthorsToAdd.Count > 0 || AuthorsToRemove.Count > 0)
             {
-                f.Authors = new(f.Authors.Union(addedAuthors).Except(deletedAuthors));
+                foreach (Codex f in _editedCodices)
+                {
+                    f.Authors = new(f.Authors.Union(AuthorsToAdd).Except(AuthorsToRemove));
+                }
             }
 
             if (!string.IsNullOrEmpty(Publisher))

@@ -14,10 +14,8 @@ using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
-using ShimSkiaSharp;
 
 namespace COMPASS.Common.ViewModels.Modals.Edit
 {
