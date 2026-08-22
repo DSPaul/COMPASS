@@ -240,9 +240,6 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                 }
             }
 
-            //Update lists of all authors, publishers, ect.
-            TabsViewModel.GetInstance().ActiveTab?.FiltersVM.PopulateMetaDataCollections();
-
             //Add and remove Tags
             foreach (Codex codex in _editedCodices)
             {

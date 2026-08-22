@@ -42,10 +42,7 @@ namespace COMPASS.Common.ViewModels.Main
             ExcludedFilters.CollectionChanged += HandleRefilter;
             collectionVM.AllCodexVms.CollectionChanged += (_, _) =>
             {
-                Dispatcher.UIThread.PostIfNeeded(() =>
-                {
-                    PopulateMetaDataCollections();
-                });
+                PopulateMetaDataCollections();
                 TriggerFilter();
             };
             collectionVM.CodexPropertyChanged += OnCodexPropertyChanged;
@@ -343,36 +340,54 @@ namespace COMPASS.Common.ViewModels.Main
             }
         }
 
-        public void PopulateMetaDataCollections() => Dispatcher.UIThread.Post(() =>
+        public void PopulateMetaDataCollections()
         {
-            foreach (CodexViewModel vm in _allCodexVms)
+            //put this on a background thread
+            Task.Run(() =>
             {
-                //Populate Author Collection
-                AuthorList = new(AuthorList.Union(vm.Authors));
+                HashSet<string> authors = [];
+                HashSet<string> publishers = [];
+                HashSet<string> fileTypes = [];
+                HashSet<string> domains = [];
+                Dictionary<string, string> domainCache = [];
 
-                //Populate Publisher Collection
-                if (!String.IsNullOrEmpty(vm.Publisher)) PublisherList.AddIfMissing(vm.Publisher);
-
-                //Populate FileType Collection
-                if (!String.IsNullOrEmpty(vm.Sources.FileType)) FileTypeList.AddIfMissing(vm.Sources.FileType);
-
-                //Populate Domain Collection
-                if (vm.Sources.HasOnlineSource())
+                foreach (CodexViewModel vm in _allCodexVms)
                 {
-                    string domain = Uri.IsWellFormedUriString(vm.Sources.SourceURL, UriKind.Absolute) ?
-                        new Uri(vm.Sources.SourceURL).Host :
-                        vm.Sources.SourceURL;
-                    if (!string.IsNullOrEmpty(domain)) DomainList.AddIfMissing(domain);
-                }
-            }
-            AuthorList.Remove(""); //remove "" author because String.IsNullOrEmpty cannot be called during Union
+                    //Populate Author Collection
+                    authors.UnionWith(vm.Authors);
 
-            //Sort them
-            AuthorList = new(AuthorList.Order());
-            PublisherList = new(PublisherList.Order());
-            FileTypeList = new(FileTypeList.Order());
-            DomainList = new(DomainList.Order());
-        });
+                    //Populate Publisher Collection
+                    if (!String.IsNullOrEmpty(vm.Publisher)) publishers.Add(vm.Publisher);
+
+                    //Populate FileType Collection
+                    if (!String.IsNullOrEmpty(vm.Sources.FileType)) fileTypes.Add(vm.Sources.FileType);
+
+                    //Populate Domain Collection
+                    if (vm.Sources.HasOnlineSource())
+                    {
+                        string sourceURL = vm.Sources.SourceURL;
+                        if (!domainCache.TryGetValue(sourceURL, out string? domain))
+                        {
+                            domain = Uri.TryCreate(sourceURL, UriKind.Absolute, out Uri? parsedUri) ?
+                                parsedUri.Host :
+                                sourceURL;
+                            domainCache[sourceURL] = domain;
+                        }
+                        if (!string.IsNullOrEmpty(domain)) domains.Add(domain);
+                    }
+                }
+                authors.Remove(""); //remove "" author because String.IsNullOrEmpty cannot be called during Union
+
+                //Sort & apply them
+                Dispatcher.UIThread.Post(() =>
+                {
+                    AuthorList = new(authors.Order());
+                    PublisherList = new(publishers.Order());
+                    FileTypeList = new(fileTypes.Order());
+                    DomainList = new(domains.Order());
+                });
+            });
+        }
 
         public FiltersState GetFiltersState() => new FiltersState()
             {
