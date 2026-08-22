@@ -56,38 +56,45 @@
         </DataGrid.Styles>
 
         <DataGrid.Columns>
-            <DataGridTextColumn Header="TITLE" Binding="{Binding Title}" SortMemberPath="SortingTitle"
-                                Width="3*" MinWidth="100" CanUserSort="True"
+            <DataGridTextColumn Header="TITLE" Binding="{Binding Title}" 
+                                Width="3*" MinWidth="100" 
+                                CanUserSort="True" SortMemberPath="SortingTitle"
                                 x:DataType="modelVm:CodexViewModel"
                                 IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowTitle}" />
 
-            <DataGridTextColumn Header="AUTHORS" Binding="{Binding AuthorsAsString}"
-                                Width="2*" MinWidth="100" CanUserSort="True"
+            <DataGridTextColumn Header="AUTHORS" Binding="{Binding AuthorsAsString}" 
+                                Width="2*" MinWidth="100" 
+                                CanUserSort="True" SortMemberPath="AuthorsAsString"
                                 x:DataType="modelVm:CodexViewModel"
                                 IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowAuthor}" />
 
-            <DataGridTextColumn Header="PUBLISHER" Binding="{Binding Publisher}"
-                                Width="2*" MinWidth="100" CanUserSort="True"
+            <DataGridTextColumn Header="PUBLISHER" Binding="{Binding Publisher}" 
+                                Width="2*" MinWidth="100" 
+                                CanUserSort="True" SortMemberPath="Publisher"
                                 x:DataType="modelVm:CodexViewModel"
                                 IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowPublisher}" />
             
-            <DataGridTextColumn Header="RELEASE DATE" Binding="{Binding ReleaseDateAsString}" SortMemberPath="ReleaseDate"
-                                Width="*" MinWidth="100" CanUserSort="True"
+            <DataGridTextColumn Header="RELEASE DATE" Binding="{Binding ReleaseDateAsString}" 
+                                Width="*" MinWidth="100" 
+                                CanUserSort="True" SortMemberPath="ReleaseDate"
                                 x:DataType="modelVm:CodexViewModel"
                                 IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowReleaseDate}" />
 
-            <DataGridTextColumn Header="DATE ADDED" Binding="{Binding DateAdded, StringFormat=dd/MM/yyyy}"
-                                Width="*" MinWidth="100" CanUserSort="True"
+            <DataGridTextColumn Header="DATE ADDED" Binding="{Binding DateAdded, StringFormat=dd/MM/yyyy}" 
+                                Width="*" MinWidth="100" 
+                                CanUserSort="True" SortMemberPath="DateAdded"
                                 x:DataType="modelVm:CodexViewModel"
                                 IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowDateAdded}" />
 
-            <DataGridTextColumn Header="VERSION" Binding="{Binding Version}"
-                                Width="*" MinWidth="20" CanUserSort="True"
+            <DataGridTextColumn Header="VERSION" Binding="{Binding Version}" 
+                                Width="*" MinWidth="20" 
+                                CanUserSort="True" SortMemberPath="Version"
                                 x:DataType="modelVm:CodexViewModel"
                                 IsVisible="{Binding $parent[layouts:ListLayout].((vm:ListLayoutViewModel)DataContext).Preferences.ShowVersion}" />
 
-            <DataGridTemplateColumn Header="RATING" SortMemberPath="Rating"
-                                    Width="*" MinWidth="120" CanUserSort="True"
+            <DataGridTemplateColumn Header="RATING" 
+                                    Width="*" MinWidth="120" 
+                                    CanUserSort="True" SortMemberPath="Rating"
                                     IsVisible="{Binding Preferences.ShowRating}">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate x:DataType="modelVm:CodexViewModel">
