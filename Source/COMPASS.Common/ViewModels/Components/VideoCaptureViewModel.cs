@@ -1,8 +1,8 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Infra.Models;
-using COMPASS.Infra.Tools;
 using FlashCap;
 using SkiaSharp;
 
@@ -10,11 +10,12 @@ namespace COMPASS.Common.ViewModels.Components
 {
     public class VideoCaptureViewModel : ViewModelBase, IAsyncDisposable
     {
-        private ICameraService _cameraService = ServiceResolver.Resolve<ICameraService>();
+        private readonly ICameraService _cameraService;
         private CaptureDevice? _activeDevice;
 
-        public VideoCaptureViewModel()
+        public VideoCaptureViewModel(ICameraService cameraService)
         {
+            _cameraService = cameraService;
             DeviceDescriptors = [];
             Characteristics = [];
             RefreshCameras();
@@ -130,5 +131,11 @@ namespace COMPASS.Common.ViewModels.Components
             await StopCapture();
             CurrentFrame?.Dispose();
         }
+    }
+
+    [Factory]
+    public class VideoCaptureViewModelFactory(ICameraService cameraService)
+    {
+        public VideoCaptureViewModel Create() => new VideoCaptureViewModel(cameraService);
     }
 }

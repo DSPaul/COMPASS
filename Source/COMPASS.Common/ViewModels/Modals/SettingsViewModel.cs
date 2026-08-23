@@ -11,30 +11,51 @@ using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Models;
-using COMPASS.Infra.Tools;
+using COMPASS.Common.ViewModels.Tools;
+using COMPASS.Common.DependencyInjection;
 using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
     public class SettingsViewModel : ViewModelBase, IModalViewModel, IDisposable
     {
+        private readonly ILogger _logger;
+        private readonly IApplicationDataService _applicationDataService;
+        private readonly IIOService _ioService;
+        private readonly IPreferencesService _preferencesService;
+        private readonly IFilesService _filesService;
+        private readonly UpdateManager _updateManager;
+        private readonly ImportFilesViewModelFactory _importFilesViewModelFactory;
+
         private static readonly List<string> TabOrder = ["General", "Import", "Metadata", "Tools", "About", "Legal"];
 
-        public SettingsViewModel(string tabToOpen = "")
+        public SettingsViewModel(
+            ILogger logger,
+            IApplicationDataService applicationDataService,
+            IIOService ioService,
+            IPreferencesService preferencesService,
+            IFilesService filesService,
+            UpdateManager updateManager,
+            ImportFilesViewModelFactory importFilesViewModelFactory,
+            BackupToolViewModelFactory backupToolViewModelFactory,
+            string tabToOpen = "")
         {
             int tabIndex = TabOrder.FindIndex(t => t.Equals(tabToOpen, StringComparison.OrdinalIgnoreCase));
             SelectedTabIndex = tabIndex >= 0 ? tabIndex : 0;
 
-            _applicationDataService = ServiceResolver.Resolve<IApplicationDataService>();
-            _ioService = ServiceResolver.Resolve<IIOService>();
-            _preferencesService = ServiceResolver.Resolve<IPreferencesService>();
-            
+            _logger = logger;
+            _applicationDataService = applicationDataService;
+            _ioService = ioService;
+            _preferencesService = preferencesService;
+            _filesService = filesService;
+            _updateManager = updateManager;
+            _importFilesViewModelFactory = importFilesViewModelFactory;
 
             SelectedCollectionVm = CollectionManager.CollectionVms.SingleOrDefault(vm => vm.Identifier == ActiveCollection.Name);
 
             if (SelectedCollectionVm == null)
             {
-                Logger.Warn("The active collection was not found in the list of all known collections");
+                _logger.Warn("The active collection was not found in the list of all known collections");
             }
 
             if (SelectedCollection != null)
@@ -46,11 +67,10 @@ namespace COMPASS.Common.ViewModels.Modals
             {
                 BanishedPaths = new ObservableCollection<string>();
             }
+
+            ToolsVM = new(backupToolViewModelFactory);
         }
 
-        private readonly IApplicationDataService _applicationDataService;
-        private readonly IIOService _ioService;
-        private readonly IPreferencesService _preferencesService;
 
         private int _selectedTabIndex;
         public int SelectedTabIndex
@@ -156,7 +176,7 @@ namespace COMPASS.Common.ViewModels.Modals
         public AsyncRelayCommand ChangeDataPathCommand => field ??= new(ChooseNewDataPath);
         private async Task ChooseNewDataPath()
         {
-            var folders = await ServiceResolver.Resolve<IFilesService>().OpenFoldersAsync(new()
+            var folders = await _filesService.OpenFoldersAsync(new()
             {
                 Title = "Choose a new data location",
             });
@@ -235,7 +255,7 @@ namespace COMPASS.Common.ViewModels.Modals
         private async Task EditAutoImportFolder(Folder? folder)
         {
             if (folder is null) return;
-            using var importFolderVM = new ImportFilesViewModel(autoImport: false);
+            using var importFolderVM = _importFilesViewModelFactory.Create(autoImport: false);
             importFolderVM.ExistingFolders = [folder];
             await importFolderVM.Import();
             
@@ -257,7 +277,7 @@ namespace COMPASS.Common.ViewModels.Modals
         {
             if (!String.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))
             {
-                using var importFolderVM = new ImportFilesViewModel(false);
+                using var importFolderVM = _importFilesViewModelFactory.Create(false);
                 importFolderVM.RecursiveDirectories = [dir];
                 await importFolderVM.Import();
             }
@@ -308,7 +328,7 @@ namespace COMPASS.Common.ViewModels.Modals
         #endregion
 
         #region Tab: Tools
-        public ToolsViewModel ToolsVM { get; } = new();
+        public ToolsViewModel ToolsVM { get; }
         #endregion
         
         #region Tab: About
@@ -317,8 +337,7 @@ namespace COMPASS.Common.ViewModels.Modals
         public AsyncRelayCommand CheckForUpdatesCommand => field ??= new(CheckForUpdates);
         private async Task CheckForUpdates()
         {
-            var updateManager = ServiceResolver.Resolve<UpdateManager>();
-            await updateManager.ExplicitCheckUpdates();
+            await _updateManager.ExplicitCheckUpdates();
         }
         #endregion
 
@@ -342,5 +361,21 @@ namespace COMPASS.Common.ViewModels.Modals
             _selectedCollectionHandle?.Dispose();
             ToolsVM.Dispose();
         }
+    }
+
+    [Factory]
+    public class SettingsViewModelFactory(
+        ILogger logger,
+        IApplicationDataService applicationDataService,
+        IIOService ioService,
+        IPreferencesService preferencesService,
+        IFilesService filesService,
+        UpdateManager updateManager,
+        ImportFilesViewModelFactory importFilesViewModelFactory,
+        BackupToolViewModelFactory backupToolViewModelFactory)
+    {
+        public SettingsViewModel Create(string tabToOpen = "")
+            => new(logger, applicationDataService, ioService, preferencesService, filesService, updateManager,
+                   importFilesViewModelFactory, backupToolViewModelFactory, tabToOpen);
     }
 }

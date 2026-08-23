@@ -2,6 +2,8 @@ using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Adorners;
+using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.DragDrop;
 using COMPASS.Common.Operations;
@@ -18,12 +20,14 @@ namespace COMPASS.Common.ViewModels.ModelVMs;
 
 public class CodexViewModel : ModelViewModelBase<Codex>
 {
+    private readonly ILogger _logger;
     private readonly CodexCollectionVM _codexCollectionVM;
     
     #region Constructors
 
-    public CodexViewModel(Codex codex, CodexCollectionVM codexCollectionVM) : base(codex)
+    public CodexViewModel(ILogger logger, Codex codex, CodexCollectionVM codexCollectionVM) : base(codex)
     {
+        _logger = logger;
         _codexCollectionVM = codexCollectionVM;
 
         Tags = new ReadOnlyCollection<TagViewModel>(GetTagVms());
@@ -214,7 +218,7 @@ public class CodexViewModel : ModelViewModelBase<Codex>
         }
         catch (Exception ex)
         {
-            Logger.Error("Failed to load thumbnail", ex);
+            _logger.Error("Failed to load thumbnail", ex);
         }
     }
 
@@ -255,7 +259,7 @@ public class CodexViewModel : ModelViewModelBase<Codex>
         }
         catch (Exception ex)
         {
-            Logger.Error("Failed to load thumbnail", ex); 
+            _logger.Error("Failed to load thumbnail", ex); 
             return null;
         }
     }
@@ -384,4 +388,11 @@ public class CodexViewModel : ModelViewModelBase<Codex>
     private async Task GetCover() => await CodexOperations.GetCover(_model);
     
     #endregion
+}
+
+[Factory]
+public class CodexViewModelFactory(ILogger logger)
+{
+    public CodexViewModel Create(Codex codex, CodexCollectionVM parentCollectionVm)
+        => new(logger, codex, parentCollectionVm);
 }

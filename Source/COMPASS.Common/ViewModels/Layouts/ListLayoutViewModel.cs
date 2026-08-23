@@ -7,9 +7,9 @@ namespace COMPASS.Common.ViewModels.Layouts
 {
     public class ListLayoutViewModel : LayoutViewModel
     {
-        public ListLayoutViewModel(CollectionTabVM tabVM) : base(tabVM)
+        public ListLayoutViewModel(ListLayoutPreferences preferences, CodexInfoViewModelFactory codexInfoVmFactory, CollectionTabVM tabVM) : base(codexInfoVmFactory, tabVM)
         {
-            Preferences = PreferencesService.Preferences.ListLayoutPreferences;
+            Preferences = preferences;
             SubscribeToCollectionChangedEvent();
         }
         

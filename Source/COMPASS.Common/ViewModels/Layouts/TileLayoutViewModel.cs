@@ -6,9 +6,9 @@ namespace COMPASS.Common.ViewModels.Layouts
 {
     public class TileLayoutViewModel : LayoutViewModel
     {
-        public TileLayoutViewModel(CollectionTabVM tabVM) : base(tabVM)
+        public TileLayoutViewModel(TileLayoutPreferences preferences, CodexInfoViewModelFactory codexInfoVmFactory, CollectionTabVM tabVM) : base(codexInfoVmFactory, tabVM)
         {
-            Preferences = PreferencesService.Preferences.TileLayoutPreferences;
+            Preferences = preferences;
         }
         
         public TileLayoutPreferences Preferences { get; }

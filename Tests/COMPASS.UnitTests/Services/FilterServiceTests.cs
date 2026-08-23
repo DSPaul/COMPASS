@@ -1,16 +1,19 @@
 using Autofac;
 using Avalonia.Platform.Storage;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Repos;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Repositories;
 using COMPASS.Common.Services;
+using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Tools;
 using COMPASS.Tests.Common;
+using COMPASS.Tests.Common.Mocks;
 using System.ComponentModel;
 
 namespace COMPASS.UnitTests.Services;
@@ -25,6 +28,7 @@ public class FilterServiceTests
     public void OneTimeSetUp()
     {
         var builder = new ContainerBuilder();
+        builder.RegisterModule<CommonModule>();
         builder.RegisterModule<MockModule>();
         builder.RegisterType<StubImportExportService>().As<IImportExportService>();
         ServiceResolver.Initialize(builder.Build());
@@ -252,8 +256,8 @@ public class FilterServiceTests
         AddCodex(collection, "Zeta", [duneTag], publisher: "Paizo", rating: 5);
         AddCodex(collection, "Eta", [wizardsTag, starWarsTag], publisher: "WotC", rating: 2);
 
-        return new CodexCollectionVM("FilterServiceTestCollection", collection, new CodexCollectionMemRepository());
-    }
+        var codexCollectionVMFactory = ServiceResolver.Resolve<CodexCollectionVMFactory>();
+        return codexCollectionVMFactory.Create(collection, new CodexCollectionMemRepository());    }
 
     private static void AddCodex(CodexCollection collection, string title, Tag[] tags,
         string publisher = "", int rating = 0, string path = "", bool favorite = false, string[]? authors = null)

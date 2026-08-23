@@ -6,9 +6,9 @@ namespace COMPASS.Common.ViewModels.Layouts
 {
     public class CardLayoutViewModel : LayoutViewModel
     {
-        public CardLayoutViewModel(CollectionTabVM tabVM) : base(tabVM)
+        public CardLayoutViewModel(CardLayoutPreferences preferences, CodexInfoViewModelFactory codexInfoVmFactory, CollectionTabVM tabVM) : base(codexInfoVmFactory, tabVM)
         {
-            Preferences = PreferencesService.Preferences.CardLayoutPreferences;
+            Preferences = preferences;
         }
 
         public CardLayoutPreferences Preferences { get; }

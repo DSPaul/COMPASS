@@ -7,11 +7,11 @@ namespace COMPASS.Common.ViewModels.Modals;
 
 public class ToolsViewModel : ViewModelBase, IDisposable
 {
-    public ToolsViewModel()
+    public ToolsViewModel(BackupToolViewModelFactory backupToolViewModelFactory)
     {
         Tools =
         [
-            new BackupToolViewModel(),
+            backupToolViewModelFactory.Create(),
             new BrokenFileRefsToolViewModel()
         ];
     }

@@ -1,12 +1,10 @@
 ﻿using COMPASS.Common.Exceptions;
-using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
-using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Selection;
-using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
@@ -16,14 +14,19 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 {
     public class ImportCollectionViewModel : WizardViewModel, IDisposable
     {
+        private readonly IUserFilesStorageService _userFilesStorageService;
+        private readonly INotificationService _notificationService;
+
         public override string WindowTitle { get; } = "Import Collection";
 
         private readonly WizardStepViewModel _overviewStep = new("Overview");
 
         private readonly CollectionHandle _collectionToImportHandle;
         
-        public ImportCollectionViewModel(CodexCollectionVM collectionVmToImport, CodexCollectionVM? targetCollection = null)
+        public ImportCollectionViewModel(IUserFilesStorageService userFilesStorageService, INotificationService notificationService, CollectionContentSelectorViewModelFactory contentSelectorVMFactory, CodexCollectionVM collectionVmToImport, CodexCollectionVM? targetCollection = null)
         {
+            _userFilesStorageService = userFilesStorageService;
+            _notificationService = notificationService;
             AddValidation(nameof(MergeIntoCollection), ValidateTarget);
             AddValidation(nameof(CollectionName), ValidateTarget);
             AddValidation(nameof(TargetCollection), ValidateTarget);
@@ -36,18 +39,16 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
             _collectionToImportHandle = collectionVmToImport.Load() ?? throw new LoadException(collectionVmToImport.Identifier);
             
-            ContentSelectorVM = new(CollectionToImport);
+            ContentSelectorVM = contentSelectorVMFactory.Create(CollectionToImport);
             
             UpdateSteps();
 
             //if files were included in compass file, set paths of codices to those files
-            var userFileService = ServiceResolver.Resolve<IUserFilesStorageService>();
-
-            if (userFileService.HasUserFiles(CollectionToImport))
+            if (_userFilesStorageService.HasUserFiles(CollectionToImport))
             {
                 foreach (Codex codex in CollectionToImport.AllCodices.Where(c => c.Sources.HasOfflineSource()))
                 {
-                    userFileService.MoveCodexDataToCollection(codex, CollectionToImport);
+                    _userFilesStorageService.MoveCodexDataToCollection(codex, CollectionToImport);
                 }
             }
         }
@@ -129,7 +130,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
                 Notification notification = new("Tags found", message, Severity.Info,
                     NotificationAction.Cancel | NotificationAction.Decline | NotificationAction.Confirm);
-                await ServiceResolver.Resolve<INotificationService>().ShowDialog(notification);
+                await _notificationService.ShowDialog(notification);
 
                 switch (notification.Result)
                 {
@@ -222,5 +223,12 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             _collectionToImportHandle.CollectionVM.DeleteCollection();
             _collectionToImportHandle.CollectionVM.Dispose();
         }
+    }
+
+    [Factory]
+    public class ImportCollectionViewModelFactory(IUserFilesStorageService userFilesStorageService, INotificationService notificationService, CollectionContentSelectorViewModelFactory contentSelectorVMFactory)
+    {
+        public ImportCollectionViewModel Create(CodexCollectionVM collectionVmToImport, CodexCollectionVM? targetCollection = null)
+            => new(userFilesStorageService, notificationService, contentSelectorVMFactory, collectionVmToImport, targetCollection);
     }
 }

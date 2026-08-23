@@ -1,8 +1,8 @@
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Infra.Models;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals;
 
@@ -10,13 +10,13 @@ public class MetaDataProposalViewModel : ViewModelBase, IDisposable
 {
     private readonly Guid _proposalIdentifier = Guid.NewGuid();
 
-    public MetaDataProposalViewModel(Codex codex, SourceMetaData proposedMetaData)
+    public MetaDataProposalViewModel(IPreferencesService preferencesService, Codex codex, SourceMetaData proposedMetaData)
     {
         Codex = codex;
         ExistingMetaData = new(new(codex));
         ProposedMetaData = new(proposedMetaData);
 
-        ShouldUseNewValue = ServiceResolver.Resolve<IPreferencesService>().Preferences.ImportableCodexProperties
+        ShouldUseNewValue = preferencesService.Preferences.ImportableCodexProperties
                                               .ToDictionary(prop => prop.Name, prop => new ObservableKeyValuePair<CodexProperty, bool>(prop, false));
         MetaDataChoiceGroupNames = ShouldUseNewValue.Keys.ToDictionary(
             propertyName => propertyName,
@@ -45,4 +45,10 @@ public class MetaDataProposalViewModel : ViewModelBase, IDisposable
         ExistingMetaData.DeepDispose();
         ProposedMetaData.DeepDispose();
     }
+}
+
+[Factory]
+public class MetaDataProposalViewModelFactory(IPreferencesService preferencesService)
+{
+    public MetaDataProposalViewModel Create(Codex codex, SourceMetaData proposedMetaData) => new(preferencesService, codex, proposedMetaData);
 }

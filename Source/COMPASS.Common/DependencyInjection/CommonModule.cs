@@ -13,6 +13,8 @@ using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Services.Storage;
 using COMPASS.Common.Tools.Logging;
+using COMPASS.Common.ViewModels;
+using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Interfaces.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -47,6 +49,14 @@ namespace COMPASS.Common.DependencyInjection
 
             //Managers
             builder.RegisterType<UpdateManager>().AsSelf().SingleInstance();
+
+            // View model factories (all classes marked with [Factory])
+            builder.RegisterFactories();
+
+            // Singletons reachable via transitional static accessors
+            builder.RegisterType<TabsViewModel>().AsSelf().SingleInstance();
+            builder.RegisterType<MainViewModel>().AsSelf().SingleInstance();
+            builder.RegisterType<ProgressViewModel>().AsSelf().SingleInstance();
 
             // Misc Services
             builder.RegisterType<BarcodeDecoderService>().As<IBarcodeDecoderService>();

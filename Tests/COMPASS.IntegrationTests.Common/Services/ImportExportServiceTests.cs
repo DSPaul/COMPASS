@@ -8,6 +8,7 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Services.Storage;
+using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Infra.Tools;
@@ -104,8 +105,8 @@ namespace COMPASS.IntegrationTests.Common.Services
                 //Deserialize Satchel
                 var deserializedCollection = await importExportService.OpenSatchel(filePath);
                 Assert.That(deserializedCollection, Is.Not.Null);
-                deserializedCollectionVm = new CodexCollectionVM(deserializedCollection, StorageStrategy.Xml);
-                ImportCollectionViewModel importViewModel = new(deserializedCollectionVm);
+                deserializedCollectionVm = container.Resolve<CodexCollectionVMFactory>().Create(deserializedCollection, StorageStrategy.Xml);
+                ImportCollectionViewModel importViewModel = container.Resolve<ImportCollectionViewModelFactory>().Create(deserializedCollectionVm);
 
                 Assert.That(importViewModel.ContentSelectorVM.HasCodices, "deserialized satchel has no Codices");
                 Assert.That(importViewModel.ContentSelectorVM.HasTags, "deserialized satchel has no Tags");

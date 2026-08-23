@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using Avalonia.Media;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Main;
@@ -11,10 +12,12 @@ namespace COMPASS.Common.ViewModels.ModelVMs;
 
 public class TagViewModel : ModelViewModelBase<Tag>, IHasChildren<TagViewModel>
 {
+    private readonly IPreferencesService _preferencesService;
     private readonly CodexCollectionVM _codexCollectionVm;
     
-    public TagViewModel(Tag tag, CodexCollectionVM codexCollectionVm) : base(tag)
+    public TagViewModel(IPreferencesService preferencesService, Tag tag, CodexCollectionVM codexCollectionVm) : base(tag)
     {
+        _preferencesService = preferencesService;
         _codexCollectionVm =  codexCollectionVm;
         
         _derivedProperties.Add(nameof(Tag.Name), [nameof(LongName), nameof(CalculatedLinkedGlobs)]);
@@ -62,7 +65,7 @@ public class TagViewModel : ModelViewModelBase<Tag>, IHasChildren<TagViewModel>
     
     
     public ObservableCollection<string> LinkedGlobs => _model.LinkedGlobs;
-    public List<string> CalculatedLinkedGlobs => ServiceResolver.Resolve<IPreferencesService>().Preferences.AutoLinkFolderTagSameName ? [$"**/{Name}/**"] : [];
+    public List<string> CalculatedLinkedGlobs => _preferencesService.Preferences.AutoLinkFolderTagSameName ? [$"**/{Name}/**"] : [];
     
     #endregion Properties
     
@@ -82,4 +85,11 @@ public class TagViewModel : ModelViewModelBase<Tag>, IHasChildren<TagViewModel>
         }
     }
     #endregion
+}
+
+[Factory]
+public class TagViewModelFactory(IPreferencesService preferencesService)
+{
+    public TagViewModel Create(Tag tag, CodexCollectionVM codexCollectionVm)
+        => new(preferencesService, tag, codexCollectionVm);
 }

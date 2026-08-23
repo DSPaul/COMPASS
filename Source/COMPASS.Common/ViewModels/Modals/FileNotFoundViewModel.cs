@@ -1,18 +1,21 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.Tools;
 using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
     public class FileNotFoundViewModel : ViewModelBase, IModalViewModel
     {
-        public FileNotFoundViewModel(Codex codex)
+
+        private readonly IFilesService _filesService;
+        public FileNotFoundViewModel(IFilesService filesService, Codex codex)
         {
+            _filesService = filesService;
             Codex = codex;
         }
 
@@ -30,7 +33,7 @@ namespace COMPASS.Common.ViewModels.Modals
         public AsyncRelayCommand FindFileCommand => _findFileCommand ??= new(FindFile);
         public async Task FindFile()
         {
-            var files = await ServiceResolver.Resolve<IFilesService>().OpenFilesAsync();
+            var files = await _filesService.OpenFilesAsync();
 
             if (files.Any())
             {
@@ -98,5 +101,11 @@ namespace COMPASS.Common.ViewModels.Modals
         
         public string WindowTitle => "File Not Found";
         public Action CloseAction { get; set; } = () => { };
+    }
+
+    [Factory]
+    public class FileNotFoundViewModelFactory(IFilesService filesService)
+    {
+        public FileNotFoundViewModel Create(Codex codex) => new(filesService, codex);
     }
 }

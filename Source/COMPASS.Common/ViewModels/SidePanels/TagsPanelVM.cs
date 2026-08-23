@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -10,12 +12,10 @@ using COMPASS.Common.ViewModels.Modals;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Common.ViewModels.ModelVMs;
-using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
-using COMPASS.Infra.Tools;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
@@ -23,8 +23,34 @@ namespace COMPASS.Common.ViewModels.SidePanels
 {
     public class TagsPanelVM : ViewModelBase
     {
-        public TagsPanelVM(CodexCollectionVM codexCollectionVm, FiltersViewModel filtersVM)
+        private readonly ILogger _logger;
+        private readonly IImportExportService _importExportService;
+        private readonly INotificationService _notificationService;
+        private readonly CodexCollectionVMFactory _codexCollectionVMFactory;
+        private readonly ExportCollectionViewModelFactory _exportCollectionViewModelFactory;
+        private readonly TagEditViewModelFactory _tagEditViewModelFactory;
+        private readonly TagViewModelFactory _tagViewModelFactory;
+        private readonly CodexCollectionVM _codexCollectionVm;
+        private readonly FiltersViewModel _filtersVM;
+
+        public TagsPanelVM(
+            ILogger logger,
+            IImportExportService importExportService,
+            INotificationService notificationService,
+            CodexCollectionVMFactory codexCollectionVMFactory,
+            ExportCollectionViewModelFactory exportCollectionViewModelFactory,
+            TagEditViewModelFactory tagEditViewModelFactory,
+            TagViewModelFactory tagViewModelFactory,
+            CodexCollectionVM codexCollectionVm,
+            FiltersViewModel filtersVM)
         {
+            _logger = logger;
+            _importExportService = importExportService;
+            _notificationService = notificationService;
+            _codexCollectionVMFactory = codexCollectionVMFactory;
+            _exportCollectionViewModelFactory = exportCollectionViewModelFactory;
+            _tagEditViewModelFactory = tagEditViewModelFactory;
+            _tagViewModelFactory = tagViewModelFactory;
             _codexCollectionVm = codexCollectionVm;
 
             codexCollectionVm.Collection.PropertyChanged += OnCollectionChanged;
@@ -32,9 +58,6 @@ namespace COMPASS.Common.ViewModels.SidePanels
             _filtersVM = filtersVM;
             UpdateTagsAsTreeNodes();
         }
-
-        private readonly CodexCollectionVM _codexCollectionVm;
-        private readonly FiltersViewModel _filtersVM;
 
         #region Properties
         
@@ -148,7 +171,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
 
         //Add Tag Buttons
         public RelayCommand AddTagCommand => field ??= new(AddTag);
-        public void AddTag() => AddTagViewModel = new TagEditViewModel(new Tag(), _codexCollectionVm, true);
+        public void AddTag() => AddTagViewModel = _tagEditViewModelFactory.Create(new Tag(), _codexCollectionVm, true);
 
 
         public RelayCommand AddGroupCommand => field ??= new(AddGroup);
@@ -158,7 +181,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
             {
                 IsGroup = true,
             };
-            AddGroupViewModel = new TagEditViewModel(newTag, _codexCollectionVm, true);
+            AddGroupViewModel = _tagEditViewModelFactory.Create(newTag, _codexCollectionVm, true);
         }
 
         public RelayCommand<TagViewModel?> AddTagFilterCommand => field ??= new(AddTagFilterHelper);
@@ -173,31 +196,31 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public AsyncRelayCommand ImportTagsFromOtherCollectionsCommand => field ??= new(ImportTagsFromOtherCollections);
         public async Task ImportTagsFromOtherCollections()
         {
-            var importVM = new ImportTagsViewModel(CollectionManager.CollectionNames, ActiveCollection.Name);
+            var importVM = new ImportTagsViewModel(_tagViewModelFactory,
+                (IEnumerable<string>)CollectionManager.CollectionNames, ActiveCollection.Name);
             await WindowManager.OpenModal(importVM);
         }
 
         public AsyncRelayCommand ImportTagsFromSatchelCommand => field ??= new(ImportTagsFromSatchel);
         public async Task ImportTagsFromSatchel()
         {
-            var importService = ServiceResolver.Resolve<IImportExportService>();
-            var importCollection = await importService.OpenSatchel();
+            var importCollection = await _importExportService.OpenSatchel();
 
             if (importCollection == null)
             {
-                Logger.Warn("Failed to open file");
+                _logger.Warn("Failed to open file");
                 return;
             }
 
             if (!importCollection.RootTags.Any())
             {
                 Notification noTagsFound = new("No Tags found", $"{importCollection.Name[2..]} does not contain tags");
-                await ServiceResolver.Resolve<INotificationService>().ShowDialog(noTagsFound);
+                await _notificationService.ShowDialog(noTagsFound);
                 return;
             }
             
-            using CodexCollectionVM toImportVm = new(importCollection, StorageStrategy.Xml);
-            var tagImportVM = new ImportTagsViewModel(toImportVm, ActiveCollection.Name);
+            using CodexCollectionVM toImportVm = _codexCollectionVMFactory.Create(importCollection, StorageStrategy.Xml);
+            var tagImportVM = new ImportTagsViewModel(_tagViewModelFactory, toImportVm, ActiveCollection.Name);
 
             var w = new ModalWindow(tagImportVM);
             await w.ShowDialog(WindowManager.ActiveWindow);
@@ -209,18 +232,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         public AsyncRelayCommand ExportTagsCommand => field ??= new(ExportTags);
         public async Task ExportTags()
         {
-            var vm = new ExportCollectionViewModel
-            {
-                //configure export vm for tags only
-                AdvancedExport = true
-            };
-
-            vm.Steps.Clear();
-            vm.Steps.Add(CollectionContentSelectorViewModel.TagsStep);
-            foreach (var codex in vm.ContentSelectorVM.SelectableCodices)
-            {
-                codex.Selected = false;
-            }
+            var vm = _exportCollectionViewModelFactory.CreateTagsExporter(_codexCollectionVm.Collection);
 
             var w = new ModalWindow(vm);
             await w.ShowDialog(WindowManager.ActiveWindow);
@@ -239,7 +251,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
                 {
                     Parent = referenceTag.GetModel()
                 };
-                var vm = new TagEditViewModel(newTag, _codexCollectionVm, true);
+                var vm = _tagEditViewModelFactory.Create(newTag, _codexCollectionVm, true);
                 await WindowManager.OpenModal(vm);
             }
         }
@@ -278,7 +290,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         private async Task EditTag(TagViewModel? toEdit)
         {
             if (toEdit is null) return;
-            var vm = new TagEditViewModel(toEdit.GetModel(), _codexCollectionVm, false);
+            var vm = _tagEditViewModelFactory.Create(toEdit.GetModel(), _codexCollectionVm, false);
             await WindowManager.OpenModal(vm);
         }
 
@@ -296,5 +308,20 @@ namespace COMPASS.Common.ViewModels.SidePanels
             UpdateTagsAsTreeNodes();
         }
         #endregion
+    }
+
+    [Factory]
+    public class TagsPanelVMFactory(
+        ILogger logger,
+        IImportExportService importExportService,
+        INotificationService notificationService,
+        CodexCollectionVMFactory codexCollectionVMFactory,
+        ExportCollectionViewModelFactory exportCollectionViewModelFactory,
+        TagEditViewModelFactory tagEditViewModelFactory,
+        TagViewModelFactory tagViewModelFactory)
+    {
+        public TagsPanelVM Create(CodexCollectionVM collectionVm, FiltersViewModel filtersVm)
+            => new(logger, importExportService, notificationService, codexCollectionVMFactory, exportCollectionViewModelFactory, tagEditViewModelFactory,
+                   tagViewModelFactory, collectionVm, filtersVm);
     }
 }

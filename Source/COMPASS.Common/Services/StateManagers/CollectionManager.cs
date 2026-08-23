@@ -3,9 +3,9 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using COMPASS.Common.Interfaces.Repos;
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.ViewModels;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Tools;
 
@@ -13,8 +13,7 @@ namespace COMPASS.Common.Services.StateManagers
 {
     public static class CollectionManager
     {
-        private static ILogger? _logger;
-        private static ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
+        private static ILogger Logger => field ??= ServiceResolver.Resolve<ILogger>();
 
         #region Properties
     
@@ -75,6 +74,8 @@ namespace COMPASS.Common.Services.StateManagers
     
         public static void DiscoverCollections()
         {
+            var vmFactory = ServiceResolver.Resolve<CodexCollectionVMFactory>();
+
             foreach (StorageStrategy strategy in Enum.GetValues<StorageStrategy>())
             {
                 var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(strategy);
@@ -83,7 +84,7 @@ namespace COMPASS.Common.Services.StateManagers
                 var foundCollections = storageService.GetAllCollections();
                 foreach (CodexCollection collection in foundCollections)
                 {
-                    CodexCollectionVM vm = new(collection.Name, collection, storageService);
+                    CodexCollectionVM vm = vmFactory.Create(collection, storageService);
                     RegisterCollection(vm);
                 }
             }
@@ -118,8 +119,10 @@ namespace COMPASS.Common.Services.StateManagers
         
             //save to xml by default
             var storageService = ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
+            var vmFactory = ServiceResolver.Resolve<CodexCollectionVMFactory>();
+
             storageService.AllocateNewCollection(newCollection);
-            var newCollectionVm = new CodexCollectionVM(newCollection.Name, newCollection, storageService);
+            var newCollectionVm = vmFactory.Create(newCollection, storageService);
             RegisterCollection(newCollectionVm);
             
             return newCollectionVm;

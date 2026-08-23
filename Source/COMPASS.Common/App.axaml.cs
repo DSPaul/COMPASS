@@ -62,7 +62,7 @@ public partial class App : Application
             HandleVersionChanges();
 
             var mainWindow = new MainWindow();
-            var mainVm = new MainViewModel();
+            var mainVm = ServiceResolver.Resolve<MainViewModel>();
             mainWindow.DataContext = mainVm;
 
             desktop.MainWindow = mainWindow;
@@ -91,7 +91,7 @@ public partial class App : Application
         SemanticVersion? lastRanVersion = preferencesService.Preferences.LastRanVersion;
         SemanticVersion? currentVersion = SemanticVersion.Parse(ApplicationService.Version);
 
-        //Check if magration from v1 is needed
+        //Check if migration from v1 is needed
         if (lastRanVersion == null || lastRanVersion.Major == 1)
         {
             ServiceResolver.Resolve<IApplicationDataService>().MigrateFromV1();

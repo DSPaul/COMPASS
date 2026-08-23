@@ -1,5 +1,6 @@
 ﻿using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
@@ -11,11 +12,15 @@ namespace COMPASS.Common.ViewModels.Modals
 {
     public class ExportCollectionViewModel : WizardViewModel
     {
-        public ExportCollectionViewModel() : this(TabsViewModel.GetInstance().ActiveTab!.CollectionVM.Collection) { }
-        public ExportCollectionViewModel(CodexCollection collectionToExport)
+
+        private readonly IFilesService _filesService;
+        private readonly IImportExportService _importExportService;
+        public ExportCollectionViewModel(IFilesService filesService, IImportExportService importExportService, CollectionContentSelectorViewModelFactory contentSelectorVMFactory, CodexCollection collectionToExport)
         {
+            _filesService = filesService;
+            _importExportService = importExportService;
             CollectionToExport = collectionToExport;
-            ContentSelectorVM = new(collectionToExport);
+            ContentSelectorVM = contentSelectorVMFactory.Create(collectionToExport);
             UpdateSteps();
         }
 
@@ -100,22 +105,16 @@ namespace COMPASS.Common.ViewModels.Modals
             ContentSelectorVM.ApplyAllSelections();
         }
 
-        private async Task<IStorageFile?> ChooseDestination()
+        private async Task<IStorageFile?> ChooseDestination() => await _filesService.SaveFileAsync(new()
         {
-            var filesService = ServiceResolver.Resolve<IFilesService>();
-
-            return await filesService.SaveFileAsync(new()
-            {
-                FileTypeChoices = [filesService.SatchelExtensionFilter],
-                SuggestedFileName = CollectionToExport.Name,
-                DefaultExtension = Constants.SatchelExtension
-            });
-        }
+            FileTypeChoices = [_filesService.SatchelExtensionFilter],
+            SuggestedFileName = CollectionToExport.Name,
+            DefaultExtension = Constants.SatchelExtension
+        });
 
         public async Task ExportToFile(IStorageFile targetFile)
         {
-            var exportService = ServiceResolver.Resolve<IImportExportService>();
-            await exportService.ExportCollection(ContentSelectorVM.CuratedCollection, targetFile, IncludeFiles, IncludeCoverArt);           
+            await _importExportService.ExportCollection(ContentSelectorVM.CuratedCollection, targetFile, IncludeFiles, IncludeCoverArt);           
         }
 
         public void UpdateSteps()
@@ -128,6 +127,27 @@ namespace COMPASS.Common.ViewModels.Modals
                 ContentSelectorVM.UpdateSteps();
                 Steps.AddRange(ContentSelectorVM.Steps);
             }
+        }
+    }
+
+    [Factory]
+    public class ExportCollectionViewModelFactory(IFilesService filesService, IImportExportService importExportService, CollectionContentSelectorViewModelFactory contentSelectorVMFactory)
+    {
+        public ExportCollectionViewModel Create(CodexCollection collectionToExport)
+            => new(filesService, importExportService, contentSelectorVMFactory, collectionToExport);
+
+        public ExportCollectionViewModel CreateTagsExporter(CodexCollection collectionToExport)
+        {
+            var vm = Create(collectionToExport);
+            //configure export vm for tags only
+            vm.AdvancedExport = true;
+            vm.Steps.Clear();
+            vm.Steps.Add(CollectionContentSelectorViewModel.TagsStep);
+            foreach (var selectableCodex in vm.ContentSelectorVM.SelectableCodices)
+            {
+                selectableCodex.Selected = false;
+            }
+            return vm;
         }
     }
 }

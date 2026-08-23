@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
@@ -68,8 +63,7 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel, IDispo
         var tabsVm = TabsViewModel.GetInstance();
         FiltersState filtersState = new();
         filtersState.IncludedFilters.Add(new HasBrokenPathFilter());
-        CollectionTabVM tabVM = new CollectionTabVM(SelectedCollectionVm, filtersState, CodexLayout.List);
-        tabsVm.AddTab(tabVM);
+        tabsVm.CreateTab(SelectedCollectionVm, filtersState, CodexLayout.List);
     }
 
     //Rename the refs

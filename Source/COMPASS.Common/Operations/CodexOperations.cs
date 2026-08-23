@@ -26,8 +26,8 @@ namespace COMPASS.Common.Operations
 {
     public class CodexOperations
     {
-        private static ILogger? _logger;
-        private static ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
+        private static ILogger Logger => field ??= ServiceResolver.Resolve<ILogger>();
+        private static CodexEditViewModelFactory CodexEditViewModelFactory => field ??= ServiceResolver.Resolve<CodexEditViewModelFactory>();
 
         #region Open Codex
 
@@ -64,7 +64,7 @@ namespace COMPASS.Common.Operations
             {
                 Logger.Warn($"Failed to open {toOpen.Sources.Path}", ex);
 
-                var fileNotFoundVM = new FileNotFoundViewModel(toOpen);
+                var fileNotFoundVM = ServiceResolver.Resolve<FileNotFoundViewModelFactory>().Create(toOpen);
                 await WindowManager.OpenModal(fileNotFoundVM);
                 return fileNotFoundVM.FixedAndOpenedCodex;
             }
@@ -139,7 +139,7 @@ namespace COMPASS.Common.Operations
         public static async Task EditCodex(Codex? toEdit)
         {
             if (toEdit is null) return;
-            var codexEditVm = new CodexEditViewModel(sourceCodex: toEdit);
+            var codexEditVm = CodexEditViewModelFactory.Create(sourceCodex: toEdit);
             await WindowManager.OpenModal(codexEditVm);
         }
 
@@ -465,7 +465,7 @@ namespace COMPASS.Common.Operations
                 MaxDegreeOfParallelism = Math.Max(Environment.ProcessorCount / 2, 1)
             };
 
-            ChooseMetaDataViewModel chooseMetaDataVM = new();
+            ChooseMetaDataViewModel chooseMetaDataVM = ServiceResolver.Resolve<ChooseMetaDataViewModelFactory>().Create();
 
             try
             {

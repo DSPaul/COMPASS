@@ -21,6 +21,7 @@ namespace COMPASS.Common.Services.Storage;
 
 public class ImportExportService(
     IApplicationDataService applicationDataService,
+    ICoverStorageService coverStorageService,
     IFilesService filesService,
     IIOService ioService,
     INotificationService windowedNotificationService,
@@ -143,10 +144,9 @@ public class ImportExportService(
             xmlservice.Load(collection);
 
             //Image paths need to be updated to point to the dir where the files where extracted
-            var thumbnailService = ServiceResolver.Resolve<ICoverStorageService>();
             foreach(var codex in collection.AllCodices)
             {
-                thumbnailService.InitCodexImagePaths(codex);
+                coverStorageService.InitCodexImagePaths(codex);
             }
 
             xmlservice.SaveCodices(collection);

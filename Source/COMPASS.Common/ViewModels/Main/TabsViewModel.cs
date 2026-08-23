@@ -1,21 +1,27 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.Tools;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Main;
 
-public class TabsViewModel : ViewModelBase
+public class TabsViewModel(
+    ILogger logger,
+    CollectionTabVMFactory collectionTabVMFactory) : ViewModelBase
 {
-    private TabsViewModel() { }
-
     private static TabsViewModel? _instance;
-    public static TabsViewModel GetInstance() => _instance ??= new();
+
+    /// <summary>
+    /// Accessor for code that cannot receive constructor injection (static
+    /// helpers, view code-behind). Services should inject TabsViewModel instead. TODO
+    /// </summary>
+    public static TabsViewModel GetInstance() => _instance ??= ServiceResolver.Resolve<TabsViewModel>();
+
+    private readonly ILogger _logger = logger;
+    private readonly CollectionTabVMFactory _collectionTabVMFactory = collectionTabVMFactory;
 
     private int _tabIndex = 0;
     private Stack<TabState> _closedTabs = [];
@@ -62,26 +68,30 @@ public class TabsViewModel : ViewModelBase
     #endregion
 
     #region Methods
-    
-    public CollectionTabVM CreateTab()
+
+    public CollectionTabVM CreateTab() => CreateTab(CollectionManager.GetOrCreateInitialCollectionVM());
+
+    public CollectionTabVM CreateTab(CodexCollectionVM collectionVm, FiltersState? filtersState = null, CodexLayout? layout = null)
+        => CreateTab(collectionVm.Load() ?? CollectionManager.GetOrCreateInitialCollectionVM(), filtersState, layout);
+
+    private CollectionTabVM CreateTab(CollectionHandle collectionHandle, FiltersState? filtersState = null, CodexLayout? layout = null)
     {
-        var tab = new CollectionTabVM();
+        var tab = _collectionTabVMFactory.Create(collectionHandle, filtersState, layout);
         AddTab(tab);
         return tab;
     }
-    
+
     private void CreateTab(TabState tabState)
     {
         if (CollectionManager.GetCollectionVM(tabState.CollectionId) is { } collectionVM)
         {
-            var tab = new CollectionTabVM(collectionVM, tabState.FiltersState, tabState.Layout);
-            AddTab(tab);
+            CreateTab(collectionVM, tabState.FiltersState, tabState.Layout);
         }
         else
         {
             //Collection referenced in tab is no longer available
             //TODO should probably show a popup message here, but don't feel like making it all async atm
-            Logger.Warn($"Failed to create tab for collection {tabState.CollectionId} because it is no longer available");
+            _logger.Warn($"Failed to create tab for collection {tabState.CollectionId} because it is no longer available");
             CreateTab();
         }
     }

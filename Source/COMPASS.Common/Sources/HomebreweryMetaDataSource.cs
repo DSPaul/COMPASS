@@ -15,19 +15,14 @@ using System.Text.Json.Nodes;
 
 namespace COMPASS.Common.Sources
 {
-    public class HomebreweryMetaDataSource : MetaDataSource
+    public class HomebreweryMetaDataSource : OnlineMetaDataSource
     {
-        private readonly IWebService _webService;
-
         public HomebreweryMetaDataSource(CodexCollection targetCollection) :
             base(targetCollection)
-        {
-            _webService = ServiceResolver.Resolve<IWebService>();
-        }
+        { }
         
         public override MetaDataSourceType Type => MetaDataSourceType.Homebrewery;
-        public override bool IsValidSource(SourceSet sources)
-            => sources.HasOnlineSource() && sources.SourceURL.Contains(new ImportURLViewModel(ImportSource.Homebrewery).ExampleURL);
+        public override string UrlPrefix => "https://homebrewery.naturalcrit.com/share/";
 
         public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
         {
@@ -41,7 +36,7 @@ namespace COMPASS.Common.Sources
             };
 
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from Homebrewery"));
-            JsonNode? metadata = await _webService.GetJsonAsync(uri);
+            JsonNode? metadata = await WebService.GetJsonAsync(uri);
 
             if (metadata is null || metadata.AsObject().Count == 0)
             {
@@ -69,7 +64,7 @@ namespace COMPASS.Common.Sources
         {
             if (string.IsNullOrEmpty(sources.SourceURL)) { return null; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Homebrewery"));
-            using WebDriver? driver = await ServiceResolver.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
+            using WebDriver? driver = await WebDriverService.GetWebDriver().ConfigureAwait(false);
 
             if (driver == null) { return null; }
 

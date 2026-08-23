@@ -11,14 +11,14 @@ namespace COMPASS.Common.ViewModels.Layouts
 {
     internal class HomeLayoutViewModel : LayoutViewModel
     {
-        public HomeLayoutViewModel(CollectionTabVM tabVM) : base(tabVM)
+        public HomeLayoutViewModel(HomeLayoutPreferences preferences, CodexInfoViewModelFactory codexInfoVmFactory, CollectionTabVM tabVM) : base(codexInfoVmFactory, tabVM)
         {
-            Preferences = PreferencesService.Preferences.HomeLayoutPreferences;
+            Preferences = preferences;
             tabVM.CollectionVM.CodexPropertyChanged += OnCodexPropertyChanged;
             tabVM.FiltersVM.CodicesUpdated += OnFilteredCodicesChanged;
         }
 
-        public HomeLayoutPreferences Preferences { get; set; }
+        public HomeLayoutPreferences Preferences { get; }
         
         public override CodexLayout LayoutType => CodexLayout.Home;
 

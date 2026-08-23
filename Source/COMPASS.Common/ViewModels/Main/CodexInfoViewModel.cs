@@ -1,30 +1,30 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.Filters;
-using COMPASS.Infra.Tools;
 using COMPASS.Common.ViewModels.ModelVMs;
+using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Models.Preferences;
 
 namespace COMPASS.Common.ViewModels.Main
 {
     public class CodexInfoViewModel : ViewModelBase
     {
+        private readonly UIState _uiState;
 
-        public CodexInfoViewModel()
+        public CodexInfoViewModel(UIState uiState)
         {
-            _preferencesService = ServiceResolver.Resolve<IPreferencesService>();
+            _uiState = uiState;
         }
 
         private FiltersViewModel? _FilterVm => TabsViewModel.GetInstance().ActiveTab?.FiltersVM;
 
-        private readonly IPreferencesService _preferencesService;
-
         //whether the codex info panel is active
         public bool ShowCodexInfo
         {
-            get => _preferencesService.Preferences.UIState.ShowCodexInfoPanel;
+            get => _uiState.ShowCodexInfoPanel;
             set
             {
-                _preferencesService.Preferences.UIState.ShowCodexInfoPanel = value;
+                _uiState.ShowCodexInfoPanel = value;
                 OnPropertyChanged(nameof(ShowInfo));
                 OnPropertyChanged();
             }
@@ -53,10 +53,10 @@ namespace COMPASS.Common.ViewModels.Main
 
         public bool AutoHide
         {
-            get => _preferencesService.Preferences.UIState.AutoHideCodexInfoPanel;
+            get => _uiState.AutoHideCodexInfoPanel;
             set
             {
-                _preferencesService.Preferences.UIState.AutoHideCodexInfoPanel = value;
+                _uiState.AutoHideCodexInfoPanel = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ShowInfo));
             }
@@ -76,5 +76,11 @@ namespace COMPASS.Common.ViewModels.Main
             if (tagVm == null) return;
             _FilterVm?.ActivateFilter(new TagFilter(tagVm));
         }
+    }
+
+    [Factory]
+    public class CodexInfoViewModelFactory(IPreferencesService preferencesService)
+    {
+        public CodexInfoViewModel Create() => new(preferencesService.Preferences.UIState);
     }
 }

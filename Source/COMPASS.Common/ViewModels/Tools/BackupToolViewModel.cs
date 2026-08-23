@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Interfaces.ViewModels;
@@ -20,10 +21,20 @@ namespace COMPASS.Common.ViewModels.Tools;
 public class BackupToolViewModel : ViewModelBase, IToolViewModel
 {
     private readonly IApplicationDataService _applicationDataService;
+    private readonly IFilesService _filesService;
+    private readonly IImportExportService _importExportService;
+    private readonly INotificationService _notificationService;
 
-    public BackupToolViewModel()
+    public BackupToolViewModel(
+        IApplicationDataService applicationDataService,
+        IFilesService filesService,
+        IImportExportService importExportService,
+        INotificationService notificationService)
     {
-        _applicationDataService = ServiceResolver.Resolve<IApplicationDataService>();
+        _applicationDataService = applicationDataService;
+        _filesService = filesService;
+        _importExportService = importExportService;
+        _notificationService = notificationService;
     }
     
     #region IToolViewModel
@@ -36,10 +47,9 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
     public AsyncRelayCommand BackupLocalFilesCommand => _backupLocalFilesCommand ??= new(BackupLocalFiles);
     private async Task BackupLocalFiles()
     {
-        var filesService = ServiceResolver.Resolve<IFilesService>();
-        var saveFile = await filesService.SaveFileAsync(new()
+        var saveFile = await _filesService.SaveFileAsync(new()
         {
-            FileTypeChoices = [filesService.ZipExtensionFilter]
+            FileTypeChoices = [_filesService.ZipExtensionFilter]
         });
 
         if (saveFile != null)
@@ -52,8 +62,7 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             //save first
             CollectionManager.SaveAllCollections();
 
-            var collectionStorageService = ServiceResolver.Resolve<IImportExportService>();
-            await Task.Run(() => collectionStorageService.CompressUserDataToZip(targetPath));
+            await Task.Run(() => _importExportService.CompressUserDataToZip(targetPath));
 
             loadingWindow.Close();
         }
@@ -63,10 +72,9 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
     public AsyncRelayCommand RestoreBackupCommand => _restoreBackupCommand ??= new(RestoreBackup);
     private async Task RestoreBackup()
     {
-        var filesService = ServiceResolver.Resolve<IFilesService>();
-        var files = await filesService.OpenFilesAsync(new()
+        var files = await _filesService.OpenFilesAsync(new()
         {
-            FileTypeFilter = [filesService.ZipExtensionFilter]
+            FileTypeFilter = [_filesService.ZipExtensionFilter]
         });
 
         if (files.Any())
@@ -80,9 +88,8 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
             loadingWindow?.Close();
 
             //Restart the app with the new data
-            var notificationService = ServiceResolver.Resolve<INotificationService>();
             var notfication = new Notification("Backup restored", "The backup has been restored. COMPASS will now restart.");
-            await notificationService.ShowDialog(notfication);
+            await _notificationService.ShowDialog(notfication);
             ApplicationService.Restart(false);
         }
     }
@@ -105,4 +112,15 @@ public class BackupToolViewModel : ViewModelBase, IToolViewModel
         await using var archive = await ZipArchive.OpenAsyncArchive(sourcePath, options);
         await archive.WriteToDirectoryAsync(_applicationDataService.UserDataPath);
     }
+}
+
+[Factory]
+public class BackupToolViewModelFactory(
+    IApplicationDataService applicationDataService,
+    IFilesService filesService,
+    IImportExportService importExportService,
+    INotificationService notificationService)
+{
+    public BackupToolViewModel Create()
+        => new(applicationDataService, filesService, importExportService, notificationService);
 }

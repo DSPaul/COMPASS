@@ -1,29 +1,20 @@
 ﻿using System.Diagnostics;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
-using COMPASS.Common.ViewModels.Import;
-using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
 using HtmlAgilityPack;
 using ImageMagick;
 
 namespace COMPASS.Common.Sources
 {
-    public class GoogleDriveMetaDataSource : MetaDataSource
+    public class GoogleDriveMetaDataSource : OnlineMetaDataSource
     {
-        private readonly IWebService _webService;
-
         public GoogleDriveMetaDataSource(CodexCollection targetCollection) :
             base(targetCollection)
-        {
-            _webService = ServiceResolver.Resolve<IWebService>();
-        }
+        { }
         
         public override MetaDataSourceType Type => MetaDataSourceType.GoogleDrive;
-        public override bool IsValidSource(SourceSet soures) =>
-            soures.HasOnlineSource() && soures.SourceURL.Contains(new ImportURLViewModel(ImportSource.GoogleDrive).ExampleURL);
+        public override string UrlPrefix => "https://drive.google.com/file/";
 
         public override Task<SourceMetaData> GetMetaData(SourceSet sources)
         {
@@ -44,7 +35,7 @@ namespace COMPASS.Common.Sources
             try
             {
                 //cover art is on store page, redirect there by going to /credits which every book has
-                HtmlDocument? doc = await _webService.ScrapeSite(sources.SourceURL);
+                HtmlDocument? doc = await WebService.ScrapeSite(sources.SourceURL);
                 HtmlNode? src = doc?.DocumentNode;
                 if (src is null) return null;
 
@@ -63,7 +54,7 @@ namespace COMPASS.Common.Sources
 
                 if (!string.IsNullOrEmpty(imgURL))
                 {
-                    return await _webService.DownloadImageAsync(imgURL);
+                    return await WebService.DownloadImageAsync(imgURL);
                 }
             }
             catch (Exception ex)

@@ -98,7 +98,7 @@ namespace COMPASS.Common.Services
             progressVM.TotalAmount = codices.Count;
             progressVM.Text = "Getting Cover";
 
-            ChooseMetaDataViewModel chooseMetaDataVM = new();
+            ChooseMetaDataViewModel chooseMetaDataVM = ServiceResolver.Resolve<ChooseMetaDataViewModelFactory>().Create();
 
             ParallelOptions parallelOptions = new()
             {

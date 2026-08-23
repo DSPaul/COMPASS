@@ -1,10 +1,18 @@
-﻿using COMPASS.Common.Models;
+﻿using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Models;
 using COMPASS.Infra.ExtensionMethods;
 
 namespace COMPASS.Common.ViewModels.Modals
 {
     public class ChooseMetaDataViewModel : WizardViewModel
     {
+        private readonly MetaDataProposalViewModelFactory _metaDataProposalViewModelFactory;
+
+        public ChooseMetaDataViewModel(MetaDataProposalViewModelFactory metaDataProposalViewModelFactory)
+        {
+            _metaDataProposalViewModelFactory = metaDataProposalViewModelFactory;
+        }
+
         public List<MetaDataProposalViewModel> MetaDataProposals { get; } = [];
         
         public override string WindowTitle { get; } = "Choose which metadata to keep";
@@ -13,7 +21,7 @@ namespace COMPASS.Common.ViewModels.Modals
         public void AddMetaDataProposal(Codex codex, SourceMetaData proposedMetaData)
         {
             _codicesListMutex.WaitOne();
-            if (MetaDataProposals.AddIfMissing(new(codex, proposedMetaData)))
+            if (MetaDataProposals.AddIfMissing(_metaDataProposalViewModelFactory.Create(codex, proposedMetaData)))
             {
                 Steps.Add(new WizardStepViewModel(codex.Title));
             }
@@ -51,5 +59,11 @@ namespace COMPASS.Common.ViewModels.Modals
             
             MetaDataProposals.Clear();
         }
+    }
+
+    [Factory]
+    public class ChooseMetaDataViewModelFactory(MetaDataProposalViewModelFactory metaDataProposalViewModelFactory)
+    {
+        public ChooseMetaDataViewModel Create() => new(metaDataProposalViewModelFactory);
     }
 }

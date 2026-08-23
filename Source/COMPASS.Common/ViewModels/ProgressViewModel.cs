@@ -2,6 +2,7 @@
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Infra.Models;
+using COMPASS.Infra.Tools;
 using SharpCompress.Common;
 
 namespace COMPASS.Common.ViewModels
@@ -10,10 +11,13 @@ namespace COMPASS.Common.ViewModels
     {
 
         #region Singleton pattern
-        private ProgressViewModel() { }
-
         private static ProgressViewModel? _progressVM;
-        public static ProgressViewModel GetInstance() => _progressVM ??= new ProgressViewModel();
+
+        /// <summary>
+        /// Accessor for code that cannot receive constructor injection (static
+        /// helpers, view code-behind). Services should inject ProgressViewModel instead.
+        /// </summary>
+        public static ProgressViewModel GetInstance() => _progressVM ??= ServiceResolver.Resolve<ProgressViewModel>();
 
         #endregion
 

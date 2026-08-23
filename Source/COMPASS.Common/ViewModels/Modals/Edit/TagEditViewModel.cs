@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.Services.StateManagers;
@@ -16,9 +17,14 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
     public class TagEditViewModel : EditViewModelBase<TagViewModel, Tag>
     {
         private readonly CodexCollectionVM _codexCollectionVm;
+        private readonly TagViewModelFactory _tagViewModelFactory;
+        private readonly INotificationService _notificationService;
         
-        public TagEditViewModel(Tag sourceTag, CodexCollectionVM collectionVm, bool createNew) : base(sourceTag, createNew, tag => new TagViewModel(tag, collectionVm))
+        public TagEditViewModel(TagViewModelFactory tagViewModelFactory, INotificationService notificationService, Tag sourceTag, CodexCollectionVM collectionVm, bool createNew) 
+            : base(sourceTag, createNew, tag => tagViewModelFactory.Create(tag, collectionVm))
         {
+            _tagViewModelFactory = tagViewModelFactory;
+            _notificationService = notificationService;
             _codexCollectionVm = collectionVm;
             _possibleParents = GetPossibleParents();
         }
@@ -210,7 +216,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
                     $"Either no matches were found or all matching items already contain this tag.");
             }
 
-            await ServiceResolver.Resolve<INotificationService>().ShowDialog(notification);
+            await _notificationService.ShowDialog(notification);
 
             if (notification.Result == NotificationAction.Confirm)
             {
@@ -241,5 +247,12 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public override string WindowTitle => _createNew ? "Create new tag" : "Edit tag";
 
         #endregion
+    }
+
+    [Factory]
+    public class TagEditViewModelFactory(TagViewModelFactory tagViewModelFactory, INotificationService notificationService)
+    {
+        public TagEditViewModel Create(Tag sourceTag, CodexCollectionVM collectionVm, bool createNew)
+            => new(tagViewModelFactory, notificationService, sourceTag, collectionVm, createNew);
     }
 }

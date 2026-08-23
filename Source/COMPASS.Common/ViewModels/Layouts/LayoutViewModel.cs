@@ -2,6 +2,7 @@
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using COMPASS.Common.Adorners;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -18,11 +19,10 @@ namespace COMPASS.Common.ViewModels.Layouts
 {
     public abstract class LayoutViewModel : ViewModelBase, IDisposable
     {
-        public LayoutViewModel(CollectionTabVM tabVM)
+        public LayoutViewModel(CodexInfoViewModelFactory codexInfoVmFactory, CollectionTabVM tabVM)
         {
             _tabViewModel = tabVM;
-            PreferencesService = ServiceResolver.Resolve<IPreferencesService>();
-            CodexInfoVM = new();
+            CodexInfoVM = codexInfoVmFactory.Create();
             tabVM.CollectionChanging += OnCollectionChanging;
             tabVM.CollectionChanged += OnCollectionChanged;
         }
@@ -31,24 +31,6 @@ namespace COMPASS.Common.ViewModels.Layouts
 
         public RangeObservableCollection<CodexViewModel> FilteredCodexVms => _tabViewModel.FiltersVM.FilteredCodices;
 
-        protected IPreferencesService PreferencesService { get; }
-
-        // Should put this function separate Factory class for proper factory pattern,
-        // but I don't see the point, seems a lot of boilerplate without real advantages
-        public static LayoutViewModel GetLayout(CollectionTabVM tabVM, CodexLayout? layout = null)
-        {
-            var preferencesService = ServiceResolver.Resolve<IPreferencesService>();
-            layout ??= preferencesService.Preferences.UIState.StartupLayout;
-            preferencesService.Preferences.UIState.StartupLayout = (CodexLayout)layout;
-            return layout switch
-            {
-                CodexLayout.Home => new HomeLayoutViewModel(tabVM),
-                CodexLayout.List => new ListLayoutViewModel(tabVM),
-                CodexLayout.Card => new CardLayoutViewModel(tabVM),
-                CodexLayout.Tile => new TileLayoutViewModel(tabVM),
-                _ => throw new NotImplementedException(layout.ToString())
-            };
-        }
 
         #region Properties
 
@@ -104,11 +86,10 @@ namespace COMPASS.Common.ViewModels.Layouts
 
                     if (folders.Count != 0)
                     {
-                        using ImportFilesViewModel folderImportVM = new(autoImport: false)
-                        {
-                            RecursiveDirectories = folders,
-                            Files = files
-                        };
+                        var importFilesVmFactory = ServiceResolver.Resolve<ImportFilesViewModelFactory>();
+                        using ImportFilesViewModel folderImportVM = importFilesVmFactory.Create(autoImport: false);
+                        folderImportVM.RecursiveDirectories = folders;
+                        folderImportVM.Files = files;
                         await folderImportVM.Import();
                     }
                     else
@@ -131,6 +112,24 @@ namespace COMPASS.Common.ViewModels.Layouts
         {
             _tabViewModel.CollectionChanging -= OnCollectionChanging;
             _tabViewModel.CollectionChanged -= OnCollectionChanged;
+        }
+    }
+
+    [Factory]
+    public class LayoutViewModelFactory(CodexInfoViewModelFactory codexInfoVmFactory, IPreferencesService preferencesService)
+    {
+        public LayoutViewModel Create(CollectionTabVM tabVm, CodexLayout? layout = null)
+        {
+            layout ??= preferencesService.Preferences.UIState.StartupLayout;
+            preferencesService.Preferences.UIState.StartupLayout = (CodexLayout)layout;
+            return layout switch
+            {
+                CodexLayout.Home => new HomeLayoutViewModel(preferencesService.Preferences.HomeLayoutPreferences, codexInfoVmFactory, tabVm),
+                CodexLayout.List => new ListLayoutViewModel(preferencesService.Preferences.ListLayoutPreferences, codexInfoVmFactory, tabVm),
+                CodexLayout.Card => new CardLayoutViewModel(preferencesService.Preferences.CardLayoutPreferences, codexInfoVmFactory, tabVm),
+                CodexLayout.Tile => new TileLayoutViewModel(preferencesService.Preferences.TileLayoutPreferences, codexInfoVmFactory, tabVm),
+                _ => throw new NotImplementedException(layout.ToString())
+            };
         }
     }
 }

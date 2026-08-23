@@ -1,4 +1,5 @@
 ﻿using COMPASS.Common.Exceptions;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
@@ -15,9 +16,26 @@ namespace COMPASS.Common.ViewModels.Import
 {
     public class ImportViewModel : ViewModelBase
     {
-        public ImportViewModel(string targetCollectionId)
+        private readonly CodexEditViewModelFactory _codexEditViewModelFactory;
+        private readonly ImportFilesViewModelFactory _importFilesViewModelFactory;
+        private readonly ImportURLViewModelFactory _importURLViewModelFactory;
+        private readonly ISBNScannerViewModelFactory _isbnScannerViewModelFactory;
+        private readonly IFilesService _filesService;
+
+        public ImportViewModel(
+            CodexEditViewModelFactory codexEditViewModelFactory, 
+            ImportFilesViewModelFactory importFilesViewModelFactory, 
+            ImportURLViewModelFactory importURLViewModelFactory,
+            ISBNScannerViewModelFactory isbnScannerViewModelFactory,
+            IFilesService filesService,
+            string targetCollectionId)
         {
-            _targetcollectionId =  targetCollectionId;
+            _codexEditViewModelFactory = codexEditViewModelFactory;
+            _importURLViewModelFactory = importURLViewModelFactory;
+            _importFilesViewModelFactory = importFilesViewModelFactory;
+            _isbnScannerViewModelFactory = isbnScannerViewModelFactory;
+            _filesService = filesService;
+            _targetcollectionId = targetCollectionId;
         }
 
         private readonly string _targetcollectionId;
@@ -33,7 +51,7 @@ namespace COMPASS.Common.ViewModels.Import
                     await ImportFilesAsync(pathsToImport, targetCollectionId);
                     break;
                 case ImportSource.Folder:
-                    using (ImportFilesViewModel folderVM = new(targetCollectionId, autoImport: false))
+                    using (ImportFilesViewModel folderVM = _importFilesViewModelFactory.Create(targetCollectionId, autoImport: false))
                     {
                         await folderVM.Import();
                     }
@@ -53,11 +71,9 @@ namespace COMPASS.Common.ViewModels.Import
             }
         }
 
-        private static async Task<List<string>> ChooseFiles()
+        private async Task<List<string>> ChooseFiles()
         {
-            var filesService = ServiceResolver.Resolve<IFilesService>();
-
-            var files = await filesService.OpenFilesAsync(new()
+            var files = await _filesService.OpenFilesAsync(new()
             {
                 AllowMultiple = true,
             }).ConfigureAwait(false);
@@ -77,19 +93,19 @@ namespace COMPASS.Common.ViewModels.Import
         private async Task ImportManual()
         {
             using var handle = CollectionManager.LoadCollection(_targetcollectionId);
-            CodexEditViewModel vm = new(CodexOperations.CreateNewCodex(handle!.CollectionVM.Collection), createNew: true);
+            CodexEditViewModel vm = _codexEditViewModelFactory.Create(CodexOperations.CreateNewCodex(handle!.CollectionVM.Collection), createNew: true);
             await WindowManager.OpenModal(vm);
         }
 
-        private static async Task ImportURL(ImportSource source)
+        private async Task ImportURL(ImportSource source)
         {
-            ImportURLViewModel importVM = new(source);
+            ImportURLViewModel importVM = _importURLViewModelFactory.Create(source);
             await WindowManager.OpenModal(importVM);
         }
 
-        private static async Task ImportISBN()
+        private async Task ImportISBN()
         {
-            ISBNScannerViewModel importVM = new();
+            ISBNScannerViewModel importVM = _isbnScannerViewModelFactory.Create();
             await WindowManager.OpenModal(importVM);
         }
 
@@ -182,5 +198,17 @@ namespace COMPASS.Common.ViewModels.Import
                 codex.NotifyCoverChanged();
             }
         }
+    }
+
+    [Factory]
+    public class ImportViewModelFactory(
+        CodexEditViewModelFactory codexEditViewModelFactory,
+        ImportFilesViewModelFactory importFilesViewModelFactory,
+        ImportURLViewModelFactory importURLViewModelFactory,
+        ISBNScannerViewModelFactory isbnScannerViewModelFactory,
+        IFilesService filesService)
+    {
+        public ImportViewModel Create(string targetCollectionId)
+            => new(codexEditViewModelFactory, importFilesViewModelFactory, importURLViewModelFactory, isbnScannerViewModelFactory, filesService, targetCollectionId);
     }
 }

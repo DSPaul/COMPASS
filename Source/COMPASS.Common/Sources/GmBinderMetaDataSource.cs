@@ -3,8 +3,6 @@ using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
-using COMPASS.Common.ViewModels.Import;
-using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
 using HtmlAgilityPack;
@@ -13,20 +11,15 @@ using OpenQA.Selenium;
 
 namespace COMPASS.Common.Sources
 {
-    public class GmBinderMetaDataSource : MetaDataSource
+    public class GmBinderMetaDataSource : OnlineMetaDataSource
     {
-        private readonly IWebService _webService;
-        
+
         public GmBinderMetaDataSource(CodexCollection targetCollection) :
             base(targetCollection)
-        {
-            _webService = ServiceResolver.Resolve<IWebService>();
-        }
+        { }
         
         public override MetaDataSourceType Type => MetaDataSourceType.GmBinder;
-
-        public override bool IsValidSource(SourceSet sources) =>
-            sources.HasOnlineSource() && sources.SourceURL.Contains(new ImportURLViewModel(ImportSource.GmBinder).ExampleURL);
+        public override string UrlPrefix => "https://www.gmbinder.com/share/";
 
         public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
         {
@@ -38,7 +31,7 @@ namespace COMPASS.Common.Sources
             };
             
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading metadata from GM Binder"));
-            HtmlDocument? doc = await _webService.ScrapeSite(sources.SourceURL);
+            HtmlDocument? doc = await WebService.ScrapeSite(sources.SourceURL);
             HtmlNode? src = doc?.DocumentNode;
 
             if (doc is null || src is null)
@@ -60,7 +53,7 @@ namespace COMPASS.Common.Sources
         {
             if (string.IsNullOrEmpty(sources.SourceURL)) { return null; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from {sources.SourceURL}"));
-            using WebDriver? driver = await ServiceResolver.Resolve<IWebDriverService>().GetWebDriver().ConfigureAwait(false);
+            using WebDriver? driver = await WebDriverService.GetWebDriver().ConfigureAwait(false);
 
             if (driver is null) { return null; }
 

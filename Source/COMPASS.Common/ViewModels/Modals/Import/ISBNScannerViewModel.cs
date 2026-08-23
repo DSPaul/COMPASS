@@ -1,6 +1,7 @@
 ﻿using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
@@ -9,7 +10,6 @@ using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels.Components;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Main;
-using COMPASS.Infra.Tools;
 using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.ViewModels.Modals.Import
@@ -18,11 +18,13 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     {
         private readonly DispatcherTimer _scanTimer;
         private readonly IBarcodeDecoderService _barcodeDecoderService;
+        private readonly VideoCaptureViewModelFactory _videoCaptureVmFactory;
         private bool _scanning;
 
-        public ISBNScannerViewModel()
+        public ISBNScannerViewModel(IBarcodeDecoderService barcodeDecoderService, VideoCaptureViewModelFactory videoCaptureVmFactory)
         {
-            _barcodeDecoderService = ServiceResolver.Resolve<IBarcodeDecoderService>();
+            _barcodeDecoderService = barcodeDecoderService;
+            _videoCaptureVmFactory = videoCaptureVmFactory;
             _scanTimer = new(TimeSpan.FromMilliseconds(50), DispatcherPriority.Render, OnScanTick);
 
             ScannedCodes = [];
@@ -83,7 +85,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         private void StartScanning()
         {
             ShowWebcam = true;
-            VideoCaptureViewModel ??= new VideoCaptureViewModel();
+            VideoCaptureViewModel ??= _videoCaptureVmFactory.Create();
             _scanTimer.Start();
         }
 
@@ -177,6 +179,12 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
             public string Title { get; set => SetProperty(ref field, value); } = "";
         }
+    }
+
+    [Factory]
+    public class ISBNScannerViewModelFactory(IBarcodeDecoderService barcodeDecoderService, VideoCaptureViewModelFactory videoCaptureVmFactory)
+    {
+        public ISBNScannerViewModel Create() => new(barcodeDecoderService, videoCaptureVmFactory);
     }
 
 }

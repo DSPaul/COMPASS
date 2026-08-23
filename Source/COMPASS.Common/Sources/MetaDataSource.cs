@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using COMPASS.Common.Interfaces.Services;
+﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.ViewModels;
@@ -15,8 +14,7 @@ namespace COMPASS.Common.Sources
             TargetCollection = targetCollection;
         }
 
-        private ILogger? _logger;
-        protected ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
+        protected ILogger Logger => field ??= ServiceResolver.Resolve<ILogger>();
 
         /// <summary>
         /// 

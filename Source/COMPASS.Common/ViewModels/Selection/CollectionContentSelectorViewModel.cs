@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Attributes;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Hierarchy;
@@ -17,8 +18,13 @@ namespace COMPASS.Common.ViewModels.Selection
     /// </summary>
     public class CollectionContentSelectorViewModel : WizardViewModel, IDisposable
     {
-        public CollectionContentSelectorViewModel(CodexCollection collection)
+        private readonly CodexCollectionVMFactory _codexCollectionVMFactory;
+        private readonly TagViewModelFactory _tagViewModelFactory;
+
+        public CollectionContentSelectorViewModel(CodexCollectionVMFactory codexCollectionVMFactory, TagViewModelFactory tagViewModelFactory, CodexCollection collection)
         {
+            _codexCollectionVMFactory = codexCollectionVMFactory;
+            _tagViewModelFactory = tagViewModelFactory;
             CompleteCollection = collection;
 
             //Checks which steps need to be included in wizard
@@ -28,10 +34,10 @@ namespace COMPASS.Common.ViewModels.Selection
             UpdateSteps();
 
             //The create a temporary vm to be used in the UI
-            _createdCollectionVm = new CodexCollectionVM(collection.Name, collection, StorageStrategy.Memory);
+            _createdCollectionVm = _codexCollectionVMFactory.Create(collection, StorageStrategy.Memory);
             
             //Put Tags in Checkable Wrapper
-            TagsSelectorVM = new(_createdCollectionVm);
+            TagsSelectorVM = new(_tagViewModelFactory, _createdCollectionVm);
 
             //Put codices in dictionary so they can be labeled true/false for import
             SelectableCodices = CompleteCollection.AllCodices.Select(codex => new SelectableCodex(codex, this)).ToList();
@@ -252,6 +258,15 @@ namespace COMPASS.Common.ViewModels.Selection
             BanishedPathsSelector.Dispose();
             FileTypePrefsSelector.Dispose();
         }
+    }
+
+    [Factory]
+    public class CollectionContentSelectorViewModelFactory(
+        CodexCollectionVMFactory codexCollectionVMFactory,
+        TagViewModelFactory tagViewModelFactory)
+    {
+        public CollectionContentSelectorViewModel Create(CodexCollection collection)
+            => new(codexCollectionVMFactory, tagViewModelFactory, collection);
     }
 }
 

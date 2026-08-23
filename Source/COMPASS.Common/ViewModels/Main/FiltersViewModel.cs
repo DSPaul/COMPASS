@@ -2,6 +2,7 @@
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Adorners;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
@@ -15,15 +16,23 @@ using COMPASS.Infra.Avalonia.ExtensionMethods;
 using COMPASS.Infra.Tools;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using COMPASS.Common.Models.Preferences;
 
 namespace COMPASS.Common.ViewModels.Main
 {
     public class FiltersViewModel : ViewModelBase
     {
-        public FiltersViewModel(CodexCollectionVM collectionVM, FiltersState? filtersState = null)
+        private readonly ILogger _logger;
+        private readonly IFilterService _filterService;
+        private readonly UIState _uiState;
+
+        public FiltersViewModel(ILogger logger, IFilterService filterService, UIState uiState, 
+            CodexCollectionVM collectionVM, FiltersState? filtersState = null)
         {
+            _logger = logger;
+            _filterService = filterService;
+            _uiState = uiState;
             _allCodexVms = collectionVM.AllCodexVms;
-            _filterService = ServiceResolver.Resolve<IFilterService>();
 
             //We want a single event at the end of the constructor 
             _codicesUpdatedNotifier = new (e => CodicesUpdated?.Invoke(this, e));
@@ -57,16 +66,7 @@ namespace COMPASS.Common.ViewModels.Main
 
         public event EventHandler? CodicesUpdated;
         private readonly EventDeferralScope _codicesUpdatedNotifier;
-        private IFilterService _filterService;
-
-        #region Fields
-
-        private readonly IPreferencesService _preferencesService = ServiceResolver.Resolve<IPreferencesService>();
-        
         private readonly RangeObservableCollection<CodexViewModel> _allCodexVms;
-
-        
-        #endregion
 
         #region Properties
 
@@ -240,12 +240,12 @@ namespace COMPASS.Common.ViewModels.Main
 
         public ListSortDirection SortDirection
         {
-            get => _preferencesService.Preferences.UIState.SortDirection;
+            get => _uiState.SortDirection;
             set
             {
-                if (value != _preferencesService.Preferences.UIState.SortDirection)
+                if (value != _uiState.SortDirection)
                 {
-                    _preferencesService.Preferences.UIState.SortDirection = value;
+                    _uiState.SortDirection = value;
                     SortAndNotify();
                     OnPropertyChanged();
                 }
@@ -254,12 +254,12 @@ namespace COMPASS.Common.ViewModels.Main
 
         public string SortProperty
         {
-            get => _preferencesService.Preferences.UIState.SortProperty;
+            get => _uiState.SortProperty;
             set
             {
-                if (!string.IsNullOrEmpty(value) && _preferencesService.Preferences.UIState.SortProperty != value)
+                if (!string.IsNullOrEmpty(value) && _uiState.SortProperty != value)
                 {
-                    _preferencesService.Preferences.UIState.SortProperty = value;
+                    _uiState.SortProperty = value;
                     SortAndNotify();
                     OnPropertyChanged();
                 }
@@ -323,7 +323,7 @@ namespace COMPASS.Common.ViewModels.Main
             var possibleSortPropertyNames = typeof(CodexViewModel).GetProperties().Select(p => p.Name).ToList();
             if (SortOptions.Select(pair => pair.Value).Except(possibleSortPropertyNames).Any())
             {
-                Logger.Warn("One of the sort property paths does not exist", new MissingMemberException());
+                _logger.Warn("One of the sort property paths does not exist", new MissingMemberException());
             }
         }
 
@@ -495,7 +495,7 @@ namespace COMPASS.Common.ViewModels.Main
             }
             catch (Exception ex)
             {
-                Logger.Warn("Something when wrong during filtering", ex);
+                _logger.Warn("Something when wrong during filtering", ex);
             }
         }
         
@@ -529,5 +529,15 @@ namespace COMPASS.Common.ViewModels.Main
                 AdornerFactory = tags => new DropTagAdorner(tags[0]) { Format = "Filter on {0}" },
             });
         #endregion
+    }
+
+    [Factory]
+    public class FiltersViewModelFactory(
+        ILogger logger,
+        IFilterService filterService,
+        IPreferencesService preferencesService)
+    {
+        public FiltersViewModel Create(CodexCollectionVM collectionVm, FiltersState? filtersState = null)
+            => new(logger, filterService, preferencesService.Preferences.UIState, collectionVm, filtersState);
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Autofac;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.Services;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Tests.Common.Mocks;
 
@@ -15,6 +17,7 @@ namespace COMPASS.Tests.Common
             builder.RegisterType<MockIOService>().As<IIOService>();
             builder.RegisterType<MockLogger>().As<ILogger>();
             builder.RegisterType<MockNotificationService>().As<INotificationService>();
+            builder.RegisterType<MockPreferencesService>().As<IPreferencesService>();
         }
     }
 }

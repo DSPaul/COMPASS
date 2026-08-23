@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Exceptions;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
@@ -21,10 +22,18 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
 {
     public class CodexEditViewModel : EditViewModelBase<CodexViewModel, Codex>
     {
-        public CodexEditViewModel(Codex sourceCodex, bool createNew = false, CollectionTabVM? tabVm = null) 
-            : base(sourceCodex, createNew, codex => new CodexViewModel(codex, (tabVm ?? TabsViewModel.GetInstance().ActiveTab)!.CollectionVM))
+        private readonly TagEditViewModelFactory _tagEditViewModelFactory;
+        private readonly IFilesService _filesService;
+        private readonly IPreferencesService _preferencesService;
+        public CodexEditViewModel(CodexViewModelFactory codexViewModelFactory, TagEditViewModelFactory tagEditViewModelFactory,
+            IFilesService filesService, IPreferencesService preferencesService,
+            Codex sourceCodex, bool createNew = false, CollectionTabVM? tabVm = null)
+            : base(sourceCodex, createNew, codex => codexViewModelFactory.Create(codex, (tabVm ?? TabsViewModel.GetInstance().ActiveTab)!.CollectionVM))
         {
             TabVM = tabVm ?? TabsViewModel.GetInstance().ActiveTab ?? throw new NoTabException("An active tab is expected when editing a codex");
+            _tagEditViewModelFactory = tagEditViewModelFactory;
+            _filesService = filesService;
+            _preferencesService = preferencesService;
         
             var publisherList = TabVM.FiltersVM.PublisherList;
             PublisherOptions = ["", ..publisherList];
@@ -94,9 +103,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public AsyncRelayCommand BrowsePathCommand => _browsePathCommand ??= new(BrowsePath);
         private async Task BrowsePath()
         {
-            var filesService = ServiceResolver.Resolve<IFilesService>();
-
-            var files = await filesService.OpenFilesAsync(new()
+            var files = await _filesService.OpenFilesAsync(new()
             {
                 //TODO, this needs to be a folder, not a path
                 //SuggestedStartLocation = Path.GetDirectoryName(WorkingCopy.Sources.Path) ?? string.Empty
@@ -141,7 +148,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             //keep track of the count to check if tags were created
             int tagCount = TabVM.CollectionVM.Collection.AllTags.Count;
 
-            TagEditViewModel tagEditVm = new(new Tag(), TabVM.CollectionVM, createNew: true);
+            TagEditViewModel tagEditVm = _tagEditViewModelFactory.Create(new Tag(), TabVM.CollectionVM, createNew: true);
             await WindowManager.OpenModal(tagEditVm);
 
             if (TabVM.CollectionVM.Collection.AllTags.Count > tagCount) //new tag was created
@@ -190,7 +197,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             ShowLoading = true;
             //make it so cover always gets overwritten if this case, store old value first
-            CodexProperty coverProp = ServiceResolver.Resolve<IPreferencesService>().Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetaData.Cover));
+            CodexProperty coverProp = _preferencesService.Preferences.ImportableCodexProperties.First(prop => prop.Name == nameof(SourceMetaData.Cover));
             MetaDataOverwriteMode curSetting = coverProp.OverwriteMode;
             coverProp.OverwriteMode = MetaDataOverwriteMode.Always;
             //get the cover
@@ -215,9 +222,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public AsyncRelayCommand ChooseCoverCommand => _chooseCoverCommand ??= new(ChooseCover);
         private async Task ChooseCover()
         {
-            var filesService = ServiceResolver.Resolve<IFilesService>();
-
-            var files = await filesService.OpenFilesAsync(new()
+            var files = await _filesService.OpenFilesAsync(new()
             {
                 FileTypeFilter = [FilePickerFileTypes.ImageAll],
             });
@@ -280,6 +285,17 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             base.Dispose();
             WorkingCopy.Dispose();
         }
+    }
+
+    [Factory]
+    public class CodexEditViewModelFactory(
+        CodexViewModelFactory codexViewModelFactory,
+        TagEditViewModelFactory tagEditViewModelFactory,
+        IFilesService filesService,
+        IPreferencesService preferencesService)
+    {
+        public CodexEditViewModel Create(Codex sourceCodex, bool createNew = false, CollectionTabVM? tabVm = null)
+            => new(codexViewModelFactory, tagEditViewModelFactory, filesService, preferencesService, sourceCodex, createNew, tabVm);
     }
 }
 

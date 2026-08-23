@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Models.Hierarchy;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.ModelVMs;
@@ -10,13 +11,14 @@ namespace COMPASS.Common.ViewModels.Selection
     public class TagsSelectorViewModel : ViewModelBase
     {
         #region ctor
-        public TagsSelectorViewModel(IEnumerable<CodexCollectionVM> collectionVms)
+        public TagsSelectorViewModel(TagViewModelFactory tagViewModelFactory, IEnumerable<CodexCollectionVM> collectionVms)
         {
-            TagCollections = collectionVms.Select(c => new TagCollection(c)).ToList();
+            TagCollections = collectionVms.Select(c => new TagCollection(tagViewModelFactory, c)).ToList();
             SelectedTagCollection = TagCollections.FirstOrDefault();
         }
 
-        public TagsSelectorViewModel(CodexCollectionVM collectionVm) : this([collectionVm]) { }
+        public TagsSelectorViewModel(TagViewModelFactory tagViewModelFactory, CodexCollectionVM collectionVm)
+            : this(tagViewModelFactory, [collectionVm]) { }
 
         #endregion
 
@@ -41,12 +43,14 @@ namespace COMPASS.Common.ViewModels.Selection
         
         public class TagCollection : ObservableObject
         {
-            public TagCollection(CodexCollectionVM collectionVm)
+            public TagCollection(TagViewModelFactory tagViewModelFactory, CodexCollectionVM collectionVm)
             {
+                _tagViewModelFactory = tagViewModelFactory;
                 _collectionVm = collectionVm;
                 Name = collectionVm.Identifier;
             }
 
+            private readonly TagViewModelFactory _tagViewModelFactory;
             private readonly CodexCollectionVM _collectionVm;
 
             public string Name { get; set; }
@@ -60,7 +64,7 @@ namespace COMPASS.Common.ViewModels.Selection
                     if (_tagsRoot != null) return _tagsRoot;
                     
                     //convert to nodes
-                    _tagsRoot = new CheckableTreeNode<TagViewModel>(new(new(), _collectionVm), containerOnly: true, propagateChanges: true)
+                    _tagsRoot = new CheckableTreeNode<TagViewModel>(_tagViewModelFactory.Create(new(), _collectionVm), containerOnly: true, propagateChanges: true)
                     {
                         Children = new(_collectionVm.Collection.RootTags
                             .Select(t => new CheckableTreeNode<TagViewModel>(_collectionVm.GetTagVm(t), containerOnly: t.IsGroup, propagateChanges: true)))

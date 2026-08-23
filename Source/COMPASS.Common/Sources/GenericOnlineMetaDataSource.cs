@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Net;
-using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Infra.ExtensionMethods;
@@ -11,20 +10,16 @@ using ImageMagick;
 
 namespace COMPASS.Common.Sources
 {
-    public class GenericOnlineMetaDataSource : MetaDataSource
+    public class GenericOnlineMetaDataSource : OnlineMetaDataSource
     {
-        private readonly IWebService _webService;
-
         public GenericOnlineMetaDataSource(CodexCollection targetCollection) :
             base(targetCollection)
-        {
-            _webService = ServiceResolver.Resolve<IWebService>();
-        }
+        { }
         
         public override MetaDataSourceType Type => MetaDataSourceType.GenericURL;
+        public override string UrlPrefix => "https://";
 
         public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources) => throw new NotImplementedException();
-        public override bool IsValidSource(SourceSet sources) => sources.HasOnlineSource();
 
         public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
         {
@@ -34,7 +29,7 @@ namespace COMPASS.Common.Sources
 
             // Scrape metadata
             ProgressVM.AddLogEntry(new(Severity.Info, $"Extracting metadata from website header"));
-            HtmlDocument? doc = await _webService.ScrapeSite(sources.SourceURL);
+            HtmlDocument? doc = await WebService.ScrapeSite(sources.SourceURL);
             HtmlNode? src = doc?.DocumentNode;
 
             if (src is null)

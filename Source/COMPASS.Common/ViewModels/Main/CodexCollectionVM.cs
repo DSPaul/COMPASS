@@ -1,7 +1,9 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using COMPASS.Common.Interfaces.Repos;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
@@ -17,28 +19,35 @@ namespace COMPASS.Common.ViewModels.Main;
 
 public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
 {
-    public CodexCollectionVM(string identifier, CodexCollection collection, ICodexCollectionRepository repo) 
+    private readonly ILogger _logger;
+    private readonly ICodexCollectionRepository _repo;
+    private readonly INotificationService _notificationService;
+    private readonly IImportExportService _importExportService;
+    private readonly ICoverStorageService _coverStorageService;
+    private readonly CodexViewModelFactory _codexViewModelFactory;
+    private readonly TagViewModelFactory _tagViewModelFactory;
+    private readonly ImportFilesViewModelFactory _importFilesViewModelFactory;
+
+    public CodexCollectionVM(string identifier, CodexCollection collection, 
+        ICodexCollectionRepository repo, ILogger logger, INotificationService notificationService, IImportExportService importExportService, 
+        ICoverStorageService coverStorageService, CodexViewModelFactory codexViewModelFactory, TagViewModelFactory tagViewModelFactory,
+        ImportFilesViewModelFactory importFilesViewModelFactory)
         : base(collection)
     {
+        _logger = logger;
+        _notificationService = notificationService;
+        _importExportService = importExportService;
+        _coverStorageService = coverStorageService;
+        _codexViewModelFactory = codexViewModelFactory;
+        _tagViewModelFactory = tagViewModelFactory;
+        _importFilesViewModelFactory = importFilesViewModelFactory;
+
         _identifier = identifier;
+        _repo = repo;
 
         //Create codex vms for existing codices in collection
-        AllCodexVms.AddRange(collection.AllCodices.Select(codex => new CodexViewModel(codex, this)));
+        AllCodexVms.AddRange(collection.AllCodices.Select(codex => _codexViewModelFactory.Create(codex, this)));
         collection.AllCodices.CollectionChanged += OnAllCodicesCollectionChanged;
-        
-        _repo = repo;
-        _notificationService = ServiceResolver.Resolve<INotificationService>();
-        _importExportService = ServiceResolver.Resolve<IImportExportService>();
-    }
-
-    public CodexCollectionVM(string identifier, CodexCollection collection, StorageStrategy storageStrat) 
-        :this(identifier, collection, ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(storageStrat))
-    {
-    }
-
-    public CodexCollectionVM(CodexCollection collection, StorageStrategy storageStrat)
-        : this(collection.Name, collection, ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(storageStrat))
-    {
     }
 
     public EventHandler<PropertyChangedEventArgs>? CodexPropertyChanged;
@@ -55,7 +64,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         }
 
         var newCodices = (e.NewItems?.Cast<Codex>() ?? [])
-            .Select(codex => new CodexViewModel(codex, this))
+            .Select(codex => _codexViewModelFactory.Create(codex, this))
             .ToList();
         foreach (var codexVm in newCodices)
         {
@@ -72,10 +81,6 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         if (sender is not CodexViewModel codexVm) return;
         CodexPropertyChanged?.Invoke(codexVm, e);
     }
-
-    public readonly ICodexCollectionRepository _repo;
-    private readonly INotificationService _notificationService;
-    private readonly IImportExportService _importExportService;
 
     public CodexCollection Collection => _model;
     public RangeObservableCollection<CodexViewModel> AllCodexVms { get; } = [];
@@ -163,7 +168,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         }
         else
         {
-            Logger.Warn($"Someone tried to save with expired handle");
+            _logger.Warn($"Someone tried to save with expired handle");
         }
     }
     
@@ -175,7 +180,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         }
         else
         {
-            Logger.Warn($"Someone tried to save codices with expired handle");
+            _logger.Warn($"Someone tried to save codices with expired handle");
         }
     }
     #endregion
@@ -184,7 +189,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     {
         if (!AllTagVms.TryGetValue(tag, out TagViewModel? tagVm))
         {
-            tagVm = new(tag, this);
+            tagVm = _tagViewModelFactory.Create(tag, this);
             AllTagVms.Add(tag, tagVm);
         }
         
@@ -194,7 +199,7 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     public async Task AutoImport()
     {
         //Start Auto Imports
-        using ImportFilesViewModel folderImportVM = new(autoImport: true);
+        using ImportFilesViewModel folderImportVM = _importFilesViewModelFactory.Create(autoImport: true);
         folderImportVM.NonRecursiveDirectories = Collection.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList() ?? [];
         await Task.Delay(TimeSpan.FromSeconds(2));
         await folderImportVM.Import();
@@ -207,16 +212,16 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
         Identifier = Collection.Name;
         
         _repo.OnCollectionRenamed(oldName, newCollectionName);
-        ServiceResolver.Resolve<ICoverStorageService>().OnCollectionRenamed(Collection);
+        _coverStorageService.OnCollectionRenamed(Collection);
 
-        Logger.Info($"Renamed {oldName} to {newCollectionName}");
+        _logger.Info($"Renamed {oldName} to {newCollectionName}");
     }
 
     private bool CanDeleteCollection()
     {
         if (Owners.Count > 0)
         {
-            Logger.Warn("The collection is still in use");
+            _logger.Warn("The collection is still in use");
             return false;
         }
 
@@ -242,4 +247,22 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     {
         await _importExportService.ExportTags(Collection);
     }
+}
+
+[Factory]
+public class CodexCollectionVMFactory(
+    ILogger logger,
+    INotificationService notificationService,
+    IImportExportService importExportService,
+    ICoverStorageService coverStorageService,
+    CodexViewModelFactory codexViewModelFactory,
+    TagViewModelFactory tagViewModelFactory,
+    ImportFilesViewModelFactory importFilesViewModelFactory)
+{
+    public CodexCollectionVM Create(CodexCollection collection, ICodexCollectionRepository repo)
+        => new(collection.Name, collection, repo, logger, notificationService, importExportService, coverStorageService,
+               codexViewModelFactory, tagViewModelFactory, importFilesViewModelFactory);
+
+    public CodexCollectionVM Create(CodexCollection collection, StorageStrategy storageStrategy)
+        => Create(collection, ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(storageStrategy));
 }

@@ -58,17 +58,17 @@ namespace COMPASS.Common.Models.Preferences
         /// <summary>
         /// All codex properties that can be imported from a metadata source
         /// </summary>
-        public List<CodexProperty> ImportableCodexProperties { get; set; }
+        public List<CodexProperty> ImportableCodexProperties { get; init; }
 
-        public ListLayoutPreferences ListLayoutPreferences { get; set; }
-        public CardLayoutPreferences CardLayoutPreferences { get; set; }
-        public TileLayoutPreferences TileLayoutPreferences { get; set; }
-        public HomeLayoutPreferences HomeLayoutPreferences { get; set; }
+        public ListLayoutPreferences ListLayoutPreferences { get; init; }
+        public CardLayoutPreferences CardLayoutPreferences { get; init; }
+        public TileLayoutPreferences TileLayoutPreferences { get; init; }
+        public HomeLayoutPreferences HomeLayoutPreferences { get; init; }
 
-        public UIState UIState { get; set; }
-        public WindowRestoreState WindowState { get; set; }
+        public UIState UIState { get; init; }
+        public WindowRestoreState WindowState { get; init; }
 
-        public UpdatePreferences UpdatePreferences { get; set; }
+        public UpdatePreferences UpdatePreferences { get; init; }
 
         private bool _autoLinkFolderTagSameName;
         public bool AutoLinkFolderTagSameName

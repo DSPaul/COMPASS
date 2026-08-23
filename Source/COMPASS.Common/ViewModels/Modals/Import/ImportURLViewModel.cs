@@ -1,7 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
+using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels.Import;
 using COMPASS.Common.ViewModels.Modals.Edit;
 
@@ -9,28 +12,35 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 {
     public class ImportURLViewModel : ViewModelBase, IModalViewModel, IConfirmable
     {       
-        public ImportURLViewModel(ImportSource importSource)
+        private readonly CodexEditViewModelFactory _codexEditViewModelFactory;
+
+        public ImportURLViewModel(CodexEditViewModelFactory codexEditViewModelFactory, ImportSource importSource)
         {
-            switch (importSource)
+            _codexEditViewModelFactory = codexEditViewModelFactory;
+
+            //TODO: Name should be a property of the metadatasource itself
+            SourceName = importSource switch
             {
-                case ImportSource.GmBinder:
-                    SourceName = "GM Binder";
-                    ExampleURL = "https://www.gmbinder.com/share/";
-                    break;
-                case ImportSource.Homebrewery:
-                    SourceName = "Homebrewery";
-                    ExampleURL = "https://homebrewery.naturalcrit.com/share/";
-                    ShowValidateDisableCheckbox = true;
-                    break;
-                case ImportSource.GoogleDrive:
-                    SourceName = "Google Drive";
-                    ExampleURL = "https://drive.google.com/file/";
-                    break;
-                case ImportSource.GenericURL:
-                    SourceName = "Any URL";
-                    ExampleURL = "https://";
-                    break;
-                }
+                ImportSource.GmBinder => "GM Binder",
+                ImportSource.Homebrewery => "Homebrewery",
+                ImportSource.GoogleDrive => "Google Drive",
+                _ => "Any URL"
+            };
+
+            //TODO importSource should probably be simpified to categories File, Folder, URL, ISBN, etc
+            //with optional metadatasource to narrow it down, rather than these almost identical enums
+            var associatedMetadataSource = importSource switch
+            {
+                ImportSource.GmBinder => MetaDataSourceType.GmBinder,
+                ImportSource.Homebrewery => MetaDataSourceType.Homebrewery,
+                ImportSource.GoogleDrive => MetaDataSourceType.GoogleDrive,
+                _ => MetaDataSourceType.GenericURL
+            };
+
+            var metadataSource = MetaDataSource.GetSource(associatedMetadataSource, ActiveCollection) as OnlineMetaDataSource;
+
+            ExampleURL = metadataSource?.UrlPrefix ?? "";
+            ShowValidateDisableCheckbox = importSource == ImportSource.Homebrewery;
         }
 
         //configuration props
@@ -91,7 +101,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                     .FirstOrDefault(c => c.Sources.SourceURL == InputURL);
                 if(addedCodex != null)
                 {
-                    CodexEditViewModel vm = new(addedCodex);
+                    CodexEditViewModel vm = _codexEditViewModelFactory.Create(addedCodex);
                     await WindowManager.OpenModal(vm);
                 }
                 else
@@ -110,5 +120,12 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         public Action CloseAction { get; set; } = () => { };
 
         #endregion
+    }
+
+    [Factory]
+    public class ImportURLViewModelFactory(CodexEditViewModelFactory codexEditViewModelFactory)
+    {
+        public ImportURLViewModel Create(ImportSource importSource)
+            => new(codexEditViewModelFactory, importSource);
     }
 }

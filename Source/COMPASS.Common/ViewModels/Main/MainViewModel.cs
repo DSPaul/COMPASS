@@ -15,21 +15,29 @@ namespace COMPASS.Common.ViewModels.Main
 {
     public class MainViewModel : ViewModelBase
     {
+        private readonly ILogger _logger;
         private readonly IUIService _uiService;
-        
-        public MainViewModel()
-        {
-            Logger.Info($"Launching COMPASS v{ApplicationService.Version}");
+        private readonly UpdateManager _updateManager;
+        private readonly SettingsViewModelFactory _settingsViewModelFactory;
 
-            _uiService = ServiceResolver.Resolve<IUIService>();
+        public MainViewModel(ILogger logger, IUIService uiService, UpdateManager updateManager, TabsViewModel tabsVm,
+            LeftDockViewModelFactory leftDockViewModelFactory,
+            SettingsViewModelFactory settingsViewModelFactory)
+        {
+            _logger = logger;
+            _uiService = uiService;
+            _updateManager = updateManager;
+            _settingsViewModelFactory = settingsViewModelFactory;
+
+            _logger.Info($"Launching COMPASS v{ApplicationService.Version}");
 
             InitLayouts();
             CollectionManager.DiscoverCollections();
 
-            TabsVM = TabsViewModel.GetInstance();
+            TabsVM = tabsVm;
             TabsVM.CreateTab();
 
-            LeftDockVM = new(TabsVM);
+            LeftDockVM = leftDockViewModelFactory.Create(TabsVM);
 
             InitCheckForUpdates();
 
@@ -52,9 +60,8 @@ namespace COMPASS.Common.ViewModels.Main
         /// </summary>
         private void InitCheckForUpdates()
         {
-            var updateManager = ServiceResolver.Resolve<UpdateManager>();
-            updateManager.OnUpdateFound += (_, _) => UpdateAvailable = updateManager.UpdatesAvailable;
-            updateManager.StartUpdateCheckLoop();
+            _updateManager.OnUpdateFound += (_, _) => UpdateAvailable = _updateManager.UpdatesAvailable;
+            _updateManager.StartUpdateCheckLoop();
         }
 
         private void InitLayouts() => AllLayouts = 
@@ -88,7 +95,6 @@ namespace COMPASS.Common.ViewModels.Main
         #region ViewModels
         
         public TabsViewModel TabsVM { get; }
-
         public IList<Layout> AllLayouts { get; private set; } = [];
 
         public LeftDockViewModel LeftDockVM { get; init; }
@@ -101,7 +107,7 @@ namespace COMPASS.Common.ViewModels.Main
         public RelayCommand<string> OpenSettingsCommand => field ??= new(OpenSettings);
         private void OpenSettings(string? tab = "")
         {
-            var settingsVm = new SettingsViewModel(tab ?? "");
+            var settingsVm = _settingsViewModelFactory.Create(tab ?? "");
             var settingsWindow = new ModalWindow(settingsVm);
             settingsWindow.Show(WindowManager.ActiveWindow);
         }
@@ -110,8 +116,7 @@ namespace COMPASS.Common.ViewModels.Main
         public AsyncRelayCommand CheckForUpdatesCommand => _checkForUpdatesCommand ??= new(CheckForUpdates);
         private async Task CheckForUpdates()
         {
-            var updateManager = ServiceResolver.Resolve<UpdateManager>();
-            await updateManager.ExplicitCheckUpdates();
+            await _updateManager.ExplicitCheckUpdates();
         }
 
         public RelayCommand<string> NavigateToCommand => field ??= new(url =>

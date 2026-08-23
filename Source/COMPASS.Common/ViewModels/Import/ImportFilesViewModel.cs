@@ -1,3 +1,4 @@
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
@@ -14,6 +15,7 @@ namespace COMPASS.Common.ViewModels.Import;
 public class ImportFilesViewModel : ViewModelBase, IDisposable
 {
     private readonly IIOService _ioService;
+    private readonly INotificationService _notificationService;
     
     private readonly bool _autoImport;
     private readonly CollectionHandle _targetCollectionHandle;
@@ -21,13 +23,10 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     
     #region CTOR
     
-    public ImportFilesViewModel(bool autoImport) : 
-        this(TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier ?? 
-             throw new NoTabException("There is no open tab, so no collection to import the files to"), 
-            autoImport) { }
-    public ImportFilesViewModel(string targetCollectionId, bool autoImport)
+    public ImportFilesViewModel(IIOService ioService, INotificationService notificationService, string targetCollectionId, bool autoImport)
     {        
-        _ioService = ServiceResolver.Resolve<IIOService>();
+        _ioService = ioService;
+        _notificationService = notificationService;
         
         var handle = CollectionManager.LoadCollection(targetCollectionId);
         if (handle != null)
@@ -86,8 +85,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         else if (!_autoImport)
         {
             Notification noFilesFound = new("No files found", "The selected folder did not contain any files.");
-            var windowedNotificationService = ServiceResolver.Resolve<INotificationService>();
-            await windowedNotificationService.ShowDialog(noFilesFound);
+            await _notificationService.ShowDialog(noFilesFound);
         }
     }
     
@@ -179,5 +177,22 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     public void Dispose()
     {
         _targetCollectionHandle.Dispose();
+    }
+}
+
+[Factory]
+public class ImportFilesViewModelFactory(IIOService ioServcie, INotificationService notificationService)
+{
+    public ImportFilesViewModel Create(bool autoImport)
+    {
+        var targetCollectionId = TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier ??
+             throw new NoTabException("There is no open tab, so no collection to import the files to");
+
+        return Create(targetCollectionId, autoImport);
+    }
+
+    public ImportFilesViewModel Create(string targetCollectionId, bool autoImport)
+    {
+        return new ImportFilesViewModel(ioServcie, notificationService, targetCollectionId, autoImport);
     }
 }

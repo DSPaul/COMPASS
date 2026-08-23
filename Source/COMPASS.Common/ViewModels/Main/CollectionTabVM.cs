@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -15,27 +16,51 @@ using COMPASS.Common.Views.Windows;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
+using COMPASS.Common.Models.Preferences;
 
 namespace COMPASS.Common.ViewModels.Main;
 
 public class CollectionTabVM : ViewModelBase, IDisposable
-{ 
-    public CollectionTabVM() : 
-        this(CollectionManager.GetOrCreateInitialCollectionVM())
-    { }
+{
+    private readonly ILogger _logger;
+    private readonly INotificationService _notificationService;
+    private readonly IImportExportService _importExportService;
+    private readonly CodexCollectionVMFactory _codexCollectionVMFactory;
+    private readonly FiltersViewModelFactory _filtersViewModelFactory;
+    private readonly TagsPanelVMFactory _tagsPanelVMFactory;
+    private readonly LayoutViewModelFactory _layoutViewModelFactory;
+    private readonly ImportCollectionViewModelFactory _importCollectionViewModelFactory;
+    private readonly ExportCollectionViewModelFactory _exportCollectionViewModelFactory;
+    private readonly UIState _uiState;
 
-    public CollectionTabVM(CodexCollectionVM collectionVm, FiltersState? filtersState = null, CodexLayout? layout = null) : 
-        this(collectionVm.Load() ?? CollectionManager.GetOrCreateInitialCollectionVM(), filtersState, layout)
-    { }
-    
-    public CollectionTabVM(CollectionHandle collectionHandle, FiltersState? filtersState = null, CodexLayout? layout = null)
+    public CollectionTabVM(
+        ILogger logger,
+        INotificationService notificationService,
+        IPreferencesService preferencesService,
+        IImportExportService importExportService,
+        CodexCollectionVMFactory codexCollectionVMFactory,
+        FiltersViewModelFactory filtersViewModelFactory,
+        TagsPanelVMFactory tagsPanelVMFactory,
+        LayoutViewModelFactory layoutViewModelFactory,
+        ImportCollectionViewModelFactory importCollectionViewModelFactory,
+        ExportCollectionViewModelFactory exportCollectionViewModelFactory,
+        CollectionHandle collectionHandle, FiltersState? filtersState = null, CodexLayout? layout = null)
     {
+        _logger = logger;
+        _notificationService = notificationService;
+        _importExportService = importExportService;
+        _codexCollectionVMFactory = codexCollectionVMFactory;
+        _filtersViewModelFactory = filtersViewModelFactory;
+        _tagsPanelVMFactory = tagsPanelVMFactory;
+        _layoutViewModelFactory = layoutViewModelFactory;
+        _importCollectionViewModelFactory = importCollectionViewModelFactory;
+        _exportCollectionViewModelFactory = exportCollectionViewModelFactory;
+        _uiState = preferencesService.Preferences.UIState;
         _collectionHandle = collectionHandle;
-        
-        _filtersVM = new(_collectionHandle.CollectionVM, filtersState);
-        _tagsVM = new(_collectionHandle.CollectionVM, _filtersVM);
-        _currentLayout = LayoutViewModel.GetLayout(this, layout);
+
+        _filtersVM = filtersViewModelFactory.Create(_collectionHandle.CollectionVM, filtersState);
+        _tagsVM = tagsPanelVMFactory.Create(_collectionHandle.CollectionVM, _filtersVM);
+        _currentLayout = layoutViewModelFactory.Create(this, layout);
         CodexCommands = new();
     }
 
@@ -108,8 +133,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
             Notification areYouSure = Notification.AreYouSureNotification;
             areYouSure.Body = codexCount == 1 ? messageSingle : messageMultiple;
 
-            var windowedNotificationService = ServiceResolver.Resolve<INotificationService>();
-            await windowedNotificationService.ShowDialog(areYouSure);
+            await _notificationService.ShowDialog(areYouSure);
 
             if (areYouSure.Result == NotificationAction.Confirm)
             {
@@ -132,10 +156,9 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         if (deleted)
         {
             //If it was the default, change the default
-            var preferencesService = ServiceResolver.Resolve<IPreferencesService>();
-            if (preferencesService.Preferences.UIState.StartupCollection == collectionToDelete.Identifier)
+            if (_uiState.StartupCollection == collectionToDelete.Identifier)
             {
-                preferencesService.Preferences.UIState.StartupCollection =
+                _uiState.StartupCollection =
                     CollectionManager.CollectionVms
                         .Select(vm => vm.Identifier)
                         .FirstOrDefault(vm => vm != collectionToDelete.Identifier) ?? Constants.DEFAULT_COLLECTION_NAME;
@@ -147,7 +170,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         }
         else
         {
-            Logger.Warn($"Failed to delete {collectionToDelete.Identifier}");
+            _logger.Warn($"Failed to delete {collectionToDelete.Identifier}");
         }
     }
 
@@ -155,7 +178,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     public AsyncRelayCommand ExportCommand => field ??= new(Export);
     private async Task Export()
     {
-        ExportCollectionViewModel exportCollectionVM = new(CollectionVM.Collection);
+        ExportCollectionViewModel exportCollectionVM = _exportCollectionViewModelFactory.Create(CollectionVM.Collection);
         ModalWindow wizard = new(exportCollectionVM);
         await wizard.ShowDialog(WindowManager.ActiveWindow);
     }
@@ -168,18 +191,17 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     private async Task ImportSatchelAsync() => await ImportSatchelAsync(null);
     public async Task ImportSatchelAsync(string? path)
     {
-        var importService = ServiceResolver.Resolve<IImportExportService>();
-        var extractedCollection = await importService.OpenSatchel(path);
+        var extractedCollection = await _importExportService.OpenSatchel(path);
 
         if (extractedCollection == null)
         {
-            Logger.Warn("Failed to read file");
+            _logger.Warn("Failed to read file");
             return;
         }
         
         //open wizard, which will handle the rest of the import process
-        CodexCollectionVM toImportVm = new(extractedCollection, StorageStrategy.Xml);
-        ImportCollectionViewModel importCollectionVM = new(toImportVm);
+        CodexCollectionVM toImportVm = _codexCollectionVMFactory.Create(extractedCollection, StorageStrategy.Xml);
+        ImportCollectionViewModel importCollectionVM = _importCollectionViewModelFactory.Create(toImportVm);
         ModalWindow wizard = new(importCollectionVM);
         wizard.Show(WindowManager.ActiveWindow);
     }
@@ -200,7 +222,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         areYouSure.Body = $"You are about to merge '{CollectionVM.Identifier}' into '{collectionToMergeInto}'. \n" +
                        $"This will copy all items, tags and preferences to the chosen collection. \n" +
                        $"Are you sure you want to continue?";
-        await ServiceResolver.Resolve<INotificationService>().ShowDialog(areYouSure);
+        await _notificationService.ShowDialog(areYouSure);
         if (areYouSure.Result != NotificationAction.Confirm) return;
 
         //load target, merge, and unload
@@ -208,7 +230,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         {
             if (targetCollectionHandle == null)
             {
-                Logger.Warn($"Failed to load merge {CollectionVM.Identifier} into {collectionToMergeInto} " +
+                _logger.Warn($"Failed to load merge {CollectionVM.Identifier} into {collectionToMergeInto} " +
                             $"because the target collection could not be loaded.");
                 return;
             }
@@ -220,7 +242,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         Notification doneNotification = new("Merge Success", $"Successfully merged '{CollectionVM.Identifier}' into '{collectionToMergeInto}'");
 
         //TODO toast notifications
-        //await ServiceResolver.Resolve<INotificationService>().ShowToast(doneNotification);
+        //await _notificationService.ShowToast(doneNotification);
     }
     
     //Change Layout
@@ -228,7 +250,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     private void ChangeLayout(CodexLayout layout)
     {
         _currentLayout.Dispose();
-        CurrentLayout = LayoutViewModel.GetLayout(this, layout);
+        CurrentLayout = _layoutViewModelFactory.Create(this, layout);
     }
 
     #endregion
@@ -263,12 +285,12 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         _collectionHandle = newHandle;
         
         //update Startup collection, TODO make this a setting, choose between a set collection or last used (current behaviour)
-        ServiceResolver.Resolve<IPreferencesService>().Preferences.UIState.StartupCollection = _collectionHandle.CollectionVM.Identifier;
+        _uiState.StartupCollection = _collectionHandle.CollectionVM.Identifier;
         
         
         CollectionChanging?.Invoke(this, EventArgs.Empty);
-        FiltersVM = new(newHandle.CollectionVM);
-        TagsVM = new(newHandle.CollectionVM, FiltersVM);
+        FiltersVM = _filtersViewModelFactory.Create(newHandle.CollectionVM);
+        TagsVM = _tagsPanelVMFactory.Create(newHandle.CollectionVM, FiltersVM);
         CodexCommands = new();
 
         OnPropertyChanged(nameof(CollectionVM));
@@ -288,4 +310,24 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     }
 
     #endregion
+}
+
+[Factory]
+public class CollectionTabVMFactory(
+    ILogger logger,
+    INotificationService notificationService,
+    IPreferencesService preferencesService,
+    IImportExportService importExportService,
+    CodexCollectionVMFactory codexCollectionVMFactory,
+    FiltersViewModelFactory filtersViewModelFactory,
+    TagsPanelVMFactory tagsPanelVMFactory,
+    LayoutViewModelFactory layoutViewModelFactory,
+    ImportCollectionViewModelFactory importCollectionViewModelFactory,
+    ExportCollectionViewModelFactory exportCollectionViewModelFactory)
+{
+    public CollectionTabVM Create(CollectionHandle collectionHandle, FiltersState? filtersState = null, CodexLayout? layout = null)
+        => new(logger, notificationService, preferencesService, importExportService,
+               codexCollectionVMFactory, filtersViewModelFactory, tagsPanelVMFactory,
+               layoutViewModelFactory, importCollectionViewModelFactory, exportCollectionViewModelFactory,
+               collectionHandle, filtersState, layout);
 }
