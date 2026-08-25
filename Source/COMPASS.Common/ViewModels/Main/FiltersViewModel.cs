@@ -342,6 +342,9 @@ namespace COMPASS.Common.ViewModels.Main
 
         public void PopulateMetaDataCollections()
         {
+            //snapshot on the UI thread because _allCodexVms may be mutated there while we enumerate
+            List<CodexViewModel> codexVmsSnapshot = [.. _allCodexVms];
+
             //put this on a background thread
             Task.Run(() =>
             {
@@ -351,7 +354,7 @@ namespace COMPASS.Common.ViewModels.Main
                 HashSet<string> domains = [];
                 Dictionary<string, string> domainCache = [];
 
-                foreach (CodexViewModel vm in _allCodexVms)
+                foreach (CodexViewModel vm in codexVmsSnapshot)
                 {
                     //Populate Author Collection
                     authors.UnionWith(vm.Authors);
