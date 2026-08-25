@@ -50,7 +50,7 @@ namespace COMPASS.Common.Sources
 
             //get page count
             HtmlNode? previewDiv = doc.GetElementbyId("preview");
-            IEnumerable<HtmlNode> pages = previewDiv?.ChildNodes.Where(node => node.Id.Contains('p')) ?? [];
+            IEnumerable<HtmlNode> pages = previewDiv?.ChildNodes.Where(node => node.Id != null && node.Id.Contains('p')) ?? [];
             metaData.PageCount = pages.Count();
 
             return metaData;

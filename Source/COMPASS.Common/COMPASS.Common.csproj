@@ -34,12 +34,12 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="FlashCap" Version="1.11.0" />
+    <PackageReference Include="FlashCap" Version="1.12.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.11" />
     <PackageReference Include="OpenCvSharp5" Version="5.0.0.20260806" />
     <PackageReference Include="Selenium.Support" Version="4.47.0" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-    <PackageReference Include="MarkView.Avalonia" Version="12.2.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.13.0" />
+    <PackageReference Include="MarkView.Avalonia" Version="12.2.1" />
     <PackageReference Include="PdfPig" Version="0.1.16" />
     <PackageReference Include="log4net" Version="3.4.0" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.16.0" />
