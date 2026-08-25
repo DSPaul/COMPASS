@@ -46,7 +46,7 @@
     <PackageReference Include="Magick.NET.AvaloniaMediaImaging" Version="1.1.14" />
     <PackageReference Include="Magick.NET.SystemDrawing" Version="8.0.25" />
     <PackageReference Include="Material.Icons.Avalonia" Version="3.0.2" />
-    <PackageReference Include="PDFtoImage" Version="5.4.0" />
+    <PackageReference Include="PDFtoImage" Version="5.2.1" />
     <PackageReference Include="Selenium.WebDriver" Version="4.47.0" />
     <PackageReference Include="SharpCompress" Version="0.50.4" />
     <PackageReference Include="SkiaImageView.Avalonia11" Version="1.5.0" />
