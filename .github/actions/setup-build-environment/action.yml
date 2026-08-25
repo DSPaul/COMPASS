@@ -1,0 +1,28 @@
+name: 'Setup build environment'
+description: 'Checkout, install .NET SDK and Chrome, restore and build the solution'
+
+inputs:
+  dotnet-version:
+    description: '.NET SDK version to install'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v6
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: ${{ inputs.dotnet-version }}
+
+    - name: Setup Chrome
+      uses: browser-actions/setup-chrome@v2
+
+    - name: Restore dependencies
+      shell: bash
+      run: dotnet restore
+
+    - name: Build solution
+      shell: bash
+      run: dotnet build --configuration Release --no-restore

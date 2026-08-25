@@ -5,6 +5,7 @@ permissions:
   actions: read
 
 on:
+  workflow_dispatch:
   push:
     branches: [ avalonia, dev ]
     paths:
@@ -20,59 +21,77 @@ env:
   DOTNET_VERSION: '10.0.x' # The .NET SDK version to use
 
 jobs:
-  build-and-test:
-
-    name: build-and-test-${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest]
-      fail-fast: false
+  test-windows:
+    name: test-windows
+    runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v6
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v5
+    - name: Setup build environment
+      uses: ./.github/actions/setup-build-environment
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Setup Chrome
-      uses: browser-actions/setup-chrome@v2
-      
-    - name: Install dependencies
-      run: dotnet restore
-      
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-
-    - name: Test (Windows)
-      if: runner.os == 'Windows'
+    - name: Test
       run: |
         dotnet test Tests/COMPASS.UnitTests --no-restore -v normal --filter Priority!=2
         dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal --filter Priority!=2
         dotnet test Tests/COMPASS.IntegrationTests.Windows --no-restore -v normal --filter Priority!=2
 
-    - name: Test (Linux)
-      if: runner.os == 'Linux'
+    - name: Smoke test - launch app and verify it survives startup
+      shell: pwsh
+      run: |
+        dotnet publish Source/COMPASS.Windows/COMPASS.Windows.csproj --configuration Release --no-restore -o publish/win-x64
+        $compassProcess = Start-Process -FilePath ".\publish\win-x64\COMPASS.exe" -PassThru
+        Start-Sleep -Seconds 12
+        if ($compassProcess.HasExited) {
+          Write-Output "::error::COMPASS exited within 12s of launch - likely crashed during startup"
+          exit 1
+        }
+        Write-Output "COMPASS was still running after 12s, startup succeeded"
+        Stop-Process -Id $compassProcess.Id -Force
+
+    - name: Upload Log Artifact
+      if: failure()
+      uses: actions/upload-artifact@v7
+      with:
+        name: log-file-windows
+        path: C:\Users\runneradmin\AppData\Local\COMPASS\logs
+
+  test-linux:
+    name: test-linux
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup build environment
+      uses: ./.github/actions/setup-build-environment
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Test
       run: |
         dotnet test Tests/COMPASS.UnitTests --no-restore -v normal --filter Priority!=2
         dotnet test Tests/COMPASS.IntegrationTests.Common --no-restore -v normal --filter Priority!=2
         dotnet test Tests/COMPASS.IntegrationTests.Linux --no-restore -v normal --filter Priority!=2
 
-    - name: Upload Log Artifact (Windows)
-      if: failure() && runner.os == 'Windows'
-      uses: actions/upload-artifact@v7
-      with:
-        name: log-file-windows
-        path: C:\Users\runneradmin\AppData\Roaming\COMPASS\logs\test.log
-        archive: false
+    - name: Smoke test - launch app and verify it survives startup
+      run: |
+        dotnet publish Source/COMPASS.Linux/COMPASS.Linux.csproj --configuration Release --no-restore -o publish/linux-x64
+        timeout 60s xvfb-run -a ./publish/linux-x64/COMPASS &
+        APP_PID=$!
+        sleep 12
+        if ! kill -0 "$APP_PID" 2>/dev/null; then
+          echo "::error::COMPASS terminated within 12s of launch - likely crashed during startup"
+          exit 1
+        fi
+        echo "COMPASS was still running after 12s, startup succeeded"
 
-    - name: Upload Log Artifact (Linux)
-      if: failure() && runner.os == 'Linux'
+    - name: Stop smoke test app
+      if: always()
+      run: pkill -f "publish/linux-x64/COMPASS" || true
+
+    - name: Upload Log Artifact
+      if: failure()
       uses: actions/upload-artifact@v7
       with:
         name: log-file-linux
-        path: /home/runner/.config/COMPASS/logs/test.log
-        archive: false
+        path: /home/runner/.local/share/COMPASS/logs
