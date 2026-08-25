@@ -50,7 +50,7 @@
     <PackageReference Include="Selenium.WebDriver" Version="4.47.0" />
     <PackageReference Include="SharpCompress" Version="0.50.4" />
     <PackageReference Include="SkiaImageView.Avalonia11" Version="1.5.0" />
-    <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.14" />
+    <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.13" />
     <PackageReference Include="HotAvalonia" Version="3.1.4" PrivateAssets="All" Publish="True" />
   </ItemGroup>
   <ItemGroup>
