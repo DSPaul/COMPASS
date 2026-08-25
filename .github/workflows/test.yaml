@@ -11,11 +11,13 @@ on:
     paths:
     - '**.cs'
     - '**.csproj'
+    - '.github/workflows/*'
   pull_request:
     branches: [ master ]
     paths:
     - '**.cs'
     - '**.csproj'
+    - '.github/workflows/*'
 
 env:
   DOTNET_VERSION: '10.0.x' # The .NET SDK version to use

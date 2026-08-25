@@ -548,8 +548,8 @@
       },
       "ShimSkiaSharp": {
         "type": "Transitive",
-        "resolved": "5.2.1",
-        "contentHash": "mUPSMxfW+vjtwDPrbhK3ILQg8D7aud7JO7p2Y5cqPmKf+s2erTyfEWohlVHCjSSDPvpT5L4aKLqnW02JCfGvag=="
+        "resolved": "5.2.0",
+        "contentHash": "CNCbWDhCjuLTcbqsV2207BzCEr9+fWZ7veeS6/qZZp0h/GUzA0+aMGOEd2g+F1qllAIitvmdrNqiTOijQR/2+g=="
       },
       "SkiaImageView.Avalonia11": {
         "type": "Transitive",
@@ -571,8 +571,8 @@
       },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Transitive",
-        "resolved": "4.148.0",
-        "contentHash": "diba2vLeoKmWVkVTdXYOG14c7+s5FsH/AQZ5UPiFLRwLKgrCQNJPLKw8q60HzfOcJt+t/blv+1xkinqd5ZjX5A=="
+        "resolved": "3.119.4",
+        "contentHash": "UAyVzbqNfZsZbKbzj68zXLyUyF/SbTKmzTfOO6qDu++dtIUMMTzPBe8oOuzU/DiewpfKoUUlOSsJmqWc6blxBw=="
       },
       "SkiaSharp.NativeAssets.Linux.NoDependencies": {
         "type": "Transitive",
@@ -596,66 +596,65 @@
       },
       "Svg.Animation": {
         "type": "Transitive",
-        "resolved": "5.2.1",
-        "contentHash": "/WKtsXMKAGIoiNzETQvQQtwoO3V2gEonkxqwrEdiGPSXuTG9Q0c6K34P06HhVXnLaZjjvxja+vOIKVSUucXOug==",
+        "resolved": "5.2.0",
+        "contentHash": "eUGhVM4dl+FQdsDM7N3zzKM1gYrNRfaCytNdD5VPGxooGc05GZlzoNVI8dwhh5jcYuCO2hxRPzsspyxfZdAgJA==",
         "dependencies": {
-          "ShimSkiaSharp": "5.2.1",
+          "ShimSkiaSharp": "5.2.0",
           "SkiaSharp": "4.148.0",
-          "Svg.Custom": "5.2.1",
-          "Svg.Model": "5.2.1"
+          "Svg.Custom": "5.2.0",
+          "Svg.Model": "5.2.0"
         }
       },
       "Svg.Controls.Skia.Avalonia": {
         "type": "Transitive",
-        "resolved": "12.0.0.15",
-        "contentHash": "dpL8LvvKBkVB8oAOgou+aSQEfyWVMWY79UN7EZDcF1PHGoINhBDwGVoBLItA7SEdjpy3d+5LegABYGxeu0Ou1w==",
+        "resolved": "12.0.0.14",
+        "contentHash": "XaKcZwx+yvlnJy3QHA0V0UtaFyG54FwRrQDV13Xt5P6iKXKU6sQpovVG2145LJH0fojDPZhlLu4Oeirx8zPYFA==",
         "dependencies": {
           "Avalonia.Skia": "12.0.0",
-          "SkiaSharp.NativeAssets.Linux": "4.148.0",
-          "Svg.Skia": "5.2.1"
+          "Svg.Skia": "5.2.0"
         }
       },
       "Svg.Custom": {
         "type": "Transitive",
-        "resolved": "5.2.1",
-        "contentHash": "7qAG1I0FGlMwOJk0Js41TmvRJ0eLJPpz8Edd8DOzsotLikUhYGDZZlwXV+6sKvsApfIZEfarH0KwI38T9OHsmw==",
+        "resolved": "5.2.0",
+        "contentHash": "Up4hK0GphasgVzPOB5JT7Md3FP1dHaQK6AkBD7XH0uBWvu8d/DVVXp5qjWvpmBayIYWF4FAHnb2b/OPl+U2UkA==",
         "dependencies": {
           "ExCSS": "4.3.1"
         }
       },
       "Svg.Model": {
         "type": "Transitive",
-        "resolved": "5.2.1",
-        "contentHash": "0+fG1BFw3QoXj+4sxpaXpLDZXz+Snb289epyP3HKjEjUUoWVsErMZb6teo4dVj8KElRJIeXjX6jD1C0B1vLRXw==",
+        "resolved": "5.2.0",
+        "contentHash": "G3ZXXnlo6eD+oU/e+a33oVkf27a3oYu+djAwIEt4BU8w4S9t5UWsjcrR3bsq6SdO9r154+KiflpW/eznmGCtZQ==",
         "dependencies": {
-          "ShimSkiaSharp": "5.2.1",
-          "Svg.Custom": "5.2.1"
+          "ShimSkiaSharp": "5.2.0",
+          "Svg.Custom": "5.2.0"
         }
       },
       "Svg.SceneGraph": {
         "type": "Transitive",
-        "resolved": "5.2.1",
-        "contentHash": "vm2QxbPv5MraL7T2+1dh0m8lGQqtW37RK4iOHvBsJQHQzcuDlCR+uX/Oiun77kS2US2OC23zfaIFEYWGwocXLw==",
+        "resolved": "5.2.0",
+        "contentHash": "Yr4T6Nzwi+Hd2sKOKik1qbCteLNnuapzvKxMblIuJ2SHwEbMb+2FjFwA6FenD7CRWhlCEiIwTvAe3/IJswTYoQ==",
         "dependencies": {
-          "ShimSkiaSharp": "5.2.1",
-          "Svg.Custom": "5.2.1",
-          "Svg.Model": "5.2.1"
+          "ShimSkiaSharp": "5.2.0",
+          "Svg.Custom": "5.2.0",
+          "Svg.Model": "5.2.0"
         }
       },
       "Svg.Skia": {
         "type": "Transitive",
-        "resolved": "5.2.1",
-        "contentHash": "es8F7MSeJJgc30Dmi0ZsrPpGQmLTQuS3DCvHcJ9wYlNAt3oHEoEzg5ugX3bwMPFejrPNLNjPpr1VOiMrpFyvIA==",
+        "resolved": "5.2.0",
+        "contentHash": "AABURGBPTwWNFPnETLgjteTqcGfoNMJu+z1LNcNc8R280oVRMHgCf8dwGkIDj9rDD6A4Xt5w/LLmcZh0Iv7tTw==",
         "dependencies": {
           "HarfBuzzSharp": "14.2.0",
           "HarfBuzzSharp.NativeAssets.Linux": "14.2.0",
           "HarfBuzzSharp.NativeAssets.Win32": "14.2.0",
           "HarfBuzzSharp.NativeAssets.macOS": "14.2.0",
           "SkiaSharp": "4.148.0",
-          "Svg.Animation": "5.2.1",
-          "Svg.Custom": "5.2.1",
-          "Svg.Model": "5.2.1",
-          "Svg.SceneGraph": "5.2.1"
+          "Svg.Animation": "5.2.0",
+          "Svg.Custom": "5.2.0",
+          "Svg.Model": "5.2.0",
+          "Svg.SceneGraph": "5.2.0"
         }
       },
       "System.Configuration.ConfigurationManager": {
@@ -705,9 +704,9 @@
           "Avalonia.Fonts.Inter": "[12.1.1, )",
           "Avalonia.Labs.Gif": "[12.0.2, )",
           "Avalonia.Themes.Fluent": "[12.1.1, )",
-          "COMPASS.ApiClients": "[2.0.0-beta.1, )",
-          "COMPASS.Infra": "[2.0.0-beta.1, )",
-          "COMPASS.Infra.Avalonia": "[2.0.0-beta.1, )",
+          "COMPASS.ApiClients": "[2.0.0-beta.2, )",
+          "COMPASS.Infra": "[2.0.0-beta.2, )",
+          "COMPASS.Infra.Avalonia": "[2.0.0-beta.2, )",
           "CommandLineParser": "[2.9.1, )",
           "FlashCap": "[1.12.0, )",
           "HtmlAgilityPack": "[1.13.0, )",
@@ -724,7 +723,7 @@
           "Selenium.WebDriver": "[4.47.0, )",
           "SharpCompress": "[0.50.4, )",
           "SkiaImageView.Avalonia11": "[1.5.0, )",
-          "Svg.Controls.Skia.Avalonia": "[12.0.0.15, )",
+          "Svg.Controls.Skia.Avalonia": "[12.0.0.14, )",
           "log4net": "[3.4.0, )"
         }
       },
@@ -817,8 +816,8 @@
       },
       "SkiaSharp.NativeAssets.Linux": {
         "type": "Transitive",
-        "resolved": "4.148.0",
-        "contentHash": "diba2vLeoKmWVkVTdXYOG14c7+s5FsH/AQZ5UPiFLRwLKgrCQNJPLKw8q60HzfOcJt+t/blv+1xkinqd5ZjX5A=="
+        "resolved": "3.119.4",
+        "contentHash": "UAyVzbqNfZsZbKbzj68zXLyUyF/SbTKmzTfOO6qDu++dtIUMMTzPBe8oOuzU/DiewpfKoUUlOSsJmqWc6blxBw=="
       },
       "SkiaSharp.NativeAssets.Linux.NoDependencies": {
         "type": "Transitive",

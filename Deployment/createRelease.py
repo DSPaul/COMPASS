@@ -103,7 +103,7 @@ def WriteChangelog():
 
 
 # first arg: new version number
-NEW_VERSION = sys.argv[1]
+NEW_VERSION = sys.argv[1].strip("v")  # remove leading 'v' if present
 OLD_VERSION = getOldVersion()
 
 if NEW_VERSION != OLD_VERSION:
