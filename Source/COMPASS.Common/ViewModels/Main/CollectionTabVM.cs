@@ -25,6 +25,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     private readonly ILogger _logger;
     private readonly INotificationService _notificationService;
     private readonly IImportExportService _importExportService;
+    private readonly CodexCollectionOperations _codexCollectionOperations;
     private readonly CodexCollectionVMFactory _codexCollectionVMFactory;
     private readonly FiltersViewModelFactory _filtersViewModelFactory;
     private readonly TagsPanelVMFactory _tagsPanelVMFactory;
@@ -38,6 +39,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         INotificationService notificationService,
         IPreferencesService preferencesService,
         IImportExportService importExportService,
+        CodexCollectionOperations codexCollectionOperations,
         CodexCollectionVMFactory codexCollectionVMFactory,
         FiltersViewModelFactory filtersViewModelFactory,
         TagsPanelVMFactory tagsPanelVMFactory,
@@ -49,6 +51,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         _logger = logger;
         _notificationService = notificationService;
         _importExportService = importExportService;
+        _codexCollectionOperations = codexCollectionOperations;
         _codexCollectionVMFactory = codexCollectionVMFactory;
         _filtersViewModelFactory = filtersViewModelFactory;
         _tagsPanelVMFactory = tagsPanelVMFactory;
@@ -235,7 +238,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
                 return;
             }
             
-            targetCollectionHandle.CollectionVM.Collection.MergeWith(CollectionVM.Collection);
+            _codexCollectionOperations.Merge(CollectionVM.Collection, targetCollectionHandle.CollectionVM.Collection);
             targetCollectionHandle.Save();
         }
 
@@ -318,6 +321,7 @@ public class CollectionTabVMFactory(
     INotificationService notificationService,
     IPreferencesService preferencesService,
     IImportExportService importExportService,
+    CodexCollectionOperations codexCollectionOperations,
     CodexCollectionVMFactory codexCollectionVMFactory,
     FiltersViewModelFactory filtersViewModelFactory,
     TagsPanelVMFactory tagsPanelVMFactory,
@@ -326,7 +330,7 @@ public class CollectionTabVMFactory(
     ExportCollectionViewModelFactory exportCollectionViewModelFactory)
 {
     public CollectionTabVM Create(CollectionHandle collectionHandle, FiltersState? filtersState = null, CodexLayout? layout = null)
-        => new(logger, notificationService, preferencesService, importExportService,
+        => new(logger, notificationService, preferencesService, importExportService, codexCollectionOperations,
                codexCollectionVMFactory, filtersViewModelFactory, tagsPanelVMFactory,
                layoutViewModelFactory, importCollectionViewModelFactory, exportCollectionViewModelFactory,
                collectionHandle, filtersState, layout);

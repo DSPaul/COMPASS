@@ -1,6 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
@@ -12,8 +10,6 @@ namespace COMPASS.Common.Models
 {
     public class CodexCollection : ObservableObject
     {
-        private IUserFilesStorageService _userFilesStorageService => field ??= ServiceResolver.Resolve<IUserFilesStorageService>();
-        private ICoverStorageService _thumbnailStorageService => field ??=  ServiceResolver.Resolve<ICoverStorageService>();
         
         public CodexCollection(string identifier)
         {
@@ -56,33 +52,6 @@ namespace COMPASS.Common.Models
 
         #endregion
 
-        /// <summary>
-        /// Will merge all the data from toMergeFrom into this collection
-        /// </summary>
-        /// <param name="toMergeFrom"></param>
-        /// <param name="separateTags"> if true, all new tags will be put under a group with the name of the collection they came from</param>
-        public void MergeWith(CodexCollection toMergeFrom, bool separateTags = false)
-        {
-            //Merge Tags
-            if (separateTags)
-            {
-                var rootTag = new Tag(toMergeFrom.AllTags)
-                {
-                    IsGroup = true,
-                    Name = toMergeFrom.Name.Trim('_'),
-                    Children = new(toMergeFrom.RootTags)
-                };
-                toMergeFrom.RootTags = [rootTag];
-            }
-            AddTags(toMergeFrom.RootTags);
-
-            //merge codices
-            ImportCodicesFrom(toMergeFrom);
-
-            //merge info
-            Info.MergeWith(toMergeFrom.Info);
-        }
-
         public void TagsChanged()
         {
             AllTags = new(RootTags.Flatten());
@@ -103,36 +72,6 @@ namespace COMPASS.Common.Models
             TagsChanged();
         }
 
-        private void ImportCodicesFrom(CodexCollection source)
-        {
-            //if import includes files, make sure directory exists to copy files into
-            bool canImportFiles = false;
-            if (_userFilesStorageService.HasUserFiles(source))
-            {
-                canImportFiles = _userFilesStorageService.EnsureDirectoryExists(this);
-                if (!canImportFiles)
-                {
-                    ServiceResolver.Resolve<ILogger>().Warn("The files referenced by the import items could not be copied.");
-                }
-            }
-            
-            foreach (var codex in source.AllCodices)
-            {
-                //Give it a new id that is unique to this collection
-                codex.Id = Utils.GetAvailableId(AllCodices);
-
-                //Move thumbnail and cover
-                _thumbnailStorageService.MoveCodexDataToCollection(codex, this);
-
-                //move user files included in import
-                if (canImportFiles)
-                {
-                    _userFilesStorageService.MoveCodexDataToCollection(codex, this, source, copy: true);
-                }
-                AllCodices.Add(codex);
-            }
-        }
-
         public void BanishCodices(IList<Codex> toBanish)
         {
             IEnumerable<string> toBanishPaths = toBanish.Select(codex => codex.Sources.Path);
@@ -145,13 +84,12 @@ namespace COMPASS.Common.Models
             Info.BanishedPaths.AddRange(toBanishStrings);
         }
 
-        public async Task DeleteTag(Tag toDelete)
+        public async Task DeleteTag(Tag toDelete, INotificationService notificationService)
         {
             var inUseBy = AllCodices.Where(c => c.Tags.Contains(toDelete)).ToList();
             if (inUseBy.Any())
             {
                 var codexNames = string.Join("\n - ", inUseBy.Select(c => c.Title));
-                var notificationService = ServiceResolver.Resolve<INotificationService>();
                 Notification confirm = Notification.AreYouSureNotification;
                 confirm.Body = $"The tag '{toDelete.Name}' is currently in use by {inUseBy.Count} items.\n Are you sure you want to delete it?";
                 confirm.Details = $"{toDelete.LongName} is currently assigned to:\n\n - {codexNames}";
@@ -172,8 +110,8 @@ namespace COMPASS.Common.Models
             //Recursive loop to delete all children
             if (toDelete.Children.Count > 0)
             {
-                await DeleteTag(toDelete.Children[0]);
-                await DeleteTag(toDelete);
+                await DeleteTag(toDelete.Children[0], notificationService);
+                await DeleteTag(toDelete, notificationService);
             }
 
             //Remove the tag from all Tags

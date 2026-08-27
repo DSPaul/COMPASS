@@ -2,13 +2,13 @@
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Modals.Import
 {
@@ -16,6 +16,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     {
         private readonly IUserFilesStorageService _userFilesStorageService;
         private readonly INotificationService _notificationService;
+        private readonly CodexCollectionOperations _codexCollectionOperations;
 
         public override string WindowTitle { get; } = "Import Collection";
 
@@ -23,10 +24,17 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
         private readonly CollectionHandle _collectionToImportHandle;
         
-        public ImportCollectionViewModel(IUserFilesStorageService userFilesStorageService, INotificationService notificationService, CollectionContentSelectorViewModelFactory contentSelectorVMFactory, CodexCollectionVM collectionVmToImport, CodexCollectionVM? targetCollection = null)
+        public ImportCollectionViewModel(
+            IUserFilesStorageService userFilesStorageService, 
+            INotificationService notificationService, 
+            CodexCollectionOperations codexCollectionOperations, 
+            CollectionContentSelectorViewModelFactory contentSelectorVMFactory, 
+            CodexCollectionVM collectionVmToImport,
+            CodexCollectionVM? targetCollection = null)
         {
             _userFilesStorageService = userFilesStorageService;
             _notificationService = notificationService;
+            _codexCollectionOperations = codexCollectionOperations;
             AddValidation(nameof(MergeIntoCollection), ValidateTarget);
             AddValidation(nameof(CollectionName), ValidateTarget);
             AddValidation(nameof(TargetCollection), ValidateTarget);
@@ -163,7 +171,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 }
 
                 //Save the changes to a permanent collection
-                targetCollectionHandle.CollectionVM.Collection.MergeWith(ContentSelectorVM.CuratedCollection, ImportTagsSeparately);
+                _codexCollectionOperations.Merge(ContentSelectorVM.CuratedCollection, targetCollectionHandle.CollectionVM.Collection, ImportTagsSeparately);
                 targetCollectionHandle.Save();
             }
             finally
@@ -226,9 +234,12 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     }
 
     [Factory]
-    public class ImportCollectionViewModelFactory(IUserFilesStorageService userFilesStorageService, INotificationService notificationService, CollectionContentSelectorViewModelFactory contentSelectorVMFactory)
+    public class ImportCollectionViewModelFactory(
+        IUserFilesStorageService userFilesStorageService, INotificationService notificationService, 
+        CodexCollectionOperations codexCollectionOperations, 
+        CollectionContentSelectorViewModelFactory contentSelectorVMFactory)
     {
         public ImportCollectionViewModel Create(CodexCollectionVM collectionVmToImport, CodexCollectionVM? targetCollection = null)
-            => new(userFilesStorageService, notificationService, contentSelectorVMFactory, collectionVmToImport, targetCollection);
+            => new(userFilesStorageService, notificationService, codexCollectionOperations, contentSelectorVMFactory, collectionVmToImport, targetCollection);
     }
 }

@@ -3,6 +3,7 @@ using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Models.Filters;
 using COMPASS.Common.Models.Hierarchy;
@@ -26,6 +27,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
         private readonly ILogger _logger;
         private readonly IImportExportService _importExportService;
         private readonly INotificationService _notificationService;
+        private readonly TagOperations _tagOperations;
         private readonly CodexCollectionVMFactory _codexCollectionVMFactory;
         private readonly ExportCollectionViewModelFactory _exportCollectionViewModelFactory;
         private readonly TagEditViewModelFactory _tagEditViewModelFactory;
@@ -37,6 +39,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
             ILogger logger,
             IImportExportService importExportService,
             INotificationService notificationService,
+            TagOperations tagOperations,
             CodexCollectionVMFactory codexCollectionVMFactory,
             ExportCollectionViewModelFactory exportCollectionViewModelFactory,
             TagEditViewModelFactory tagEditViewModelFactory,
@@ -47,6 +50,7 @@ namespace COMPASS.Common.ViewModels.SidePanels
             _logger = logger;
             _importExportService = importExportService;
             _notificationService = notificationService;
+            _tagOperations = tagOperations;
             _codexCollectionVMFactory = codexCollectionVMFactory;
             _exportCollectionViewModelFactory = exportCollectionViewModelFactory;
             _tagEditViewModelFactory = tagEditViewModelFactory;
@@ -300,7 +304,8 @@ namespace COMPASS.Common.ViewModels.SidePanels
         {
             if (toDelete is null) return;
             
-            await _codexCollectionVm.Collection.DeleteTag(toDelete.GetModel());
+            bool deleted = await _tagOperations.Delete(_codexCollectionVm.Collection, toDelete.GetModel());
+            if (!deleted) return;
             _filtersVM.RemoveFilter(ModelVmFactory.GetFilterViewModel(new TagFilter(toDelete)));
 
             _codexCollectionVm.Collection.Save();
@@ -315,13 +320,14 @@ namespace COMPASS.Common.ViewModels.SidePanels
         ILogger logger,
         IImportExportService importExportService,
         INotificationService notificationService,
+        TagOperations tagOperations,
         CodexCollectionVMFactory codexCollectionVMFactory,
         ExportCollectionViewModelFactory exportCollectionViewModelFactory,
         TagEditViewModelFactory tagEditViewModelFactory,
         TagViewModelFactory tagViewModelFactory)
     {
         public TagsPanelVM Create(CodexCollectionVM collectionVm, FiltersViewModel filtersVm)
-            => new(logger, importExportService, notificationService, codexCollectionVMFactory, exportCollectionViewModelFactory, tagEditViewModelFactory,
+            => new(logger, importExportService, notificationService, tagOperations, codexCollectionVMFactory, exportCollectionViewModelFactory, tagEditViewModelFactory,
                    tagViewModelFactory, collectionVm, filtersVm);
     }
 }

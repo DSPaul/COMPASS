@@ -24,6 +24,7 @@ using System.Diagnostics;
 
 namespace COMPASS.Common.Operations
 {
+    /// Domain operations for <see cref="Codex"/>
     public class CodexOperations
     {
         private static ILogger Logger => field ??= ServiceResolver.Resolve<ILogger>();

@@ -50,6 +50,10 @@ namespace COMPASS.Common.DependencyInjection
             //Managers
             builder.RegisterType<UpdateManager>().AsSelf().SingleInstance();
 
+            //Operations
+            builder.RegisterType<Operations.CodexCollectionOperations>().AsSelf().SingleInstance();
+            builder.RegisterType<Operations.TagOperations>().AsSelf().SingleInstance();
+
             // View model factories (all classes marked with [Factory])
             builder.RegisterFactories();
 

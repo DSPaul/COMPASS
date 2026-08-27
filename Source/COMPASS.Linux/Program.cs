@@ -5,10 +5,8 @@ using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Services;
 using COMPASS.Common.Tools;
-using COMPASS.Common.Tools.Logging;
 using COMPASS.Infra.Tools;
 using COMPASS.Linux.DepencyInjection;
-using COMPASS.Linux.Services;
 
 namespace COMPASS.Linux;
 
