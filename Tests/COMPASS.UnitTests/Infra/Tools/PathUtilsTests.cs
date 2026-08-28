@@ -151,6 +151,18 @@ public class PathUtilsTests
     }
 
     [Test]
+    public void MatchesAnyGlob_GlobPattern_Matches_FileWithoutDirectory()
+    {
+        Assert.That(PathUtils.MatchesAnyGlob("readme.md", ["*.md"]), Is.True);
+    }
+
+    [Test]
+    public void MatchesAnyGlob_GlobPattern_NoMatch_FileWithoutDirectory()
+    {
+        Assert.That(PathUtils.MatchesAnyGlob("readme.md", ["*.cs"]), Is.False);
+    }
+
+    [Test]
     public void MatchesAnyGlob_NoMatch_ReturnsFalse()
     {
         Assert.That(PathUtils.MatchesAnyGlob(Path.Combine("docs", "file.txt"), ["*.cs"]), Is.False);
