@@ -1,14 +1,18 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text;
 using Avalonia.Media;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools;
 using NuGet.Versioning;
 
 namespace COMPASS.Common.Models.XmlDtos
 {
     public static class XmlMapper
     {
+        private static ILogger Logger => field ??= ServiceResolver.Resolve<ILogger>();
+
         #region Sanitize xml data
         //based on https://seattlesoftware.wordpress.com/2008/09/11/hexadecimal-value-0-is-an-invalid-character/
         /// <summary>
@@ -331,12 +335,12 @@ namespace COMPASS.Common.Models.XmlDtos
 
         #region CollectionInfo
 
-        public static CollectionInfo ToModel(this CollectionInfoDto dto, IList<Tag> allTags)
+        public static CollectionInfo ToModel(this CollectionInfoDto dto, IList<Tag> allTags, FolderFactory folderFactory)
         {
             var collectionInfo = new CollectionInfo()
             {
                 BanishedPaths = new(dto.BanishedPaths),
-                AutoImportFolders = new(dto.AutoImportFolders.Select(ToModel)),
+                AutoImportFolders = new(dto.AutoImportFolders.Select(f => f.ToModel(folderFactory))),
                 FiletypePreferences = dto.FiletypePreferences.DistinctBy(x => x.Key)
                                                              .Where(x => !string.IsNullOrWhiteSpace(x.Key))
                                                              .ToDictionary(x => x.Key!, x => x.Value),
@@ -354,7 +358,7 @@ namespace COMPASS.Common.Models.XmlDtos
             //(1.6.0 -> 1.7.0) migrate from AutoImportFoldersViewSource to AutoImportFolders 
             if (dto.AutoImportDirectories.SafeAny() && !dto.AutoImportFolders.Any())
             {
-                collectionInfo.AutoImportFolders.ReplaceRange(dto.AutoImportDirectories!.Select(dir => new Folder(dir)));
+                collectionInfo.AutoImportFolders.ReplaceRange(dto.AutoImportDirectories!.Select(dir => folderFactory.Create(dir)));
             }
 
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -374,13 +378,29 @@ namespace COMPASS.Common.Models.XmlDtos
             };
         }
         
-        private static Folder ToModel(this FolderDto dto)
+        private static Folder ToModel(this FolderDto dto, FolderFactory folderFactory)
         {
-            var folder = new Folder(dto.FullPath)
+            var folder = folderFactory.Create(dto.FullPath);
+            
+            if(!dto.HasAllSubFolders)
             {
-                HasAllSubFolders = dto.HasAllSubFolders,
-                SubFolders = dto.SubFolders != null ? new(dto.SubFolders.Select(ToModel)) : null!
-            };
+                var subFoldersDtos = dto.SubFolders?.Where(sf => Directory.Exists(sf.FullPath)).ToList() ?? [];
+
+                foreach(var removedFolder in dto.SubFolders?.Except(subFoldersDtos) ?? [])
+                {
+                    Logger.Warn($"Folder {removedFolder.FullPath} was not found as a subfolder of {dto.FullPath} and will be ignored.");
+                }
+
+                var subFolders = subFoldersDtos.Select(sf => sf.ToModel(folderFactory));
+                try
+                {
+                    folder.SetExplicitSubfolders(subFolders);
+                }
+                catch(Exception ex)
+                {
+                    Logger.Error($"Failed to set explicit subfolders for folder {dto.FullPath}", ex);
+                }
+            }
             
             return folder;
         }
@@ -391,7 +411,7 @@ namespace COMPASS.Common.Models.XmlDtos
             {
                 HasAllSubFolders = model.HasAllSubFolders,
                 FullPath = Sanitize(model.FullPath),
-                SubFolders = model.SubFolders.Select(ToDto).ToList(),
+                SubFolders = model.HasAllSubFolders ? null : model.SubFolders.Select(ToDto).ToList(),
             };
         }
         #endregion

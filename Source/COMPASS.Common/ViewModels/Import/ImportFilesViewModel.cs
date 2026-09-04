@@ -16,17 +16,25 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
 {
     private readonly IIOService _ioService;
     private readonly INotificationService _notificationService;
-    
+    private readonly ImportFolderWizardFactory _importFolderWizardFactory;
+    private readonly FolderFactory _folderFactory;
+
     private readonly bool _autoImport;
     private readonly CollectionHandle _targetCollectionHandle;
     private CodexCollection _TargetCollection => _targetCollectionHandle.CollectionVM.Collection;
     
     #region CTOR
     
-    public ImportFilesViewModel(IIOService ioService, INotificationService notificationService, string targetCollectionId, bool autoImport)
-    {        
+    public ImportFilesViewModel(
+        IIOService ioService, INotificationService notificationService, 
+        ImportFolderWizardFactory importFolderWizardFactory, 
+        FolderFactory folderFactory,
+        string targetCollectionId, bool autoImport)
+    {
         _ioService = ioService;
         _notificationService = notificationService;
+        _importFolderWizardFactory = importFolderWizardFactory;
+        _folderFactory = folderFactory;
         
         var handle = CollectionManager.LoadCollection(targetCollectionId);
         if (handle != null)
@@ -156,11 +164,11 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     /// <returns></returns>
     private async Task<List<string>> LetUserFilterToImport(IList<string> allFilesToImport)
     {
-        IList<Folder> folders = RecursiveDirectories.Select(f => new Folder(f))
+        IList<Folder> folders = RecursiveDirectories.Select(_folderFactory.Create)
                                                     .Concat(ExistingFolders)
                                                     .ToList();
         
-        var folderImportWizardVm = new ImportFolderWizardVm(_autoImport, _TargetCollection.Info, folders, allFilesToImport);
+        var folderImportWizardVm = _importFolderWizardFactory.Create(_autoImport, _TargetCollection.Info, folders, allFilesToImport);
         
         if (folderImportWizardVm.Steps.Any())
         {
@@ -181,7 +189,10 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
 }
 
 [Factory]
-public class ImportFilesViewModelFactory(IIOService ioServcie, INotificationService notificationService)
+public class ImportFilesViewModelFactory(
+    IIOService ioServcie, INotificationService notificationService, 
+    ImportFolderWizardFactory importFolderWizardFactory,
+    FolderFactory folderFactory)
 {
     public ImportFilesViewModel Create(bool autoImport)
     {
@@ -193,6 +204,9 @@ public class ImportFilesViewModelFactory(IIOService ioServcie, INotificationServ
 
     public ImportFilesViewModel Create(string targetCollectionId, bool autoImport)
     {
-        return new ImportFilesViewModel(ioServcie, notificationService, targetCollectionId, autoImport);
+        return new ImportFilesViewModel(
+            ioServcie, notificationService, 
+            importFolderWizardFactory, folderFactory, 
+            targetCollectionId, autoImport);
     }
 }

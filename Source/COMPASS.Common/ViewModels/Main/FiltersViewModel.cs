@@ -410,8 +410,8 @@ namespace COMPASS.Common.ViewModels.Main
         }
         public void RemoveFilterType(FilterType filterType)
         {
-            IncludedFilters.RemoveAll(filter => filter.Type == filterType);
-            ExcludedFilters.RemoveAll(filter => filter.Type == filterType);
+            IncludedFilters.RemoveWhere(filter => filter.Type == filterType);
+            ExcludedFilters.RemoveWhere(filter => filter.Type == filterType);
         }
 
         // Add Filter
@@ -430,7 +430,7 @@ namespace COMPASS.Common.ViewModels.Main
             //if Filter does not allow multiple instances, remove previous instance(s) of that Filter before adding
             if (!filter.AllowMultiple && target.Any(f => f.Type == filter.Type))
             {
-                target.RemoveAll(f => f.Type == filter.Type);
+                target.RemoveWhere(f => f.Type == filter.Type);
             }
             
             target.AddIfMissing(filterVm);

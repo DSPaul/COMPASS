@@ -1,85 +1,77 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Interfaces;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.Models
 {
     public class Folder : ObservableObject, IHasChildren<Folder>
     {
-        private ILogger? _logger;
-        private ILogger Logger => _logger ??= ServiceResolver.Resolve<ILogger>();
-
-        public Folder(string path)
+        public Folder(string path, IEnumerable<Folder> allSubFolders)
         {
-            _fullPath = path.Trim(Path.DirectorySeparatorChar).Trim(Path.AltDirectorySeparatorChar);
+            FullPath = path.Trim(Path.DirectorySeparatorChar).Trim(Path.AltDirectorySeparatorChar);
+            _allSubFolders = new RangeObservableCollection<Folder>(allSubFolders);
         }
 
-        /// <summary>
-        /// Indicates whether this folder has all the existing subfolders, or only the ones specified in <see cref="SubFolders"/>
-        /// If this is true, and a new subfolder was created, it will be added to the subfolders, if not, subfolders remains unchanged.
-        /// </summary>
-        public bool HasAllSubFolders { get; set; } = true;
+        public bool HasAllSubFolders => _explicitSubFolders == null;
 
-        private string _fullPath;
         public string FullPath
         {
-            get => _fullPath;
-            set => SetProperty(ref _fullPath, value);
+            get;
+            set => SetProperty(ref field, value);
         }
 
-        private RangeObservableCollection<Folder>? _subFolders;
+        private RangeObservableCollection<Folder>? _explicitSubFolders;
+        private RangeObservableCollection<Folder> _allSubFolders;
+
         public RangeObservableCollection<Folder> SubFolders
         {
-            get
-            {
-                AddNewSubFolders();
-                return _subFolders ??= new(FindSubFolders());
-            }
+            get => _explicitSubFolders ?? _allSubFolders;
+        }
 
-            init => SetProperty(ref _subFolders, value);
+        public void SetExplicitSubfolders(IEnumerable<Folder> folders)
+        {
+            _explicitSubFolders = new RangeObservableCollection<Folder>();
+
+            foreach (var folder in folders) 
+            { 
+                if(!_allSubFolders.Select(sf => sf.FullPath).Contains(folder.FullPath))
+                {
+                    throw new InvalidOperationException($"Cannot set explicit subfolders for {FullPath} because it contains a folder that is not a subfolder of this folder: {folder.FullPath}");
+                }
+
+                _explicitSubFolders.Add(folder);
+            }
+            OnPropertyChanged(nameof(SubFolders));
+        }
+
+        public void ClearExplicitSubfolders()
+        {
+            _explicitSubFolders = null;
+            OnPropertyChanged(nameof(SubFolders));
+        }
+
+        public void UpdateAllSubFolders(FolderFactory folderFactory)
+        {
+            _allSubFolders = folderFactory.Create(FullPath)._allSubFolders;
+            OnPropertyChanged(nameof(SubFolders));
         }
 
         public string Name => Path.GetFileName(FullPath);
         
         //Proxy for Subfolder, to implement IHasChildren
         public RangeObservableCollection<Folder> Children => SubFolders;
-        
-        private IEnumerable<Folder> FindSubFolders()
-        {
-            if (Directory.Exists(FullPath))
-            {
-                try
-                {
-                    var directories = Directory.GetDirectories(FullPath);
-                    return directories.Select(dir => new Folder(dir));
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"Failed to get subfolders of {FullPath}", ex);
-                }
-            }
+    }
 
-            return [];
-        }
-
-        /// <summary>
-        /// Looks for new subfolders and updates its subfolders if needed
-        /// </summary>
-        public void AddNewSubFolders()
+    [Factory]
+    public class FolderFactory(IIOService ioService)
+    {
+        public Folder Create(string path)
         {
-            if (HasAllSubFolders)
-            {
-                _subFolders = null;
-            }
-            else
-            {
-                foreach (Folder folder in _subFolders!)
-                {
-                    folder.AddNewSubFolders();
-                }
-            }
+            var subFolders = ioService.TryGetDirectories(path);
+            var folder = new Folder(path, subFolders.Select(Create));
+            return folder;
         }
     }
 }

@@ -33,7 +33,7 @@ namespace COMPASS.Common.Sources
                 {
                     //using filestream is way more perfomant than calling PdfDocument.Open() directly with the path which would read the entire pdf immediatly
                     using var fileStream = new FileStream(sources.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
-                  using PdfDocument pdfDoc = PdfDocument.Open(fileStream, new ParsingOptions()
+                    using PdfDocument pdfDoc = PdfDocument.Open(fileStream, new ParsingOptions()
                     {
                         Logger = new PdfLogger()
                     });

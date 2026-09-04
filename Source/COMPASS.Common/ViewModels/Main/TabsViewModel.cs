@@ -98,10 +98,9 @@ public class TabsViewModel(
 
     public void AddTab(CollectionTabVM tab)
     {
-        TabCreated?.Invoke(this, tab);
         Tabs.Add(tab);
         TabIndex = Tabs.Count - 1;
-        
+        TabCreated?.Invoke(this, tab);
     }
     
     public void DuplicateTab(CollectionTabVM? tab)

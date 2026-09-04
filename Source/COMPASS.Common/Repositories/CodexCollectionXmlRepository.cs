@@ -19,7 +19,8 @@ namespace COMPASS.Common.Repositories
     internal class CodexCollectionXmlRepository(
         IApplicationDataService applicationDataService,
         INotificationService windowedNotificationService,
-        ILogger logger)
+        ILogger logger,
+        FolderFactory folderFactory)
          : ICodexCollectionRepository
     {
         private string _collectionsPath = Path.Combine(applicationDataService.UserDataPath, Constants.DIR_COLLECTIONS);
@@ -207,7 +208,7 @@ namespace COMPASS.Common.Repositories
                             return false;
                         }
 
-                        collection.Info = loadedInfo.ToModel(collection.AllTags);
+                        collection.Info = loadedInfo.ToModel(collection.AllTags, folderFactory);
                     }
                     catch (Exception ex)
                     {

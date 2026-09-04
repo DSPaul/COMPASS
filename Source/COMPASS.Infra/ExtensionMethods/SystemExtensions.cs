@@ -129,11 +129,14 @@ namespace COMPASS.Infra.ExtensionMethods
 
             return obsoleteProperties;
         }
-        
+
         #endregion
 
         #region EnumerableExtensions
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<T> l, string method = "dfs") where T : IHasChildren<T>
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<T> l, string method = "dfs") where T : IHasChildren<T> 
+            => l.Flatten(item => item.Children, method);
+
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<T> l, Func<T, IEnumerable<T>> childSelector, string method = "dfs")
         {
             var result = l.ToList();
 
@@ -145,7 +148,7 @@ namespace COMPASS.Infra.ExtensionMethods
                         for (int i = 0; i < result.Count; i++)
                         {
                             T parent = result[i];
-                            result.AddRange(parent.Children);
+                            result.AddRange(childSelector(parent));
                             yield return parent;
                         }
                         break;
@@ -156,7 +159,7 @@ namespace COMPASS.Infra.ExtensionMethods
                         for (int i = 0; i < result.Count; i++)
                         {
                             T parent = result[i];
-                            result.InsertRange(i + 1, parent.Children);
+                            result.InsertRange(i + 1, childSelector(parent));
                             yield return parent;
                         }
                         break;

@@ -165,11 +165,7 @@ namespace COMPASS.Common.Services.FileSystem
             return true;
         }
         
-        /// <summary>
-        /// Safe alternative of <see cref="Directory.GetFiles(string)"/> that catches all exceptions
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public IEnumerable<string> TryGetFilesInFolder(string path)
         {
             IEnumerable<string> files = Enumerable.Empty<string>();
@@ -186,6 +182,21 @@ namespace COMPASS.Common.Services.FileSystem
             }
 
             return files;
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<string> TryGetDirectories(string directory)
+        {
+            try
+            {
+                return Directory.GetDirectories(directory);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Failed to get subfolders of {directory}", ex);
+                return Enumerable.Empty<string>();
+            }
+
         }
     }
 }

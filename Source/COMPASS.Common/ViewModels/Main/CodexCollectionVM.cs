@@ -24,19 +24,21 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     private readonly INotificationService _notificationService;
     private readonly IImportExportService _importExportService;
     private readonly ICoverStorageService _coverStorageService;
+    private readonly FolderFactory _folderFactory;
     private readonly CodexViewModelFactory _codexViewModelFactory;
     private readonly TagViewModelFactory _tagViewModelFactory;
     private readonly ImportFilesViewModelFactory _importFilesViewModelFactory;
 
     public CodexCollectionVM(string identifier, CodexCollection collection, 
         ICodexCollectionRepository repo, ILogger logger, INotificationService notificationService, IImportExportService importExportService, 
-        ICoverStorageService coverStorageService, CodexViewModelFactory codexViewModelFactory, TagViewModelFactory tagViewModelFactory,
+        ICoverStorageService coverStorageService, FolderFactory folderFactory, CodexViewModelFactory codexViewModelFactory, TagViewModelFactory tagViewModelFactory,
         ImportFilesViewModelFactory importFilesViewModelFactory)
         : base(collection)
     {
         _logger = logger;
         _notificationService = notificationService;
         _importExportService = importExportService;
+        _folderFactory = folderFactory;
         _coverStorageService = coverStorageService;
         _codexViewModelFactory = codexViewModelFactory;
         _tagViewModelFactory = tagViewModelFactory;
@@ -198,11 +200,26 @@ public class CodexCollectionVM : ModelViewModelBase<CodexCollection>
     
     public async Task AutoImport()
     {
-        //Start Auto Imports
-        using ImportFilesViewModel folderImportVM = _importFilesViewModelFactory.Create(autoImport: true);
-        folderImportVM.NonRecursiveDirectories = Collection.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList() ?? [];
-        await Task.Delay(TimeSpan.FromSeconds(2));
-        await folderImportVM.Import();
+        try
+        {
+            //Start Auto Imports
+            using ImportFilesViewModel folderImportVM = _importFilesViewModelFactory.Create(autoImport: true);
+            var autoImportFolders = Collection.Info.AutoImportFolders.Flatten();
+
+            //Check for any new folders
+            foreach (var folder in autoImportFolders)
+            {
+                folder.UpdateAllSubFolders(_folderFactory);
+            }
+
+            folderImportVM.NonRecursiveDirectories = Collection.Info.AutoImportFolders.Flatten().Select(f => f.FullPath).ToList() ?? [];
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            await folderImportVM.Import();
+        }
+        catch (Exception ex) 
+        { 
+            Logger.Error("Error during auto import", ex);
+        }
     }
     
     public void RenameCollection(string newCollectionName)
@@ -255,13 +272,14 @@ public class CodexCollectionVMFactory(
     INotificationService notificationService,
     IImportExportService importExportService,
     ICoverStorageService coverStorageService,
+    FolderFactory folderFactory,
     CodexViewModelFactory codexViewModelFactory,
     TagViewModelFactory tagViewModelFactory,
     ImportFilesViewModelFactory importFilesViewModelFactory)
 {
     public CodexCollectionVM Create(CodexCollection collection, ICodexCollectionRepository repo)
         => new(collection.Name, collection, repo, logger, notificationService, importExportService, coverStorageService,
-               codexViewModelFactory, tagViewModelFactory, importFilesViewModelFactory);
+               folderFactory, codexViewModelFactory, tagViewModelFactory, importFilesViewModelFactory);
 
     public CodexCollectionVM Create(CodexCollection collection, StorageStrategy storageStrategy)
         => Create(collection, ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(storageStrategy));

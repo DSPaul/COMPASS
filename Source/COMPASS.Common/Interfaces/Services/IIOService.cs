@@ -44,4 +44,11 @@ public interface IIOService
     /// <param name="path"></param>
     /// <returns></returns>
     IEnumerable<string> TryGetFilesInFolder(string path);
+
+    /// <summary>
+    /// Safe alternative of <see cref="Directory.GetDirectories(string)"/> that catches all exceptions
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <returns></returns>
+    IEnumerable<string> TryGetDirectories(string directory);
 }

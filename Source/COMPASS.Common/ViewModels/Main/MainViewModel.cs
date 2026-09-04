@@ -8,7 +8,6 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Infra.Tools;
 using Material.Icons;
 
 namespace COMPASS.Common.ViewModels.Main
@@ -35,6 +34,7 @@ namespace COMPASS.Common.ViewModels.Main
             CollectionManager.DiscoverCollections();
 
             TabsVM = tabsVm;
+            TabsVM.TabCreated += TabsVM_TabCreated;
             TabsVM.CreateTab();
 
             LeftDockVM = leftDockViewModelFactory.Create(TabsVM);
@@ -44,6 +44,11 @@ namespace COMPASS.Common.ViewModels.Main
             InitConnectionTimer();
         }
 
+        private void TabsVM_TabCreated(object? sender, CollectionTabVM e)
+        {
+            //Fire and forget auto import on that new tab
+            _ = e.CollectionVM.AutoImport();
+        }
 
         #region Init Functions
         /// <summary>

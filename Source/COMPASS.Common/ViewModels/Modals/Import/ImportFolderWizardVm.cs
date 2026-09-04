@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Models;
+﻿using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Infra.ExtensionMethods;
 
@@ -10,36 +11,39 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         private readonly CollectionInfo _collectionInfo;
 
         public bool Finished { get; private set; }
-        
+
         public ImportFolderWizardVm(
-            bool autoImport, 
-            CollectionInfo collectionInfo, 
-            IList<Folder> folders, 
+            FolderFactory folderFactory,
+            bool autoImport,
+            CollectionInfo collectionInfo,
+            IList<Folder> folders,
             IList<string> allFiles)
         {
+
             _autoImport = autoImport;
             _collectionInfo = collectionInfo;
-            
+
             //Add SubFolders Step
             if (!_autoImport)
             {
                 //TODO: this step isn't really needed if there are no subfolders
                 //except for auto import checkbox, could probably just check that behind the scenes
                 Steps.Add(_subFoldersStep);
-                
-                //Get the root folders will all subfolders to show in step
-                var rootFolders = folders.Select(f => new Folder(f.FullPath)).ToList();
+
+                //Get the root folders with all subfolders on disk to show in step
+                var rootFolders = folders.Select(f => folderFactory.Create(f.FullPath)).ToList();
                 SelectSubfoldersVM = new(rootFolders);
 
-                //Existing folders already have a list of subfolders, which may be a subset of the subfolders on disk
+                //Existing folders may already have a list of explicit subfolders,
+                //which may be a subset of the subfolders on disk
                 //so we need to check the subfolders that are already in the collection
                 foreach (var node in SelectSubfoldersVM.OptionsRoot)
                 {
                     node.IsChecked = true;
-                    
-                    Folder? origFolder = folders.First(f => f.FullPath == node.Item.FullPath);
 
-                    var chosenSubFolderPaths = origFolder.SubFolders.Flatten().Select(sf => sf.FullPath).ToList();
+                    Folder? origFolder = folders.Single(f => f.FullPath == node.Item.FullPath);
+
+                    var chosenSubFolderPaths = origFolder.SubFolders.Flatten().Select(sf => sf.FullPath).ToHashSet();
                     foreach (var subNode in node.Children.Flatten())
                     {
                         subNode.IsChecked = chosenSubFolderPaths.Contains(subNode.Item.FullPath);
@@ -67,14 +71,14 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                     .Select(x => new FileTypeInfo(x.Key, true, x.Count())).ToList();
             }
         }
-        
+
         private readonly WizardStepViewModel _subFoldersStep = new("Choose which subfolders to import", "SubFolders");
         private readonly WizardStepViewModel _extensionsStep = new("Choose which file types to import", "Extensions");
 
         #region IModalWindow
-        
-        public override string WindowTitle => _autoImport ?  "AutoImport" : "Import Folder(s)";
-        
+
+        public override string WindowTitle => _autoImport ? "AutoImport" : "Import Folder(s)";
+
         #endregion
 
         private bool _addAutoImportFolders = true;
@@ -85,9 +89,9 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         }
 
         #region Subfolder Select Step
-        
+
         public HierarchicalSelectorViewModel<Folder>? SelectSubfoldersVM { get; set; }
-        
+
         #endregion
 
         #region File Type Selection Step
@@ -129,7 +133,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         /// <returns></returns>
         public List<string> GetFilteredFiles(IList<string> toImport)
         {
-            List<string> filteredList = [..toImport];
+            List<string> filteredList = [.. toImport];
             filteredList = FilterFilesBySubFolders(filteredList);
             return FilterFilesByExtension(filteredList);
         }
@@ -139,7 +143,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             //filter files so that it only contains those from checked subfolders
             //because there may also be loose files in the list
             //we need to remove those in unchecked folders, rather than include those in checked folders
-            
+
             IList<Folder> excludedFolders = SelectSubfoldersVM?.UncheckedOptions ?? [];
             var excludedBySubfolder = files.Where(path => excludedFolders.Any(folder => Path.GetDirectoryName(path) == folder.FullPath));
             return files.Except(excludedBySubfolder).ToList();
@@ -149,37 +153,38 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         {
             return files.Where(path => _collectionInfo.FiletypePreferences[Path.GetExtension(path)]).ToList();
         }
-        
+
         public override Task Finish()
         {
             //Update the Auto Import Folders
             if (AddAutoImportFolders)
             {
-                //go over every folder and set the HasAllSubFolder Flag
+                //go over every folder and updat the original if any, other wise add it
                 foreach (var checkableFolder in SelectSubfoldersVM?.OptionsRoot.Flatten() ?? [])
                 {
-                    checkableFolder.Item.HasAllSubFolders =
-                        checkableFolder.IsChecked == true &&
-                        checkableFolder.Children.All(child => child.IsChecked == true); //need this check as well because folder might also be checked without any children
-                }
-
-                //Remove the existingFolders as they will be replaced
-                var updatedFolders = SelectSubfoldersVM?.SelectedOptions ?? [];
-                
-                foreach (Folder folder in updatedFolders)
-                {
-                    _collectionInfo.AutoImportFolders.Remove(folder);
-                }
-
-                //Add or update the folder to the AutoImportFolders
-                foreach (Folder folder in updatedFolders)
-                {
-                    var existingFolder = _collectionInfo.AutoImportFolders.FirstOrDefault(f => f.FullPath == folder.FullPath);
-                    _collectionInfo.AutoImportFolders.Add(folder);
-                    if (existingFolder != null)
+                    bool allSubfoldersChecked = checkableFolder.Children.All(child => child.IsChecked != false);
+                    if (allSubfoldersChecked)
                     {
-                        _collectionInfo.AutoImportFolders.Remove(existingFolder);
+                        checkableFolder.Item.ClearExplicitSubfolders();
                     }
+                    else
+                    {
+                        var explicitSubfolders = checkableFolder.Children
+                            .Where(child => child.IsChecked != false)
+                            .Select(child => child.Item)
+                            .ToList();
+                        checkableFolder.Item.SetExplicitSubfolders(explicitSubfolders);
+                    }
+
+                    //If folder was already in auto import, remove it so it can be replaced with the new version
+                    _collectionInfo.AutoImportFolders.RemoveWhere(f => f.FullPath == checkableFolder.Item.FullPath);
+                }
+
+                //Now add the top level folders to the auto import list
+                var checkedFolders = SelectSubfoldersVM?.OptionsRoot.Where(x => x.IsChecked != false).Select(x => x.Item).ToList() ?? [];
+                foreach (Folder folder in checkedFolders)
+                {
+                    _collectionInfo.AutoImportFolders.Add(folder);
                 }
             }
 
@@ -196,6 +201,19 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             Finished = true;
             CloseAction();
             return Task.CompletedTask;
+        }
+    }
+
+    [Factory]
+    public class ImportFolderWizardFactory(FolderFactory folderFactory)
+    {
+        public ImportFolderWizardVm Create(
+            bool autoImport,
+            CollectionInfo collectionInfo,
+            IList<Folder> folders,
+            IList<string> allFiles)
+        {
+            return new ImportFolderWizardVm(folderFactory, autoImport, collectionInfo, folders, allFiles);
         }
     }
 }

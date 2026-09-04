@@ -198,7 +198,7 @@ namespace COMPASS.Infra.Models
         /// <param name="match"></param>
         /// <returns>Returns the number of elements that where </returns>
         /// <exception cref="ArgumentNullException"><paramref name="match"/> is null.</exception>
-        public int RemoveAll(Predicate<T> match)
+        public int RemoveWhere(Predicate<T> match)
         {
             return RemoveAll(0, Count, match);
         }
