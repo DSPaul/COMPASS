@@ -2,11 +2,14 @@
 using COMPASS.Common.Models;
 using COMPASS.Common.ViewModels.Selection;
 using COMPASS.Infra.ExtensionMethods;
+using COMPASS.Infra.Tools;
+using ExCSS;
 
 namespace COMPASS.Common.ViewModels.Modals.Import
 {
     public sealed class ImportFolderWizardVm : WizardViewModel
     {
+        private readonly FolderFactory _folderFactory;
         private readonly bool _autoImport;
         private readonly CollectionInfo _collectionInfo;
 
@@ -19,7 +22,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             IList<Folder> folders,
             IList<string> allFiles)
         {
-
+            _folderFactory = folderFactory;
             _autoImport = autoImport;
             _collectionInfo = collectionInfo;
 
@@ -184,7 +187,63 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 var checkedFolders = SelectSubfoldersVM?.OptionsRoot.Where(x => x.IsChecked != false).Select(x => x.Item).ToList() ?? [];
                 foreach (Folder folder in checkedFolders)
                 {
-                    _collectionInfo.AutoImportFolders.Add(folder);
+                    //this could be a subfolder of a folder already in autoImport
+                    //check upwards to see if any parent folder is already in autoImport
+                    Folder? foundParent = null;
+
+                    Stack<string> checkedDirectories = [];
+                    checkedDirectories.Push(folder.FullPath);
+
+                    foreach(var parentFolder in PathUtils.GetAllParentDirectories(folder.FullPath))
+                    {
+                        if (_collectionInfo.AutoImportFolders.FirstOrDefault(f => f.FullPath == parentFolder) is { } parent)
+                        {
+                            foundParent = parent;
+                            break;
+                        }
+                        checkedDirectories.Push(parentFolder);
+                    }
+
+                    if (foundParent != null)
+                    {
+                        //go back down the tree, checking all neccessary subfolders along the way
+                        while (checkedDirectories.TryPop(out var parentFolder)) 
+                        {
+                            foundParent.UpdateAllSubFolders(_folderFactory);
+                            var lowerParent = foundParent.SubFolders.SingleOrDefault(sf => sf.FullPath == parentFolder);
+                            
+                            //if not a subfolders already, take it from allSubFolders and add it
+                            if (lowerParent == null)
+                            {
+                                lowerParent = foundParent.AllSubFolders.Single(p => p.FullPath == parentFolder);
+                                foundParent.SetExplicitSubfolders([.. foundParent.SubFolders, lowerParent]);
+                                //If not yet target folder, explicit empty subfolders to not accidentally add other folders
+                                if(lowerParent.FullPath != folder.FullPath)
+                                {
+                                    lowerParent.SetExplicitSubfolders([]);
+                                }
+                            }
+
+                            //if reached target, copy over explicit subfolders
+                            if (lowerParent.FullPath == folder.FullPath) 
+                            {
+                                if (folder.HasAllSubFolders)
+                                {
+                                    lowerParent.ClearExplicitSubfolders();
+                                }
+                                else
+                                {
+                                    lowerParent.SetExplicitSubfolders(folder.SubFolders);
+                                }
+                            }
+
+                            foundParent = lowerParent;
+                        }
+                    }
+                    else
+                    {
+                        _collectionInfo.AutoImportFolders.Add(folder);
+                    }
                 }
             }
 

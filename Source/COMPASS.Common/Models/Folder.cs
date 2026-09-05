@@ -30,6 +30,8 @@ namespace COMPASS.Common.Models
             get => _explicitSubFolders ?? _allSubFolders;
         }
 
+        public IReadOnlyList<Folder> AllSubFolders => _allSubFolders;
+
         public void SetExplicitSubfolders(IEnumerable<Folder> folders)
         {
             _explicitSubFolders = new RangeObservableCollection<Folder>();

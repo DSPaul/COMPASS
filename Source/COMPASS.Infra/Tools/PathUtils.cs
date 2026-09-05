@@ -69,6 +69,15 @@ public static class PathUtils
         return (remainingPath1, remainingPath2);
     }
 
+    public static IEnumerable<string> GetAllParentDirectories(string path)
+    {
+        var parts = path.Split(Path.DirectorySeparatorChar);
+        for (int i = 1; i < parts.Length; i++)
+        {
+            yield return string.Join(Path.DirectorySeparatorChar, parts.SkipLast(i));
+        }
+    }
+
     public static bool MatchesAnyGlob(string filePath, IList<string> globs )
     {
         if (string.IsNullOrEmpty(filePath)) return false;

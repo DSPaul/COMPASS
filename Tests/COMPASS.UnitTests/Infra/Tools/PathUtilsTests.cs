@@ -136,6 +136,32 @@ public class PathUtilsTests
 
     #endregion
 
+    #region GetAllParentDirectories
+
+    [Test]
+    public void GetAllParentDirectories_Normal()
+    {
+        string path = Path.Combine("a", "path", "to", "a", "file.txt");
+        List<string> result = PathUtils.GetAllParentDirectories(path).ToList();
+        Assert.That(result, Is.EqualTo(new List<string>
+        {
+            Path.Combine("a", "path", "to", "a"),
+            Path.Combine("a", "path", "to"),
+            Path.Combine("a", "path"),
+            "a"
+        }));
+    }
+
+    [Test]
+    public void GetAllParentDirectories_Empty()
+    {
+        string path = "";
+        List<string> result = PathUtils.GetAllParentDirectories(path).ToList();
+        Assert.That(result, Is.EqualTo(new List<string>()));
+    }
+
+    #endregion
+
     #region MatchesAnyGlob
 
     [Test]
