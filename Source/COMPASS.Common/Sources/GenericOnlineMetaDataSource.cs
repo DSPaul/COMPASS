@@ -4,7 +4,6 @@ using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
 using HtmlAgilityPack;
 using ImageMagick;
 
@@ -61,16 +60,13 @@ namespace COMPASS.Common.Sources
             {
                 metaData.Description = WebUtility.HtmlDecode(description);
             }
-            
+
             // Tags
-            foreach (Tag tag in TargetCollection.AllTags)
+            foreach (var tag in GetMatchingTags(sources))
             {
-                var globs = tag.LinkedGlobs.Concat(tag.CalculatedLinkedGlobs).ToList();
-                if (PathUtils.MatchesAnyGlob(sources.SourceURL, globs))
-                {
-                    metaData.Tags.AddIfMissing(tag);
-                }
+                metaData.Tags.AddIfMissing(tag);
             }
+
             return metaData;
         }
     }

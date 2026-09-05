@@ -1,5 +1,7 @@
-﻿using COMPASS.Common.Models;
+﻿using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Tools;
 using ImageMagick;
@@ -22,14 +24,9 @@ namespace COMPASS.Common.Sources
                 Title = Path.GetFileNameWithoutExtension(sources.Path)
             };
 
-            // Tags based on file path
-            foreach (Tag tag in TargetCollection.AllTags)
-            {
-                var globs = tag.LinkedGlobs.Concat(tag.CalculatedLinkedGlobs).ToList();
-                if (PathUtils.MatchesAnyGlob(sources.Path, globs))
-                {
-                    metaData.Tags.AddIfMissing(tag);
-                }
+            foreach (var tag in GetMatchingTags(sources))
+            { 
+                metaData.Tags.AddIfMissing(tag);
             }
              
             return Task.FromResult(metaData);

@@ -1,6 +1,7 @@
 ﻿using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
+using COMPASS.Common.Models.Preferences;
 using COMPASS.Common.ViewModels;
 using COMPASS.Infra.Tools;
 using ImageMagick;
@@ -15,6 +16,7 @@ namespace COMPASS.Common.Sources
         }
 
         protected ILogger Logger => field ??= ServiceResolver.Resolve<ILogger>();
+        protected Preferences Preferences => field ??= ServiceResolver.Resolve<IPreferencesService>().Preferences;
 
         /// <summary>
         /// 
@@ -49,5 +51,29 @@ namespace COMPASS.Common.Sources
 
         public abstract Task<IMagickImage<byte>?> FetchCover(SourceSet sources);
         #endregion
+
+        protected virtual List<Tag> GetMatchingTags(SourceSet sources)
+        {
+            var autoLinkEnabled = Preferences.AutoLinkFolderTagSameName;
+            List<Tag> matchingTags = new();
+
+            // Tags based on file path
+            foreach (Tag tag in TargetCollection.AllTags)
+            {
+                List<string> globs = [..tag.LinkedGlobs];
+
+                if(autoLinkEnabled)
+                {
+                    globs.AddRange($"**/{tag.Name}/**");
+                }
+
+                if (PathUtils.MatchesAnyGlob(sources.Path, globs))
+                {
+                    matchingTags.Add(tag);
+                }
+            }
+
+            return matchingTags;
+        }
     }
 }
