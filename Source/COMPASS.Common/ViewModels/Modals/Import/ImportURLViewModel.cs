@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.ViewModels;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
@@ -13,10 +14,12 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     public class ImportURLViewModel : ViewModelBase, IModalViewModel, IConfirmable
     {       
         private readonly CodexEditViewModelFactory _codexEditViewModelFactory;
+        private readonly CodexCollectionOperations _codexCollectionOperations;
 
-        public ImportURLViewModel(CodexEditViewModelFactory codexEditViewModelFactory, ImportSource importSource)
+        public ImportURLViewModel(CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ImportSource importSource)
         {
             _codexEditViewModelFactory = codexEditViewModelFactory;
+            _codexCollectionOperations = codexCollectionOperations;
 
             //TODO: Name should be a property of the metadatasource itself
             SourceName = importSource switch
@@ -92,7 +95,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             CloseAction();
 
             List<SourceSet> sourceSets = [new() { SourceURL = InputURL }];
-            await ImportViewModel.CreateCodicesAsync(sourceSets);
+            await _codexCollectionOperations.CreateCodicesAsync(sourceSets);
 
             if (ShowEditWhenDone)
             {
@@ -123,9 +126,9 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     }
 
     [Factory]
-    public class ImportURLViewModelFactory(CodexEditViewModelFactory codexEditViewModelFactory)
+    public class ImportURLViewModelFactory(CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations)
     {
         public ImportURLViewModel Create(ImportSource importSource)
-            => new(codexEditViewModelFactory, importSource);
+            => new(codexEditViewModelFactory, codexCollectionOperations, importSource);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.ViewModels.Tools;
 
@@ -7,12 +8,12 @@ namespace COMPASS.Common.ViewModels.Modals;
 
 public class ToolsViewModel : ViewModelBase, IDisposable
 {
-    public ToolsViewModel(BackupToolViewModelFactory backupToolViewModelFactory)
+    public ToolsViewModel(BackupToolViewModelFactory backupToolViewModelFactory, BrokenFileRefsToolViewModelFactory brokenFileRefsToolViewModelFactory)
     {
         Tools =
         [
             backupToolViewModelFactory.Create(),
-            new BrokenFileRefsToolViewModel()
+            brokenFileRefsToolViewModelFactory.Create()
         ];
     }
     
@@ -28,4 +29,13 @@ public class ToolsViewModel : ViewModelBase, IDisposable
             }
         }
     }
+}
+
+[Factory]
+public class ToolsViewModelFactory(
+    BackupToolViewModelFactory backupToolViewModelFactory,
+    BrokenFileRefsToolViewModelFactory brokenFileRefsToolViewModelFactory)
+{
+    public ToolsViewModel Create()
+        => new(backupToolViewModelFactory, brokenFileRefsToolViewModelFactory);
 }

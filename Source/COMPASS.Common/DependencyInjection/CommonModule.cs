@@ -53,6 +53,7 @@ namespace COMPASS.Common.DependencyInjection
             //Operations
             builder.RegisterType<Operations.CodexCollectionOperations>().AsSelf().SingleInstance();
             builder.RegisterType<Operations.TagOperations>().AsSelf().SingleInstance();
+            builder.RegisterType<Operations.CodexOperations>().AsSelf().SingleInstance();
 
             // View model factories (all classes marked with [Factory])
             builder.RegisterFactories();

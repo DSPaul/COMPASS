@@ -23,7 +23,8 @@ public partial class CardLayout : CodexLayoutView
     {
         if (sender is Border { DataContext: CodexViewModel codexVm })
         {
-            await CodexOperations.OpenCodex(codexVm.GetModel());
+            var operations = TabsViewModel.GetInstance().ActiveTab!.CodexCommands;
+            await operations.OpenCodex(codexVm.GetModel());
         }
     }
 }

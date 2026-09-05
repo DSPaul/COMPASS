@@ -13,9 +13,11 @@ namespace COMPASS.Common.ViewModels.Modals
     {
 
         private readonly IFilesService _filesService;
-        public FileNotFoundViewModel(IFilesService filesService, Codex codex)
+        private readonly CodexOperations _codexOperations;
+        public FileNotFoundViewModel(IFilesService filesService, CodexOperations codexOperations, Codex codex)
         {
             _filesService = filesService;
+            _codexOperations = codexOperations;
             Codex = codex;
         }
 
@@ -71,7 +73,7 @@ namespace COMPASS.Common.ViewModels.Modals
                 Logger.Debug(message);
                 
                 Codex.Collection.SaveCodices();
-                bool opened = await CodexOperations.OpenCodexLocally(Codex);
+                bool opened = await _codexOperations.OpenCodexLocally(Codex);
                 MarkAsResolved(opened);
             }
         }
@@ -88,7 +90,7 @@ namespace COMPASS.Common.ViewModels.Modals
         public AsyncRelayCommand DeleteCodexCommand => _deleteCodexCommand ??= new(DeleteCodex);
         private async Task DeleteCodex()
         {
-            await CodexOperations.DeleteCodex(Codex);
+            await _codexOperations.DeleteCodex(Codex);
             MarkAsResolved(false);
         }
         
@@ -104,8 +106,8 @@ namespace COMPASS.Common.ViewModels.Modals
     }
 
     [Factory]
-    public class FileNotFoundViewModelFactory(IFilesService filesService)
+    public class FileNotFoundViewModelFactory(IFilesService filesService, CodexOperations codexOperations)
     {
-        public FileNotFoundViewModel Create(Codex codex) => new(filesService, codex);
+        public FileNotFoundViewModel Create(Codex codex) => new(filesService, codexOperations, codex);
     }
 }

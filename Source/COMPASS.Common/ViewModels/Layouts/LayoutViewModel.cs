@@ -102,7 +102,7 @@ namespace COMPASS.Common.ViewModels.Layouts
                                     await activeTab.ImportSatchelAsync(files.First());
                                 break;
                             default:
-                                await ImportViewModel.ImportFilesAsync(files);
+                                await ServiceResolver.Resolve<CodexCollectionOperations>().ImportFilesAsync(files);
                                 break;
                         }
                 }

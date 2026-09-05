@@ -22,7 +22,7 @@ public static class FactoryRegistrar
 
         foreach (Type factoryType in factoryTypes)
         {
-            builder.RegisterType(factoryType).AsSelf().SingleInstance();
+            builder.RegisterType(factoryType).AsSelf();
         }
     }
 }

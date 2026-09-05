@@ -30,6 +30,13 @@ namespace COMPASS.Common.Models
             Id = id;
             IsAsync = true;
         }
+
+        // Metadata only (no function bound) — execution binds instance methods by Id at runtime
+        public PreferableFunction(string name, int id = -1)
+        {
+            Name = name;
+            Id = id;
+        }
         
         public string Name { get; }
         

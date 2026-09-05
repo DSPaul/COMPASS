@@ -25,8 +25,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         private readonly TagEditViewModelFactory _tagEditViewModelFactory;
         private readonly IFilesService _filesService;
         private readonly IPreferencesService _preferencesService;
+        private readonly CodexOperations _codexOperations;
         public CodexEditViewModel(CodexViewModelFactory codexViewModelFactory, TagEditViewModelFactory tagEditViewModelFactory,
-            IFilesService filesService, IPreferencesService preferencesService,
+            IFilesService filesService, IPreferencesService preferencesService, CodexOperations codexOperations,
             Codex sourceCodex, bool createNew = false, CollectionTabVM? tabVm = null)
             : base(sourceCodex, createNew, codex => codexViewModelFactory.Create(codex, (tabVm ?? TabsViewModel.GetInstance().ActiveTab)!.CollectionVM))
         {
@@ -34,6 +35,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
             _tagEditViewModelFactory = tagEditViewModelFactory;
             _filesService = filesService;
             _preferencesService = preferencesService;
+            _codexOperations = codexOperations;
         
             var publisherList = TabVM.FiltersVM.PublisherList;
             PublisherOptions = ["", ..publisherList];
@@ -120,9 +122,9 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         public RelayCommand BrowseURLCommand => _browseURLCommand ??= new(BrowseURL);
         private void BrowseURL()
         {
-            if (CodexOperations.CanOpenCodexOnline(WorkingCopy.GetModel()))
+            if (_codexOperations.CanOpenCodexOnline(WorkingCopy.GetModel()))
             {
-                CodexOperations.OpenCodexOnline(WorkingCopy.GetModel());
+                _codexOperations.OpenCodexOnline(WorkingCopy.GetModel());
             }
         }
 
@@ -185,7 +187,7 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         {
             if (!_createNew)
             {
-                await CodexOperations.DeleteCodex(_source);
+                await _codexOperations.DeleteCodex(_source);
             }
             
             CloseAction();
@@ -292,10 +294,11 @@ namespace COMPASS.Common.ViewModels.Modals.Edit
         CodexViewModelFactory codexViewModelFactory,
         TagEditViewModelFactory tagEditViewModelFactory,
         IFilesService filesService,
-        IPreferencesService preferencesService)
+        IPreferencesService preferencesService,
+        CodexOperations codexOperations)
     {
         public CodexEditViewModel Create(Codex sourceCodex, bool createNew = false, CollectionTabVM? tabVm = null)
-            => new(codexViewModelFactory, tagEditViewModelFactory, filesService, preferencesService, sourceCodex, createNew, tabVm);
+            => new(codexViewModelFactory, tagEditViewModelFactory, filesService, preferencesService, codexOperations, sourceCodex, createNew, tabVm);
     }
 }
 

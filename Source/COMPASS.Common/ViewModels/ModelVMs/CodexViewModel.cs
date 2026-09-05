@@ -21,13 +21,15 @@ namespace COMPASS.Common.ViewModels.ModelVMs;
 public class CodexViewModel : ModelViewModelBase<Codex>
 {
     private readonly ILogger _logger;
+    private readonly CodexOperations _codexOperations;
     private readonly CodexCollectionVM _codexCollectionVM;
     
     #region Constructors
 
-    public CodexViewModel(ILogger logger, Codex codex, CodexCollectionVM codexCollectionVM) : base(codex)
+    public CodexViewModel(ILogger logger, CodexOperations codexOperations, Codex codex, CodexCollectionVM codexCollectionVM) : base(codex)
     {
         _logger = logger;
+        _codexOperations = codexOperations;
         _codexCollectionVM = codexCollectionVM;
 
         Tags = new ReadOnlyCollection<TagViewModel>(GetTagVms());
@@ -337,62 +339,62 @@ public class CodexViewModel : ModelViewModelBase<Codex>
 
     //Open codex
     public AsyncRelayCommand OpenCodexCommand => field ??= new(OpenCodex, CanOpenCodex);
-    private async Task<bool> OpenCodex() => await CodexOperations.OpenCodex(_model);
-    private bool CanOpenCodex() => CodexOperations.CanOpenCodex(_model);
+    private async Task<bool> OpenCodex() => await _codexOperations.OpenCodex(_model);
+    private bool CanOpenCodex() => _codexOperations.CanOpenCodex(_model);
     
     //Open codex Offline
     public AsyncRelayCommand OpenCodexLocallyCommand => field ??= new(OpenCodexLocally, CanOpenCodexLocally);
-    private async Task<bool> OpenCodexLocally() => await CodexOperations.OpenCodexLocally(_model);
-    private bool CanOpenCodexLocally() => CodexOperations.CanOpenCodexLocally(_model);
+    private async Task<bool> OpenCodexLocally() => await _codexOperations.OpenCodexLocally(_model);
+    private bool CanOpenCodexLocally() => _codexOperations.CanOpenCodexLocally(_model);
 
     //Open codex Online
     public RelayCommand OpenCodexOnlineCommand => field ??= new(OpenCodexOnline, CanOpenCodexOnline);
-    private void OpenCodexOnline() => CodexOperations.OpenCodexOnline(_model);
-    private bool CanOpenCodexOnline() => CodexOperations.CanOpenCodexOnline(_model);
+    private void OpenCodexOnline() => _codexOperations.OpenCodexOnline(_model);
+    private bool CanOpenCodexOnline() => _codexOperations.CanOpenCodexOnline(_model);
     
     //Edit File
     public AsyncRelayCommand EditCodexCommand => field ??= new(EditCodex);
-    private async Task EditCodex() => await CodexOperations.EditCodex(_model);
+    private async Task EditCodex() => await _codexOperations.EditCodex(_model);
     
     //Toggle Favorite
     public RelayCommand FavoriteCodexCommand => field ??= new(FavoriteCodex);
-    private void FavoriteCodex() => CodexOperations.FavoriteCodex(_model);
+    private void FavoriteCodex() => _codexOperations.FavoriteCodex(_model);
 
     //Show in Explorer
     public RelayCommand ShowInExplorerCommand => field ??= new(ShowInExplorer, CanOpenCodexLocally);
-    private void ShowInExplorer() => CodexOperations.ShowInExplorer(_model);
+    private void ShowInExplorer() => _codexOperations.ShowInExplorer(_model);
     
     //Move Codex to other CodexCollection
     public AsyncRelayCommand<string> MoveToCollectionCommand => field ??= new(MoveToCollection);
     private async Task MoveToCollection(string? targetCollectionIdentifier)
     {
         if (string.IsNullOrEmpty(targetCollectionIdentifier)) return;
-        await CodexOperations.MoveToCollection(targetCollectionIdentifier, [_model]);
+        await _codexOperations.MoveToCollection(targetCollectionIdentifier, [_model]);
     }
     
     //Delete Codex
     public AsyncRelayCommand DeleteCodexCommand => field ??= new(DeleteCodex);
-    private async Task DeleteCodex() => await CodexOperations.DeleteCodex(_model);
+    private async Task DeleteCodex() => await _codexOperations.DeleteCodex(_model);
     
 
     //Banish Codex
     public AsyncRelayCommand BanishCodexCommand => field ??= new(BanishCodex);
-    private async Task BanishCodex() => await CodexOperations.BanishCodex(_model);
+    private async Task BanishCodex() => await _codexOperations.BanishCodex(_model);
 
     //Get Metadata
     public AsyncRelayCommand GetMetaDataCommand => field ??= new(StartGetMetaDataProcess);
-    private async Task StartGetMetaDataProcess() => await CodexOperations.StartGetMetaDataProcess(_model);
+    private async Task StartGetMetaDataProcess() => await _codexOperations.StartGetMetaDataProcess(_model);
     
     //Get Cover
     public AsyncRelayCommand GetCoverCommand => field ??= new(GetCover);
-    private async Task GetCover() => await CodexOperations.GetCover(_model);
+    private async Task GetCover() => await _codexOperations.GetCover(_model);
     
     #endregion
 }
 
 [Factory]
-public class CodexViewModelFactory(ILogger logger)
+public class CodexViewModelFactory(ILogger logger, Lazy<CodexOperations> codexOperations)
 {
     public CodexViewModel Create(Codex codex, CodexCollectionVM parentCollectionVm)
-        => new(logger, codex, parentCollectionVm);
+        => new(logger, codexOperations.Value, codex, parentCollectionVm);
 }

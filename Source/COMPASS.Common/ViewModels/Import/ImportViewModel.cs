@@ -1,16 +1,9 @@
-﻿using COMPASS.Common.Exceptions;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
-using COMPASS.Common.Models;
 using COMPASS.Common.Operations;
-using COMPASS.Common.Services;
 using COMPASS.Common.Services.StateManagers;
-using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Edit;
 using COMPASS.Common.ViewModels.Modals.Import;
-using COMPASS.Infra.Models;
-using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
 
 namespace COMPASS.Common.ViewModels.Import
 {
@@ -21,6 +14,7 @@ namespace COMPASS.Common.ViewModels.Import
         private readonly ImportURLViewModelFactory _importURLViewModelFactory;
         private readonly ISBNScannerViewModelFactory _isbnScannerViewModelFactory;
         private readonly IFilesService _filesService;
+        private readonly CodexCollectionOperations _codexCollectionOperations;
 
         public ImportViewModel(
             CodexEditViewModelFactory codexEditViewModelFactory, 
@@ -28,6 +22,7 @@ namespace COMPASS.Common.ViewModels.Import
             ImportURLViewModelFactory importURLViewModelFactory,
             ISBNScannerViewModelFactory isbnScannerViewModelFactory,
             IFilesService filesService,
+            CodexCollectionOperations codexCollectionOperations,
             string targetCollectionId)
         {
             _codexEditViewModelFactory = codexEditViewModelFactory;
@@ -35,6 +30,7 @@ namespace COMPASS.Common.ViewModels.Import
             _importFilesViewModelFactory = importFilesViewModelFactory;
             _isbnScannerViewModelFactory = isbnScannerViewModelFactory;
             _filesService = filesService;
+            _codexCollectionOperations = codexCollectionOperations;
             _targetcollectionId = targetCollectionId;
         }
 
@@ -48,7 +44,7 @@ namespace COMPASS.Common.ViewModels.Import
             {
                 case ImportSource.File:
                     pathsToImport = await ChooseFiles();
-                    await ImportFilesAsync(pathsToImport, targetCollectionId);
+                    await _codexCollectionOperations.ImportFilesAsync(pathsToImport, targetCollectionId);
                     break;
                 case ImportSource.Folder:
                     using (ImportFilesViewModel folderVM = _importFilesViewModelFactory.Create(targetCollectionId, autoImport: false))
@@ -93,7 +89,7 @@ namespace COMPASS.Common.ViewModels.Import
         private async Task ImportManual()
         {
             using var handle = CollectionManager.LoadCollection(_targetcollectionId);
-            CodexEditViewModel vm = _codexEditViewModelFactory.Create(CodexOperations.CreateNewCodex(handle!.CollectionVM.Collection), createNew: true);
+            CodexEditViewModel vm = _codexEditViewModelFactory.Create(_codexCollectionOperations.CreateNewCodex(handle!.CollectionVM.Collection), createNew: true);
             await WindowManager.OpenModal(vm);
         }
 
@@ -108,96 +104,6 @@ namespace COMPASS.Common.ViewModels.Import
             ISBNScannerViewModel importVM = _isbnScannerViewModelFactory.Create();
             await WindowManager.OpenModal(importVM);
         }
-
-        public static async Task ImportFilesAsync(IList<string> paths, string? targetCollectionId = null)
-        {
-            var logger = ServiceResolver.Resolve<ILogger>();
-
-            targetCollectionId ??= TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier 
-                                   ?? throw new NoTabException("There is no open tab, so no collection to import the files to");
-
-            using CollectionHandle targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId) 
-                                                            ?? throw new LoadException(targetCollectionId);
-            var targetCollection = targetCollectionHandle.CollectionVM.Collection;
-            
-            //filter out codices already in collection & banned paths
-            IEnumerable<string> existingPaths = targetCollection.AllCodices.Select(codex => codex.Sources.Path);
-            var sourceSets = paths
-                .Except(existingPaths)
-                .Except(targetCollection.Info.BanishedPaths)
-                .Select(path => new SourceSet()
-                {
-                    Path = path,
-                })
-                .ToList();
-
-            await CreateCodicesAsync(sourceSets, targetCollectionId);
-        }
-
-        public static async Task CreateCodicesAsync(IList<SourceSet> sourceSets, string? targetCollectionId = null)
-        {
-            var logger = ServiceResolver.Resolve<ILogger>();
-
-            targetCollectionId ??= TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier
-                                   ?? throw new NoTabException("There is no open tab, so no collection to import the items to");
-
-            using CollectionHandle targetCollectionHandle = CollectionManager.LoadCollection(targetCollectionId)
-                                                            ?? throw new LoadException(targetCollectionId);
-            var targetCollection = targetCollectionHandle.CollectionVM.Collection;
-
-            var progressVM = ProgressViewModel.GetInstance();
-
-            progressVM.TotalAmount = sourceSets.Count;
-            progressVM.ResetCounter();
-            progressVM.Text = "Importing new items...";
-
-            if (sourceSets.Count == 0) return;
-
-            List<Codex> newCodices = [];
-
-            //make new codices synchronously so they all have a valid ID
-            foreach (var sourceSet in sourceSets)
-            {
-                try
-                {
-                    ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
-                }
-                catch (OperationCanceledException)
-                {
-                    ProgressViewModel.GetInstance().ConfirmCancellation();
-                    break;
-                }
-
-                Codex newCodex = CodexOperations.CreateNewCodex(targetCollection);
-                newCodex.Sources = sourceSet;
-                newCodices.Add(newCodex);
-                targetCollection.AllCodices.Add(newCodex);
-
-                LogEntry logEntry = new(Severity.Info, $"Importing {sourceSet}");
-                progressVM.IncrementCounter();
-                progressVM.AddLogEntry(logEntry);
-            }
-
-            targetCollection.Save();
-
-            //now get metadata and cover async
-            try
-            {
-                await CodexOperations.StartGetMetaDataProcess(newCodices);
-                await CoverService.GetAndApplyCover(newCodices);
-            }
-            catch (OperationCanceledException ex)
-            {
-                logger.Warn("Import has been cancelled", ex);
-                await Task.Run(() => ProgressViewModel.GetInstance().ConfirmCancellation());
-                return;
-            }
-
-            foreach (Codex codex in newCodices)
-            {
-                codex.NotifyCoverChanged();
-            }
-        }
     }
 
     [Factory]
@@ -206,9 +112,10 @@ namespace COMPASS.Common.ViewModels.Import
         ImportFilesViewModelFactory importFilesViewModelFactory,
         ImportURLViewModelFactory importURLViewModelFactory,
         ISBNScannerViewModelFactory isbnScannerViewModelFactory,
-        IFilesService filesService)
+        IFilesService filesService,
+        CodexCollectionOperations codexCollectionOperations)
     {
         public ImportViewModel Create(string targetCollectionId)
-            => new(codexEditViewModelFactory, importFilesViewModelFactory, importURLViewModelFactory, isbnScannerViewModelFactory, filesService, targetCollectionId);
+            => new(codexEditViewModelFactory, importFilesViewModelFactory, importURLViewModelFactory, isbnScannerViewModelFactory, filesService, codexCollectionOperations, targetCollectionId);
     }
 }

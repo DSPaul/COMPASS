@@ -2,6 +2,7 @@ using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Exceptions;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
+using COMPASS.Common.Operations;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.ViewModels.Main;
 using COMPASS.Common.ViewModels.Modals.Import;
@@ -18,6 +19,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     private readonly INotificationService _notificationService;
     private readonly ImportFolderWizardFactory _importFolderWizardFactory;
     private readonly FolderFactory _folderFactory;
+    private readonly CodexCollectionOperations _codexCollectionOperations;
 
     private readonly bool _autoImport;
     private readonly CollectionHandle _targetCollectionHandle;
@@ -29,12 +31,14 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         IIOService ioService, INotificationService notificationService, 
         ImportFolderWizardFactory importFolderWizardFactory, 
         FolderFactory folderFactory,
+        CodexCollectionOperations codexCollectionOperations,
         string targetCollectionId, bool autoImport)
     {
         _ioService = ioService;
         _notificationService = notificationService;
         _importFolderWizardFactory = importFolderWizardFactory;
         _folderFactory = folderFactory;
+        _codexCollectionOperations = codexCollectionOperations;
         
         var handle = CollectionManager.LoadCollection(targetCollectionId);
         if (handle != null)
@@ -88,7 +92,7 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
         if (toImport.Any())
         {
             toImport = await LetUserFilterToImport(toImport);
-            await ImportViewModel.ImportFilesAsync(toImport, _targetCollectionHandle.CollectionVM.Identifier);
+            await _codexCollectionOperations.ImportFilesAsync(toImport, _targetCollectionHandle.CollectionVM.Identifier);
         }
         else if (!_autoImport)
         {
@@ -188,25 +192,27 @@ public class ImportFilesViewModel : ViewModelBase, IDisposable
     }
 }
 
-[Factory]
-public class ImportFilesViewModelFactory(
-    IIOService ioServcie, INotificationService notificationService, 
-    ImportFolderWizardFactory importFolderWizardFactory,
-    FolderFactory folderFactory)
-{
-    public ImportFilesViewModel Create(bool autoImport)
+    [Factory]
+    public class ImportFilesViewModelFactory(
+        IIOService ioServcie, INotificationService notificationService, 
+        ImportFolderWizardFactory importFolderWizardFactory,
+        FolderFactory folderFactory,
+        CodexCollectionOperations codexCollectionOperations)
     {
-        var targetCollectionId = TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier ??
-             throw new NoTabException("There is no open tab, so no collection to import the files to");
+        public ImportFilesViewModel Create(bool autoImport)
+        {
+            var targetCollectionId = TabsViewModel.GetInstance().ActiveTab?.CollectionVM.Identifier ??
+                 throw new NoTabException("There is no open tab, so no collection to import the files to");
 
-        return Create(targetCollectionId, autoImport);
-    }
+            return Create(targetCollectionId, autoImport);
+        }
 
-    public ImportFilesViewModel Create(string targetCollectionId, bool autoImport)
-    {
-        return new ImportFilesViewModel(
-            ioServcie, notificationService, 
-            importFolderWizardFactory, folderFactory, 
-            targetCollectionId, autoImport);
+        public ImportFilesViewModel Create(string targetCollectionId, bool autoImport)
+        {
+            return new ImportFilesViewModel(
+                ioServcie, notificationService, 
+                importFolderWizardFactory, folderFactory,
+                codexCollectionOperations,
+                targetCollectionId, autoImport);
+        }
     }
-}

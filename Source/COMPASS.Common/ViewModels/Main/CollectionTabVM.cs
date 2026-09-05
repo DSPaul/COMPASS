@@ -26,6 +26,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
     private readonly INotificationService _notificationService;
     private readonly IImportExportService _importExportService;
     private readonly CodexCollectionOperations _codexCollectionOperations;
+    private readonly CodexOperations _codexOperations;
     private readonly CodexCollectionVMFactory _codexCollectionVMFactory;
     private readonly FiltersViewModelFactory _filtersViewModelFactory;
     private readonly TagsPanelVMFactory _tagsPanelVMFactory;
@@ -40,6 +41,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         IPreferencesService preferencesService,
         IImportExportService importExportService,
         CodexCollectionOperations codexCollectionOperations,
+        CodexOperations codexOperations,
         CodexCollectionVMFactory codexCollectionVMFactory,
         FiltersViewModelFactory filtersViewModelFactory,
         TagsPanelVMFactory tagsPanelVMFactory,
@@ -52,6 +54,8 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         _notificationService = notificationService;
         _importExportService = importExportService;
         _codexCollectionOperations = codexCollectionOperations;
+        _codexOperations = codexOperations;
+        CodexCommands = codexOperations;
         _codexCollectionVMFactory = codexCollectionVMFactory;
         _filtersViewModelFactory = filtersViewModelFactory;
         _tagsPanelVMFactory = tagsPanelVMFactory;
@@ -64,7 +68,7 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         _filtersVM = filtersViewModelFactory.Create(_collectionHandle.CollectionVM, filtersState);
         _tagsVM = tagsPanelVMFactory.Create(_collectionHandle.CollectionVM, _filtersVM);
         _currentLayout = layoutViewModelFactory.Create(this, layout);
-        CodexCommands = new();
+        CodexCommands = _codexOperations;
     }
 
     #region events
@@ -294,7 +298,6 @@ public class CollectionTabVM : ViewModelBase, IDisposable
         CollectionChanging?.Invoke(this, EventArgs.Empty);
         FiltersVM = _filtersViewModelFactory.Create(newHandle.CollectionVM);
         TagsVM = _tagsPanelVMFactory.Create(newHandle.CollectionVM, FiltersVM);
-        CodexCommands = new();
 
         OnPropertyChanged(nameof(CollectionVM));
         CollectionChanged?.Invoke(this, EventArgs.Empty);
@@ -322,6 +325,7 @@ public class CollectionTabVMFactory(
     IPreferencesService preferencesService,
     IImportExportService importExportService,
     CodexCollectionOperations codexCollectionOperations,
+    CodexOperations codexOperations,
     CodexCollectionVMFactory codexCollectionVMFactory,
     FiltersViewModelFactory filtersViewModelFactory,
     TagsPanelVMFactory tagsPanelVMFactory,
@@ -330,7 +334,7 @@ public class CollectionTabVMFactory(
     ExportCollectionViewModelFactory exportCollectionViewModelFactory)
 {
     public CollectionTabVM Create(CollectionHandle collectionHandle, FiltersState? filtersState = null, CodexLayout? layout = null)
-        => new(logger, notificationService, preferencesService, importExportService, codexCollectionOperations,
+        => new(logger, notificationService, preferencesService, importExportService, codexCollectionOperations, codexOperations,
                codexCollectionVMFactory, filtersViewModelFactory, tagsPanelVMFactory,
                layoutViewModelFactory, importCollectionViewModelFactory, exportCollectionViewModelFactory,
                collectionHandle, filtersState, layout);

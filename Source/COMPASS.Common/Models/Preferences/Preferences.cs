@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using COMPASS.Common.Models.CodexProperties;
-using COMPASS.Common.Operations;
 using COMPASS.Infra.ExtensionMethods;
 using NuGet.Versioning;
 
@@ -28,12 +27,12 @@ namespace COMPASS.Common.Models.Preferences
         public const int ONLINE_SOURCE_PRIORITY_ID = 0;
         public const int LOCAL_SOURCE_PRIORITY_ID = 1;
 
-        //list with possible functions to open a file
+        //list with possible functions to open a file (metadata only — CodexOperations binds instance methods by Id at execution time)
         public static readonly ReadOnlyCollection<PreferableFunction<Codex>> OpenCodexFunctions =
             new List<PreferableFunction<Codex>>()
             {
-                new("Online source", CodexOperations.OpenCodexOnline, ONLINE_SOURCE_PRIORITY_ID),
-                new("Local File", CodexOperations.OpenCodexLocally, LOCAL_SOURCE_PRIORITY_ID)
+                new("Online source", id: ONLINE_SOURCE_PRIORITY_ID),
+                new("Local File", id: LOCAL_SOURCE_PRIORITY_ID)
             }.AsReadOnly();
 
         #endregion

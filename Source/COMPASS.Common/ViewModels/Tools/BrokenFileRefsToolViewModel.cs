@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
+using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -11,8 +12,11 @@ namespace COMPASS.Common.ViewModels.Tools;
 
 public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel, IDisposable
 {
-    public BrokenFileRefsToolViewModel()
+    private readonly CodexOperations _codexOperations;
+
+    public BrokenFileRefsToolViewModel(CodexOperations codexOperations)
     {
+        _codexOperations = codexOperations;
         SelectedCollectionVm = CollectionManager.CollectionVms.SingleOrDefault(vm => vm.Identifier == ActiveCollection.Name);
     }
 
@@ -144,7 +148,7 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel, IDispo
     {
         if (SelectedCollectionVm is null || _selectedCollectionHandle is null) return;
         
-        await CodexOperations.DeleteCodices(BrokenCodices.ToList(), true);
+        await _codexOperations.DeleteCodices(BrokenCodices.ToList(), true);
         BrokenCodicesChanged();
     }
 
@@ -152,4 +156,10 @@ public class BrokenFileRefsToolViewModel : ViewModelBase, IToolViewModel, IDispo
     {
         _selectedCollectionHandle?.Dispose();
     }
+}
+
+[Factory]
+public class BrokenFileRefsToolViewModelFactory(CodexOperations codexOperations)
+{
+    public BrokenFileRefsToolViewModel Create() => new(codexOperations);
 }

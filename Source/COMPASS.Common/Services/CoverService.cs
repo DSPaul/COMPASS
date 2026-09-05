@@ -215,7 +215,7 @@ namespace COMPASS.Common.Services
             {
                 File.Delete(codex.CoverArtPath);
                 Logger.Info("Corrupt cover removed, attempting to fetch a new cover...");
-                CodexOperations.GetCover(codex).ContinueWith(t =>
+                GetAndApplyCover([codex]).ContinueWith(t =>
                 {
                     if (t.IsCompletedSuccessfully)
                     {

@@ -13,6 +13,7 @@ using COMPASS.Common.ViewModels.Main;
 using COMPASS.Infra.Models;
 using COMPASS.Common.ViewModels.Tools;
 using COMPASS.Common.DependencyInjection;
+using COMPASS.Common.Operations;
 using System.Collections.ObjectModel;
 
 namespace COMPASS.Common.ViewModels.Modals
@@ -37,7 +38,7 @@ namespace COMPASS.Common.ViewModels.Modals
             IFilesService filesService,
             UpdateManager updateManager,
             ImportFilesViewModelFactory importFilesViewModelFactory,
-            BackupToolViewModelFactory backupToolViewModelFactory,
+            ToolsViewModelFactory toolsViewModelFactory,
             string tabToOpen = "")
         {
             int tabIndex = TabOrder.FindIndex(t => t.Equals(tabToOpen, StringComparison.OrdinalIgnoreCase));
@@ -50,6 +51,7 @@ namespace COMPASS.Common.ViewModels.Modals
             _filesService = filesService;
             _updateManager = updateManager;
             _importFilesViewModelFactory = importFilesViewModelFactory;
+            ToolsVM = toolsViewModelFactory.Create();
 
             SelectedCollectionVm = CollectionManager.CollectionVms.SingleOrDefault(vm => vm.Identifier == ActiveCollection.Name);
 
@@ -68,7 +70,7 @@ namespace COMPASS.Common.ViewModels.Modals
                 BanishedPaths = new ObservableCollection<string>();
             }
 
-            ToolsVM = new(backupToolViewModelFactory);
+            ToolsVM = toolsViewModelFactory.Create();
         }
 
 
@@ -255,7 +257,7 @@ namespace COMPASS.Common.ViewModels.Modals
         private async Task EditAutoImportFolder(Folder? folder)
         {
             if (folder is null) return;
-            using var importFolderVM = _importFilesViewModelFactory.Create(autoImport: false);
+            using var importFolderVM = _importFilesViewModelFactory.Create(targetCollectionId: ActiveCollection.Name, autoImport: false);
             importFolderVM.ExistingFolders = [folder];
             await importFolderVM.Import();
             
@@ -277,7 +279,7 @@ namespace COMPASS.Common.ViewModels.Modals
         {
             if (!String.IsNullOrWhiteSpace(dir) && Directory.Exists(dir))
             {
-                using var importFolderVM = _importFilesViewModelFactory.Create(false);
+                using var importFolderVM = _importFilesViewModelFactory.Create(targetCollectionId: ActiveCollection.Name, autoImport: false);
                 importFolderVM.RecursiveDirectories = [dir];
                 await importFolderVM.Import();
             }
@@ -372,10 +374,10 @@ namespace COMPASS.Common.ViewModels.Modals
         IFilesService filesService,
         UpdateManager updateManager,
         ImportFilesViewModelFactory importFilesViewModelFactory,
-        BackupToolViewModelFactory backupToolViewModelFactory)
+        ToolsViewModelFactory toolsViewModelFactory)
     {
         public SettingsViewModel Create(string tabToOpen = "")
             => new(logger, applicationDataService, ioService, preferencesService, filesService, updateManager,
-                   importFilesViewModelFactory, backupToolViewModelFactory, tabToOpen);
+                   importFilesViewModelFactory, toolsViewModelFactory, tabToOpen);
     }
 }
