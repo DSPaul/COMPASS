@@ -9,8 +9,13 @@ namespace COMPASS.Common.Sources
 {
     public class ImageMetaDataSource : MetaDataSource
     {
-        public ImageMetaDataSource(ILogger logger, IPreferencesService preferencesService) :  
-            base(logger, preferencesService) { }
+        private readonly CoverService _coverService;
+
+        public ImageMetaDataSource(ILogger logger, IPreferencesService preferencesService, CoverService coverService) :  
+            base(logger, preferencesService) 
+        {
+            _coverService = coverService;
+        }
         
         public override MetaDataSourceType Type => MetaDataSourceType.Image;
 
@@ -26,6 +31,6 @@ namespace COMPASS.Common.Sources
             return Task.FromResult(metaData);
         }
         public override async Task<IMagickImage<byte>?> FetchCover(SourceSet sources) => await Task.Run(() => 
-            ServiceResolver.Resolve<CoverService>().GetCoverFromImage(sources.Path));
+            _coverService.GetCoverFromImage(sources.Path));
     }
 }

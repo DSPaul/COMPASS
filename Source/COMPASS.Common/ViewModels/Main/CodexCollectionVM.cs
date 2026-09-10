@@ -14,6 +14,7 @@ using COMPASS.Infra.Interfaces.Services;
 using COMPASS.Infra.Models;
 using COMPASS.Infra.Models.Enums;
 using COMPASS.Infra.Tools;
+using Autofac.Features.Indexed;
 
 namespace COMPASS.Common.ViewModels.Main;
 
@@ -274,6 +275,7 @@ public class CodexCollectionVMFactory(
     INotificationService notificationService,
     IImportExportService importExportService,
     ICoverStorageService coverStorageService,
+    IIndex<StorageStrategy, ICodexCollectionRepository> repoIndex,
     FolderFactory folderFactory,
     CodexViewModelFactory codexViewModelFactory,
     TagViewModelFactory tagViewModelFactory,
@@ -285,5 +287,5 @@ public class CodexCollectionVMFactory(
                folderFactory, codexViewModelFactory, tagViewModelFactory, importFilesViewModelFactory, collectionManager);
 
     public CodexCollectionVM Create(CodexCollection collection, StorageStrategy storageStrategy)
-        => Create(collection, ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(storageStrategy));
+        => Create(collection, repoIndex[storageStrategy]);
 }

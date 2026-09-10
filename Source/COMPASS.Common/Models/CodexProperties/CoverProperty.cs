@@ -1,5 +1,4 @@
-﻿using System.IO;
-using COMPASS.Common.Services;
+﻿using COMPASS.Common.Services;
 using COMPASS.Infra.Tools;
 using ImageMagick;
 
