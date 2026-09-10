@@ -1,8 +1,10 @@
-﻿using COMPASS.Common.Models;
+﻿using Autofac.Features.Indexed;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Sources;
 using COMPASS.Common.ViewModels.Main;
+using COMPASS.Infra.Tools;
 
 namespace COMPASS.IntegrationTests.Common.Sources;
 
@@ -19,9 +21,10 @@ public class HomeBrewery
             SourceURL = TEST_URL
         };
 
-        var source = MetaDataSource.GetSource(MetaDataSourceType.Homebrewery, new CodexCollection("TEST_COLLECTION"));
+        var collection = new CodexCollection("TEST_COLLECTION");
+        var source = ServiceResolver.Resolve<IIndex<MetaDataSourceType, MetaDataSource>>()[MetaDataSourceType.Homebrewery];
 
-        SourceMetaData response = await source!.GetMetaData(sources);
+        SourceMetaData response = await source.GetMetaData(sources, collection.AllTags);
 
         Assert.Multiple(() =>
         {
@@ -37,7 +40,7 @@ public class HomeBrewery
     public async Task GetCoverFromHomeBrewery()
     {
         //Setup
-        var source = MetaDataSource.GetSource(MetaDataSourceType.Homebrewery, new CodexCollection("TEST_COLLECTION"));
+        var source = ServiceResolver.Resolve<IIndex<MetaDataSourceType, MetaDataSource>>()[MetaDataSourceType.Homebrewery];
         var sources = new SourceSet()
         {
             SourceURL = TEST_URL

@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Models;
+﻿using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
 using COMPASS.Infra.Tools;
@@ -8,14 +9,14 @@ namespace COMPASS.Common.Sources
 {
     public class ImageMetaDataSource : MetaDataSource
     {
-        public ImageMetaDataSource(CodexCollection targetCollection) :  
-            base(targetCollection) { }
+        public ImageMetaDataSource(ILogger logger, IPreferencesService preferencesService) :  
+            base(logger, preferencesService) { }
         
         public override MetaDataSourceType Type => MetaDataSourceType.Image;
 
         public override bool IsValidSource(SourceSet sources) => File.Exists(sources.Path) && FileFormatUtils.IsImageFile(sources.Path);
 
-        public override Task<SourceMetaData> GetMetaData(SourceSet sources)
+        public override Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
         {
             SourceMetaData metaData = new()
             {

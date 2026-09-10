@@ -15,14 +15,14 @@ namespace COMPASS.Common.Sources
 {
     public class PdfMetaDataSource : MetaDataSource
     {
-        public PdfMetaDataSource(CodexCollection targetCollection) :
-            base(targetCollection)
+        public PdfMetaDataSource(ILogger logger, IPreferencesService preferencesService) :
+            base(logger, preferencesService)
         { }
 
         public override MetaDataSourceType Type => MetaDataSourceType.PDF;
         public override bool IsValidSource(SourceSet sources) => FileFormatUtils.IsPDFFile(sources.Path);
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
         {
             Debug.Assert(IsValidSource(sources), "Codex without pdf found in pdf source");
 
@@ -35,7 +35,7 @@ namespace COMPASS.Common.Sources
                     using var fileStream = new FileStream(sources.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
                     using PdfDocument pdfDoc = PdfDocument.Open(fileStream, new ParsingOptions()
                     {
-                        Logger = new PdfLogger()
+                        Logger = new PdfLogger(Logger)
                     });
 
                     metaData.Title = pdfDoc.Information.Title ?? string.Empty;
@@ -113,10 +113,8 @@ namespace COMPASS.Common.Sources
                 Width: 850,
                 WithAspectRatio: true);
 
-        private class PdfLogger : ILog
+        private class PdfLogger(ILogger logger) : ILog
         {
-            ILogger logger = ServiceResolver.Resolve<ILogger>();
-
             public void Debug(string message) { } //Too much stuff I don't care about, don't log it
             public void Debug(string message, Exception ex) => logger.Debug(message, ex);
             public void Warn(string message) => logger.Warn(message);

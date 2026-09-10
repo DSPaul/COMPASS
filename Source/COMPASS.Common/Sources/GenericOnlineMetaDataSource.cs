@@ -1,5 +1,6 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Net;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Infra.ExtensionMethods;
@@ -11,8 +12,8 @@ namespace COMPASS.Common.Sources
 {
     public class GenericOnlineMetaDataSource : OnlineMetaDataSource
     {
-        public GenericOnlineMetaDataSource(CodexCollection targetCollection) :
-            base(targetCollection)
+        public GenericOnlineMetaDataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
+            base(logger, preferencesService, webService, webDriverService)
         { }
         
         public override MetaDataSourceType Type => MetaDataSourceType.GenericURL;
@@ -20,7 +21,7 @@ namespace COMPASS.Common.Sources
 
         public override Task<IMagickImage<byte>?> FetchCover(SourceSet sources) => throw new NotImplementedException();
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
         {
             Debug.Assert(IsValidSource(sources), "Codex without URL was used in Generic URL source");
             
@@ -62,7 +63,7 @@ namespace COMPASS.Common.Sources
             }
 
             // Tags
-            foreach (var tag in GetMatchingTags(sources))
+            foreach (var tag in GetMatchingTags(sources, availableTags))
             {
                 metaData.Tags.AddIfMissing(tag);
             }

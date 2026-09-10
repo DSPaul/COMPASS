@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Models;
+using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Infra.Models.Enums;
 using HtmlAgilityPack;
@@ -8,14 +9,14 @@ namespace COMPASS.Common.Sources
 {
     public class DndBeyondMetaDataSource : OnlineMetaDataSource
     {
-        public DndBeyondMetaDataSource(CodexCollection targetCollection) :
-            base(targetCollection)
+        public DndBeyondMetaDataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
+            base(logger, preferencesService, webService, webDriverService)
         { }
         
         public override MetaDataSourceType Type => MetaDataSourceType.DnDBeyond;
         public override string UrlPrefix => "https://www.dndbeyond.com/";
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
         {
             SourceMetaData metaData = new()
             {

@@ -1,4 +1,5 @@
-﻿using COMPASS.Common.Models;
+﻿using Autofac.Features.Indexed;
+using COMPASS.Common.Models;
 using COMPASS.Common.Models.CodexProperties;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Sources;
@@ -18,7 +19,8 @@ namespace COMPASS.Common.Services
         ILogger logger,
         IPreferencesService preferencesService,
         IIOService ioService,
-        ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory)
+        ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory,
+        IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
     {
 
         private const int ThumbnailWidth = 200;
@@ -54,8 +56,8 @@ namespace COMPASS.Common.Services
                 {
                     ProgressViewModel.GlobalCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                    MetaDataSource? source = MetaDataSource.GetSource(sourceType, codex.Collection);
-                    if (source == null || !source.IsValidSource(codex.Sources)) continue;
+                    if (!metaDataSources.TryGetValue(sourceType, out MetaDataSource? source)) continue;
+                    if (!source.IsValidSource(codex.Sources)) continue;
                     coverFromSource = await source.FetchCover(codex.Sources);
                     if (coverFromSource != null) break;
                 }

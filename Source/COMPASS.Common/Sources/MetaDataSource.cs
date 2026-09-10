@@ -10,55 +10,38 @@ namespace COMPASS.Common.Sources
 {
     public abstract class MetaDataSource
     {
-        protected MetaDataSource(CodexCollection targetCollection)
+        protected MetaDataSource(ILogger logger, IPreferencesService preferencesService)
         {
-            TargetCollection = targetCollection;
+            Logger = logger;
+            Preferences = preferencesService;
         }
 
-        protected ILogger Logger => field ??= ServiceResolver.Resolve<ILogger>();
-        protected Preferences Preferences => field ??= ServiceResolver.Resolve<IPreferencesService>().Preferences;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sourceType"></param>
-        /// <param name="targetCollection"> Needed to have a list of tags that sources can choose from </param>
-        /// <returns></returns>
-        public static MetaDataSource? GetSource(MetaDataSourceType sourceType, CodexCollection targetCollection) => sourceType switch
-        {
-            MetaDataSourceType.File => new FileMetaDataSource(targetCollection),
-            MetaDataSourceType.PDF => new PdfMetaDataSource(targetCollection),
-            MetaDataSourceType.Image => new ImageMetaDataSource(targetCollection),
-            MetaDataSourceType.ISBN => new ISBNMetaDataSource(targetCollection),
-            MetaDataSourceType.GmBinder => new GmBinderMetaDataSource(targetCollection),
-            MetaDataSourceType.Homebrewery => new HomebreweryMetaDataSource(targetCollection),
-            MetaDataSourceType.GoogleDrive => new GoogleDriveMetaDataSource(targetCollection),
-            MetaDataSourceType.GenericURL => new GenericOnlineMetaDataSource(targetCollection),
-            _ => null
-        };
+        protected ILogger Logger { get; }
+        protected IPreferencesService Preferences { get; }
 
         #region Import Logic
 
         protected ProgressViewModel ProgressVM => ProgressViewModel.GetInstance();
 
-        protected CodexCollection TargetCollection;
-
         public abstract MetaDataSourceType Type { get; }
 
         public abstract bool IsValidSource(SourceSet sources);
 
-        public abstract Task<SourceMetaData> GetMetaData(SourceSet sources);
+        /// <param name="sources">The sources to get metadata for</param>
+        /// <param name="availableTags">Tags that sources can choose from</param>
+        /// <returns></returns>
+        public abstract Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags);
 
         public abstract Task<IMagickImage<byte>?> FetchCover(SourceSet sources);
         #endregion
 
-        protected virtual List<Tag> GetMatchingTags(SourceSet sources)
+        protected virtual List<Tag> GetMatchingTags(SourceSet sources, IList<Tag> availableTags)
         {
-            var autoLinkEnabled = Preferences.AutoLinkFolderTagSameName;
+            var autoLinkEnabled = Preferences.Preferences.AutoLinkFolderTagSameName;
             List<Tag> matchingTags = new();
 
             // Tags based on file path
-            foreach (Tag tag in TargetCollection.AllTags)
+            foreach (Tag tag in availableTags)
             {
                 List<string> globs = [..tag.LinkedGlobs];
 
@@ -68,6 +51,11 @@ namespace COMPASS.Common.Sources
                 }
 
                 if (PathUtils.MatchesAnyGlob(sources.Path, globs))
+                {
+                    matchingTags.Add(tag);
+                }
+
+                if (PathUtils.MatchesAnyGlob(sources.SourceURL, globs))
                 {
                     matchingTags.Add(tag);
                 }

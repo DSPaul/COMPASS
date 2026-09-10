@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
@@ -14,14 +14,14 @@ namespace COMPASS.Common.Sources
     public class GmBinderMetaDataSource : OnlineMetaDataSource
     {
 
-        public GmBinderMetaDataSource(CodexCollection targetCollection) :
-            base(targetCollection)
+        public GmBinderMetaDataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
+            base(logger, preferencesService, webService, webDriverService)
         { }
         
         public override MetaDataSourceType Type => MetaDataSourceType.GmBinder;
         public override string UrlPrefix => "https://www.gmbinder.com/share/";
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
         {
             Debug.Assert(IsValidSource(sources), "Invalid Codex was used in GM Binder source");
             
@@ -53,7 +53,7 @@ namespace COMPASS.Common.Sources
         {
             if (string.IsNullOrEmpty(sources.SourceURL)) { return null; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from {sources.SourceURL}"));
-            using WebDriver? driver = await WebDriverService.GetWebDriver().ConfigureAwait(false);
+            using WebDriver? driver = await GetWebDriverAsync().ConfigureAwait(false);
 
             if (driver is null) { return null; }
 

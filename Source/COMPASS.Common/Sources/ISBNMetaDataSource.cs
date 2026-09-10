@@ -15,16 +15,16 @@ namespace COMPASS.Common.Sources
     {
         private readonly IWebService _webService;
 
-        public ISBNMetaDataSource(CodexCollection targetCollection) :
-            base(targetCollection)
+        public ISBNMetaDataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService) :
+            base(logger, preferencesService)
         {
-            _webService = ServiceResolver.Resolve<IWebService>();
+            _webService = webService;
         }
         
         public override MetaDataSourceType Type => MetaDataSourceType.ISBN;
         public override bool IsValidSource(SourceSet sources) => !String.IsNullOrWhiteSpace(sources.ISBN);
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
         {
             Debug.Assert(IsValidSource(sources), "Codex without ISBN was used in ISBN Source");
             

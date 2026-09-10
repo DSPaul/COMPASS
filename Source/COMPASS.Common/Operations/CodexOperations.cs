@@ -1,5 +1,6 @@
 ﻿using Avalonia.Input;
 using Avalonia.Threading;
+using Autofac.Features.Indexed;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
@@ -37,7 +38,8 @@ namespace COMPASS.Common.Operations
         Lazy<FileNotFoundViewModelFactory> fileNotFoundViewModelFactory,
         ChooseMetaDataViewModelFactory chooseMetaDataViewModelFactory,
         Lazy<CollectionManager> collectionManager,
-        CoverService coverService)
+        CoverService coverService,
+        IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
     {
         #region Open Codex
 
@@ -493,10 +495,11 @@ namespace COMPASS.Common.Operations
 
             //First try to get sources from other sources
             //Pdf can contain ISBN number
-            PdfMetaDataSource pdfSource = new(codex.Collection);
-            if (pdfSource.IsValidSource(codex.Sources) && string.IsNullOrEmpty(codex.Sources.ISBN))
+            if (metaDataSources.TryGetValue(MetaDataSourceType.PDF, out MetaDataSource? pdfSource)
+                && pdfSource.IsValidSource(codex.Sources)
+                && string.IsNullOrEmpty(codex.Sources.ISBN))
             {
-                SourceMetaData pdfData = await pdfSource.GetMetaData(codex.Sources);
+                SourceMetaData pdfData = await pdfSource.GetMetaData(codex.Sources, codex.Collection.AllTags);
 
                 //already store this so pdf doesn't need to be opened twice
                 metaDataFromSource.Add(MetaDataSourceType.PDF, pdfData);
@@ -523,10 +526,9 @@ namespace COMPASS.Common.Operations
                     // Check if there is metadata from this source to use
                     if (!metaDataFromSource.TryGetValue(sourceType, out SourceMetaData? metadata))
                     {
-                        MetaDataSource? source = MetaDataSource.GetSource(sourceType, codex.Collection);
-                        if (source is null) continue;
+                        if (!metaDataSources.TryGetValue(sourceType, out MetaDataSource? source)) continue;
                         if (!source.IsValidSource(codex.Sources)) continue;
-                        metadata = await source.GetMetaData(codex.Sources);
+                        metadata = await source.GetMetaData(codex.Sources, codex.Collection.AllTags);
                         metaDataFromSource.Add(sourceType, metadata);
                     }
 

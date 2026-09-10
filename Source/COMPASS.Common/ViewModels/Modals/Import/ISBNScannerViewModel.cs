@@ -1,10 +1,12 @@
 ﻿using Avalonia.Threading;
+using Autofac.Features.Indexed;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Models;
+using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Operations;
 using COMPASS.Common.Services;
 using COMPASS.Common.Sources;
@@ -21,13 +23,15 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         private readonly IBarcodeDecoderService _barcodeDecoderService;
         private readonly VideoCaptureViewModelFactory _videoCaptureVmFactory;
         private readonly CodexCollectionOperations _codexCollectionOperations;
+        private readonly MetaDataSource _isbnSource;
         private bool _scanning;
 
-        public ISBNScannerViewModel(IBarcodeDecoderService barcodeDecoderService, VideoCaptureViewModelFactory videoCaptureVmFactory, CodexCollectionOperations codexCollectionOperations)
+        public ISBNScannerViewModel(IBarcodeDecoderService barcodeDecoderService, VideoCaptureViewModelFactory videoCaptureVmFactory, CodexCollectionOperations codexCollectionOperations, IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
         {
             _barcodeDecoderService = barcodeDecoderService;
             _videoCaptureVmFactory = videoCaptureVmFactory;
             _codexCollectionOperations = codexCollectionOperations;
+            _isbnSource = metaDataSources[MetaDataSourceType.ISBN];
             _scanTimer = new(TimeSpan.FromMilliseconds(50), DispatcherPriority.Render, OnScanTick);
 
             ScannedCodes = [];
@@ -66,7 +70,7 @@ namespace COMPASS.Common.ViewModels.Modals.Import
             string? digits = isbn?.Replace("-", "").Replace(" ", "");
             if (ScannedCodes.Any(code => code.ISBN == digits)) return;
             if (!ValidationService.IsValidISBN(digits)) return;
-            var scannedISBN = new ScannedISBN(digits);
+            var scannedISBN = new ScannedISBN(_isbnSource, digits);
             ScannedCodes.Add(scannedISBN);
         }
         private bool CanAddISBN(string? isbn)
@@ -160,23 +164,20 @@ namespace COMPASS.Common.ViewModels.Modals.Import
 
         public class ScannedISBN : ObservableObject
         {
-            public ScannedISBN(string isbn)
+            public ScannedISBN(MetaDataSource isbnSource, string isbn)
             {
                 ISBN = isbn;
                 Title = "Searching...";
 
                 var activeCollection = TabsViewModel.GetInstance().ActiveTab!.CollectionVM.Collection;
-                isbnSource = new ISBNMetaDataSource(activeCollection);
                 isbnSource.GetMetaData(new SourceSet()
                 {
                     ISBN = isbn
-                }).ContinueWith(t =>
+                }, activeCollection.AllTags).ContinueWith(t =>
                 {
                     Title = t.IsCompletedSuccessfully && !string.IsNullOrEmpty(t.Result.Title) ? t.Result.Title : "Unknown";
                 });
             }
-
-            private ISBNMetaDataSource isbnSource;
 
             public string ISBN { get; }
 
@@ -185,9 +186,9 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     }
 
     [Factory]
-    public class ISBNScannerViewModelFactory(IBarcodeDecoderService barcodeDecoderService, VideoCaptureViewModelFactory videoCaptureVmFactory, CodexCollectionOperations codexCollectionOperations)
+    public class ISBNScannerViewModelFactory(IBarcodeDecoderService barcodeDecoderService, VideoCaptureViewModelFactory videoCaptureVmFactory, CodexCollectionOperations codexCollectionOperations, IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
     {
-        public ISBNScannerViewModel Create() => new(barcodeDecoderService, videoCaptureVmFactory, codexCollectionOperations);
+        public ISBNScannerViewModel Create() => new(barcodeDecoderService, videoCaptureVmFactory, codexCollectionOperations, metaDataSources);
     }
 
 }

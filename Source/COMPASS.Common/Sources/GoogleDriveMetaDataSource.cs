@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Infra.Models.Enums;
@@ -9,14 +10,14 @@ namespace COMPASS.Common.Sources
 {
     public class GoogleDriveMetaDataSource : OnlineMetaDataSource
     {
-        public GoogleDriveMetaDataSource(CodexCollection targetCollection) :
-            base(targetCollection)
+        public GoogleDriveMetaDataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
+            base(logger, preferencesService, webService, webDriverService)
         { }
         
         public override MetaDataSourceType Type => MetaDataSourceType.GoogleDrive;
         public override string UrlPrefix => "https://drive.google.com/file/";
 
-        public override Task<SourceMetaData> GetMetaData(SourceSet sources)
+        public override Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
         {
             Debug.Assert(IsValidSource(sources), "Invalid Codex was used in Google drive source");
             

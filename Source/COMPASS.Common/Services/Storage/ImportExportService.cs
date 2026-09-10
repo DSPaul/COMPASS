@@ -1,4 +1,5 @@
 using Avalonia.Platform.Storage;
+using Autofac.Features.Indexed;
 using COMPASS.Common.Interfaces.Repos;
 using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Interfaces.Storage;
@@ -25,7 +26,8 @@ public class ImportExportService(
     IFilesService filesService,
     IIOService ioService,
     INotificationService windowedNotificationService,
-    ILogger logger)
+    ILogger logger,
+    IIndex<StorageStrategy, ICodexCollectionRepository> repositories)
     : IImportExportService
 {
     private const string CodicesFileName = "CodexInfo.xml";
@@ -140,7 +142,7 @@ public class ImportExportService(
 
             //Load collection once
             CodexCollection collection = new CodexCollection(identifier);
-            var xmlservice = ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
+            var xmlservice = repositories[StorageStrategy.Xml];
             xmlservice.Load(collection);
 
             //Image paths need to be updated to point to the dir where the files where extracted
@@ -275,7 +277,7 @@ public class ImportExportService(
     public async Task ExportTags(CodexCollection collection)
     {
         //satchel uses xml files 
-        var repo = ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
+        var repo = repositories[StorageStrategy.Xml];
 
         using var selectedFile = await filesService.SaveFileAsync(new()
         {
@@ -337,7 +339,7 @@ public class ImportExportService(
 
     private async Task AddCollectionToArchive(IWritableAsyncArchive<ZipWriterOptions> archive, CodexCollection collection)
     {
-        var repo = ServiceResolver.ResolveKeyed<ICodexCollectionRepository>(StorageStrategy.Xml);
+        var repo = repositories[StorageStrategy.Xml];
 
         //Add codices
         var codicesStream = new MemoryStream();

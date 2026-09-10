@@ -1,12 +1,9 @@
-﻿using COMPASS.Common.Interfaces.Services;
+using COMPASS.Common.Interfaces.Services;
 using COMPASS.Common.Models;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Services;
-using COMPASS.Common.ViewModels.Import;
-using COMPASS.Common.ViewModels.Modals.Import;
 using COMPASS.Infra.ExtensionMethods;
 using COMPASS.Infra.Models.Enums;
-using COMPASS.Infra.Tools;
 using ImageMagick;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
@@ -17,14 +14,14 @@ namespace COMPASS.Common.Sources
 {
     public class HomebreweryMetaDataSource : OnlineMetaDataSource
     {
-        public HomebreweryMetaDataSource(CodexCollection targetCollection) :
-            base(targetCollection)
+        public HomebreweryMetaDataSource(ILogger logger, IPreferencesService preferencesService, IWebService webService, IWebDriverService webDriverService) :
+            base(logger, preferencesService, webService, webDriverService)
         { }
         
         public override MetaDataSourceType Type => MetaDataSourceType.Homebrewery;
         public override string UrlPrefix => "https://homebrewery.naturalcrit.com/share/";
 
-        public override async Task<SourceMetaData> GetMetaData(SourceSet sources)
+        public override async Task<SourceMetaData> GetMetaData(SourceSet sources, IList<Tag> availableTags)
         {
             Debug.Assert(IsValidSource(sources), "Invalid Codex was used in Homebrewery source");
 
@@ -64,7 +61,7 @@ namespace COMPASS.Common.Sources
         {
             if (string.IsNullOrEmpty(sources.SourceURL)) { return null; }
             ProgressVM.AddLogEntry(new(Severity.Info, $"Downloading cover from Homebrewery"));
-            using WebDriver? driver = await WebDriverService.GetWebDriver().ConfigureAwait(false);
+            using WebDriver? driver = await GetWebDriverAsync().ConfigureAwait(false);
 
             if (driver == null) { return null; }
 

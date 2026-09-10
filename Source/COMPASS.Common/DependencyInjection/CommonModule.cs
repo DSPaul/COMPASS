@@ -9,6 +9,7 @@ using COMPASS.Common.Interfaces.Storage;
 using COMPASS.Common.Models.Enums;
 using COMPASS.Common.Repositories;
 using COMPASS.Common.Services;
+using COMPASS.Common.Sources;
 using COMPASS.Common.Services.FileSystem;
 using COMPASS.Common.Services.StateManagers;
 using COMPASS.Common.Services.Storage;
@@ -35,25 +36,41 @@ namespace COMPASS.Common.DependencyInjection
                    .As<ILogger>()
                    .SingleInstance();
 
-            //Data releted services and repositories
+            //Data Repos
             builder.RegisterType<CodexCollectionXmlRepository>().Keyed<ICodexCollectionRepository>(StorageStrategy.Xml);
             builder.RegisterType<CodexCollectionMemRepository>().Keyed<ICodexCollectionRepository>(StorageStrategy.Memory);
-            builder.RegisterType<ImportExportService>().As<IImportExportService>();
-            builder.RegisterType<CoverStorageService>().As<ICoverStorageService>();
-            builder.RegisterType<UserFilesStorageService>().As<IUserFilesStorageService>();
 
-            //Singletons
-            builder.RegisterType<ApplicationDataService>().As<IApplicationDataService>().SingleInstance();
+            //Metadata sources
+            builder.RegisterType<FileMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.File);
+            builder.RegisterType<PdfMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.PDF);
+            builder.RegisterType<ImageMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.Image);
+            builder.RegisterType<ISBNMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.ISBN);
+            builder.RegisterType<GmBinderMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.GmBinder);
+            builder.RegisterType<HomebreweryMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.Homebrewery);
+            builder.RegisterType<GoogleDriveMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.GoogleDrive);
+            builder.RegisterType<GenericOnlineMetaDataSource>().Keyed<MetaDataSource>(MetaDataSourceType.GenericURL);
+
+            //Services with cache of some kind -> SingleInstance
             builder.RegisterType<PreferencesService>().As<IPreferencesService>().SingleInstance();
             builder.RegisterType<WebDriverService>().As<IWebDriverService>().SingleInstance();
 
-            //Managers
+            //Managers (stateful services)
             builder.RegisterType<UpdateManager>().AsSelf().SingleInstance();
             builder.RegisterType<CollectionManager>().AsSelf().SingleInstance();
             builder.RegisterType<ConnectivityManager>().AsSelf().SingleInstance();
 
             //Services
-            builder.RegisterType<CoverService>().AsSelf().SingleInstance();
+            builder.RegisterType<ApplicationDataService>().As<IApplicationDataService>();
+            builder.RegisterType<BarcodeDecoderService>().As<IBarcodeDecoderService>();
+            builder.RegisterType<CameraService>().As<ICameraService>();
+            builder.RegisterType<CoverService>().AsSelf();
+            builder.RegisterType<CoverStorageService>().As<ICoverStorageService>();
+            builder.RegisterType<FilesService>().As<IFilesService>();
+            builder.RegisterType<FilterService>().As<IFilterService>();
+            builder.RegisterType<ImportExportService>().As<IImportExportService>();
+            builder.RegisterType<NotificationService>().As<INotificationService>();
+            builder.RegisterType<UserFilesStorageService>().As<IUserFilesStorageService>();
+            builder.RegisterType<WebService>().As<IWebService>();
 
             //Operations
             builder.RegisterType<Operations.CodexCollectionOperations>().AsSelf().SingleInstance();
@@ -63,18 +80,10 @@ namespace COMPASS.Common.DependencyInjection
             // View model factories (all classes marked with [Factory])
             builder.RegisterFactories();
 
-            // Singletons reachable via transitional static accessors
+            // ViewModel singletons
             builder.RegisterType<TabsViewModel>().AsSelf().SingleInstance();
             builder.RegisterType<MainViewModel>().AsSelf().SingleInstance();
             builder.RegisterType<ProgressViewModel>().AsSelf().SingleInstance();
-
-            // Misc Services
-            builder.RegisterType<BarcodeDecoderService>().As<IBarcodeDecoderService>();
-            builder.RegisterType<CameraService>().As<ICameraService>();
-            builder.RegisterType<NotificationService>().As<INotificationService>();
-            builder.RegisterType<FilesService>().As<IFilesService>();
-            builder.RegisterType<FilterService>().As<IFilterService>();
-            builder.RegisterType<WebService>().As<IWebService>();
         }
 
         private static void RegisterHttpClients(ContainerBuilder builder)

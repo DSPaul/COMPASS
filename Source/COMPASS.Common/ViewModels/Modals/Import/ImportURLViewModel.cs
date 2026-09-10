@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Autofac.Features.Indexed;
 using COMPASS.Common.DependencyInjection;
 using COMPASS.Common.Interfaces.ViewModels;
 using COMPASS.Common.Operations;
@@ -16,12 +17,14 @@ namespace COMPASS.Common.ViewModels.Modals.Import
         private readonly CodexEditViewModelFactory _codexEditViewModelFactory;
         private readonly CodexCollectionOperations _codexCollectionOperations;
         private readonly ConnectivityManager _connectivityManager;
+        private readonly IIndex<MetaDataSourceType, MetaDataSource> _metaDataSources;
 
-        public ImportURLViewModel(CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, ImportSource importSource)
+        public ImportURLViewModel(CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, IIndex<MetaDataSourceType, MetaDataSource> metaDataSources, ImportSource importSource)
         {
             _codexEditViewModelFactory = codexEditViewModelFactory;
             _codexCollectionOperations = codexCollectionOperations;
             _connectivityManager = connectivityManager;
+            _metaDataSources = metaDataSources;
 
             //TODO: Name should be a property of the metadatasource itself
             SourceName = importSource switch
@@ -42,7 +45,9 @@ namespace COMPASS.Common.ViewModels.Modals.Import
                 _ => MetaDataSourceType.GenericURL
             };
 
-            var metadataSource = MetaDataSource.GetSource(associatedMetadataSource, ActiveCollection) as OnlineMetaDataSource;
+            var metadataSource = _metaDataSources.TryGetValue(associatedMetadataSource, out MetaDataSource? source)
+                ? source as OnlineMetaDataSource
+                : null;
 
             ExampleURL = metadataSource?.UrlPrefix ?? "";
             ShowValidateDisableCheckbox = importSource == ImportSource.Homebrewery;
@@ -128,9 +133,9 @@ namespace COMPASS.Common.ViewModels.Modals.Import
     }
 
     [Factory]
-    public class ImportURLViewModelFactory(CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager)
+    public class ImportURLViewModelFactory(CodexEditViewModelFactory codexEditViewModelFactory, CodexCollectionOperations codexCollectionOperations, ConnectivityManager connectivityManager, IIndex<MetaDataSourceType, MetaDataSource> metaDataSources)
     {
         public ImportURLViewModel Create(ImportSource importSource)
-            => new(codexEditViewModelFactory, codexCollectionOperations, connectivityManager, importSource);
+            => new(codexEditViewModelFactory, codexCollectionOperations, connectivityManager, metaDataSources, importSource);
     }
 }
